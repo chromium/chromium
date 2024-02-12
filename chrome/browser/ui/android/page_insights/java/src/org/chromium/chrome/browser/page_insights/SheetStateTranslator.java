@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  * EXPANDED                 FULL
  * SCROLLING                SCROLLING
  */
-public class PageInsightsSheetStateTranslator {
+public class SheetStateTranslator {
 
     /** The different states that the PageInsightsHub can have. */
     @IntDef({
@@ -41,7 +41,7 @@ public class PageInsightsSheetStateTranslator {
     }
 
     @SheetState
-    static int convertToBottomSheetState(@PageInsightsSheetState int sheet) {
+    static int toBottomSheetState(@PageInsightsSheetState int sheet) {
         return switch (sheet) {
             case PageInsightsSheetState.NONE -> SheetState.NONE;
             case PageInsightsSheetState.HIDDEN -> SheetState.HIDDEN;
@@ -54,7 +54,7 @@ public class PageInsightsSheetStateTranslator {
     }
 
     @PageInsightsSheetState
-    static int convertToPageInsightsSheetState(@SheetState int sheet) {
+    static int toPageInsightsSheetState(@SheetState int sheet) {
         return switch (sheet) {
             case SheetState.NONE -> PageInsightsSheetState.NONE;
             case SheetState.HIDDEN -> PageInsightsSheetState.HIDDEN;

@@ -10,13 +10,13 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
-import org.chromium.chrome.browser.page_insights.PageInsightsSheetStateTranslator.PageInsightsSheetState;
+import org.chromium.chrome.browser.page_insights.SheetStateTranslator.PageInsightsSheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 
-/** Tests for {@link PageInsightsSheetStateTranslator}. */
+/** Tests for {@link SheetStateTranslator}. */
 @LooperMode(Mode.PAUSED)
 @RunWith(BlockJUnit4ClassRunner.class)
-public class PageInsightsSheetStateTranslatorTest {
+public class SheetStateTranslatorTest {
 
     @Test
     public void testTranslatorConversionsCorrect() throws Exception {
@@ -30,16 +30,16 @@ public class PageInsightsSheetStateTranslatorTest {
         assertThrows(
                 UnsupportedOperationException.class,
                 () ->
-                        PageInsightsSheetStateTranslator.convertToBottomSheetState(
+                        SheetStateTranslator.toBottomSheetState(
                                 PageInsightsSheetState.COLLAPSED));
     }
 
     private boolean translates(
             @PageInsightsSheetState int pageInsightsSheetState, @SheetState int bottomSheetState)
             throws Exception {
-        return PageInsightsSheetStateTranslator.convertToPageInsightsSheetState(bottomSheetState)
+        return SheetStateTranslator.toPageInsightsSheetState(bottomSheetState)
                         == pageInsightsSheetState
-                && PageInsightsSheetStateTranslator.convertToBottomSheetState(
+                && SheetStateTranslator.toBottomSheetState(
                                 pageInsightsSheetState)
                         == bottomSheetState;
     }
