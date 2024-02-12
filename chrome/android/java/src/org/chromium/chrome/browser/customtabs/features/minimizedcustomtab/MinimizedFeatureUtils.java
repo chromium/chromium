@@ -14,6 +14,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -23,6 +24,7 @@ import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.util.Collections;
@@ -70,52 +72,72 @@ public class MinimizedFeatureUtils {
         int NUM_ENTRIES = 6;
     }
 
-    private static Boolean sIsMinimizedCustomTabAvailable;
-    private static boolean sMinimizedCustomTabAvailableForTesting;
+    private static Boolean sIsDeviceEligibleForMinimizedCustomTab;
+    private static boolean sIsDeviceEligibleForMinimizedCustomTabForTesting;
 
     /**
      * Computes the availability of the Minimized Custom Tab feature based on multiple signals and
      * emits histograms accordingly.
      *
      * @param context The {@link Context}.
+     * @param featureOverridesManager The {@link CustomTabFeatureOverridesManager} to check
+     *     overridden features.
      * @return Whether the Minimized Custom Tab feature is available.
      */
-    public static boolean isMinimizedCustomTabAvailable(Context context) {
-        if (sMinimizedCustomTabAvailableForTesting) return true;
+    public static boolean isMinimizedCustomTabAvailable(
+            Context context, @Nullable CustomTabFeatureOverridesManager featureOverridesManager) {
+        if (!isDeviceEligibleForMinimizedCustomTab(context)) return false;
+        if (!ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
+            return ChromeFeatureList.sCctMinimized.isEnabled();
+        }
+        if (featureOverridesManager == null) return ChromeFeatureList.sCctMinimized.isEnabled();
 
-        if (sIsMinimizedCustomTabAvailable != null) {
-            return sIsMinimizedCustomTabAvailable;
+        Boolean override =
+                featureOverridesManager.isFeatureEnabled(ChromeFeatureList.CCT_MINIMIZED);
+        if (override != null) return override;
+        return ChromeFeatureList.sCctMinimized.isEnabled();
+    }
+
+    /**
+     * Computes the eligibility of the Minimized Custom Tab feature based on multiple signals and
+     * emits histograms accordingly.
+     *
+     * @param context The {@link Context}.
+     * @return Whether the device is eligible for Minimized Custom Tab feature.
+     */
+    private static boolean isDeviceEligibleForMinimizedCustomTab(Context context) {
+        if (sIsDeviceEligibleForMinimizedCustomTabForTesting) return true;
+
+        if (sIsDeviceEligibleForMinimizedCustomTab != null) {
+            return sIsDeviceEligibleForMinimizedCustomTab;
         }
 
-        @MinimizedFeatureAvailability int availability;
-
+        @MinimizedFeatureAvailability int availability = MinimizedFeatureAvailability.AVAILABLE;
+        sIsDeviceEligibleForMinimizedCustomTab = true;
         if (VERSION.SDK_INT < VERSION_CODES.O) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_API_LEVEL;
-            sIsMinimizedCustomTabAvailable = false;
+            sIsDeviceEligibleForMinimizedCustomTab = false;
         } else if (SysUtils.isLowEndDevice()) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_LOW_END_DEVICE;
-            sIsMinimizedCustomTabAvailable = false;
+            sIsDeviceEligibleForMinimizedCustomTab = false;
         } else if (!context.getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_SYSTEM_FEATURE;
-            sIsMinimizedCustomTabAvailable = false;
+            sIsDeviceEligibleForMinimizedCustomTab = false;
         } else if (!isPipAllowed(context)) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_PIP_PERMISSION;
-            sIsMinimizedCustomTabAvailable = false;
+            sIsDeviceEligibleForMinimizedCustomTab = false;
         } else if (isDeviceExcluded()) {
             availability = MinimizedFeatureAvailability.UNAVAILABLE_EXCLUDED_MANUFACTURER;
-            sIsMinimizedCustomTabAvailable = false;
-        } else {
-            availability = MinimizedFeatureAvailability.AVAILABLE;
-            sIsMinimizedCustomTabAvailable = ChromeFeatureList.sCctMinimized.isEnabled();
+            sIsDeviceEligibleForMinimizedCustomTab = false;
         }
 
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.MinimizedFeatureAvailability",
                 availability,
                 MinimizedFeatureAvailability.NUM_ENTRIES);
-        ResettersForTesting.register(() -> sIsMinimizedCustomTabAvailable = null);
-        return sIsMinimizedCustomTabAvailable;
+        ResettersForTesting.register(() -> sIsDeviceEligibleForMinimizedCustomTab = null);
+        return sIsDeviceEligibleForMinimizedCustomTab;
     }
 
     @RequiresApi(api = VERSION_CODES.O)
@@ -142,9 +164,10 @@ public class MinimizedFeatureUtils {
                         || sManufacturerExcludeList.contains(Build.BRAND.toLowerCase(Locale.US)));
     }
 
-    public static void setMinimizeCustomTabAvailableForTesting(boolean availability) {
-        sMinimizedCustomTabAvailableForTesting = availability;
-        ResettersForTesting.register(() -> sMinimizedCustomTabAvailableForTesting = false);
+    public static void setDeviceEligibleForMinimizedCustomTabForTesting(boolean eligibility) {
+        sIsDeviceEligibleForMinimizedCustomTabForTesting = eligibility;
+        ResettersForTesting.register(
+                () -> sIsDeviceEligibleForMinimizedCustomTabForTesting = false);
     }
 
     public static @DrawableRes int getMinimizeIcon() {

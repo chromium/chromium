@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -37,6 +38,7 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final CustomTabFeatureOverridesManager mFeatureOverridesManager;
 
     private @Nullable MinimizedCustomTabIPHController mIPHController;
     private @Nullable CustomTabMinimizationManager mMinimizationManager;
@@ -48,13 +50,15 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
             ActivityTabProvider activityTabProvider,
             BrowserServicesIntentDataProvider intentDataProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
+            @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
+            CustomTabFeatureOverridesManager featureOverridesManager) {
         mActivity = activity;
         mNavigationController = navigationController;
         mActivityTabProvider = activityTabProvider;
         mIntentDataProvider = intentDataProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
+        mFeatureOverridesManager = featureOverridesManager;
 
         lifecycleDispatcher.register(this);
     }
@@ -65,7 +69,8 @@ public class CustomTabMinimizationManagerHolder implements DestroyObserver {
     }
 
     public void maybeCreateMinimizationManager(ObservableSupplier<Profile> profileSupplier) {
-        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(mActivity)) {
+        if (MinimizedFeatureUtils.isMinimizedCustomTabAvailable(
+                mActivity, mFeatureOverridesManager)) {
             mIPHController =
                     new MinimizedCustomTabIPHController(
                             mActivity,
