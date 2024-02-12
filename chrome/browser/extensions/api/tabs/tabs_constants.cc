@@ -145,6 +145,15 @@ const char kNotAllowedForDevToolsError[] =
     "Operation not allowed for DevTools windows";
 const char kFileUrlsNotAllowedInExtensionNavigations[] =
     "Cannot navigate to a file URL without local file access.";
-
+const char kWindowCreateSupportsOnlySingleIwaUrlError[] =
+    "When creating a window for a URL with the 'isolated-app:' scheme, only "
+    "one tab can be added to the window.";
+const char kWindowCreateCannotParseIwaUrlError[] =
+    "Unable to parse 'isolated-app:' URL: %s";
+const char kWindowCreateCannotUseTabIdWithIwaError[] =
+    "Creating a new window for an Isolated Web App does not support adding a "
+    "tab by its ID.";
+const char kWindowCreateCannotMoveIwaTabError[] =
+    "The tab of an Isolated Web App cannot be moved to a new window.";
 }  // namespace tabs_constants
 }  // namespace extensions

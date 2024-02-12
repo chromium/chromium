@@ -200,9 +200,21 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       bool navigating_same_app =
           params.browser &&
           web_app::AppBrowserController::IsForWebApp(params.browser, *app_id);
-      if (navigating_same_app &&
-          params.disposition == WindowOpenDisposition::CURRENT_TAB) {
-        return {params.browser, -1};
+      if (navigating_same_app) {
+        if (params.disposition == WindowOpenDisposition::CURRENT_TAB) {
+          return {params.browser, -1};
+        }
+
+        // If the browser window does not yet have any tabs, and we are
+        // attempting to add the first tab to it, allow for it to be reused.
+        bool navigating_new_tab =
+            params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+            params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB;
+        bool browser_has_no_tabs =
+            params.browser && params.browser->tab_strip_model()->empty();
+        if (navigating_new_tab && browser_has_no_tabs) {
+          return {params.browser, -1};
+        }
       }
       // App popups are handled in the switch statement below.
       if (params.disposition != WindowOpenDisposition::NEW_POPUP) {
