@@ -160,7 +160,8 @@ class AuthenticatorRequestDialogModel
     kCreatePasskey,
     kRecoverSecurityDomain,
     kTrustThisComputer,
-    kGPMCreate,
+    kGPMCreatePasskey,
+    kGPMCreatePin,
     kGPMOnboarding,
     kWaitingForEnclave,
 

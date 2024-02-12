@@ -387,7 +387,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
       return StepUIType::WINDOW;
 
-    case AuthenticatorRequestDialogModel::Step::kGPMCreate:
+    case AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey:
     case AuthenticatorRequestDialogModel::Step::kTrustThisComputer:
     case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
     case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
@@ -1249,7 +1249,7 @@ void AuthenticatorRequestDialogModel::OnAttestationPermissionResponse(
 
 void AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted() {
   DCHECK_EQ(current_step(), Step::kGPMOnboarding);
-  SetCurrentStep(Step::kGPMCreate);
+  SetCurrentStep(Step::kGPMCreatePin);
 }
 
 void AuthenticatorRequestDialogModel::OnTrustThisComputer() {
