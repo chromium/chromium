@@ -1,6 +1,9 @@
-monorail {
+monorail: {
   component: "Blink>Layout>Printing"
 }
-wpt {
+wpt: {
   notify: YES
+}
+buganizer_public: {
+  component_id: 1456464
 }

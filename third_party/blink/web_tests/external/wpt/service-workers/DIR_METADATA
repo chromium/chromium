@@ -1,8 +1,10 @@
-monorail {
+monorail: {
   component: "Blink>ServiceWorker"
 }
 team_email: "worker-dev@chromium.org"
-wpt {
+wpt: {
   notify: YES
 }
-
+buganizer_public: {
+  component_id: 1456150
+}

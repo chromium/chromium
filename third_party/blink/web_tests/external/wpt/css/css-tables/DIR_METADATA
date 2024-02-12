@@ -1,7 +1,9 @@
-monorail {
+monorail: {
   component: "Blink>Layout>Table"
 }
-wpt {
+wpt: {
   notify: YES
 }
-
+buganizer_public: {
+  component_id: 1456333
+}

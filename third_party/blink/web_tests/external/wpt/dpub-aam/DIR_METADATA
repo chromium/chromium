@@ -1,4 +1,6 @@
-monorail {
+monorail: {
   component: "Blink>Accessibility"
 }
-
+buganizer_public: {
+  component_id: 1456587
+}

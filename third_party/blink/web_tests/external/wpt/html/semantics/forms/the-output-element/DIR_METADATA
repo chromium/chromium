@@ -1,7 +1,10 @@
-monorail {
+monorail: {
   component: "Blink>Forms>Output"
 }
 team_email: "dom-dev@chromium.org"
-wpt {
+wpt: {
   notify: YES
+}
+buganizer_public: {
+  component_id: 1456251
 }

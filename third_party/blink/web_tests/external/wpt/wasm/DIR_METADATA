@@ -1,8 +1,10 @@
-monorail {
+monorail: {
   component: "Blink>JavaScript>WebAssembly"
 }
 team_email: "wasm-v8@google.com"
-wpt {
+wpt: {
   notify: YES
 }
-
+buganizer_public: {
+  component_id: 1456332
+}

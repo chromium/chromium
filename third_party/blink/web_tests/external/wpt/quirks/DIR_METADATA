@@ -1,8 +1,10 @@
-monorail {
+monorail: {
   component: "Blink>CSS"
 }
 team_email: "style-dev@chromium.org"
-wpt {
+wpt: {
   notify: YES
 }
-
+buganizer_public: {
+  component_id: 1456329
+}
