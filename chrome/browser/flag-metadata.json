@@ -1126,6 +1126,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "cct-embedder-special-behaviour-trigger",
+    "owners": [ "edmundw@google.com", "kgrosu@google.com" ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "cct-incognito",
     "owners": [ "chrome-incognito@chromium.org", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
     "expiry_milestone": 140

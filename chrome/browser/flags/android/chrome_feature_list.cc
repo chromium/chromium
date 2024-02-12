@@ -179,6 +179,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCreateNewTabInitializeRenderer,
     &kCCTBrandTransparencyMemoryImprovement,
     &kCCTClientDataHeader,
+    &kCCTEmbedderSpecialBehaviorTrigger,
     &kCCTFeatureUsage,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
@@ -485,6 +486,10 @@ BASE_FEATURE(kCCTBrandTransparencyMemoryImprovement,
 
 BASE_FEATURE(kCCTClientDataHeader,
              "CCTClientDataHeader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTEmbedderSpecialBehaviorTrigger,
+             "CCTEmbedderSpecialBehaviorTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTFeatureUsage,
