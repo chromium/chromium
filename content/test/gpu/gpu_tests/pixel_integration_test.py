@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import os
+import platform
 import posixpath
 import sys
 import time
@@ -68,6 +69,18 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
           # AMD.
           'Pixel_OffscreenCanvasWebGLSoftwareCompositingWorker',
       }
+
+    # TODO(crbug.com/324293876): Move this check to wherever the host-side
+    # information collection ends up living.
+    # We can't rely on directly checking platform.machine() since it is
+    # possible that we're using emulated Python on arm64 devices.
+    if sys.platform == 'win32' and 'armv8' in platform.processor().lower():
+      serial_tests |= {
+          # Context loss tests don't like being run in parallel on Windows
+          # arm64.
+          'Pixel_Video_Context_Loss_VP9',
+      }
+
     return serial_tests
 
   @classmethod
