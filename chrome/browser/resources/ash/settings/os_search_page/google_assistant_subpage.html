@@ -88,7 +88,7 @@
         </div>
       </div>
       <controlled-button id="retrain-voice-model"
-          on-click="onRetrainVoiceModelTapped_"
+          on-click="onRetrainVoiceModelClick_"
           label="$i18n{googleAssistantVoiceSettingsRetrainButton}"
           pref="{{prefs.settings.voice_interaction.hotword.enabled}}"
           deep-link-focus-id$="[[Setting.kTrainAssistantVoiceModel]]">
@@ -110,7 +110,7 @@
       deep-link-focus-id$="[[Setting.kAssistantVoiceInput]]">
   </settings-toggle-button>
   <cr-link-row id="google-assistant-settings" class="hr"
-      on-click="onGoogleAssistantSettingsTapped_"
+      on-click="onGoogleAssistantSettingsClick_"
       label="$i18n{googleAssistantSettings}"
       external>
   </cr-link-row>
