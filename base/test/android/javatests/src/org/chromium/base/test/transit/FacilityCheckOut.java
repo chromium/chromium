@@ -7,6 +7,7 @@ package org.chromium.base.test.transit;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.transit.Elements.ViewElementInState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,11 +52,21 @@ class FacilityCheckOut extends Transition {
 
     private List<ConditionWaiter.ConditionWaitStatus> createWaitStatuses() {
         ArrayList<ConditionWaiter.ConditionWaitStatus> waitStatuses = new ArrayList<>();
-        for (Condition condition : mFacility.getExitConditions()) {
+        for (ViewElementInState element : mFacility.getElements().getViewElements()) {
+            Condition exitCondition = element.getExitCondition();
+            if (exitCondition != null) {
+                waitStatuses.add(
+                        new ConditionWaiter.ConditionWaitStatus(
+                                exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+            }
+        }
+
+        for (Condition exitCondition : mFacility.getElements().getOtherExitConditions()) {
             waitStatuses.add(
                     new ConditionWaiter.ConditionWaitStatus(
-                            condition, ConditionWaiter.ConditionOrigin.EXIT));
+                            exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
         }
+
         for (Condition condition : getTransitionConditions()) {
             waitStatuses.add(
                     new ConditionWaiter.ConditionWaitStatus(

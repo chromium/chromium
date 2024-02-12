@@ -8,8 +8,11 @@ import static org.junit.Assert.fail;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.test.transit.Elements.ViewElementInState;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -67,21 +70,16 @@ public abstract class ConditionalState {
      */
     public abstract void declareElements(Elements.Builder elements);
 
-    List<Condition> getEnterConditions() {
+    Elements getElements() {
         initElements();
-        return mElements.getEnterConditions();
-    }
-
-    List<Condition> getExitConditions() {
-        initElements();
-        return mElements.getExitConditions();
+        return mElements;
     }
 
     private void initElements() {
         if (mElements == null) {
-            Elements.Builder builder = new Elements.Builder();
+            Elements.Builder builder = Elements.newBuilder();
             declareElements(builder);
-            mElements = builder.build(this);
+            mElements = builder.build();
         }
     }
 
@@ -89,9 +87,6 @@ public abstract class ConditionalState {
         assertInPhase(Phase.NEW);
         mLifecyclePhase = Phase.TRANSITIONING_TO;
         onStartMonitoringTransitionTo();
-        for (Condition condition : getEnterConditions()) {
-            condition.onStartMonitoring();
-        }
     }
 
     /** Hook to setup observers for the transition into the ConditionalState. */
@@ -110,9 +105,6 @@ public abstract class ConditionalState {
         assertInPhase(Phase.ACTIVE);
         mLifecyclePhase = Phase.TRANSITIONING_FROM;
         onStartMonitoringTransitionFrom();
-        for (Condition condition : getExitConditions()) {
-            condition.onStartMonitoring();
-        }
     }
 
     /** Hook to setup observers for the transition from the ConditionalState. */
@@ -147,7 +139,15 @@ public abstract class ConditionalState {
     /** Check the enter Conditions are still fulfilled. */
     public final void recheckEnterConditions() {
         assertInPhase(Phase.ACTIVE);
-        ConditionChecker.check(getEnterConditions());
+
+        List<Condition> enterConditions = new ArrayList<>();
+        Elements elements = getElements();
+        for (ViewElementInState element : elements.getViewElements()) {
+            enterConditions.add(element.getEnterCondition());
+        }
+        enterConditions.addAll(elements.getOtherEnterConditions());
+
+        ConditionChecker.check(enterConditions);
     }
 
     /**

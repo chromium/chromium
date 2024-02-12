@@ -14,19 +14,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import android.view.View;
+import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
-
-import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.R;
@@ -36,14 +35,16 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation extends TransitStation {
-    public static final Matcher<View> HUB_TOOLBAR = withId(R.id.hub_toolbar);
-    public static final Matcher<View> HUB_PANE_HOST = withId(R.id.hub_pane_host);
-    public static final Matcher<View> HUB_MENU_BUTTON =
-            allOf(
-                    isDescendantOfA(withId(R.id.hub_toolbar)),
-                    withId(org.chromium.chrome.R.id.menu_button));
-    public static final Matcher<View> HUB_PANE_SWITCHER =
-            allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher));
+    public static final ViewElement HUB_TOOLBAR = sharedViewElement(withId(R.id.hub_toolbar));
+    public static final ViewElement HUB_PANE_HOST = sharedViewElement(withId(R.id.hub_pane_host));
+    public static final ViewElement HUB_MENU_BUTTON =
+            sharedViewElement(
+                    allOf(
+                            isDescendantOfA(withId(R.id.hub_toolbar)),
+                            withId(org.chromium.chrome.R.id.menu_button)));
+    public static final ViewElement HUB_PANE_SWITCHER =
+            sharedViewElement(
+                    allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
@@ -60,9 +61,9 @@ public abstract class HubBaseStation extends TransitStation {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareUnownedView(HUB_TOOLBAR);
-        elements.declareUnownedView(HUB_PANE_HOST);
-        elements.declareUnownedView(HUB_MENU_BUTTON);
+        elements.declareView(HUB_TOOLBAR);
+        elements.declareView(HUB_PANE_HOST);
+        elements.declareView(HUB_MENU_BUTTON);
 
         elements.declareEnterCondition(new HubIsEnabled());
         elements.declareEnterCondition(new HubLayoutShowing());
@@ -105,7 +106,7 @@ public abstract class HubBaseStation extends TransitStation {
             HubStationUtils.createHubStation(paneId, mChromeTabbedActivityTestRule));
 
         try {
-            onView(HUB_PANE_SWITCHER).check(matches(isDisplayed()));
+            HUB_PANE_SWITCHER.onView().check(matches(isDisplayed()));
         } catch (NoMatchingViewException e) {
             var throwable = new Throwable(
                 "Hub pane switcher is not visible to switch to " + paneId);
@@ -170,7 +171,7 @@ public abstract class HubBaseStation extends TransitStation {
                 mChromeTabbedActivityTestRule.getActivity().getString(contentDescriptionRes);
         onView(
                         allOf(
-                                isDescendantOfA(HUB_PANE_SWITCHER),
+                                isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
                                 withContentDescription(contentDescription)))
                 .perform(click());
     }

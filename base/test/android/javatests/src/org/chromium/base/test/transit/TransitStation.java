@@ -32,14 +32,15 @@ public abstract class TransitStation extends ConditionalState {
         TrafficControl.notifyCreatedStation(this);
     }
 
-    List<Condition> getActiveFacilityExitConditions() {
-        List<Condition> conditions = new ArrayList<>();
+    Elements getElementsIncludingFacilities() {
+        Elements.Builder allElements = Elements.newBuilder();
+        allElements.addAll(getElements());
         for (StationFacility facility : mFacilities) {
             if (facility.getPhase() == Phase.ACTIVE) {
-                conditions.addAll(facility.getExitConditions());
+                allElements.addAll(facility.getElements());
             }
         }
-        return conditions;
+        return allElements.build();
     }
 
     void registerFacility(StationFacility facility) {

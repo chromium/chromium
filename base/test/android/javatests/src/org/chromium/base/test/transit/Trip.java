@@ -7,8 +7,13 @@ package org.chromium.base.test.transit;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.transit.ConditionWaiter.ConditionWaitStatus;
+import org.chromium.base.test.transit.Elements.ViewElementInState;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A {@link Transition} into a {@link TransitStation}, either from another TransitStation or as an
@@ -20,6 +25,8 @@ public class Trip extends Transition {
 
     @Nullable private final TransitStation mOrigin;
     private final TransitStation mDestination;
+
+    private List<ConditionWaitStatus> mWaitStatuses;
 
     private static int sLastTripId;
 
@@ -72,40 +79,20 @@ public class Trip extends Transition {
             mOrigin.setStateTransitioningFrom();
         }
         mDestination.setStateTransitioningTo();
+
+        mWaitStatuses =
+                calculateConditionWaitStatuses(mOrigin, mDestination, getTransitionConditions());
+        for (ConditionWaitStatus waitStatus : mWaitStatuses) {
+            waitStatus.getCondition().onStartMonitoring();
+        }
     }
 
     private void waitUntilArrival() {
-        ArrayList<ConditionWaiter.ConditionWaitStatus> waitStatuses = new ArrayList<>();
-
-        if (mOrigin != null) {
-            for (Condition condition : mOrigin.getExitConditions()) {
-                waitStatuses.add(
-                        new ConditionWaiter.ConditionWaitStatus(
-                                condition, ConditionWaiter.ConditionOrigin.EXIT));
-            }
-            for (Condition condition : mOrigin.getActiveFacilityExitConditions()) {
-                waitStatuses.add(
-                        new ConditionWaiter.ConditionWaitStatus(
-                                condition, ConditionWaiter.ConditionOrigin.EXIT));
-            }
-        }
-
-        for (Condition condition : mDestination.getEnterConditions()) {
-            waitStatuses.add(
-                    new ConditionWaiter.ConditionWaitStatus(
-                            condition, ConditionWaiter.ConditionOrigin.ENTER));
-        }
-        for (Condition condition : getTransitionConditions()) {
-            waitStatuses.add(
-                    new ConditionWaiter.ConditionWaitStatus(
-                            condition, ConditionWaiter.ConditionOrigin.TRANSITION));
-        }
-
         // Throws CriteriaNotSatisfiedException if any conditions aren't met within the timeout and
         // prints the state of all conditions. The timeout can be reduced when explicitly looking
         // for flakiness due to tight timeouts.
         try {
-            ConditionWaiter.waitFor(waitStatuses);
+            ConditionWaiter.waitFor(mWaitStatuses);
         } catch (AssertionError e) {
             throw TravelException.newTripException(mOrigin, mDestination, e);
         }
@@ -115,5 +102,65 @@ public class Trip extends Transition {
         }
         mDestination.setStateActive();
         TrafficControl.notifyActiveStationChanged(mDestination);
+    }
+
+    private static ArrayList<ConditionWaitStatus> calculateConditionWaitStatuses(
+            @Nullable TransitStation origin,
+            TransitStation destination,
+            List<Condition> transitionConditions) {
+        ArrayList<ConditionWaitStatus> waitStatuses = new ArrayList<>();
+
+        Elements originElements =
+                origin != null ? origin.getElementsIncludingFacilities() : Elements.EMPTY;
+        Elements destinationElements = destination.getElementsIncludingFacilities();
+
+        Set<String> destinationViewElementDescriptions = new HashSet<>();
+        for (ViewElementInState element : destinationElements.getViewElements()) {
+            destinationViewElementDescriptions.add(
+                    element.getViewElement().getViewMatcherDescription());
+        }
+
+        // Create exit Conditions for Views that should disappear
+        for (ViewElementInState element : originElements.getViewElements()) {
+            Condition exitCondition = element.getExitCondition();
+            if (exitCondition != null) {
+                boolean isInBothOriginAndDestination =
+                        destinationViewElementDescriptions.contains(
+                                element.getViewElement().getViewMatcherDescription());
+                if (!isInBothOriginAndDestination) {
+                    waitStatuses.add(
+                            new ConditionWaitStatus(
+                                    exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+                }
+            }
+        }
+
+        // Create enter Conditions for Views that should appear
+        for (ViewElementInState element : destinationElements.getViewElements()) {
+            Condition enterCondition = element.getEnterCondition();
+            if (enterCondition != null) {
+                waitStatuses.add(
+                        new ConditionWaitStatus(
+                                enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
+            }
+        }
+
+        // TOOD(crbug.com/1521928): Match non-visual Elements
+        for (Condition exitCondition : originElements.getOtherExitConditions()) {
+            waitStatuses.add(
+                    new ConditionWaitStatus(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+        }
+        for (Condition enterCondition : destinationElements.getOtherEnterConditions()) {
+            waitStatuses.add(
+                    new ConditionWaitStatus(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));
+        }
+
+        // Add transition conditions
+        for (Condition condition : transitionConditions) {
+            waitStatuses.add(
+                    new ConditionWaitStatus(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
+        }
+
+        return waitStatuses;
     }
 }

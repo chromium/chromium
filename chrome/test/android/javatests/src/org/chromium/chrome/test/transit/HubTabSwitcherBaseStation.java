@@ -14,6 +14,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -21,6 +23,7 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -30,10 +33,11 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /** The base station for Hub tab switcher stations. */
 public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
-    public static final Matcher<View> TAB_LIST_RECYCLER_VIEW =
-            allOf(
-                    isDescendantOfA(HubBaseStation.HUB_PANE_HOST),
-                    withId(R.id.tab_list_recycler_view));
+    public static final ViewElement TAB_LIST_RECYCLER_VIEW =
+            sharedViewElement(
+                    allOf(
+                            isDescendantOfA(HubBaseStation.HUB_PANE_HOST.getViewMatcher()),
+                            withId(R.id.tab_list_recycler_view)));
 
     public static final Matcher<View> TAB_CLOSE_BUTTON =
             allOf(
@@ -63,7 +67,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        elements.declareUnownedView(TAB_LIST_RECYCLER_VIEW);
+        elements.declareView(TAB_LIST_RECYCLER_VIEW);
     }
 
     /**
@@ -101,7 +105,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                 (t) -> {
                     t.addCondition(new HubLayoutNotShowing());
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                            TAB_LIST_RECYCLER_VIEW, index, TAB_THUMBNAIL, click());
+                            TAB_LIST_RECYCLER_VIEW.getViewMatcher(), index, TAB_THUMBNAIL, click());
                 });
     }
 
@@ -139,7 +143,10 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                 tabSwitcher,
                 (t) -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                            TAB_LIST_RECYCLER_VIEW, index, TAB_CLOSE_BUTTON, click());
+                            TAB_LIST_RECYCLER_VIEW.getViewMatcher(),
+                            index,
+                            TAB_CLOSE_BUTTON,
+                            click());
                 });
     }
 }
