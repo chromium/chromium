@@ -93,4 +93,7 @@ export function log(logPrefix: LogPrefix, ...messages: unknown[]) {
   lineElement.className = 'pre';
   lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
   typeLogContainer.appendChild(lineElement);
+  if (typeLogContainer.childNodes.length > 200) {
+    typeLogContainer.removeChild(typeLogContainer.childNodes[0]!);
+  }
 }
