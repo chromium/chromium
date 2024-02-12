@@ -1962,7 +1962,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
 // Tests correct calculation of five-number summary when there is only one
 // origin.
 TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
-  db_ = LoadFromFile("shared_storage.v3.single_origin.sql");
+  db_ = LoadFromFile("shared_storage.v5.single_origin.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1988,7 +1988,7 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
 // Tests correct calculation of five-number summary when number of origins is
 // greater than one and has remainder 1 modulo 4.
 TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.5origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.5origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2019,7 +2019,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 2 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SixOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.6origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.6origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2051,7 +2051,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 3 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.7origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.7origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2086,7 +2086,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 0 modulo 4.
 TEST_F(SharedStorageDatabaseTest, EightOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.8origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.8origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 

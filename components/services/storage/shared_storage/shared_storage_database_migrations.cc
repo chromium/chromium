@@ -15,6 +15,62 @@ namespace storage {
 
 namespace {
 
+bool MigrateToVersion5(sql::Database& db, sql::MetaTable& meta_table) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  static constexpr char kNewOriginTableSql[] =
+      "CREATE TABLE new_per_origin_mapping("
+      "context_origin TEXT NOT NULL PRIMARY KEY,"
+      "creation_time INTEGER NOT NULL,"
+      "length INTEGER NOT NULL,"
+      "num_bytes INTEGER NOT NULL) WITHOUT ROWID";
+  if (!db.Execute(kNewOriginTableSql)) {
+    return false;
+  }
+
+  static constexpr char kInsertSql[] =
+      "INSERT INTO new_per_origin_mapping(context_origin, creation_time, "
+      "length, num_bytes) "
+      "SELECT p.context_origin, p.creation_time, p.length, "
+      "SUM(LENGTH(v.key) + LENGTH(v.value)) "
+      "FROM per_origin_mapping p INNER JOIN values_mapping v "
+      "ON p.context_origin == v.context_origin "
+      "GROUP BY v.context_origin";
+  if (!db.Execute(kInsertSql)) {
+    return false;
+  }
+
+  static constexpr char kDropOldOriginTableSql[] =
+      "DROP TABLE per_origin_mapping";
+  if (!db.Execute(kDropOldOriginTableSql)) {
+    return false;
+  }
+
+  static constexpr char kRenameOriginTableSql[] =
+      "ALTER TABLE new_per_origin_mapping RENAME TO per_origin_mapping";
+  if (!db.Execute(kRenameOriginTableSql)) {
+    return false;
+  }
+
+  static constexpr char kDropOldCreationTimeIndexSql[] =
+      "DROP INDEX IF EXISTS per_origin_mapping_creation_time_idx";
+  if (!db.Execute(kDropOldCreationTimeIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kAddCreationTimeIndexSql[] =
+      "CREATE INDEX per_origin_mapping_creation_time_idx "
+      "ON per_origin_mapping(creation_time)";
+  if (!db.Execute(kAddCreationTimeIndexSql)) {
+    return false;
+  }
+
+  return meta_table.SetVersionNumber(5) && transaction.Commit();
+}
+
 bool MigrateToVersion4(sql::Database& db, sql::MetaTable& meta_table) {
   static constexpr char kCreateNewIndexSql[] =
       "CREATE INDEX IF NOT EXISTS budget_mapping_site_time_stamp_idx "
@@ -261,6 +317,10 @@ bool UpgradeSharedStorageDatabaseSchema(sql::Database& db,
   }
   if (meta_table.GetVersionNumber() == 3 &&
       !MigrateToVersion4(db, meta_table)) {
+    return false;
+  }
+  if (meta_table.GetVersionNumber() == 4 &&
+      !MigrateToVersion5(db, meta_table)) {
     return false;
   }
   return true;
