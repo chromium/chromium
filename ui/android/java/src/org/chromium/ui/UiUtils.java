@@ -34,7 +34,9 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleableRes;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.graphics.Insets;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
@@ -465,5 +467,21 @@ public class UiUtils {
     public static boolean isHardwareKeyboardAttached() {
         return ContextUtils.getApplicationContext().getResources().getConfiguration().keyboard
                 != Configuration.KEYBOARD_NOKEYS;
+    }
+
+    /**
+     * @param window The application window which includes the decor view.
+     * @return True if gesture navigation mode is on.
+     */
+    public static boolean isGestureNavigationMode(Window window) {
+        // https://stackoverflow.com/a/70514883
+        WindowInsetsCompat windowInsets =
+                WindowInsetsCompat.toWindowInsetsCompat(
+                        window.getDecorView().getRootWindowInsets());
+        // Use systemGestures rather than tappableElements.
+        // In some devices, like Samsung Fold, which has a dock, the bottom inset of
+        // tappableElements is non-zero even when gesture mode is on.
+        Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemGestures());
+        return insets.left > 0;
     }
 }

@@ -6,14 +6,11 @@ package org.chromium.chrome.browser.back_press;
 
 import android.annotation.SuppressLint;
 import android.util.SparseIntArray;
-import android.view.Window;
 
 import androidx.activity.BackEventCompat;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.graphics.Insets;
-import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
@@ -192,24 +189,6 @@ public class BackPressManager implements Destroyable {
      */
     public static int getHistogramValue(@Type int type) {
         return sMetricsMap.get(type);
-    }
-
-    /**
-     * TODO(crbug.com/1523293): move to UiUtils once crbug.com/1522985 is fixed.
-     *
-     * @param window The application window which includes the decor view.
-     * @return True if gesture navigation mode is on.
-     */
-    public static boolean isGestureNavigationMode(Window window) {
-        // https://stackoverflow.com/a/70514883
-        WindowInsetsCompat windowInsets =
-                WindowInsetsCompat.toWindowInsetsCompat(
-                        window.getDecorView().getRootWindowInsets());
-        // Use systemGestures rather than tappableElements.
-        // In some devices, like Samsung Fold, which has a dock, the bottom inset of
-        // tappableElements is non-zero even when gesture mode is on.
-        Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemGestures());
-        return insets.left > 0;
     }
 
     private static void recordFailure(@Type int type) {
