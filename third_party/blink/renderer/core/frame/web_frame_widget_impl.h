@@ -318,7 +318,7 @@ class CORE_EXPORT WebFrameWidgetImpl
                               int relative_cursor_pos) override;
   void ImeFinishComposingTextForPlugin(bool keep_selection) override;
   float GetCompositingScaleFactor() override;
-  const cc::LayerTreeDebugState& GetLayerTreeDebugState() override;
+  const cc::LayerTreeDebugState* GetLayerTreeDebugState() override;
   void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) override;
   void SetMayThrottleIfUndrawnFrames(
       bool may_throttle_if_undrawn_frames) override;

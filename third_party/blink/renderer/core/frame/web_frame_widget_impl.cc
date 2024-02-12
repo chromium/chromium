@@ -4391,12 +4391,18 @@ float WebFrameWidgetImpl::GetCompositingScaleFactor() {
   return compositing_scale_factor_;
 }
 
-const cc::LayerTreeDebugState& WebFrameWidgetImpl::GetLayerTreeDebugState() {
-  return widget_base_->LayerTreeHost()->GetDebugState();
+const cc::LayerTreeDebugState* WebFrameWidgetImpl::GetLayerTreeDebugState() {
+  if (!View()->does_composite()) {
+    return nullptr;
+  }
+  return &widget_base_->LayerTreeHost()->GetDebugState();
 }
 
 void WebFrameWidgetImpl::SetLayerTreeDebugState(
     const cc::LayerTreeDebugState& state) {
+  if (!View()->does_composite()) {
+    return;
+  }
   widget_base_->LayerTreeHost()->SetDebugState(state);
 }
 

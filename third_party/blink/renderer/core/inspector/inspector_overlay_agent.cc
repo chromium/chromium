@@ -422,7 +422,7 @@ InspectorOverlayAgent::InspectorOverlayAgent(
   if (GetFrame()->GetWidgetForLocalRoot()) {
     original_layer_tree_debug_state_ =
         std::make_unique<cc::LayerTreeDebugState>(
-            GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState());
+            *GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState());
   }
 }
 
@@ -553,7 +553,7 @@ protocol::Response InspectorOverlayAgent::setShowDebugBorders(bool show) {
   }
   if (FrameWidgetInitialized()) {
     FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     if (show) {
       debug_state.show_debug_borders.set();
     } else {
@@ -574,7 +574,7 @@ protocol::Response InspectorOverlayAgent::setShowFPSCounter(bool show) {
   }
   if (FrameWidgetInitialized()) {
     FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_fps_counter = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
@@ -591,7 +591,7 @@ protocol::Response InspectorOverlayAgent::setShowPaintRects(bool show) {
   }
   if (FrameWidgetInitialized()) {
     FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_paint_rects = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
@@ -608,7 +608,7 @@ protocol::Response InspectorOverlayAgent::setShowLayoutShiftRegions(bool show) {
   }
   if (FrameWidgetInitialized()) {
     FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_layout_shift_regions = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
@@ -626,7 +626,7 @@ protocol::Response InspectorOverlayAgent::setShowScrollBottleneckRects(
   }
   if (FrameWidgetInitialized()) {
     FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_touch_event_handler_rects = show;
     debug_state.show_wheel_event_handler_rects = show;
     debug_state.show_non_fast_scrollable_rects = show;
@@ -657,7 +657,7 @@ protocol::Response InspectorOverlayAgent::setShowWebVitals(bool show) {
   }
   if (FrameWidgetInitialized()) {
     FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-    cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
+    cc::LayerTreeDebugState debug_state = *widget->GetLayerTreeDebugState();
     debug_state.show_web_vital_metrics = show;
     widget->SetLayerTreeDebugState(debug_state);
   }
@@ -1292,7 +1292,7 @@ void InspectorOverlayAgent::DidInitializeFrameWidget() {
   }
 
   original_layer_tree_debug_state_ = std::make_unique<cc::LayerTreeDebugState>(
-      GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState());
+      *GetFrame()->GetWidgetForLocalRoot()->GetLayerTreeDebugState());
   Restore();
 }
 

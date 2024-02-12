@@ -2822,9 +2822,12 @@ void LocalFrame::SetContextPaused(bool is_paused) {
   if (IsLocalRoot() && (!is_paused || GetPage()->ShowPausedHudOverlay())) {
     auto* widget = GetWidgetForLocalRoot();
     if (widget) {
-      cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-      debug_state.debugger_paused = is_paused;
-      widget->SetLayerTreeDebugState(debug_state);
+      const auto* debug_state = widget->GetLayerTreeDebugState();
+      if (debug_state) {
+        cc::LayerTreeDebugState new_debug_state = *debug_state;
+        new_debug_state.debugger_paused = is_paused;
+        widget->SetLayerTreeDebugState(new_debug_state);
+      }
     }
   }
 
