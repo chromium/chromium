@@ -310,7 +310,8 @@ class StyleBuilderConverter {
                                                         const CSSValue&);
   static OffsetPathOperation* ConvertOffsetPath(StyleResolverState&,
                                                 const CSSValue&);
-  static StyleOffsetRotation ConvertOffsetRotate(const CSSValue&);
+  static StyleOffsetRotation ConvertOffsetRotate(const CSSLengthResolver&,
+                                                 const CSSValue&);
   template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
   static Length ConvertPositionLength(StyleResolverState&, const CSSValue&);
   static Rotation ConvertRotation(const CSSValue&);
