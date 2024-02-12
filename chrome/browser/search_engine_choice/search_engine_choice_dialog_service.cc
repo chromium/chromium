@@ -111,17 +111,18 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
           TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
               pref_service, &search_engine_choice_service_.get(),
               prepopulate_id);
-
-      SCOPED_CRASH_KEY_BOOL("ChoiceService", "engine_found",
-                            search_engine != nullptr);
-      base::debug::DumpWithoutCrashing();
     }
 
-    CHECK(search_engine);
-    TemplateURL search_engine_template_url = TemplateURL(*search_engine);
-    template_url_service_->SetUserSelectedDefaultSearchProvider(
-        &search_engine_template_url,
-        search_engines::ChoiceMadeLocation::kChoiceScreen);
+    // There are some cases where we might still not have a search engine entry
+    // available, for example if the source was an old entry that was removed.
+    // TODO(crbug.com/324852232): Ensure that we don't reach here at all,
+    // because it means the screen will also show a broken entry.
+    if (search_engine) {
+      TemplateURL search_engine_template_url = TemplateURL(*search_engine);
+      template_url_service_->SetUserSelectedDefaultSearchProvider(
+          &search_engine_template_url,
+          search_engines::ChoiceMadeLocation::kChoiceScreen);
+    }
   } else {
     // Make sure that the default search engine is a custom search engine.
     const TemplateURL* default_search_provider =
