@@ -2173,31 +2173,18 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 }
 
 TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
-  FormData form;
-  form.name = u"the-name";
-  form.url = GURL("http://cool.com");
-  form.action = form.url.Resolve("/login");
-
-  FormFieldData field;
-  field.label = u"username";
-  field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"select";
-  field.name = u"select";
-  field.form_control_type = FormControlType::kInputCheckbox;
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  field.check_status = FormFieldData::CheckStatus::kNotCheckable;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData({
+      .fields = {{.role = USERNAME},
+                 {.label = u"select",
+                  .name = u"select",
+                  .form_control_type = FormControlType::kInputCheckbox,
+                  .check_status =
+                      FormFieldData::CheckStatus::kCheckableButUnchecked},
+                 {.role = EMAIL_ADDRESS}},
+      .name = u"the-name",
+      .url = "http://cool.com",
+      .action = "http://cool.com/login",
+  });
 
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
@@ -2225,29 +2212,18 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
 
 TEST_F(AutofillCrowdsourcingEncoding,
        EncodeAutofillPageQueryRequest_WithLabels) {
-  FormData form;
-  form.name = u"the-name";
-  form.url = GURL("http://cool.com");
-  form.action = form.url.Resolve("/login");
-
-  FormFieldData field;
-  // No label on the first field.
-  field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Enter your Email address";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Enter your Password";
-  field.name = u"password";
-  field.form_control_type = FormControlType::kInputPassword;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData({
+      .fields =
+          {// No label on the first field.
+           {.name = u"username"},
+           {.label = u"Enter your Email address", .name = u"email"},
+           {.label = u"Enter your Password",
+            .name = u"password",
+            .form_control_type = FormControlType::kInputPassword}},
+      .name = u"the-name",
+      .url = "http://cool.com",
+      .action = "http://cool.com/login",
+  });
 
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
   FormStructure form_structure(form);
@@ -2273,34 +2249,26 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
 TEST_F(AutofillCrowdsourcingEncoding,
        EncodeAutofillPageQueryRequest_WithLongLabels) {
-  FormData form;
-  form.name = u"the-name";
-  form.url = GURL("http://cool.com");
-  form.action = form.url.Resolve("/login");
-
-  FormFieldData field;
-  // No label on the first field.
-  field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  // This label will be truncated in the XML request.
-  field.label =
-      u"Enter Your Really Really Really (Really!) Long Email Address Which We "
-      u"Hope To Get In Order To Send You Unwanted Publicity Because That's "
-      u"What Marketers Do! We Know That Your Email Address Has The Possibility "
-      u"Of Exceeding A Certain Number Of Characters...";
-  field.name = u"email";
-  field.form_control_type = FormControlType::kInputText;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = u"Enter your Password";
-  field.name = u"password";
-  field.form_control_type = FormControlType::kInputPassword;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData({
+      .fields =
+          {// No label on the first field.
+           {.name = u"username"},
+           // This label will be truncated in the XML request.
+           {.label = u"Enter Your Really Really Really (Really!) Long Email "
+                     u"Address Which We "
+                     u"Hope To Get In Order To Send You Unwanted Publicity "
+                     u"Because That's "
+                     u"What Marketers Do! We Know That Your Email Address Has "
+                     u"The Possibility "
+                     u"Of Exceeding A Certain Number Of Characters...",
+            .name = u"email"},
+           {.label = u"Enter your Password",
+            .name = u"password",
+            .form_control_type = FormControlType::kInputPassword}},
+      .name = u"the-name",
+      .url = "http://cool.com",
+      .action = "http://cool.com/login",
+  });
 
   FormStructure form_structure(form);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
@@ -2327,25 +2295,18 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // One name is missing from one field.
 TEST_F(AutofillCrowdsourcingEncoding,
        EncodeAutofillPageQueryRequest_MissingNames) {
-  FormData form;
-  // No name set for the form.
-  form.url = GURL("http://cool.com");
-  form.action = form.url.Resolve("/login");
-
-  FormFieldData field;
-  field.label = u"username";
-  field.name = u"username";
-  field.form_control_type = FormControlType::kInputText;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
-
-  field.label = std::u16string();
-  // No name set for this field.
-  field.name = u"";
-  field.form_control_type = FormControlType::kInputText;
-  field.check_status = FormFieldData::CheckStatus::kNotCheckable;
-  field.renderer_id = test::MakeFieldRendererId();
-  form.fields.push_back(field);
+  FormData form = test::GetFormData({
+      .fields = {{.role = USERNAME},
+                 // No name set for this field.
+                 {.label = u"",
+                  .name = u"",
+                  .form_control_type = FormControlType::kInputText,
+                  .check_status = FormFieldData::CheckStatus::kNotCheckable}},
+      // No name set for the form.
+      .name = u"",
+      .url = "http://cool.com",
+      .action = "http://cool.com/login",
+  });
 
   FormStructure form_structure(form);
   for (auto& fs_field : form_structure) {
@@ -2455,30 +2416,17 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // predictions.
 TEST_F(AutofillCrowdsourcingEncoding,
        ParseQueryResponse_HeuristicsOverrideSpanishLastNameTypes) {
-  FormData form_data;
-  FormFieldData field;
-  form_data.url = GURL("http://foo.com");
-  field.form_control_type = FormControlType::kInputText;
-
-  // First name field.
-  field.label = u"Nombre";
-  field.name = u"Nombre";
-  field.renderer_id = test::MakeFieldRendererId();
-  form_data.fields.push_back(field);
-
-  // First last name field.
-  // Should be identified by local heuristics.
-  field.label = u"Apellido Paterno";
-  field.name = u"apellido_paterno";
-  field.renderer_id = test::MakeFieldRendererId();
-  form_data.fields.push_back(field);
-
-  // Second last name field.
-  // Should be identified by local heuristics.
-  field.label = u"Apellido Materno";
-  field.name = u"apellido materno";
-  field.renderer_id = test::MakeFieldRendererId();
-  form_data.fields.push_back(field);
+  FormData form_data = test::GetFormData(
+      {.fields =
+           {// First name field.
+            {.label = u"Nombre", .name = u"Nombre"},
+            // First last name field.
+            // Should be identified by local heuristics.
+            {.label = u"Apellido Paterno", .name = u"apellido_paterno"},
+            // Second last name field.
+            // Should be identified by local heuristics.
+            {.label = u"Apellido Materno", .name = u"apellido materno"}},
+       .url = "http://foo.com"});
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr, nullptr);
@@ -2516,34 +2464,17 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // ADDRESS_HOME_HOUSE_NUMBER overrides server predictions.
 TEST_F(AutofillCrowdsourcingEncoding,
        ParseQueryResponse_HeuristicsOverrideStreetNameAndHouseNumberTypes) {
-  FormData form_data;
-  FormFieldData field;
-  form_data.url = GURL("http://foo.com");
-  field.form_control_type = FormControlType::kInputText;
-
-  // Field for the name.
-  field.label = u"Name";
-  field.name = u"Name";
-  field.renderer_id = test::MakeFieldRendererId();
-  form_data.fields.push_back(field);
-
-  // Field for the street name.
-  field.label = u"Street Name";
-  field.name = u"street_name";
-  field.renderer_id = test::MakeFieldRendererId();
-  form_data.fields.push_back(field);
-
-  // Field for the house number.
-  field.label = u"House Number";
-  field.name = u"house_number";
-  field.renderer_id = test::MakeFieldRendererId();
-  form_data.fields.push_back(field);
-
-  // Field for the postal code.
-  field.label = u"ZIP";
-  field.name = u"ZIP";
-  field.renderer_id = test::MakeFieldRendererId();
-  form_data.fields.push_back(field);
+  FormData form_data = test::GetFormData(
+      {.fields =
+           {// Field for the name.
+            {.label = u"Name", .name = u"Name"},
+            // Field for the street name.
+            {.label = u"Street Name", .name = u"street_name"},
+            // Field for the house number.
+            {.label = u"House Number", .name = u"house_number"},
+            // Field for the postal code.
+            {.label = u"ZIP", .name = u"ZIP"}},
+       .url = "http://foo.com"});
 
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr, nullptr);
