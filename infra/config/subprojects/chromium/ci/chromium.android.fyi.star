@@ -66,6 +66,7 @@ ci.builder(
         category = "wpt|chrome",
         short_name = "p-x86",
     ),
+    execution_timeout = 4 * time.hour,
 )
 
 ci.builder(
