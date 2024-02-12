@@ -3244,8 +3244,6 @@ source_set("ash") {
     "system/automatic_reboot_manager.cc",
     "system/automatic_reboot_manager.h",
     "system/automatic_reboot_manager_observer.h",
-    "system/breakpad_consent_watcher.cc",
-    "system/breakpad_consent_watcher.h",
     "system/device_disabling_manager.cc",
     "system/device_disabling_manager.h",
     "system/device_disabling_manager_default_delegate.cc",

@@ -73,7 +73,7 @@ static_library("app") {
     "crashpad.h",
   ]
 
-  if (is_chromeos || is_castos) {
+  if (is_castos) {
     sources += [
       "breakpad_linux.cc",
       "breakpad_linux.h",
@@ -123,7 +123,7 @@ static_library("app") {
     ]
   }
 
-  if (is_chromeos || is_castos) {
+  if (is_castos) {
     deps += [ "//third_party/breakpad:client" ]
   }
 

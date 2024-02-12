@@ -115,11 +115,6 @@ void SetFirstChanceExceptionHandler(bool (*handler)(int, siginfo_t*, void*)) {
       FirstChanceHandlerHelper);
 }
 
-bool IsCrashpadEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kEnableCrashpad);
-}
-
 bool GetHandlerSocket(int* fd, pid_t* pid) {
   return crashpad::CrashpadClient::GetHandlerSocket(fd, pid);
 }

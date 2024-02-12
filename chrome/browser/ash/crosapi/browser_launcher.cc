@@ -333,10 +333,6 @@ void SetUpForCrashpad(base::CommandLine& command_line) {
   // Paths are UTF-8 safe on Chrome OS.
   std::string crash_dir = LacrosCrashDumpDirectory().AsUTF8Unsafe();
   command_line.AppendSwitchASCII("breakpad-dump-location", crash_dir);
-
-  if (crash_reporter::IsCrashpadEnabled()) {
-    command_line.AppendSwitch(switches::kEnableCrashpad);
-  }
 }
 
 // Sets up switches and arguments of command line for anything shared to

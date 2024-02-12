@@ -61,12 +61,6 @@ extern const char kPackageVersionName[];
 extern const char kPackageVersionCode[];
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1176772): Remove kEnableCrashpad and IsCrashpadEnabled() when
-// Crashpad is fully enabled on Linux.
-extern const char kEnableCrashpad[];
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kSchedulerBoostUrgent[];
 #endif

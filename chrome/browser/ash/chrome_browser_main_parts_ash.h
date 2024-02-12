@@ -127,7 +127,6 @@ class QuickPairBrowserDelegateImpl;
 }
 
 namespace system {
-class BreakpadConsentWatcher;
 class DarkResumeController;
 }  // namespace system
 
@@ -270,7 +269,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       login_screen_extensions_storage_cleaner_;
 
   std::unique_ptr<GnubbyNotification> gnubby_notification_;
-  std::unique_ptr<system::BreakpadConsentWatcher> breakpad_consent_watcher_;
 
   std::unique_ptr<platform_keys::KeyPermissionsManager>
       system_token_key_permissions_manager_;

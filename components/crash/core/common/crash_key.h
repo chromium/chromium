@@ -23,7 +23,7 @@
 //
 // See https://cs.chromium.org/chromium/src/docs/debugging_with_crash_keys.md
 // for more information on using this.
-#if BUILDFLAG(USE_CRASHPAD_ANNOTATION) || BUILDFLAG(USE_COMBINED_ANNOTATIONS)
+#if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
 #include "third_party/crashpad/crashpad/client/annotation.h"  // nogncheck
 #endif
 
@@ -34,8 +34,6 @@ class StackTrace;
 }  // namespace base
 
 namespace crash_reporter {
-
-class CrashKeyBreakpadTest;
 
 // A CrashKeyString stores a name-value pair that will be recorded within a
 // crash report.
@@ -73,6 +71,8 @@ template <crashpad::Annotation::ValueSizeType MaxLength>
 using CrashKeyString = crashpad::StringAnnotation<MaxLength>;
 
 #else  // Crashpad-compatible crash key interface:
+
+class CrashKeyBreakpadTest;
 
 namespace internal {
 
@@ -172,67 +172,8 @@ class CrashKeyStringBreakpad : public internal::CrashKeyStringImpl {
       indexes_;
 };
 
-#if BUILDFLAG(USE_COMBINED_ANNOTATIONS)
-
-namespace internal {
-
-class CrashKeyStringCombinedImpl {
- public:
-  constexpr CrashKeyStringCombinedImpl(CrashKeyStringImpl* breakpad_key,
-                                       crashpad::Annotation* crashpad_key)
-      : breakpad_key_(breakpad_key), crashpad_key_(crashpad_key) {}
-
-  CrashKeyStringCombinedImpl(const CrashKeyStringCombinedImpl&) = delete;
-  CrashKeyStringCombinedImpl& operator=(const CrashKeyStringCombinedImpl&) =
-      delete;
-
-  void Clear() {
-    breakpad_key_->Clear();
-    crashpad_key_->Clear();
-  }
-
-  bool is_set() const { return breakpad_key_->is_set(); }
-
- private:
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION CrashKeyStringImpl* breakpad_key_;
-  RAW_PTR_EXCLUSION crashpad::Annotation* crashpad_key_;
-};
-
-}  // namespace internal
-
-template <uint32_t MaxLength>
-class CrashKeyStringCombined : public internal::CrashKeyStringCombinedImpl {
- public:
-  enum class Tag { kArray };
-
-  constexpr explicit CrashKeyStringCombined(const char name[])
-      : internal::CrashKeyStringCombinedImpl(&breakpad_key_, &crashpad_key_),
-        breakpad_key_(name),
-        crashpad_key_(name) {}
-
-  constexpr CrashKeyStringCombined(const char name[], Tag tag)
-      : CrashKeyStringCombined(name) {}
-
-  CrashKeyStringCombined(const CrashKeyStringCombined&) = delete;
-  CrashKeyStringCombined& operator=(const CrashKeyStringCombined&) = delete;
-
-  void Set(base::StringPiece value) {
-    breakpad_key_.Set(value);
-    crashpad_key_.Set(value);
-  }
-
- private:
-  CrashKeyStringBreakpad<MaxLength> breakpad_key_;
-  crashpad::StringAnnotation<MaxLength> crashpad_key_;
-};
-
-template <uint32_t MaxLength>
-using CrashKeyString = CrashKeyStringCombined<MaxLength>;
-#else
 template <uint32_t MaxLength>
 using CrashKeyString = CrashKeyStringBreakpad<MaxLength>;
-#endif  // BUILDFLAG(USE_COMBINED_ANNOTATIONS)
 
 #endif  // BUILDFLAG(USE_CRASHPAD_ANNOTATION)
 
@@ -250,8 +191,6 @@ class [[nodiscard]] ScopedCrashKeyString {
  public:
 #if BUILDFLAG(USE_CRASHPAD_ANNOTATION)
   using CrashKeyType = crashpad::Annotation;
-#elif BUILDFLAG(USE_COMBINED_ANNOTATIONS)
-  using CrashKeyType = internal::CrashKeyStringCombinedImpl;
 #else
   using CrashKeyType = internal::CrashKeyStringImpl;
 #endif

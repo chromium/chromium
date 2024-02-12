@@ -218,30 +218,9 @@ RenderProcessImpl::RenderProcessImpl()
 
 #ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
-    base::CommandLine* const command_line =
-        base::CommandLine::ForCurrentProcess();
-
-    if (command_line->HasSwitch(switches::kEnableCrashpad) ||
-        command_line->HasSwitch(switches::kEnableCrashReporter) ||
-        command_line->HasSwitch(switches::kEnableCrashReporterForTesting)) {
-      // The trap handler is set as the first chance handler for Crashpad or
-      // Breakpad's signal handler.
-      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
-    } else if (!command_line->HasSwitch(
-                   switches::kDisableInProcessStackTraces)) {
-      if (base::debug::SetStackDumpFirstChanceCallback(
-              v8::TryHandleWebAssemblyTrapPosix)) {
-        // Crashpad and Breakpad are disabled, but the in-process stack dump
-        // handlers are enabled, so set the callback on the stack dump handlers.
-        v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
-      } else {
-        // As the registration of the callback failed, we don't enable trap
-        // handlers.
-      }
-    } else {
-      // There is no signal handler yet, but it's okay if v8 registers one.
-      v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/true);
-    }
+    // The trap handler is set as the first chance handler for Crashpad's signal
+    // handler.
+    v8::V8::EnableWebAssemblyTrapHandler(/*use_v8_signal_handler=*/false);
   }
 #endif
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)

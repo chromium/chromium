@@ -153,7 +153,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "components/crash/core/app/breakpad_linux.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1267,12 +1266,6 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   v8_crashpad_support::SetUp();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!crash_reporter::IsCrashpadEnabled()) {
-    breakpad::SetFirstChanceExceptionHandler(v8::TryHandleWebAssemblyTrapPosix);
-  }
-#endif
-
 #if BUILDFLAG(IS_POSIX)
   if (HandleVersionSwitches(command_line)) {
     return 0;  // Got a --version switch; exit with a success error code.
@@ -1728,14 +1721,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
     } else {
       base::android::InitJavaExceptionReporterForChildProcess();
     }
-#elif BUILDFLAG(IS_CHROMEOS)
-    if (crash_reporter::IsCrashpadEnabled()) {
-      crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
-      crash_reporter::SetFirstChanceExceptionHandler(
-          v8::TryHandleWebAssemblyTrapPosix);
-    } else {
-      breakpad::InitCrashReporter(process_type);
-    }
 #else
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
     crash_reporter::SetFirstChanceExceptionHandler(
@@ -1884,19 +1869,9 @@ void ChromeMainDelegate::ZygoteForked() {
       base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);
-#if BUILDFLAG(IS_CHROMEOS)
-  if (crash_reporter::IsCrashpadEnabled()) {
-    crash_reporter::InitializeCrashpad(false, process_type);
-    crash_reporter::SetFirstChanceExceptionHandler(
-        v8::TryHandleWebAssemblyTrapPosix);
-  } else {
-    breakpad::InitCrashReporter(process_type);
-  }
-#else
   crash_reporter::InitializeCrashpad(false, process_type);
   crash_reporter::SetFirstChanceExceptionHandler(
       v8::TryHandleWebAssemblyTrapPosix);
-#endif
 
   // Reset the command line for the newly spawned process.
   crash_keys::SetCrashKeysFromCommandLine(*command_line);
