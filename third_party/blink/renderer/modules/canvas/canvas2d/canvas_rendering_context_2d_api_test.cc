@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/accessibility/ax_mode.h"
 
 using testing::Mock;
@@ -499,6 +500,39 @@ TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerToDataUrl) {
 
   // Doesn't throw outside layers:
   CanvasElement().toDataURL(/*mime_type=*/"image/png", no_exception);
+}
+
+// Checks `drawMesh` throws an exception if called inside a layer.
+TEST_F(CanvasRenderingContext2DAPITest, UnclosedLayerDrawMesh) {
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  CreateContext(kNonOpaque);
+
+  NonThrowableExceptionState no_exception;
+  auto* image = MakeGarbageCollected<V8CanvasImageSource>(&CanvasElement());
+
+  const Mesh2DVertexBuffer* vbuf = MakeGarbageCollected<Mesh2DVertexBuffer>(
+      base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+          std::vector<SkPoint>{{0, 0}, {100, 0}, {100, 100}}));
+  const Mesh2DUVBuffer* uvbuf = MakeGarbageCollected<Mesh2DUVBuffer>(
+      base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+          std::vector<SkPoint>{{0, 0}, {1, 0}, {1, 1}}));
+  const Mesh2DIndexBuffer* ibuf = MakeGarbageCollected<Mesh2DIndexBuffer>(
+      base::MakeRefCounted<cc::RefCountedBuffer<uint16_t>>(
+          std::vector<uint16_t>{0, 1, 2}));
+
+  Context2D()->beginLayer(GetScriptState(), BeginLayerOptions::Create(),
+                          no_exception);
+
+  // Throws inside layers:
+  DummyExceptionStateForTesting exception_state;
+  Context2D()->drawMesh(vbuf, uvbuf, ibuf, image, exception_state);
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+
+  Context2D()->endLayer(no_exception);
+
+  // Doesn't throw outside layers:
+  Context2D()->drawMesh(vbuf, uvbuf, ibuf, image, no_exception);
 }
 
 void ResetCanvasForAccessibilityRectTest(Document& document) {

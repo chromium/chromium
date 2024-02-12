@@ -107,5 +107,25 @@ test(function(t) {
 
     ctx.drawMesh(vbuf, uvbuf, ibuf, canvas);
 }, "Test drawMesh() behavior.");
+
+test(function(t) {
+    var source_canvas = document.createElement("canvas");
+    var ctx = document.createElement("canvas").getContext("2d");
+
+    var vbuf = ctx.createMesh2DVertexBuffer(new Float32Array([0, 0, 0, 100, 100, 100]));
+    var uvbuf = ctx.createMesh2DUVBuffer(new Float32Array([0, 0, 0, 1, 1, 1]));
+    var ibuf = ctx.createMesh2DIndexBuffer(new Uint16Array([0, 1, 2]));
+
+    ctx.drawMesh(vbuf, uvbuf, ibuf, source_canvas);
+
+    source_canvas.getContext("2d").beginLayer();
+    assert_throws_dom("InvalidStateError", () => {
+        ctx.drawMesh(vbuf, uvbuf, ibuf, source_canvas);
+    });
+
+    source_canvas.getContext("2d").endLayer();
+    ctx.drawMesh(vbuf, uvbuf, ibuf, source_canvas);
+
+}, "Test drawMesh() layer behavior.");
 </script>
 </body>

@@ -4,23 +4,36 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
+#include <cstdint>
+#include <optional>
+
+#include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_filter.h"
+#include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "cc/test/paint_op_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_begin_layer_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasfilter_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/resolver/font_style_resolver.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_test_utils.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_index_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_uv_buffer.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/mesh_2d_vertex_buffer.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -39,7 +52,11 @@ using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
 using ::cc::DrawRecordOp;
 using ::cc::DrawRectOp;
+using ::cc::DrawVerticesOp;
+using ::cc::PaintFlags;
+using ::cc::PaintImage;
 using ::cc::PaintOpEq;
+using ::cc::PaintShader;
 using ::cc::RestoreOp;
 using ::cc::SaveLayerAlphaOp;
 using ::cc::SaveLayerOp;
@@ -1527,6 +1544,45 @@ TEST(BaseRenderingContextLayersCSSTests,
   EXPECT_THAT(context->FlushRecorder(),
               RecordedOpsAre(DrawRecordOpEq(PaintOpEq<SaveLayerOp>(flags),
                                             PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextMeshTests, DrawMesh) {
+  test::TaskEnvironment task_environment;
+
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> vbuf =
+      base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+          std::vector<SkPoint>{{0, 0}, {100, 0}, {100, 100}, {0, 100}});
+  scoped_refptr<cc::RefCountedBuffer<SkPoint>> uvbuf =
+      base::MakeRefCounted<cc::RefCountedBuffer<SkPoint>>(
+          std::vector<SkPoint>{{0, 0}, {1, 0}, {1, 1}, {0, 1}});
+  scoped_refptr<cc::RefCountedBuffer<uint16_t>> ibuf =
+      base::MakeRefCounted<cc::RefCountedBuffer<uint16_t>>(
+          std::vector<uint16_t>{0, 1, 2, 0, 2, 3});
+
+  V8TestingScope scope;
+  NonThrowableExceptionState no_exception;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+
+  context->drawMesh(
+      MakeGarbageCollected<Mesh2DVertexBuffer>(vbuf),
+      MakeGarbageCollected<Mesh2DUVBuffer>(uvbuf),
+      MakeGarbageCollected<Mesh2DIndexBuffer>(ibuf),
+      MakeGarbageCollected<V8CanvasImageSource>(
+          MakeGarbageCollected<ImageBitmap>(
+              context->createImageData(/*sw=*/10, /*sh=*/10, no_exception),
+              /*crop_rect=*/std::nullopt)),
+      no_exception);
+
+  PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setFilterQuality(PaintFlags::FilterQuality::kLow);
+
+  SkMatrix local_matrix = SkMatrix::Scale(1.0f / 10, 1.0f / 10);
+  flags.setShader(PaintShader::MakeImage(PaintImage(), SkTileMode::kClamp,
+                                         SkTileMode::kClamp, &local_matrix));
+  EXPECT_THAT(
+      context->FlushRecorder(),
+      RecordedOpsAre(PaintOpEq<DrawVerticesOp>(vbuf, uvbuf, ibuf, flags)));
 }
 
 }  // namespace

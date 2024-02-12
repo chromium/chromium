@@ -2180,11 +2180,42 @@ Mesh2DIndexBuffer* BaseRenderingContext2D::createMesh2DIndexBuffer(
                                 array->Data() + array->length())));
 }
 
-void BaseRenderingContext2D::drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
-                                      const Mesh2DUVBuffer* uv_buffer,
-                                      const Mesh2DIndexBuffer* index_buffer,
-                                      const V8CanvasImageSource* image,
-                                      ExceptionState& exception_state) {
+void BaseRenderingContext2D::drawMesh(
+    const Mesh2DVertexBuffer* vertex_buffer,
+    const Mesh2DUVBuffer* uv_buffer,
+    const Mesh2DIndexBuffer* index_buffer,
+    const V8CanvasImageSource* v8_image_source,
+    ExceptionState& exception_state) {
+  CanvasImageSource* image_source =
+      ToCanvasImageSource(v8_image_source, exception_state);
+  if (!image_source) {
+    return;
+  }
+
+  SourceImageStatus source_image_status = kInvalidSourceImageStatus;
+  scoped_refptr<Image> image = image_source->GetSourceImageForCanvas(
+      FlushReason::kDrawMesh, &source_image_status,
+      gfx::SizeF(Width(), Height()));
+  switch (source_image_status) {
+    case kUndecodableSourceImageStatus:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "The HTMLImageElement provided is in the 'broken' state.");
+      return;
+    case kLayersOpenInCanvasSource:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "`drawMesh()` with a canvas as a source cannot be called while "
+          "layers are open in the the source canvas.");
+      return;
+    default:
+      break;
+  }
+
+  if (!image || image->IsNull()) {
+    return;
+  }
+
   scoped_refptr<cc::RefCountedBuffer<SkPoint>> vertex_data =
       vertex_buffer->GetBuffer();
   CHECK_NE(vertex_data, nullptr);
@@ -2194,7 +2225,35 @@ void BaseRenderingContext2D::drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
       index_buffer->GetBuffer();
   CHECK_NE(index_data, nullptr);
 
-  // TODO(fmalita): impl
+  WillDrawImage(image_source);
+
+  if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
+    SetOriginTaintedByContent();
+  }
+
+  SkRect bounds;
+  bounds.setBounds(vertex_data->data().data(),
+                   SkToInt(vertex_data->data().size()));
+
+  Draw<OverdrawOp::kNone>(
+      /*draw_func=*/
+      [&image, &vertex_data, &uv_data, &index_data](
+          cc::PaintCanvas* c, const cc::PaintFlags* flags) {
+        const gfx::RectF src(image->width(), image->height());
+        // UV coordinates are normalized, relative to the texture size.
+        const SkMatrix local_matrix =
+            SkMatrix::Scale(1.0f / image->width(), 1.0f / image->height());
+
+        cc::PaintFlags scoped_flags(*flags);
+        image->ApplyShader(scoped_flags, local_matrix, src, ImageDrawOptions());
+        c->drawVertices(vertex_data, uv_data, index_data, scoped_flags);
+      },
+      kNoOverdraw,
+      gfx::RectF(bounds.x(), bounds.y(), bounds.width(), bounds.height()),
+      CanvasRenderingContext2DState::PaintType::kFillPaintType,
+      image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
+                               : CanvasRenderingContext2DState::kNonOpaqueImage,
+      CanvasPerformanceMonitor::DrawType::kOther);
 }
 
 bool BaseRenderingContext2D::ComputeDirtyRect(const gfx::RectF& local_rect,
