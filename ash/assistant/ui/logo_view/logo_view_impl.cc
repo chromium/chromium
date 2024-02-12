@@ -57,9 +57,6 @@ void LogoViewImpl::SetState(LogoView::State state, bool animate) {
     case LogoView::State::kMic:
       animator_state = StateModel::State::kMic;
       break;
-    case LogoView::State::kMoleculeWavy:
-      animator_state = StateModel::State::kMoleculeWavy;
-      break;
     case LogoView::State::kUserSpeaks:
       animator_state = StateModel::State::kUserSpeaks;
       break;
