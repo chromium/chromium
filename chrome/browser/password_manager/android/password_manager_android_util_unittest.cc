@@ -598,7 +598,7 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
     enable_local_upm.InitAndEnableFeatureWithParameters(
         password_manager::features::
             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-        {{password_manager::features::kUPMLocalPasswordsMinGmsVersionCode.name,
+        {{password_manager::features::kLocalUpmMinGmsVersionParam,
           base::ToString(std::numeric_limits<int>::max())}});
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
         switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
@@ -613,6 +613,28 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest,
     password_manager::PasswordStoreResultsObserver profile_store_observer;
     profile_password_store()->GetAllLogins(profile_store_observer.GetWeakPtr());
     EXPECT_EQ(profile_store_observer.WaitForResults().size(), 1u);
+    DestroyProfile();
+  }
+}
+
+TEST_F(UsesSplitStoresAndUPMForLocalTest,
+       ChangingSettingsAfterActivationShouldNotDeactivate) {
+  {
+    base::test::ScopedFeatureList enable_local_upm(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    CreateProfile();
+    ASSERT_TRUE(UsesSplitStoresAndUPMForLocal(pref_service()));
+    pref_service()->SetBoolean(
+        password_manager::prefs::kCredentialsEnableAutosignin, false);
+    DestroyProfile();
+  }
+  {
+    base::test::ScopedFeatureList enable_local_upm(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+    CreateProfile();
+    EXPECT_TRUE(UsesSplitStoresAndUPMForLocal(pref_service()));
     DestroyProfile();
   }
 }

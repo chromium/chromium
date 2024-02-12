@@ -119,11 +119,6 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-constinit const base::FeatureParam<int> kUPMLocalPasswordsMinGmsVersionCode(
-    &kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
-    "min_gms_version",
-    /*default_value=*/240212000);
-
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
              "UnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);

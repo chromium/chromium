@@ -109,17 +109,20 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 // UnifiedPasswordManagerLocalPasswordsAndroidWithMigration will replace this
 // feature once UPM starts to be rolled out to users who have saved local
 // passwords.
+// See also kLocalUpmMinGmsVersionParam below.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-
-// The min value of base::android::BuildInfo::gms_version_code() for the flag
-// above to take effect.
-// WARNING: this is a param of the NoMigration flag, not the WithMigration one!
-extern constinit const base::FeatureParam<int>
-    kUPMLocalPasswordsMinGmsVersionCode;
 
 // Enables use of Google Mobile services for non-synced password storage add for
 // users who have local passwords saved.
+// See also kLocalUpmMinGmsVersionParam below.
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+
+// A parameter for both the NoMigration and WithMigration features above. It
+// dictates the min value of base::android::BuildInfo::gms_version_code() for
+// the flag take effect.
+inline constexpr char kLocalUpmMinGmsVersionParam[] = "min_gms_version";
+// Default value of kLocalUpmMinGmsVersionParam.
+inline constexpr int kDefaultLocalUpmMinGmsVersion = 240212000;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from
