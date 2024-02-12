@@ -200,6 +200,7 @@ const char kTabletProductivityUserModelLabelHigh[] = "High";
 // Labels for Android Home modules for ranking.
 const char kSingleTab[] = "SingleTab";
 const char kPriceChange[] = "PriceChange";
+const char kTabResumptionForAndroidHome[] = "TabResumption";
 
 // Labels for IOS modules for ranking.
 const char kMostVisitedTiles[] = "MostVisitedTiles";
