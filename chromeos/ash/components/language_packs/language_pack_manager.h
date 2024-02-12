@@ -37,7 +37,8 @@ enum class FeatureIdsEnum {
   kUnknown = 0,
   kHandwriting = 1,
   kTts = 2,
-  kMaxValue = kTts,
+  kFonts = 3,
+  kMaxValue = kFonts,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -50,7 +51,9 @@ enum class FeatureSuccessEnum {
   kHandwritingFailure = 3,
   kTtsSuccess = 4,
   kTtsFailure = 5,
-  kMaxValue = kTtsFailure,
+  kFontsSuccess = 6,
+  kFontsFailure = 7,
+  kMaxValue = kFontsFailure,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

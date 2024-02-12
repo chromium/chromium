@@ -56,6 +56,9 @@ FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
   if (feature_id == kTtsFeatureId) {
     return FeatureIdsEnum::kTts;
   }
+  if (feature_id == kFontsFeatureId) {
+    return FeatureIdsEnum::kFonts;
+  }
 
   // Default value of unknown.
   return FeatureIdsEnum::kUnknown;
@@ -75,6 +78,13 @@ FeatureSuccessEnum GetSuccessValueForUma(const std::string& feature_id,
       return FeatureSuccessEnum::kTtsSuccess;
     } else {
       return FeatureSuccessEnum::kTtsFailure;
+    }
+  }
+  if (feature_id == kFontsFeatureId) {
+    if (success) {
+      return FeatureSuccessEnum::kFontsSuccess;
+    } else {
+      return FeatureSuccessEnum::kFontsFailure;
     }
   }
 

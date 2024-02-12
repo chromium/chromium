@@ -142,6 +142,9 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
     } else if (feature_id == kTtsFeatureId) {
       base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallError.Tts",
                                     GetDlcErrorTypeForUma(dlc_result.error));
+    } else if (feature_id == kFontsFeatureId) {
+      base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.InstallError.Fonts",
+                                    GetDlcErrorTypeForUma(dlc_result.error));
     }
   }
 

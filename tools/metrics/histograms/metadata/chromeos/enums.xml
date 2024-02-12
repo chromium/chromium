@@ -1021,6 +1021,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="HANDWRITING"/>
   <int value="2" label="TTS"/>
+  <int value="3" label="FONTS"/>
 </enum>
 
 <enum name="LanguagePackFeatureSuccess">
@@ -1038,6 +1039,8 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="3" label="Handwriting failure"/>
   <int value="4" label="TTS success"/>
   <int value="5" label="TTS failure"/>
+  <int value="6" label="Fonts success"/>
+  <int value="7" label="Fonts failure"/>
 </enum>
 
 <enum name="LanguagePackLanguageCodes">

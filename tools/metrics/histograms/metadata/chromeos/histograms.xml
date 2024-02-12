@@ -1959,6 +1959,18 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.LanguagePacks.InstallError.Fonts"
+    enum="LanguagePackDlcErrorType" expires_after="2024-08-30">
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <owner>claudiomagni@chromium.org</owner>
+  <summary>
+    Records the type of error that is received from DLC Service when an
+    installation is requested for fonts. No metric is emitted on success, we
+    only record an entry in case of error.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.LanguagePacks.InstallError.Handwriting"
     enum="LanguagePackDlcErrorType" expires_after="2024-06-30">
   <owner>claudiomagni@chromium.org</owner>
