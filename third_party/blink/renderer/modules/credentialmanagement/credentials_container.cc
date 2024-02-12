@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credentials_container.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
@@ -2061,7 +2062,7 @@ ScriptPromise CredentialsContainer::GetForIdentity(
     return promise;
   }
 
-  if (absl::optional<ScriptPromise> digital_credential_promise =
+  if (std::optional<ScriptPromise> digital_credential_promise =
           GetForDigitalCredential(script_state, resolver, promise, options,
                                   *identity_options.providers()[0],
                                   identity_options.providers().size(),
@@ -2246,7 +2247,7 @@ ScriptPromise CredentialsContainer::GetForIdentity(
   return promise;
 }
 
-absl::optional<ScriptPromise> CredentialsContainer::GetForDigitalCredential(
+std::optional<ScriptPromise> CredentialsContainer::GetForDigitalCredential(
     ScriptState* script_state,
     ScriptPromiseResolver* resolver,
     const ScriptPromise& promise,
@@ -2260,7 +2261,7 @@ absl::optional<ScriptPromise> CredentialsContainer::GetForDigitalCredential(
             resolver->GetExecutionContext()) ||
       RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled() ||
       !first_identity_provider.hasHolder()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (num_identity_providers > 1u) {

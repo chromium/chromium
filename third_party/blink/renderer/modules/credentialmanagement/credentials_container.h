@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_CREDENTIALS_CONTAINER_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_request_options.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/web_identity_requester.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -58,9 +60,9 @@ class MODULES_EXPORT CredentialsContainer final : public ScriptWrappable,
                                ExceptionState&);
 
   // get() implementation for WebIdentityDigitalCredential.
-  // Returns absl::nullopt if the passed-in CredentialRequestOptions are not for
+  // Returns std::nullopt if the passed-in CredentialRequestOptions are not for
   // a WebIdentityDigitalCredential.
-  absl::optional<ScriptPromise> GetForDigitalCredential(
+  std::optional<ScriptPromise> GetForDigitalCredential(
       ScriptState*,
       ScriptPromiseResolver*,
       const ScriptPromise&,
