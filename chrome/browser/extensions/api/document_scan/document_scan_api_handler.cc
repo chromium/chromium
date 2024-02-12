@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
+#include "extensions/common/extension_id.h"
 #endif
 
 namespace extensions {
@@ -577,7 +578,7 @@ void DocumentScanAPIHandler::CancelScan(
 }
 
 void DocumentScanAPIHandler::OnCancelScanResponse(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     CancelScanCallback callback,
     crosapi::mojom::CancelScanResponsePtr response) {
   auto api_response =

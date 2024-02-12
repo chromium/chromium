@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -40,23 +41,23 @@ class ImageWriterControllerLacros : public BrowserContextKeyedAPI,
 
   using WriteOperationCallback =
       base::OnceCallback<void(const std::optional<std::string>&)>;
-  void DestroyPartitions(const std::string& extension_id,
+  void DestroyPartitions(const ExtensionId& extension_id,
                          const std::string& storage_unit_id,
                          WriteOperationCallback callback);
-  void WriteFromUrl(const std::string& extension_id,
+  void WriteFromUrl(const ExtensionId& extension_id,
                     const std::string& storage_unit_id,
                     const GURL& image_url,
                     const std::optional<std::string>& image_hash,
                     WriteOperationCallback callback);
-  void WriteFromFile(const std::string& extension_id,
+  void WriteFromFile(const ExtensionId& extension_id,
                      const std::string& storage_unit_id,
                      const base::FilePath& image_path,
                      WriteOperationCallback callback);
-  void CancelWrite(const std::string& extension_id,
+  void CancelWrite(const ExtensionId& extension_id,
                    WriteOperationCallback callback);
 
-  void OnPendingClientWriteCompleted(const std::string& extension_id);
-  void OnPendingClientWriteError(const std::string& extension_id);
+  void OnPendingClientWriteCompleted(const ExtensionId& extension_id);
+  void OnPendingClientWriteError(const ExtensionId& extension_id);
 
   // BrowserContextKeyedAPI Implementation.
   static BrowserContextKeyedAPIFactory<ImageWriterControllerLacros>*
@@ -76,12 +77,12 @@ class ImageWriterControllerLacros : public BrowserContextKeyedAPI,
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
   // extensions::ProcessManagerObserver:
-  void OnBackgroundHostClose(const std::string& extension_id) override;
+  void OnBackgroundHostClose(const ExtensionId& extension_id) override;
   void OnProcessManagerShutdown(extensions::ProcessManager* manager) override;
   void OnExtensionProcessTerminated(
       const extensions::Extension* extension) override;
 
-  void DeletePendingClient(const std::string& extension_id);
+  void DeletePendingClient(const ExtensionId& extension_id);
 
   // |browser_context_| is safe to use in the class, since this class is a
   // BrowserContextKeyedAPI with |browser_context_| which will handle the

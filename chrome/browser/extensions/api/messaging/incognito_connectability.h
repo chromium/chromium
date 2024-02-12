@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -93,15 +94,15 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
   explicit IncognitoConnectability(content::BrowserContext* context);
   ~IncognitoConnectability() override;
 
-  using ExtensionToOriginsMap = std::map<std::string, std::set<GURL>>;
-  using ExtensionOriginPair = std::pair<std::string, GURL>;
+  using ExtensionToOriginsMap = std::map<ExtensionId, std::set<GURL>>;
+  using ExtensionOriginPair = std::pair<ExtensionId, GURL>;
   using PendingOrigin = std::map<infobars::ContentInfoBarManager*, TabContext>;
   using PendingOriginMap = std::map<ExtensionOriginPair, PendingOrigin>;
 
   // Called with the user's selection from the infobar.
   // |response == INTERACTIVE| indicates that the user closed the infobar
   // without selecting allow or deny.
-  void OnInteractiveResponse(const std::string& extension_id,
+  void OnInteractiveResponse(const ExtensionId& extension_id,
                              const GURL& origin,
                              infobars::ContentInfoBarManager* infobar_manager,
                              ScopedAlertTracker::Mode response);

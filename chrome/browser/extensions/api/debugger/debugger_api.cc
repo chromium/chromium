@@ -58,6 +58,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
@@ -272,7 +273,7 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   std::string GetTypeForMetrics() override { return "Extension"; }
 
   bool Attach();
-  const std::string& extension_id() { return extension_->id(); }
+  const ExtensionId& extension_id() { return extension_->id(); }
   DevToolsAgentHost* agent_host() { return agent_host_.get(); }
   void RespondDetachedToPendingRequests();
   void Close();
@@ -629,7 +630,7 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
       // TODO(caseq): get rid of the below code, browser agent host should
       // really be a singleton.
       // Re-use existing browser agent hosts.
-      const std::string& extension_id = extension()->id();
+      const ExtensionId& extension_id = extension()->id();
       AttachedClientHosts& hosts = g_attached_client_hosts.Get();
       auto it = base::ranges::find_if(
           hosts, [&extension_id](ExtensionDevToolsClientHost* client_host) {
@@ -673,7 +674,7 @@ ExtensionDevToolsClientHost* DebuggerFunction::FindClientHost() {
   if (!agent_host_.get())
     return nullptr;
 
-  const std::string& extension_id = extension()->id();
+  const ExtensionId& extension_id = extension()->id();
   DevToolsAgentHost* agent_host = agent_host_.get();
   AttachedClientHosts& hosts = g_attached_client_hosts.Get();
   auto it = base::ranges::find_if(

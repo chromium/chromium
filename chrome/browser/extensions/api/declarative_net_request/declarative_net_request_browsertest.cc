@@ -397,7 +397,7 @@ class DeclarativeNetRequestBrowserTest
   }
 
   std::string ExecuteScriptInBackgroundPageAndReturnString(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::string& script,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kActivate) {
@@ -818,7 +818,7 @@ class DeclarativeNetRequestBrowserTest
                                            ));
 
         if (is_extension_update) {
-          std::string extension_id = last_loaded_extension_id();
+          const ExtensionId& extension_id = last_loaded_extension_id();
           extension =
               UpdateExtension(extension_id, crx_path, 0 /* expected_change */);
         } else {

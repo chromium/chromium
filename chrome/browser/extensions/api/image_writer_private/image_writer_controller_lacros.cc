@@ -54,7 +54,7 @@ class ImageWriterControllerLacros::ImageWriterClientLacros
  public:
   ImageWriterClientLacros(
       content::BrowserContext* browser_context,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       extensions::image_writer::ImageWriterControllerLacros* controller)
       : extension_id_(extension_id),
         browser_context_(browser_context),
@@ -149,7 +149,7 @@ void ImageWriterControllerLacros::ListRemovableStorageDevices(
 }
 
 void ImageWriterControllerLacros::DestroyPartitions(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& storage_unit_id,
     WriteOperationCallback callback) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
@@ -172,7 +172,7 @@ void ImageWriterControllerLacros::DestroyPartitions(
 }
 
 void ImageWriterControllerLacros::WriteFromUrl(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& storage_unit_id,
     const GURL& image_url,
     const std::optional<std::string>& image_hash,
@@ -198,7 +198,7 @@ void ImageWriterControllerLacros::WriteFromUrl(
 }
 
 void ImageWriterControllerLacros::WriteFromFile(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& storage_unit_id,
     const base::FilePath& image_path,
     WriteOperationCallback callback) {
@@ -222,7 +222,7 @@ void ImageWriterControllerLacros::WriteFromFile(
   pending_clients_.emplace(extension_id, std::move(pending_client));
 }
 
-void ImageWriterControllerLacros::CancelWrite(const std::string& extension_id,
+void ImageWriterControllerLacros::CancelWrite(const ExtensionId& extension_id,
                                               WriteOperationCallback callback) {
   if (!base::Contains(pending_clients_, extension_id)) {
     std::move(callback).Run(error::kNoOperationInProgress);
@@ -236,12 +236,12 @@ void ImageWriterControllerLacros::CancelWrite(const std::string& extension_id,
 }
 
 void ImageWriterControllerLacros::OnPendingClientWriteCompleted(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   DeletePendingClient(extension_id);
 }
 
 void ImageWriterControllerLacros::OnPendingClientWriteError(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   DeletePendingClient(extension_id);
 }
 
@@ -261,7 +261,7 @@ void ImageWriterControllerLacros::OnShutdown(
 }
 
 void ImageWriterControllerLacros::OnBackgroundHostClose(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   DeletePendingClient(extension_id);
 }
 
@@ -278,7 +278,7 @@ void ImageWriterControllerLacros::OnExtensionProcessTerminated(
 }
 
 void ImageWriterControllerLacros::DeletePendingClient(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   pending_clients_.erase(extension_id);
 }
 

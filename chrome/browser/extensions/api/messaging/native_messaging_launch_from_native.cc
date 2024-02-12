@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -62,7 +63,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   NativeMessagingHostErrorReporter& operator=(
       const NativeMessagingHostErrorReporter&) = delete;
 
-  static void Report(const std::string& extension_id,
+  static void Report(const ExtensionId& extension_id,
                      const std::string& host_id,
                      const std::string& connection_id,
                      Profile* profile,
@@ -126,7 +127,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
 
 }  // namespace
 
-bool ExtensionSupportsConnectionFromNativeApp(const std::string& extension_id,
+bool ExtensionSupportsConnectionFromNativeApp(const ExtensionId& extension_id,
                                               const std::string& host_id,
                                               Profile* profile,
                                               bool log_errors) {
@@ -212,7 +213,7 @@ bool IsValidConnectionId(const base::StringPiece connection_id) {
              "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-");
 }
 
-void LaunchNativeMessageHostFromNativeApp(const std::string& extension_id,
+void LaunchNativeMessageHostFromNativeApp(const ExtensionId& extension_id,
                                           const std::string& host_id,
                                           const std::string& connection_id,
                                           Profile* profile) {

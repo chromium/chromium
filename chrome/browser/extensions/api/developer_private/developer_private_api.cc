@@ -100,6 +100,7 @@
 #include "extensions/browser/warning_service_factory.h"
 #include "extensions/browser/zipfile_installer.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/install_warning.h"
@@ -534,12 +535,12 @@ DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() {
 }
 
 void DeveloperPrivateEventRouter::AddExtensionId(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   extension_ids_.insert(extension_id);
 }
 
 void DeveloperPrivateEventRouter::RemoveExtensionId(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   extension_ids_.erase(extension_id);
 }
 
@@ -591,28 +592,28 @@ void DeveloperPrivateEventRouter::OnErrorAdded(const ExtensionError* error) {
 }
 
 void DeveloperPrivateEventRouter::OnExtensionConfigurationChanged(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   BroadcastItemStateChanged(developer::EventType::kConfigurationChanged,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnErrorsRemoved(
-    const std::set<std::string>& removed_ids) {
-  for (const std::string& id : removed_ids) {
+    const std::set<ExtensionId>& removed_ids) {
+  for (const ExtensionId& id : removed_ids) {
     if (!extension_ids_.count(id))
       BroadcastItemStateChanged(developer::EventType::kErrorsRemoved, id);
   }
 }
 
 void DeveloperPrivateEventRouter::OnExtensionFrameRegistered(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host) {
   BroadcastItemStateChanged(developer::EventType::kViewRegistered,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host) {
   BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
                             extension_id);
@@ -641,31 +642,32 @@ void DeveloperPrivateEventRouter::OnAppWindowRemoved(AppWindow* window) {
 }
 
 void DeveloperPrivateEventRouter::OnExtensionCommandAdded(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Command& added_command) {
   BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Command& removed_command) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionDisableReasonsChanged(
-    const std::string& extension_id, int disable_reasons) {
+    const ExtensionId& extension_id,
+    int disable_reasons) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionRuntimePermissionsChanged(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool show_warning) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
@@ -750,7 +752,7 @@ void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
 
 void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
     developer::EventType event_type,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   std::unique_ptr<ExtensionInfoGenerator> info_generator(
       new ExtensionInfoGenerator(profile_));
   ExtensionInfoGenerator* info_generator_weak = info_generator.get();
@@ -764,7 +766,7 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
 
 void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
     developer::EventType event_type,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::unique_ptr<ExtensionInfoGenerator> info_generator,
     ExtensionInfoGenerator::ExtensionInfoList infos) {
   DCHECK_LE(infos.size(), 1u);
@@ -886,13 +888,13 @@ DeveloperPrivateAPIFunction::~DeveloperPrivateAPIFunction() {
 }
 
 const Extension* DeveloperPrivateAPIFunction::GetExtensionById(
-    const std::string& id) {
+    const ExtensionId& id) {
   return ExtensionRegistry::Get(browser_context())->GetExtensionById(
       id, ExtensionRegistry::EVERYTHING);
 }
 
 const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
-    const std::string& id) {
+    const ExtensionId& id) {
   return ExtensionRegistry::Get(browser_context())->enabled_extensions().
       GetByID(id);
 }

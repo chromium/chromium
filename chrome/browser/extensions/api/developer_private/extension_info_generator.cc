@@ -49,6 +49,7 @@
 #include "extensions/browser/warning_service.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/command.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest.h"
@@ -182,7 +183,7 @@ developer::RuntimeError ConstructRuntimeError(const RuntimeError& error) {
 // Constructs any commands for the extension with the given |id|, and adds them
 // to the list of |commands|.
 void ConstructCommands(CommandService* command_service,
-                       const std::string& extension_id,
+                       const ExtensionId& extension_id,
                        std::vector<developer::Command>* commands) {
   auto construct_command = [](const Command& command, bool active,
                               bool is_extension_action) {
@@ -402,7 +403,7 @@ ExtensionInfoGenerator::~ExtensionInfoGenerator() {
 }
 
 void ExtensionInfoGenerator::CreateExtensionInfo(
-    const std::string& id,
+    const ExtensionId& id,
     ExtensionInfosCallback callback) {
   DCHECK(callback_.is_null() && list_.empty()) <<
       "Only a single generation can be running at a time!";

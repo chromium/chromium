@@ -41,6 +41,7 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
@@ -292,7 +293,7 @@ ExtensionPrefs* ExtensionActionAPI::GetExtensionPrefs() {
 
 void ExtensionActionAPI::DispatchEventToExtension(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
     base::Value::List event_args) {

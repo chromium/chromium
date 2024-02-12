@@ -39,6 +39,7 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -85,7 +86,7 @@ void RunTestAndWaitForSuccess(content::WebContents* web_contents,
 class TestStateStoreObserver : public StateStore::TestObserver {
  public:
   TestStateStoreObserver(content::BrowserContext* context,
-                         const std::string& extension_id)
+                         const ExtensionId& extension_id)
       : extension_id_(extension_id) {
     scoped_observation_.Observe(ExtensionSystem::Get(context)->state_store());
   }
@@ -95,7 +96,7 @@ class TestStateStoreObserver : public StateStore::TestObserver {
 
   ~TestStateStoreObserver() override {}
 
-  void WillSetExtensionValue(const std::string& extension_id,
+  void WillSetExtensionValue(const ExtensionId& extension_id,
                              const std::string& key) override {
     if (extension_id == extension_id_)
       ++updated_values_[key];

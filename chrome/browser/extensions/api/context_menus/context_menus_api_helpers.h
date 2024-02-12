@@ -14,6 +14,7 @@
 #include "chrome/common/extensions/api/context_menus.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/utils/extension_utils.h"
 
@@ -184,7 +185,7 @@ bool UpdateMenuItem(const PropertyWithEnumT& update_properties,
   MenuManager* menu_manager = MenuManager::Get(browser_context);
 
   MenuItem* item = menu_manager->GetItemById(item_id);
-  const std::string& extension_id = MaybeGetExtensionId(extension);
+  const ExtensionId& extension_id = MaybeGetExtensionId(extension);
   if (!item || item->extension_id() != extension_id) {
     *error = ErrorUtils::FormatErrorMessage(
         kCannotFindItemError, GetIDString(item_id));

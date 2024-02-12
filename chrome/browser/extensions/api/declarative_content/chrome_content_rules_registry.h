@@ -75,12 +75,12 @@ class ChromeContentRulesRegistry
       const std::vector<std::string>& css_selectors) override;
   // RulesRegistry:
   std::string AddRulesImpl(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::vector<const api::events::Rule*>& rules) override;
   std::string RemoveRulesImpl(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       const std::vector<std::string>& rule_identifiers) override;
-  std::string RemoveAllRulesImpl(const std::string& extension_id) override;
+  std::string RemoveAllRulesImpl(const ExtensionId& extension_id) override;
 
   // DeclarativeContentConditionTrackerDelegate:
   void RequestEvaluation(content::WebContents* contents) override;

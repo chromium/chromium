@@ -235,7 +235,7 @@ ChromeContentRulesRegistry::GetMatchingRules(content::WebContents* tab) const {
 }
 
 std::string ChromeContentRulesRegistry::AddRulesImpl(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::vector<const api::events::Rule*>& api_rules) {
   EvaluationScope evaluation_scope(this);
   const Extension* extension = ExtensionRegistry::Get(browser_context())
@@ -310,7 +310,7 @@ std::string ChromeContentRulesRegistry::AddRulesImpl(
 }
 
 std::string ChromeContentRulesRegistry::RemoveRulesImpl(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::vector<std::string>& rule_identifiers) {
   // Ignore evaluation requests in this function because it reverts actions on
   // any active rules itself. Otherwise, we run the risk of reverting the same
@@ -357,7 +357,7 @@ std::string ChromeContentRulesRegistry::RemoveRulesImpl(
 }
 
 std::string ChromeContentRulesRegistry::RemoveAllRulesImpl(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   // Search all identifiers of rules that belong to extension |extension_id|.
   std::vector<std::string> rule_identifiers;
   for (const RulesMap::value_type& id_rule_pair : content_rules_) {
