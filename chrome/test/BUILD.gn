@@ -4785,6 +4785,7 @@ if (!is_android) {
         "../browser/ui/ash/arc_open_url_delegate_impl_browsertest.cc",
         "../browser/ui/ash/ash_web_view_impl_browsertest.cc",
         "../browser/ui/ash/back_gesture_browsertest.cc",
+        "../browser/ui/ash/birch/birch_browsertest.cc",
         "../browser/ui/ash/capture_mode/capture_mode_browsertest.cc",
         "../browser/ui/ash/capture_mode/recording_service_browsertest.cc",
         "../browser/ui/ash/chrome_new_window_client_browsertest.cc",
