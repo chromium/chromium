@@ -247,5 +247,14 @@
         },
         "is_try_builder": true,
         "is_cq_builder":true
+    },
+    "android-chrome-pie-x86-wpt-android-specific": {
+        "main": "tryserver.blink",
+        "port_name": "webview",
+        "specifiers": ["Webview", "Release"],
+        "steps": {
+            "system_webview_wpt": {}
+        },
+        "is_try_builder": true
     }
 }
