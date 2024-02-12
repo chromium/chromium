@@ -32,8 +32,6 @@ using testing::Property;
 using testing::Return;
 using testing::StartsWith;
 
-using LanguagePackFontServiceTest = testing::Test;
-
 // `FakeDlcserviceClient::Install` adds DLCs to the return value of
 // `GetExistingDlcs`, so we use that to observe whether any DLCs have been
 // installed.
@@ -42,24 +40,32 @@ using GetExistingDlcsTestFuture =
                            const dlcservice::DlcsWithContent&>;
 using MockAddFontDir = testing::MockFunction<bool(base::FilePath)>;
 
+class LanguagePackFontServiceTest : public testing::Test {
+ public:
+  PrefService* prefs() { return profile_.GetPrefs(); }
+  FakeDlcserviceClient* dlcservice_client() { return &dlcservice_client_; }
+  MockAddFontDir* add_font_dir() { return &add_font_dir_; }
+
+ private:
+  MockAddFontDir add_font_dir_;
+  FakeDlcserviceClient dlcservice_client_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+};
+
 TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
   // Ensure that we don't install any DLCs / add any fonts to begin with.
   // Both zz and xx (used below) are not valid ISO 639 locales as of 2024.
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,xx");
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
-  dlcservice_client.GetExistingDlcs(future.GetCallback());
+  dlcservice_client()->GetExistingDlcs(future.GetCallback());
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
@@ -89,22 +95,17 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ValidFontLanguageTest, InstallValidLanguageOnValidLanguageLocaleChange) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages,
-                   test_case.preferred_languages_one_locale);
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
-  dlcservice_client.GetExistingDlcs(future.GetCallback());
+  dlcservice_client()->GetExistingDlcs(future.GetCallback());
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
@@ -115,22 +116,17 @@ TEST_P(ValidFontLanguageTest,
        InstallValidLanguageOnlyOnceOnMultipleValidLanguageLocalesChange) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages,
-                   test_case.preferred_languages_two_locales);
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_two_locales);
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
-  dlcservice_client.GetExistingDlcs(future.GetCallback());
+  dlcservice_client()->GetExistingDlcs(future.GetCallback());
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
@@ -138,25 +134,20 @@ TEST_P(ValidFontLanguageTest,
 }
 
 TEST_F(LanguagePackFontServiceTest, InstallNothingOnInitWithUnrelatedLocales) {
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,xx");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
-  dlcservice_client.GetExistingDlcs(future.GetCallback());
+  dlcservice_client()->GetExistingDlcs(future.GetCallback());
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
@@ -165,26 +156,21 @@ TEST_P(ValidFontLanguageTest,
        InstallValidLanguageOnInitWithValidLanguageLocale) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages,
-                   test_case.preferred_languages_one_locale);
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
-  dlcservice_client.GetExistingDlcs(future.GetCallback());
+  dlcservice_client()->GetExistingDlcs(future.GetCallback());
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
@@ -195,26 +181,21 @@ TEST_P(ValidFontLanguageTest,
        InstallValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages,
-                   test_case.preferred_languages_two_locales);
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_two_locales);
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
   base::RunLoop().RunUntilIdle();
 
   GetExistingDlcsTestFuture future;
-  dlcservice_client.GetExistingDlcs(future.GetCallback());
+  dlcservice_client()->GetExistingDlcs(future.GetCallback());
   const dlcservice::DlcsWithContent& dlcs = future.Get<1>();
   EXPECT_THAT(dlcs.dlc_infos(),
               ElementsAre(Property(&dlcservice::DlcsWithContent::DlcInfo::id,
@@ -224,98 +205,78 @@ TEST_P(ValidFontLanguageTest,
 constexpr std::string kUnusedDlcPath = "/path/to/unused/dlc";
 
 TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
-  ON_CALL(add_font_dir, Call).WillByDefault(Return(true));
-  EXPECT_CALL(add_font_dir, Call).Times(0);
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call).Times(0);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(kUnusedDlcPath);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,xx");
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_P(ValidFontLanguageTest, AddNothingOnValidLanguageLocaleChange) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
-  ON_CALL(add_font_dir, Call).WillByDefault(Return(true));
-  EXPECT_CALL(add_font_dir, Call).Times(0);
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call).Times(0);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
-  prefs->SetString(language::prefs::kPreferredLanguages,
-                   test_case.preferred_languages_one_locale);
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(LanguagePackFontServiceTest, AddNothingOnInitWithUnrelatedLocale) {
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
-  ON_CALL(add_font_dir, Call).WillByDefault(Return(true));
-  EXPECT_CALL(add_font_dir, Call).Times(0);
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call).Times(0);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(kUnusedDlcPath);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages, "zz,xx");
+  prefs()->SetString(language::prefs::kPreferredLanguages, "zz,xx");
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
   base::RunLoop().RunUntilIdle();
 }
 
 TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
-  ON_CALL(add_font_dir, Call).WillByDefault(Return(true));
-  EXPECT_CALL(add_font_dir, Call)
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call)
       .With(FieldsAre(Property(&base::FilePath::value, test_case.dlc_path)))
       .Times(1);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages,
-                   test_case.preferred_languages_one_locale);
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_one_locale);
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -323,27 +284,22 @@ TEST_P(ValidFontLanguageTest,
        AddValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
-  FakeDlcserviceClient dlcservice_client;
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  PrefService* prefs = profile.GetPrefs();
-  MockAddFontDir add_font_dir;
-  ON_CALL(add_font_dir, Call).WillByDefault(Return(true));
-  EXPECT_CALL(add_font_dir, Call)
+  ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
+  EXPECT_CALL(*add_font_dir(), Call)
       .With(FieldsAre(Property(&base::FilePath::value, test_case.dlc_path)))
       .Times(1);
   {
     dlcservice::DlcState state;
     state.set_state(dlcservice::DlcState::State::DlcState_State_INSTALLED);
     state.set_root_path(test_case.dlc_path);
-    dlcservice_client.set_dlc_state(std::move(state));
+    dlcservice_client()->set_dlc_state(std::move(state));
   }
-  prefs->SetString(language::prefs::kPreferredLanguages,
-                   test_case.preferred_languages_two_locales);
+  prefs()->SetString(language::prefs::kPreferredLanguages,
+                     test_case.preferred_languages_two_locales);
 
   LanguagePackFontService service(
-      prefs, base::BindRepeating(&MockAddFontDir::Call,
-                                 base::Unretained(&add_font_dir)));
+      prefs(), base::BindRepeating(&MockAddFontDir::Call,
+                                   base::Unretained(add_font_dir())));
   base::RunLoop().RunUntilIdle();
 }
 
