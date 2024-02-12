@@ -22,11 +22,12 @@ struct ASH_EXPORT BirchItem {
   BirchItem(BirchItem&&) = default;
   BirchItem(const BirchItem&);
   BirchItem& operator=(const BirchItem&);
-  ~BirchItem();
+  virtual ~BirchItem();
   bool operator==(const BirchItem& rhs) const = default;
 
   const std::u16string title;
   const ui::ImageModel icon;
+  virtual const char* GetItemType() const = 0;
 };
 
 // A birch item which contains file path and time information.
@@ -34,13 +35,17 @@ struct ASH_EXPORT BirchFileItem : public BirchItem {
   BirchFileItem(const base::FilePath& file_path,
                 const std::optional<base::Time>& timestamp);
   BirchFileItem(BirchFileItem&&) = default;
-  BirchFileItem(const BirchFileItem&) = delete;
+  BirchFileItem(const BirchFileItem&) = default;
   BirchFileItem& operator=(const BirchFileItem&) = delete;
   bool operator==(const BirchFileItem& rhs) const = default;
-  ~BirchFileItem();
+  ~BirchFileItem() override;
 
   const base::FilePath file_path;
   const std::optional<base::Time> timestamp;
+
+  static constexpr char kItemType[] = "FileItem";
+
+  const char* GetItemType() const override;
 
   // Intended for debugging.
   std::string ToString() const;
@@ -57,12 +62,16 @@ struct ASH_EXPORT BirchTabItem : public BirchItem {
   BirchTabItem(const BirchTabItem&);
   BirchTabItem& operator=(const BirchTabItem&);
   bool operator==(const BirchTabItem& rhs) const = default;
-  ~BirchTabItem();
+  ~BirchTabItem() override;
 
   const GURL url;
   const base::Time timestamp;
   const GURL favicon_url;
   const std::string session_name;
+
+  static constexpr char kItemType[] = "TabItem";
+
+  const char* GetItemType() const override;
 
   // Intended for debugging.
   std::string ToString() const;
@@ -73,12 +82,16 @@ struct ASH_EXPORT BirchWeatherItem : public BirchItem {
                    const std::u16string& temperature,
                    ui::ImageModel icon);
   BirchWeatherItem(BirchWeatherItem&&) = default;
-  BirchWeatherItem(const BirchWeatherItem&) = delete;
+  BirchWeatherItem(const BirchWeatherItem&) = default;
   BirchWeatherItem& operator=(const BirchWeatherItem&) = delete;
   bool operator==(const BirchWeatherItem& rhs) const = default;
-  ~BirchWeatherItem();
+  ~BirchWeatherItem() override;
 
   const std::u16string temperature;
+
+  static constexpr char kItemType[] = "WeatherItem";
+
+  const char* GetItemType() const override;
 
   // Intended for debugging.
   std::string ToString() const;

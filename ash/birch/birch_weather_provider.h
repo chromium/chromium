@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "ash/birch/birch_client.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -20,16 +21,16 @@ class BirchModel;
 
 struct WeatherInfo;
 
-class BirchWeatherProvider {
+class BirchWeatherProvider : public BirchClient {
  public:
   explicit BirchWeatherProvider(BirchModel* birch_model);
   BirchWeatherProvider(const BirchWeatherProvider&) = delete;
   BirchWeatherProvider& operator=(const BirchWeatherProvider&) = delete;
-  ~BirchWeatherProvider();
+  ~BirchWeatherProvider() override;
 
   // Called from birch model to request weather information to be displayed in
   // UI.
-  void RequestDataFetch();
+  void RequestBirchDataFetch() override;
 
  private:
   // Called in response to a weather info request. It initiates icon fetch from

@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -324,7 +325,7 @@ TEST_F(BirchKeyedServiceTest, BirchRecentTabProvider) {
   EXPECT_EQ(Shell::Get()->birch_model()->GetTabsForTest().size(), 0u);
 
   // Request birch data fetch, then verify that tabs data is correct.
-  Shell::Get()->birch_model()->RequestBirchDataFetch();
+  Shell::Get()->birch_model()->RequestBirchDataFetch(base::DoNothing());
 
   auto& tabs = Shell::Get()->birch_model()->GetTabsForTest();
   ASSERT_EQ(tabs.size(), 2u);

@@ -69,12 +69,10 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
   info.temp_f = 70.0f;
   ambient_backend_controller_->SetWeatherInfo(info);
 
-  birch_model->RequestBirchDataFetch();
-
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
-
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
@@ -93,12 +91,10 @@ TEST_F(BirchWeatherProviderTest, GetWeatherInCelsius) {
   info.show_celsius = true;
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
-  birch_model->RequestBirchDataFetch();
-
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
-
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
 
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
@@ -110,10 +106,9 @@ TEST_F(BirchWeatherProviderTest, GetWeatherInCelsius) {
 TEST_F(BirchWeatherProviderTest, NoWeatherInfo) {
   auto* birch_model = Shell::Get()->birch_model();
 
-  birch_model->RequestBirchDataFetch();
-
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
@@ -126,10 +121,10 @@ TEST_F(BirchWeatherProviderTest, WeatherWithNoIcon) {
   info.show_celsius = false;
   info.temp_f = 70.0f;
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
-  birch_model->RequestBirchDataFetch();
 
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
@@ -144,10 +139,9 @@ TEST_F(BirchWeatherProviderTest, WeatherWithInvalidIcon) {
   info.temp_f = 70.0f;
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
-  birch_model->RequestBirchDataFetch();
-
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
@@ -163,10 +157,10 @@ TEST_F(BirchWeatherProviderTest, WeatherIconDownloadFailure) {
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
 
   image_downloader_->set_should_fail(true);
-  birch_model->RequestBirchDataFetch();
 
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
@@ -179,10 +173,10 @@ TEST_F(BirchWeatherProviderTest, WeatherWithNoTemperature) {
   info.condition_icon_url = "https://fake_icon_url";
   info.show_celsius = false;
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
-  birch_model->RequestBirchDataFetch();
 
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
@@ -195,10 +189,10 @@ TEST_F(BirchWeatherProviderTest, WeatherWithNoDecription) {
   info.show_celsius = false;
   info.temp_f = 70.0f;
   ambient_backend_controller_->SetWeatherInfo(std::move(info));
-  birch_model->RequestBirchDataFetch();
 
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
@@ -213,10 +207,9 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   info1.temp_f = 70.0f;
   ambient_backend_controller_->SetWeatherInfo(info1);
 
-  birch_model->RequestBirchDataFetch();
-
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
@@ -231,10 +224,9 @@ TEST_F(BirchWeatherProviderTest, RefetchWeather) {
   info2.temp_f = 73.0f;
   ambient_backend_controller_->SetWeatherInfo(info2);
 
-  birch_model->RequestBirchDataFetch();
-
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop2;
+  birch_model->RequestBirchDataFetch(run_loop2.QuitClosure());
+  run_loop2.Run();
 
   auto& updated_weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, updated_weather_items.size());
@@ -253,10 +245,9 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   info1.temp_f = 70.0f;
   ambient_backend_controller_->SetWeatherInfo(info1);
 
-  birch_model->RequestBirchDataFetch();
-
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  birch_model->RequestBirchDataFetch(run_loop.QuitClosure());
+  run_loop.Run();
 
   auto& weather_items = birch_model->GetWeatherForTest();
   ASSERT_EQ(1u, weather_items.size());
@@ -268,10 +259,10 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   info2.show_celsius = false;
   ambient_backend_controller_->SetWeatherInfo(info2);
 
-  birch_model->RequestBirchDataFetch();
+  base::RunLoop run_loop2;
+  birch_model->RequestBirchDataFetch(run_loop2.QuitClosure());
+  run_loop2.Run();
 
-  // The fake image downloader post a task to respond with an image.
-  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
 

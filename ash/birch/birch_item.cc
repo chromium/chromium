@@ -15,6 +15,8 @@ namespace ash {
 BirchItem::BirchItem(const std::u16string& title, ui::ImageModel icon)
     : title(title), icon(std::move(icon)) {}
 
+BirchItem::BirchItem(const BirchItem&) = default;
+
 BirchItem::~BirchItem() = default;
 
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
@@ -25,6 +27,10 @@ BirchFileItem::BirchFileItem(const base::FilePath& file_path,
       timestamp(timestamp) {}
 
 BirchFileItem::~BirchFileItem() = default;
+
+const char* BirchFileItem::GetItemType() const {
+  return kItemType;
+}
 
 std::string BirchFileItem::ToString() const {
   std::stringstream ss;
@@ -47,6 +53,10 @@ BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
 
 BirchWeatherItem::~BirchWeatherItem() = default;
 
+const char* BirchWeatherItem::GetItemType() const {
+  return kItemType;
+}
+
 std::string BirchWeatherItem::ToString() const {
   std::stringstream ss;
   ss << "Weather item: {title: " << base::UTF16ToUTF8(title)
@@ -67,7 +77,13 @@ BirchTabItem::BirchTabItem(const std::u16string& title,
 
 BirchTabItem::BirchTabItem(BirchTabItem&&) = default;
 
+BirchTabItem::BirchTabItem(const BirchTabItem&) = default;
+
 BirchTabItem::~BirchTabItem() = default;
+
+const char* BirchTabItem::GetItemType() const {
+  return kItemType;
+}
 
 std::string BirchTabItem::ToString() const {
   std::stringstream ss;

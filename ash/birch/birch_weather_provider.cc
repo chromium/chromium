@@ -68,7 +68,7 @@ BirchWeatherProvider::BirchWeatherProvider(BirchModel* birch_model)
 
 BirchWeatherProvider::~BirchWeatherProvider() = default;
 
-void BirchWeatherProvider::RequestDataFetch() {
+void BirchWeatherProvider::RequestBirchDataFetch() {
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
