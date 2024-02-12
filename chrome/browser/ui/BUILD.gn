@@ -3909,6 +3909,7 @@ static_library("ui") {
       "//ui/compositor_extra",
       "//ui/display/manager",
       "//ui/events/ash",
+      "//ui/events/ozone/evdev",
       "//ui/events/ozone/layout:layout",
       "//ui/file_manager:file_manager",
       "//ui/ozone",

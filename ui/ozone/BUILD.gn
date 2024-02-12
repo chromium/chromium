@@ -120,13 +120,6 @@ component("ozone_base") {
     "public/system_input_injector.h",
   ]
 
-  if (is_chromeos_ash) {
-    sources += [
-      "public/palm_detector.cc",
-      "public/palm_detector.h",
-    ]
-  }
-
   defines = [ "IS_OZONE_BASE_IMPL" ]
 
   public_deps = [

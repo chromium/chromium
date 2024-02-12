@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chromeos/ash/components/heatmap/heatmap_palm_detector.h"
+#include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
 
 #include "base/strings/strcat.h"
 
@@ -25,11 +25,11 @@ struct HeatmapModelMetadata {
 };
 
 using MetadataMap =
-    std::map<HeatmapPalmDetector::DeviceId, HeatmapModelMetadata>;
+    std::map<HeatmapPalmDetectorImpl::DeviceId, HeatmapModelMetadata>;
 
 // Returns a map from device ID to model metadata for each supported device.
 MetadataMap GetHeatmapModelMetadata() {
-  return {{HeatmapPalmDetector::DeviceId::kRex,
+  return {{HeatmapPalmDetectorImpl::DeviceId::kRex,
            {
                .model_file =
                    "mlservice-model-poncho_palm_rejection-20230907-v0.tflite",
@@ -40,11 +40,11 @@ MetadataMap GetHeatmapModelMetadata() {
 }
 }  // namespace
 
-HeatmapPalmDetector::HeatmapPalmDetector() : client_(this) {}
+HeatmapPalmDetectorImpl::HeatmapPalmDetectorImpl() : client_(this) {}
 
-HeatmapPalmDetector::~HeatmapPalmDetector() = default;
+HeatmapPalmDetectorImpl::~HeatmapPalmDetectorImpl() = default;
 
-void HeatmapPalmDetector::Start(DeviceId device, std::string_view path) {
+void HeatmapPalmDetectorImpl::Start(DeviceId device, std::string_view path) {
   const MetadataMap model_metadata = GetHeatmapModelMetadata();
   const auto metadata_lookup = model_metadata.find(device);
   if (metadata_lookup == model_metadata.end()) {
@@ -65,35 +65,39 @@ void HeatmapPalmDetector::Start(DeviceId device, std::string_view path) {
         ->BindMachineLearningService(ml_service_.BindNewPipeAndPassReceiver());
   }
   ml_service_.set_disconnect_handler(base::BindOnce(
-      &HeatmapPalmDetector::OnConnectionError, weak_factory_.GetWeakPtr()));
+      &HeatmapPalmDetectorImpl::OnConnectionError, weak_factory_.GetWeakPtr()));
   ml_service_->LoadHeatmapPalmRejection(
       std::move(config), client_.BindNewPipeAndPassRemote(),
-      base::BindOnce(&HeatmapPalmDetector::OnLoadHeatmapPalmRejection,
+      base::BindOnce(&HeatmapPalmDetectorImpl::OnLoadHeatmapPalmRejection,
                      weak_factory_.GetWeakPtr()));
 }
 
-void HeatmapPalmDetector::OnConnectionError() {
+void HeatmapPalmDetectorImpl::OnConnectionError() {
   ml_service_.reset();
   client_.reset();
   is_ready_ = false;
   is_palm_ = false;
 }
 
-void HeatmapPalmDetector::OnLoadHeatmapPalmRejection(
+void HeatmapPalmDetectorImpl::OnLoadHeatmapPalmRejection(
     LoadHeatmapPalmRejectionResult result) {
   if (result == LoadHeatmapPalmRejectionResult::OK) {
     is_ready_ = true;
   }
 }
 
-void HeatmapPalmDetector::OnHeatmapProcessedEvent(
+void HeatmapPalmDetectorImpl::OnHeatmapProcessedEvent(
     HeatmapProcessedEventPtr event) {
   is_palm_ = event->is_palm;
 }
 
-HeatmapPalmDetector::DetectionResult HeatmapPalmDetector::GetDetectionResult()
+HeatmapPalmDetectorImpl::DetectionResult HeatmapPalmDetectorImpl::GetDetectionResult()
     const {
   return is_palm_ ? DetectionResult::kPalm : DetectionResult::kNoPalm;
+}
+
+bool HeatmapPalmDetectorImpl::IsReady() const {
+  return is_ready_;
 }
 
 }  // namespace ash

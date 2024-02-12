@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/heatmap/heatmap_palm_detector.h"
+#include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
 
 #include "base/run_loop.h"
 #include "chromeos/dbus/machine_learning/machine_learning_client.h"
@@ -14,7 +14,7 @@
 namespace ash {
 namespace {
 
-class HeatmapPalmDetectorTest : public testing::Test {
+class HeatmapPalmDetectorImplTest : public testing::Test {
  public:
   void SetUp() override {
     chromeos::MachineLearningClient::InitializeFake();
@@ -31,14 +31,14 @@ class HeatmapPalmDetectorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-TEST_F(HeatmapPalmDetectorTest, StartsService) {
-  HeatmapPalmDetector detector;
+TEST_F(HeatmapPalmDetectorImplTest, StartsService) {
+  HeatmapPalmDetectorImpl detector;
   EXPECT_FALSE(detector.IsReady());
-  detector.Start(HeatmapPalmDetector::DeviceId::kRex, "/dev/hidraw0");
+  detector.Start(HeatmapPalmDetectorImpl::DeviceId::kRex, "/dev/hidraw0");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(detector.IsReady());
   EXPECT_EQ(detector.GetDetectionResult(),
-            HeatmapPalmDetector::DetectionResult::kNoPalm);
+            HeatmapPalmDetectorImpl::DetectionResult::kNoPalm);
 
   auto palm_event =
       chromeos::machine_learning::mojom::HeatmapProcessedEvent::New();
@@ -46,7 +46,7 @@ TEST_F(HeatmapPalmDetectorTest, StartsService) {
   fake_service_connection_.SendHeatmapPalmRejectionEvent(std::move(palm_event));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(detector.GetDetectionResult(),
-            HeatmapPalmDetector::DetectionResult::kPalm);
+            HeatmapPalmDetectorImpl::DetectionResult::kPalm);
 }
 
 }  // namespace
