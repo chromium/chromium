@@ -237,6 +237,10 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     return UISemanticContentAttributeUnspecified;
   }
 
+  if (textDirection == NSWritingDirectionNatural) {
+    return self.semanticContentAttribute;
+  }
+
   return textDirection == NSWritingDirectionRightToLeft
              ? UISemanticContentAttributeForceRightToLeft
              : UISemanticContentAttributeForceLeftToRight;
@@ -331,10 +335,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
   self.preEditing = true;
 
-  self.defaultTextAttributes = @{
-    NSBackgroundColorAttributeName : self.selectedTextBackgroundColor,
-    NSFontAttributeName : self.currentFont
-  };
+  NSMutableDictionary<NSAttributedStringKey, id>* attributes =
+      self.defaultTextAttributes.mutableCopy;
+  [attributes setValue:self.currentFont forKey:NSFontAttributeName];
+  [attributes setValue:self.selectedTextBackgroundColor
+                forKey:NSBackgroundColorAttributeName];
+  self.defaultTextAttributes = attributes;
 
   self.clearsOnInsertion = true;
 }
@@ -344,10 +350,12 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   self.preEditing = false;
   self.clearsOnInsertion = false;
 
-  self.defaultTextAttributes = @{
-    NSFontAttributeName : self.currentFont,
-    NSBackgroundColorAttributeName : UIColor.clearColor
-  };
+  NSMutableDictionary<NSAttributedStringKey, id>* attributes =
+      self.defaultTextAttributes.mutableCopy;
+  [attributes setValue:self.currentFont forKey:NSFontAttributeName];
+  [attributes setValue:UIColor.clearColor
+                forKey:NSBackgroundColorAttributeName];
+  self.defaultTextAttributes = attributes;
 }
 
 #pragma mark - Properties
