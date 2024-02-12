@@ -247,6 +247,41 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   self.topOmniboxGuide =
       [self.layoutGuideCenter makeLayoutGuideNamed:kTopOmniboxGuide];
   [[popup superview] addLayoutGuide:self.topOmniboxGuide];
+
+  [self updatePopupLayer];
+  [self updateConstraints];
+
+  [[popup superview] layoutIfNeeded];
+
+  if (isAnimated) {
+    [self animatePopupOnOmniboxFocus];
+  }
+}
+
+// Updates the popup's view layer.
+- (void)updatePopupLayer {
+  if (!IsIpadPopoutOmniboxEnabled()) {
+    return;
+  }
+
+  _popupContainerView.layer.masksToBounds = NO;
+
+  BOOL showRegularLayout =
+      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
+
+  _popupContainerView.layer.cornerRadius = showRegularLayout ? 16 : 0;
+  _popupContainerView.layer.shadowColor =
+      [UIColor.blackColor colorWithAlphaComponent:0.2].CGColor;
+  _popupContainerView.layer.shadowRadius = 60;
+  _popupContainerView.layer.shadowOffset = CGSizeMake(0, 10);
+  _popupContainerView.layer.shadowOpacity = 0.2;
+  self.viewController.view.layer.cornerRadius = showRegularLayout ? 16 : 0;
+}
+
+// Updates and activates the constraints based on the popup's current view state
+- (void)updateConstraints {
+  UIView* popup = self.popupContainerView;
+
   // Position the top anchor of the popup relatively to that layout guide.
   NSLayoutConstraint* topConstraint =
       [popup.topAnchor constraintEqualToAnchor:self.topOmniboxGuide.bottomAnchor
@@ -255,46 +290,24 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   NSMutableArray<NSLayoutConstraint*>* constraintsToActivate =
       [NSMutableArray arrayWithObject:topConstraint];
 
-  if (IsIpadPopoutOmniboxEnabled()) {
-    if (IsRegularXRegularSizeClass(self.popupContainerView)) {
-      _popupContainerView.layer.cornerRadius = 16;
-      _popupContainerView.layer.shadowColor = [UIColor blackColor].CGColor;
-      _popupContainerView.layer.shadowRadius = 30;
-      _popupContainerView.layer.shadowOffset = CGSizeMake(0, 10);
-      _popupContainerView.layer.masksToBounds = NO;
-      _popupContainerView.layer.shadowOpacity = 0.2;
+  if (IsIpadPopoutOmniboxEnabled() &&
+      IsRegularXRegularSizeClass(self.popupContainerView.traitCollection)) {
+    NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor
+        constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor
+                       constant:-16];
+    leadingConstraint.priority = UILayoutPriorityDefaultHigh;
 
-      self.viewController.view.layer.cornerRadius = 16.0f;
+    NSLayoutConstraint* trailingConstraint = [popup.trailingAnchor
+        constraintEqualToAnchor:self.topOmniboxGuide.trailingAnchor
+                       constant:16];
+    trailingConstraint.priority = UILayoutPriorityDefaultHigh;
 
-      NSLayoutConstraint* leadingConstraint = [popup.leadingAnchor
-          constraintEqualToAnchor:self.topOmniboxGuide.leadingAnchor
-                         constant:-16];
-      leadingConstraint.priority = UILayoutPriorityDefaultHigh;
+    NSLayoutConstraint* centerXConstraint = [popup.centerXAnchor
+        constraintEqualToAnchor:self.topOmniboxGuide.centerXAnchor];
 
-      NSLayoutConstraint* trailingConstraint = [popup.trailingAnchor
-          constraintEqualToAnchor:self.topOmniboxGuide.trailingAnchor
-                         constant:16];
-      trailingConstraint.priority = UILayoutPriorityDefaultHigh;
-
-      NSLayoutConstraint* centerXConstraint = [popup.centerXAnchor
-          constraintEqualToAnchor:self.topOmniboxGuide.centerXAnchor];
-
-      [constraintsToActivate addObjectsFromArray:@[
-        leadingConstraint, trailingConstraint, centerXConstraint
-      ]];
-    } else {
-      _popupContainerView.layer.cornerRadius = 0;
-      _popupContainerView.layer.shadowColor = [UIColor clearColor].CGColor;
-      _popupContainerView.layer.masksToBounds = YES;
-      self.viewController.view.layer.cornerRadius = 0;
-
-      [constraintsToActivate addObjectsFromArray:@[
-        [popup.leadingAnchor
-            constraintEqualToAnchor:popup.superview.leadingAnchor],
-        [popup.trailingAnchor
-            constraintEqualToAnchor:popup.superview.trailingAnchor],
-      ]];
-    }
+    [constraintsToActivate addObjectsFromArray:@[
+      leadingConstraint, trailingConstraint, centerXConstraint
+    ]];
   } else {
     [constraintsToActivate addObjectsFromArray:@[
       [popup.leadingAnchor
@@ -305,12 +318,6 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   }
 
   [NSLayoutConstraint activateConstraints:constraintsToActivate];
-
-  [[popup superview] layoutIfNeeded];
-
-  if (isAnimated) {
-    [self animatePopupOnOmniboxFocus];
-  }
 }
 
 /// Animates the popup for omnibox focus.
