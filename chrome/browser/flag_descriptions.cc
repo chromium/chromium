@@ -4508,12 +4508,6 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
-const char kSurfaceControlMagnifierName[] = "Surface control magnifier";
-const char kSurfaceControlMagnifierDescription[] =
-    "Use magnifier built using SurfaceControl. Depends on SurfaceControl, "
-    "Slim compositor, and Android OS support. No effect if enabled on "
-    "unsupported environment.";
-
 const char kSurfacePolishName[] = "Surface Polish";
 const char kSurfacePolishDescription[] =
     "Enable clank home surface polish for Start surface and NTP.";

@@ -57,10 +57,8 @@ bool IsOffsetAdjustValid(
 namespace {
 
 bool IsAndroidSurfaceControlMagnifierEnabled() {
-  static bool enabled =
-      gfx::SurfaceControl::SupportsSurfacelessControl() &&
-      features::IsSlimCompositorEnabled() &&
-      base::FeatureList::IsEnabled(features::kAndroidSurfaceControlMagnifier);
+  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl() &&
+                        features::IsSlimCompositorEnabled();
   return enabled;
 }
 

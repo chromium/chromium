@@ -576,22 +576,6 @@
             ]
         }
     ],
-    "AndroidSurfaceControlMagnifier": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "AndroidSurfaceControlMagnifier",
-                    "enable_features": [
-                        "AndroidSurfaceControlMagnifier"
-                    ],
-                    "min_os_version": "14.0.0"
-                }
-            ]
-        }
-    ],
     "AndroidSystemTracing": [
         {
             "platforms": [

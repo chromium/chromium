@@ -10096,13 +10096,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"surface-control-magnifier",
-     flag_descriptions::kSurfaceControlMagnifierName,
-     flag_descriptions::kSurfaceControlMagnifierDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidSurfaceControlMagnifier)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"use-multi-plane-format-for-hardware-video",
      flag_descriptions::kUseMultiPlaneFormatForHardwareVideoName,
      flag_descriptions::kUseMultiPlaneFormatForHardwareVideoDescription, kOsAll,
