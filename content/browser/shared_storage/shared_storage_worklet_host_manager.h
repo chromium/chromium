@@ -81,6 +81,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
       SharedStorageDocumentServiceImpl* document_service,
       const url::Origin& frame_origin,
       const GURL& script_source_url,
+      network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -121,6 +122,7 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const GURL& script_source_url,
+      network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>

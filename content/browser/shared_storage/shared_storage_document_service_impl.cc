@@ -108,6 +108,7 @@ void SharedStorageDocumentServiceImpl::Bind(
 
 void SharedStorageDocumentServiceImpl::CreateWorklet(
     const GURL& script_source_url,
+    network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -147,7 +148,8 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
 
   GetSharedStorageWorkletHostManager()->CreateWorkletHost(
       this, render_frame_host().GetLastCommittedOrigin(), script_source_url,
-      origin_trial_features, std::move(worklet_host), std::move(callback));
+      credentials_mode, origin_trial_features, std::move(worklet_host),
+      std::move(callback));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageSet(

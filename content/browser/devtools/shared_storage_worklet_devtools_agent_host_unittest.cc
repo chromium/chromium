@@ -114,6 +114,7 @@ class SharedStorageWorkletDevToolsAgentHostTest
             main_rfh);
     document_service->CreateWorklet(
         GURL("http://www.google.com/script.js"),
+        network::mojom::CredentialsMode::kSameOrigin,
         {blink::mojom::OriginTrialFeature::kSharedStorageAPI},
         std::move(worklet_host), base::DoNothing());
 

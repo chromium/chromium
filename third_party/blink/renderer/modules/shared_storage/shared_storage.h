@@ -22,6 +22,7 @@ class SharedStorageWorklet;
 class SharedStorageSetMethodOptions;
 class SharedStorageRunOperationMethodOptions;
 class SharedStorageUrlWithMetadata;
+class WorkletOptions;
 
 class MODULES_EXPORT SharedStorage final
     : public ScriptWrappable,
@@ -70,6 +71,7 @@ class MODULES_EXPORT SharedStorage final
                     ExceptionState&);
   ScriptPromise createWorklet(ScriptState*,
                               const String& module_url,
+                              const WorkletOptions* options,
                               ExceptionState&);
   SharedStorageWorklet* worklet(ScriptState*, ExceptionState&);
 

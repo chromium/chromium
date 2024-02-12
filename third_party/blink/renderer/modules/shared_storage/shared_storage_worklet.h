@@ -16,6 +16,7 @@ namespace blink {
 
 class SharedStorageUrlWithMetadata;
 class SharedStorageRunOperationMethodOptions;
+class WorkletOptions;
 
 // Implement the worklet attribute under window.sharedStorage.
 class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
@@ -32,6 +33,7 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   // addModule() imports ES6 module scripts.
   ScriptPromise addModule(ScriptState*,
                           const String& module_url,
+                          const WorkletOptions* options,
                           ExceptionState&);
   ScriptPromise selectURL(ScriptState*,
                           const String& name,
@@ -52,6 +54,7 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
   // for `sharedStorage.createWorklet()`.
   ScriptPromise AddModuleHelper(ScriptState*,
                                 const String& module_url,
+                                const WorkletOptions* options,
                                 ExceptionState&,
                                 bool resolve_to_worklet);
 

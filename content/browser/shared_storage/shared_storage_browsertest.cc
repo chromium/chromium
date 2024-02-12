@@ -238,6 +238,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const GURL& script_source_url,
+      network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -248,6 +249,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       : SharedStorageWorkletHost(document_service,
                                  frame_origin,
                                  script_source_url,
+                                 credentials_mode,
                                  origin_trial_features,
                                  std::move(worklet_host),
                                  std::move(callback)),
@@ -735,6 +737,7 @@ class TestSharedStorageWorkletHostManager
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const GURL& script_source_url,
+      network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -742,7 +745,7 @@ class TestSharedStorageWorkletHostManager
       blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
           callback) override {
     return std::make_unique<TestSharedStorageWorkletHost>(
-        document_service, frame_origin, script_source_url,
+        document_service, frame_origin, script_source_url, credentials_mode,
         origin_trial_features, std::move(worklet_host), std::move(callback),
         should_defer_worklet_messages_);
   }

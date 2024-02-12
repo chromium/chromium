@@ -64,6 +64,7 @@ void SharedStorageWorkletHostManager::CreateWorkletHost(
     SharedStorageDocumentServiceImpl* document_service,
     const url::Origin& frame_origin,
     const GURL& script_source_url,
+    network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host_receiver,
@@ -84,10 +85,10 @@ void SharedStorageWorkletHostManager::CreateWorkletHost(
           : attached_shared_storage_worklet_hosts_[document_service];
 
   std::unique_ptr<SharedStorageWorkletHost> worklet_host =
-      CreateWorkletHostHelper(*document_service, frame_origin,
-                              script_source_url, origin_trial_features,
-                              std::move(worklet_host_receiver),
-                              std::move(callback));
+      CreateWorkletHostHelper(
+          *document_service, frame_origin, script_source_url, credentials_mode,
+          origin_trial_features, std::move(worklet_host_receiver),
+          std::move(callback));
 
   SharedStorageWorkletHost* raw_worklet_host = worklet_host.get();
 
@@ -124,14 +125,15 @@ SharedStorageWorkletHostManager::CreateWorkletHostHelper(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
     const GURL& script_source_url,
+    network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
     blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
         callback) {
   return std::make_unique<SharedStorageWorkletHost>(
-      document_service, frame_origin, script_source_url, origin_trial_features,
-      std::move(worklet_host), std::move(callback));
+      document_service, frame_origin, script_source_url, credentials_mode,
+      origin_trial_features, std::move(worklet_host), std::move(callback));
 }
 
 void SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished(

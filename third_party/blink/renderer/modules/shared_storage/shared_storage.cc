@@ -24,6 +24,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
@@ -771,9 +772,11 @@ ScriptPromise SharedStorage::run(
 
 ScriptPromise SharedStorage::createWorklet(ScriptState* script_state,
                                            const String& module_url,
+                                           const WorkletOptions* options,
                                            ExceptionState& exception_state) {
   SharedStorageWorklet* worklet = SharedStorageWorklet::Create(script_state);
-  return worklet->AddModuleHelper(script_state, module_url, exception_state,
+  return worklet->AddModuleHelper(script_state, module_url, options,
+                                  exception_state,
                                   /*resolve_to_worklet=*/true);
 }
 

@@ -15,10 +15,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_url_with_metadata.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -83,14 +85,16 @@ void SharedStorageWorklet::Trace(Visitor* visitor) const {
 
 ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
                                               const String& module_url,
+                                              const WorkletOptions* options,
                                               ExceptionState& exception_state) {
-  return AddModuleHelper(script_state, module_url, exception_state,
+  return AddModuleHelper(script_state, module_url, options, exception_state,
                          /*resolve_to_worklet=*/false);
 }
 
 ScriptPromise SharedStorageWorklet::AddModuleHelper(
     ScriptState* script_state,
     const String& module_url,
+    const WorkletOptions* options,
     ExceptionState& exception_state,
     bool resolve_to_worklet) {
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -147,6 +151,11 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
     return promise;
   }
 
+  const String& credentials = options->credentials();
+  std::optional<network::mojom::CredentialsMode> credentials_mode =
+      Request::ParseCredentialsMode(credentials);
+  CHECK(credentials_mode);
+
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       origin_trial_features =
           OriginTrialContext::GetInheritedTrialFeatures(execution_context);
@@ -154,7 +163,7 @@ ScriptPromise SharedStorageWorklet::AddModuleHelper(
   SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
-          script_source_url,
+          script_source_url, *credentials_mode,
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(
