@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -136,6 +138,10 @@ void GuestOsDlcInstallation::StartInstall() {
   }
   dlcservice::InstallRequest install_request;
   install_request.set_id(dlc_id_);
+  if (base::FeatureList::IsEnabled(
+          ash::features::kCrostiniTerminaDlcForceOta)) {
+    install_request.set_force_ota(true);
+  }
   ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&GuestOsDlcInstallation::OnDlcInstallCompleted,

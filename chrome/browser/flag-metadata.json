@@ -1553,8 +1553,13 @@
     "expiry_milestone": 130
   },
   {
+    "name": "crostini-termina-dlc-force-ota",
+    "owners": ["drmasquatch@chromium.org"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "crostini-virtual-keyboard-support",
-    "owners": [ "timloh@chromium.org", "sophialin@google.com" ],
+    "owners": ["timloh@chromium.org", "sophialin@google.com"],
     "expiry_milestone": 130
   },
   {

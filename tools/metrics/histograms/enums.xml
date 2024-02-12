@@ -18866,6 +18866,7 @@ from previous Chrome versions.
   <int value="-816221229" label="FencedFramesM120FeaturesPart2:enabled"/>
   <int value="-815616832"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:enabled"/>
+  <int value="-815601488" label="CrostiniTerminaDlcForceOta:disabled"/>
   <int value="-815487797" label="WindowSplitting:enabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
   <int value="-814305011" label="BatchFetchRequests:disabled"/>
@@ -21756,6 +21757,7 @@ from previous Chrome versions.
   <int value="510833540" label="UseOutOfProcessVideoDecoding:enabled"/>
   <int value="511179195" label="ShoppingAssist:disabled"/>
   <int value="511392922" label="SharedClipboardReceiver:enabled"/>
+  <int value="511522097" label="CrostiniTerminaDlcForceOta:enabled"/>
   <int value="512143128" label="LacrosOnly:enabled"/>
   <int value="512508240" label="WebViewExtraHeadersSameDomainOnly:disabled"/>
   <int value="513258875" label="WinrtSensorsImplementation:disabled"/>
