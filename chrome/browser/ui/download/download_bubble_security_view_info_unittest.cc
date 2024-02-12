@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 
 #include "base/strings/pattern.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
@@ -65,6 +67,29 @@ class DownloadBubbleSecurityViewInfoTest
   std::unique_ptr<NiceMock<download::MockDownloadItem>> item_;
   DownloadUIModelPtr model_;
   std::unique_ptr<DownloadBubbleSecurityViewInfo> info_;
+};
+
+// TODO: Remove the following test fixture once the ChromeRefresh flags are
+//       removed or they're on by default.
+class DownloadBubbleSecurityViewInfoTestGM3
+    : public DownloadBubbleSecurityViewInfoTest {
+ public:
+  DownloadBubbleSecurityViewInfoTestGM3() = default;
+  ~DownloadBubbleSecurityViewInfoTestGM3() override = default;
+
+  void SetUp() override {
+    DownloadBubbleSecurityViewInfoTest::SetUp();
+    if (IsSkipped()) {
+      return;
+    }
+    features.InitWithFeatures(
+        {features::kChromeRefresh2023, features::kChromeRefreshSecondary2023,
+         features::kChromeWebuiRefresh2023},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features;
 };
 
 TEST_F(DownloadBubbleSecurityViewInfoTest, DangerousWarningInfo) {
@@ -125,7 +150,7 @@ TEST_F(DownloadBubbleSecurityViewInfoTest, DangerousWarningInfo) {
   }
 }
 
-TEST_F(DownloadBubbleSecurityViewInfoTest, InterruptedInfo) {
+TEST_F(DownloadBubbleSecurityViewInfoTestGM3, InterruptedInfo) {
   std::vector<download::DownloadInterruptReason> no_retry_interrupt_reasons = {
       download::DOWNLOAD_INTERRUPT_REASON_FILE_TOO_LARGE,
       download::DOWNLOAD_INTERRUPT_REASON_FILE_VIRUS_INFECTED,
@@ -165,29 +190,31 @@ TEST_F(DownloadBubbleSecurityViewInfoTest, InterruptedInfo) {
        false,
        "Your organization blocked this file because it didn't meet a security "
        "policy",
-       &views::kInfoIcon,
+       &views::kInfoChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,
        "Try using a shorter file name or saving to a different folder",
-       &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NO_SPACE},
        false,
        "Free up space on your device. Then, try to download again",
-       &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_SERVER_UNAUTHORIZED},
        false,
        "Try to sign in to the site. Then, download again",
-       &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
       {no_retry_interrupt_reasons, false, "",
-       &vector_icons::kFileDownloadOffIcon,
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        std::optional<DownloadCommands::Command>()},
-      {retry_interrupt_reasons, false, "", &vector_icons::kFileDownloadOffIcon,
+      {retry_interrupt_reasons, false, "",
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        DownloadCommands::Command::RETRY},
-      {retry_interrupt_reasons, true, "", &vector_icons::kFileDownloadOffIcon,
+      {retry_interrupt_reasons, true, "",
+       &vector_icons::kFileDownloadOffChromeRefreshIcon,
        DownloadCommands::Command::RESUME},
   };
 
