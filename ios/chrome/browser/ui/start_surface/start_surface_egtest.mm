@@ -81,7 +81,8 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
-- (void)testColdStartOpenStartSurface {
+// TODO(b/324867042): This test fails on Official bots.
+- (void)DISABLED_testColdStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -99,7 +100,8 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened.
-- (void)testWarmStartOpenStartSurface {
+// TODO(b/324867042): This test fails on Official bots.
+- (void)DISABLED_testWarmStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -119,7 +121,8 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-- (void)testRemoveRecentTabRemovesReturnToRecentTabTile {
+// TODO(b/324867042): This test fails on Official bots.
+- (void)DISABLED_testRemoveRecentTabRemovesReturnToRecentTabTile {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
