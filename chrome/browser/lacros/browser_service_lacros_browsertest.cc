@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
@@ -104,8 +105,8 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     }
   }
 
-  void CreateNewWindow() {
-    Browser::Create(Browser::CreateParams(browser()->profile(), false));
+  Browser* CreateNewWindow() {
+    return Browser::Create(Browser::CreateParams(browser()->profile(), false));
   }
 
   void VerifyFullscreenWindow() {
@@ -177,10 +178,9 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosKioskBrowserTest,
   CreateFullscreenWindow();
 
   // The new window should be blocked in the web Kiosk session.
-  const size_t browser_count = BrowserList::GetInstance()->size();
-  CreateNewWindow();
-  ui_test_utils::WaitForBrowserToClose();
-  EXPECT_EQ(BrowserList::GetInstance()->size(), browser_count);
+  Browser* browser = CreateNewWindow();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return browser->tab_strip_model()->closing_all(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,

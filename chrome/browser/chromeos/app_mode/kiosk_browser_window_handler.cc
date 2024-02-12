@@ -46,14 +46,9 @@ std::string GetUrlOfActiveTab(const Browser* browser) {
 }
 
 void CloseBrowser(Browser* browser) {
-  // TODO(b/323129396) Remove feature flag once QA verifies it.
-  if (base::FeatureList::IsEnabled(chromeos::features::kKioskCloseAllTabs)) {
-    // Note we don't use `browser.window().Close()` because it can fail if a
-    // user drags the window.
-    browser->tab_strip_model()->CloseAllTabs();
-  } else {
-    browser->window()->Close();
-  }
+  // Note we don't use `browser.window().Close()` because it can fail if a
+  // user drags the window.
+  browser->tab_strip_model()->CloseAllTabs();
 }
 
 void CloseAllBrowserWindows() {
