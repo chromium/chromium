@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -20,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -476,7 +476,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
 
     storage::FileSystemType file_system_type = file_system_url.type();
     if (file_system_type == storage::kFileSystemTypeFuseBox) {
-      base::StringPiece path(file_system_url.path().value());
+      std::string_view path(file_system_url.path().value());
       if (base::StartsWith(path, file_manager::util::kFuseBoxMediaSlashPath)) {
         path.remove_prefix(strlen(file_manager::util::kFuseBoxMediaSlashPath));
         if (base::StartsWith(path,
@@ -795,7 +795,7 @@ void FileManagerPrivateSearchDriveMetadataFunction::OnSearchDriveFs(
 
   std::vector<std::u16string> keywords =
       base::SplitString(base::UTF8ToUTF16(query_text),
-                        base::StringPiece16(base::kWhitespaceUTF16),
+                        std::u16string_view(base::kWhitespaceUTF16),
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   std::vector<std::unique_ptr<
       base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents>>

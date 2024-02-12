@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -129,7 +130,7 @@ namespace {
 using file_manager::Volume;
 using file_manager::VolumeManager;
 
-std::string Redact(const base::StringPiece s) {
+std::string Redact(const std::string_view s) {
   return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
 }
 
@@ -592,7 +593,7 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
   }
 
   // For fusebox volumes, get the underlying (aka regular) volume.
-  const auto fusebox = base::StringPiece(file_manager::util::kFuseBox);
+  const auto fusebox = std::string_view(file_manager::util::kFuseBox);
   if (base::StartsWith(volume->file_system_type(), fusebox)) {
     std::string volume_id = params->volume_id;
 

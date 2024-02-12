@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -108,7 +109,7 @@ class ExternalCacheImplTest : public testing::Test,
   }
 
   void CreateFile(const base::FilePath& file) {
-    EXPECT_TRUE(base::WriteFile(file, base::StringPiece()));
+    EXPECT_TRUE(base::WriteFile(file, std::string_view()));
   }
 
   base::FilePath GetExtensionFile(const base::FilePath& dir,

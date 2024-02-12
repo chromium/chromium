@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -72,7 +73,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -6666,7 +6666,7 @@ void AutotestPrivateInstallBruschettaFunction::OnInstallerFinish(
   if (result == bruschetta::BruschettaInstallResult::kSuccess) {
     Respond(NoArguments());
   } else {
-    Respond(Error(base::UTF16ToUTF8(base::StringPiece16(
+    Respond(Error(base::UTF16ToUTF8(std::u16string_view(
         bruschetta::BruschettaInstallResultString(result)))));
   }
 }

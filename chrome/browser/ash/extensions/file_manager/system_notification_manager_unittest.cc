@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/webui/file_manager/url_constants.h"
@@ -13,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1130,7 +1130,7 @@ std::u16string kGoogleDrive = u"Google Drive";
 // Tests the bulk-pinning notifications.
 TEST_F(SystemNotificationManagerTest, BulkPinningNotification) {
   using List = base::Value::List;
-  const base::StringPiece event_name = "unused-event-name";
+  const std::string_view event_name = "unused-event-name";
 
   // Event with no args should be ignored.
   notification_manager_->HandleEvent(
