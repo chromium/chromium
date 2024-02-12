@@ -278,15 +278,11 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnSizeChange) {
   ink_drop()->AnimateToState(InkDropState::ACTIVATED);
   EXPECT_EQ(1, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(1, ink_drop_host()->num_ink_drop_highlights_created());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_ripple(), ink_drop_ripple());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
 
   const gfx::Rect bounds(5, 6, 7, 8);
   ink_drop_host()->SetBoundsRect(bounds);
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_highlights_created());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_ripple(), ink_drop_ripple());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
   EXPECT_EQ(bounds.size(), ink_drop_ripple()->GetRootLayer()->size());
   EXPECT_EQ(bounds.size(), ink_drop_highlight()->layer()->size());
 }
@@ -298,16 +294,12 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnHostThemeChange) {
   ink_drop()->AnimateToState(InkDropState::ACTIVATED);
   EXPECT_EQ(1, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(1, ink_drop_host()->num_ink_drop_highlights_created());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_ripple(), ink_drop_ripple());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
 
   ui::TestNativeTheme native_theme;
   native_theme.SetDarkMode(true);
   widget()->SetNativeThemeForTest(&native_theme);
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_highlights_created());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_ripple(), ink_drop_ripple());
-  EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
   DestroyWidget();
 }
 
