@@ -27,8 +27,6 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
   // TODO(vrk): This code is largely duplicated in
   // MediaStreamDevicesController::GetDevices(). Move this code into a shared
   // method between the two classes.
-  bool get_default_audio_device = audio_allowed;
-  bool get_default_video_device = video_allowed;
 
   // TOOD(crbug.com/1300883): Generalize to multiple streams.
   blink::mojom::StreamDevicesSet stream_devices_set;
@@ -53,34 +51,19 @@ void MediaAccessHandler::CheckDevicesAndRunCallback(
   // Get the exact audio or video device if an id is specified.
   // We only set any error result here and before running the callback change
   // it to OK if we have any device.
-  if (audio_allowed && !request.requested_audio_device_ids.empty() &&
-      !request.requested_audio_device_ids.front().empty()) {
-    const blink::MediaStreamDevice* audio_device =
-        MediaCaptureDevicesDispatcher::GetInstance()->GetRequestedAudioDevice(
-            request.requested_audio_device_ids.front());
-    if (audio_device) {
-      stream_devices.audio_device = *audio_device;
-      get_default_audio_device = false;
-    }
+  if (audio_allowed) {
+    stream_devices.audio_device =
+        MediaCaptureDevicesDispatcher::GetInstance()
+            ->GetPreferredAudioDeviceForBrowserContext(
+                web_contents->GetBrowserContext(),
+                request.requested_audio_device_ids);
   }
-  if (video_allowed && !request.requested_video_device_ids.empty() &&
-      !request.requested_video_device_ids.front().empty()) {
-    const blink::MediaStreamDevice* video_device =
-        MediaCaptureDevicesDispatcher::GetInstance()->GetRequestedVideoDevice(
-            request.requested_video_device_ids.front());
-    if (video_device) {
-      stream_devices.video_device = *video_device;
-      get_default_video_device = false;
-    }
-  }
-
-  // If either or both audio and video devices were requested but not
-  // specified by id, get the default devices.
-  if (get_default_audio_device || get_default_video_device) {
-    MediaCaptureDevicesDispatcher::GetInstance()
-        ->GetDefaultDevicesForBrowserContext(
-            web_contents->GetBrowserContext(), get_default_audio_device,
-            get_default_video_device, stream_devices);
+  if (video_allowed) {
+    stream_devices.video_device =
+        MediaCaptureDevicesDispatcher::GetInstance()
+            ->GetPreferredVideoDeviceForBrowserContext(
+                web_contents->GetBrowserContext(),
+                request.requested_video_device_ids);
   }
 
   std::unique_ptr<content::MediaStreamUI> ui;

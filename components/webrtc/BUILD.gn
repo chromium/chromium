@@ -14,6 +14,8 @@ if (use_blink) {
       "media_stream_device_enumerator.h",
       "media_stream_device_enumerator_impl.cc",
       "media_stream_device_enumerator_impl.h",
+      "media_stream_devices_util.cc",
+      "media_stream_devices_util.h",
     ]
 
     deps = [
@@ -105,7 +107,10 @@ source_set("unit_tests") {
   # Only include this test on blink platforms because dependency on
   # //content/test:test_support requires it.
   if (use_blink) {
-    sources += [ "media_stream_devices_controller_unittest.cc" ]
+    sources += [
+      "media_stream_devices_controller_unittest.cc",
+      "media_stream_devices_util_unittest.cc",
+    ]
 
     deps += [
       ":webrtc",
