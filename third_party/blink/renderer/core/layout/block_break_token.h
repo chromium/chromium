@@ -215,6 +215,28 @@ class CORE_EXPORT BlockBreakToken final : public BreakToken {
   const InlineBreakToken* InlineBreakTokenFor(const LayoutInputNode&) const;
   const InlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
 
+  // When merging out-of-flow children from a new placeholder fragmentainer into
+  // an existing one, some new break token data may also have to be copied over.
+  class MutableForOofFragmentation {
+    STACK_ALLOCATED();
+
+   public:
+    explicit MutableForOofFragmentation(const BlockBreakToken& break_token)
+        : break_token_(const_cast<BlockBreakToken&>(break_token)) {}
+
+    // Merge the relevant parts (from the perspective of a fragmentainer that
+    // has been updated with additional OOF children) of the specified break
+    // token into this one.
+    void Merge(const BlockBreakToken&);
+
+   private:
+    const BlockBreakToken& break_token_;
+  };
+  friend class MutableForOofFragmentation;
+  MutableForOofFragmentation GetMutableForOofFragmentation() const {
+    return MutableForOofFragmentation(*this);
+  }
+
 #if DCHECK_IS_ON()
   String ToString() const;
 #endif

@@ -1249,7 +1249,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
       }
 
       limited_multicol_container_builder.AddChild(*fragment, offset);
-      multicol_children.emplace_back(MulticolChildInfo(&child));
+      multicol_children.emplace_back(MulticolChildInfo());
     }
 
     // If a column fragment is updated with OOF children, we may need to update
@@ -1369,44 +1369,30 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
       fragment_idx--;
     } while (true);
 
-    // We have located the right multicol fragment to replace. Re-use its old
-    // constraint space and establish a layout algorithm to regenerate the
-    // fragment.
-    const ConstraintSpace& constraint_space =
-        old_result->GetConstraintSpaceForCaching();
-    FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
-        constraint_space, multicol, /* break_token */ nullptr);
-    LayoutAlgorithmParams params(multicol, fragment_geometry, constraint_space);
-    SimplifiedLayoutAlgorithm algorithm(params, *old_result,
-                                        /* keep_old_size */ true);
-
-    // First copy the fragmentainers (and other child fragments) that we already
-    // had.
-    algorithm.CloneOldChildren();
-
-    WritingModeConverter converter(constraint_space.GetWritingDirection(),
-                                   old_result->GetPhysicalFragment().Size());
+    // We have located the right multicol container fragment to update.
+    const auto& existing_fragment =
+        To<PhysicalBoxFragment>(old_result->GetPhysicalFragment());
+    WritingModeConverter converter(
+        existing_fragment.Style().GetWritingDirection(),
+        existing_fragment.Size());
     LayoutUnit additional_column_block_size;
-    // Then append the new fragmentainers.
+
+    // Append the new fragmentainers to the multicol container fragment.
+    auto fragment_mutator = existing_fragment.GetMutableForOofFragmentation();
     for (wtf_size_t i = old_fragment_count; i < new_fragment_count; i++) {
       const LogicalFragmentLink& child =
           limited_multicol_container_builder.Children()[i];
-      algorithm.AppendNewChildFragment(*child.fragment, child.offset);
+      fragment_mutator.AddChildFragmentainer(
+          *To<PhysicalBoxFragment>(child.get()), child.offset);
       additional_column_block_size +=
           converter.ToLogical(child.fragment->Size()).block_size;
     }
+    fragment_mutator.UpdateOverflow();
 
     // We've already written back to legacy for |multicol|, but if we added
     // new columns to hold any OOF descendants, we need to extend the final
     // size of the legacy flow thread to encompass those new columns.
     multicol.MakeRoomForExtraColumns(additional_column_block_size);
-
-    // Create a new multicol container fragment and replace all references to
-    // the old one with this new one.
-    const LayoutResult* new_result =
-        algorithm.CreateResultAfterManualChildLayout();
-    ReplaceFragment(std::move(new_result), *last_fragment_with_fragmentainer,
-                    fragment_idx);
   }
 
   // Any descendants should have been handled in
@@ -2531,11 +2517,9 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   LayoutAlgorithmParams params(node, fragment_geometry, space,
                                previous_break_token,
                                /* early_break */ nullptr);
-
-  // |algorithm| corresponds to the "mutable copy" of our original
-  // fragmentainer. As long as this "copy" hasn't been laid out via
-  // SimplifiedOofLayoutAlgorithm::Layout, we can append new items to it.
-  SimplifiedOofLayoutAlgorithm algorithm(params, *fragment, is_new_fragment);
+  // This algorithm will be used to add new OOFs. The existing fragment passed
+  // is the last fragmentainer created so far.
+  SimplifiedOofLayoutAlgorithm algorithm(params, *fragment);
   // Layout any OOF elements that are a continuation of layout first.
   for (auto& descendant : descendants_continued) {
     AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
@@ -2559,13 +2543,24 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   const LayoutResult* fragmentainer_result = algorithm.Layout();
   const auto& new_fragmentainer =
       To<PhysicalBoxFragment>(fragmentainer_result->GetPhysicalFragment());
+  const PhysicalBoxFragment* updated_fragmentainer = fragment;
 
-  // Finalize layout on the cloned fragmentainer and replace all existing
-  // references to the old result.
-  ReplaceFragmentainer(index, fragmentainer_offset, is_new_fragment,
-                       new_fragmentainer);
+  if (is_new_fragment) {
+    // Add the new fragmentainer to the builder.
+    container_builder_->AddChild(new_fragmentainer, fragmentainer_offset);
+    updated_fragmentainer = &new_fragmentainer;
+  } else {
+    // A fragmentainer already exists at the given index. The new one that was
+    // just prepared by the algorithm is treated as a temporatry placeholder
+    // fragmentainer which will be "poured" into the existing one, and then
+    // forgotten about. This will add new OOFs (and whatever relevant info they
+    // propagated).
+    updated_fragmentainer->GetMutableForOofFragmentation().Merge(
+        new_fragmentainer);
+  }
 
-  if (const BlockBreakToken* break_token = new_fragmentainer.GetBreakToken()) {
+  if (const BlockBreakToken* break_token =
+          updated_fragmentainer->GetBreakToken()) {
     *monolithic_overflow = break_token->MonolithicOverflow();
   } else {
     *monolithic_overflow = LayoutUnit();
@@ -2675,11 +2670,9 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
     return;
   }
 
-  // Propagate new data to the |container_builder_|. |AppendOutOfFlowResult|
-  // will add the |result| to the fragmentainer, and replace the fragmentainer
-  // in the |container_builder_|. |ReplaceChild| can't compute the differences
-  // of the new and the old fragments, so it skips all propagations usually done
-  // in |AddChild|.
+  // Propagate new data to the |container_builder_| manually. Unlike when in
+  // regular layout, MutableForOofFragmentation / SimplifiedOofLayoutAlgorithm
+  // won't do this for us.
   container_builder_->PropagateChildAnchors(
       physical_fragment, oof_offset + relative_offset + offset_adjustment);
   container_builder_->PropagateStickyDescendants(physical_fragment);
@@ -2725,27 +2718,6 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
             container->Style().GetWritingDirection(), container->Size(),
             physical_fragment.Size()),
         *container, /* previous_container_break_token */ nullptr);
-  }
-}
-
-void OutOfFlowLayoutPart::ReplaceFragmentainer(
-    wtf_size_t index,
-    LogicalOffset offset,
-    bool create_new_fragment,
-    const PhysicalBoxFragment& new_fragmentainer) {
-  if (create_new_fragment) {
-    container_builder_->AddChild(new_fragmentainer, offset);
-  } else {
-    container_builder_->ReplaceChild(index, new_fragmentainer, offset);
-
-    if (multicol_children_ && index < multicol_children_->size()) {
-      // We are in a nested fragmentation context. Replace the column entry
-      // (that already existed) directly in the existing multicol fragment. If
-      // there any new columns, they will be appended as part of regenerating
-      // the multicol fragment.
-      MulticolChildInfo& column_info = (*multicol_children_)[index];
-      column_info.mutable_link->fragment = &new_fragmentainer;
-    }
   }
 }
 
@@ -2907,128 +2879,6 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   *start_index = child_index + additional_fragment_count;
   offset->block_offset = remaining_block_offset -
                          additional_fragment_count * fragmentainer_block_size;
-}
-
-void OutOfFlowLayoutPart::ReplaceFragment(
-    const LayoutResult* new_result,
-    const PhysicalBoxFragment& old_fragment,
-    wtf_size_t index) {
-  // Replace the LayoutBox entry.
-  LayoutBox& box = *old_fragment.MutableOwnerLayoutBox();
-  box.ReplaceLayoutResult(new_result, index);
-
-  // Replace the entry in the parent fragment. Locating the parent fragment
-  // isn't straight-forward if the containing block is a multicol container.
-  LayoutBox* containing_block;
-
-  if (box.IsOutOfFlowPositioned()) {
-    // If the inner multicol is out-of-flow positioned, its fragments will be
-    // found as direct children of fragmentainers in some ancestor fragmentation
-    // context. It may not be the *nearest* fragmentation context, though, since
-    // the OOF inner multicol may be contained by other OOFs, which in turn may
-    // not be contained by the innermost multicol container, and so on. Skip
-    // above all OOFs in the containing block chain, to find the right
-    // fragmentation context root.
-    containing_block = &box;
-    bool is_inside_spanner = false;
-    do {
-      // Keep searching up the tree until we have found a containing block
-      // that's in-flow and the containing block of that containing block is a
-      // fragmentation context root. This fragmentation context root is the one
-      // that contains the fragment.
-      bool is_out_of_flow = containing_block->IsOutOfFlowPositioned();
-      containing_block = containing_block->ContainingNGBox();
-      if (containing_block->IsFragmentationContextRoot() && !is_out_of_flow) {
-        // If the OOF element we are searching for has a CB that is nested
-        // within a spanner, that OOF will *not* be laid out in the nearest
-        // multicol container. Instead, it will propagate up to the context in
-        // which the spanner is laid out. Thus, continue searching past the
-        // nearest multicol container for the OOF in question.
-        if (!is_inside_spanner) {
-          break;
-        }
-      }
-      is_inside_spanner = containing_block->IsColumnSpanAll();
-    } while (containing_block->MightBeInsideFragmentationContext());
-
-    DCHECK(containing_block->IsFragmentationContextRoot());
-  } else {
-    containing_block = box.ContainingNGBox();
-  }
-
-  // Replace the old fragment with the new one, if it's inside |parent|.
-  auto ReplaceChild =
-      [&new_result, &old_fragment](const PhysicalBoxFragment& parent) -> bool {
-    for (PhysicalFragmentLink& child_link :
-         parent.GetMutableChildrenForOutOfFlow().Children()) {
-      if (child_link.fragment != &old_fragment)
-        continue;
-      child_link.fragment = &new_result->GetPhysicalFragment();
-      return true;
-    }
-    return false;
-  };
-
-  // Replace the old fragment with the new one, if |multicol_child| is a
-  // fragmentainer and has the old fragment as a child.
-  auto ReplaceFragmentainerChild =
-      [ReplaceChild](const PhysicalFragment& multicol_child) -> bool {
-    // We're going to replace a child of a fragmentainer. First check if it's a
-    // fragmentainer at all.
-    if (!multicol_child.IsFragmentainerBox())
-      return false;
-    const auto& fragmentainer = To<PhysicalBoxFragment>(multicol_child);
-    // Then search and replace inside the fragmentainer.
-    return ReplaceChild(fragmentainer);
-  };
-
-  if (!containing_block->IsFragmentationContextRoot()) {
-    DCHECK_NE(containing_block, container_builder_->GetLayoutObject());
-    DCHECK(!box.IsColumnSpanAll());
-    for (const auto& parent_fragment : containing_block->PhysicalFragments()) {
-      if (parent_fragment.HasItems()) {
-        // Look inside the inline formatting context to find and replace the
-        // fragment generated for the nested multicol container. This happens
-        // when we have a floated "inline-level" nested multicol container with
-        // an OOF inside.
-        if (FragmentItems::ReplaceBoxFragment(
-                old_fragment,
-                To<PhysicalBoxFragment>(new_result->GetPhysicalFragment()),
-                parent_fragment)) {
-          return;
-        }
-      }
-      // Search inside child fragments of the containing block.
-      if (ReplaceChild(parent_fragment))
-        return;
-    }
-  } else if (containing_block == container_builder_->GetLayoutObject()) {
-    DCHECK(!box.IsColumnSpanAll());
-    // We're currently laying out |containing_block|, and it's a multicol
-    // container. Search inside fragmentainer children in the builder.
-    auto& children = FragmentationContextChildren();
-    for (const LogicalFragmentLink& child : children) {
-      if (ReplaceFragmentainerChild(*child.fragment))
-        return;
-    }
-  } else {
-    // |containing_block| has already been laid out, and it's a multicol
-    // container. Search inside fragmentainer children of the fragments
-    // generated for the containing block.
-    for (const auto& multicol : containing_block->PhysicalFragments()) {
-      if (box.IsColumnSpanAll()) {
-        // Column spanners are found as direct children of the multicol.
-        if (ReplaceChild(multicol))
-          return;
-      } else {
-        for (const auto& child : multicol.Children()) {
-          if (ReplaceFragmentainerChild(*child.fragment))
-            return;
-        }
-      }
-    }
-  }
-  NOTREACHED();
 }
 
 void OutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
