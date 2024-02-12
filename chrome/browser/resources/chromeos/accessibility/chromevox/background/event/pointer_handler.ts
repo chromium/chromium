@@ -21,37 +21,34 @@ import {Output} from '../output/output.js';
 import {BaseAutomationHandler} from './base_automation_handler.js';
 import {DesktopAutomationInterface} from './desktop_automation_interface.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
-const AutomationEvent = chrome.automation.AutomationEvent;
-const DeviceType = chrome.chromeosInfoPrivate.DeviceType;
-const EventType = chrome.automation.EventType;
-const RoleType = chrome.automation.RoleType;
+type AutomationNode = chrome.automation.AutomationNode;
+import AutomationEvent = chrome.automation.AutomationEvent;
+import DeviceType = chrome.chromeosInfoPrivate.DeviceType;
+import EventType = chrome.automation.EventType;
+import RoleType = chrome.automation.RoleType;
 
-/** @return {!Promise<DeviceType>} */
-async function getDeviceType() {
+async function getDeviceType(): Promise<DeviceType> {
   return new Promise(
       resolve => chrome.chromeosInfoPrivate.get(
-          ['deviceType'], data => resolve(data.deviceType)));
+          ['deviceType'], data => resolve(data.deviceType!)));
 }
 
 export class PointerHandler extends BaseAutomationHandler {
+  private mouseX_: number|undefined;
+  private mouseY_: number|undefined;
+  private lastNoPointerAnchorEarconPlayedTime_: Date;
+  private expectingHoverCount_: number;
+  private isChromebox_: boolean;
+  private lastHoverRequested_: Date;
+  private ready_: boolean;
+  private speakTextUnderMouse_: boolean = false;
   constructor() {
     super(null);
 
-    /** @private {number|undefined} */
-    this.mouseX_;
-    /** @private {number|undefined} */
-    this.mouseY_;
-    /** @private {!Date} */
     this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
-    /** @private {number} */
     this.expectingHoverCount_ = 0;
-    /** @private {boolean} */
     this.isChromebox_ = false;
-    /** @private {!Date} */
     this.lastHoverRequested_ = new Date();
-
-    /** @private {boolean} */
     this.ready_ = false;
 
     // Asynchronously initialize the listeners. Sets this.ready_ when done.
@@ -61,10 +58,11 @@ export class PointerHandler extends BaseAutomationHandler {
   /**
    * Performs a hit test using the most recent mouse coordinates received in
    * onMouseMove or onMove (a e.g. for touch explore).
-   * @param {boolean} isTouch
-   * @param {AutomationNode} specificNode
    */
-  runHitTest(isTouch = false, specificNode = null) {
+  // TODO(b:314204374): use undefined rather than null.
+  runHitTest(
+      isTouch: boolean = false,
+      specificNode: AutomationNode|null = null): void {
     if (this.mouseX_ === undefined || this.mouseY_ === undefined) {
       return;
     }
@@ -79,37 +77,36 @@ export class PointerHandler extends BaseAutomationHandler {
     }
 
     const actOnNode = specificNode ? specificNode : this.node_;
-    actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, target => {
-      this.handleHitTestResult_(target);
-    });
+    actOnNode.hitTestWithReply(
+        this.mouseX_, this.mouseY_, (target: AutomationNode) => {
+          this.handleHitTestResult_(target);
+        });
   }
 
   /**
    * Handles mouse move events.
-   * @param {AutomationEvent} evt The mouse move event to process.
    */
-  onMouseMove(evt) {
+  onMouseMove(evt: AutomationEvent): void {
     this.onMove_(evt.mouseX, evt.mouseY);
   }
 
   /**
    * Handles touch move events.
-   * @param {number} x
-   * @param {number} y
    */
-  onTouchMove(x, y) {
+  onTouchMove(x: number, y: number): void {
     this.onMove_(x, y, true);
   }
 
   // =========== Private Methods =============
 
-  /** @private */
-  async initListeners_() {
+  private async initListeners_(): Promise<void> {
     this.node_ = await AsyncUtil.getDesktop();
+    // @ts-ignore: BaseAutomationHandler needs to be converted to TS.
     this.addListener_(EventType.MOUSE_MOVED, this.onMouseMove_);
 
     // This is needed for ARC++ and Lacros. They send mouse move and hit test
     // respectively. Each responds with hover.
+    // @ts-ignore: BaseAutomationHandler needs to be converted to TS.
     this.addListener_(EventType.HOVER, this.onHover_);
 
     this.mouseX_ = 0;
@@ -117,7 +114,20 @@ export class PointerHandler extends BaseAutomationHandler {
 
     if (SettingsManager.get('speakTextUnderMouse')) {
       chrome.accessibilityPrivate.enableMouseEvents(true);
+      this.speakTextUnderMouse_ = true;
     }
+    // Rather than disabling mouse events, instead we just do not
+    // speak the text under the mouse when the setting is disabled by the
+    // user. This has the benefit of not turning off mouse events for
+    // other features that are using them, like magnifier and facegaze.
+    SettingsManager.addListenerForKey(
+        'speakTextUnderMouse',
+        (newValue: boolean) => {
+          if (newValue) {
+            chrome.accessibilityPrivate.enableMouseEvents(true);
+          }
+          this.speakTextUnderMouse_ = newValue;
+    });
 
     const deviceType = await getDeviceType();
     this.isChromebox_ = deviceType === DeviceType.CHROMEBOX;
@@ -128,11 +138,11 @@ export class PointerHandler extends BaseAutomationHandler {
   /**
    * Performs a hit test using the most recent mouse coordinates received in
    * onMouseMove or onMove (a e.g. for touch explore).
-   * @param {boolean} isTouch
-   * @param {AutomationNode} specificNode
-   * @private
    */
-  runHitTest_(isTouch = false, specificNode = null) {
+  // TODO(b:314204374): use undefined rather than null.
+  private runHitTest_(
+      isTouch: boolean = false,
+      specificNode: AutomationNode|null = null): void {
     if (!this.ready_ || !this.mouseX_ || !this.mouseY_) {
       return;
     }
@@ -147,25 +157,24 @@ export class PointerHandler extends BaseAutomationHandler {
     }
 
     const actOnNode = specificNode ? specificNode : this.node_;
-    actOnNode.hitTestWithReply(this.mouseX_, this.mouseY_, target => {
-      this.handleHitTestResult_(target);
-    });
+    actOnNode.hitTestWithReply(
+        this.mouseX_, this.mouseY_, (target: AutomationNode) => {
+          this.handleHitTestResult_(target);
+        });
   }
 
   /**
    * This is needed for ARC++ and Lacros. They send mouse move and hit test
    * respectively. Each responds with hover.
-   * @param {AutomationEvent} evt The mouse move event to process.
-   * @private
    */
-  onHover_(evt) {
+  private onHover_(evt: AutomationEvent): void {
     if (this.expectingHoverCount_ === 0) {
       return;
     }
 
     // Stop honoring expectingHoverCount_ if it comes far after its
     // corresponding requested hit test.
-    if (new Date() - this.lastHoverRequested_ > 500) {
+    if (new Date().getTime() - this.lastHoverRequested_.getTime() > 500) {
       this.expectingHoverCount_ = 0;
     }
 
@@ -175,21 +184,18 @@ export class PointerHandler extends BaseAutomationHandler {
 
   /**
    * Handles mouse move events.
-   * @param {AutomationEvent} evt The mouse move event to process.
-   * @private
    */
-  onMouseMove_(evt) {
+  private onMouseMove_(evt: AutomationEvent): void {
+    if (!this.speakTextUnderMouse_) {
+      return;
+    }
     this.onMove_(evt.mouseX, evt.mouseY);
   }
 
   /**
    * Inform this handler of a move to (x, y).
-   * @param {number} x
-   * @param {number} y
-   * @param {boolean} isTouch
-   * @private
    */
-  onMove_(x, y, isTouch = false) {
+  private onMove_(x: number, y: number, isTouch: boolean = false): void {
     if (x === undefined || y === undefined) {
       return;
     }
@@ -201,9 +207,8 @@ export class PointerHandler extends BaseAutomationHandler {
 
   /**
    * Synthesizes a mouse move on the current mouse location.
-   * @private
    */
-  synthesizeMouseMove_() {
+  private synthesizeMouseMove_(): void {
     if (!this.ready_ || !this.mouseX_ || !this.mouseY_) {
       return;
     }
@@ -216,18 +221,16 @@ export class PointerHandler extends BaseAutomationHandler {
 
   /**
    * Handles the result of a test test e.g. speaking the node.
-   * @param {AutomationNode} result
-   * @private
    */
-  handleHitTestResult_(result) {
+  private handleHitTestResult_(result: AutomationNode): void {
     if (!result) {
       return;
     }
 
-    let target = result;
+    let target: AutomationNode|undefined|null = result;
 
     // The target is in an ExoSurface, which hosts remote content.
-    if (target.role === RoleType.WINDOW &&
+    if (target.role === RoleType.WINDOW && target.className &&
         target.className.indexOf('ExoSurface') === 0) {
       // We're in ARC++, which still requires a synthesized mouse
       // event.
@@ -235,6 +238,7 @@ export class PointerHandler extends BaseAutomationHandler {
       return;
     }
 
+    // TODO(b:314204374): Change null to undefined.
     let targetLeaf = null;
     let targetObject = null;
     while (target && target !== target.root) {
@@ -255,7 +259,8 @@ export class PointerHandler extends BaseAutomationHandler {
       ChromeVoxRange.set(null);
 
       // Play a earcon to let the user know they're in the middle of nowhere.
-      if ((new Date() - this.lastNoPointerAnchorEarconPlayedTime_) >
+      if ((new Date().getTime() -
+           this.lastNoPointerAnchorEarconPlayedTime_.getTime()) >
           PointerHandler.MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS) {
         ChromeVox.earcons.playEarcon(EarconId.NO_POINTER_ANCHOR);
         this.lastNoPointerAnchorEarconPlayedTime_ = new Date();
@@ -270,12 +275,16 @@ export class PointerHandler extends BaseAutomationHandler {
     }
 
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
-    DesktopAutomationInterface.instance.onEventDefault(
-        new CustomAutomationEvent(
-            EventType.HOVER, target,
-            {eventFromAction: chrome.automation.ActionType.HIT_TEST}));
+    DesktopAutomationInterface.instance!.onEventDefault(
+        // @ts-ignore: Need to convert base_automation_handler.js to Typescript.
+        new CustomAutomationEvent(EventType.HOVER, target, {
+          eventFromAction: chrome.automation.ActionType.HIT_TEST,
+          eventFrom: undefined,
+          intents: undefined,
+        }));
   }
 }
 
-/** @const {number} */
-PointerHandler.MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS = 500;
+export namespace PointerHandler {
+  export const MIN_NO_POINTER_ANCHOR_SOUND_DELAY_MS = 500;
+}
