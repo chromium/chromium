@@ -257,18 +257,8 @@ template <typename OutType, typename... FinishArgs>
   factory_params->factory_override = std::move(factory_override);
   factory_params->disable_secure_dns = disable_secure_dns;
 
-  if (url_loader_factory::GetTestingInterceptor()) {
-    switch (type) {
-      case ContentBrowserClient::URLLoaderFactoryType::kPrefetch:
-        // Do not intercept `kPrefetch` requests to preserve the existing
-        // behavior.
-        // TODO(crbug.com/1506871): Revisit this.
-        break;
-      default:
-        url_loader_factory::GetTestingInterceptor().Run(
-            factory_params->process_id, factory_builder);
-        break;
-    }
+  if (GetTestingInterceptor()) {
+    GetTestingInterceptor().Run(factory_params->process_id, factory_builder);
   }
 
   return std::move(factory_builder)
