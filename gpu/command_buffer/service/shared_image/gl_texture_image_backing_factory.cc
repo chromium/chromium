@@ -53,7 +53,8 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      for_cpu_upload_usage_(for_cpu_upload_usage) {}
+      for_cpu_upload_usage_(for_cpu_upload_usage),
+      support_all_metal_usages_(false) {}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 
@@ -165,18 +166,18 @@ bool GLTextureImageBackingFactory::IsSupported(
 
   // This is not beneficial on iOS. The main purpose of this is a multi-gpu
   // support.
-#if BUILDFLAG(IS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    constexpr uint32_t kMetalInvalidUsages =
-        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
-        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-    if (usage & kMetalInvalidUsages) {
-      return false;
+  if (!support_all_metal_usages_) {
+    if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+      constexpr uint32_t kMetalInvalidUsages =
+          SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
+          SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+          SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+      if (usage & kMetalInvalidUsages) {
+        return false;
+      }
     }
   }
-#endif  // BUILDFLAG(IS_MAC)
 
   // Doesn't support contexts other than GL for OOPR Canvas
   if (gr_context_type != GrContextType::kGL &&
@@ -197,6 +198,10 @@ bool GLTextureImageBackingFactory::IsSupported(
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
+}
+
+void GLTextureImageBackingFactory::EnableSupportForAllMetalUsagesForTesting() {
+  support_all_metal_usages_ = true;
 }
 
 std::unique_ptr<SharedImageBacking>
