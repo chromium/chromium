@@ -88,6 +88,7 @@ enum SearchEngineType {
   SEARCH_ENGINE_QUENDU = 69,
   SEARCH_ENGINE_BRAVE = 70,
   SEARCH_ENGINE_KARMA = 71,
+  SEARCH_ENGINE_YOU = 72,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
 };
