@@ -204,16 +204,14 @@ bool ClipsSelf(const LayoutObject& object) {
          object.IsSVGChild();
 }
 
-bool ClipsContents(const LayoutObject& object, bool has_target_margin) {
+bool ClipsContents(const LayoutObject& object) {
   // An objects that clips itself also clips contents.
   if (ClipsSelf(object)) {
     return true;
   }
-  if (object.ShouldClipOverflowAlongEitherAxis()) {
-    // Clippers that don't actually clip anything are ignored.
-    return has_target_margin || To<LayoutBox>(object).HasScrollableOverflow();
-  }
-  return false;
+  // TODO(wangxianzhu): Ideally we should ignore clippers that don't have
+  // a scrollable overflow, but that caused crbug.com/41492283. Investigate.
+  return object.ShouldClipOverflowAlongEitherAxis();
 }
 
 static const unsigned kConstructorFlagsMask =
@@ -482,7 +480,7 @@ void IntersectionGeometry::RootAndTarget::ComputeRelationship(
     }
 
     if (!has_intermediate_clippers && !have_crossed_frame_boundary &&
-        container != root && ClipsContents(*container, has_target_margin)) {
+        container != root && ClipsContents(*container)) {
       has_intermediate_clippers = true;
     }
 
