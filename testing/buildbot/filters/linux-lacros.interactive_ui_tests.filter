@@ -44,8 +44,6 @@
 
 # TODO(crbug.com/1336691) Fix TabDragging tests.
 # The following tests fail consistently.
--TabDragging/DetachToBrowserTabDragControllerTest.DragAll/1
--TabDragging/DetachToBrowserTabDragControllerTest.DragAll/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAllToSeparateWindow/*
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDirectlyToSecondWindow/2
