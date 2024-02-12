@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
+
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/stringprintf.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -10,27 +13,26 @@
 namespace system_logs {
 
 namespace {
-constexpr auto vendor_map =
-    base::MakeFixedFlatMap<uint16_t, base::StringPiece>({
-        {0x03eb, "Atmel"},
-        {0x0457, "Silicon Integrated Systems"},
-        {0x04b4, "Cypress"},
-        {0x04f3, "Elan"},
-        {0x056a, "Wacom"},
-        {0x0603, "Novatek"},
-        {0x06cb, "Synaptics"},
-        {0x093a, "Pixart"},
-        {0x14e5, "Zinitix"},
-        {0x18d1, "Google"},
-        {0x1fd2, "Melfas"},
-        {0x22c5, "Himax"},
-        {0x2386, "Raydium"},
-        {0x2575, "Weida"},
-        {0x27c6, "Goodix"},
-        {0x2a94, "G2 Touch"},
-        {0x2c68, "EMRight"},
-        {0x2d1f, "Wacom Taiwan"},
-    });
+constexpr auto vendor_map = base::MakeFixedFlatMap<uint16_t, std::string_view>({
+    {0x03eb, "Atmel"},
+    {0x0457, "Silicon Integrated Systems"},
+    {0x04b4, "Cypress"},
+    {0x04f3, "Elan"},
+    {0x056a, "Wacom"},
+    {0x0603, "Novatek"},
+    {0x06cb, "Synaptics"},
+    {0x093a, "Pixart"},
+    {0x14e5, "Zinitix"},
+    {0x18d1, "Google"},
+    {0x1fd2, "Melfas"},
+    {0x22c5, "Himax"},
+    {0x2386, "Raydium"},
+    {0x2575, "Weida"},
+    {0x27c6, "Goodix"},
+    {0x2a94, "G2 Touch"},
+    {0x2c68, "EMRight"},
+    {0x2d1f, "Wacom Taiwan"},
+});
 }  // namespace
 
 void ConnectedInputDevicesLogSource::ProcessDeviceFillResponse(
