@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/companion/core/constants.h"
@@ -13,8 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -134,13 +131,7 @@ bool IsNewBadgeEnabledForSearchMenuItem(const Browser* browser) {
       features::kCompanionEnableNewBadgesInContextMenu);
 }
 
-void UpdateCompanionDefaultPinnedToToolbarState(Profile* profile) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  CHECK(profile);
-
-  PrefService* const pref_service = profile->GetPrefs();
-  CHECK(pref_service);
-
+void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
   std::optional<bool> should_force_pin =
       switches::ShouldForceOverrideCompanionPinState();
   if (should_force_pin) {
@@ -159,19 +150,9 @@ void UpdateCompanionDefaultPinnedToToolbarState(Profile* profile) {
           ::features::kSidePanelCompanionDefaultPinned) ||
       pref_service->GetBoolean(companion::kExpsOptInStatusGrantedPref) ||
       observed_exps_nav;
-
   pref_service->SetDefaultPrefValue(
       prefs::kSidePanelCompanionEntryPinnedToToolbar,
       base::Value(companion_should_be_default_pinned));
-
-  if (base::FeatureList::IsEnabled(::features::kSidePanelPinning)) {
-    PinnedToolbarActionsModel* const model =
-        PinnedToolbarActionsModelFactory::GetForProfile(profile);
-    CHECK(model);
-    model->MaybeUpdateSearchCompanionPinnedState(
-        companion_should_be_default_pinned);
-  }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 bool ShouldUseContextualLensPanelForImageSearch(const Browser* browser) {

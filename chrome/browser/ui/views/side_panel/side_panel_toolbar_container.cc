@@ -154,8 +154,7 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
   // true) we want to make sure their pin state changes if they have not
   // explicitly changed it themselves.
   if (PrefService* pref_service = browser_view_->GetProfile()->GetPrefs()) {
-    companion::UpdateCompanionDefaultPinnedToToolbarState(
-        browser_view_->GetProfile());
+    companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
   }
   CreatePinnedEntryButtons();
 }

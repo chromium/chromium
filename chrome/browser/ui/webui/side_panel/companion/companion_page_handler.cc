@@ -437,7 +437,7 @@ void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
   pref_service->SetBoolean(kExpsOptInStatusGrantedPref, is_exps_opted_in);
   // Update default value for pref indicating whether companion should be
   // pinned to the toolbar.
-  companion::UpdateCompanionDefaultPinnedToToolbarState(GetProfile());
+  companion::UpdateCompanionDefaultPinnedToToolbarState(pref_service);
 }
 
 void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
