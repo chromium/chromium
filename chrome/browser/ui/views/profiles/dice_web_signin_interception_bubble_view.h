@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 
+#include "base/functional/callback_helpers.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include "base/functional/callback.h"
@@ -142,6 +143,8 @@ class DiceWebSigninInterceptionBubbleView
   raw_ptr<views::WebView> web_view_;
 
   base::TimeTicks chrome_signin_bubble_shown_time_;
+
+  base::ScopedClosureRunner hide_avatar_text_callback_;
 
   // Last member in the class: pointers are invalidated before other fields.
   base::WeakPtrFactory<DiceWebSigninInterceptionBubbleView> weak_factory_{this};

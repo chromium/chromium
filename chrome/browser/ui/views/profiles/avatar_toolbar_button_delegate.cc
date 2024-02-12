@@ -6,6 +6,8 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
@@ -18,11 +20,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
-#include "chrome/browser/signin/dice_web_signin_interceptor.h"
-#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
-#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -58,31 +57,6 @@ ProfileAttributesEntry* GetProfileAttributesEntry(Profile* profile) {
   return GetProfileAttributesStorage().GetProfileAttributesWithPath(
       profile->GetPath());
 }
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-std::u16string InterceptionTypeToIdentityPillText(
-    WebSigninInterceptor::SigninInterceptionType interception_type) {
-  switch (interception_type) {
-    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
-      return l10n_util::GetStringUTF16(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SWITCH_PROFILE_TEXT);
-    case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
-      return l10n_util::GetStringUTF16(
-          IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
-    case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
-    case WebSigninInterceptor::SigninInterceptionType::kEnterprise:
-      return l10n_util::GetStringUTF16(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT);
-    case WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
-    case WebSigninInterceptor::SigninInterceptionType::
-        kEnterpriseAcceptManagement:
-    case WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
-      // These intercept type do not show a bubble and should not need to change
-      // the identity pill text.
-      NOTREACHED_NORETURN();
-  }
-}
-#endif
 
 }  // namespace
 
@@ -136,8 +110,9 @@ std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
 std::u16string AvatarToolbarButtonDelegate::GetShortProfileName() const {
   ProfileAttributesEntry* entry = GetProfileAttributesEntry(profile_);
   // If the profile is being deleted, it doesn't matter what name is shown.
-  if (!entry)
+  if (!entry) {
     return std::u16string();
+  }
 
   return signin_ui_util::GetShortProfileIdentityToDisplay(*entry, profile_);
 }
@@ -169,8 +144,9 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
   // instead of (or on top of) IdentityManager. Only then we can rely on |entry|
   // being up to date (as the storage also observes IdentityManager so there's
   // no guarantee on the order of notifications).
-  if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture())
+  if (entry->IsUsingGAIAPicture() && entry->GetGAIAPicture()) {
     return *entry->GetGAIAPicture();
+  }
 
   // Show |user_identity_image| when the following conditions are satisfied:
   //  - the user is migrated to Dice
@@ -190,27 +166,30 @@ gfx::Image AvatarToolbarButtonDelegate::GetProfileAvatarImage(
 }
 
 int AvatarToolbarButtonDelegate::GetWindowCount() const {
-  if (profile_->IsGuestSession())
+  if (profile_->IsGuestSession()) {
     return BrowserList::GetGuestBrowserCount();
+  }
   DCHECK(profile_->IsOffTheRecord());
   return BrowserList::GetOffTheRecordBrowsersActiveForProfile(profile_);
 }
 
 AvatarToolbarButtonDelegate::ButtonState
 AvatarToolbarButtonDelegate::ComputeState() const {
-  if (profile_->IsGuestSession())
+  if (profile_->IsGuestSession()) {
     return ButtonState::kGuestSession;
+  }
 
   // Return |kIncognitoProfile| state for all OffTheRecord profile types except
   // guest mode.
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
     return ButtonState::kIncognitoProfile;
+  }
 
   if (button_text_state_ == TextState::kShowingName) {
     return ButtonState::kAnimatedUserIdentity;
   }
-  if (button_text_state_ == TextState::kShowingInterceptText) {
-    return ButtonState::kInterceptTextShowing;
+  if (button_text_state_ == TextState::kShowingExplicitText) {
+    return ButtonState::kExplicitTextShowing;
   }
 
   if (!last_avatar_error_ &&
@@ -244,8 +223,9 @@ AvatarToolbarButtonDelegate::ComputeState() const {
   // |last_avatar_error_| should be checked here rather than
   // ::GetAvatarSyncErrorType(), so the result agrees with
   // AvatarToolbarButtonDelegate::GetAvatarSyncErrorType().
-  if (!last_avatar_error_)
+  if (!last_avatar_error_) {
     return ButtonState::kNormal;
+  }
 
   if (last_avatar_error_ == AvatarSyncErrorType::kSyncPaused &&
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
@@ -278,8 +258,9 @@ void AvatarToolbarButtonDelegate::MaybeShowIdentityAnimation() {
 }
 
 void AvatarToolbarButtonDelegate::SetHasInProductHelpPromo(bool has_promo) {
-  if (has_in_product_help_promo_ == has_promo)
+  if (has_in_product_help_promo_ == has_promo) {
     return;
+  }
 
   has_in_product_help_promo_ = has_promo;
   // Trigger a new animation, even if the IPH is being removed. This keeps the
@@ -392,8 +373,9 @@ void AvatarToolbarButtonDelegate::OnRefreshTokensLoaded() {
   CoreAccountInfo account =
       IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
-  if (account.IsEmpty())
+  if (account.IsEmpty()) {
     return;
+  }
   OnUserIdentityChanged();
 }
 
@@ -421,8 +403,9 @@ void AvatarToolbarButtonDelegate::OnIdentityManagerShutdown(
 void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
   const std::optional<AvatarSyncErrorType> error =
       ::GetAvatarSyncErrorType(profile_);
-  if (last_avatar_error_ == error)
+  if (last_avatar_error_ == error) {
     return;
+  }
 
   last_avatar_error_ = error;
   avatar_toolbar_button_->UpdateIcon();
@@ -449,7 +432,7 @@ void AvatarToolbarButtonDelegate::OnIdentityAnimationTimeout() {
   // OnIdentityAnimationTimeout() that will hide it after the proper delay.
   // Also return if the button is showing the signin text rather than the name.
   if (identity_animation_timeout_count_ > 0 ||
-      button_text_state_ == TextState::kShowingInterceptText ||
+      button_text_state_ == TextState::kShowingExplicitText ||
       button_text_state_ == TextState::kShowingEnterpriseText) {
     return;
   }
@@ -491,14 +474,43 @@ void AvatarToolbarButtonDelegate::ShowIdentityAnimation() {
       kIdentityAnimationDuration);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void AvatarToolbarButtonDelegate::ShowInterceptText(
-    WebSigninInterceptor::SigninInterceptionType interception_type) {
-  current_interception_type_ = interception_type;
-  button_text_state_ = TextState::kShowingInterceptText;
+base::ScopedClosureRunner AvatarToolbarButtonDelegate::ShowExplicitText(
+    const std::u16string& new_text) {
+  CHECK(!new_text.empty());
+
+  // If an explicit text was already showing, enforce hiding it and invalidate
+  // its hide closure internally.
+  if (!explicit_text_.empty()) {
+    CHECK(hide_explicit_closure_ptr_);
+    // It is safe to run the scoped closure multiple times. It is a no-op after
+    // the first time.
+    hide_explicit_closure_ptr_->RunAndReset();
+  }
+
+  explicit_text_ = new_text;
+  button_text_state_ = TextState::kShowingExplicitText;
   avatar_toolbar_button_->UpdateText();
+
+  base::ScopedClosureRunner closure = base::ScopedClosureRunner(
+      base::BindOnce(&AvatarToolbarButtonDelegate::ClearExplicitText,
+                     weak_ptr_factory_.GetWeakPtr()));
+  // Keep a pointer to the current active closure in case the current explicit
+  // text was reset from another call to `ShowExplicitText()`.
+  hide_explicit_closure_ptr_ = &closure;
+  return closure;
 }
 
+void AvatarToolbarButtonDelegate::ClearExplicitText() {
+  explicit_text_.clear();
+  hide_explicit_closure_ptr_ = nullptr;
+  if (button_text_state_ != TextState::kShowingExplicitText) {
+    return;
+  }
+
+  ShowDefaultText();
+}
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void AvatarToolbarButtonDelegate::MaybeShowEnterpriseText() {
   if (!base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) ||
       !chrome::enterprise_util::UserAcceptedAccountManagement(profile_)) {
@@ -521,7 +533,6 @@ void AvatarToolbarButtonDelegate::MaybeShowEnterpriseText() {
 
 void AvatarToolbarButtonDelegate::ShowDefaultText() {
   button_text_state_ = GetDefaultTextState();
-  Reset();
   avatar_toolbar_button_->UpdateText();
 }
 
@@ -536,10 +547,6 @@ AvatarToolbarButtonDelegate::GetDefaultTextState() const {
   }
 
   return TextState::kNotShowing;
-}
-
-void AvatarToolbarButtonDelegate::Reset() {
-  current_interception_type_.reset();
 }
 
 std::pair<std::u16string, std::optional<SkColor>>
@@ -569,16 +576,10 @@ AvatarToolbarButtonDelegate::GetTextAndColor(
     case ButtonState::kAnimatedUserIdentity:
       text = GetShortProfileName();
       break;
-    case ButtonState::kInterceptTextShowing: {
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-      // The signin text is not supported on Lacros.
-      NOTREACHED_NORETURN();
-#else
-      CHECK(current_interception_type_.has_value());
-      text = InterceptionTypeToIdentityPillText(
-          current_interception_type_.value());
+    case ButtonState::kExplicitTextShowing: {
+      CHECK(!explicit_text_.empty());
+      text = explicit_text_;
       break;
-#endif
     }
     case ButtonState::kSyncError:
       color = color_provider->GetColor(kColorAvatarButtonHighlightSyncError);
@@ -639,7 +640,7 @@ std::optional<SkColor> AvatarToolbarButtonDelegate::GetHighlightTextColor(
           color_provider->GetColor(kColorAvatarButtonHighlightNormalForeground);
       break;
     case ButtonState::kGuestSession:
-    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kExplicitTextShowing:
     case ButtonState::kAnimatedUserIdentity:
       color = color_provider->GetColor(
           kColorAvatarButtonHighlightDefaultForeground);
@@ -677,7 +678,7 @@ std::u16string AvatarToolbarButtonDelegate::GetAvatarTooltipText() const {
               *error, IdentityManagerFactory::GetForProfile(profile_)
                           ->HasPrimaryAccount(signin::ConsentLevel::kSync)));
     }
-    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kExplicitTextShowing:
     case ButtonState::kWork:
     case ButtonState::kSchool:
     case ButtonState::kNormal:
@@ -699,7 +700,7 @@ AvatarToolbarButtonDelegate::GetInkdropColors() const {
         break;
       case ButtonState::kSyncError:
       case ButtonState::kGuestSession:
-      case ButtonState::kInterceptTextShowing:
+      case ButtonState::kExplicitTextShowing:
       case ButtonState::kAnimatedUserIdentity:
         break;
       case ButtonState::kSyncPaused:
@@ -729,7 +730,7 @@ ui::ImageModel AvatarToolbarButtonDelegate::GetAvatarIcon(
                                             icon_color, icon_size);
     case ButtonState::kGuestSession:
       return profiles::GetGuestAvatar(icon_size);
-    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kExplicitTextShowing:
     case ButtonState::kAnimatedUserIdentity:
     case ButtonState::kSyncError:
     // TODO(crbug.com/1191411): If sync-the-feature is disabled, the icon
@@ -751,7 +752,7 @@ bool AvatarToolbarButtonDelegate::ShouldPaintBorder() const {
     case ButtonState::kNormal:
       return true;
     case ButtonState::kIncognitoProfile:
-    case ButtonState::kInterceptTextShowing:
+    case ButtonState::kExplicitTextShowing:
     case ButtonState::kWork:
     case ButtonState::kSchool:
     case ButtonState::kSyncPaused:

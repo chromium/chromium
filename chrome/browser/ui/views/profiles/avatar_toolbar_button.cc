@@ -223,16 +223,10 @@ bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
   return !features::IsChromeRefresh2023() || has_custom_theme;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void AvatarToolbarButton::ShowInterceptText(
-    WebSigninInterceptor::SigninInterceptionType interception_type) {
-  delegate_->ShowInterceptText(interception_type);
+base::ScopedClosureRunner AvatarToolbarButton::ShowExplicitText(
+    const std::u16string& text) {
+  return delegate_->ShowExplicitText(text);
 }
-
-void AvatarToolbarButton::HideText() {
-  delegate_->ShowDefaultText();
-}
-#endif
 
 void AvatarToolbarButton::SetButtonActionDisabled(bool disabled) {
   button_action_disabled_ = disabled;

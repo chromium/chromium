@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
@@ -36,13 +36,10 @@ class AvatarToolbarButton : public ToolbarButton {
 
   void UpdateText();
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Expands the pill to show the intercept text.
-  void ShowInterceptText(
-      WebSigninInterceptor::SigninInterceptionType interception_type);
-  // Contracts the pill so that no text is shown.
-  void HideText();
-#endif
+  // Returns a callback to be used when the shown text should be hidden.
+  [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
+      const std::u16string& text);
 
   // Control whether the button action is active or not.
   // One reason to disable the action; when a bubble is shown from this button

@@ -8,13 +8,13 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -63,10 +63,10 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   ui::ImageModel GetAvatarIcon(int icon_size, SkColor icon_color) const;
   bool ShouldPaintBorder() const;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void ShowInterceptText(
-      WebSigninInterceptor::SigninInterceptionType interception_type);
+  [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
+      const std::u16string& text);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void MaybeShowEnterpriseText();
 #endif
   void ShowDefaultText();
@@ -89,7 +89,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
     kNotShowing,
     kWaitingForImage,
     kShowingName,
-    kShowingInterceptText,
+    kShowingExplicitText,
     kShowingEnterpriseText,
   };
 
@@ -97,7 +97,7 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   enum class ButtonState {
     kIncognitoProfile,
     kGuestSession,
-    kInterceptTextShowing,
+    kExplicitTextShowing,
     kAnimatedUserIdentity,
     kSyncPaused,
     // An error in sync-the-feature or sync-the-transport.
@@ -161,7 +161,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType() const;
   gfx::Image GetGaiaAccountImage() const;
 
-  void Reset();
+  // Callback used to remove the explicit text shown and reset to the default.
+  void ClearExplicitText();
 
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -178,9 +179,9 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   TextState button_text_state_ = TextState::kNotShowing;
 
   // Count of identity pill animation timeouts that are currently scheduled.
-  // Multiple timeouts are scheduled when multiple animation triggers happen in
-  // a quick sequence (before the first timeout passes). The identity pill tries
-  // to close when this reaches 0.
+  // Multiple timeouts are scheduled when multiple animation triggers happen
+  // in a quick sequence (before the first timeout passes). The identity pill
+  // tries to close when this reaches 0.
   int identity_animation_timeout_count_ = 0;
 
   bool enterprise_text_hide_scheduled_ = false;
@@ -192,8 +193,13 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   // changes and notify |avatar_toolbar_button_|.
   std::optional<AvatarSyncErrorType> last_avatar_error_;
 
-  std::optional<WebSigninInterceptor::SigninInterceptionType>
-      current_interception_type_;
+  // Text to be displayed while the state is
+  // `ButtonState::kExplicitTextShowing`.
+  std::u16string explicit_text_;
+  // Internal pointer to the current explicit closure. This is used if multiple
+  // explicit content is trying to be shown at the same time. Priority to the
+  // last call.
+  raw_ptr<base::ScopedClosureRunner> hide_explicit_closure_ptr_ = nullptr;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 };

@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/browser_process.h"
@@ -141,6 +142,63 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninBrowser) {
   EXPECT_FALSE(avatar->GetEnabled());
 }
 #endif
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       ShowExplicitTextAndHide) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  std::u16string new_text(u"Some New Text");
+  base::ScopedClosureRunner hide_callback = avatar->ShowExplicitText(new_text);
+
+  EXPECT_EQ(avatar->GetText(), new_text);
+  hide_callback.RunAndReset();
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       ShowExplicitTextAndDefaultHide) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  // Simulates a stack that enforces the change of text, but never explicitly
+  // call the hide callback. It should still be done on explicitly destroying
+  // the caller.
+  {
+    std::u16string new_text(u"Some New Text");
+    base::ScopedClosureRunner hide_callback =
+        avatar->ShowExplicitText(new_text);
+    EXPECT_EQ(avatar->GetText(), new_text);
+  }
+
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       ShowExplicitTextTwiceAndHide) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+
+  std::u16string initial_new_text(u"Some New Text");
+  base::ScopedClosureRunner initial_hide_callback =
+      avatar->ShowExplicitText(initial_new_text);
+
+  EXPECT_EQ(avatar->GetText(), initial_new_text);
+
+  std::u16string override_new_text(u"Some New Override Text");
+  base::ScopedClosureRunner override_hide_callback =
+      avatar->ShowExplicitText(override_new_text);
+
+  EXPECT_EQ(avatar->GetText(), override_new_text);
+
+  // Attempting to reset the initial text should have no effect.
+  initial_hide_callback.RunAndReset();
+  EXPECT_EQ(avatar->GetText(), override_new_text);
+
+  // Resetting the last text should work fine.
+  override_hide_callback.RunAndReset();
+  EXPECT_EQ(avatar->GetText(), std::u16string());
+}
 
 // Test suite for testing `AvatarToolbarButton`'s responsibility of updating
 // color information in `ProfileAttributesStorage`.
@@ -311,10 +369,9 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     EXPECT_EQ(toolbar_button->GetText(), work_label);
-    toolbar_button->ShowInterceptText(
-        WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    auto clear_closure = toolbar_button->ShowExplicitText(u"Explicit text");
     EXPECT_NE(toolbar_button->GetText(), work_label);
-    toolbar_button->HideText();
+    clear_closure.RunAndReset();
     EXPECT_EQ(toolbar_button->GetText(), work_label);
 #else
     EXPECT_NE(toolbar_button->GetText(), work_label);
@@ -322,10 +379,9 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   } else {
     EXPECT_NE(toolbar_button->GetText(), work_label);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    toolbar_button->ShowInterceptText(
-        WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
+    auto clear_closure = toolbar_button->ShowExplicitText(u"Explicit text");
     EXPECT_NE(toolbar_button->GetText(), work_label);
-    toolbar_button->HideText();
+    clear_closure.RunAndReset();
     EXPECT_NE(toolbar_button->GetText(), work_label);
 #endif
   }
