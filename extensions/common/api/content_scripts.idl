@@ -5,26 +5,6 @@
 // Stub namespace for the "content_scripts" manifest key.
 [generate_error_messages]
 namespace contentScripts {
-  // The stage in the document lifecycle when the javascript file is injected.
-  enum RunAt {
-    // The browser chooses a time to inject scripts between "document_end" and
-    // immediately after the window.onload event fires. The exact moment of
-    // injection depends on how complex the document is and how long it is
-    // taking to load, and is optimized for page load speed.
-    // Content scripts running at "document_idle" do not need to listen for the
-    // window.onload event; they are guaranteed to run after the DOM is
-    // complete. If a script definitely needs to run after window.onload, the
-    // extension can check if onload has already fired by using the
-    // document.readyState property.
-    document_idle,
-    // Scripts are injected after any files from css, but before any other DOM
-    // is constructed or any other script is run.
-    document_start,
-    // Scripts are injected immediately after the DOM is complete, but before
-    // subresources like images and frames have loaded.
-    document_end
-  };
-
   // Describes a content script to be injected into a web page.
   dictionary ContentScript {
     // Specifies which pages this content script will be injected into. See
@@ -74,7 +54,7 @@ namespace contentScripts {
     DOMString[]? exclude_globs;
     // Specifies when JavaScript files are injected into the web page. The
     // preferred and default value is <code>document_idle</code>.
-    RunAt? run_at;
+    extensionTypes.RunAt? run_at;
     // The JavaScript "world" to run the script in. Defaults to
     // <code>ISOLATED</code>. Only available in Manifest V3 extensions.
     [nodoc] extensionTypes.ExecutionWorld? world;

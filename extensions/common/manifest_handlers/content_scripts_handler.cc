@@ -45,20 +45,6 @@ std::unique_ptr<UserScript> CreateUserScript(
     bool all_urls_includes_chrome_urls,
     Extension* extension,
     std::u16string* error) {
-  auto convert_run_at = [](api::content_scripts::RunAt run_at) {
-    switch (run_at) {
-      case api::content_scripts::RunAt::kNone:
-        // Default to document_idle.
-        return api::extension_types::RunAt::kDocumentIdle;
-      case api::content_scripts::RunAt::kDocumentEnd:
-        return api::extension_types::RunAt::kDocumentEnd;
-      case api::content_scripts::RunAt::kDocumentIdle:
-        return api::extension_types::RunAt::kDocumentIdle;
-      case api::content_scripts::RunAt::kDocumentStart:
-        return api::extension_types::RunAt::kDocumentStart;
-    }
-  };
-
   // We first convert to a `SerializedScript` to then convert that to a
   // `UserScript` through shared logic. We need a bit of custom handling for
   // match_origin_as_fallback, since manifest content scripts support
@@ -108,7 +94,7 @@ std::unique_ptr<UserScript> CreateUserScript(
 
   serialized_script.include_globs = std::move(content_script.include_globs);
   serialized_script.exclude_globs = std::move(content_script.exclude_globs);
-  serialized_script.run_at = convert_run_at(content_script.run_at);
+  serialized_script.run_at = content_script.run_at;
 
   // Parse execution world. This should only be possible for MV3.
   if (content_script.world != api::extension_types::ExecutionWorld::kNone) {
