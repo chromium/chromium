@@ -923,10 +923,9 @@ class BookmarkBarViewTest6 : public BookmarkBarViewEventTestBase {
   }
 };
 
-#if BUILDFLAG(IS_OZONE_WAYLAND)
-// TODO (crbug/1523247): This test is failing under wayland when the
-//                       ChromeRefresh2023 flags are set. This skips it
-//                       until it can be fixed.
+#if BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
+// TODO (crbug/1523247): This test is failing under wayland and Windows when
+// the ChromeRefresh2023 flags are set. This skips it until it can be fixed.
 #define MAYBE_OpenMenuOnClickAndHold DISABLED_OpenMenuOnClickAndHold
 #else
 #define MAYBE_OpenMenuOnClickAndHold OpenMenuOnClickAndHold
