@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zone.h"
 #include "chrome/browser/ash/printing/oauth2/client_ids_database.h"
 #include "chrome/browser/ash/printing/oauth2/log_entry.h"
@@ -39,7 +39,7 @@ namespace {
 // Logs results to device-log and calls `callback` with parameters `status` and
 // `data`.
 void LogAndCall(StatusCallback callback,
-                base::StringPiece method,
+                std::string_view method,
                 const GURL& auth_server,
                 const chromeos::Uri& ipp_endpoint,
                 StatusCode status,
@@ -55,7 +55,7 @@ void LogAndCall(StatusCallback callback,
 }
 
 void AddLoggingToCallback(StatusCallback& callback,
-                          const base::StringPiece method,
+                          const std::string_view method,
                           const GURL& auth_server,
                           const chromeos::Uri& ipp_endpoint = chromeos::Uri()) {
   // Wrap the `callback` with the function LogAndCall() defined above.

@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
 #include "chrome/browser/ash/printing/oauth2/log_entry.h"
@@ -31,7 +31,7 @@ namespace {
 // Logs results to device-log and calls `callback` with parameters `status` and
 // `data`.
 void LogAndCall(oauth2::StatusCallback callback,
-                base::StringPiece method,
+                std::string_view method,
                 const GURL& auth_server,
                 oauth2::StatusCode status,
                 std::string data) {

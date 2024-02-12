@@ -7,8 +7,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chromeos/printing/uri.h"
 #include "url/gurl.h"
@@ -24,8 +24,8 @@ namespace ash::printing::oauth2 {
 //  * `status` - the result returned by the method or std::nullopt if
 //               the method is still being executed;
 //  * `ipp_endpoint` - the URL of the IPP Endpoint (if applicable).
-std::string LogEntry(base::StringPiece message,
-                     base::StringPiece method,
+std::string LogEntry(std::string_view message,
+                     std::string_view method,
                      const GURL& auth_server,
                      std::optional<StatusCode> status = std::nullopt,
                      const chromeos::Uri& ipp_endpoint = chromeos::Uri());

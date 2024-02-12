@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -116,7 +116,7 @@ void MD5UpdateBigEndian(base::MD5Context* ctx, T val) {
   static_assert(std::is_integral<T>::value, "Value must be an integer");
   char buf[sizeof(T)];
   base::WriteBigEndian(buf, val);
-  base::MD5Update(ctx, base::StringPiece(buf, sizeof(T)));
+  base::MD5Update(ctx, std::string_view(buf, sizeof(T)));
 }
 
 // Update the hash with the contents of |str|.
@@ -129,7 +129,7 @@ void MD5UpdateBigEndian(base::MD5Context* ctx, T val) {
 // to UTF-8 and hash that", which avoids all of these issues.
 void MD5UpdateString16(base::MD5Context* ctx, const std::u16string& str) {
   std::string tmp = base::UTF16ToUTF8(str);
-  base::MD5Update(ctx, base::StringPiece(tmp.data(), tmp.size()));
+  base::MD5Update(ctx, std::string_view(tmp.data(), tmp.size()));
 }
 
 // Get the usb printer id for |device|.  This is used both as the identifier for

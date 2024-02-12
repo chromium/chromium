@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/server_printers_fetcher.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/hash/md5.h"
@@ -105,7 +106,7 @@ class ServerPrintersFetcher::PrivateImplementation
   void Delete() { task_runner_->DeleteSoon(FROM_HERE, this); }
 
   // Implementation of network::SimpleURLLoaderStreamConsumer.
-  void OnDataReceived(base::StringPiece part_of_payload,
+  void OnDataReceived(std::string_view part_of_payload,
                       base::OnceClosure resume) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     response_.insert(response_.end(), part_of_payload.begin(),
