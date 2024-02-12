@@ -1041,12 +1041,44 @@ TEST_F(FasterSplitScreenTest, NoCrashWhenDraggingTheSnappedWindow) {
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
   VerifySplitViewOverviewSession(window.get());
 
+  std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
+      window.get(), gfx::PointF(), HTCAPTION, wm::WINDOW_MOVE_SOURCE_MOUSE));
+  resizer->Drag(gfx::PointF(500, 100), /*event_flags=*/0);
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->is_dragged());
+  resizer->CompleteDrag();
+  EXPECT_FALSE(window_state->IsSnapped());
+}
+
+// Tests that after a minimized window gets auto-snapped, dragging the window
+// won't lead to crash. See crash at http://b/324483508.
+TEST_F(FasterSplitScreenTest,
+       NoCrashWhenDraggingTheAutoSnappedWindowThatWasPreviouslyMinimized) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(100, 100, 100, 100)));
+  WindowState* w2_window_state = WindowState::Get(w2.get());
+  w2_window_state->Minimize();
+  ASSERT_TRUE(w2_window_state->IsMinimized());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifySplitViewOverviewSession(w1.get());
+
+  auto* w2_overview_item = GetOverviewItemForWindow(w2.get());
   auto* event_generator = GetEventGenerator();
   event_generator->set_current_screen_location(
-      window->GetBoundsInScreen().CenterPoint());
-  event_generator->PressLeftButton();
-  event_generator->DragMouseBy(50, 50);
-  event_generator->ReleaseLeftButton();
+      gfx::ToRoundedPoint(w2_overview_item->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(w2_window_state->GetStateType(),
+            chromeos::WindowStateType::kSecondarySnapped);
+
+  std::unique_ptr<WindowResizer> resizer(CreateWindowResizer(
+      w2.get(), gfx::PointF(), HTCAPTION, wm::WINDOW_MOVE_SOURCE_MOUSE));
+  resizer->Drag(gfx::PointF(500, 100), /*event_flags=*/0);
+  EXPECT_TRUE(w2_window_state->is_dragged());
+  resizer->CompleteDrag();
+  EXPECT_FALSE(w2_window_state->IsSnapped());
 }
 
 // Verifies the issue to snap a window in overview is working properly. see

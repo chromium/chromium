@@ -508,10 +508,8 @@ void DefaultState::EnterToNextState(
   gfx::Rect restore_bounds_in_screen;
   if (window_state->window()->parent()) {
     // Save the current bounds as the restore bounds if changing from normal
-    // state (not horizontal/vertical maximized) to other non-minimized window
-    // states.
-    if (is_previous_normal_type && !window_state->IsMinimized() &&
-        !window_state->IsNormalStateType()) {
+    // state (not horizontal/vertical maximized) to other window states.
+    if (is_previous_normal_type && !window_state->IsNormalStateType()) {
       window_state->SaveCurrentBoundsForRestore();
     }
 
