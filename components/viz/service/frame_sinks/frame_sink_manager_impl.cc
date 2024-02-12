@@ -761,16 +761,6 @@ void FrameSinkManagerImpl::VerifySandboxedThreadIds(
     const base::flat_set<base::PlatformThreadId>& thread_ids,
     base::OnceCallback<void(bool)> verification_callback) {
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          ::features::kEnableADPFAsyncThreadsVerification)) {
-    // Do a sync check for both GPU and Browser from the GPU process, and
-    // invoke the callback immediately.
-    std::move(verification_callback)
-        .Run(CheckThreadIdsDoNotBelongToProcessIds(
-            {host_process_id_, base::GetCurrentProcId()}, thread_ids));
-    return;
-  }
-
   if (!CheckThreadIdsDoNotBelongToCurrentProcess(thread_ids)) {
     // At least one thread belongs to the GPU process, verification failed.
     std::move(verification_callback).Run(false);
