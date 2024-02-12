@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/interest_group/auction_metrics_recorder.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "crypto/openssl_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -509,7 +510,7 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   EXPECT_EQ("https://en.wikipedia.test/wiki/Train",
             bid_state->bidder->interest_group.ads.value()[0].render_url());
 
-  EXPECT_EQ(InterestGroupAuction::Bid::BidRole::kBothKAnonModes, bid->bid_role);
+  EXPECT_EQ(auction_worklet::mojom::BidRole::kBothKAnonModes, bid->bid_role);
   EXPECT_EQ("null", bid->ad_metadata);
   EXPECT_EQ(10.0, bid->bid);
   EXPECT_EQ(std::nullopt, bid->bid_currency);

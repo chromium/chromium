@@ -189,7 +189,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
     const std::vector<blink::InterestGroup::Ad>& ads,
     const base::flat_map<std::string, bool>& kanon_keys,
     const blink::InterestGroup& interest_group,
-    InterestGroupAuction::Bid::BidRole bid_role,
+    auction_worklet::mojom::BidRole bid_role,
     bool is_component_ad,
     const blink::AdDescriptor& ad_descriptor) {
   // TODO(mmenke): Validate render URLs on load and make this a DCHECK just
@@ -203,7 +203,7 @@ const blink::InterestGroup::Ad* FindMatchingAd(
     return nullptr;
   }
 
-  if (bid_role != InterestGroupAuction::Bid::BidRole::kUnenforcedKAnon) {
+  if (bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon) {
     const std::string kanon_key =
         is_component_ad
             ? blink::KAnonKeyForAdComponentBid(ad_descriptor)
@@ -280,16 +280,16 @@ struct BidStatesDescByPriorityAndGroupByJoinOrigin {
 
 bool IsBidRoleUsedForWinner(
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
-    InterestGroupAuction::Bid::BidRole bid_role) {
+    auction_worklet::mojom::BidRole bid_role) {
   if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kEnforce) {
-    return bid_role != InterestGroupAuction::Bid::BidRole::kUnenforcedKAnon;
+    return bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon;
   } else {
-    return bid_role != InterestGroupAuction::Bid::BidRole::kEnforcedKAnon;
+    return bid_role != auction_worklet::mojom::BidRole::kEnforcedKAnon;
   }
 }
 
 static const char* ScoreAdTraceEventName(const InterestGroupAuction::Bid& bid) {
-  if (bid.bid_role == InterestGroupAuction::Bid::BidRole::kEnforcedKAnon) {
+  if (bid.bid_role == auction_worklet::mojom::BidRole::kEnforcedKAnon) {
     return "seller_worklet_score_kanon_enforced_ad";
   } else {
     return "seller_worklet_score_ad";
@@ -933,7 +933,7 @@ void InterestGroupAuction::BidState::EndTracingKAnonScoring() {
 }
 
 InterestGroupAuction::Bid::Bid(
-    BidRole bid_role,
+    auction_worklet::mojom::BidRole bid_role,
     std::string ad_metadata,
     double bid,
     std::optional<blink::AdCurrency> bid_currency,
@@ -1317,7 +1317,7 @@ class InterestGroupAuction::BuyerHelper
   }
 
   std::unique_ptr<Bid> TryToCreateBidFromServerResponse(
-      InterestGroupAuction::Bid::BidRole bid_role,
+      auction_worklet::mojom::BidRole bid_role,
       double bid,
       const std::optional<blink::AdCurrency>& bid_currency,
       const std::optional<std::string>& ad_metadata,
@@ -1852,10 +1852,11 @@ class InterestGroupAuction::BuyerHelper
     if (mojo_bid) {
       // It's possible that k-anon enforced bid is the same as one with out
       // enforcement, in which case we make sure to only run ScoreBid once.
-      Bid::BidRole role = Bid::BidRole::kUnenforcedKAnon;
+      auction_worklet::mojom::BidRole role =
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon;
       if (mojo_kanon_bid) {
         if (mojo_kanon_bid->is_same_as_non_enforced()) {
-          role = Bid::BidRole::kBothKAnonModes;
+          role = auction_worklet::mojom::BidRole::kBothKAnonModes;
           auction_->auction_metrics_recorder_
               ->RecordInterestGroupWithSameBidForKAnonAndNonKAnon();
         } else {
@@ -1880,11 +1881,12 @@ class InterestGroupAuction::BuyerHelper
 
     std::unique_ptr<Bid> kanon_bid;
     if (mojo_kanon_bid && !mojo_kanon_bid->is_same_as_non_enforced()) {
-      kanon_bid = TryToCreateBid(Bid::BidRole::kEnforcedKAnon,
-                                 std::move(mojo_kanon_bid->get_bid()), *state,
-                                 bidding_signals_data_version,
-                                 /*debug_loss_report_url=*/std::nullopt,
-                                 /*debug_win_report_url=*/std::nullopt);
+      kanon_bid =
+          TryToCreateBid(auction_worklet::mojom::BidRole::kEnforcedKAnon,
+                         std::move(mojo_kanon_bid->get_bid()), *state,
+                         bidding_signals_data_version,
+                         /*debug_loss_report_url=*/std::nullopt,
+                         /*debug_win_report_url=*/std::nullopt);
     }
 
     // Release the worklet. If it wins the auction, it will be requested again
@@ -1999,7 +2001,7 @@ class InterestGroupAuction::BuyerHelper
   // ReportBadMessage() if it's not valid. Does not mutate `bid_state`, but
   // the returned Bid has a non-const pointer to it.
   std::unique_ptr<InterestGroupAuction::Bid> TryToCreateBid(
-      InterestGroupAuction::Bid::BidRole bid_role,
+      auction_worklet::mojom::BidRole bid_role,
       auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
       BidState& bid_state,
       const std::optional<uint32_t>& bidding_signals_data_version,
@@ -3241,7 +3243,8 @@ bool InterestGroupAuction::NonKAnonWinnerIsKAnon() const {
   return top_non_kanon_enforced_bid() &&
          top_non_kanon_enforced_bid()
                  ->bid->auction->top_non_kanon_enforced_bid()
-                 ->bid->bid_role == Bid::BidRole::kBothKAnonModes;
+                 ->bid->bid_role ==
+             auction_worklet::mojom::BidRole::kBothKAnonModes;
 }
 
 bool InterestGroupAuction::HasInterestGroups() const {
@@ -4194,13 +4197,14 @@ void InterestGroupAuction::OnComponentAuctionComplete(
     // There is no need to potentially turn this into an k-anon enforced bid
     // since that already happened when running the component auction.
     ScoreBidIfReady(CreateBidFromComponentAuctionWinner(
-        non_kanon_enforced_bid, Bid::BidRole::kUnenforcedKAnon));
+        non_kanon_enforced_bid,
+        auction_worklet::mojom::BidRole::kUnenforcedKAnon));
   }
 
   ScoredBid* kanon_bid = component_auction->top_kanon_enforced_bid();
   if (kanon_bid) {
     ScoreBidIfReady(CreateBidFromComponentAuctionWinner(
-        kanon_bid, Bid::BidRole::kEnforcedKAnon));
+        kanon_bid, auction_worklet::mojom::BidRole::kEnforcedKAnon));
   }
 
   OnScoringDependencyDone();
@@ -4210,7 +4214,7 @@ void InterestGroupAuction::OnComponentAuctionComplete(
 std::unique_ptr<InterestGroupAuction::Bid>
 InterestGroupAuction::CreateBidFromComponentAuctionWinner(
     const ScoredBid* scored_bid,
-    Bid::BidRole bid_role) {
+    auction_worklet::mojom::BidRole bid_role) {
   // Create a copy of component Auction's bid, replacing values as necessary.
   const Bid* component_bid = scored_bid->bid.get();
   const auto* modified_bid_params =
@@ -4219,7 +4223,7 @@ InterestGroupAuction::CreateBidFromComponentAuctionWinner(
 
   // Create a new event for the bid, since the component auction's event for
   // it ended after the component auction scored the bid.
-  if (bid_role == Bid::BidRole::kEnforcedKAnon) {
+  if (bid_role == auction_worklet::mojom::BidRole::kEnforcedKAnon) {
     if (!component_bid->bid_state->trace_id_for_kanon_scoring.has_value()) {
       component_bid->bid_state->BeginTracingKAnonScoring();
     }
@@ -4448,7 +4452,7 @@ void InterestGroupAuction::OnScoreAdComplete(
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", ScoreAdTraceEventName(*bid),
                                   bid->TraceId());
-  if (bid->bid_role == Bid::BidRole::kEnforcedKAnon) {
+  if (bid->bid_role == auction_worklet::mojom::BidRole::kEnforcedKAnon) {
     bid->bid_state->EndTracingKAnonScoring();
   } else {
     bid->bid_state->EndTracing();
@@ -4517,21 +4521,21 @@ void InterestGroupAuction::OnScoreAdComplete(
   // A score <= 0 means the seller rejected the bid.
   if (score > 0) {
     switch (bid->bid_role) {
-      case Bid::BidRole::kUnenforcedKAnon:
+      case auction_worklet::mojom::BidRole::kUnenforcedKAnon:
         UpdateAuctionLeaders(std::move(bid), score,
                              std::move(component_auction_modified_bid_params),
                              bid_in_seller_currency,
                              scoring_signals_data_version,
                              non_kanon_enforced_auction_leader_);
         break;
-      case Bid::BidRole::kEnforcedKAnon:
+      case auction_worklet::mojom::BidRole::kEnforcedKAnon:
         UpdateAuctionLeaders(std::move(bid), score,
                              std::move(component_auction_modified_bid_params),
                              bid_in_seller_currency,
                              scoring_signals_data_version,
                              kanon_enforced_auction_leader_);
         break;
-      case Bid::BidRole::kBothKAnonModes: {
+      case auction_worklet::mojom::BidRole::kBothKAnonModes: {
         auto bid_copy = std::make_unique<Bid>(*bid);
         auto modified_bid_params_copy =
             component_auction_modified_bid_params
@@ -5051,8 +5055,9 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
       [](const GURL& url) { return blink::AdDescriptor(url); });
   std::unique_ptr<Bid> bid =
       buyer_helpers_[0]->TryToCreateBidFromServerResponse(
-          Bid::BidRole::kUnenforcedKAnon, saved_response_->bid.value(),
-          saved_response_->bid_currency, saved_response_->ad_metadata,
+          auction_worklet::mojom::BidRole::kUnenforcedKAnon,
+          saved_response_->bid.value(), saved_response_->bid_currency,
+          saved_response_->ad_metadata,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
           /*ad_component_descriptors=*/std::move(ad_components));
@@ -5097,7 +5102,7 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
 
   // TODO(behamilton): Refactor this once B&A supports k-anonymity. For now we
   // treat all bids from B&A as k-anonymous.
-  bid->bid_role = Bid::BidRole::kBothKAnonModes;
+  bid->bid_role = auction_worklet::mojom::BidRole::kBothKAnonModes;
   auto bid_copy = std::make_unique<Bid>(*bid);
   auto modified_bid_params_copy =
       component_auction_modified_bid_params
