@@ -31,7 +31,7 @@ using FamilyIdentifier =
 // * child.
 class FamilyLiveTest : public signin::test::LiveTest {
  public:
-  FamilyLiveTest();
+  FamilyLiveTest() = delete;
   // Navigation will be allowed to extra hosts.
   explicit FamilyLiveTest(FamilyIdentifier family_identifier);
   // The provided family identifier will be used to select the test accounts.

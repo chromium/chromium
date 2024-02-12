@@ -48,7 +48,6 @@ std::string GetFamilyMemberIdentifier(FamilyIdentifier family_identifier,
 
 }  // namespace
 
-FamilyLiveTest::FamilyLiveTest() = default;
 FamilyLiveTest::FamilyLiveTest(FamilyIdentifier family_identifier)
     : family_identifier_(family_identifier) {}
 FamilyLiveTest::FamilyLiveTest(
