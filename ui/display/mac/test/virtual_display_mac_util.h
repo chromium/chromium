@@ -24,14 +24,14 @@ namespace test {
 // integration testing of display information and window management APIs in
 // multi-screen device environments. It updates the displays that the normal mac
 // screen impl sees, but not `TestScreenMac`.
-class VirtualDisplayMacUtil : public VirtualDisplayUtil,
+class VirtualDisplayUtilMac : public VirtualDisplayUtil,
                               public display::DisplayObserver {
  public:
-  explicit VirtualDisplayMacUtil(Screen* screen);
-  ~VirtualDisplayMacUtil() override;
+  explicit VirtualDisplayUtilMac(Screen* screen);
+  ~VirtualDisplayUtilMac() override;
 
-  VirtualDisplayMacUtil(const VirtualDisplayMacUtil&) = delete;
-  VirtualDisplayMacUtil& operator=(const VirtualDisplayMacUtil&) = delete;
+  VirtualDisplayUtilMac(const VirtualDisplayUtilMac&) = delete;
+  VirtualDisplayUtilMac& operator=(const VirtualDisplayUtilMac&) = delete;
 
   // VirtualDisplayUtil overrides:
   int64_t AddDisplay(uint8_t display_id,

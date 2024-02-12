@@ -1019,7 +1019,7 @@ targets.legacy_basic_suite(
         "multiscreen_interactive_ui_tests": targets.legacy_test_config(
             args = [
                 "--windows-virtual-display-driver",
-                "--gtest_filter=*MultiScreen*:*VirtualDisplayWinUtil*",
+                "--gtest_filter=*MultiScreen*:*VirtualDisplayUtilWin*",
             ],
             swarming = targets.swarming(
                 dimensions = {

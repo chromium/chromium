@@ -48619,7 +48619,7 @@
       {
         "args": [
           "--windows-virtual-display-driver",
-          "--gtest_filter=*MultiScreen*:*VirtualDisplayWinUtil*"
+          "--gtest_filter=*MultiScreen*:*VirtualDisplayUtilWin*"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

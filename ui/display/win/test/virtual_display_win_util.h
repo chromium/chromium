@@ -24,11 +24,11 @@ struct DisplayParams;
 // integration testing of display information and window management APIs in
 // multi-screen device environments. It updates the displays that the normal
 // windows screen impl sees.
-class VirtualDisplayWinUtil : public display::DisplayObserver,
+class VirtualDisplayUtilWin : public display::DisplayObserver,
                               public VirtualDisplayUtil {
  public:
-  explicit VirtualDisplayWinUtil(Screen* screen);
-  ~VirtualDisplayWinUtil() override;
+  explicit VirtualDisplayUtilWin(Screen* screen);
+  ~VirtualDisplayUtilWin() override;
 
   // Check whether the related drivers are available on the current system.
   static bool IsAPIAvailable();

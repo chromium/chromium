@@ -41,7 +41,7 @@ struct DisplayParams {
   MonitorConfig monitor_config;
 };
 
-VirtualDisplayWinUtil::VirtualDisplayWinUtil(Screen* screen)
+VirtualDisplayUtilWin::VirtualDisplayUtilWin(Screen* screen)
     : screen_(screen), is_headless_(IsHeadless()) {
   screen_->AddObserver(this);
   if (IsAPIAvailable()) {
@@ -49,7 +49,7 @@ VirtualDisplayWinUtil::VirtualDisplayWinUtil(Screen* screen)
   }
 }
 
-VirtualDisplayWinUtil::~VirtualDisplayWinUtil() {
+VirtualDisplayUtilWin::~VirtualDisplayUtilWin() {
   if (IsAPIAvailable()) {
     driver_controller_.Reset();
     if (virtual_displays_.size() > 0) {
@@ -60,11 +60,11 @@ VirtualDisplayWinUtil::~VirtualDisplayWinUtil() {
 }
 
 // static
-bool VirtualDisplayWinUtil::IsAPIAvailable() {
+bool VirtualDisplayUtilWin::IsAPIAvailable() {
   return DisplayDriverController::IsDriverInstalled();
 }
 
-int64_t VirtualDisplayWinUtil::AddDisplay(uint8_t id,
+int64_t VirtualDisplayUtilWin::AddDisplay(uint8_t id,
                                           const DisplayParams& display_params) {
   if (virtual_displays_.find(id) != virtual_displays_.end()) {
     LOG(ERROR) << "Duplicate virtual display ID added: " << id;
@@ -84,7 +84,7 @@ int64_t VirtualDisplayWinUtil::AddDisplay(uint8_t id,
   return created_display->second;
 }
 
-void VirtualDisplayWinUtil::RemoveDisplay(int64_t display_id) {
+void VirtualDisplayUtilWin::RemoveDisplay(int64_t display_id) {
   auto it = std::find_if(
       virtual_displays_.begin(), virtual_displays_.end(),
       [&display_id](const std::pair<unsigned short, int64_t>& obj) {
@@ -103,7 +103,7 @@ void VirtualDisplayWinUtil::RemoveDisplay(int64_t display_id) {
   }
 }
 
-void VirtualDisplayWinUtil::ResetDisplays() {
+void VirtualDisplayUtilWin::ResetDisplays() {
   // Internal virtual display ID used for replacing a headless stub display.
   // This is arbitrarily chosen to be the max value that
   // MonitorConfig::set_product_code() supports.
@@ -129,7 +129,7 @@ void VirtualDisplayWinUtil::ResetDisplays() {
   }
 }
 
-void VirtualDisplayWinUtil::OnDisplayAdded(
+void VirtualDisplayUtilWin::OnDisplayAdded(
     const display::Display& new_display) {
   std::vector<MonitorConfig> requested = current_config_.requested_configs();
   HMONITOR monitor = ::MonitorFromPoint(
@@ -150,7 +150,7 @@ void VirtualDisplayWinUtil::OnDisplayAdded(
   OnDisplayAddedOrRemoved(new_display.id());
 }
 
-void VirtualDisplayWinUtil::OnDisplayRemoved(
+void VirtualDisplayUtilWin::OnDisplayRemoved(
     const display::Display& old_display) {
   base::EraseIf(virtual_displays_,
                 [&old_display](const std::pair<unsigned short, int64_t>& obj) {
@@ -159,7 +159,7 @@ void VirtualDisplayWinUtil::OnDisplayRemoved(
   OnDisplayAddedOrRemoved(old_display.id());
 }
 
-bool VirtualDisplayWinUtil::SetDriverProperties(DriverProperties properties) {
+bool VirtualDisplayUtilWin::SetDriverProperties(DriverProperties properties) {
   if (!driver_controller_.SetDisplayConfig(properties)) {
     LOG(ERROR) << "SetDisplayConfig failed: Failed to set display properties.";
     return false;
@@ -168,14 +168,14 @@ bool VirtualDisplayWinUtil::SetDriverProperties(DriverProperties properties) {
   return true;
 }
 
-void VirtualDisplayWinUtil::OnDisplayAddedOrRemoved(int64_t id) {
+void VirtualDisplayUtilWin::OnDisplayAddedOrRemoved(int64_t id) {
   if (virtual_displays_.size() != current_config_.requested_configs().size()) {
     return;
   }
   StopWaiting();
 }
 
-void VirtualDisplayWinUtil::StartWaiting() {
+void VirtualDisplayUtilWin::StartWaiting() {
   CHECK(!run_loop_);
   run_loop_ = std::make_unique<base::RunLoop>();
   if (virtual_displays_.size() != current_config_.requested_configs().size()) {
@@ -184,14 +184,14 @@ void VirtualDisplayWinUtil::StartWaiting() {
   run_loop_.reset();
 }
 
-void VirtualDisplayWinUtil::StopWaiting() {
+void VirtualDisplayUtilWin::StopWaiting() {
   CHECK(run_loop_);
   run_loop_->Quit();
 }
 
-const DisplayParams VirtualDisplayWinUtil::k1920x1080 =
+const DisplayParams VirtualDisplayUtilWin::k1920x1080 =
     DisplayParams(MonitorConfig::k1920x1080);
-const DisplayParams VirtualDisplayWinUtil::k1024x768 =
+const DisplayParams VirtualDisplayUtilWin::k1024x768 =
     DisplayParams(MonitorConfig::k1024x768);
 
 }  // namespace display::test
