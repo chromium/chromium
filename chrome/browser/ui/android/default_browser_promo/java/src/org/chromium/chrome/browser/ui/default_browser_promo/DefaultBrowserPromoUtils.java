@@ -54,6 +54,7 @@ public class DefaultBrowserPromoUtils {
         if (!shouldShowPromo(deps, activity, ignoreMaxCount)) return false;
         deps.incrementPromoCount();
         deps.recordPromoTime();
+        deps.recordLastPromoSessionCount();
         DefaultBrowserPromoManager manager =
                 new DefaultBrowserPromoManager(
                         activity, windowAndroid, deps.getCurrentDefaultBrowserState());

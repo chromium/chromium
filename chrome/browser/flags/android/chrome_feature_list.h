@@ -61,6 +61,7 @@ BASE_DECLARE_FEATURE(kCCTResizableSideSheetForThirdParties);
 BASE_DECLARE_FEATURE(kCCTRetainingStateInMemory);
 BASE_DECLARE_FEATURE(kCCTTabModalDialog);
 BASE_DECLARE_FEATURE(kDataSharingAndroid);
+BASE_DECLARE_FEATURE(kDefaultBrowserPromoAndroid);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
 BASE_DECLARE_FEATURE(kChromeShareScreenshot);

@@ -204,6 +204,8 @@ public final class ChromePreferenceKeys {
             "Chrome.DefaultBrowserPromo.PromoedCount";
     public static final String DEFAULT_BROWSER_PROMO_LAST_DEFAULT_STATE =
             "Chrome.DefaultBrowserPromo.LastDefaultState";
+    public static final String DEFAULT_BROWSER_PROMO_LAST_SESSION_COUNT =
+            "Chrome.DefaultBrowserPromo.LastPromoSessionCount";
     public static final String DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME =
             "Chrome.DefaultBrowserPromo.LastPromoTime";
     public static final String DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS =
@@ -905,6 +907,7 @@ public final class ChromePreferenceKeys {
                 CUSTOM_TABS_LAST_REFERRER,
                 CUSTOM_TABS_LAST_TASK_ID,
                 DEFAULT_BROWSER_PROMO_LAST_DEFAULT_STATE,
+                DEFAULT_BROWSER_PROMO_LAST_SESSION_COUNT,
                 DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME,
                 DEFAULT_BROWSER_PROMO_PROMOED_BY_SYSTEM_SETTINGS,
                 DEFAULT_BROWSER_PROMO_PROMOED_COUNT,

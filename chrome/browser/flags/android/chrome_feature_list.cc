@@ -195,6 +195,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableSideSheetForThirdParties,
     &kCCTTabModalDialog,
     &kDataSharingAndroid,
+    &kDefaultBrowserPromoAndroid,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
     &kChromeSurveyNextAndroid,
@@ -577,6 +578,10 @@ BASE_FEATURE(kContextualSearchThinWebViewImplementation,
 
 BASE_FEATURE(kDataSharingAndroid,
              "DataSharingAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDefaultBrowserPromoAndroid,
+             "DefaultBrowserPromoAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeferKeepScreenOnDuringGesture,
