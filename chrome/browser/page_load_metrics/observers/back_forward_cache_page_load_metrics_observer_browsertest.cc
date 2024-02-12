@@ -245,8 +245,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCachePageLoadMetricsObserverBrowserTest,
-                       FirstInputDelayAfterBackForwardCacheRestoreBackground) {
+// TODO(https://crbug.com/40799125): Test is flaky on Windows and Mac.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground \
+  DISABLED_FirstInputDelayAfterBackForwardCacheRestoreBackground
+#else
+#define MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground \
+  FirstInputDelayAfterBackForwardCacheRestoreBackground
+#endif
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCachePageLoadMetricsObserverBrowserTest,
+    MAYBE_FirstInputDelayAfterBackForwardCacheRestoreBackground) {
   Start();
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -670,7 +679,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(https://crbug.com/1494775): Test is flaky on MSAN.
-#if defined(MEMORY_SANITIZER)
+// TODO(https://crbug.com/40799125): Test is flaky on Windows and Mac.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_ResponsivenessMetricsNormalizationWithSendingAllLatencies \
   DISABLED_ResponsivenessMetricsNormalizationWithSendingAllLatencies
 #else
