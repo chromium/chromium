@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_MARKETING_OPT_IN_SCREEN_H_
 
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/containers/flat_set.h"
@@ -127,22 +128,22 @@ class MarketingOptInScreen : public BaseScreen {
   bool ignore_pref_sync_for_testing_ = false;
 
   // Default country list.
-  const base::flat_set<base::StringPiece> default_countries_{"us", "ca", "gb"};
+  const base::flat_set<std::string_view> default_countries_{"us", "ca", "gb"};
 
   // Extended country list. Protected behind the flag:
   // - kOobeMarketingAdditionalCountriesSupported (DEFAULT_ON)
-  const base::flat_set<base::StringPiece> additional_countries_{
+  const base::flat_set<std::string_view> additional_countries_{
       "fr", "nl", "fi", "se", "no", "dk", "es", "it", "jp", "au"};
 
   // Countries with double opt-in.  Behind the flag:
   // - kOobeMarketingDoubleOptInCountriesSupported (DEFAULT_OFF)
-  const base::flat_set<base::StringPiece> double_opt_in_countries_{"de"};
+  const base::flat_set<std::string_view> double_opt_in_countries_{"de"};
 
   // Countries in which the toggle will be enabled by default.
-  const base::flat_set<base::StringPiece> default_opt_in_countries_{"us"};
+  const base::flat_set<std::string_view> default_opt_in_countries_{"us"};
 
   // Countries that require the screen to show a footer with legal information.
-  const base::flat_set<base::StringPiece> countries_with_legal_footer{"ca"};
+  const base::flat_set<std::string_view> countries_with_legal_footer{"ca"};
 
   // Timer to record user changed value for the accessibility setting to turn
   // shelf navigation buttons on in tablet mode. The metric is recorded with 10

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -15,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -90,7 +90,7 @@ constexpr char kGetChallengeDataRequest[] = R"({
     })";
 
 constexpr auto kRejectionReasonErrorMap = base::MakeFixedFlatMap<
-    base::StringPiece,
+    std::string_view,
     SecondDeviceAuthBroker::AuthCodeRejectionResponse::Reason>({
     {"invalid_oauth_token", SecondDeviceAuthBroker::AuthCodeRejectionResponse::
                                 Reason::kInvalidOAuthToken},

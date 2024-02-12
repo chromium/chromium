@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/screens/network_screen.h"
+
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +16,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
-#include "chrome/browser/ash/login/screens/network_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -159,7 +161,7 @@ class NetworkScreenTest : public OobeBaseTest {
     auto expected_subtitle_text = l10n_util::GetStringFUTF8(
         IDS_NETWORK_SELECTION_ERROR,
         l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME),
-        base::UTF8ToUTF16(base::StringPiece(kWifiNetworkName)));
+        base::UTF8ToUTF16(std::string_view(kWifiNetworkName)));
     test::OobeJS()
         .CreateElementTextContentWaiter(expected_subtitle_text,
                                         kNetworkScreenErrorSubtitile)

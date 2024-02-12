@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -135,7 +136,7 @@ void InstallDemoMedia(const base::FilePath& offline_resources_path,
     LOG(ERROR) << "Failed to install demo mode media.";
 }
 
-std::string GetSwitchOrDefault(const base::StringPiece& switch_string,
+std::string GetSwitchOrDefault(std::string_view switch_string,
                                const std::string& default_value) {
   auto* const command_line = base::CommandLine::ForCurrentProcess();
 
@@ -402,7 +403,7 @@ bool DemoSession::ShouldShowExtensionInAppLauncher(const std::string& app_id) {
 
 // Static function to default region from VPD.
 static std::string GetDefaultRegion() {
-  const std::optional<base::StringPiece> region_code =
+  const std::optional<std::string_view> region_code =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kRegionKey);
   if (region_code) {

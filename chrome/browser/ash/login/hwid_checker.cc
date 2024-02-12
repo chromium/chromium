@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/login/hwid_checker.h"
 
 #include <cstdio>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
@@ -24,12 +24,12 @@
 namespace ash {
 namespace {
 
-unsigned CalculateCRC32(base::StringPiece data) {
+unsigned CalculateCRC32(std::string_view data) {
   return static_cast<unsigned>(
       crc32(0, reinterpret_cast<const Bytef*>(data.data()), data.length()));
 }
 
-std::string CalculateHWIDv2Checksum(base::StringPiece data) {
+std::string CalculateHWIDv2Checksum(std::string_view data) {
   unsigned crc32 = CalculateCRC32(data);
   // We take four least significant decimal digits of CRC-32.
   char checksum[5];
@@ -38,7 +38,7 @@ std::string CalculateHWIDv2Checksum(base::StringPiece data) {
   return checksum;
 }
 
-bool IsCorrectHWIDv2(base::StringPiece hwid) {
+bool IsCorrectHWIDv2(std::string_view hwid) {
   std::string body;
   std::string checksum;
   if (!RE2::FullMatch(hwid, "([\\s\\S]*) (\\d{4})", &body, &checksum)) {
@@ -47,11 +47,11 @@ bool IsCorrectHWIDv2(base::StringPiece hwid) {
   return CalculateHWIDv2Checksum(body) == checksum;
 }
 
-bool IsExceptionalHWID(base::StringPiece hwid) {
+bool IsExceptionalHWID(std::string_view hwid) {
   return RE2::PartialMatch(hwid, "^(SPRING [A-D])|(FALCO A)");
 }
 
-std::string CalculateExceptionalHWIDChecksum(base::StringPiece data) {
+std::string CalculateExceptionalHWIDChecksum(std::string_view data) {
   static const char base32_alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   unsigned crc32 = CalculateCRC32(data);
   // We take 10 least significant bits of CRC-32 and encode them in 2 characters
@@ -62,7 +62,7 @@ std::string CalculateExceptionalHWIDChecksum(base::StringPiece data) {
   return checksum;
 }
 
-bool IsCorrectExceptionalHWID(base::StringPiece hwid) {
+bool IsCorrectExceptionalHWID(std::string_view hwid) {
   if (!IsExceptionalHWID(hwid))
     return false;
   std::string bom;
@@ -82,7 +82,7 @@ bool IsCorrectExceptionalHWID(base::StringPiece hwid) {
   return CalculateExceptionalHWIDChecksum(not_checksum) == checksum;
 }
 
-std::string CalculateHWIDv3Checksum(base::StringPiece data) {
+std::string CalculateHWIDv3Checksum(std::string_view data) {
   static const char base8_alphabet[] = "23456789";
   static const char base32_alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
   unsigned crc32 = CalculateCRC32(data);
@@ -93,7 +93,7 @@ std::string CalculateHWIDv3Checksum(base::StringPiece data) {
   return checksum;
 }
 
-bool IsCorrectHWIDv3(base::StringPiece hwid) {
+bool IsCorrectHWIDv3(std::string_view hwid) {
   if (IsExceptionalHWID(hwid))
     return false;
 
@@ -148,7 +148,7 @@ bool IsCorrectHWIDv3(base::StringPiece hwid) {
 
 }  // anonymous namespace
 
-bool IsHWIDCorrect(base::StringPiece hwid) {
+bool IsHWIDCorrect(std::string_view hwid) {
   return IsCorrectHWIDv2(hwid) || IsCorrectExceptionalHWID(hwid) ||
          IsCorrectHWIDv3(hwid);
 }
@@ -175,7 +175,7 @@ bool IsMachineHWIDCorrect() {
   if (stats->IsRunningOnVm())
     return true;
 
-  const std::optional<base::StringPiece> hwid =
+  const std::optional<std::string_view> hwid =
       stats->GetMachineStatistic(system::kHardwareClassKey);
   if (!hwid) {
     LOG(ERROR) << "Couldn't get machine statistic 'hardware_class'.";

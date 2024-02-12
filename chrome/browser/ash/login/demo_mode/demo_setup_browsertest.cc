@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-
 #include <string>
+#include <string_view>
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
@@ -30,6 +29,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
@@ -1310,7 +1310,7 @@ class DemoSetupGrowthFrameworkEnabledTest : public DemoSetupArcSupportedTest {
     DemoSetupTestBase::CreatedBrowserMainParts(browser_main_parts);
   }
 
-  void CreateTestCampaignsFile(base::StringPiece data) {
+  void CreateTestCampaignsFile(std::string_view data) {
     CHECK(base::CreateDirectory(growth_campaigns_mounted_path_));
 
     base::FilePath campaigns_file(

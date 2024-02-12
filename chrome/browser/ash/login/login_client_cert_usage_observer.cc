@@ -7,9 +7,9 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
@@ -32,7 +32,7 @@ bool ObtainSignatureAlgorithms(
     std::vector<ChallengeResponseKey::SignatureAlgorithm>*
         signature_algorithms) {
   auto* certificate_provider_service = GetCertificateProviderService();
-  base::StringPiece spki;
+  std::string_view spki;
   if (!net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(cert.cert_buffer()),
           &spki)) {
