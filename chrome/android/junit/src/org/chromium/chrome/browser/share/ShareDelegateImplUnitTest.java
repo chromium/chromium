@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.core.os.BuildCompat;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -41,7 +40,6 @@ import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareContentType;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowAndroidShareSheetController;
-import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowBuildCompatForU;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareHelper;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareSheetCoordinator;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
@@ -68,7 +66,6 @@ import java.util.List;
             ShadowShareSheetCoordinator.class,
             ShadowShareHelper.class,
             ShadowAndroidShareSheetController.class,
-            ShadowBuildCompatForU.class
         })
 public class ShareDelegateImplUnitTest {
     @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
@@ -111,7 +108,6 @@ public class ShareDelegateImplUnitTest {
 
     @After
     public void tearDown() {
-        ShadowBuildCompatForU.sIsAtLeastU = false;
         ShadowShareSheetCoordinator.reset();
         ShadowShareHelper.reset();
         ShadowAndroidShareSheetController.reset();
@@ -119,7 +115,6 @@ public class ShareDelegateImplUnitTest {
 
     @Test
     public void shareWithSharingHub() {
-        ShadowBuildCompatForU.sIsAtLeastU = false;
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
         HistogramWatcher histogramWatcher =
@@ -139,7 +134,6 @@ public class ShareDelegateImplUnitTest {
 
     @Test
     public void shareLastUsedComponent() {
-        ShadowBuildCompatForU.sIsAtLeastU = false;
         Assert.assertTrue("ShareHub not enabled.", mShareDelegate.isSharingHubEnabled());
 
         HistogramWatcher histogramWatcher =
@@ -162,8 +156,8 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
+    @Config(sdk = 34)
     public void shareWithAndroidShareSheetForU() {
-        ShadowBuildCompatForU.sIsAtLeastU = true;
         Assert.assertFalse("ShareHub enabled.", mShareDelegate.isSharingHubEnabled());
 
         HistogramWatcher histogramWatcher =
@@ -408,18 +402,6 @@ public class ShareDelegateImplUnitTest {
 
         public static void reset() {
             sShareWithSystemShareSheetUiCalled = false;
-        }
-    }
-
-    // Work around shadow to assume runtime is at least U.
-    // TODO(https://crbug.com/1420388): Switch to @Config(sdk=34) this once API 34 exists.
-    @Implements(BuildCompat.class)
-    public static class ShadowBuildCompatForU {
-        static boolean sIsAtLeastU;
-
-        @Implementation
-        protected static boolean isAtLeastU() {
-            return sIsAtLeastU;
         }
     }
 }

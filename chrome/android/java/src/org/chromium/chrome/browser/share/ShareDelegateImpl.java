@@ -5,12 +5,11 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.os.BuildCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -289,9 +288,8 @@ public class ShareDelegateImpl implements ShareDelegate {
     }
 
     @Override
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public boolean isSharingHubEnabled() {
-        return !(mIsCustomTab || BuildCompat.isAtLeastU());
+        return !(mIsCustomTab || Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
     }
 
     /** Delegate for share handling. */
