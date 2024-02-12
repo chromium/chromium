@@ -87,6 +87,7 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kUnexpectedFindResult = 36,
   kFailedToDecodeKeyAttributes = 37,
   kFailedToRetrieveMechanismList = 38,
+  kFailedToParseKey = 39,
 };
 
 // Handles for tokens on ChromeOS.

@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_future.h"
@@ -142,23 +140,6 @@ bool KeyInfoEquals(const KeyInfo& expected, const KeyInfo& actual) {
     return false;
   }
   return true;
-}
-
-// Reads a file in the PEM format, decodes it, returns the content of the first
-// PEM block in the DER format. Currently supports CERTIFICATE and PRIVATE KEY
-// block types.
-std::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
-    const base::FilePath& path) {
-  std::string pem_data;
-  if (!base::ReadFileToString(path, &pem_data)) {
-    return std::nullopt;
-  }
-
-  bssl::PEMTokenizer tokenizer(pem_data, {"CERTIFICATE", "PRIVATE KEY"});
-  if (!tokenizer.GetNext()) {
-    return std::nullopt;
-  }
-  return StrToBytes(tokenizer.data());
 }
 
 // A helper class for receiving notifications from Kcer.
@@ -999,6 +980,7 @@ TEST_F(KcerNssTest, ImportCertForImportedKey) {
   std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
       net::GetTestCertsDirectory().AppendASCII("client_1.key"));
   ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
   std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
       net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
   ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
@@ -1227,6 +1209,7 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
         std::optional<std::vector<uint8_t>> key_to_import =
             ReadPemFileReturnDer(
                 net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+
         kcer_->ImportKey(token, Pkcs8PrivateKeyInfoDer(key_to_import.value()),
                          key_waiter.GetCallback());
         key_can_be_listed_ = false;

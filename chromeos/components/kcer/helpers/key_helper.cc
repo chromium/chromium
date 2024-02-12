@@ -12,6 +12,7 @@
 #include "base/hash/sha1.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
+#include "third_party/boringssl/src/include/openssl/asn1.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -71,6 +72,31 @@ std::vector<uint8_t> GetEcPublicKeyBytes(const EC_KEY* ec_key) {
   return buf;
 }
 
+std::vector<uint8_t> DerEncodeAsn1OctetString(
+    base::span<const uint8_t> asn1_octet_string) {
+  if (asn1_octet_string.empty()) {
+    return {};
+  }
+
+  bssl::UniquePtr<ASN1_OCTET_STRING> octet_string(ASN1_OCTET_STRING_new());
+  if (!ASN1_OCTET_STRING_set(octet_string.get(), asn1_octet_string.data(),
+                             asn1_octet_string.size())) {
+    return {};
+  }
+
+  int der_size = i2d_ASN1_OCTET_STRING(octet_string.get(), nullptr);
+  if (der_size <= 0) {
+    return {};
+  }
+
+  std::vector<uint8_t> result_der(der_size);
+  uint8_t* output_buffer = result_der.data();
+  if (i2d_ASN1_OCTET_STRING(octet_string.get(), &output_buffer) <= 0) {
+    return {};
+  }
+  return result_der;
+}
+
 std::vector<uint8_t> GetEcPrivateKeyBytes(const EC_KEY* ec_key) {
   if (!ec_key) {
     return {};
@@ -90,6 +116,19 @@ std::vector<uint8_t> GetEcPrivateKeyBytes(const EC_KEY* ec_key) {
     return {};
   }
   return buffer;
+}
+
+std::vector<uint8_t> GetEcParamsDer(const EC_KEY* ec_key) {
+  bssl::ScopedCBB cbb;
+  uint8_t* ec_params_der = nullptr;
+  const EC_GROUP* group = EC_KEY_get0_group(ec_key);
+  size_t ec_params_der_len = 0;
+  if (!CBB_init(cbb.get(), 0) || !EC_KEY_marshal_curve_name(cbb.get(), group) ||
+      !CBB_finish(cbb.get(), &ec_params_der, &ec_params_der_len)) {
+    return {};
+  }
+  bssl::UniquePtr<uint8_t> der_deleter(ec_params_der);
+  return std::vector<uint8_t>(ec_params_der, ec_params_der + ec_params_der_len);
 }
 
 bool IsKeyEcType(const bssl::UniquePtr<EVP_PKEY>& key) {

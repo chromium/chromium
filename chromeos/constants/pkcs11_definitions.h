@@ -75,10 +75,21 @@ inline constexpr uint32_t PKCS11_CKA_DECRYPT = 0x00000105;
 inline constexpr uint32_t PKCS11_CKA_WRAP = 0x00000106;
 inline constexpr uint32_t PKCS11_CKA_UNWRAP = 0x00000107;
 inline constexpr uint32_t PKCS11_CKA_SIGN = 0x00000108;
+inline constexpr uint32_t PKCS11_CKA_SIGN_RECOVER = 0x00000109;
 inline constexpr uint32_t PKCS11_CKA_VERIFY = 0x0000010A;
+inline constexpr uint32_t PKCS11_CKA_DERIVE = 0x0000010C;
+// Should be used for CreateObject, GetAttributeValue.
 inline constexpr uint32_t PKCS11_CKA_MODULUS = 0x00000120;
+// Should be used for GenerateKeyPair.
 inline constexpr uint32_t PKCS11_CKA_MODULUS_BITS = 0x00000121;
 inline constexpr uint32_t PKCS11_CKA_PUBLIC_EXPONENT = 0x00000122;
+inline constexpr uint32_t PKCS11_CKA_PRIVATE_EXPONENT = 0x00000123;
+inline constexpr uint32_t PKCS11_CKA_PRIME_1 = 0x00000124;
+inline constexpr uint32_t PKCS11_CKA_PRIME_2 = 0x00000125;
+inline constexpr uint32_t PKCS11_CKA_EXPONENT_1 = 0x00000126;
+inline constexpr uint32_t PKCS11_CKA_EXPONENT_2 = 0x00000127;
+inline constexpr uint32_t PKCS11_CKA_COEFFICIENT = 0x00000128;
+inline constexpr uint32_t PKCS11_CKA_EXTRACTABLE = 0x00000162;
 inline constexpr uint32_t PKCS11_CKA_EC_PARAMS = 0x00000180;
 inline constexpr uint32_t PKCS11_CKA_EC_POINT = 0x00000181;
 
