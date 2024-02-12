@@ -139,9 +139,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // Module Container for the tab resumption tile.
 @property(nonatomic, strong)
     MagicStackModuleContainer* tabResumptionModuleContainer;
-// Width Anchor of the Most Visited Tiles container.
-@property(nonatomic, strong)
-    NSLayoutConstraint* mostVisitedContainerWidthAnchor;
 // List of all of the Most Visited views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
