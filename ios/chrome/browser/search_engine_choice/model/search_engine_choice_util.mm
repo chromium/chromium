@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 
 #import "base/check_deref.h"
+#import "base/command_line.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
@@ -21,7 +23,8 @@ namespace {
 // disabled for tests or for non-branded builds. This method eliminates those
 // cases, unless it is force-enabled by flag.
 bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
-  if (IsSearchEngineForceEnabled()) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceSearchEngineChoiceScreen)) {
     return true;
   }
   if (tests_hook::DisableDefaultSearchEngineChoice()) {
