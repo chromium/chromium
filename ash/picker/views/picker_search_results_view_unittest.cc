@@ -36,7 +36,7 @@ using PickerSearchResultsViewTest = AshTestBase;
 
 auto MatchesResultSection(const PickerSearchResults::Section& section) {
   return AllOf(
-      Property(&PickerSectionView::title_for_testing,
+      Property(&PickerSectionView::title_label_for_testing,
                Property(&views::Label::GetText, Eq(section.heading()))),
       Property(&PickerSectionView::item_views_for_testing,
                SizeIs(section.results().size())));

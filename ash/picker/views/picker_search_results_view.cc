@@ -51,8 +51,9 @@ void PickerSearchResultsView::SetSearchResults(
   section_views_.clear();
   RemoveAllChildViews();
   for (const auto& section : search_results_.sections()) {
-    auto* section_view = AddChildView(std::make_unique<PickerSectionView>(
-        picker_view_width_, section.heading()));
+    auto* section_view =
+        AddChildView(std::make_unique<PickerSectionView>(picker_view_width_));
+    section_view->AddTitleLabel(section.heading());
     for (const auto& result : section.results()) {
       AddResultToSection(result, section_view);
     }

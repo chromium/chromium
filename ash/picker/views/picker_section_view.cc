@@ -23,7 +23,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
@@ -34,7 +36,9 @@
 namespace ash {
 namespace {
 
-constexpr auto kSectionTitlePadding = gfx::Insets::VH(8, 16);
+constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
+constexpr auto kSectionTitleTrailingLinkMargins =
+    gfx::Insets::TLBR(4, 8, 4, 16);
 
 // Horizontal padding between small grid items.
 constexpr auto kSmallGridItemMargins = gfx::Insets::VH(0, 12);
@@ -119,20 +123,49 @@ std::unique_ptr<views::View> CreateListItemsContainer() {
 
 }  // namespace
 
-PickerSectionView::PickerSectionView(int section_width,
-                                     const std::u16string& title_text)
+PickerSectionView::PickerSectionView(int section_width)
     : section_width_(section_width) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  title_ = AddChildView(
-      bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2, title_text,
-                                cros_tokens::kCrosSysOnSurfaceVariant));
-  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_->SetBorder(views::CreateEmptyBorder(kSectionTitlePadding));
+  title_container_ =
+      AddChildView(views::Builder<views::FlexLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kHorizontal)
+                       .Build());
 }
 
 PickerSectionView::~PickerSectionView() = default;
+
+void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
+  title_label_ = title_container_->AddChildView(
+      views::Builder<views::Label>(
+          bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2,
+                                    title_text,
+                                    cros_tokens::kCrosSysOnSurfaceVariant))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::MinimumFlexSizeRule::kScaleToMinimum,
+                           views::MaximumFlexSizeRule::kUnbounded)
+                           .WithWeight(1))
+          .SetProperty(views::kMarginsKey, kSectionTitleMargins)
+          .Build());
+}
+
+void PickerSectionView::AddTitleTrailingLink(
+    const std::u16string& link_text,
+    views::Link::ClickedCallback link_callback) {
+  title_trailing_link_ = title_container_->AddChildView(
+      views::Builder<views::Link>()
+          .SetText(link_text)
+          .SetCallback(link_callback)
+          .SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
+              ash::TypographyToken::kCrosAnnotation2))
+          .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
+          .SetForceUnderline(false)
+          .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
+          .Build());
+}
 
 void PickerSectionView::AddListItem(std::unique_ptr<views::View> list_item) {
   if (list_items_container_ == nullptr) {
