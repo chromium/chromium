@@ -9952,6 +9952,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_IPH_SHARE_PASSWORD_BUTTON_SCREENREADER" desc="Text announced with the in Product Help for Share Password Button in Password Manager.">
           Use Share button at the bottom of the card to share a copy of your password with someone in your family group
         </message>
+        <message name="IDS_PASSWORD_MANAGER_IPH_ACCOUNT_STORAGE_TOGGLE" desc="Body of the in Product Help for account storage toggle in Password Manager.">
+          You can turn off this setting to save your passwords only on this device
+        </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE" desc="Body of the in Product Help shown after successfully logging into a website telling user about how to create a shortcut">
           Get to your saved passwords quicker
         </message>

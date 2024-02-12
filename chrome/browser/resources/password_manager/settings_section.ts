@@ -195,6 +195,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       this.hasPasskeys_ = hasPasskeys;
     });
     // </if>
+
+    const accountStorageToggleRoot = this.$.accountStorageToggle.shadowRoot;
+    this.registerHelpBubble(
+        PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID,
+        accountStorageToggleRoot!.querySelector('#control')!);
   }
 
   override disconnectedCallback() {
@@ -213,18 +218,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   override currentRouteChanged(route: Route): void {
     const triggerImportParam =
         route.queryParameters.get(UrlParam.START_IMPORT) || '';
-    const accountStoreIphParam =
-        route.queryParameters.get(UrlParam.SHOW_ACCOUNT_STORE_IPH) || '';
     if (triggerImportParam === 'true') {
       const importer = this.shadowRoot!.querySelector('passwords-importer');
       assert(importer);
       importer.launchImport();
       const params = new URLSearchParams();
       Router.getInstance().updateRouterParams(params);
-    } else if (accountStoreIphParam === 'true') {
-      this.registerHelpBubble(
-          PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID,
-          this.$.accountStorageToggle);
     }
   }
 

@@ -35,8 +35,6 @@ export enum UrlParam {
   START_CHECK = 'start',
   // Triggers import on the Settings page.
   START_IMPORT = 'import',
-  // Triggers iph for disabling the account storage.
-  SHOW_ACCOUNT_STORE_IPH = 'accountStoreIPH',
 }
 
 export class Route {
