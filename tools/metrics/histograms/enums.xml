@@ -11211,6 +11211,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4841" label="UserFeatureNuxtThirdPartiesGTM"/>
   <int value="4842" label="UserFeatureNuxtThirdPartiesYouTubeEmbed"/>
   <int value="4843" label="UserFeatureNuxtThirdPartiesGoogleMaps"/>
+  <int value="4844" label="SelectParserDroppedTag"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

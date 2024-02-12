@@ -4205,6 +4205,7 @@ enum WebFeature {
   kUserFeatureNuxtThirdPartiesGTM = 4841,
   kUserFeatureNuxtThirdPartiesYouTubeEmbed = 4842,
   kUserFeatureNuxtThirdPartiesGoogleMaps = 4843,
+  kSelectParserDroppedTag = 4844,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

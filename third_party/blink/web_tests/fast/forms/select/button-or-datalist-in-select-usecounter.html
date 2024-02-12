@@ -6,6 +6,7 @@
 <script>
 window.buttonInSelectId = 4771;
 window.datalistInSelectId = 4772;
+window.selectParserDroppedTag = 4844;
 </script>
 
 <button>button</button>
@@ -20,6 +21,7 @@ window.datalistInSelectId = 4772;
 test(() => {
   assert_false(internals.isUseCounted(document, buttonInSelectId), 'button in select');
   assert_false(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+  assert_false(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
 }, 'UseCounter is not counted in existing normal use case.');
 </script>
 
@@ -31,6 +33,7 @@ test(() => {
 test(() => {
   assert_true(internals.isUseCounted(document, buttonInSelectId), 'button in select');
   assert_false(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+  assert_false(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
   internals.clearUseCounter(document, buttonInSelectId);
 }, 'UseCounter is counted when putting button in select.');
 </script>
@@ -43,5 +46,17 @@ test(() => {
 test(() => {
   assert_false(internals.isUseCounted(document, buttonInSelectId), 'button in select');
   assert_true(internals.isUseCounted(document, datalistInSelectId), 'datalist in select');
+  assert_false(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
+  internals.clearUseCounter(document, datalistInSelectId);
 }, 'UseCounter is counted when putting datalist in select.');
+</script>
+
+<select>
+  <div>div</div>
+</select>
+
+<script>
+test(() => {
+  assert_true(internals.isUseCounted(document, selectParserDroppedTag), 'select parser dropped tag');
+}, 'UseCounter for <div> in <select>.');
 </script>
