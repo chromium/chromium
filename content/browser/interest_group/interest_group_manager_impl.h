@@ -167,7 +167,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const net::NetworkIsolationKey& network_isolation_key,
       bool report_result_only,
       network::mojom::URLLoaderFactory& url_loader_factory,
-      scoped_refptr<network::WrapperSharedURLLoaderFactory>
+      scoped_refptr<network::SharedURLLoaderFactory>
           url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback);
@@ -434,7 +434,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // may be called synchronously if the key is already available or the
   // coordinator is not recognized.
   void GetBiddingAndAuctionServerKey(
-      network::mojom::URLLoaderFactory* loader,
+      scoped_refptr<network::SharedURLLoaderFactory> loader,
       std::optional<url::Origin> coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
@@ -504,7 +504,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       blink::InterestGroup group,
       const GURL& joining_url,
       bool report_result_only,
-      scoped_refptr<network::WrapperSharedURLLoaderFactory>
+      scoped_refptr<network::SharedURLLoaderFactory>
           url_loader_factory_for_keyfetch,
       AreReportingOriginsAttestedCallback attestation_callback,
       blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,

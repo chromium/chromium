@@ -9,6 +9,7 @@
 #include <functional>
 #include <memory>
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -3005,6 +3006,22 @@ TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeys) {
   EXPECT_EQ(1, a_loaded_keys[0].id);
   EXPECT_EQ(expiration, a_expiration);
   EXPECT_TRUE(b_loaded_keys.empty());
+}
+
+TEST_F(InterestGroupStorageTest, SetGetBiddingAndAuctionKeysNonUtf8) {
+  const url::Origin origin = url::Origin::Create(GURL("https://b.example.com"));
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  std::string key(32, 0x00);
+  std::vector<BiddingAndAuctionServerKey> keys{{key, 2}};
+  storage->SetBiddingAndAuctionServerKeys(origin, keys,
+                                          base::Time::Now() + base::Days(1));
+  std::vector<BiddingAndAuctionServerKey> loaded_keys;
+  base::Time expiration;
+  std::tie(expiration, loaded_keys) =
+      storage->GetBiddingAndAuctionServerKeys(origin);
+  EXPECT_EQ(loaded_keys.size(), 1u);
+  EXPECT_EQ(loaded_keys[0].key, key);
+  EXPECT_EQ(loaded_keys[0].id, 2);
 }
 
 }  // namespace

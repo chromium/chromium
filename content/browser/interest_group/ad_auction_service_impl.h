@@ -187,7 +187,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void OnGotAuctionData(base::Uuid request_id, BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(
       base::Uuid request_id,
-      scoped_refptr<network::WrapperSharedURLLoaderFactory> loader,
       base::expected<BiddingAndAuctionServerKey, std::string> maybe_key);
   void OnGotAuctionDataAndKey(base::Uuid request_id);
 

@@ -23,7 +23,7 @@ message AdProtos {
 
 message BiddingAndAuctionServerKeyProtos {
   message BiddingAndAuctionServerKeyProto {
-    string key = 1;
+    bytes key = 1;
     int32 id = 2;
   }
   repeated BiddingAndAuctionServerKeyProto keys = 1;

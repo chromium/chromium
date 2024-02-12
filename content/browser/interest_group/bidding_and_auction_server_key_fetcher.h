@@ -15,15 +15,12 @@
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace network {
 class SimpleURLLoader;
-
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
 }  // namespace network
 
 namespace content {
@@ -58,14 +55,16 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // Fetch keys for all coordinators in kFledgeBiddingAndAuctionKeyConfig if
   // kFledgePrefetchBandAKeys and kFledgeBiddingAndAuctionServer are enabled and
   // if the keys haven't been fetched yet.
-  void MaybePrefetchKeys(network::mojom::URLLoaderFactory* loader_factory);
+  void MaybePrefetchKeys(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
 
   // GetOrFetchKey provides a key in the callback, fetching the key over the
   // network with the provided loader_factory if necessary. If the key is
   // immediately available then the callback may be called synchronously.
-  void GetOrFetchKey(network::mojom::URLLoaderFactory* loader_factory,
-                     std::optional<url::Origin> maybe_coordinator,
-                     BiddingAndAuctionServerKeyFetcherCallback callback);
+  void GetOrFetchKey(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      std::optional<url::Origin> maybe_coordinator,
+      BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
   struct PerCoordinatorFetcherState {
@@ -96,18 +95,19 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
 
   // Fetch keys for a particular coordinator, first checking if the key is
   // in the database.
-  void FetchKeys(network::mojom::URLLoaderFactory* loader_factory,
+  void FetchKeys(scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
                  const url::Origin& coordinator,
                  PerCoordinatorFetcherState& state,
                  BiddingAndAuctionServerKeyFetcherCallback callback);
 
   void OnFetchKeysFromDatabaseComplete(
-      network::mojom::URLLoaderFactory* loader_factory,
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       const url::Origin coordinator,
       std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>> keys);
 
-  void FetchKeysFromNetwork(network::mojom::URLLoaderFactory* loader_factory,
-                            const url::Origin& coordinator);
+  void FetchKeysFromNetwork(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      const url::Origin& coordinator);
 
   // Called when the JSON blob containing the keys have been successfully
   // fetched over the network.

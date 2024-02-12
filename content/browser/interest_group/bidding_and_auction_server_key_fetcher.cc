@@ -115,7 +115,7 @@ BiddingAndAuctionServerKeyFetcher::~BiddingAndAuctionServerKeyFetcher() =
     default;
 
 void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys(
-    network::mojom::URLLoaderFactory* loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory) {
   // We only prefetch keys if the prefetching is enabled and if
   // kFledgeBiddingAndAuctionServer is enabled. We don't need to check
   // kFledgeBiddingAndAuctionServer because if it's not enabled
@@ -136,7 +136,7 @@ void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys(
 }
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
-    network::mojom::URLLoaderFactory* loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     std::optional<url::Origin> maybe_coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
   url::Origin coordinator = maybe_coordinator.value_or(
@@ -166,11 +166,11 @@ void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
   }
   base::UmaHistogramBoolean("Ads.InterestGroup.ServerAuction.KeyFetch.Cached",
                             false);
-  FetchKeys(loader_factory, coordinator, state, std::move(callback));
+  FetchKeys(std::move(loader_factory), coordinator, state, std::move(callback));
 }
 
 void BiddingAndAuctionServerKeyFetcher::FetchKeys(
-    network::mojom::URLLoaderFactory* loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const url::Origin& coordinator,
     PerCoordinatorFetcherState& state,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
@@ -186,14 +186,15 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeys(
         coordinator,
         base::BindOnce(
             &BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromDatabaseComplete,
-            weak_ptr_factory_.GetWeakPtr(), loader_factory, coordinator));
+            weak_ptr_factory_.GetWeakPtr(), std::move(loader_factory),
+            coordinator));
   } else {
-    FetchKeysFromNetwork(loader_factory, coordinator);
+    FetchKeysFromNetwork(std::move(loader_factory), coordinator);
   }
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromDatabaseComplete(
-    network::mojom::URLLoaderFactory* loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const url::Origin coordinator,
     std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
         expiration_and_keys) {
@@ -201,7 +202,7 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromDatabaseComplete(
       expiration_and_keys.first < base::Time::Now()) {
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.ServerAuction.KeyFetch.DBCached", false);
-    FetchKeysFromNetwork(loader_factory, coordinator);
+    FetchKeysFromNetwork(std::move(loader_factory), coordinator);
   } else {
     base::UmaHistogramBoolean(
         "Ads.InterestGroup.ServerAuction.KeyFetch.DBCached", true);
@@ -211,7 +212,7 @@ void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromDatabaseComplete(
 }
 
 void BiddingAndAuctionServerKeyFetcher::FetchKeysFromNetwork(
-    network::mojom::URLLoaderFactory* loader_factory,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const url::Origin& coordinator) {
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
   state.fetch_start = base::TimeTicks::Now();
@@ -228,7 +229,7 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeysFromNetwork(
   state.loader->SetTimeoutDuration(kRequestTimeout);
 
   state.loader->DownloadToString(
-      loader_factory,
+      loader_factory.get(),
       base::BindOnce(
           &BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromNetworkComplete,
           weak_ptr_factory_.GetWeakPtr(), coordinator),
