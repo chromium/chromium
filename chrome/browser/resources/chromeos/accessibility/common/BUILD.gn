@@ -62,6 +62,7 @@ ts_modules = [
   "tree_walker.ts",
   "action_fulfillment/context_checker.ts",
   "action_fulfillment/input_controller.ts",
+  "action_fulfillment/macros/mouse_click_macro.ts",
   "action_fulfillment/macros/delete_prev_sent_macro.ts",
   "action_fulfillment/macros/toggle_dictation_macro.ts",
   "action_fulfillment/macros/input_text_view_macro.ts",

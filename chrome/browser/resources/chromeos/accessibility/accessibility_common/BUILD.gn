@@ -70,7 +70,9 @@ ts_modules = [
   "dictation/parse/speech_parser.ts",
   "facegaze/facegaze.ts",
   "facegaze/gesture_detector.ts",
+  "facegaze/gesture_handler.ts",
   "facegaze/mouse_controller.ts",
+  "facegaze/macros/reset_cursor_macro.ts",
   "magnifier/magnifier.ts",
 ]
 

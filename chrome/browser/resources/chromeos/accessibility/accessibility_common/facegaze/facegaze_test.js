@@ -438,16 +438,16 @@ AX_TEST_F(
     });
 
 AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
-  const gestureToAction =
+  const gestureToMacroName =
       new Map()
-          .set(FacialGesture.JAW_OPEN, Action.CLICK_LEFT)
-          .set(FacialGesture.BROW_INNER_UP, Action.CLICK_RIGHT);
+          .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
+          .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_RIGHT);
   const gestureToConfidence = new Map()
                                   .set(FacialGesture.JAW_OPEN, 0.6)
                                   .set(FacialGesture.BROW_INNER_UP, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToAction(gestureToAction)
+                     .withGestureToMacroName(gestureToMacroName)
                      .withGestureToConfidence(gestureToConfidence);
   await this.configureFaceGaze(config);
 
@@ -483,16 +483,16 @@ AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
 // separate facial gestures. This test ensures that the associated action is
 // only performed when both gestures are detected.
 AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
-  const gestureToAction =
+  const gestureToMacroName =
       new Map()
-          .set(FacialGesture.BROW_DOWN_LEFT, Action.RESET_MOUSE)
-          .set(FacialGesture.BROW_DOWN_RIGHT, Action.RESET_MOUSE);
+          .set(FacialGesture.BROW_DOWN_LEFT, MacroName.RESET_CURSOR)
+          .set(FacialGesture.BROW_DOWN_RIGHT, MacroName.RESET_CURSOR);
   const gestureToConfidence = new Map()
                                   .set(FacialGesture.BROW_DOWN_LEFT, 0.6)
                                   .set(FacialGesture.BROW_DOWN_RIGHT, 0.6);
   const config = new Config()
                      .withMouseLocation({x: 0, y: 0})
-                     .withGestureToAction(gestureToAction)
+                     .withGestureToMacroName(gestureToMacroName)
                      .withGestureToConfidence(gestureToConfidence);
   await this.configureFaceGaze(config);
   this.mockAccessibilityPrivate.clearCursorPosition();

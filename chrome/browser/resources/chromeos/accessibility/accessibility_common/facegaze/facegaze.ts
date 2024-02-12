@@ -5,51 +5,24 @@
 import {MediapipeAvailability} from '../third_party/mediapipe/availability/mediapipe_availability.js';
 import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
 
-import {FacialGesture, GestureDetector} from './gesture_detector.js';
+import {GestureHandler} from './gesture_handler.js';
 import {MouseController} from './mouse_controller.js';
-
-/**
- * TODO(b/309121742): Move this into a dedicated class for action fulfillment.
- * The actions that are supported by FaceGaze.
- */
-export enum Action {
-  CLICK_LEFT = 'clickLeft',
-  CLICK_RIGHT = 'clickRight',
-  RESET_MOUSE = 'resetMouse',
-}
 
 /** Main class for FaceGaze. */
 export class FaceGaze {
   private mouseController_: MouseController;
-  private gestureToAction_: Map<FacialGesture, Action> = new Map();
-  private gestureToConfidence_: Map<FacialGesture, number> = new Map();
+  private gestureHandler_: GestureHandler;
   private onInitCallbackForTest_: (() => void)|undefined;
   private initialized_ = false;
 
   constructor() {
     this.mouseController_ = new MouseController();
+    this.gestureHandler_ = new GestureHandler(this.mouseController_);
     this.init_();
   }
 
   /** Initializes FaceGaze. */
   private async init_(): Promise<void> {
-    // Initialize default mapping of facial gestures to actions.
-    // TODO(b/309121742): Set this using the user's preferences.
-    this.gestureToAction_.set(FacialGesture.JAW_OPEN, Action.CLICK_LEFT)
-        .set(FacialGesture.BROW_INNER_UP, Action.CLICK_RIGHT)
-        .set(FacialGesture.BROW_DOWN_LEFT, Action.RESET_MOUSE)
-        .set(FacialGesture.BROW_DOWN_RIGHT, Action.RESET_MOUSE);
-    // Initialize default mapping of facial gestures to confidence threshold.
-    // TODO(b/309121742): Set this using the user's preferences.
-    this.gestureToConfidence_
-        .set(FacialGesture.JAW_OPEN, FaceGaze.DEFAULT_CONFIDENCE_THRESHOLD)
-        .set(FacialGesture.BROW_INNER_UP, FaceGaze.DEFAULT_CONFIDENCE_THRESHOLD)
-        .set(
-            FacialGesture.BROW_DOWN_LEFT, FaceGaze.DEFAULT_CONFIDENCE_THRESHOLD)
-        .set(
-            FacialGesture.BROW_DOWN_RIGHT,
-            FaceGaze.DEFAULT_CONFIDENCE_THRESHOLD);
-
     this.connectToWebCam_();
 
     await this.mouseController_.init();
@@ -100,45 +73,15 @@ export class FaceGaze {
     }
 
     this.mouseController_.onFaceLandmarkerResult(result);
-    const gestures = GestureDetector.detect(result, this.gestureToConfidence_);
-    for (const gesture of gestures) {
-      if (gesture === FacialGesture.BROW_DOWN_LEFT ||
-          gesture === FacialGesture.BROW_DOWN_RIGHT) {
-        // Handle the BrowDown gesture separately.
-        continue;
+    const macros = this.gestureHandler_.detectMacros(result);
+    for (const macro of macros) {
+      // TODO(b:322511275): Smooth macros by having some rate limit at which the
+      // same one can be executed.
+      const runMacroResult = macro.run();
+      if (!runMacroResult.isSuccess) {
+        console.warn(
+            'Failed to execute macro ', macro.getName(), runMacroResult.error);
       }
-
-      this.performAction_(this.gestureToAction_.get(gesture));
-    }
-
-    if (gestures.includes(FacialGesture.BROW_DOWN_LEFT) &&
-        gestures.includes(FacialGesture.BROW_DOWN_RIGHT)) {
-      // The BrowDown gesture is special because it is the combination of
-      // two separate facial gestures. Ensure that the associated action
-      // is only performed if both gestures are recognized.
-      this.performAction_(
-          this.gestureToAction_.get(FacialGesture.BROW_DOWN_LEFT));
-    }
-  }
-
-  /**
-   * TODO(b/309121742): Move this into a dedicated class for action fulfillment.
-   */
-  private performAction_(action: Action|undefined): void {
-    if (!action) {
-      return;
-    }
-
-    switch (action) {
-      case Action.CLICK_LEFT:
-        this.mouseController_.clickLeft();
-        break;
-      case Action.CLICK_RIGHT:
-        this.mouseController_.clickRight();
-        break;
-      case Action.RESET_MOUSE:
-        this.mouseController_.resetLocation();
-        break;
     }
   }
 
@@ -155,9 +98,4 @@ export class FaceGaze {
     }
     callback();
   }
-}
-
-export namespace FaceGaze {
-  /** The default confidence threshold for facial gestures. */
-  export const DEFAULT_CONFIDENCE_THRESHOLD = 0.6;
 }

@@ -128,6 +128,15 @@ export enum MacroName {
   // Repeats the last executed macro.
   REPEAT = 34,
 
+  // Generates a synthetic left-click event.
+  MOUSE_CLICK_LEFT = 35,
+
+  // Generates a synthetic right-click event.
+  MOUSE_CLICK_RIGHT = 36,
+
+  // Resets the cursor to a default location in the default screen.
+  RESET_CURSOR = 37,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }
