@@ -736,13 +736,6 @@ class TabListMediator {
 
                     mModel.move(curPosition, newPosition);
                 }
-
-                @Override
-                public void didCreateGroup(
-                        List<Tab> tabs,
-                        List<Integer> tabOriginalIndex,
-                        List<Integer> tabOriginalRootId,
-                        String destinationGroupTitle) {}
             };
 
     /** Interface for implementing a {@link Runnable} that takes a tabId for a generic action. */
