@@ -682,6 +682,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.SnapWindowSuggestions" enum="BooleanToggled"
+    expires_after="2024-08-08">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <summary>
+    Records when a user changes the kSnapWindowSuggestions setting in the
+    Multitasking section of the System Preferences page.
+  </summary>
+</histogram>
+
 <histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
     expires_after="2024-07-07">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->

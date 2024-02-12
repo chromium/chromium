@@ -41,6 +41,12 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.BOOLEAN,
   },
 
+  // Multitasking settings
+  'ash.snap_window_suggestions.enabled': {
+    setting: Setting.kSnapWindowSuggestions,
+    type: PrefType.BOOLEAN,
+  },
+
   // Startup settings
   'settings.restore_apps_and_pages': {
     setting: Setting.kRestoreAppsAndPages,

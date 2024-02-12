@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -97,7 +98,11 @@ const char* MultitaskingSection::GetSectionPath() const {
 
 bool MultitaskingSection::LogMetric(mojom::Setting setting,
                                     base::Value& value) const {
-  // No metrics are logged.
+  if (setting == mojom::Setting::kSnapWindowSuggestions) {
+    base::UmaHistogramBoolean("ChromeOS.Settings.SnapWindowSuggestions",
+                              value.GetBool());
+    return true;
+  }
   return false;
 }
 
