@@ -54,11 +54,9 @@ constants.SetBuildType('Release')
 # architecture not listed here will eventually throw.
 _ARCH_GN_ARGS = {
     'arm': ['target_cpu="arm"'],
-    'arm64': [
-        'target_cpu="arm64"', 'android_64bit_browser=true',
-        'is_high_end_android=true'
-    ],
+    'arm64': ['target_cpu="arm64"'],
     'x86': ['target_cpu="x86"'],
+    'x64': ['target_cpu="x64"'],
 }
 
 class CommandError(Exception):
@@ -257,8 +255,13 @@ class ClankCompiler:
     if monochrome:
       self._apk = 'Monochrome.apk'
       self._apk_target = 'monochrome_apk'
-      self._libname = 'libmonochrome'
-      self._libchrome_target = 'libmonochrome'
+      if '64' in self._arch:
+        # Monochrome has a _64 suffix for arm64 and x64 builds.
+        self._libname = 'libmonochrome_64'
+        self._libchrome_target = 'libmonochrome_64'
+      else:
+        self._libname = 'libmonochrome'
+        self._libchrome_target = 'libmonochrome'
     else:
       self._apk = 'Chrome.apk'
       self._apk_target = 'chrome_apk'
