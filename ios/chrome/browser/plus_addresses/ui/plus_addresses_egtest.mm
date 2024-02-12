@@ -228,7 +228,8 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       assertWithMatcher:grey_notVisible()];
 }
 
-- (void)testPlusAddressBottomSheetErrorReportLink {
+// TODO(b/324865662): This test fails on official bots.
+- (void)DISABLED_testPlusAddressBottomSheetErrorReportLink {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -259,7 +260,8 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       assertWithMatcher:grey_notVisible()];
 }
 
-- (void)testSwipeToDismiss {
+// TODO(b/324865662): This test fails on official bots.
+- (void)DISABLED_testSwipeToDismiss {
   // TODO(crbug.com/1508365): Test fails on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
