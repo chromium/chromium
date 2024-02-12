@@ -8,9 +8,11 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/gfx/font_render_params.h"
 
@@ -44,6 +46,9 @@ constexpr base::FilePath::CharType kImageloaderMountBase[] =
 class GFX_EXPORT GlobalFontConfig {
  public:
   GlobalFontConfig() {
+    TRACE_EVENT0("ui", "GlobalFontConfig::GlobalFontConfig");
+    SCOPED_UMA_HISTOGRAM_TIMER("Startup.InitializeFontConfigDuration");
+
     // Without this call, the FontConfig library gets implicitly initialized
     // on the first call to FontConfig. Since it's not safe to initialize it
     // concurrently from multiple threads, we explicitly initialize it here
