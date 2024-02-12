@@ -973,7 +973,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegisteredWithoutKeys(
 
 void StandaloneTrustedVaultBackend::OnKeysDownloaded(
     TrustedVaultDownloadKeysStatus status,
-    const std::vector<std::vector<uint8_t>>& new_vault_keys,
+    const std::vector<std::vector<uint8_t>>& downloaded_vault_keys,
     int last_vault_key_version) {
   DCHECK(primary_account_.has_value());
 
@@ -982,13 +982,13 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
   DCHECK(per_user_vault);
   switch (status) {
     case TrustedVaultDownloadKeysStatus::kSuccess: {
-      // Store all vault keys (including already known) as they required for
-      // adding recovery method and might still be useful for decryption (e.g.
-      // key rotation wasn't complete).
-      std::vector<std::vector<uint8_t>> vault_keys =
-          GetAllVaultKeys(*per_user_vault);
-      base::ranges::copy(new_vault_keys, std::back_inserter(vault_keys));
-      StoreKeys(primary_account_->gaia, vault_keys, last_vault_key_version);
+      // |downloaded_vault_keys| doesn't necessary have all keys known to the
+      // backend, because some old keys may have been deleted from the server
+      // already. Not preserving old keys is acceptable and desired here, since
+      // the opposite can make some operations (such as registering
+      // authentication factors) impossible.
+      StoreKeys(primary_account_->gaia, downloaded_vault_keys,
+                last_vault_key_version);
       break;
     }
     case TrustedVaultDownloadKeysStatus::kMemberNotFound:
@@ -1008,13 +1008,18 @@ void StandaloneTrustedVaultBackend::OnKeysDownloaded(
       WriteDataToDisk();
       break;
     }
-    case TrustedVaultDownloadKeysStatus::kNoNewKeys:
+    case TrustedVaultDownloadKeysStatus::kNoNewKeys: {
       // The registration itself exists, but there's no additional keys to
       // download. This is bad because key download attempts are triggered for
       // the case where local keys have been marked as stale, which means the
       // user is likely in an unrecoverable state.
       RecordFailedConnectionRequestForThrottling();
+      // Persist the keys anyway, since some old keys could be removed from the
+      // server.
+      StoreKeys(primary_account_->gaia, downloaded_vault_keys,
+                last_vault_key_version);
       break;
+    }
     case TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure:
     case TrustedVaultDownloadKeysStatus::kNetworkError:
       // Request wasn't sent to the server, so there is no need for throttling.

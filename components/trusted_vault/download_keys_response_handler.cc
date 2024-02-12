@@ -78,19 +78,6 @@ std::optional<std::vector<ExtractedSharedKey>> ExtractAndSortSharedKeys(
   return result;
 }
 
-// |sorted_keys| must be non-empty and sorted by version. Returns new keys, a
-// key is new if it has higher version than |last_known_version|.
-std::vector<ExtractedSharedKey> GetNewKeys(
-    const std::vector<ExtractedSharedKey>& sorted_keys,
-    int last_known_version) {
-  DCHECK(!sorted_keys.empty());
-  auto new_keys_start_it =
-      base::ranges::upper_bound(sorted_keys, last_known_version, /*comp=*/{},
-                                &ExtractedSharedKey::version);
-
-  return std::vector<ExtractedSharedKey>(new_keys_start_it, sorted_keys.end());
-}
-
 // Validates |rotation_proof| starting from the key next to
 // last known trusted vault key.
 bool IsValidKeyChain(
@@ -131,9 +118,11 @@ DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
 
 DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
     TrustedVaultDownloadKeysStatus status,
-    std::vector<std::vector<uint8_t>> new_keys,
+    std::vector<std::vector<uint8_t>> downloaded_keys,
     int last_key_version)
-    : status(status), new_keys(new_keys), last_key_version(last_key_version) {}
+    : status(status),
+      downloaded_keys(downloaded_keys),
+      last_key_version(last_key_version) {}
 
 DownloadKeysResponseHandler::ProcessedResponse::ProcessedResponse(
     const ProcessedResponse& other) = default;
@@ -229,19 +218,23 @@ DownloadKeysResponseHandler::ProcessResponse(
             kKeyProofsVerificationFailed);
   }
 
-  std::vector<ExtractedSharedKey> new_keys =
-      GetNewKeys(*extracted_keys, last_trusted_vault_key_and_version_.version);
-  if (new_keys.empty()) {
-    return ProcessedResponse(
-        /*status=*/TrustedVaultDownloadKeysStatus::kNoNewKeys);
+  std::vector<std::vector<uint8_t>> trusted_vault_keys;
+  for (const ExtractedSharedKey& key : *extracted_keys) {
+    trusted_vault_keys.push_back(key.trusted_vault_key);
   }
-  std::vector<std::vector<uint8_t>> new_trusted_vault_keys;
-  for (ExtractedSharedKey& key : new_keys) {
-    new_trusted_vault_keys.push_back(key.trusted_vault_key);
+
+  TrustedVaultDownloadKeysStatus status =
+      TrustedVaultDownloadKeysStatus::kSuccess;
+  if (extracted_keys->back().version <=
+      last_trusted_vault_key_and_version_.version) {
+    // In theory, the above check could be == instead of <=, since server
+    // version should not decrease, but it is tolerated to make implementation
+    // more robust.
+    status = TrustedVaultDownloadKeysStatus::kNoNewKeys;
   }
-  return ProcessedResponse(/*status=*/TrustedVaultDownloadKeysStatus::kSuccess,
-                           new_trusted_vault_keys,
-                           /*last_key_version=*/new_keys.back().version);
+
+  return ProcessedResponse(status, trusted_vault_keys,
+                           /*last_key_version=*/extracted_keys->back().version);
 }
 
 }  // namespace trusted_vault
