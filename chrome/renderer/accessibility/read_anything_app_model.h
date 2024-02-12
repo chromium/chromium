@@ -354,6 +354,13 @@ class ReadAnythingAppModel {
       ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity,
       ui::AXNodeID id);
 
+  // Helper method to get the correct anchor node from an AXPositionInstance
+  // that should be used by Read Aloud. AXPosition can sometimes return
+  // leaf nodes that don't actually correspond to the AXNodes we're using
+  // in Reading Mode, so we need to get a parent node from the AXPosition's
+  // returned anchor when this happens.
+  ui::AXNode* GetAnchorNode(ui::AXNodePosition::AXPositionInstance& position);
+
   bool IsOpeningPunctuation(char c);
 
   // State.

@@ -1325,11 +1325,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     return new_position;
   }
 
-  bool is_leaf = new_position->GetAnchor()->IsChildOfLeaf();
-  // If the node is a leaf, use the parent node instead.
-  ui::AXNode* anchor_node =
-      is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
-              : new_position->GetAnchor();
+  ui::AXNode* anchor_node = GetAnchorNode(new_position);
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   bool is_text_node = IsTextForReadAnything(anchor_node->id());
@@ -1355,10 +1351,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     new_position =
         new_position->CreateNextSentenceStartPosition(movement_options);
 
-    is_leaf = anchor_node->IsChildOfLeaf();
-    if (is_leaf) {
-      anchor_node = anchor_node->GetLowestPlatformAncestor();
-    }
+    anchor_node = GetAnchorNode(new_position);
     was_previously_spoken =
         NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
     is_text_node = IsTextForReadAnything(anchor_node->id());
@@ -1451,4 +1444,12 @@ bool ReadAnythingAppModel::ShouldSplitAtParagraph(
     ReadAloudCurrentGranularity& current_granularity) {
   return position->AtStartOfParagraph() &&
          (current_granularity.node_ids.size() > 0);
+}
+
+ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
+    ui::AXNodePosition::AXPositionInstance& position) {
+  bool is_leaf = position->GetAnchor()->IsChildOfLeaf();
+  // If the node is a leaf, use the parent node instead.
+  return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
+                 : position->GetAnchor();
 }
