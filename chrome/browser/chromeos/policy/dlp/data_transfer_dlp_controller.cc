@@ -356,9 +356,14 @@ void DataTransferDlpController::DropIfAllowed(
   // To simplify logic that would have to check OTR in every sub-call of DLP
   // checks, simply null the endpoints so that subsequent code never misuses
   // data.
+  base::optional_ref<const ui::DataTransferEndpoint> source =
+      drag_data->GetSource() && !drag_data->GetSource()->off_the_record()
+          ? base::optional_ref<const ui::DataTransferEndpoint>(
+                drag_data->GetSource())
+          : std::nullopt;
   base::optional_ref<const ui::DataTransferEndpoint> destination =
       data_dst.has_value() && !data_dst->off_the_record() ? data_dst
-                                                          : absl::nullopt;
+                                                          : std::nullopt;
 
   if (drag_data->HasFile() && !IsFilesApp(destination)) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
@@ -377,8 +382,7 @@ void DataTransferDlpController::DropIfAllowed(
       return;
     }
   }
-  ContinueDropIfAllowed(*drag_data->GetSource(), destination,
-                        std::move(drop_cb));
+  ContinueDropIfAllowed(source, destination, std::move(drop_cb));
 }
 
 DataTransferDlpController::DataTransferDlpController(
