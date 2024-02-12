@@ -2466,6 +2466,25 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
            metadata.top_controls_height ||
        last_draw_render_frame_metadata_->top_controls_shown_ratio !=
            metadata.top_controls_shown_ratio);
+#elif BUILDFLAG(IS_ANDROID)
+      last_draw_render_frame_metadata_ &&
+      (last_draw_render_frame_metadata_->top_controls_height !=
+           metadata.top_controls_height ||
+       last_draw_render_frame_metadata_->bottom_controls_height !=
+           metadata.bottom_controls_height ||
+       last_draw_render_frame_metadata_->selection != metadata.selection ||
+       last_draw_render_frame_metadata_->has_transparent_background !=
+           metadata.has_transparent_background);
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAndroidNoSurfaceSyncForBrowserControls)) {
+    allocate_new_local_surface_id |=
+        last_draw_render_frame_metadata_ &&
+        (last_draw_render_frame_metadata_->top_controls_shown_ratio !=
+             metadata.top_controls_shown_ratio ||
+         last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+             metadata.bottom_controls_shown_ratio);
+  }
 #else
       last_draw_render_frame_metadata_ &&
       (last_draw_render_frame_metadata_->top_controls_height !=
