@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
 #define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_URL_LOADER_THROTTLE_H_
 
-#include <optional>
-
 #include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
@@ -21,10 +19,6 @@ class NoStatePrefetchURLLoaderThrottle : public blink::URLLoaderThrottle {
   NoStatePrefetchURLLoaderThrottle(
       mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler);
   ~NoStatePrefetchURLLoaderThrottle() override;
-
-  // Called when the prerender is used. This will unpaused requests and set the
-  // priorities to the original value.
-  void PrerenderUsed();
 
   void set_destruction_closure(base::OnceClosure closure) {
     destruction_closure_ = std::move(closure);
@@ -50,11 +44,6 @@ class NoStatePrefetchURLLoaderThrottle : public blink::URLLoaderThrottle {
   network::mojom::RequestDestination request_destination_;
 
   mojo::PendingRemote<prerender::mojom::PrerenderCanceler> canceler_;
-
-  // The throttle changes most request priorities to IDLE during prerendering.
-  // The priority is reset back to the original priority when prerendering is
-  // finished.
-  std::optional<net::RequestPriority> original_request_priority_;
 
   base::OnceClosure destruction_closure_;
 
