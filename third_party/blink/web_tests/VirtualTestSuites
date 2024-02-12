@@ -174,7 +174,6 @@
     "prefix": "attribution-reporting-in-browser-migration",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting"],
-    "exclusive_tests": "ALL",
     "args": ["--enable-features=KeepAliveInBrowserMigration,AttributionReportingInBrowserMigration,AttributionReportingCrossAppWeb,PrivacySandboxAdsAPIsOverride",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["anthonygarant@chromium.org"],
