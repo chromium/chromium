@@ -904,6 +904,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripTest, HasTabStrip) {
   Browser* browser;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
   EXPECT_TRUE(browser->app_controller()->has_tab_strip());
+  EXPECT_FALSE(browser->app_controller()->ShouldHideNewTabButton());
 }
 
 class SystemWebAppManagerHasNoTabStripTest
