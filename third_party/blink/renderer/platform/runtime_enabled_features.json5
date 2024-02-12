@@ -228,11 +228,6 @@
       public: true,
     },
     {
-      name: "AccessibilityExposeIgnoredNodes",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "AccessibilityObjectModel",
       status: "experimental",
       base_feature: "none",

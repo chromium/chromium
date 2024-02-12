@@ -1367,8 +1367,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   if (AccessibilityIsIgnored()) {
     node_data->AddState(ax::mojom::blink::State::kIgnored);
     // Early return for ignored, unfocusable nodes, avoiding unnecessary work.
-    if (!is_focusable &&
-        !RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled()) {
+    if (!is_focusable) {
       // The name is important for exposing the selection around ignored nodes.
       // TODO(accessibility) Remove this and still pass this
       // content_browsertest:
@@ -3762,10 +3761,6 @@ bool AXObject::IsExcludedByFormControlsFilter() const {
 }
 
 bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
-  // TODO(accessibility) Remove this flag, we never want to expose all nodes.
-  if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled())
-    return true;
-
   // If an inline text box is ignored, it is never included in the tree.
   if (IsAXInlineTextBox()) {
     return false;

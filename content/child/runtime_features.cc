@@ -188,8 +188,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kEnableAccessibilityAriaVirtualContent)},
           {wf::EnableAccessibilityExposeHTMLElement,
            raw_ref(features::kEnableAccessibilityExposeHTMLElement)},
-          {wf::EnableAccessibilityExposeIgnoredNodes,
-           raw_ref(features::kEnableAccessibilityExposeIgnoredNodes)},
 #if BUILDFLAG(IS_ANDROID)
           {wf::EnableAccessibilityPageZoom,
            raw_ref(features::kAccessibilityPageZoom)},
