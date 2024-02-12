@@ -16,6 +16,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/network_service.h"
+#include "services/network/public/mojom/network_context_client.mojom.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -21,6 +21,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 #include <optional>

@@ -28,7 +28,9 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 class PrefRegistrySimple;
 class Profile;

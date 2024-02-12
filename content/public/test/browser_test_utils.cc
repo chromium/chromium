@@ -111,6 +111,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"

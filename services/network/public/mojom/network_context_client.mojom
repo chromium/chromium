@@ -1,0 +1,65 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Callback interface for NetworkContext when routing identifiers aren't
+// available. Otherwise generally callbacks from the network service go on
+// NetworkServiceClient.
+//
+// Implemented by the browser process.
+interface NetworkContextClient {
+  // Called when file uploading was requested.
+  // If the process that requested the uploads to |destination_url| has
+  // permission to read all of the files referenced by |file_paths|,
+  // the callback arguments will be net::OK, along with an array of open file
+  // handles. The array will contain exactly one handle for each path in
+  // |file_paths|, in the same order. If any files referenced by |file_paths|
+  // cannot be read, a net::ERROR will be returned, and |files| will be an empty
+  // list. If the |async| parameter is true, the files will be opened with
+  // FLAG_ASYNC.
+  OnFileUploadRequested(int32 process_id,
+                        bool async,
+                        array<mojo_base.mojom.FilePath> file_paths,
+                        url.mojom.Url destination_url) =>
+      (int32 net_error, array<mojo_base.mojom.ReadOnlyFile> files);
+
+  // Checks if network error reports could be sent for the given origins.
+  // Replies with the origins that are allowed.
+  OnCanSendReportingReports(array<url.mojom.Origin> origins) =>
+      (array<url.mojom.Origin> origins);
+
+  // Checks if a Domain Reliability report can be uploaded for the given origin.
+  OnCanSendDomainReliabilityUpload(url.mojom.Origin origin) => (bool allowed);
+
+  // Called to generate an auth token for SPNEGO authentication on Android.
+  [EnableIf=is_android]
+  OnGenerateHttpNegotiateAuthToken(string server_auth_token, bool can_delegate,
+                                   string auth_negotiate_android_account_type,
+                                   string spn) =>
+                                   (int32 result, string auth_token);
+
+  // Notification that a trust anchor was used for the given user.
+  [EnableIf=is_chromeos]
+  OnTrustAnchorUsed();
+
+  // Checks if a new SCT Auditing report can be sent. The browser maintains a
+  // maximum report count cap for Hashdance clients -- this returns whether the
+  // cap has been exceeded or not (i.e., whether another report can be sent from
+  // this client). Only used for SCT auditing "hashdance" clients; no report cap
+  // is applied for SBER clients.
+  [EnableIf=is_ct_supported]
+  OnCanSendSCTAuditingReport() => (bool allowed);
+
+  // Signal that a new SCT auditing report has been sent, so that the browser
+  // can update its report count. Only used for SCT auditing "hashdance"
+  // clients.
+  [EnableIf=is_ct_supported]
+  OnNewSCTAuditingReportSent();
+};

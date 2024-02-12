@@ -18,7 +18,7 @@
 #include "components/services/storage/public/mojom/local_storage_control.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom-forward.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"

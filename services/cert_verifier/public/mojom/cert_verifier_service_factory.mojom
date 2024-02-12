@@ -9,6 +9,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
+import "services/network/public/mojom/cert_verifier_service_updater.mojom";
 import "services/network/public/mojom/network_param.mojom";
 
 [EnableIf=is_ct_supported]

@@ -28,23 +28,6 @@ struct CertVerifierConfig {
   bool disable_symantec_enforcement;
 };
 
-struct AdditionalCertificates {
-  // List of untrusted certificates, which will be used during path building.
-  array<array<uint8>> all_certificates;
-
-  // List of additional trust anchors.
-  array<array<uint8>> trust_anchors;
-
-  // List of additional trust anchors that have enforced constraints.
-  array<array<uint8>> trust_anchors_with_enforced_constraints;
-
-  // List of SPKIs that are explicitly distrusted.
-  array<array<uint8>> distrusted_spkis;
-
-  // If true, use user-added certs in the system trust store.
-  bool include_system_trust_store = true;
-};
-
 // Allows the CertVerifierService to connect a new URLLoaderFactory if its
 // existing URLLoaderFactory is disconnected. The CertVerifierService uses the
 // URLLoaderFactory for AIA and OCSP fetching.
@@ -73,15 +56,6 @@ interface CertVerifierService {
          pending_remote<CertVerifierRequest> cert_verifier_request);
   // Sets the config for the underlying CertVerifier.
   SetConfig(CertVerifierConfig config);
-};
-
-// Updates a Cert Verifier with new parameters.
-interface CertVerifierServiceUpdater {
-  // Called when trust parameters change for Cert Verification.  All parameters
-  // will override any previously provided parameters that were provide (either
-  // via previous calls to UpdateCertVerifier or that were specified in
-  // cert_verifier.mojom.CertVerifierCreationParams.
-  UpdateAdditionalCertificates(AdditionalCertificates certificates);
 };
 
 // Receives events from the CertVerifierService.

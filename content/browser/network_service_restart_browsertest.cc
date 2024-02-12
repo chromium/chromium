@@ -56,6 +56,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"

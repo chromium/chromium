@@ -94,6 +94,7 @@
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "services/network/public/mojom/network_context_client.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"

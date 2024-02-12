@@ -35,6 +35,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
