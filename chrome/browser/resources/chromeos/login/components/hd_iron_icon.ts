@@ -22,27 +22,34 @@
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './common_styles/oobe_common_styles.css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/**
- * @polymer
- */
+import {getTemplate} from './hd_iron_icon.html.js';
+
 export class HdIronIcon extends PolymerElement {
   static get is() {
-    return 'hd-iron-icon';
+    return 'hd-iron-icon' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+
+  static get properties(): PolymerElementProperties {
     return {
       icon1x: String,
       icon2x: String,
       src1x: String,
       src2x: String,
     };
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [HdIronIcon.is]: HdIronIcon;
   }
 }
 
