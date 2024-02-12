@@ -170,7 +170,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
     // in such mode. It will first try a PassThrough provider and, if that is
     // not possible, it will try a SharedImage with the appropriate flags.
     if ((RenderingContext() && RenderingContext()->UsingSwapChain()) ||
-        RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
+        RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
+        base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium)) {
       // If either SwapChain is enabled or WebGLImage mode is enabled, we can
       // try a passthrough provider.
       DCHECK(LowLatencyEnabled());
@@ -184,7 +185,9 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       // and if WebGLImageChromium is enabled, add concurrent read write and
       // usage scanout (overlay).
       uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      if (RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
+      if (RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
+          base::FeatureList::IsEnabled(
+              features::kLowLatencyWebGLImageChromium)) {
         shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
         shared_image_usage_flags |=
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;

@@ -808,6 +808,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowLatencyCanvas2dImageChromium);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowLatencyWebGLImageChromium);
+
 // If enabled, async scripts will be run on a lower priority task queue.
 // See https://crbug.com/1348467.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityAsyncScriptExecution);

@@ -1354,9 +1354,9 @@ BASE_FEATURE(kLogUnexpectedIPCPostedToBackForwardCachedDocuments,
              "LogUnexpectedIPCPostedToBackForwardCachedDocuments",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the use of GpuMemoryBuffer images for low latency 2d canvas.
-// TODO(khushalsagar): Enable this if we're using SurfaceControl and GMBs allow
-// us to overlay these resources.
+// Allow low latency canvas 2D to be in overlay (generally meaning scanned out
+// directly to display), even if regular canvas are not in overlay
+// (Canvas2DImageChromium is disabled).
 BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
              "LowLatencyCanvas2dImageChromium",
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1365,6 +1365,13 @@ BASE_FEATURE(kLowLatencyCanvas2dImageChromium,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_CHROMEOS)
 );
+
+// Allow low latency WebGL to be in overlay (generally meaning scanned out
+// directly to display), even if regular canvas are not in overlay
+// (WebGLImageChromium is disabled).
+BASE_FEATURE(kLowLatencyWebGLImageChromium,
+             "kLowLatencyWebGLImageChromium",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLowPriorityAsyncScriptExecution,
              "LowPriorityAsyncScriptExecution",
