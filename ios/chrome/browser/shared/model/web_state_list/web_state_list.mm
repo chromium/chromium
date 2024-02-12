@@ -160,7 +160,6 @@ WebStateList::~WebStateList() {
   DCHECK(!locked_);
   DCHECK(!batch_operation_in_progress_);
 
-  CloseAllWebStates(CLOSE_NO_FLAGS);
   for (auto& observer : observers_) {
     observer.WebStateListDestroyed(this);
   }
