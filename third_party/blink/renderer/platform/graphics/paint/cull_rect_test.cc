@@ -120,9 +120,13 @@ TEST_P(CullRectTest, ApplyScrollTranslationPartialScrollingContents1) {
 
   // Clipped: (20, 10, 30, 50)
   // Inverse transformed: (20, 5010, 30, 50)
-  // Expanded: (0, 1010, 30, 8050)
+  // Expanded: (0, 1010, 30/40, 8050)
   // Then clipped by the contents rect.
-  EXPECT_EQ(gfx::Rect(20, 1010, 30, 7000), cull_rect.Rect());
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(gfx::Rect(20, 1010, 30, 7000), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+  }
 
   cull_rect = CullRect::Infinite();
   EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
@@ -163,7 +167,11 @@ TEST_P(CullRectTest,
   CullRect cull_rect(gfx::Rect(0, 0, 50, 100));
   // Same as ApplyScrollTranslationPartialScrollingContents1.
   EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
-  EXPECT_EQ(gfx::Rect(20, 1010, 30, 7000), cull_rect.Rect());
+  if (RuntimeEnabledFeatures::DynamicScrollCullRectExpansionEnabled()) {
+    EXPECT_EQ(gfx::Rect(20, 1010, 30, 7000), cull_rect.Rect());
+  } else {
+    EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
+  }
   cull_rect = CullRect::Infinite();
   EXPECT_TRUE(ApplyScrollTranslation(cull_rect, scroll_translation));
   EXPECT_EQ(gfx::Rect(20, 1010, 40, 7000), cull_rect.Rect());
