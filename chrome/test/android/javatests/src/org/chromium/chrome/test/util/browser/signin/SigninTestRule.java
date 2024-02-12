@@ -12,7 +12,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.AccountCapabilitiesConstants;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -111,7 +111,7 @@ public class SigninTestRule extends AccountManagerTestRule {
     /** Adds and signs in an account with the default name and enables sync. */
     public CoreAccountInfo addTestAccountThenSigninAndEnableSync() {
         return addTestAccountThenSigninAndEnableSync(
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
+                SyncTestUtil.getSyncServiceForLastUsedProfile());
     }
 
     /**
@@ -135,8 +135,7 @@ public class SigninTestRule extends AccountManagerTestRule {
         CoreAccountInfo coreAccountInfo = addAccount(email, name);
         waitForSeeding();
         SigninTestUtil.signinAndEnableSync(
-                coreAccountInfo,
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
+                coreAccountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
         mIsSignedIn = true;
         return coreAccountInfo;
     }

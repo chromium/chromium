@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity;
 import org.chromium.chrome.browser.signin.SyncConsentActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -66,6 +65,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -315,8 +315,7 @@ public class IdentityDiscControllerTest {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
         CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
         SigninTestUtil.signinAndEnableSync(
-                coreAccountInfo,
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
+                coreAccountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()

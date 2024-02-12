@@ -72,10 +72,10 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -229,7 +229,9 @@ public class PrivacyGuideFragmentTest {
         }
 
         runOnUiThreadBlocking(
-                () -> SyncServiceFactory.get().setSelectedTypes(false, selectedTypes));
+                () ->
+                        SyncTestUtil.getSyncServiceForLastUsedProfile()
+                                .setSelectedTypes(false, selectedTypes));
     }
 
     private void setSafeBrowsingState(@SafeBrowsingState int safeBrowsingState) {

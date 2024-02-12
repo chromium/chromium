@@ -434,8 +434,7 @@ public class MainSettingsFragmentTest {
     @SmallTest
     public void testSyncRowSummaryWhenNoDataTypeSynced() {
         CoreAccountInfo account = mSyncTestRule.addTestAccount();
-        final SyncService syncService =
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get);
+        final SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
         SigninTestUtil.signinAndEnableSync(account, syncService);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

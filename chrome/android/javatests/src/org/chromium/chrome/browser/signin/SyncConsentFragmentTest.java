@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -70,11 +69,13 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -518,12 +519,11 @@ public class SyncConsentFragmentTest {
                 });
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertTrue(SyncServiceFactory.get().hasSyncConsent());
-                    assertFalse(SyncServiceFactory.get().isInitialSyncFeatureSetupComplete());
-                    assertEquals(
-                            ALL_CLANK_SYNCABLE_DATA_TYPES,
-                            SyncServiceFactory.get().getSelectedTypes());
-                    assertTrue(SyncServiceFactory.get().hasKeepEverythingSynced());
+                    SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                    assertTrue(syncService.hasSyncConsent());
+                    assertFalse(syncService.isInitialSyncFeatureSetupComplete());
+                    assertEquals(ALL_CLANK_SYNCABLE_DATA_TYPES, syncService.getSelectedTypes());
+                    assertTrue(syncService.hasKeepEverythingSynced());
                 });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
@@ -566,8 +566,9 @@ public class SyncConsentFragmentTest {
                 });
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertTrue(SyncServiceFactory.get().hasSyncConsent());
-                    assertFalse(SyncServiceFactory.get().isInitialSyncFeatureSetupComplete());
+                    SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                    assertTrue(syncService.hasSyncConsent());
+                    assertFalse(syncService.isInitialSyncFeatureSetupComplete());
                 });
         onView(withId(R.id.cancel_button)).perform(click());
         // Check that the sync consent has been cleared (but the user is still signed in), and that
@@ -624,8 +625,9 @@ public class SyncConsentFragmentTest {
         // UI in this case does not link to the types list.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    assertEquals(Set.of(), SyncServiceFactory.get().getSelectedTypes());
-                    assertTrue(SyncServiceFactory.get().hasKeepEverythingSynced());
+                    SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+                    assertEquals(Set.of(), syncService.getSelectedTypes());
+                    assertTrue(syncService.hasKeepEverythingSynced());
                 });
     }
 
@@ -906,20 +908,21 @@ public class SyncConsentFragmentTest {
                 });
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    SyncService syncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
                     assertTrue(
                             "The service should have recorded user consent for sync.",
-                            SyncServiceFactory.get().hasSyncConsent());
+                            syncService.hasSyncConsent());
                     assertFalse(
                             "Sync feature setup should not be complete without the confirm button "
                                     + "being clicked.",
-                            SyncServiceFactory.get().isInitialSyncFeatureSetupComplete());
+                            syncService.isInitialSyncFeatureSetupComplete());
                     assertEquals(
                             "All syncable data types should be selected by default.",
                             ALL_CLANK_SYNCABLE_DATA_TYPES,
-                            SyncServiceFactory.get().getSelectedTypes());
+                            syncService.getSelectedTypes());
                     assertTrue(
                             "All data types should be enabled for sync.",
-                            SyncServiceFactory.get().hasKeepEverythingSynced());
+                            syncService.hasKeepEverythingSynced());
                 });
 
         // Close the SettingsActivity.
