@@ -8,16 +8,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 public class HistorySyncCoordinator {
+    /*Delegate for the History Sync MVC */
+    public interface HistorySyncDelegate {
+        void dismiss();
+    }
+
     private final HistorySyncMediator mMediator;
     private final HistorySyncView mView;
 
-    public HistorySyncCoordinator(LayoutInflater inflater, ViewGroup container) {
+    public HistorySyncCoordinator(
+            LayoutInflater inflater,
+            ViewGroup container,
+            HistorySyncDelegate delegate,
+            Profile profile) {
         mView = (HistorySyncView) inflater.inflate(R.layout.history_sync_view, container, false);
-        mMediator = new HistorySyncMediator(inflater.getContext());
+        mMediator = new HistorySyncMediator(inflater.getContext(), delegate, profile);
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, HistorySyncViewBinder::bind);
     }

@@ -200,6 +200,7 @@ android_library("javatests") {
     "java/src/org/chromium/chrome/browser/ui/signin/SyncPromoControllerUITest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetTest.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/history_sync/HistorySyncTest.java",
   ]
   deps = [
     ":java",
@@ -210,6 +211,7 @@ android_library("javatests") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/android/signin:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",
@@ -219,6 +221,7 @@ android_library("javatests") {
     "//components/signin/core/browser:signin_enums_java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
+    "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

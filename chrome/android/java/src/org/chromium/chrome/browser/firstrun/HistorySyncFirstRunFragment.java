@@ -13,15 +13,19 @@ import android.view.accessibility.AccessibilityEvent;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 
-public class HistorySyncFirstRunFragment extends Fragment implements FirstRunFragment {
+public class HistorySyncFirstRunFragment extends Fragment
+        implements FirstRunFragment, HistorySyncCoordinator.HistorySyncDelegate {
     private HistorySyncCoordinator mHistorySyncCoordinator;
 
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mHistorySyncCoordinator = new HistorySyncCoordinator(inflater, container);
+        assert getPageDelegate().getProfileProviderSupplier().get() != null;
+        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
+        mHistorySyncCoordinator = new HistorySyncCoordinator(inflater, container, this, profile);
 
         return mHistorySyncCoordinator.getView();
     }
@@ -34,5 +38,11 @@ public class HistorySyncFirstRunFragment extends Fragment implements FirstRunFra
 
         final View title = getView().findViewById(R.id.sync_consent_title);
         title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    /** Implements {@link HistorySyncDelegate} */
+    @Override
+    public void dismiss() {
+        getPageDelegate().advanceToNextPage();
     }
 }
