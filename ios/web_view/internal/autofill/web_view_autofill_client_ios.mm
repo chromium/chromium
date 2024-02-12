@@ -241,10 +241,6 @@ void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
                                callback:std::move(callback)];
 }
 
-void WebViewAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {
-  [bridge_ handleCreditCardUploadCompleted:card_saved];
-}
-
 void WebViewAutofillClientIOS::ConfirmCreditCardFillAssist(
     const CreditCard& card,
     base::OnceClosure callback) {}

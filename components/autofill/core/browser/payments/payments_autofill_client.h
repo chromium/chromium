@@ -72,6 +72,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // enrolled as a virtual card.
   virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // Called after credit card upload is finished. Will show upload result to
+  // users. `card_saved` indicates if the card is successfully saved.
+  // TODO(crbug.com/932818): This function is overridden in iOS codebase and in
+  // the desktop codebase. If iOS is not using it to do anything, please keep
+  // this function for desktop.
+  virtual void CreditCardUploadCompleted(bool card_saved);
 };
 
 }  // namespace payments

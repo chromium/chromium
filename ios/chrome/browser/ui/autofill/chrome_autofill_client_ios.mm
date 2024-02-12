@@ -377,10 +377,6 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
                                                      options))));
 }
 
-void ChromeAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {
-  NOTIMPLEMENTED();
-}
-
 void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(
     const CreditCard& card,
     base::OnceClosure callback) {

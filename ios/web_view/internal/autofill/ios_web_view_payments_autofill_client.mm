@@ -18,6 +18,11 @@ void IOSWebViewPaymentsAutofillClient::LoadRiskData(
   [bridge_ loadRiskData:std::move(callback)];
 }
 
+void IOSWebViewPaymentsAutofillClient::CreditCardUploadCompleted(
+    bool card_saved) {
+  [bridge_ handleCreditCardUploadCompleted:card_saved];
+}
+
 void IOSWebViewPaymentsAutofillClient::set_bridge(
     id<CWVAutofillClientIOSBridge> bridge) {
   bridge_ = bridge;

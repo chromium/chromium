@@ -209,7 +209,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
                                 LegalMessageLines legal_message_lines,
                                 bool should_show_prompt,
                                 SaveIbanPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved) override;
   void ConfirmCreditCardFillAssist(const CreditCard& card,
                                    base::OnceClosure callback) override;
   void ShowEditAddressProfileDialog(

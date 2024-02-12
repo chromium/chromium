@@ -48,6 +48,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       MigrationDeleteCardCallback delete_local_card_callback) override;
   void VirtualCardEnrollCompleted(bool is_vcn_enrolled) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
+  void CreditCardUploadCompleted(bool card_saved) override;
 };
 
 }  // namespace autofill::payments

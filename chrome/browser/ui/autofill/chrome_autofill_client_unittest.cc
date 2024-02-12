@@ -257,7 +257,7 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillSurvey) {
 TEST_F(ChromeAutofillClientTest,
        CreditCardUploadCompleted_HidesSaveCardBubbleAndIcon) {
   EXPECT_CALL(save_card_bubble_controller(), ShowConfirmationBubbleView);
-  client()->CreditCardUploadCompleted(true);
+  client()->GetPaymentsAutofillClient()->CreditCardUploadCompleted(true);
 }
 #endif
 

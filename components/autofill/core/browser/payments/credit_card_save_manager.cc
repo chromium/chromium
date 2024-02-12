@@ -517,7 +517,7 @@ void CreditCardSaveManager::OnDidUploadCard(
   }
 
   // Show credit card upload feedback.
-  client_->CreditCardUploadCompleted(
+  client_->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
       result == AutofillClient::PaymentsRpcResult::kSuccess);
 
   if (observer_for_testing_) {

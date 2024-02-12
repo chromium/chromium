@@ -19,4 +19,9 @@ void IOSChromePaymentsAutofillClient::LoadRiskData(
       base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
+void IOSChromePaymentsAutofillClient::CreditCardUploadCompleted(
+    bool card_saved) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace autofill::payments

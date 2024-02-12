@@ -396,8 +396,6 @@ class TestAutofillClientTemplate : public T {
     std::move(callback).Run(get_save_card_offer_user_decision(), {});
   }
 
-  void CreditCardUploadCompleted(bool card_saved) override {}
-
   void ConfirmCreditCardFillAssist(const CreditCard& card,
                                    base::OnceClosure callback) override {
     std::move(callback).Run();

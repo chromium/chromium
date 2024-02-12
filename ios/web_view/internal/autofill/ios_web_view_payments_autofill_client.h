@@ -27,6 +27,9 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   void LoadRiskData(
       base::OnceCallback<void(const std::string&)> callback) override;
 
+  // PaymentsAutofillClient:
+  void CreditCardUploadCompleted(bool card_saved) override;
+
   void set_bridge(id<CWVAutofillClientIOSBridge> bridge);
 
  private:

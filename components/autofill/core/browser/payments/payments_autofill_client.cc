@@ -29,4 +29,6 @@ void PaymentsAutofillClient::ShowLocalCardMigrationResults(
 void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+void PaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
+
 }  // namespace autofill::payments
