@@ -34,8 +34,9 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
   int completed_task_count() { return completed_tasks_; }
 
   // TasksClient:
-  void GetTaskLists(GetTaskListsCallback callback) override;
+  void GetTaskLists(bool force_fetch, GetTaskListsCallback callback) override;
   void GetTasks(const std::string& task_list_id,
+                bool force_fetch,
                 GetTasksCallback callback) override;
   void MarkAsCompleted(const std::string& task_list_id,
                        const std::string& task_id,
@@ -48,6 +49,7 @@ class ASH_EXPORT FakeTasksClient : public TasksClient {
                   const std::string& title,
                   bool completed,
                   TasksClient::OnTaskSavedCallback callback) override;
+  void InvalidateCache() override {}
   void OnGlanceablesBubbleClosed(OnAllPendingCompletedTasksSavedCallback
                                      callback = base::DoNothing()) override;
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b/323974821): Move this file to the Tasks API directory.
 #include "chrome/browser/ui/ash/glanceables/glanceables_tasks_client_impl.h"
 
 #include <algorithm>
@@ -112,8 +113,9 @@ TasksClientImpl::TasksClientImpl(
 TasksClientImpl::~TasksClientImpl() = default;
 
 void TasksClientImpl::GetTaskLists(
+    bool force_fetch,
     api::TasksClient::GetTaskListsCallback callback) {
-  if (task_lists_fetch_state_.status == FetchStatus::kFresh) {
+  if (task_lists_fetch_state_.status == FetchStatus::kFresh && !force_fetch) {
     std::move(callback).Run(/*success=*/true, &task_lists_);
     return;
   }
@@ -128,6 +130,7 @@ void TasksClientImpl::GetTaskLists(
 }
 
 void TasksClientImpl::GetTasks(const std::string& task_list_id,
+                               bool force_fetch,
                                api::TasksClient::GetTasksCallback callback) {
   CHECK(!task_list_id.empty());
 
@@ -141,7 +144,7 @@ void TasksClientImpl::GetTasks(const std::string& task_list_id,
     status_it->second = std::make_unique<TasksFetchState>();
   }
   TasksFetchState& fetch_state = *status_it->second;
-  if (fetch_state.status == FetchStatus::kFresh) {
+  if (fetch_state.status == FetchStatus::kFresh && !force_fetch) {
     std::move(callback).Run(/*success=*/true, &iter->second);
     return;
   }
@@ -207,8 +210,31 @@ void TasksClientImpl::UpdateTask(
                      base::Time::Now(), std::move(callback))));
 }
 
+void TasksClientImpl::InvalidateCache() {
+  for (auto& task_list_state : tasks_fetch_state_) {
+    if (task_list_state.second->status == FetchStatus::kRefreshing) {
+      RunGetTasksCallbacks(task_list_state.first, FetchStatus::kNotFresh,
+                           /*accumulated_raw_tasks=*/{});
+    } else {
+      task_list_state.second->status = FetchStatus::kNotFresh;
+    }
+  }
+
+  if (task_lists_fetch_state_.status == FetchStatus::kRefreshing) {
+    RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
+                             /*accumulated_raw_tasks=*/{});
+  } else {
+    task_lists_fetch_state_.status = FetchStatus::kNotFresh;
+  }
+}
+
 void TasksClientImpl::OnGlanceablesBubbleClosed(
     api::TasksClient::OnAllPendingCompletedTasksSavedCallback callback) {
+  // TODO(b/324462272): We need to watch this. This could cause one client to
+  // cancel the in-flight callbacks for requests sent by another client. This
+  // could become an issue when we have multiple clients for one
+  // `TasksClientImpl`. Remove this after adding a `kRefreshingInvalidated`
+  // state.
   weak_factory_.InvalidateWeakPtrs();
 
   int num_tasks_completed = 0;
@@ -217,6 +243,8 @@ void TasksClientImpl::OnGlanceablesBubbleClosed(
   }
   base::RepeatingClosure barrier_closure =
       base::BarrierClosure(num_tasks_completed, std::move(callback));
+
+  // TODO(b/323975767): Generalize this histogram to the Tasks API.
   base::UmaHistogramCounts100(
       "Ash.Glanceables.Api.Tasks.SimultaneousMarkAsCompletedRequestsCount",
       num_tasks_completed);
@@ -235,19 +263,7 @@ void TasksClientImpl::OnGlanceablesBubbleClosed(
   }
   pending_completed_tasks_.clear();
 
-  for (auto& task_list_state : tasks_fetch_state_) {
-    if (task_list_state.second->status == FetchStatus::kRefreshing) {
-      RunGetTasksCallbacks(task_list_state.first, FetchStatus::kNotFresh, {});
-    } else {
-      task_list_state.second->status = FetchStatus::kNotFresh;
-    }
-  }
-
-  if (task_lists_fetch_state_.status == FetchStatus::kRefreshing) {
-    RunGetTaskListsCallbacks(FetchStatus::kNotFresh, {});
-  } else {
-    task_lists_fetch_state_.status = FetchStatus::kNotFresh;
-  }
+  InvalidateCache();
 }
 
 void TasksClientImpl::FetchTaskListsPage(
@@ -273,13 +289,15 @@ void TasksClientImpl::OnTaskListsPageFetched(
     std::vector<std::unique_ptr<google_apis::tasks::TaskList>>
         accumulated_raw_task_lists,
     base::expected<std::unique_ptr<TaskLists>, ApiErrorCode> result) {
+  // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.GetTaskLists.Latency",
                           base::Time::Now() - request_start_time);
   base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.GetTaskLists.Status",
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    RunGetTaskListsCallbacks(FetchStatus::kNotFresh, {});
+    RunGetTaskListsCallbacks(FetchStatus::kNotFresh,
+                             /*accumulated_raw_tasks=*/{});
     return;
   }
 
@@ -289,6 +307,7 @@ void TasksClientImpl::OnTaskListsPageFetched(
       std::make_move_iterator(result.value()->mutable_items()->end()));
 
   if (result.value()->next_page_token().empty()) {
+    // TODO(b/323975767): Generalize these histograms to the Tasks API.
     base::UmaHistogramCounts100(
         "Ash.Glanceables.Api.Tasks.GetTaskLists.PagesCount", page_number);
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.TaskListsCount",
@@ -325,13 +344,15 @@ void TasksClientImpl::OnTasksPageFetched(
     const base::Time& request_start_time,
     int page_number,
     base::expected<std::unique_ptr<Tasks>, ApiErrorCode> result) {
+  // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.GetTasks.Latency",
                           base::Time::Now() - request_start_time);
   base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.GetTasks.Status",
                            result.error_or(ApiErrorCode::HTTP_SUCCESS));
 
   if (!result.has_value()) {
-    RunGetTasksCallbacks(task_list_id, FetchStatus::kNotFresh, {});
+    RunGetTasksCallbacks(task_list_id, FetchStatus::kNotFresh,
+                         /*accumulated_raw_tasks=*/{});
     return;
   }
 
@@ -341,6 +362,7 @@ void TasksClientImpl::OnTasksPageFetched(
       std::make_move_iterator(result.value()->mutable_items()->end()));
 
   if (result.value()->next_page_token().empty()) {
+    // TODO(b/323975767): Generalize these histograms to the Tasks API.
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.GetTasks.PagesCount",
                                 page_number);
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.RawTasksCount",
@@ -409,6 +431,8 @@ void TasksClientImpl::RunGetTasksCallbacks(
     for (auto& item : ConvertTasks(accumulated_raw_tasks)) {
       iter->second.Add(std::move(item));
     }
+
+    // TODO(b/323975767): Generalize this histogram to the Tasks API.
     base::UmaHistogramCounts100("Ash.Glanceables.Api.Tasks.ProcessedTasksCount",
                                 iter->second.item_count());
   }
@@ -431,6 +455,7 @@ void TasksClientImpl::OnMarkedAsCompleted(
     const base::Time& request_start_time,
     base::RepeatingClosure on_done,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+  // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
                           base::Time::Now() - request_start_time);
   base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.PatchTask.Status",
@@ -443,6 +468,7 @@ void TasksClientImpl::OnTaskAdded(
     const base::Time& request_start_time,
     api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+  // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.InsertTask.Latency",
                           base::Time::Now() - request_start_time);
   base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.InsertTask.Status",
@@ -474,6 +500,7 @@ void TasksClientImpl::OnTaskUpdated(
     const base::Time& request_start_time,
     api::TasksClient::OnTaskSavedCallback callback,
     base::expected<std::unique_ptr<Task>, ApiErrorCode> result) {
+  // TODO(b/323975767): Generalize these histograms to the Tasks API.
   base::UmaHistogramTimes("Ash.Glanceables.Api.Tasks.PatchTask.Latency",
                           base::Time::Now() - request_start_time);
   base::UmaHistogramSparse("Ash.Glanceables.Api.Tasks.PatchTask.Status",

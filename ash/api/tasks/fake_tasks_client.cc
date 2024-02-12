@@ -41,7 +41,8 @@ FakeTasksClient::FakeTasksClient(base::Time tasks_due_time) {
 
 FakeTasksClient::~FakeTasksClient() = default;
 
-void FakeTasksClient::GetTaskLists(GetTaskListsCallback callback) {
+void FakeTasksClient::GetTaskLists(bool force_fetch,
+                                   GetTaskListsCallback callback) {
   if (!paused_) {
     std::move(callback).Run(/*succes=*/true, task_lists_.get());
   } else {
@@ -54,6 +55,7 @@ void FakeTasksClient::GetTaskLists(GetTaskListsCallback callback) {
 }
 
 void FakeTasksClient::GetTasks(const std::string& task_list_id,
+                               bool force_fetch,
                                GetTasksCallback callback) {
   auto iter = tasks_in_task_lists_.find(task_list_id);
   CHECK(iter != tasks_in_task_lists_.end());

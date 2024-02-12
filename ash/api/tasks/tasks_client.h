@@ -32,13 +32,17 @@ class ASH_EXPORT TasksClient {
   using OnTaskSavedCallback = base::OnceCallback<void(const Task* task)>;
   using OnAllPendingCompletedTasksSavedCallback = base::OnceClosure;
 
-  // Fetches all the authenticated user's task lists and invokes `callback` when
-  // done.
-  virtual void GetTaskLists(GetTaskListsCallback callback) = 0;
+  // Retrieves all the authenticated user's task lists and invokes `callback`
+  // when done. If `force_fetch` is true, new data will be pulled from the
+  // Google Tasks API.
+  virtual void GetTaskLists(bool force_fetch,
+                            GetTaskListsCallback callback) = 0;
 
-  // Fetches all tasks in the specified task list (`task_list_id` must not be
-  // empty) and invokes `callback` when done.
+  // Retrieves all tasks in the specified task list (`task_list_id` must not be
+  // empty) and invokes `callback` when done. If `force_fetch` is true, new data
+  // will be pulled from the Google Tasks API.
   virtual void GetTasks(const std::string& task_list_id,
+                        bool force_fetch,
                         GetTasksCallback callback) = 0;
 
   // Marks the specified task in the specified task list as completed. Only root
@@ -60,6 +64,10 @@ class ASH_EXPORT TasksClient {
                           const std::string& title,
                           bool completed,
                           OnTaskSavedCallback callback) = 0;
+
+  // Marks cached Task and TaskList data as "not fresh". This will also fail any
+  // pending callbacks.
+  virtual void InvalidateCache() = 0;
 
   // Method called when the glanceables bubble UI closes. The client can use
   // this as a signal to invalidate cached tasks data.

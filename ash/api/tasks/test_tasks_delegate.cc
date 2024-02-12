@@ -20,24 +20,28 @@ void TestTasksDelegate::UpdateClientForProfileSwitch(
 }
 
 void TestTasksDelegate::GetTaskLists(
+    bool force_fetch,
     TasksClient::GetTaskListsCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void TestTasksDelegate::GetTasks(const std::string& task_list_id,
+                                 bool force_fetch,
                                  TasksClient::GetTasksCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void TestTasksDelegate::AddTask(const std::string& task_list_id,
-                                const std::string& title) {
+                                const std::string& title,
+                                TasksClient::OnTaskSavedCallback callback) {
   NOTIMPLEMENTED();
 }
 
 void TestTasksDelegate::UpdateTask(const std::string& task_list_id,
                                    const std::string& task_id,
                                    const std::string& title,
-                                   bool completed) {
+                                   bool completed,
+                                   TasksClient::OnTaskSavedCallback callback) {
   NOTIMPLEMENTED();
 }
 

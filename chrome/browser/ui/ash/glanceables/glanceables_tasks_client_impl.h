@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b/323974821): Move this file to the Tasks API directory.
 #ifndef CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_TASKS_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_GLANCEABLES_GLANCEABLES_TASKS_CLIENT_IMPL_H_
 
@@ -55,8 +56,10 @@ class TasksClientImpl : public api::TasksClient {
   ~TasksClientImpl() override;
 
   // api::TasksClient:
-  void GetTaskLists(api::TasksClient::GetTaskListsCallback callback) override;
+  void GetTaskLists(bool force_fetch,
+                    api::TasksClient::GetTaskListsCallback callback) override;
   void GetTasks(const std::string& task_list_id,
+                bool force_fetch,
                 api::TasksClient::GetTasksCallback callback) override;
   void MarkAsCompleted(const std::string& task_list_id,
                        const std::string& task_id,
@@ -69,6 +72,7 @@ class TasksClientImpl : public api::TasksClient {
                   const std::string& title,
                   bool completed,
                   api::TasksClient::OnTaskSavedCallback callback) override;
+  void InvalidateCache() override;
   void OnGlanceablesBubbleClosed(
       api::TasksClient::OnAllPendingCompletedTasksSavedCallback callback =
           base::DoNothing()) override;

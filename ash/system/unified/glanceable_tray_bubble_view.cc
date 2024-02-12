@@ -295,6 +295,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
   if (should_show_non_calendar_glanceables && tasks_client) {
     CHECK(!tasks_bubble_view_);
     tasks_client->GetTaskLists(
+        /*force_fetch=*/false,
         base::BindOnce(&GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded,
                        weak_ptr_factory_.GetWeakPtr()));
   }
