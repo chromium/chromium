@@ -172,4 +172,37 @@ TEST(LorgnetteScannerManagerUtilTest,
   EXPECT_EQ(scanner.device_uuid(), "9876-5432");
 }
 
+TEST(LorgnetteScannerManagerUtilTest, ProtocolTypeMopriaNet) {
+  lorgnette::ScannerInfo info;
+  info.set_name("airscan:escl:therest");
+  EXPECT_EQ(ProtocolTypeForScanner(info), "Mopria");
+}
+
+TEST(LorgnetteScannerManagerUtilTest, ProtocolTypeMopriaUSB) {
+  lorgnette::ScannerInfo info;
+  info.set_name("ippusb:escl:therest");
+  EXPECT_EQ(ProtocolTypeForScanner(info), "Mopria");
+}
+
+TEST(LorgnetteScannerManagerUtilTest, ProtocolTypeWSD) {
+  lorgnette::ScannerInfo info;
+  info.set_name("airscan:wsd:therest");
+  EXPECT_EQ(ProtocolTypeForScanner(info), "WSD");
+}
+
+TEST(LorgnetteScannerManagerUtilTest, ProtocolTypeOther) {
+  lorgnette::ScannerInfo info;
+  info.set_name("epson2:net:therest");
+  EXPECT_EQ(ProtocolTypeForScanner(info), "epson2");
+
+  info.set_name("epsonds:libusb:001:002");
+  EXPECT_EQ(ProtocolTypeForScanner(info), "epsonds");
+
+  info.set_name("pixma:04a91234_ABC321");
+  EXPECT_EQ(ProtocolTypeForScanner(info), "pixma");
+
+  info.set_name("fujitsu:fi-8120:10000");
+  EXPECT_EQ(ProtocolTypeForScanner(info), "fujitsu");
+}
+
 }  // namespace ash

@@ -117,6 +117,12 @@ namespace documentScan {
 
     // MIME types that can be requested for returned scans.
     DOMString[] imageFormats;
+
+    // A general human-readable description of the protocol/backend used to
+    // access the scanner, such as Mopria, WSD, or epsonds.  This is primarily
+    // useful for allowing a user to choose between protocols if a device
+    // supports multiple protocols.
+    DOMString protocolType;
   };
 
   // The type of an option.  This is the same set of types as SANE_Value_Type.

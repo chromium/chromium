@@ -804,6 +804,7 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         // hardcode those for now.
         info.add_image_format("image/jpeg");
         info.add_image_format("image/png");
+        info.set_protocol_type(ProtocolTypeForScanner(info));
         if (ShouldIncludeScanner(info, local_only, secure_only)) {
           if (need_to_verify) {
             scanners_to_verify->emplace_back(std::move(info));

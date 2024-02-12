@@ -14,6 +14,7 @@ crosapi::mojom::ScannerInfoPtr CreateTestScannerInfo() {
   scanner->display_name = "GoogleTest Scanner";
   scanner->manufacturer = "GoogleTest";
   scanner->model = "Scanner";
+  scanner->protocol_type = "Mopria";
   return scanner;
 }
 

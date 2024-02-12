@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 
+#include "base/strings/string_util.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -20,6 +21,10 @@ constexpr char kUrlPattern[] = R"((://))";
 // lorgnette records.
 constexpr char kEpsondsNetworkPrefix[] = "epsonds:net:";
 constexpr char kEpson2NetworkPrefix[] = "epson2:net:";
+
+// Names of scanner protocol types.
+constexpr char kMopriaProtocolType[] = "Mopria";
+constexpr char kWsdProtocolType[] = "WSD";
 
 }  // namespace
 
@@ -77,6 +82,21 @@ bool MergeDuplicateScannerRecords(lorgnette::ScannerInfo* scanner_out,
     }
   }
   return false;
+}
+
+std::string ProtocolTypeForScanner(const lorgnette::ScannerInfo& scanner) {
+  // sane-airscan implements two protocols.  For other backends, just return
+  // the backend name.
+  if (scanner.name().starts_with("airscan:escl:")) {
+    return kMopriaProtocolType;
+  } else if (scanner.name().starts_with("airscan:wsd:")) {
+    return kWsdProtocolType;
+  } else if (scanner.name().starts_with("ippusb:escl:")) {
+    return kMopriaProtocolType;
+  } else {
+    return base::ToLowerASCII(
+        scanner.name().substr(0, scanner.name().find(':')));
+  }
 }
 
 }  // namespace ash

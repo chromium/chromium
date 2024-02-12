@@ -136,6 +136,12 @@ struct ScannerInfo {
     // Scanner is connected via WiFi or ethernet.
     kNetwork = 2,
   };
+
+  // A general description of protocol/backend used to access the scanner, such
+  // as Mopria, WSD, or Epson2.  This is primarily useful for preferring one
+  // protocol if a device is usable with multiple protocols.
+  [MinVersion=1]
+  string? protocol_type@8;
 };
 
 // A set of criteria that can be passed to `GetScannerList()`. Only

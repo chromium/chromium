@@ -34,6 +34,10 @@ void ParseScannerName(const std::string& scanner_name,
 bool MergeDuplicateScannerRecords(lorgnette::ScannerInfo* scanner_out,
                                   Scanner& zeroconf_scanner);
 
+// Converts the SANE connection info to a "protocol type", such as Mopria, WSD,
+// or epson2.
+std::string ProtocolTypeForScanner(const lorgnette::ScannerInfo& scanner);
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_LORGNETTE_SCANNER_MANAGER_UTIL_H_
