@@ -48,22 +48,22 @@ class AutofillProgressDialogViewsBrowserTest
   }
 
   void ShowUi(const std::string& name) override {
-    controller()->ShowDialog(GetDialogType(),
-                             base::BindOnce(&CreateAndShowProgressDialog,
-                                            base::Unretained(controller()),
-                                            base::Unretained(web_contents())),
-                             base::DoNothing());
+    controller()->ShowDialog(
+        GetDialogType(),
+        base::BindOnce(&CreateAndShowProgressDialog, controller()->GetWeakPtr(),
+                       base::Unretained(web_contents())),
+        base::DoNothing());
   }
 
   AutofillProgressDialogViews* GetDialogViews() {
     DCHECK(controller());
 
-    AutofillProgressDialogView* dialog_view =
+    base::WeakPtr<AutofillProgressDialogView> dialog_view =
         controller()->autofill_progress_dialog_view();
     if (!dialog_view)
       return nullptr;
 
-    return static_cast<AutofillProgressDialogViews*>(dialog_view);
+    return static_cast<AutofillProgressDialogViews*>(dialog_view.get());
   }
 
   AutofillProgressDialogControllerImpl* controller() const {

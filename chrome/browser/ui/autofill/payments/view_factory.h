@@ -26,8 +26,8 @@ class CardUnmaskAuthenticationSelectionDialog;
 // deletes it on dismissal, so no lifecycle management is needed. However, on
 // Android this is not the case, the view's implementation must delete itself
 // when dismissed.
-AutofillProgressDialogView* CreateAndShowProgressDialog(
-    AutofillProgressDialogController* controller,
+base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
+    base::WeakPtr<AutofillProgressDialogController> controller,
     content::WebContents* web_contents);
 
 // Factory function for creating and showing the view.

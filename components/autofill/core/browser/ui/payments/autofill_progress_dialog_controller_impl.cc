@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,10 +28,12 @@ AutofillProgressDialogControllerImpl::~AutofillProgressDialogControllerImpl() {
 
 void AutofillProgressDialogControllerImpl::ShowDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
-    base::OnceCallback<AutofillProgressDialogView*()>
+    base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>
         create_and_show_view_callback,
     base::OnceClosure cancel_callback) {
-  DCHECK(!autofill_progress_dialog_view_);
+  if (autofill_progress_dialog_view_) {
+    return;
+  }
 
   autofill_progress_dialog_type_ = autofill_progress_dialog_type;
   cancel_callback_ = std::move(cancel_callback);
@@ -160,6 +163,11 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
       NOTREACHED();
       return std::u16string();
   }
+}
+
+base::WeakPtr<AutofillProgressDialogController>
+AutofillProgressDialogControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace autofill

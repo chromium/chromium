@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 
 namespace autofill {
 
@@ -27,6 +28,8 @@ class AutofillProgressDialogView {
                        bool is_canceled_by_user) = 0;
 
   virtual void InvalidateControllerForCallbacks() = 0;
+
+  virtual base::WeakPtr<AutofillProgressDialogView> GetWeakPtr() = 0;
 };
 
 }  // namespace autofill

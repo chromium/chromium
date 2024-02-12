@@ -1222,10 +1222,9 @@ void ChromeAutofillClient::ShowAutofillProgressDialog(
     base::OnceClosure cancel_callback) {
   autofill_progress_dialog_controller_->ShowDialog(
       autofill_progress_dialog_type,
-      base::BindOnce(
-          &CreateAndShowProgressDialog,
-          base::Unretained(autofill_progress_dialog_controller_.get()),
-          base::Unretained(web_contents())),
+      base::BindOnce(&CreateAndShowProgressDialog,
+                     autofill_progress_dialog_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())),
       std::move(cancel_callback));
 }
 
