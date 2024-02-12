@@ -97,14 +97,6 @@ void FencedFrameURLMappingTestPeer::FillMap(const GURL& url) {
   DCHECK(fenced_frame_url_mapping_->IsFull());
 }
 
-void FencedFrameURLMappingTestPeer::SetId(FencedFrameURLMapping::Id id) {
-  fenced_frame_url_mapping_->id_for_testing_ = id;
-}
-
-FencedFrameURLMapping::Id FencedFrameURLMappingTestPeer::GetNextId() const {
-  return FencedFrameURLMapping::GetNextId();
-}
-
 bool PollUntilEvalToTrue(const std::string& script, RenderFrameHost* rfh) {
   base::Time start_time = base::Time::Now();
   base::TimeDelta timeout = TestTimeouts::action_max_timeout();

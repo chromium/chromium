@@ -8650,11 +8650,16 @@ TEST_F(AdAuctionServiceImplEventReportingAttestationTest, NoneAllowed) {
   EXPECT_EQ(network_responder_->ReportCount(), 0u);
 }
 
-// TODO(crbug.com/1422301): The auction must operate on the same fenced frame
-// mapping that was used at the beginning of the auction. If not, we fail the
-// auction and dump without crashing the browser. Once the root cause is known
-// and the issue fixed, remove this test.
-TEST_F(AdAuctionServiceImplTest, FencedFrameUrlMappingChangedDuringAuction) {
+// In some scenarios, the `PageImpl` used in auction may change in middle of the
+// auction. See MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation in
+// SitePerProcessBrowserTest for an example. When this happens, auction must be
+// able to detect the change and abort the auction.
+//
+// See more info about this issue in crbug.com/1422301.
+//
+// TODO(crbug.com/936696): Once RenderDocument is launched, this issue will be
+// resolved, remove this test.
+TEST_F(AdAuctionServiceImplTest, PageImplChangedDuringAuction) {
   network_responder_->RegisterDeferredScriptResponse(kBiddingUrlPath);
   network_responder_->RegisterScriptResponse(kDecisionUrlPath,
                                              BasicSellerReportScript());
@@ -8663,11 +8668,14 @@ TEST_F(AdAuctionServiceImplTest, FencedFrameUrlMappingChangedDuringAuction) {
   interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
-      /*render_url=*/GURL("https://example.com/render"),
+      /*render_gurl=*/GURL("https://example.com/render"),
       /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
 
   JoinInterestGroupAndFlush(interest_group);
+  ASSERT_NE(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->auction_initiator_page(),
+      nullptr);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
   blink::AuctionConfig auction_config;
@@ -8700,23 +8708,158 @@ TEST_F(AdAuctionServiceImplTest, FencedFrameUrlMappingChangedDuringAuction) {
   network_responder_->DoDeferredScriptResponse(kBiddingUrlPath,
                                                BasicBiddingReportScript());
 
-  FencedFrameURLMapping& fenced_frame_urls_map =
-      static_cast<RenderFrameHostImpl*>(main_rfh())
-          ->GetPage()
-          .fenced_frame_urls_map();
+  // Simulate invalidating the `PageImpl` used by the auction.
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->set_auction_initiator_page(nullptr);
 
-  FencedFrameURLMappingTestPeer test_peer(&fenced_frame_urls_map);
-
-  // Change the id of the fenced frame url mapping used by the current auction
-  // to simulate the scenario we've seen in crbug.com/1422301: the fenced frame
-  // url mapping used at the beginning of the auction is not the same as the one
-  // at the end of the auction.
-  test_peer.SetId(test_peer.GetNextId());
-
-  // Complete the auction. It should fail due to the fenced frame url mapping
-  // mismatch.
+  // Complete the auction. It should fail due to the `PageImpl` mismatch.
   run_loop.Run();
   EXPECT_FALSE(maybe_config.has_value());
+}
+
+// Similar to PageImplChangedDuringAuction, but the `PageImpl` is changed before
+// auction starts.
+//
+// TODO(crbug.com/936696): Once RenderDocument is launched, remove this test.
+TEST_F(AdAuctionServiceImplTest, PageImplChangedBeforeAuction) {
+  network_responder_->RegisterDeferredScriptResponse(kBiddingUrlPath);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath,
+                                             BasicSellerReportScript());
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+
+  JoinInterestGroupAndFlush(interest_group);
+  ASSERT_NE(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->auction_initiator_page(),
+      nullptr);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), ad_auction_service_.BindNewPipeAndPassReceiver());
+
+  // Simulate invalidating the `PageImpl` used by the auction.
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->set_auction_initiator_page(nullptr);
+
+  // Start the auction.
+  base::RunLoop run_loop;
+  std::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+  ad_auction_service_->RunAdAuction(
+      auction_config, mojo::NullReceiver(),
+      base::BindLambdaForTesting(
+          [&run_loop, &maybe_config](
+              bool aborted_by_script,
+              const std::optional<
+                  blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+            EXPECT_FALSE(aborted_by_script);
+            maybe_config = config;
+            run_loop.Quit();
+          }));
+
+  // Try to run the auction. It should fail due to the `PageImpl` mismatch.
+  task_environment()->RunUntilIdle();
+  run_loop.Run();
+  EXPECT_FALSE(maybe_config.has_value());
+}
+
+// The weak pointer to the auction initiator page should be reset upon a cross-
+// document navigation.
+// TODO(crbug.com/936696): Once RenderDocument is launched, remove this test.
+TEST_F(AdAuctionServiceImplTest,
+       ResetAuctionInitiatorPageOnCrossDocumentNavigation) {
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe =
+      NavigationSimulator::NavigateAndCommitFromDocument(kUrlA, subframe);
+  RenderFrameHostImpl* subframe_rfh =
+      static_cast<RenderFrameHostImpl*>(subframe);
+
+  // Act as if there was an infinite unload handler in the subframe.
+  subframe_rfh->DoNotDeleteForTesting();
+
+  // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
+  // fire before OnDetach() is called.
+  subframe_rfh->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframe);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  base::WeakPtr<PageImpl> auction_initator_page =
+      subframe_rfh->auction_initiator_page();
+  ASSERT_NE(auction_initator_page, nullptr);
+  EXPECT_EQ(auction_initator_page.get(), &(subframe_rfh->GetPage()));
+
+  // Commit a cross-document navigation in the subframe.
+  NavigationSimulator::NavigateAndCommitFromDocument(kUrlB, subframe);
+
+  // The weak pointer to the auction initiator page should be reset.
+  ASSERT_NE(subframe_rfh, nullptr);
+  EXPECT_EQ(subframe_rfh->auction_initiator_page(), nullptr);
+}
+
+// The weak pointer to the auction initiator page should not be reset upon a
+// same-document navigation.
+// TODO(crbug.com/936696): Once RenderDocument is launched, remove this test.
+TEST_F(AdAuctionServiceImplTest,
+       DoNotResetAuctionInitiatorPageOnSameDocumentNavigation) {
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://a.test/#frag1"), subframe);
+  RenderFrameHostImpl* subframe_rfh =
+      static_cast<RenderFrameHostImpl*>(subframe);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.update_url = kUpdateUrlA;
+  interest_group.bidding_url = kBiddingLogicUrlA;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group, subframe);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  base::WeakPtr<PageImpl> auction_initator_page =
+      subframe_rfh->auction_initiator_page();
+  ASSERT_NE(auction_initator_page, nullptr);
+  EXPECT_EQ(auction_initator_page.get(), &(subframe_rfh->GetPage()));
+
+  GURL same_document_url = GURL("https://a.test/#frag2");
+
+  // Commit a same-document navigation in the subframe.
+  auto simulator =
+      NavigationSimulator::CreateRendererInitiated(same_document_url, subframe);
+  simulator->CommitSameDocument();
+
+  // The weak pointer to the auction initiator page should not be reset.
+  ASSERT_NE(subframe_rfh, nullptr);
+  ASSERT_NE(subframe_rfh->auction_initiator_page(), nullptr);
+  EXPECT_EQ(subframe_rfh->auction_initiator_page().get(),
+            &(subframe_rfh->GetPage()));
+  EXPECT_EQ(subframe_rfh->auction_initiator_page().get(),
+            auction_initator_page.get());
 }
 
 class AdAuctionServiceImplSharedStorageEnabledTest

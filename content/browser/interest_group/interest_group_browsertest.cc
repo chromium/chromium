@@ -80,6 +80,7 @@
 #include "content/public/test/url_loader_monitor.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
@@ -21083,6 +21084,66 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NoFeatureDetection) {
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(false, EvalJs(shell(), "'protectedAudience' in navigator"));
+}
+class InterestGroupBFCacheBrowserTest : public InterestGroupBrowserTest {
+ public:
+  InterestGroupBFCacheBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kBackForwardCache);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// When there is a cross-document navigation and the original page goes into the
+// bfcache, the weak pointer to the auction initiator page should not be reset.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBFCacheBrowserTest,
+    CrossDocumentNavigationShouldNotResetAuctionInitiatorPageInBFCache) {
+  const GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  const url::Origin test_origin = url::Origin::Create(test_url);
+
+  RenderFrameHostImplWrapper main_frame(web_contents()->GetPrimaryMainFrame());
+
+  // Before first Protected Audience API call, the auction initiator page should
+  // not be set.
+  ASSERT_EQ(main_frame->auction_initiator_page(), nullptr);
+
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/test_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds({{{GURL("https://example.com/render"),
+                               R"({"ad":"metadata","here":[1,2]})"}}})
+                    .Build()));
+
+  base::WeakPtr<PageImpl> auction_initiator_page =
+      main_frame->auction_initiator_page();
+  ASSERT_NE(auction_initiator_page, nullptr);
+  EXPECT_EQ(auction_initiator_page.get(), &(main_frame->GetPage()));
+
+  // Navigate, the main frame is put into bfcache.
+  const GURL test_url_b =
+      embedded_https_test_server().GetURL("b.test", "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url_b));
+  ASSERT_TRUE(main_frame->IsInBackForwardCache());
+
+  // Navigate back.
+  TestNavigationObserver back_load_observer(shell()->web_contents());
+  shell()->web_contents()->GetController().GoBack();
+  back_load_observer.Wait();
+
+  // The auction initiator page should not be reset since the original page goes
+  // into the bfcache.
+  ASSERT_NE(main_frame->auction_initiator_page(), nullptr);
+  EXPECT_EQ(main_frame->auction_initiator_page().get(),
+            &(main_frame->GetPage()));
+  EXPECT_EQ(main_frame->auction_initiator_page().get(),
+            auction_initiator_page.get());
 }
 
 class InterestGroupAdComponentLimitBrowserTest

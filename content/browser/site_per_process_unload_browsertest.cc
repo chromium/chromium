@@ -1751,12 +1751,8 @@ IN_PROC_BROWSER_TEST_P(
   DisableBackForwardCacheForTesting(web_contents(),
                                     BackForwardCache::TEST_USES_UNLOAD_EVENT);
 
-  // 3) Retrieve the fenced frame url mapping id associated with the owned page
-  // by the main RenderFrameHost's `DocumentAssociatedData`. Since
-  // `DocumentAssociatedData` does not change its owned page during its
-  // lifetime, this id also uniquely identifies `DocumentAssociatedData`.
-  FencedFrameURLMapping::Id fenced_frame_url_mapping_id =
-      child_rfh->GetPage().fenced_frame_urls_map().unique_id();
+  // 3) Retrieve the weak pointer to the owned page by the main
+  // RenderFrameHost's `DocumentAssociatedData`.
   base::WeakPtr<PageImpl> weak_ptr_page = child_rfh->GetPage().GetWeakPtrImpl();
 
   // 4) Navigate the main frame to a same-site url. The unload handler of the
@@ -1772,16 +1768,6 @@ IN_PROC_BROWSER_TEST_P(
       GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
 
   // 6) If RenderDocument feature is not enabled for all frames, verify
-  // `DocumentAssociatedData` has changed by comparing fenced frame url mapping
-  // ids.
-  FencedFrameURLMapping::Id fenced_frame_url_mapping_id_after_navigation =
-      child_rfh->GetPage().fenced_frame_urls_map().unique_id();
-
-  EXPECT_EQ(fenced_frame_url_mapping_id !=
-                fenced_frame_url_mapping_id_after_navigation,
-            GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
-
-  // 7)  If RenderDocument feature is not enabled for all frames, verify
   // `PageImpl` has changed by checking the weak pointer.
   EXPECT_EQ(weak_ptr_page == nullptr,
             GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
