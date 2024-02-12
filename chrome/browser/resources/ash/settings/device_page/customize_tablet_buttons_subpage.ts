@@ -171,7 +171,7 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       return '';
     }
     return this.i18n(
-        'customizeButtonSubpageDescription', this.selectedTablet!.name);
+        'customizeTabletButtonSubpageDescription', this.selectedTablet!.name);
   }
 }
 
