@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "UI>Settings>Privacy"
 }
-
 team_email: "chrome-privacy-controls@google.com"
+buganizer_public: {
+  component_id: 1457044
+}
