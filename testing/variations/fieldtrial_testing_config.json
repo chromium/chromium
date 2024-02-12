@@ -4658,8 +4658,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20240205",
+                    "name": "Enabled_20240207",
                     "enable_features": [
+                        "HostIndexedMetadataGrants",
                         "IndexedHostContentSettingsMap"
                     ]
                 }
@@ -9100,67 +9101,6 @@
                     "name": "Disabled",
                     "disable_features": [
                         "RemoveMobileViewportDoubleTap"
-                    ]
-                }
-            ]
-        }
-    ],
-    "HostIndexedTpcdMetadataGrants": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "HostIndexedMetadataGrants"
-                    ]
-                },
-                {
-                    "name": "EnabledWith500TestData",
-                    "params": {
-                        "MetadataGrantsThreshold": "499",
-                        "UseTestMetadata": "500"
-                    },
-                    "enable_features": [
-                        "HostIndexedMetadataGrants"
-                    ]
-                },
-                {
-                    "name": "DisabledWith500TestData",
-                    "params": {
-                        "MetadataGrantsThreshold": "1000",
-                        "UseTestMetadata": "500"
-                    },
-                    "enable_features": [
-                        "HostIndexedMetadataGrants"
-                    ]
-                },
-                {
-                    "name": "EnabledWith1500TestData",
-                    "params": {
-                        "MetadataGrantsThreshold": "1499",
-                        "UseTestMetadata": "1500"
-                    },
-                    "enable_features": [
-                        "HostIndexedMetadataGrants"
-                    ]
-                },
-                {
-                    "name": "DisabledWith1500TestData",
-                    "params": {
-                        "MetadataGrantsThreshold": "5000",
-                        "UseTestMetadata": "1500"
-                    },
-                    "enable_features": [
-                        "HostIndexedMetadataGrants"
                     ]
                 }
             ]
