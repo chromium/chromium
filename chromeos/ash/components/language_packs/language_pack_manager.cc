@@ -5,7 +5,9 @@
 #include "chromeos/ash/components/language_packs/language_pack_manager.h"
 
 #include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -60,11 +62,25 @@ std::optional<std::string> GetDlcIdForBasePack(const std::string& feature_id) {
 }
 
 void InstallDlc(const std::string& dlc_id,
-                DlcserviceClient::InstallCallback install_callback) {
+                DlcserviceClient::InstallCallback callback) {
   dlcservice::InstallRequest install_request;
   install_request.set_id(dlc_id);
-  DlcserviceClient::Get()->Install(install_request, std::move(install_callback),
+  DlcserviceClient::Get()->Install(install_request, std::move(callback),
                                    base::DoNothing());
+}
+
+void GetDlcState(const std::string& dlc_id,
+                 DlcserviceClient::GetDlcStateCallback callback) {
+  DlcserviceClient::Get()->GetDlcState(dlc_id, std::move(callback));
+}
+
+void UninstallDlc(const std::string& dlc_id,
+                  DlcserviceClient::UninstallCallback callback) {
+  DlcserviceClient::Get()->Uninstall(dlc_id, std::move(callback));
+}
+
+void GetExistingDlcs(DlcserviceClient::GetExistingDlcsCallback callback) {
+  DlcserviceClient::Get()->GetExistingDlcs(std::move(callback));
 }
 
 void OnInstallDlcComplete(OnInstallCompleteCallback callback,
@@ -390,9 +406,8 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
   base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.GetPackState.FeatureId",
                                 GetFeatureIdValueForUma(feature_id));
 
-  DlcserviceClient::Get()->GetDlcState(
-      *dlc_id,
-      base::BindOnce(&OnGetDlcState, std::move(callback), feature_id, locale));
+  GetDlcState(*dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback),
+                                      feature_id, locale));
 }
 
 void LanguagePackManager::RemovePack(const std::string& feature_id,
@@ -409,8 +424,8 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
     return;
   }
 
-  DlcserviceClient::Get()->Uninstall(
-      *dlc_id, base::BindOnce(&OnUninstallDlcComplete, std::move(callback),
+  UninstallDlc(*dlc_id,
+               base::BindOnce(&OnUninstallDlcComplete, std::move(callback),
                               feature_id, locale));
 }
 
@@ -465,8 +480,7 @@ void LanguagePackManager::CheckAndUpdateDlcsForInputMethods(
     PrefService* pref_service) {
   // The list of input methods have changed. We need to get the list of current
   // DLCs installed on device, which is an asynchronous method.
-  DlcserviceClient::Get()->GetExistingDlcs(
-      base::BindOnce(&OnGetExistingDlcs, pref_service));
+  GetExistingDlcs(base::BindOnce(&OnGetExistingDlcs, pref_service));
 }
 
 void LanguagePackManager::ObservePrefs(PrefService* pref_service) {
