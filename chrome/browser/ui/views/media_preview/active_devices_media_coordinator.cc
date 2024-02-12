@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/media_preview/active_devices_media_coordinator.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "chrome/browser/ui/views/media_preview/scroll_media_preview.h"
 #include "components/user_prefs/user_prefs.h"
@@ -15,6 +17,7 @@
 #include "content/public/browser/media_device_id.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -50,9 +53,16 @@ ActiveDevicesMediaCoordinator::ActiveDevicesMediaCoordinator(
   web_contents_ = web_contents->GetWeakPtr();
 
   CHECK(parent_view);
-  container_ =
+  auto* scroll_contents =
       scroll_media_preview::CreateScrollViewAndGetContents(*parent_view);
-  CHECK(container_);
+  CHECK(scroll_contents);
+
+  container_ = scroll_contents->AddChildView(std::make_unique<MediaView>());
+  container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                      0));
 
   MediaCaptureDevicesDispatcher::GetInstance()->AddObserver(this);
   UpdateMediaCoordinatorList();

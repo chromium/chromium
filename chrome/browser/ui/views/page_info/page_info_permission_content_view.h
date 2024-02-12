@@ -58,7 +58,8 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
   void PermissionChanged();
 
   // Adds Media (Camera or Mic) live preview feeds.
-  void MaybeAddMediaPreview(content::WebContents* web_contents);
+  void MaybeAddMediaPreview(content::WebContents* web_contents,
+                            views::View& preceding_separator);
 
   raw_ptr<PageInfo> presenter_ = nullptr;
   ContentSettingsType type_;
