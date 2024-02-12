@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefs/browser_prefs.h"
 
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -979,6 +980,19 @@ constexpr char kSafeBrowsingEsbEnabledTimestamp[] =
 constexpr char kScreenTimeEnabled[] = "policy.screen_time";
 #endif
 
+// Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr std::array<const char*, 6u>
+    kWelcomeTourTimeBucketsOfFirstInteractions = {
+        "ash.welcome_tour.interaction_time.ExploreApp.first_time_bucket",
+        "ash.welcome_tour.interaction_time.FilesApp.first_time_bucket",
+        "ash.welcome_tour.interaction_time.Launcher.first_time_bucket",
+        "ash.welcome_tour.interaction_time.QuickSettings.first_time_bucket",
+        "ash.welcome_tour.interaction_time.Search.first_time_bucket",
+        "ash.welcome_tour.interaction_time.SettingsApp.first_time_bucket",
+};
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1374,6 +1388,13 @@ void RegisterProfilePrefsForMigration(
 #endif
   registry->RegisterBooleanPref(kSafeBrowsingDeepScanPromptSeen, false);
   registry->RegisterTimePref(kSafeBrowsingEsbEnabledTimestamp, base::Time());
+
+// Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
+    registry->RegisterIntegerPref(pref, -1);
+  }
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2619,6 +2640,13 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Deprecated 02/2024
   profile_prefs->ClearPref(kSafeBrowsingDeepScanPromptSeen);
   profile_prefs->ClearPref(kSafeBrowsingEsbEnabledTimestamp);
+
+  // Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
+    profile_prefs->ClearPref(pref);
+  }
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

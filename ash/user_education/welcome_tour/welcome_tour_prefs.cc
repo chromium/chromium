@@ -30,13 +30,6 @@ static constexpr char kReasonForFirstTourPrevention[] =
 
 // Helpers ---------------------------------------------------------------------
 
-std::string GetTimeBucketOfFirstInteractionPrefName(
-    welcome_tour_metrics::Interaction interaction) {
-  return base::StrCat({kTimeOfFirstInteractionPrefPrefix,
-                       welcome_tour_metrics::ToString(interaction),
-                       ".first_time_bucket"});
-}
-
 bool TourWasPreventedCounterfactually(PrefService* prefs) {
   return GetReasonForFirstTourPrevention(prefs) ==
          welcome_tour_metrics::PreventedReason::kCounterfactualExperimentArm;
@@ -65,65 +58,9 @@ std::optional<base::Time> GetTimePrefIfSet(PrefService* prefs,
                                 : base::ValueToTime(pref->GetValue());
 }
 
-bool MarkTimeBucketOfFirstInteraction(
-    PrefService* prefs,
-    welcome_tour_metrics::Interaction interaction) {
-  CHECK(features::IsWelcomeTourEnabled());
-
-  auto time_to_measure_from =
-      GetTimeOfFirstCompletionOrCounterfactualPrevention(prefs);
-
-  // This function should only be called if the tour has been compeleted or
-  // prevented counterfactually, so that we always have a time to measure the
-  // delta from.
-  CHECK(time_to_measure_from.has_value());
-
-  if (const auto bucket_pref_name =
-          GetTimeBucketOfFirstInteractionPrefName(interaction);
-      prefs->FindPreference(bucket_pref_name)->IsDefaultValue()) {
-    if (auto first_interaction_time =
-            GetTimeOfFirstInteraction(prefs, interaction)) {
-      // Calculate the delta from the first interaction, since it has happened.
-      auto time_delta = *first_interaction_time - *time_to_measure_from;
-      prefs->SetInteger(
-          bucket_pref_name,
-          static_cast<int>(user_education_util::GetTimeBucket(time_delta)));
-
-      return true;
-    } else if (base::Time::Now() - *time_to_measure_from > base::Days(14)) {
-      // Since it has been greater than the max possible period, just record
-      // that so that we can gather metrics about users that don't engage.
-      prefs->SetInteger(bucket_pref_name,
-                        static_cast<int>(TimeBucket::kOverTwoWeeks));
-
-      return true;
-    }
-  }
-
-  return false;
-}
-
 }  // namespace
 
 // Utilities -------------------------------------------------------------------
-
-std::optional<TimeBucket> GetTimeBucketOfFirstInteraction(
-    PrefService* prefs,
-    welcome_tour_metrics::Interaction interaction) {
-  auto pref_name = GetTimeBucketOfFirstInteractionPrefName(interaction);
-
-  auto* pref = prefs->FindPreference(pref_name);
-  if (!pref || pref->IsDefaultValue() || !pref->GetValue()->is_int()) {
-    return std::nullopt;
-  }
-
-  auto bucket = static_cast<TimeBucket>(pref->GetValue()->GetInt());
-  if (kAllTimeBucketsSet.Has(bucket)) {
-    return bucket;
-  }
-
-  return std::nullopt;
-}
 
 std::optional<base::Time> GetTimeOfFirstInteraction(
     PrefService* prefs,
@@ -189,23 +126,14 @@ bool MarkTimeOfFirstInteraction(PrefService* prefs,
   // delta from.
   CHECK(time_to_measure_from.has_value());
 
-  // If either pref was modified, return true so the caller can act accordingly,
-  // e.g., submit metrics.
-  bool either_pref_was_set = false;
-
   // Set the continuous time pref.
   const auto time_pref_name = GetTimeOfFirstInteractionPrefName(interaction);
   if (prefs->FindPreference(time_pref_name)->IsDefaultValue()) {
     prefs->SetTime(time_pref_name, now);
-    either_pref_was_set = true;
+    return true;
   }
 
-  // Set the quantized time pref.
-  if (MarkTimeBucketOfFirstInteraction(prefs, interaction)) {
-    either_pref_was_set = true;
-  }
-
-  return either_pref_was_set;
+  return false;
 }
 
 bool MarkTimeOfFirstTourCompletion(PrefService* prefs) {
@@ -225,36 +153,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   for (const auto interaction : welcome_tour_metrics::kAllInteractionsSet) {
     registry->RegisterTimePref(GetTimeOfFirstInteractionPrefName(interaction),
                                base::Time());
-    registry->RegisterIntegerPref(
-        GetTimeBucketOfFirstInteractionPrefName(interaction), -1);
   }
-}
-
-std::vector<welcome_tour_metrics::Interaction> SyncInteractionPrefs(
-    PrefService* prefs) {
-  std::vector<welcome_tour_metrics::Interaction> updated_prefs;
-  auto time_to_measure_from =
-      GetTimeOfFirstCompletionOrCounterfactualPrevention(prefs);
-
-  // If the tour has not been prevented counterfactually or completed, there are
-  // no valid interaction prefs to sync.
-  if (!time_to_measure_from.has_value()) {
-    return updated_prefs;
-  }
-
-  for (auto interaction : welcome_tour_metrics::kAllInteractionsSet) {
-    // Currently, syncing prefs is only concerned with the bucketed time
-    // metrics. If they are already recorded, do nothing.
-    if (GetTimeBucketOfFirstInteraction(prefs, interaction).has_value()) {
-      continue;
-    }
-
-    if (MarkTimeBucketOfFirstInteraction(prefs, interaction)) {
-      updated_prefs.push_back(interaction);
-    }
-  }
-
-  return updated_prefs;
 }
 
 }  // namespace ash::welcome_tour_prefs
