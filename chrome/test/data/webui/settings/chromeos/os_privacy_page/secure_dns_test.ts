@@ -15,12 +15,14 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {SecureDnsInputElement, SettingsSecureDnsDialogElement, SettingsSecureDnsElement, SecureDnsResolverType} from 'chrome://os-settings/lazy_load.js';
 import {PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsUiManagementMode, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNull, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
+
+import {clearBody} from '../utils.js';
 
 // clang-format on
 
@@ -312,11 +314,15 @@ suite('SettingsSecureDns', function() {
   });
 });
 
-suite('OsSettingsRevampSecureDnsDialog', () => {
+suite('SecureDnsDialog', () => {
   let testBrowserProxy: TestPrivacyPageBrowserProxy;
   let testElement: SettingsSecureDnsElement;
   let secureDnsToggle: SettingsToggleButtonElement;
   let secureDnsToggleDialog: SettingsSecureDnsDialogElement;
+  const isDeprecateDnsDialogEnabled =
+      loadTimeData.getBoolean('isDeprecateDnsDialogEnabled');
+  const isRevampWayfindingEnabled =
+      loadTimeData.getBoolean('isRevampWayfindingEnabled');
 
   /**
    * Checks that the select menu is shown and the toggle is properly
@@ -346,12 +352,11 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       showSecureDnsSetting: true,
-      isRevampWayfindingEnabled: true,
     });
   });
 
   setup(async function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    clearBody();
 
     testBrowserProxy = new TestPrivacyPageBrowserProxy();
     PrivacyPageBrowserProxyImpl.setInstance(testBrowserProxy);
@@ -359,6 +364,7 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
     testElement.prefs = {
       'dns_over_https': {
         'mode': {'value': SecureDnsMode.AUTOMATIC},
+        'templates': {'value': ''},
       },
     };
     document.body.appendChild(testElement);
@@ -375,112 +381,126 @@ suite('OsSettingsRevampSecureDnsDialog', () => {
         SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
-  teardown(function() {
-    testElement.remove();
-  });
+  if (isDeprecateDnsDialogEnabled || !isRevampWayfindingEnabled) {
+    test(
+        'No warning dialog appears when secure DNS is toggled off',
+        async () => {
+          // Initiate a toggle change from on to off.
+          secureDnsToggle.click();
+          await flushTasks();
 
-  test('SecureDnsDialogSanityCheck', () => {
-    // Initiate a toggle change from on to off, opens the warning dialog.
-    secureDnsToggle.click();
-    flush();
+          secureDnsToggleDialog =
+              testElement.shadowRoot!.querySelector('#warningDialog')!;
+          assertNull(secureDnsToggleDialog);
+          assertFalse(secureDnsToggle.checked);
+          assertTrue(getResolverOptions().hidden);
+        });
+  } else {
+    test('SecureDnsDialogSanityCheck', () => {
+      // Initiate a toggle change from on to off, opens the warning dialog.
+      secureDnsToggle.click();
+      flush();
 
-    setAndAssertSecureDnsDialog();
-  });
-
-  test('SecureDnsDialogCancel', async () => {
-    // Initiate a toggle change from on to off, opens the warning dialog.
-    secureDnsToggle.click();
-    flush();
-    setAndAssertSecureDnsDialog();
-
-    secureDnsToggleDialog.$.cancelButton.click();
-    flush();
-
-    // Wait for onDisableDnsDialogClosed_ to finish.
-    await flushTasks();
-    await waitAfterNextRender(secureDnsToggle);
-
-    assertFalse(secureDnsToggleDialog.$.dialog.open);
-    assertTrue(secureDnsToggle.checked);
-    assertResolverSelectShown();
-    assertEquals(
-        SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
-  });
-
-  test('SecureDnsDialogOnToOff', () => {
-    // Initiate a toggle change from on to off, opens the warning dialog.
-    secureDnsToggle.click();
-    flush();
-    setAndAssertSecureDnsDialog();
-
-    // Turn off the toggle
-    secureDnsToggleDialog.$.disableButton.click();
-    webUIListenerCallback('secure-dns-setting-changed', {
-      mode: SecureDnsMode.OFF,
-      config: '',
-      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      setAndAssertSecureDnsDialog();
     });
-    flush();
 
-    assertFalse(secureDnsToggle.checked);
-    assertTrue(getResolverOptions().hidden);
-  });
+    test('SecureDnsDialogCancel', async () => {
+      // Initiate a toggle change from on to off, opens the warning dialog.
+      secureDnsToggle.click();
+      flush();
+      setAndAssertSecureDnsDialog();
 
-  test('SecureDnsDialogSecureOffToOn', () => {
-    // If the user selects Custom Secure mode with an invalid input, we will not
-    // register that the user wants to use secure mode (see the comment on
-    // secure_dns_dialog.ts), however, when toggled off and on, we will still
-    // show that the user had selected Custom before.
+      secureDnsToggleDialog.$.cancelButton.click();
+      flush();
 
-    // Select Secure in the menu button with no input and config.
-    webUIListenerCallback('secure-dns-setting-changed', {
-      mode: SecureDnsMode.SECURE,
-      config: '',
-      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      // Wait for onDisableDnsDialogClosed_ to finish.
+      await flushTasks();
+      await waitAfterNextRender(secureDnsToggle);
+
+      assertFalse(secureDnsToggleDialog.$.dialog.open);
+      assertTrue(secureDnsToggle.checked);
+      assertResolverSelectShown();
+      assertEquals(
+          SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
     });
-    testElement.prefs = {
-      'dns_over_https':
-          {'mode': {'value': SecureDnsMode.SECURE}, 'templates': {'value': ''}},
-    };
 
-    // Simulate that the toggle is off.
-    webUIListenerCallback('secure-dns-setting-changed', {
-      mode: SecureDnsMode.OFF,
-      config: '',
-      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    test('SecureDnsDialogOnToOff', () => {
+      // Initiate a toggle change from on to off, opens the warning dialog.
+      secureDnsToggle.click();
+      flush();
+      setAndAssertSecureDnsDialog();
+
+      // Turn off the toggle
+      secureDnsToggleDialog.$.disableButton.click();
+      webUIListenerCallback('secure-dns-setting-changed', {
+        mode: SecureDnsMode.OFF,
+        config: '',
+        managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      });
+      flush();
+
+      assertFalse(secureDnsToggle.checked);
+      assertTrue(getResolverOptions().hidden);
     });
-    testElement.prefs = {
-      'dns_over_https':
-          {'mode': {'value': SecureDnsMode.OFF}, 'templates': {'value': ''}},
-    };
 
-    // Turn on the toggle
-    secureDnsToggle.click();
-    flush();
-    assertTrue(secureDnsToggle.checked);
-    assertResolverSelectShown();
-    assertEquals(
-        SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
+    test('SecureDnsDialogSecureOffToOn', () => {
+      // If the user selects Custom Secure mode with an invalid input, we will
+      // not register that the user wants to use secure mode (see the comment on
+      // secure_dns_dialog.ts), however, when toggled off and on, we will still
+      // show that the user had selected Custom before.
 
-    // Turn off the toggle, this will dispatch an event from the dialog since
-    // the invalid Custom secure mode was not registered to the pref. For more
-    // info, see the comment in secure_dns_dialog.ts.
-    secureDnsToggle.click();
-    flush();
-    setAndAssertSecureDnsDialog();
+      // Select Secure in the menu button with no input and config.
+      webUIListenerCallback('secure-dns-setting-changed', {
+        mode: SecureDnsMode.SECURE,
+        config: '',
+        managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      });
+      testElement.prefs = {
+        'dns_over_https': {
+          'mode': {'value': SecureDnsMode.SECURE},
+          'templates': {'value': ''},
+        },
+      };
 
-    secureDnsToggleDialog.$.disableButton.click();
-    flush();
-    assertFalse(secureDnsToggle.checked);
-    assertTrue(getResolverOptions().hidden);
+      // Simulate that the toggle is off.
+      webUIListenerCallback('secure-dns-setting-changed', {
+        mode: SecureDnsMode.OFF,
+        config: '',
+        managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+      });
+      testElement.prefs = {
+        'dns_over_https':
+            {'mode': {'value': SecureDnsMode.OFF}, 'templates': {'value': ''}},
+      };
 
-    // Turn on the toggle. The selected menu option should still be secure
-    // mode.
-    secureDnsToggle.click();
-    flush();
-    assertTrue(secureDnsToggle.checked);
-    assertResolverSelectShown();
-    assertEquals(
-        SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
-  });
+      // Turn on the toggle
+      secureDnsToggle.click();
+      flush();
+      assertTrue(secureDnsToggle.checked);
+      assertResolverSelectShown();
+      assertEquals(
+          SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
+
+      // Turn off the toggle, this will dispatch an event from the dialog since
+      // the invalid Custom secure mode was not registered to the pref. For more
+      // info, see the comment in secure_dns_dialog.ts.
+      secureDnsToggle.click();
+      flush();
+      setAndAssertSecureDnsDialog();
+
+      secureDnsToggleDialog.$.disableButton.click();
+      flush();
+      assertFalse(secureDnsToggle.checked);
+      assertTrue(getResolverOptions().hidden);
+
+      // Turn on the toggle. The selected menu option should still be secure
+      // mode.
+      secureDnsToggle.click();
+      flush();
+      assertTrue(secureDnsToggle.checked);
+      assertResolverSelectShown();
+      assertEquals(
+          SecureDnsResolverType.CUSTOM, testElement.$.resolverSelect.value);
+    });
+  }
 });

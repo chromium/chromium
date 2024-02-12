@@ -3935,6 +3935,10 @@ bool IsOsSettingsAppBadgingToggleEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsAppBadgingToggle);
 }
 
+bool IsOsSettingsDeprecateDnsDialogEnabled() {
+  return base::FeatureList::IsEnabled(kOsSettingsDeprecateDnsDialog);
+}
+
 bool IsOsSettingsDeprecateSyncMetricsToggleEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsDeprecateSyncMetricsToggle);
 }

@@ -1524,9 +1524,34 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDns) {
           "runMochaSuite('SettingsSecureDns')");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDnsDialog) {
-  RunTest("settings/chromeos/os_privacy_page/secure_dns_test.js",
-          "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
+class OSSettingsPrivacyTestDeprecateDnsDialogEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsPrivacyTestDeprecateDnsDialogEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOsSettingsDeprecateDnsDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestDeprecateDnsDialogEnabled,
+                       OsPrivacyPageDeprecateDnsDialog) {
+  RunSettingsTest("os_privacy_page/secure_dns_test.js",
+                  "runMochaSuite('SecureDnsDialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       OsPrivacyPageSecureDnsDialog) {
+  RunSettingsTest("os_privacy_page/secure_dns_test.js",
+                  "runMochaSuite('SecureDnsDialog')");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       OsPrivacyPageSecureDnsDialog) {
+  RunSettingsTest("os_privacy_page/secure_dns_test.js",
+                  "runMochaSuite('SecureDnsDialog')");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSmartPrivacySubpage) {

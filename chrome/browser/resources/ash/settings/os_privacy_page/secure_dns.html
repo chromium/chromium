@@ -28,10 +28,11 @@
       }
     </style>
 
-    <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+    <template is="dom-if" if="[[!shouldShowDialogWhenDisablingDns_]]">
       <settings-toggle-button
           id="secureDnsToggle"
           class="hr"
+          icon="[[getDnsRowIcon_()]]"
           pref="{{secureDnsToggle_}}"
           label="$i18n{secureDnsOsSettingsTitle}"
           sub-label="[[secureDnsDescription_]]"
@@ -39,7 +40,7 @@
       </settings-toggle-button>
     </template>
 
-    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+    <template is="dom-if" if="[[shouldShowDialogWhenDisablingDns_]]">
       <settings-toggle-button
           id="secureDnsToggle"
           class="hr"
