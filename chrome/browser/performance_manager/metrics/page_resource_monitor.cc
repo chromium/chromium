@@ -105,6 +105,15 @@ bool ContextIsTab(const ResourceContext& context) {
   return page_node && page_node->GetType() == PageType::kTab;
 }
 
+bool IsCPUInterventionEvaluationLoggingEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(
+      features::kCPUInterventionEvaluationLogging);
+#endif
+}
+
 }  // namespace
 
 class PageResourceMonitor::CPUResultConverter {
@@ -142,8 +151,12 @@ PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
                           .CreateScopedQuery()) {
   resource_query_.AddObserver(this);
   resource_query_.Start(kCollectionDelay);
-  cpu_result_converter_ = std::make_unique<CPUResultConverter>(
-      enable_system_cpu_probe ? CpuProbe::Create() : nullptr);
+  std::unique_ptr<CpuProbe> system_cpu_probe;
+  if (enable_system_cpu_probe && IsCPUInterventionEvaluationLoggingEnabled()) {
+    system_cpu_probe = CpuProbe::Create();
+  }
+  cpu_result_converter_ =
+      std::make_unique<CPUResultConverter>(std::move(system_cpu_probe));
   if (base::FeatureList::IsEnabled(features::kResourceAttributionValidation)) {
     cpu_monitor_ = std::make_unique<PageResourceCPUMonitor>();
   }
@@ -278,9 +291,7 @@ void PageResourceMonitor::OnPageResourceUsageResult(
 
   time_of_last_resource_usage_ = now;
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kCPUInterventionEvaluationLogging)) {
+  if (IsCPUInterventionEvaluationLoggingEnabled()) {
     LogCPUInterventionMetrics(page_cpu_usage, system_cpu, now,
                               CPUInterventionSuffix::kBaseline);
     bool is_cpu_over_threshold =
@@ -311,7 +322,6 @@ void PageResourceMonitor::OnPageResourceUsageResult(
       delayed_cpu_result_converter_.reset();
     }
   }
-#endif
 }
 
 void PageResourceMonitor::CheckDelayedCPUInterventionMetrics() {
