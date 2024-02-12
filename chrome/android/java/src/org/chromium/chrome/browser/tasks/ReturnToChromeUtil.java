@@ -292,22 +292,23 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Determine if we should show the tab switcher on returning to Chrome.
-     *   Returns true if enough time has elapsed since the app was last backgrounded or foreground,
-     *   depending on which time is the max.
-     *   The threshold time in milliseconds is set by experiment "enable-start-surface-return-time"
-     *   or from segmentation platform result if {@link ChromeFeatureList.START_SURFACE_RETURN_TIME}
-     *   is enabled.
+     * Determine if we should show the tab switcher on returning to Chrome. Returns true if enough
+     * time has elapsed since the app was last backgrounded or foreground, depending on which time
+     * is the max. The threshold time in milliseconds is set by experiment
+     * "enable-start-surface-return-time" or from segmentation platform result if {@link
+     * ChromeFeatureList.START_SURFACE_RETURN_TIME} is enabled.
      *
      * @param lastTimeMillis The last time the application was backgrounded or foreground, depends
-     *                       on which time is the max. Set in ChromeTabbedActivity::onStopWithNative
-     * @param isTablet Whether the activity is running in tablet mode.
+     *     on which time is the max. Set in ChromeTabbedActivity::onStopWithNative
+     * @param useNewReturnTime Whether to use a new return time feature flag. The new flag is
+     *     equivalent to the existing one, but allows a different default value other than 8 hours.
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
-    public static boolean shouldShowTabSwitcher(final long lastTimeMillis, boolean isTablet) {
+    public static boolean shouldShowTabSwitcher(
+            final long lastTimeMillis, boolean useNewReturnTime) {
         long tabSwitcherAfterMillis =
                 getReturnTime(
-                        isTablet
+                        useNewReturnTime
                                 ? StartSurfaceConfiguration
                                         .START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS
                                 : StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS);
@@ -621,11 +622,11 @@ public final class ReturnToChromeUtil {
         if (!ReturnToChromeUtil.isStartSurfaceEnabled(context)) return false;
 
         return shouldShowHomeSurfaceAtStartupImpl(
-                /* isTablet= */ false, intent, tabModelSelector, inactivityTracker);
+                /* useNewReturnTime= */ false, intent, tabModelSelector, inactivityTracker);
     }
 
     private static boolean shouldShowHomeSurfaceAtStartupImpl(
-            boolean isTablet,
+            boolean useNewReturnTime,
             Intent intent,
             TabModelSelector tabModelSelector,
             ChromeInactivityTracker inactivityTracker) {
@@ -654,7 +655,7 @@ public final class ReturnToChromeUtil {
         long lastBackgroundTimeMs = inactivityTracker.getLastBackgroundedTimeMs();
         return IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeUtil.shouldShowTabSwitcher(
-                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs), isTablet);
+                        Math.max(lastBackgroundTimeMs, lastVisibleTimeMs), useNewReturnTime);
     }
 
     /**
@@ -677,7 +678,7 @@ public final class ReturnToChromeUtil {
         if (shouldResumeHomeSurfaceOnFoldConfigurationChange(bundle)) return true;
 
         return shouldShowHomeSurfaceAtStartupImpl(
-                /* isTablet= */ true, intent, tabModelSelector, inactivityTracker);
+                /* useNewReturnTime= */ true, intent, tabModelSelector, inactivityTracker);
     }
 
     /**
