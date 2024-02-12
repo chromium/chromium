@@ -167,8 +167,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         value: function() {
           let showOverscroll = false;
           // <if expr="is_win or is_linux or is_macosx">
-          showOverscroll = loadTimeData.getBoolean(
-              'overscrollHistoryNavigationSettingEnabled');
+          showOverscroll = true;
           // </if>
           return showOverscroll;
         },

@@ -318,9 +318,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(features::kPdfOcr));
 #endif
-  html_source->AddBoolean("overscrollHistoryNavigationSettingEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kOverscrollHistoryNavigationSetting));
 
   AddCaptionSubpageStrings(html_source);
 }
