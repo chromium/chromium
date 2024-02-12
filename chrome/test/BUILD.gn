@@ -11139,6 +11139,8 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/add_custom_accelerator_to_unlocked_action_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/edit_default_accelerator_interactive_uitest.cc",
           "../browser/ui/webui/ash/shortcut_customization/integration_tests/search_for_shortcuts_interactive_ui_test.cc",
+          "../browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_test_base.cc",
+          "../browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_test_base.h",
           "//ash/drag_drop/drag_drop_interactive_uitest.cc",
 
           # These cannot live in ":test_support" because they use
@@ -11154,7 +11156,6 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ash/crosapi:crosapi",
           "//chrome/browser/ash/system_web_apps/test_support",
           "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-          "//chrome/browser/ui/webui/ash/shortcut_customization:test_support",
           "//chromeos/ash/components/standalone_browser",
           "//components/app_constants",
           "//device/udev_linux:test_support",

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/shortcut_customization/shortcut_customization_test_base.h"
+#include "chrome/browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_test_base.h"
 
-#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -13,6 +13,9 @@ namespace ash {
 
 ShortcutCustomizationInteractiveUiTestBase::
     ShortcutCustomizationInteractiveUiTestBase() {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShortcutAppWebContentsId);
+  webcontents_id_ = kShortcutAppWebContentsId;
+
   feature_list_.InitWithFeatures({::features::kShortcutCustomization,
                                   ::features::kShortcutCustomizationApp},
                                  {});
@@ -22,17 +25,26 @@ ShortcutCustomizationInteractiveUiTestBase::
     ~ShortcutCustomizationInteractiveUiTestBase() = default;
 
 void ShortcutCustomizationInteractiveUiTestBase::SetUpOnMainThread() {
-  SystemWebAppBrowserTestBase::SetUpOnMainThread();
+  InteractiveAshTest::SetUpOnMainThread();
+
+  // Set up context for element tracking for InteractiveBrowserTest.
+  SetupContextWidget();
+
   // Ensure the Shortcut Customization system web app (SWA) is installed.
-  WaitForTestSystemAppInstall();
+  InstallSystemApps();
 }
 
-ui::InteractionSequence::StepBuilder
+ui::test::InteractiveTestApi::MultiStep
 ShortcutCustomizationInteractiveUiTestBase::LaunchShortcutCustomizationApp() {
-  return Do([&]() {
-    LaunchApp(
-        LaunchParamsForApp(ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION));
-  });
+  return Steps(
+      Log("Opening Shortcut Customization app"),
+      InstrumentNextTab(webcontents_id_, AnyBrowser()), Do([&]() {
+        CreateBrowserWindow(GURL(kChromeUIShortcutCustomizationAppURL));
+      }),
+      WaitForShow(webcontents_id_),
+      Log("Waiting for Shortcut Customization app to load"),
+      WaitForWebContentsReady(webcontents_id_,
+                              GURL(kChromeUIShortcutCustomizationAppURL)));
 }
 
 // Ensure focusing web contents doesn't accidentally block accelerator

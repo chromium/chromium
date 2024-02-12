@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SHORTCUT_CUSTOMIZATION_SHORTCUT_CUSTOMIZATION_TEST_BASE_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_SHORTCUT_CUSTOMIZATION_SHORTCUT_CUSTOMIZATION_TEST_BASE_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SHORTCUT_CUSTOMIZATION_INTEGRATION_TESTS_SHORTCUT_CUSTOMIZATION_TEST_BASE_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SHORTCUT_CUSTOMIZATION_INTEGRATION_TESTS_SHORTCUT_CUSTOMIZATION_TEST_BASE_H_
 
 #include "ash/accelerators/accelerator_lookup.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/shell.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
+#include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -19,7 +19,7 @@ inline constexpr char kClickFn[] = "e => e.click()";
 inline constexpr char kFocusFn[] = "e => e.focus()";
 
 class ShortcutCustomizationInteractiveUiTestBase
-    : public SystemWebAppBrowserTestBase {
+    : public InteractiveAshTest {
  public:
   ShortcutCustomizationInteractiveUiTestBase();
 
@@ -120,7 +120,7 @@ class ShortcutCustomizationInteractiveUiTestBase
     return Steps(ExecuteJsAt(webcontents_id_, kDoneButtonQuery, kClickFn));
   }
 
-  ui::InteractionSequence::StepBuilder LaunchShortcutCustomizationApp();
+  ui::test::InteractiveTestApi::MultiStep LaunchShortcutCustomizationApp();
 
   // Ensure focusing web contents doesn't accidentally block accelerator
   // processing. When adding new accelerators, this method is called to
@@ -147,4 +147,4 @@ class ShortcutCustomizationInteractiveUiTestBase
 
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SHORTCUT_CUSTOMIZATION_SHORTCUT_CUSTOMIZATION_TEST_BASE_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SHORTCUT_CUSTOMIZATION_INTEGRATION_TESTS_SHORTCUT_CUSTOMIZATION_TEST_BASE_H_
