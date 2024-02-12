@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/i18n/case_conversion.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -235,6 +236,50 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
             });
 }
 
+void AddPasswordUsernameChildSuggestion(const std::u16string& username,
+                                        autofill::Suggestion& suggestion) {
+  suggestion.children.push_back(autofill::Suggestion(
+      username, autofill::PopupItemId::kPasswordFieldByFieldFilling));
+}
+
+void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion) {
+  suggestion.children.push_back(autofill::Suggestion(
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
+      autofill::PopupItemId::kFillPassword));
+}
+
+void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
+  autofill::Suggestion view_password_details(
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_VIEW_DETAILS_ENTRY),
+      autofill::PopupItemId::kViewPasswordDetails);
+  view_password_details.icon = autofill::Suggestion::Icon::kKey;
+  suggestion.children.push_back(view_password_details);
+}
+
+autofill::Suggestion GetManualFallbackSuggestion(
+    const CredentialUIEntry& credential) {
+  autofill::Suggestion suggestion(
+      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
+      autofill::PopupItemId::kPasswordEntry);
+  bool replaced;
+  const std::u16string maybe_username =
+      ReplaceEmptyUsername(credential.username, &replaced);
+  suggestion.additional_label = maybe_username;
+  suggestion.icon = autofill::Suggestion::Icon::kGlobe;
+
+  if (!replaced) {
+    AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
+  }
+  AddFillPasswordChildSuggestion(suggestion);
+  suggestion.children.push_back(
+      autofill::Suggestion(autofill::PopupItemId::kSeparator));
+  AddViewPasswordDetailsChildSuggestion(suggestion);
+
+  return suggestion;
+}
+
 }  // namespace
 
 PasswordSuggestionGenerator::PasswordSuggestionGenerator(
@@ -325,6 +370,25 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
   if (show_account_storage_resignin) {
     suggestions.push_back(CreateEntryToReSignin());
   }
+
+  // Add "Manage all passwords" link to settings.
+  MaybeAppendManagePasswordsEntry(&suggestions);
+
+  return suggestions;
+}
+
+std::vector<autofill::Suggestion>
+PasswordSuggestionGenerator::GetManualFallbackSuggestions(
+    const std::vector<CredentialUIEntry>& credentials) const {
+  std::vector<autofill::Suggestion> suggestions;
+  for (const CredentialUIEntry& credential : credentials) {
+    suggestions.push_back(GetManualFallbackSuggestion(credential));
+  }
+
+  base::ranges::sort(suggestions, [](const autofill::Suggestion& a,
+                                     const autofill::Suggestion& b) {
+    return a.main_text.value < b.main_text.value;
+  });
 
   // Add "Manage all passwords" link to settings.
   MaybeAppendManagePasswordsEntry(&suggestions);

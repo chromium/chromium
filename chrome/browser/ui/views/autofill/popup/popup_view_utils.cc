@@ -549,6 +549,7 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kViewPasswordDetails:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAddressEntry:
@@ -576,6 +577,8 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
       return false;
   }
 }
@@ -591,6 +594,7 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kFillFullEmail:
     case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kPasswordEntry:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
@@ -614,7 +618,9 @@ bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kPasswordAccountStorageOptIn:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kPasswordAccountStorageReSignin:
-    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:

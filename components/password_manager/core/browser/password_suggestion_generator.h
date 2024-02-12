@@ -10,6 +10,7 @@
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 
@@ -46,6 +47,12 @@ class PasswordSuggestionGenerator {
       OffersGeneration offers_generation,
       ShowPasswordSuggestions show_password_suggestions,
       ShowWebAuthnCredentials show_webauthn_credentials) const;
+
+  // Generates suggestions shown when user triggers password Autofill from the
+  // Chrome context menu. Every suggestion will have several sub suggestions to
+  // fill username, password and open credential details dialog.
+  std::vector<autofill::Suggestion> GetManualFallbackSuggestions(
+      const std::vector<CredentialUIEntry>& credentials) const;
 
  private:
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;

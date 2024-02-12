@@ -58,6 +58,9 @@ enum class PopupItemId : int {
   kAccountStoragePasswordEntry,
   kPasswordAccountStorageReSignin,
   kPasswordAccountStorageEmpty,
+  kPasswordFieldByFieldFilling,
+  kFillPassword,
+  kViewPasswordDetails,
 
   // Payment suggestions.
   kCreditCardEntry,

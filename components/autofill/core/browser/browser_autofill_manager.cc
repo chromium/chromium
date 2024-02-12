@@ -261,6 +261,9 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordEntry:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
