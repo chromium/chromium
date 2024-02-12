@@ -19486,52 +19486,33 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240212",
                     "params": {
-                        "browsing-data-probability": "0.018",
+                        "browsing-data-probability": "0.0",
                         "browsing-data-trigger-id": "1iSgej9Tq0ugnJ3q1cK0QwXZ12oo",
-                        "control-group-probability": "0.0013",
+                        "control-group-probability": "0.0",
                         "control-group-trigger-id": "CXMbsBddw0ugnJ3q1cK0QJM1Hu8m",
+                        "download-warning-ui-probability": "0.0",
+                        "download-warning-ui-trigger-id": "7SS4sg4oR0ugnJ3q1cK0TNvCvd8U",
                         "max-time-to-prompt": "60m",
                         "min-session-time": "30s",
                         "min-time-to-prompt": "2m",
                         "ntp-visits-max-range": "4",
                         "ntp-visits-min-range": "2",
-                        "password-check-probability": "0.8",
-                        "password-check-trigger-id": "Xd54YDVNJ0ugnJ3q1cK0UYBRruNH",
-                        "privacy-guide-probability": "1.0",
-                        "privacy-guide-trigger-id": "tqR1rjeDu0ugnJ3q1cK0P9yJEq7Z",
-                        "probability": "1.0",
-                        "safety-check-probability": "0.8",
-                        "safety-check-trigger-id": "YSDfPVMnX0ugnJ3q1cK0RxEhwkay",
-                        "trusted-surface-probability": "0.17",
-                        "trusted-surface-time": "5s",
-                        "trusted-surface-trigger-id": "CMniDmzgE0ugnJ3q1cK0U6PaEn1f"
-                    },
-                    "enable_features": [
-                        "TrustSafetySentimentSurveyV2"
-                    ]
-                },
-                {
-                    "name": "Enabled_CrCA_Mechanisms",
-                    "params": {
-                        "browsing-data-probability": "0.0",
-                        "control-group-probability": "0.0",
-                        "download-warning-ui-probability": "1.0",
-                        "download-warning-ui-trigger-id": "7SS4sg4oR0ugnJ3q1cK0TNvCvd8U",
                         "password-check-probability": "0.0",
-                        "password-protection-ui-probability": "1.0",
+                        "password-check-trigger-id": "Xd54YDVNJ0ugnJ3q1cK0UYBRruNH",
+                        "password-protection-ui-probability": "0.0",
                         "password-protection-ui-trigger-id": "bQBRghu5w0ugnJ3q1cK0RrqdqVRP",
                         "privacy-guide-probability": "0.0",
-                        "privacy-sandbox-4-consent-accept-probability": "0.0",
-                        "privacy-sandbox-4-consent-decline-probability": "0.0",
-                        "privacy-sandbox-4-notice-ok-probability": "0.0",
-                        "privacy-sandbox-4-notice-settings-probability": "0.0",
-                        "probability": "1.0",
-                        "safe-browsing-interstitial-probability": "1.0",
+                        "privacy-guide-trigger-id": "tqR1rjeDu0ugnJ3q1cK0P9yJEq7Z",
+                        "probability": "0.0",
+                        "safe-browsing-interstitial-probability": "0.0",
                         "safe-browsing-interstitial-trigger-id": "Z9pSWP53n0ugnJ3q1cK0Y6YkGRpU",
                         "safety-check-probability": "0.0",
-                        "trusted-surface-probability": "0.0"
+                        "safety-check-trigger-id": "YSDfPVMnX0ugnJ3q1cK0RxEhwkay",
+                        "trusted-surface-probability": "0.0",
+                        "trusted-surface-time": "5s",
+                        "trusted-surface-trigger-id": "CMniDmzgE0ugnJ3q1cK0U6PaEn1f"
                     },
                     "enable_features": [
                         "TrustSafetySentimentSurveyV2"
