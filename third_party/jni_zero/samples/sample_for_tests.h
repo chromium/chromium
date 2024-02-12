@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ANDROID_JNI_GENERATOR_SAMPLE_FOR_TESTS_H_
-#define BASE_ANDROID_JNI_GENERATOR_SAMPLE_FOR_TESTS_H_
+#ifndef _JNI_ZERO_SAMPLE_FOR_TESTS_H_
+#define _JNI_ZERO_SAMPLE_FOR_TESTS_H_
 
 #include <jni.h>
 #include <map>
 #include <string>
+#include "third_party/jni_zero/jni_zero_helper.h"
 
-#include "base/android/jni_android.h"
-
-namespace base {
-namespace android {
-
+namespace jni_zero {
+namespace samples {
 // This file is used to:
 // - document the best practices and guidelines on JNI usage.
 // - ensure sample_for_tests_jni.h compiles and the functions declared in it
@@ -105,7 +103,7 @@ class CPPClass {
   std::map<long, std::string> map_;
 };
 
-}  // namespace android
-}  // namespace base
+}  // namespace samples
+}  // namespace jni_zero
 
-#endif  // BASE_ANDROID_JNI_GENERATOR_SAMPLE_FOR_TESTS_H_
+#endif  // _JNI_ZERO_SAMPLE_FOR_TESTS_H_

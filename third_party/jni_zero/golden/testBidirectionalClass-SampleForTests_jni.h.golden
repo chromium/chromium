@@ -70,8 +70,8 @@ inline jclass org_jni_1zero_samples_SampleForTests_00024InnerStructB_clazz(JNIEn
 
 
 // Step 3: Method stubs.
-namespace base {
-namespace android {
+namespace jni_zero {
+namespace samples {
 
 JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleForTests_1addStructB(
@@ -598,7 +598,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNIEnv* 
   return jni_zero::ScopedJavaLocalRef<jstring>(env, ret);
 }
 
-}  // namespace android
-}  // namespace base
+}  // namespace samples
+}  // namespace jni_zero
 
 #endif  // org_jni_zero_samples_SampleForTests_JNI
