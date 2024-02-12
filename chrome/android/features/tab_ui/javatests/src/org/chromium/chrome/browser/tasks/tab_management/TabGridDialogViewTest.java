@@ -21,7 +21,9 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.UiThreadTest;
@@ -29,6 +31,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -49,12 +55,15 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     private FrameLayout mTestParent;
     private View mSourceView;
     private View mUngroupBar;
+    private View mDataSharingBar;
     private View mAnimationCardView;
     private View mBackgroundFrameView;
     private TextView mUngroupBarTextView;
     private RelativeLayout mTabGridDialogContainer;
     private FrameLayout.LayoutParams mContainerParams;
     private TabGridDialogView mTabGridDialogView;
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Override
     public void setUpTest() throws Exception {
@@ -71,6 +80,9 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
                             mTabGridDialogView.findViewById(R.id.dialog_container_view);
                     mUngroupBar = mTabGridDialogContainer.findViewById(R.id.dialog_ungroup_bar);
                     mUngroupBarTextView = mUngroupBar.findViewById(R.id.dialog_ungroup_bar_text);
+                    mDataSharingBar =
+                            mTabGridDialogContainer.findViewById(
+                                    R.id.dialog_data_sharing_group_bar);
                     mContainerParams =
                             (FrameLayout.LayoutParams) mTabGridDialogContainer.getLayoutParams();
                     mAnimationCardView =
@@ -139,6 +151,7 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testResetDialog() {
         mTabGridDialogContainer.removeAllViews();
         View toolbarView = new View(getActivity());
@@ -160,7 +173,25 @@ public class TabGridDialogViewTest extends BlankUiTestActivityTestCase {
     }
 
     @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
+    public void testResetDialogWithDataSharing() {
+        mTabGridDialogContainer.removeAllViews();
+        View toolbarView = new View(getActivity());
+        View recyclerView = new View(getActivity());
+        recyclerView.setVisibility(View.GONE);
+
+        mTabGridDialogView.resetDialog(toolbarView, recyclerView);
+
+        // It should contain five child views: top tool bar, recyclerview, ungroup bar, data sharing
+        // bar and undo bar container.
+        Assert.assertEquals(5, mTabGridDialogContainer.getChildCount());
+    }
+
+    @Test
     @MediumTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testUpdateUngroupBar() {
         AtomicReference<ColorStateList> showTextColorReference = new AtomicReference<>();
         AtomicReference<ColorStateList> hoverTextColorReference = new AtomicReference<>();

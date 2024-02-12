@@ -48,7 +48,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -264,6 +266,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     @Test
     @SmallTest
     @UiThreadTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testSetScrimViewObserver() {
         AtomicBoolean scrimViewClicked = new AtomicBoolean();
         scrimViewClicked.set(false);
@@ -279,6 +282,7 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.DATA_SHARING_ANDROID})
     public void testSetDialogVisibility() {
         Assert.assertNull(mTabGridDialogView.getCurrentDialogAnimatorForTesting());
 

@@ -205,6 +205,9 @@
       <message name="IDS_ACCESSIBILITY_BOTTOM_TAB_GRID_CLOSE_TAB_SHEET" desc="Accessibility string for BottomTabGridToolbar button indicated visually by the 'v' sign.">
         Hide fullscreen grid
       </message>
+      <message name="IDS_TAB_GRID_INVITE_BUTTON_TEXT" desc="Text for sharing the current tab group from the tab group dialog bottom toolbar.">
+        Invite people
+      </message>
 
       <!-- Bottom Tab Strip strings -->
       <message name="IDS_ACCESSIBILITY_BOTTOM_TAB_STRIP_EXPAND_TAB_SHEET" desc="Accessibility string for BottomTabStripToolbar button indicated visually by the '^' sign.">
