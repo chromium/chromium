@@ -1108,6 +1108,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME" desc="Button label to indicate browser activity and stop the browser from running idle timeout actions.">
          Continue using Chrome
       </message>
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_VIEW_ACCESSIBILITY_ANNOUNCEMENT" desc="Accessibility announcement read by VoiceOver when the expanded manual fill view is shown.">
+         Chrome Autofill Expanded View
+      </message>
     </messages>
   </release>
 </grit>
