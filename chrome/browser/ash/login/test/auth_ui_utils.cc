@@ -322,6 +322,10 @@ void LocalAuthenticationDialogActor::SubmitPassword(
   LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(password);
 }
 
+void LocalAuthenticationDialogActor::WaitUntilDismissed() {
+  LocalAuthenticationDialogDismissWaiter()->Wait();
+}
+
 // ----------------------------------------------------------
 
 std::unique_ptr<test::TestConditionWaiter> CreateOldPasswordEnterPageWaiter() {
@@ -513,6 +517,13 @@ std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter() {
 std::unique_ptr<test::TestConditionWaiter> LocalAuthenticationDialogWaiter() {
   return std::make_unique<test::TestPredicateWaiter>(base::BindRepeating([]() {
     return LoginScreenTestApi::IsLocalAuthenticationDialogVisible();
+  }));
+}
+
+std::unique_ptr<test::TestConditionWaiter>
+LocalAuthenticationDialogDismissWaiter() {
+  return std::make_unique<test::TestPredicateWaiter>(base::BindRepeating([]() {
+    return !LoginScreenTestApi::IsLocalAuthenticationDialogVisible();
   }));
 }
 

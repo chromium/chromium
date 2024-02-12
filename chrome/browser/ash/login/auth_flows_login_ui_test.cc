@@ -281,4 +281,33 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, LocalPasswordCorrectPassword) {
   login_mixin_.WaitForActiveSession();
 }
 
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
+                       CancelLocalAuthenticationDialog) {
+  const auto& user = with_local_pw_;
+
+  TriggerUserOnlineAuth(user, test::kGaiaPassword);
+
+  auto local_authentication =
+      test::OnLoginScreen()->WaitForLocalAuthenticationDialog();
+
+  local_authentication->CancelDialog();
+
+  local_authentication->WaitUntilDismissed();
+
+  // After dismissing the local authentication dialog,
+  // the flow should return to and display the login screen.
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
+                       CancelLocalAuthenticationDialogRecovery) {
+  const auto& user = with_local_pw_recovery_;
+
+  TriggerUserOnlineAuth(user, test::kGaiaPassword);
+
+  // After successful GAIA authentication in recovery session,
+  // the session should start automatically.
+  login_mixin_.WaitForActiveSession();
+}
+
 }  // namespace ash

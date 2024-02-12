@@ -102,6 +102,7 @@ class LocalAuthenticationDialogActor {
   bool IsVisible();
   void CancelDialog();
   void SubmitPassword(const std::string& password);
+  void WaitUntilDismissed();
 };
 
 std::unique_ptr<FullScreenAuthSurface> OnLoginScreen();
@@ -151,6 +152,8 @@ void RecoveryErrorFallbackAction();
 std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter();
 
 std::unique_ptr<test::TestConditionWaiter> LocalAuthenticationDialogWaiter();
+std::unique_ptr<test::TestConditionWaiter>
+LocalAuthenticationDialogDismissWaiter();
 
 }  // namespace ash::test
 
