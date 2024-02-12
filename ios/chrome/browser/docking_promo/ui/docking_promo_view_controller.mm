@@ -17,6 +17,7 @@
 namespace {
 constexpr CGFloat kCustomSpacingAtTopIfNoNavigationBar = 24;
 constexpr CGFloat kCustomSpacingAfterImageWithoutAnimation = 0;
+constexpr CGFloat kCustomSpacing = 20;
 NSString* const kDarkModeAnimationSuffix = @"_darkmode";
 NSString* const kEditHomeScreenKeypath = @"edit_home_screen";
 NSString* const kDockingPromoAccessibilityId = @"kDockingPromoAccessibilityId";
@@ -122,6 +123,7 @@ NSString* const kDockingPromoAccessibilityId = @"kDockingPromoAccessibilityId";
   self.alertScreen.showDismissBarButton = NO;
   self.alertScreen.titleTextStyle = UIFontTextStyleTitle2;
   self.alertScreen.topAlignedLayout = YES;
+  self.alertScreen.customSpacing = kCustomSpacing;
 
   if (self.shouldShowAnimation) {
     self.alertScreen.customSpacingBeforeImageIfNoNavigationBar =
