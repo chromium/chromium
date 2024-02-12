@@ -1720,7 +1720,7 @@ Your Google account may have other forms of browsing history like searches and a
         To show content in your preferred languages, the sites you visit can see your preferences
       </message>
       <message name="IDS_LANGUAGES_LIST_DESCRIPTION" desc="Description on the Languages settings screen. Appears above a list of one or more languages that the user selects, to tell Chrome which languages they prefer to use to read website content.">
-        Websites will show text in your preferred language, when possible.
+        Let websites know the languages you speak. They’ll show content in those languages, when possible.
       </message>
       <message name="IDS_LANGUAGES_OFFER_TRANSLATE_SWITCH" desc="Appears next to the 'offer to translate' switch that controls whether or not Chrome will display the Google Translate UI on web pages that are not in the user's preferred language(s).">
         Offer to translate pages in other languages
