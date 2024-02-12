@@ -38,7 +38,8 @@ using testing::StartsWith;
 using GetExistingDlcsTestFuture =
     base::test::TestFuture<const std::string&,
                            const dlcservice::DlcsWithContent&>;
-using MockAddFontDir = testing::MockFunction<bool(base::FilePath)>;
+using MockAddFontDir =
+    testing::MockFunction<LanguagePackFontService::AddFontDir>;
 
 class LanguagePackFontServiceTest : public testing::Test {
  public:
