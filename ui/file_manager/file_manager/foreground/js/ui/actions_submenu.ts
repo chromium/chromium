@@ -43,16 +43,6 @@ export class ActionsSubmenu {
       }
     }
 
-    // First add the sharing item (if available).
-    const shareAction = remainingActions[CommonActionId.SHARE];
-    if (shareAction) {
-      const menuItem = this.addMenuItem_();
-      menuItem.command = '#share';
-      menuItem.classList.toggle('hide-on-toolbar', true);
-      delete remainingActions[CommonActionId.SHARE];
-    }
-    queryDecoratedElement('#share', Command).canExecuteChange(element);
-
     // Then add the Manage in Drive item (if available).
     const manageInDriveAction =
         remainingActions[InternalActionId.MANAGE_IN_DRIVE];

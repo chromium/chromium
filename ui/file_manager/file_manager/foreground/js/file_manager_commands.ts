@@ -1869,64 +1869,6 @@ export class ZipSelectionCommand extends FilesCommand {
 }
 
 /**
- * Shows the share dialog for the current selection (single only).
- */
-export class ShareCommand extends FilesCommand {
-  execute(event: CommandEvent, fileManager: CommandHandlerDeps) {
-    const entries = getCommandEntries(fileManager, event.target);
-    const actionsController = fileManager.actionsController;
-
-    fileManager.actionsController.getActionsForEntries(entries).then(
-        (actionsModel: ActionsModel|void) => {
-          if (!actionsModel) {
-            return;
-          }
-          const action = actionsModel.getAction(CommonActionId.SHARE);
-          if (action) {
-            actionsController.executeAction(action);
-          }
-        });
-  }
-
-  override canExecute(event: CanExecuteEvent, fileManager: CommandHandlerDeps) {
-    const entries = getCommandEntries(fileManager, event.target);
-    const command = event.command;
-    const actionsController = fileManager.actionsController;
-
-    // Avoid flickering menu height: synchronously define command visibility.
-    if (!isDriveEntries(entries, fileManager.volumeManager)) {
-      command.setHidden(true);
-      return;
-    }
-
-    command.setHidden(false);
-
-    function canExecuteShare(actionsModel: ActionsModel|void) {
-      if (!actionsModel) {
-        return;
-      }
-      const action = actionsModel.getAction(CommonActionId.SHARE);
-      event.canExecute = !!action && action.canExecute();
-      command.disabled = !event.canExecute;
-      command.setHidden(!action);
-    }
-
-    // Run synchrounously if possible.
-    const actionsModel =
-        actionsController.getInitializedActionsForEntries(entries);
-    if (actionsModel) {
-      canExecuteShare(actionsModel);
-      return;
-    }
-
-    event.canExecute = true;
-    command.setHidden(false);
-    // Run async, otherwise.
-    actionsController.getActionsForEntries(entries).then(canExecuteShare);
-  }
-}
-
-/**
  * Opens the file in Drive for the user to manage sharing permissions etc.
  */
 export class ManageInDriveCommand extends FilesCommand {

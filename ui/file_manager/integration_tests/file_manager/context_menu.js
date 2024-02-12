@@ -196,59 +196,6 @@ testcase.checkRenameDisabledForReadOnlyFolder = () => {
 };
 
 /**
- * Tests that the Share menu item is enabled if a read-write entry is selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadWriteFile' comes
-// from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadWriteFile'].
-testcase.checkShareEnabledForReadWriteFile = () => {
-  return checkContextMenu('share', 'hello.txt', true);
-};
-
-/**
- * Tests that the Share menu item is enabled if a read-only document is
- * selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadOnlyDocument'
-// comes from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadOnlyDocument'].
-testcase.checkShareEnabledForReadOnlyDocument = () => {
-  return checkContextMenu('share', 'Read-Only Doc.gdoc', true);
-};
-
-/**
- * Tests that the Share menu item is disabled if a strict read-only document is
- * selected.
- */
-// @ts-ignore: error TS4111: Property
-// 'checkShareDisabledForStrictReadOnlyDocument' comes from an index signature,
-// so it must be accessed with ['checkShareDisabledForStrictReadOnlyDocument'].
-testcase.checkShareDisabledForStrictReadOnlyDocument = () => {
-  return checkContextMenu('share', 'Read-Only (Strict) Doc.gdoc', false);
-};
-
-/**
- * Tests that the Share menu item is enabled if a read-only file is selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadOnlyFile' comes
-// from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadOnlyFile'].
-testcase.checkShareEnabledForReadOnlyFile = () => {
-  return checkContextMenu('share', 'Read-Only File.jpg', true);
-};
-
-/**
- * Tests that the Share menu item is enabled if a read-only folder is
- * selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadOnlyFolder' comes
-// from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadOnlyFolder'].
-testcase.checkShareEnabledForReadOnlyFolder = () => {
-  return checkContextMenu('share', 'Read-Only Folder', true);
-};
-
-/**
  * Tests that the Copy menu item is enabled if a read-write entry is selected.
  */
 // @ts-ignore: error TS4111: Property 'checkCopyEnabledForReadWriteFile' comes

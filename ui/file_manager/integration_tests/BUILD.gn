@@ -43,7 +43,6 @@ js_files = [
   "file_manager/recents.js",
   "file_manager/restore_prefs.js",
   "file_manager/search.js",
-  "file_manager/share_and_manage_dialog.js",
   "file_manager/sort_columns.js",
   "file_manager/tab_index.js",
   "file_manager/tasks.js",
@@ -117,6 +116,8 @@ ts_files = [
 
   # "file_manager/keyboard_operations.ts",
 
+  "file_manager/manage_dialog.ts",
+
   # "file_manager/metadata.ts",
 
   # "file_manager/metrics.ts",
@@ -145,8 +146,6 @@ ts_files = [
   # "file_manager/search.ts",
 
   "file_manager/share.ts",
-
-  # "file_manager/share_and_manage_dialog.ts",
 
   # "file_manager/sort_columns.ts",
 

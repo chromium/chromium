@@ -69,10 +69,11 @@ export function testCustomActionRendering() {
 
 export function testCommandActionRendering() {
   submenu.setActionsModel(
-      new MockActionsModel({SHARE: new MockActionModel('share with me!')}) as
+      new MockActionsModel(
+          {SAVE_FOR_OFFLINE: new MockActionModel('save for offline!')}) as
       unknown as ActionsModel);
   const item = menu.querySelector('cr-menu-item') as MenuItem;
   assertTrue(!!item);
-  assertEquals('Share', item.textContent);
-  assertEquals('share', item.command?.id);
+  assertEquals('Toggle pinned', item.textContent);
+  assertEquals('toggle-pinned', item.command?.id);
 }

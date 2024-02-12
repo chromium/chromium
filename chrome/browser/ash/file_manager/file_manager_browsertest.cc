@@ -627,11 +627,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkRenameDisabledForReadOnlyFile"),
         TestCase("checkRenameDisabledForReadOnlyFolder"),
         TestCase("checkContextMenuForRenameInput"),
-        TestCase("checkShareEnabledForReadWriteFile"),
-        TestCase("checkShareEnabledForReadOnlyDocument"),
-        TestCase("checkShareDisabledForStrictReadOnlyDocument"),
-        TestCase("checkShareEnabledForReadOnlyFile"),
-        TestCase("checkShareEnabledForReadOnlyFolder"),
         TestCase("checkCopyEnabledForReadWriteFile"),
         TestCase("checkCopyEnabledForReadOnlyDocument"),
         TestCase("checkCopyDisabledForStrictReadOnlyDocument"),
@@ -1381,16 +1376,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                       TestCase("restoreCurrentView")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
-    ShareAndManageDialog, /* share_and_manage_dialog.js */
+    ManageDialog, /* manage_dialog.js */
     FilesAppBrowserTest,
     ::testing::Values(
-        TestCase("shareDirectoryTeamDrive").NewDirectoryTree(),
-        TestCase("shareFileDrive").NewDirectoryTree(),
-        TestCase("shareDirectoryDrive").NewDirectoryTree(),
-        TestCase("shareHostedFileDrive").NewDirectoryTree(),
-        TestCase("shareFileTeamDrive").NewDirectoryTree(),
-        TestCase("shareHostedFileTeamDrive").NewDirectoryTree(),
-        TestCase("shareTeamDrive").NewDirectoryTree(),
         TestCase("manageFileDrive")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-c8094019-e19b-4a03-8085-83bc29f1dad6"}),
@@ -1413,19 +1401,12 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .NewDirectoryTree()
             .FeatureIds({"screenplay-c8094019-e19b-4a03-8085-83bc29f1dad6"}),
         // Section end - browser tests for new directory tree
-        TestCase("shareFileDrive"),
-        TestCase("shareDirectoryDrive"),
-        TestCase("shareHostedFileDrive"),
         TestCase("manageHostedFileDrive")
             .FeatureIds({"screenplay-c8094019-e19b-4a03-8085-83bc29f1dad6"}),
         TestCase("manageFileDrive")
             .FeatureIds({"screenplay-c8094019-e19b-4a03-8085-83bc29f1dad6"}),
         TestCase("manageDirectoryDrive")
             .FeatureIds({"screenplay-c8094019-e19b-4a03-8085-83bc29f1dad6"}),
-        TestCase("shareFileTeamDrive"),
-        TestCase("shareDirectoryTeamDrive"),
-        TestCase("shareHostedFileTeamDrive"),
-        TestCase("shareTeamDrive"),
         TestCase("manageHostedFileTeamDrive")
             .FeatureIds({"screenplay-c8094019-e19b-4a03-8085-83bc29f1dad6"}),
         TestCase("manageFileTeamDrive")
