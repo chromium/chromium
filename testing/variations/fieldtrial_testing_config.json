@@ -12519,7 +12519,7 @@
             ]
         }
     ],
-    "OmniboxImplementationChangeIOS": [
+    "OmniboxImplementationChangeIOSV2": [
         {
             "platforms": [
                 "ios"
