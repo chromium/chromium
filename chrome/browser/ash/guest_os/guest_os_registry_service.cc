@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -321,8 +322,7 @@ static std::string Join(const List& list) {
   return joined;
 }
 
-std::string GetStringKey(const base::Value& dict,
-                         const base::StringPiece& key) {
+std::string GetStringKey(const base::Value& dict, std::string_view key) {
   if (!dict.is_dict()) {
     return std::string();
   }
@@ -456,12 +456,11 @@ bool GuestOsRegistryService::Registration::StartupNotify() const {
 }
 
 std::string GuestOsRegistryService::Registration::GetString(
-    base::StringPiece key) const {
+    std::string_view key) const {
   return GetStringKey(pref_, key);
 }
 
-bool GuestOsRegistryService::Registration::GetBool(
-    base::StringPiece key) const {
+bool GuestOsRegistryService::Registration::GetBool(std::string_view key) const {
   if (!pref_.is_dict()) {
     return false;
   }
@@ -471,7 +470,7 @@ bool GuestOsRegistryService::Registration::GetBool(
 
 // This is the companion to GuestOsRegistryService::SetCurrentTime().
 base::Time GuestOsRegistryService::Registration::GetTime(
-    base::StringPiece key) const {
+    std::string_view key) const {
   if (!pref_.is_dict()) {
     return base::Time();
   }
@@ -487,7 +486,7 @@ base::Time GuestOsRegistryService::Registration::GetTime(
 // undescores, e.g. 'fr' or 'en_US'), but users of the registry don't need to
 // deal with this.
 std::string GuestOsRegistryService::Registration::GetLocalizedString(
-    base::StringPiece key) const {
+    std::string_view key) const {
   if (!pref_.is_dict()) {
     return std::string();
   }
@@ -513,7 +512,7 @@ std::string GuestOsRegistryService::Registration::GetLocalizedString(
 }
 
 std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
-    base::StringPiece key) const {
+    std::string_view key) const {
   if (!pref_.is_dict()) {
     return {};
   }
@@ -967,7 +966,7 @@ void GuestOsRegistryService::UpdateApplicationList(
       }
 
       base::Value::Dict name = ProtoToDictionary(app.name());
-      if (name.Find(base::StringPiece()) == nullptr) {
+      if (name.Find(std::string_view()) == nullptr) {
         LOG(WARNING) << "Received app '" << app.desktop_file_id()
                      << "' with missing unlocalized name";
         continue;

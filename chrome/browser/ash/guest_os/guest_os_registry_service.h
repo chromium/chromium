@@ -8,6 +8,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -121,11 +122,11 @@ class GuestOsRegistryService : public KeyedService {
     bool StartupNotify() const;
 
    private:
-    std::string GetString(base::StringPiece key) const;
-    bool GetBool(base::StringPiece key) const;
-    base::Time GetTime(base::StringPiece key) const;
-    std::string GetLocalizedString(base::StringPiece key) const;
-    std::set<std::string> GetLocalizedList(base::StringPiece key) const;
+    std::string GetString(std::string_view key) const;
+    bool GetBool(std::string_view key) const;
+    base::Time GetTime(std::string_view key) const;
+    std::string GetLocalizedString(std::string_view key) const;
+    std::set<std::string> GetLocalizedList(std::string_view key) const;
 
     std::string app_id_;
     base::Value pref_;
