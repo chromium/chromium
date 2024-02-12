@@ -257,8 +257,11 @@ UIImage* DefaultFavicon() {
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
 
-  self.accessibilityTraits =
-      selected ? UIAccessibilityTraitSelected : UIAccessibilityTraitNone;
+  if (selected) {
+    self.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
 
   if (selected) {
     /// The cell attributes is updated just after the cell selection.
