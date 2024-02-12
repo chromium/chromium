@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/search_engines/search_engine_choice_utils.h"
+
 #include <string>
 
 #include "base/check_deref.h"
@@ -23,6 +24,7 @@
 #include "components/search_engines/eea_countries_ids.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
@@ -63,6 +65,12 @@ const char kSearchEngineChoiceRepromptWildcardHistogram[] =
 
 const char kSearchEngineChoiceRepromptSpecificCountryHistogram[] =
     "Search.ChoiceReprompt.SpecificCountry";
+
+const char kSearchEngineChoiceUnexpectedIdHistogram[] =
+    "Search.ChoiceDebug.UnexpectedSearchEngineId";
+
+const char kSearchEngineChoiceIsDefaultProviderAddedToChoicesHistogram[] =
+    "Search.ChoiceDebug.IsDefaultProviderAddedToChoices";
 
 // Returns whether the choice screen flag is generally enabled for the specific
 // user flow.
@@ -110,6 +118,17 @@ void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
   base::UmaHistogramEnumeration(
       kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram, engine_type,
       SEARCH_ENGINE_MAX);
+}
+
+void RecordUnexpectedSearchProvider(const TemplateURLData& data) {
+  base::UmaHistogramSparse(kSearchEngineChoiceUnexpectedIdHistogram,
+                           data.prepopulate_id);
+}
+
+void RecordIsDefaultProviderAddedToChoices(bool inserted_default) {
+  base::UmaHistogramBoolean(
+      kSearchEngineChoiceIsDefaultProviderAddedToChoicesHistogram,
+      inserted_default);
 }
 
 void WipeSearchEngineChoicePrefs(PrefService& profile_prefs,

@@ -1826,6 +1826,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
       // returned list if it's not already there.
       const TemplateURL* default_search_engine =
           template_url_service->GetDefaultSearchProvider();
+      bool inserted_default = false;
       if (default_search_engine &&
           !base::Contains(t_urls, default_search_engine->prepopulate_id(),
                           [](const std::unique_ptr<TemplateURLData>& engine) {
@@ -1833,7 +1834,9 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
                           })) {
         t_urls.insert(t_urls.begin(), std::make_unique<TemplateURLData>(
                                           default_search_engine->data()));
+        inserted_default = true;
       }
+      search_engines::RecordIsDefaultProviderAddedToChoices(inserted_default);
     }
   }
   if (default_search_provider_index) {

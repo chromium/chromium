@@ -25,6 +25,8 @@ extern const char kSearchEngineChoiceWipeReasonHistogram[];
 extern const char kSearchEngineChoiceRepromptHistogram[];
 extern const char kSearchEngineChoiceRepromptWildcardHistogram[];
 extern const char kSearchEngineChoiceRepromptSpecificCountryHistogram[];
+extern const char kSearchEngineChoiceUnexpectedIdHistogram[];
+extern const char kSearchEngineChoiceIsDefaultProviderAddedToChoicesHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -53,7 +55,12 @@ enum class SearchEngineChoiceScreenConditions {
   kSuppressedByOtherDialog = 10,
   // The browser window can't fit the dialog's smallest variant.
   kBrowserWindowTooSmall = 11,
-  kMaxValue = kBrowserWindowTooSmall,
+  // The user has a distribution custom search engine set as default.
+  kHasDistributionCustomSearchEngine = 12,
+  // The user has an unknown prepopulated search engine set as default.
+  kHasRemovedPrepopulatedSearchEngine = 13,
+
+  kMaxValue = kHasRemovedPrepopulatedSearchEngine,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -149,6 +156,14 @@ void RecordChoiceScreenEvent(SearchEngineChoiceScreenEvents event);
 // Records the type of the default search engine that was chosen by the user
 // in the search engine choice screen or in the settings page.
 void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type);
+
+// For debugging purposes, record the ID of the current default search engine
+// that does not exist in the prepopulated search providers data.
+void RecordUnexpectedSearchProvider(const TemplateURLData& data);
+
+// For debugging purposes, record whether the current default search engine
+// was inserted in the list of search engines to show in the choice screen.
+void RecordIsDefaultProviderAddedToChoices(bool inserted_default);
 
 // Clears the search engine choice prefs, such as the timestamp and the Chrome
 // version, to ensure the choice screen is shown again.
