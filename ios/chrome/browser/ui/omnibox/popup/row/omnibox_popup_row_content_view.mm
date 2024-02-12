@@ -97,19 +97,28 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
     [_primaryLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                         forAxis:UILayoutConstraintAxisVertical];
+    [_primaryLabel setContentHuggingPriority:UILayoutPriorityRequired
+                                     forAxis:UILayoutConstraintAxisVertical];
     _primaryLabel.lineSpacing = kMultilineLineSpacing;
 
     // Secondary Label Fading.
     _secondaryLabelFading = [[FadeTruncatingLabel alloc] init];
     _secondaryLabelFading.translatesAutoresizingMaskIntoConstraints = NO;
     _secondaryLabelFading.hidden = YES;
+    [_secondaryLabelFading
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisVertical];
 
     // Secondary Label Truncating.
     _secondaryLabelTruncating = [[UILabel alloc] init];
     _secondaryLabelTruncating.translatesAutoresizingMaskIntoConstraints = NO;
     _secondaryLabelTruncating.lineBreakMode = NSLineBreakByTruncatingTail;
     _secondaryLabelTruncating.hidden = YES;
+    [_secondaryLabelTruncating
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisVertical];
 
+    // Text Stack View.
     _textStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       _primaryLabel, _secondaryLabelFading, _secondaryLabelTruncating
     ]];
