@@ -13,11 +13,6 @@ void InitializeUI() {
   // Tests do not have global UI state.
 }
 
-UITextField* CreateStyledTextField() {
-  // Tests use default style for UITextField.
-  return [[UITextField alloc] initWithFrame:CGRectZero];
-}
-
 id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
   // Tests do not use LogoVendor.
   return nil;
