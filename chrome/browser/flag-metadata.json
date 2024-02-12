@@ -37,11 +37,6 @@
     "expiry_milestone":-1
   },
   {
-    "name": "adaptive-button-in-top-toolbar",
-    "owners": [ "bttk@chromium.org", "chrome-segmentation-platform@google.com" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "adaptive-button-in-top-toolbar-add-to-bookmarks",
     "owners": [ "salg@google.com", "chrome-segmentation-platform@google.com" ],
     "expiry_milestone": 125
@@ -1241,12 +1236,12 @@
   {
     "name": "chrome-refresh-2023-ntb",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "chrome-refresh-2023-top-chrome-font",
     "owners": [ "chrome-desktop-ui-sea@google.com", "dpenning@chromium.org" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 125
   },
   {
     "name": "chrome-webui-refresh-2023",
