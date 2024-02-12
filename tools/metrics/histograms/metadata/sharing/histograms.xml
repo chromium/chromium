@@ -496,7 +496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.{DetailedContentType}.{ShareStatus}"
-    enum="LinkToggleState" expires_after="2024-03-24">
+    enum="LinkToggleState" expires_after="2024-07-08">
   <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
