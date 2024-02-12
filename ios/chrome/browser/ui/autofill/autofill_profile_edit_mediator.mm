@@ -258,9 +258,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
         autofill::AutofillType(field.autofillType),
         GetApplicationContext()->GetApplicationLocale()));
     switch (autofillUIType) {
-      case AutofillUITypeProfileHonorificPrefix:
-        [self.consumer setHonorificPrefix:fieldValue];
-        break;
       case AutofillUITypeProfileCompanyName:
         [self.consumer setCompanyName:fieldValue];
         break;

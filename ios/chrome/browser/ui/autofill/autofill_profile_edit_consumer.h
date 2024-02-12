@@ -30,7 +30,6 @@
 - (void)setZipRequired:(BOOL)zipRequired;
 
 // Notifies the class that conforms this delegate to set the corresponding data.
-- (void)setHonorificPrefix:(NSString*)honorificPrefix;
 - (void)setCompanyName:(NSString*)companyName;
 - (void)setFullName:(NSString*)fullName;
 - (void)setHomeAddressLine1:(NSString*)homeAddressLine1;
