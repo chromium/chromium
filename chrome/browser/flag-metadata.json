@@ -2597,7 +2597,7 @@
   },
   {
     "name": "enable-desktop-pwas-sub-apps",
-    "owners": [ "samicolon@google.com", "desktop-pwas-team@google.com" ],
+    "owners": ["giovax@chromium.org", "desktop-pwas-team@google.com"],
     "expiry_milestone": 130
   },
   {
