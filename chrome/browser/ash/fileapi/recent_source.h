@@ -48,6 +48,7 @@ class RecentSource {
   class Params {
    public:
     Params(storage::FileSystemContext* file_system_context,
+           int32_t call_id,
            const GURL& origin,
            const std::string& query,
            const base::Time& cutoff_time,
@@ -61,6 +62,8 @@ class RecentSource {
     storage::FileSystemContext* file_system_context() const {
       return file_system_context_.get();
     }
+
+    int32_t call_id() const { return call_id_; }
 
     // Origin of external file system URLs.
     // E.g. "chrome-extension://<extension-ID>/"
@@ -90,6 +93,7 @@ class RecentSource {
 
    private:
     scoped_refptr<storage::FileSystemContext> file_system_context_;
+    const int32_t call_id_;
     const GURL origin_;
     const std::string query_;
     const base::Time cutoff_time_;
@@ -106,6 +110,13 @@ class RecentSource {
   // states to compute recent files in member variables.
   virtual void GetRecentFiles(Params params,
                               GetRecentFilesCallback callback) = 0;
+
+  // Called by the RecentModel if it wants to interrupt search for recent files.
+  // The recent source may return whatever recent files it has collected so far
+  // as the response to this call. If the Stop method is called, the callback
+  // passed to GetRecentFiles is NEVER called. The `call_id` corresponds to one
+  // of the `call_id` passed in the `params` of the GetRecentFiles` method.
+  virtual std::vector<RecentFile> Stop(const int32_t call_id) = 0;
 
  protected:
   RecentSource();

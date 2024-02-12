@@ -31,6 +31,7 @@ class FileAccumulator {
   // Creates an accumulator with the given capacity. The capacity
   // limits the maximum number of files that can be added via the Add method.
   explicit FileAccumulator(size_t max_capacity);
+  FileAccumulator(FileAccumulator&& accumulator);
 
   ~FileAccumulator();
 

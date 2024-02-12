@@ -1970,6 +1970,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentsNested"),
         TestCase("recentsNoRenameForPlayFiles").EnableArc(),
         TestCase("recentsPlayFiles").EnableArc(),
+        TestCase("recentsSearchPlayFilesShowDownloads")
+            .EnableArc()
+            .EnableFSPsInRecents(),
         TestCase("recentsReadOnlyHidden"),
         TestCase("recentsRespectSearchWhenSwitchingFilter"),
         TestCase("recentsRespondToTimezoneChangeForGridView"),

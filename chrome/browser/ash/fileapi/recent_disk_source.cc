@@ -80,6 +80,23 @@ void GetMetadataOnIOThread(
 
 }  // namespace
 
+RecentDiskSource::RecentDiskSource::CallContext::CallContext(
+    size_t max_files,
+    GetRecentFilesCallback callback)
+    : callback(std::move(callback)),
+      build_start_time(base::TimeTicks::Now()),
+      accumulator(max_files) {}
+
+RecentDiskSource::RecentDiskSource::CallContext::CallContext(
+    CallContext&& context)
+    : callback(std::move(context.callback)),
+      build_start_time(context.build_start_time),
+      inflight_readdirs(context.inflight_readdirs),
+      inflight_stats(context.inflight_stats),
+      accumulator(std::move(context.accumulator)) {}
+
+RecentDiskSource::RecentDiskSource::CallContext::~CallContext() = default;
+
 RecentDiskSource::RecentDiskSource(std::string mount_point_name,
                                    bool ignore_dotfiles,
                                    int max_depth,
@@ -89,7 +106,7 @@ RecentDiskSource::RecentDiskSource(std::string mount_point_name,
       ignore_dotfiles_(ignore_dotfiles),
       max_depth_(max_depth),
       uma_histogram_name_(std::move(uma_histogram_name)),
-      accumulator_(max_files) {
+      max_files_(max_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -100,9 +117,7 @@ RecentDiskSource::~RecentDiskSource() {
 void RecentDiskSource::GetRecentFiles(Params params,
                                       GetRecentFilesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(build_start_time_.is_null());
-  DCHECK_EQ(0, inflight_readdirs_);
-  DCHECK_EQ(0, inflight_stats_);
+  DCHECK(context_map_.Lookup(params.call_id()) == nullptr);
 
   // Return immediately if mount point does not exist.
   storage::ExternalMountPoints* mount_points =
@@ -113,11 +128,25 @@ void RecentDiskSource::GetRecentFiles(Params params,
     return;
   }
 
-  callback_ = std::move(callback);
-
-  build_start_time_ = base::TimeTicks::Now();
+  // Create a unique context for this call.
+  auto context = std::make_unique<CallContext>(max_files_, std::move(callback));
+  context_map_.AddWithID(std::move(context), params.call_id());
 
   ScanDirectory(params, base::FilePath(), 1);
+}
+
+std::vector<RecentFile> RecentDiskSource::Stop(const int32_t call_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CallContext* context = context_map_.Lookup(call_id);
+  if (context == nullptr) {
+    // The Stop method was called after we already responded. Just return empty
+    // list of files.
+    return {};
+  }
+  // Proper stop; get the files and erase the context.
+  const std::vector<RecentFile> files = context->accumulator.Get();
+  context_map_.Remove(call_id);
+  return files;
 }
 
 void RecentDiskSource::ScanDirectory(const Params& params,
@@ -125,9 +154,15 @@ void RecentDiskSource::ScanDirectory(const Params& params,
                                      int depth) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // If context is gone, that is Stop() has been called, exit immediately.
+  CallContext* context = context_map_.Lookup(params.call_id());
+  if (context == nullptr) {
+    return;
+  }
+
   storage::FileSystemURL url = BuildDiskURL(params, path);
 
-  ++inflight_readdirs_;
+  ++context->inflight_readdirs;
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&ReadDirectoryOnIOThread,
@@ -145,8 +180,13 @@ void RecentDiskSource::OnReadDirectory(
     storage::FileSystemOperation::FileEntryList entries,
     bool has_more) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const std::u16string q16 = base::UTF8ToUTF16(params.query());
+  // If context is gone, that is Stop() has been called, exit immediately.
+  CallContext* context = context_map_.Lookup(params.call_id());
+  if (context == nullptr) {
+    return;
+  }
 
+  const std::u16string q16 = base::UTF8ToUTF16(params.query());
   for (const auto& entry : entries) {
     // Ignore directories and files that start with dot.
     if (ignore_dotfiles_ &&
@@ -169,18 +209,17 @@ void RecentDiskSource::OnReadDirectory(
         continue;
       }
       storage::FileSystemURL url = BuildDiskURL(params, subpath);
-      ++inflight_stats_;
+      ++context->inflight_stats;
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(&GetMetadataOnIOThread,
-                         base::WrapRefCounted(params.file_system_context()),
-                         url,
-                         storage::FileSystemOperation::GetMetadataFieldSet(
-                             {storage::FileSystemOperation::GetMetadataField::
-                                  kLastModified}),
-                         base::BindOnce(&RecentDiskSource::OnGetMetadata,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        params.cutoff_time(), url)));
+          base::BindOnce(
+              &GetMetadataOnIOThread,
+              base::WrapRefCounted(params.file_system_context()), url,
+              storage::FileSystemOperation::GetMetadataFieldSet(
+                  {storage::FileSystemOperation::GetMetadataField::
+                       kLastModified}),
+              base::BindOnce(&RecentDiskSource::OnGotMetadata,
+                             weak_ptr_factory_.GetWeakPtr(), params, url)));
     }
   }
 
@@ -188,45 +227,52 @@ void RecentDiskSource::OnReadDirectory(
     return;
   }
 
-  --inflight_readdirs_;
-  OnReadOrStatFinished();
+  --context->inflight_readdirs;
+  if (context->inflight_stats == 0 && context->inflight_readdirs == 0) {
+    OnReadOrStatFinished(params);
+  }
 }
 
-void RecentDiskSource::OnGetMetadata(const base::Time& cutoff_time,
+void RecentDiskSource::OnGotMetadata(const Params& params,
                                      const storage::FileSystemURL& url,
                                      base::File::Error result,
                                      const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (result == base::File::FILE_OK && info.last_modified >= cutoff_time) {
-    accumulator_.Add(RecentFile(url, info.last_modified));
-  }
-
-  --inflight_stats_;
-  OnReadOrStatFinished();
-}
-
-void RecentDiskSource::OnReadOrStatFinished() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (inflight_readdirs_ > 0 || inflight_stats_ > 0) {
+  // If context is gone, that is Stop() has been called, exit immediately.
+  CallContext* context = context_map_.Lookup(params.call_id());
+  if (context == nullptr) {
     return;
   }
 
+  if (result == base::File::FILE_OK &&
+      info.last_modified >= params.cutoff_time()) {
+    context->accumulator.Add(RecentFile(url, info.last_modified));
+  }
+
+  --context->inflight_stats;
+  if (context->inflight_stats == 0 && context->inflight_readdirs == 0) {
+    OnReadOrStatFinished(params);
+  }
+}
+
+void RecentDiskSource::OnReadOrStatFinished(const Params& params) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CallContext* context = context_map_.Lookup(params.call_id());
+  // If context is gone, that is Stop() has been called, exit immediately.
+  if (context == nullptr) {
+    return;
+  }
+
+  DCHECK(context->inflight_stats == 0);
+  DCHECK(context->inflight_readdirs == 0);
+  DCHECK(!context->build_start_time.is_null());
+
   // All reads/scans completed.
-  std::vector<RecentFile> files = accumulator_.Get();
-  accumulator_.Clear();
-
-  DCHECK(!build_start_time_.is_null());
   UmaHistogramTimes(uma_histogram_name_,
-                    base::TimeTicks::Now() - build_start_time_);
-  build_start_time_ = base::TimeTicks();
+                    base::TimeTicks::Now() - context->build_start_time);
 
-  DCHECK(build_start_time_.is_null());
-  DCHECK_EQ(0, inflight_readdirs_);
-  DCHECK_EQ(0, inflight_stats_);
-
-  std::move(callback_).Run(std::move(files));
+  std::move(context->callback).Run(context->accumulator.Get());
+  context_map_.Remove(params.call_id());
 }
 
 storage::FileSystemURL RecentDiskSource::BuildDiskURL(

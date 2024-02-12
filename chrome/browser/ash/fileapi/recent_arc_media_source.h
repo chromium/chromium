@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_FILEAPI_RECENT_ARC_MEDIA_SOURCE_H_
 #define CHROME_BROWSER_ASH_FILEAPI_RECENT_ARC_MEDIA_SOURCE_H_
 
+#include <cstdint>
+#include <map>
 #include <memory>
-#include <optional>
+#include <set>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
+#include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -38,38 +40,75 @@ class RecentArcMediaSource : public RecentSource {
 
   ~RecentArcMediaSource() override;
 
-  // RecentSource overrides:
+  // Overrides the base class method to launch searches for audio, videos, image
+  // and document files.
   void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(RecentArcMediaSourceTest, UmaStats);
-  FRIEND_TEST_ALL_PREFIXES(RecentArcMediaSourceTest, UmaStats_Deferred);
+  // Overrides the base class Stop method to return partial results collected
+  // before the timeout call. This method must be called on the UI thread.
+  std::vector<RecentFile> Stop(int32_t call_id) override;
 
-  class MediaRoot;
+  // Causes laggy performance for the given `media_root`. This is to be only
+  // used in tests. The media_root must be one of roots defined in
+  // arc_media_view_util.h. The return value indicates if the lag was set.
+  bool SetLagForTesting(const char* media_root, const base::TimeDelta& lag);
 
+  // The name of the metric under which recent file access statistics for ARC
+  // are recorded.
   static const char kLoadHistogramName[];
 
-  void OnGetRecentFilesForRoot(std::vector<RecentFile> files);
-  void OnComplete();
+ private:
+  // The class that handles a specific root of the ARC folder, such as
+  // documents, videos, images.
+  class MediaRoot;
+
+  // Call context stores information specific to a single GetRecentFiles call.
+  // If multiple calls are issued each will have its own context.
+  struct CallContext {
+    explicit CallContext(GetRecentFilesCallback callback);
+    // Move constructor needed as callback cannot be copied.
+    CallContext(CallContext&& context);
+    ~CallContext();
+
+    // The callback to be called once all files are gathered. We do not know
+    // ahead of time when this may be the case, due to nested directories.
+    // Thus this class behaves similarly to a Barrier class, except that the
+    // number of times the barrier has to be called varies.
+    GetRecentFilesCallback callback;
+
+    // Time when this call started.
+    base::TimeTicks build_start_time;
+
+    // The set of media roots that have been asked to find matching files, but
+    // have not yet returned its results.
+    std::set<raw_ptr<MediaRoot>> active_roots;
+
+    // The set of files collected so far.
+    std::vector<RecentFile> files;
+  };
+
+  // The method called by each media root as it completes its search.
+  void OnGotRecentFiles(const int32_t call_id,
+                        MediaRoot* root,
+                        std::vector<RecentFile> files);
+
+  // The method called once all media roots are done.
+  void OnComplete(const int32_t call_id);
 
   bool WillArcFileSystemOperationsRunImmediately();
 
+  // A map from root ID to a media roots. Typically we use a root for each media
+  // type: images, videos, documents and audio files.
+  std::map<const char*, std::unique_ptr<MediaRoot>> roots_;
+
+  // A map from the call ID to the call context.
+  base::IDMap<std::unique_ptr<CallContext>> context_map_;
+
+  // The profile for which this recent source was created.
   const raw_ptr<Profile> profile_;
-  std::vector<std::unique_ptr<MediaRoot>> roots_;
 
-  // Time when the build started.
-  base::TimeTicks build_start_time_;
-
-  int num_inflight_roots_ = 0;
-  std::vector<RecentFile> files_;
-
+  // The maximum number of files to be returned on the callback.
   const size_t max_files_;
-
-  // The callback to be called once all files are gathered. We do not know ahead
-  // of time when this may be the case, due to nested directories. Thus this
-  // class behaves similarly to a Barrier class, except that the number of times
-  // the barrier has to be called varies.
-  GetRecentFilesCallback callback_;
 
   base::WeakPtrFactory<RecentArcMediaSource> weak_ptr_factory_{this};
 };
