@@ -28,9 +28,9 @@ constexpr int kDropTargetBorderThickness = 2;
 // overview. It includes a background view. Dragged window in tablet mode can be
 // dragged into it and then dropped into overview.
 class OverviewDropTargetView : public views::View {
- public:
-  METADATA_HEADER(OverviewDropTargetView);
+  METADATA_HEADER(OverviewDropTargetView, views::View)
 
+ public:
   OverviewDropTargetView() {
     SetUseDefaultFillLayout(true);
 
@@ -56,7 +56,7 @@ class OverviewDropTargetView : public views::View {
   raw_ptr<views::View> background_view_ = nullptr;
 };
 
-BEGIN_METADATA(OverviewDropTargetView, views::View)
+BEGIN_METADATA(OverviewDropTargetView)
 END_METADATA
 
 OverviewDropTarget::OverviewDropTarget(OverviewGrid* overview_grid)

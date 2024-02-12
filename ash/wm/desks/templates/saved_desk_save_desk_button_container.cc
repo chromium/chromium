@@ -213,7 +213,7 @@ SavedDeskSaveDeskButton* SavedDeskSaveDeskButtonContainer::GetButtonFromType(
   }
 }
 
-BEGIN_METADATA(SavedDeskSaveDeskButtonContainer, views::BoxLayoutView)
+BEGIN_METADATA(SavedDeskSaveDeskButtonContainer)
 END_METADATA
 
 }  // namespace ash

@@ -100,9 +100,9 @@ constexpr int kSettingsIconSize = 24;
 // app.
 // TODO(sammiequon): Add ASCII art.
 class PineItemView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(PineItemView);
+  METADATA_HEADER(PineItemView, views::BoxLayoutView)
 
+ public:
   PineItemView(const std::string& app_title,
                const std::vector<std::string>& favicons) {
     SetBetweenChildSpacing(kItemChildSpacing);
@@ -203,7 +203,7 @@ class PineItemView : public views::BoxLayoutView {
   base::WeakPtrFactory<PineItemView> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(PineItemView, views::BoxLayoutView)
+BEGIN_METADATA(PineItemView)
 END_METADATA
 
 // An alternative to `PineItemView` when there are more than four windows in
@@ -211,9 +211,9 @@ END_METADATA
 // TODO(hewer): Fix the styling to make the background smaller than the
 // contents.
 class PineItemsOverflowView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(PineItemsOverflowView);
+  METADATA_HEADER(PineItemsOverflowView, views::BoxLayoutView)
 
+ public:
   explicit PineItemsOverflowView(const PineContentsView::AppsData& apps) {
     const int elements = static_cast<int>(apps.size());
     CHECK_GE(elements, kOverflowMinElements);
@@ -410,16 +410,16 @@ class PineItemsOverflowView : public views::BoxLayoutView {
   base::WeakPtrFactory<PineItemsOverflowView> weak_ptr_factory_{this};
 };
 
-BEGIN_METADATA(PineItemsOverflowView, views::BoxLayoutView)
+BEGIN_METADATA(PineItemsOverflowView)
 END_METADATA
 
 // The right side contents (in LTR) of the `PineContentsView`. It is a
 // vertical list of `PineItemView`, with each view representing an app. Shows
 // a maximum of `kMaxItems` items.
 class PineItemsContainerView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(PineItemsContainerView);
+  METADATA_HEADER(PineItemsContainerView, views::BoxLayoutView)
 
+ public:
   explicit PineItemsContainerView(const PineContentsView::AppsData& apps) {
     const int elements = static_cast<int>(apps.size());
     CHECK_GT(elements, 0);
@@ -477,7 +477,7 @@ class PineItemsContainerView : public views::BoxLayoutView {
   ~PineItemsContainerView() override = default;
 };
 
-BEGIN_METADATA(PineItemsContainerView, views::BoxLayoutView)
+BEGIN_METADATA(PineItemsContainerView)
 END_METADATA
 
 }  // namespace
@@ -626,7 +626,7 @@ void PineContentsView::OnMenuClosed() {
   context_menu_model_.reset();
 }
 
-BEGIN_METADATA(PineContentsView, views::BoxLayoutView)
+BEGIN_METADATA(PineContentsView)
 END_METADATA
 
 }  // namespace ash

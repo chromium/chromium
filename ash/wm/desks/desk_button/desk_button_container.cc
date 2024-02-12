@@ -280,7 +280,7 @@ void DeskButtonContainer::MaybeShowContextMenu(views::View* source,
   event->StopPropagation();
 }
 
-BEGIN_METADATA(DeskButtonContainer, views::View)
+BEGIN_METADATA(DeskButtonContainer)
 END_METADATA
 
 }  // namespace ash

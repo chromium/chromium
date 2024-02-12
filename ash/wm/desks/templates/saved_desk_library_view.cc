@@ -582,7 +582,7 @@ void SavedDeskLibraryView::OnWindowDestroying(aura::Window* window) {
   event_handler_ = nullptr;
 }
 
-BEGIN_METADATA(SavedDeskLibraryView, views::View)
+BEGIN_METADATA(SavedDeskLibraryView)
 END_METADATA
 
 }  // namespace ash

@@ -19,9 +19,9 @@ class DeskMiniView;
 // When Bento is enabled and the user creates a new desk, the accessible name
 // for `this` will be the default desk name.
 class ASH_EXPORT DeskNameView : public DeskTextfield {
- public:
-  METADATA_HEADER(DeskNameView);
+  METADATA_HEADER(DeskNameView, DeskTextfield)
 
+ public:
   explicit DeskNameView(DeskMiniView* mini_view);
   DeskNameView(const DeskNameView&) = delete;
   DeskNameView& operator=(const DeskNameView&) = delete;

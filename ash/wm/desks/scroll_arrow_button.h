@@ -20,9 +20,9 @@ class DeskBarViewBase;
 // want to paint the button on arrow type and RTL layout differently, also
 // customize the icon's layout.
 class ASH_EXPORT ScrollArrowButton : public views::Button {
- public:
-  METADATA_HEADER(ScrollArrowButton);
+  METADATA_HEADER(ScrollArrowButton, views::Button)
 
+ public:
   ScrollArrowButton(base::RepeatingClosure on_scroll,
                     bool is_left_arrow,
                     DeskBarViewBase* bar_view);

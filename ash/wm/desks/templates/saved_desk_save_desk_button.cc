@@ -77,7 +77,7 @@ void SavedDeskSaveDeskButton::OnBlur() {
   View::OnBlur();
 }
 
-BEGIN_METADATA(SavedDeskSaveDeskButton, PillButton)
+BEGIN_METADATA(SavedDeskSaveDeskButton)
 END_METADATA
 
 }  // namespace ash

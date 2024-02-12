@@ -16,9 +16,9 @@ namespace ash {
 // Defines a textfield styled to normally look like a label. Allows modifying
 // the name of its corresponding saved desk.
 class SavedDeskNameView : public DeskTextfield {
- public:
-  METADATA_HEADER(SavedDeskNameView);
+  METADATA_HEADER(SavedDeskNameView, DeskTextfield)
 
+ public:
   SavedDeskNameView();
   SavedDeskNameView(const SavedDeskNameView&) = delete;
   SavedDeskNameView& operator=(const SavedDeskNameView&) = delete;

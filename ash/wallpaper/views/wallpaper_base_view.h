@@ -20,9 +20,9 @@ namespace ash {
 // This can be used directly (e.g. by DeskPreviewView) to paint just the
 // wallpaper without any extra effects.
 class WallpaperBaseView : public views::View {
- public:
-  METADATA_HEADER(WallpaperBaseView);
+  METADATA_HEADER(WallpaperBaseView, views::View)
 
+ public:
   WallpaperBaseView() = default;
   WallpaperBaseView(const WallpaperBaseView&) = delete;
   WallpaperBaseView& operator=(const WallpaperBaseView&) = delete;

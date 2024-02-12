@@ -60,7 +60,7 @@ void DeskNameView::OnFocusableViewFocused() {
   mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 
-BEGIN_METADATA(DeskNameView, DeskTextfield)
+BEGIN_METADATA(DeskNameView)
 END_METADATA
 
 }  // namespace ash

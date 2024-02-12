@@ -16,9 +16,9 @@ namespace ash {
 // label. It can be focused and activated by the `OverviewFocusCycler`.
 class ASH_EXPORT DeskTextfield : public SystemTextfield,
                                  public OverviewFocusableView {
- public:
-  METADATA_HEADER(DeskTextfield);
+  METADATA_HEADER(DeskTextfield, SystemTextfield)
 
+ public:
   DeskTextfield();
   explicit DeskTextfield(Type type);
   DeskTextfield(const DeskTextfield&) = delete;

@@ -729,7 +729,7 @@ WindowMiniViewBase* WindowCycleView::GetCycleViewForWindow(
   return nullptr;
 }
 
-BEGIN_METADATA(WindowCycleView, views::WidgetDelegateView)
+BEGIN_METADATA(WindowCycleView)
 END_METADATA
 
 }  // namespace ash

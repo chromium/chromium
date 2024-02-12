@@ -31,9 +31,9 @@ class RoundedImageView;
 // the SavedDeskRegularIconView may have only an icon, or an icon with a count
 // label; while the SavedDeskOverflowIconView has only a count label.
 class SavedDeskIconView : public views::View {
- public:
-  METADATA_HEADER(SavedDeskIconView);
+  METADATA_HEADER(SavedDeskIconView, views::View)
 
+ public:
   // Create an icon view for an app. Sets `count` to `count_`. `sorting_key` is
   // the key that is used for sorting by the icon container.
   SavedDeskIconView(int count, size_t sorting_key);
@@ -89,9 +89,9 @@ class SavedDeskIconView : public views::View {
 };
 
 class SavedDeskRegularIconView : public SavedDeskIconView {
- public:
-  METADATA_HEADER(SavedDeskRegularIconView);
+  METADATA_HEADER(SavedDeskRegularIconView, SavedDeskIconView)
 
+ public:
   // `on_icon_loaded` is the callback for updating the icon container.
   SavedDeskRegularIconView(
       const ui::ColorProvider* incognito_window_color_provider,
@@ -154,9 +154,9 @@ class SavedDeskRegularIconView : public SavedDeskIconView {
 };
 
 class SavedDeskOverflowIconView : public SavedDeskIconView {
- public:
-  METADATA_HEADER(SavedDeskOverflowIconView);
+  METADATA_HEADER(SavedDeskOverflowIconView, SavedDeskIconView)
 
+ public:
   // Create an icon view that only has a count and an optional plus.
   SavedDeskOverflowIconView(int count, bool show_plus);
 

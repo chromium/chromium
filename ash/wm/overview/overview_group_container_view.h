@@ -16,9 +16,9 @@ class OverviewGroupItem;
 // group item view. This class will be handling events to be passed on to
 // `OverviewGroupItem`.
 class OverviewGroupContainerView : public views::View {
- public:
-  METADATA_HEADER(OverviewGroupContainerView);
+  METADATA_HEADER(OverviewGroupContainerView, views::View)
 
+ public:
   explicit OverviewGroupContainerView(OverviewGroupItem* overview_group_item);
   OverviewGroupContainerView(const OverviewGroupContainerView&) = delete;
   OverviewGroupContainerView& operator=(const OverviewGroupContainerView&) =

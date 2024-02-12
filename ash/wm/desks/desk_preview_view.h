@@ -69,9 +69,9 @@ class WallpaperBaseView;
 // a render surface.
 class ASH_EXPORT DeskPreviewView : public views::Button,
                                    public OverviewFocusableView {
- public:
-  METADATA_HEADER(DeskPreviewView);
+  METADATA_HEADER(DeskPreviewView, views::Button)
 
+ public:
   DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
 
   DeskPreviewView(const DeskPreviewView&) = delete;

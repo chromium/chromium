@@ -25,9 +25,9 @@ class PillButton;
 // an optional call to action.
 class BirchChipButton : public views::Button,
                         public ui::SimpleMenuModel::Delegate {
- public:
-  METADATA_HEADER(BirchChipButton);
+  METADATA_HEADER(BirchChipButton, views::Button)
 
+ public:
   // The delegate executes the actions when the chip is removed.
   class Delegate {
    public:

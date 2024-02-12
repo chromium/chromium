@@ -182,7 +182,7 @@ gfx::Rect WindowMirrorView::GetClientAreaBounds() const {
   return client_view->ConvertRectToWidget(client_view->GetLocalBounds());
 }
 
-BEGIN_METADATA(WindowMirrorView, views::View)
+BEGIN_METADATA(WindowMirrorView)
 END_METADATA
 
 }  // namespace ash

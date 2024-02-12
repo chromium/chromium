@@ -649,7 +649,7 @@ void DeskPreviewView::OnFocusableViewBlurred() {
   mini_view_->UpdateFocusColor();
 }
 
-BEGIN_METADATA(DeskPreviewView, views::Button)
+BEGIN_METADATA(DeskPreviewView)
 END_METADATA
 
 }  // namespace ash

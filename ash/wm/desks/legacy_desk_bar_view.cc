@@ -32,7 +32,7 @@ gfx::Rect LegacyDeskBarView::GetAvailableBounds() const {
   return GetWidget()->GetRootView()->bounds();
 }
 
-BEGIN_METADATA(LegacyDeskBarView, DeskBarViewBase)
+BEGIN_METADATA(LegacyDeskBarView)
 END_METADATA
 
 }  // namespace ash

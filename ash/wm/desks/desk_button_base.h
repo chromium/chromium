@@ -18,9 +18,9 @@ class DeskBarViewBase;
 // button) on desks bar. It's guaranteed this button always lives under a desk
 // bar view.
 class DeskButtonBase : public views::LabelButton, public OverviewFocusableView {
- public:
-  METADATA_HEADER(DeskButtonBase);
+  METADATA_HEADER(DeskButtonBase, views::LabelButton)
 
+ public:
   explicit DeskButtonBase(const std::u16string& text,
                           bool set_text,
                           DeskBarViewBase* bar_view,

@@ -358,7 +358,7 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
           /*show_plus=*/!children().empty()));
 }
 
-BEGIN_METADATA(SavedDeskIconContainer, views::BoxLayoutView)
+BEGIN_METADATA(SavedDeskIconContainer)
 END_METADATA
 
 }  // namespace ash

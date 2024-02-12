@@ -72,9 +72,9 @@ gfx::Size GetTextSize(const std::u16string& text,
 // can have an associated sub menu container which it opens when pressed.
 class PieMenuButton : public views::Button,
                       public views::MaskedTargeterDelegate {
- public:
-  METADATA_HEADER(PieMenuButton);
+  METADATA_HEADER(PieMenuButton, views::Button)
 
+ public:
   PieMenuButton(int button_id,
                 const std::u16string& button_label_text,
                 const gfx::VectorIcon* icon)
@@ -288,7 +288,7 @@ class PieMenuButton : public views::Button,
   raw_ptr<PieSubMenuContainerView> associated_sub_menu_container_ = nullptr;
 };
 
-BEGIN_METADATA(PieMenuButton, views::Button)
+BEGIN_METADATA(PieMenuButton)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -327,7 +327,7 @@ PieSubMenuContainerView::PieSubMenuContainerView(PieMenuView* owner_menu_view)
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
-BEGIN_METADATA(PieSubMenuContainerView, views::View)
+BEGIN_METADATA(PieSubMenuContainerView)
 END_METADATA
 
 // -----------------------------------------------------------------------------
@@ -490,7 +490,7 @@ PieMenuButton* PieMenuView::GetButtonById(int button_id) const {
   return iter == buttons_by_id_.end() ? nullptr : iter->second;
 }
 
-BEGIN_METADATA(PieMenuView, views::View)
+BEGIN_METADATA(PieMenuView)
 END_METADATA
 
 }  // namespace ash

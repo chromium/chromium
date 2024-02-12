@@ -96,7 +96,7 @@ void WindowMiniViewBase::UpdateFocusState(bool focus) {
 
 WindowMiniViewBase::WindowMiniViewBase() = default;
 
-BEGIN_METADATA(WindowMiniViewBase, views::View)
+BEGIN_METADATA(WindowMiniViewBase)
 END_METADATA
 
 WindowMiniView::~WindowMiniView() = default;
@@ -369,7 +369,7 @@ WindowMiniView::GenerateFocusRingPath() {
       gfx::RoundedCornersF(kFocusRingCornerRadius));
 }
 
-BEGIN_METADATA(WindowMiniView, WindowMiniViewBase)
+BEGIN_METADATA(WindowMiniView)
 END_METADATA
 
 }  // namespace ash

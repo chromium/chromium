@@ -87,7 +87,7 @@ void DeskActionView::OnViewBlurred(views::View* observed) {
   focus_change_callback_.Run();
 }
 
-BEGIN_METADATA(DeskActionView, views::BoxLayoutView)
+BEGIN_METADATA(DeskActionView)
 END_METADATA
 
 }  // namespace ash

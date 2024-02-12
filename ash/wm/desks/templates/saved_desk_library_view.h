@@ -32,9 +32,9 @@ class ScrollViewGradientHelper;
 // saved desk features are enabled, it can show one or more `SavedDeskGridView`s
 // that each hold a number of saved desks. It is owned by the `OverviewGrid`.
 class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
- public:
-  METADATA_HEADER(SavedDeskLibraryView);
+  METADATA_HEADER(SavedDeskLibraryView, views::View)
 
+ public:
   SavedDeskLibraryView();
   SavedDeskLibraryView(const SavedDeskLibraryView&) = delete;
   SavedDeskLibraryView& operator=(const SavedDeskLibraryView&) = delete;

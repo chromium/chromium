@@ -132,7 +132,7 @@ void WallpaperBaseView::DrawWallpaper(const gfx::ImageSkia& wallpaper,
                        /*filter=*/true, flags);
 }
 
-BEGIN_METADATA(WallpaperBaseView, views::View)
+BEGIN_METADATA(WallpaperBaseView)
 END_METADATA
 
 }  // namespace ash

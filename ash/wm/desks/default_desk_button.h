@@ -17,9 +17,9 @@ class DeskBarViewBase;
 // case the bar is shown in a minimized state. Clicking the button will switch
 // to the expanded desks bar and focus on the single desk's name view.
 class DefaultDeskButton : public DeskButtonBase {
- public:
-  METADATA_HEADER(DefaultDeskButton);
+  METADATA_HEADER(DefaultDeskButton, DeskButtonBase)
 
+ public:
   explicit DefaultDeskButton(DeskBarViewBase* bar_view);
   DefaultDeskButton(const DefaultDeskButton&) = delete;
   DefaultDeskButton& operator=(const DefaultDeskButton&) = delete;

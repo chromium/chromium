@@ -207,7 +207,7 @@ void DeskIconButton::UpdateEnabledState() {
                                                : icon_enabled_color));
 }
 
-BEGIN_METADATA(DeskIconButton, DeskButtonBase)
+BEGIN_METADATA(DeskIconButton)
 END_METADATA
 
 }  // namespace ash

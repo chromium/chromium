@@ -208,7 +208,7 @@ void BirchChipButton::OnRemoveComponentPressed() {
   }
 }
 
-BEGIN_METADATA(BirchChipButton, views::Button)
+BEGIN_METADATA(BirchChipButton)
 END_METADATA
 
 }  // namespace ash

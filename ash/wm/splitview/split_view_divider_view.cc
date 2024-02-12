@@ -231,7 +231,7 @@ void SplitViewDividerView::OnResizeStatusChanged() {
       split_view_controller_->IsResizingWithDivider());
 }
 
-BEGIN_METADATA(SplitViewDividerView, views::View)
+BEGIN_METADATA(SplitViewDividerView)
 END_METADATA
 
 }  // namespace ash

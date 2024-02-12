@@ -40,9 +40,9 @@ class DeskTemplate;
 // displayed within the given width, we draw as many and a label at the end that
 // says +N, up to +99.
 class SavedDeskIconContainer : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(SavedDeskIconContainer);
+  METADATA_HEADER(SavedDeskIconContainer, views::BoxLayoutView)
 
+ public:
   // A struct for storing the various information used to determine which app
   // icons/favicons to display.
   struct IconInfo {

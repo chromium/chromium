@@ -766,7 +766,7 @@ void SavedDeskItemView::OnFocusableViewBlurred() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(SavedDeskItemView, views::Button)
+BEGIN_METADATA(SavedDeskItemView)
 END_METADATA
 
 }  // namespace ash
