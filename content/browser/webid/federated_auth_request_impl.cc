@@ -1347,12 +1347,32 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Account" flow or the IDP login mismatch in multiple IDP case.
   idp_data_for_display_.clear();
 
+  // If this method call occurs after a login, we'd like to show the account
+  // that was logged in.
+  std::optional<IdentityProviderData> new_account_idp;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
       idp_data_for_display_.push_back(*idp_info_it->second->data);
     }
+    if (IsFedCmAddAccountEnabled()) {
+      if (!login_url_.is_empty() &&
+          login_url_ == idp_info_it->second->metadata.idp_login_url) {
+        new_account_idp = idp_info_it->second->data;
+        new_account_idp->accounts.clear();
+        for (const auto& account : idp_info_it->second->data->accounts) {
+          if (!account_ids_before_login_.contains(account.id)) {
+            // Even though it is theoretically possible for more than one
+            // account to be new, just show the first one we encounter.
+            new_account_idp->accounts = {account};
+            break;
+          }
+        }
+        account_ids_before_login_.clear();
+      }
+    }
   }
+
   // We want to show IDPs in the following order in the UI:
   // 1. IDPs for which there was a mismatch.
   // 2. IDPs for which there were returning accounts.
@@ -1530,6 +1550,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
+  // TODO(crbug.com/41490360): pass `new_account_idp` so that the UI code may
+  // show the newly signed in account, if applicable.
   request_dialog_controller_->ShowAccountsDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       idp_data_for_display_,
@@ -2418,6 +2440,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   idp_login_infos_.clear();
   idp_infos_.clear();
   idp_data_for_display_.clear();
+  account_ids_before_login_.clear();
   fetch_data_ = FetchData();
   idp_order_.clear();
   metrics_endpoints_.clear();
@@ -2774,6 +2797,20 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
     MaybeAppendQueryParameters(it->second, &login_url);
   }
   permission_delegate_->AddIdpSigninStatusObserver(this);
+
+  if (IsFedCmAddAccountEnabled()) {
+    account_ids_before_login_.clear();
+    for (const auto& idp_data : idp_data_for_display_) {
+      if (idp_data.idp_metadata.idp_login_url == login_url) {
+        for (const auto& account : idp_data.accounts) {
+          account_ids_before_login_.insert(account.id);
+        }
+        break;
+      }
+    }
+  }
+
+  login_url_ = login_url;
   ShowModalDialog(idp_config_url, login_url);
 }
 

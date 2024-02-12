@@ -407,6 +407,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Populated by MaybeShowAccountsDialog().
   std::vector<IdentityProviderData> idp_data_for_display_;
 
+  // Contains the set of account IDs of an IDP before a login URL is displayed
+  // to the user. Used to compute the account ID of the account that the user
+  // logs in to. Populated by LoginToIdP().
+  base::flat_set<std::string> account_ids_before_login_;
+
   // Maps the login URL to the info that may be added as query parameters to
   // that URL. Populated by OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, IdentityProviderLoginUrlInfo> idp_login_infos_;
@@ -470,7 +475,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // account.
   std::vector<GURL> idp_order_;
 
-  // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP.
+  // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP. If
+  // LoginToIdp() is called, this is the login URL for the IDP.
   GURL login_url_;
 
   // If dialog_type_ is kError, this is the config URL for the IDP.
