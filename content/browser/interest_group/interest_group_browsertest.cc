@@ -690,19 +690,26 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAdditionalBids(
 class InterestGroupBrowserTest : public ContentBrowserTest {
  public:
   InterestGroupBrowserTest() {
-    feature_list_.InitWithFeatures(
+    feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
-         blink::features::kFledgeBiddingAndAuctionServer,
-         features::kPrivacySandboxAdsAPIsOverride,
-         blink::features::kAdInterestGroupAPI, blink::features::kParakeet,
-         blink::features::kFledge, blink::features::kAllowURNsInIframes,
-         blink::features::kFledgeNegativeTargeting,
-         blink::features::kBiddingAndScoringDebugReportingAPI,
-         blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
-         blink::features::kFencedFramesM120FeaturesPart1,
-         features::kBackForwardCache, features::kFledgeUseInterestGroupCache,
-         blink::features::kFencedFramesLocalUnpartitionedDataAccess},
+        {{blink::features::kInterestGroupStorage, {}},
+         {blink::features::kFledgeBiddingAndAuctionServer, {}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}},
+         {blink::features::kAdInterestGroupAPI, {}},
+         {blink::features::kParakeet, {}},
+         {blink::features::kFledge, {}},
+         {blink::features::kAllowURNsInIframes, {}},
+         {blink::features::kFledgeNegativeTargeting, {}},
+         {blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+         {blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot, {}},
+         {blink::features::kFencedFramesM120FeaturesPart1, {}},
+         {features::kBackForwardCache, {}},
+         {features::kFledgeUseInterestGroupCache, {}},
+         {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
+         // This is in field trial config, but we want this consistent among
+         // bots.
+         {blink::features::kFledgeCustomMaxAuctionAdComponents,
+          {{"FledgeAdComponentLimit", "40"}}}},
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
@@ -21075,15 +21082,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DetachedFramePromiseResolve) {
   EXPECT_EQ(nullptr, EvalJs(shell(), kTopLevelScript));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, NoFeatureDetection) {
-  // Tests behavior with all feature detection off; this is currently default,
-  // but should go away once anything enabling it goes to 100%
-
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
+  // Since kFledgeCustomMaxAuctionAdComponents is rolling out, feature
+  // detection helper should be visible.
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/simple_page.html");
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  EXPECT_EQ(false, EvalJs(shell(), "'protectedAudience' in navigator"));
+  EXPECT_EQ(true, EvalJs(shell(), "'protectedAudience' in navigator"));
 }
 class InterestGroupBFCacheBrowserTest : public InterestGroupBrowserTest {
  public:
