@@ -51,7 +51,6 @@ class PLATFORM_EXPORT CalculationExpressionNode
   }
 
   bool HasAnchorQueries() const { return has_anchor_queries_; }
-  bool HasAutoAnchorPositioning() const { return has_auto_anchor_positioning_; }
   bool HasContentOrIntrinsicSize() const { return has_content_or_intrinsic_; }
 
   virtual bool IsNumber() const { return false; }
@@ -79,7 +78,6 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual bool Equals(const CalculationExpressionNode& other) const = 0;
 
   bool has_anchor_queries_ = false;
-  bool has_auto_anchor_positioning_ = false;
   bool has_content_or_intrinsic_ = false;
 };
 

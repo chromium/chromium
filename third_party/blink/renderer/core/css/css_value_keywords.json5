@@ -1700,8 +1700,6 @@
 
     // anchor positioning
     "anchor",
-    // auto,
-    "auto-same",
     // top,
     // left,
     // right,

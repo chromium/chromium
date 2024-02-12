@@ -940,16 +940,52 @@ select:-internal-select-author-datalist > datalist {
   min-block-size: 1lh;
   position-fallback: -internal-select-datalist-default-fallbacks;
 }
+
+/* TODO(crbug.com/40279608): Use automatic fallbacks */
 @position-fallback -internal-select-datalist-default-fallbacks {
   /* Fallbacks without vertical scrolling */
   @try {
-    inset-block-start: anchor(auto);
-    inset-inline-start: anchor(auto-same);
+    inset-block-start: anchor(self-end);
+    inset-inline-start: anchor(self-start);
   }
+  /* Reverse block axis */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+  }
+  /* Reverse inline axis */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-end: anchor(self-end);
+  }
+  /* Reverse both axes */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-end: anchor(self-end);
+  }
+
   /* Fallbacks with vertical scrolling */
   @try {
-    inset-block-start: anchor(auto);
-    inset-inline-start: anchor(auto-same);
+    inset-block-start: anchor(self-end);
+    inset-inline-start: anchor(self-start);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse block axis */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-start: anchor(self-start);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse inline axis */
+  @try {
+    inset-block-start: anchor(self-end);
+    inset-inline-end: anchor(self-end);
+    block-size: -webkit-fill-available;
+  }
+  /* Reverse both axes */
+  @try {
+    inset-block-end: anchor(self-start);
+    inset-inline-end: anchor(self-end);
     block-size: -webkit-fill-available;
   }
 }

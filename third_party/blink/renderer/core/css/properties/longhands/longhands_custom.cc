@@ -1535,17 +1535,6 @@ const CSSValue* Bottom::CSSValueFromComputedStyleInternal(
                                                     layout_object);
 }
 
-void Bottom::ApplyValue(StyleResolverState& state,
-                        const CSSValue& value,
-                        ValueMode) const {
-  Length length = StyleBuilderConverter::ConvertLengthOrAuto(state, value);
-  if (state.IsResolvingPositionFallbackStyle() &&
-      length.HasAutoAnchorPositioning()) {
-    state.StyleBuilder().SetHasAutoAnchorPositioningInYAxisFromTryBlock();
-  }
-  state.StyleBuilder().SetBottom(std::move(length));
-}
-
 const CSSValue* BoxShadow::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -5282,17 +5271,6 @@ const CSSValue* Left::CSSValueFromComputedStyleInternal(
                                                     layout_object);
 }
 
-void Left::ApplyValue(StyleResolverState& state,
-                      const CSSValue& value,
-                      ValueMode) const {
-  Length length = StyleBuilderConverter::ConvertLengthOrAuto(state, value);
-  if (state.IsResolvingPositionFallbackStyle() &&
-      length.HasAutoAnchorPositioning()) {
-    state.StyleBuilder().SetHasAutoAnchorPositioningInXAxisFromTryBlock();
-  }
-  state.StyleBuilder().SetLeft(std::move(length));
-}
-
 const CSSValue* LetterSpacing::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -7065,17 +7043,6 @@ const CSSValue* Right::CSSValueFromComputedStyleInternal(
                                                     layout_object);
 }
 
-void Right::ApplyValue(StyleResolverState& state,
-                       const CSSValue& value,
-                       ValueMode) const {
-  Length length = StyleBuilderConverter::ConvertLengthOrAuto(state, value);
-  if (state.IsResolvingPositionFallbackStyle() &&
-      length.HasAutoAnchorPositioning()) {
-    state.StyleBuilder().SetHasAutoAnchorPositioningInXAxisFromTryBlock();
-  }
-  state.StyleBuilder().SetRight(std::move(length));
-}
-
 const CSSValue* Rotate::ParseSingleValue(CSSParserTokenRange& range,
                                          const CSSParserContext& context,
                                          const CSSParserLocalContext&) const {
@@ -8660,17 +8627,6 @@ const CSSValue* Top::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::ValueForPositionOffset(style, *this,
                                                     layout_object);
-}
-
-void Top::ApplyValue(StyleResolverState& state,
-                     const CSSValue& value,
-                     ValueMode) const {
-  Length length = StyleBuilderConverter::ConvertLengthOrAuto(state, value);
-  if (state.IsResolvingPositionFallbackStyle() &&
-      length.HasAutoAnchorPositioning()) {
-    state.StyleBuilder().SetHasAutoAnchorPositioningInYAxisFromTryBlock();
-  }
-  state.StyleBuilder().SetTop(std::move(length));
 }
 
 namespace {

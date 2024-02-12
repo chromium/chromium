@@ -371,9 +371,6 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
     if (child->HasAnchorQueries()) {
       has_anchor_queries_ = true;
     }
-    if (child->HasAutoAnchorPositioning()) {
-      has_auto_anchor_positioning_ = true;
-    }
     if (child->HasContentOrIntrinsicSize()) {
       has_content_or_intrinsic_ = true;
     }

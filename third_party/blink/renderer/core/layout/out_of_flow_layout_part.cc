@@ -127,68 +127,10 @@ bool CalculateNonOverflowingRangeInOneAxis(
   return true;
 }
 
-const ComputedStyle* CreateFlippedAutoAnchorStyle(
-    const ComputedStyle& base_style,
-    bool flip_block,
-    bool flip_inline) {
-  CHECK(!RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
-  const bool is_horizontal = base_style.IsHorizontalWritingMode();
-  const bool flip_x = is_horizontal ? flip_inline : flip_block;
-  const bool flip_y = is_horizontal ? flip_block : flip_inline;
-  ComputedStyleBuilder builder(base_style);
-  // TODO(crbug.com/1477314): Handle inset-area
-  if (flip_x) {
-    builder.SetLeft(base_style.UsedRight());
-    builder.SetRight(base_style.UsedLeft());
-  }
-  if (flip_y) {
-    builder.SetTop(base_style.UsedBottom());
-    builder.SetBottom(base_style.UsedTop());
-  }
-  return builder.TakeStyle();
-}
-
-const CSSPropertyValueSet* CreateFlippedAutoAnchorDeclarations(
-    const ComputedStyle& base_style,
-    bool flip_block,
-    bool flip_inline) {
-  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
-  const bool is_horizontal = base_style.IsHorizontalWritingMode();
-  const bool flip_x = is_horizontal ? flip_inline : flip_block;
-  const bool flip_y = is_horizontal ? flip_block : flip_inline;
-  auto* set =
-      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  float zoom = base_style.EffectiveZoom();
-  // TODO(crbug.com/1477314): Handle inset-area
-  set->SetProperty(CSSPropertyID::kLeft,
-                   *CSSValue::Create(base_style.UsedLeft(), zoom));
-  set->SetProperty(CSSPropertyID::kRight,
-                   *CSSValue::Create(base_style.UsedRight(), zoom));
-  set->SetProperty(CSSPropertyID::kTop,
-                   *CSSValue::Create(base_style.UsedTop(), zoom));
-  set->SetProperty(CSSPropertyID::kBottom,
-                   *CSSValue::Create(base_style.UsedBottom(), zoom));
-  if (flip_x) {
-    set->SetProperty(CSSPropertyID::kLeft,
-                     *CSSValue::Create(base_style.UsedRight(), zoom));
-    set->SetProperty(CSSPropertyID::kRight,
-                     *CSSValue::Create(base_style.UsedLeft(), zoom));
-  }
-  if (flip_y) {
-    set->SetProperty(CSSPropertyID::kTop,
-                     *CSSValue::Create(base_style.UsedBottom(), zoom));
-    set->SetProperty(CSSPropertyID::kBottom,
-                     *CSSValue::Create(base_style.UsedTop(), zoom));
-  }
-  return set;
-}
-
 // Helper class to enumerate all the candidate styles to be passed to
 // `TryCalculateOffset()`. The class should iterate through:
 // - The base style, if no `position-fallback` is specified
 // - The `@try` rule styles, if `position-fallback` is specified
-// In addition, if any of the above styles generate auto anchor fallbacks, the
-// class also iterate through those auto anchor fallbacks.
 class OOFCandidateStyleIterator {
   STACK_ALLOCATED();
 
@@ -199,12 +141,10 @@ class OOFCandidateStyleIterator {
   }
 
   bool UsesFallbackStyle() const {
-    return position_fallback_index_ || HasAutoFallbacks();
+    return position_fallback_index_.has_value();
   }
 
-  const ComputedStyle& GetStyle() const {
-    return auto_anchor_style_ ? *auto_anchor_style_ : *style_;
-  }
+  const ComputedStyle& GetStyle() const { return *style_; }
 
   const ComputedStyle& GetBaseStyle() const {
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
@@ -241,58 +181,17 @@ class OOFCandidateStyleIterator {
     return position_fallback_index_;
   }
 
-  bool HasNextStyle() const {
-    return HasNextAutoAnchorFallback() || HasNextPositionFallback();
-  }
+  bool HasNextStyle() const { return HasNextPositionFallback(); }
 
   void MoveToNextStyle() {
     CHECK(style_);
-
-    if (HasNextAutoAnchorFallback()) {
-      if (!auto_anchor_flippable_in_inline_) {
-        CHECK(auto_anchor_flippable_in_block_);
-        CHECK(!auto_anchor_flip_block_);
-        auto_anchor_flip_block_ = true;
-      } else if (!auto_anchor_flippable_in_block_) {
-        CHECK(auto_anchor_flippable_in_inline_);
-        CHECK(!auto_anchor_flip_inline_);
-        auto_anchor_flip_inline_ = true;
-      } else {
-        if (!auto_anchor_flip_block_) {
-          auto_anchor_flip_block_ = true;
-        } else {
-          CHECK(!auto_anchor_flip_inline_);
-          auto_anchor_flip_inline_ = true;
-          auto_anchor_flip_block_ = false;
-        }
-      }
-      if (RuntimeEnabledFeatures::
-              CSSAnchorPositioningCascadeFallbackEnabled()) {
-        auto_anchor_style_ = UpdateStyle(CreateFlippedAutoAnchorDeclarations(
-            *style_, auto_anchor_flip_block_, auto_anchor_flip_inline_));
-      } else {
-        auto_anchor_style_ = CreateFlippedAutoAnchorStyle(
-            *style_, auto_anchor_flip_block_, auto_anchor_flip_inline_);
-      }
-      return;
-    }
-
     CHECK(position_fallback_index_);
     ++*position_fallback_index_;
     style_ = UpdateStyle(*position_fallback_index_);
     CHECK(style_);
-    SetUpAutoAnchorFallbackData();
   }
 
  private:
-  bool HasAutoFallbacks() const {
-    return auto_anchor_flippable_in_block_ || auto_anchor_flippable_in_inline_;
-  }
-  bool HasNextAutoAnchorFallback() const {
-    return auto_anchor_flip_block_ != auto_anchor_flippable_in_block_ ||
-           auto_anchor_flip_inline_ != auto_anchor_flippable_in_inline_;
-  }
-
   bool HasNextPositionFallback() const {
     return position_fallback_index_ && element_ &&
            HasTryRule(*position_fallback_index_ + 1);
@@ -320,7 +219,6 @@ class OOFCandidateStyleIterator {
         style_ = UpdateStyle(/* try_set */ nullptr);
       }
     }
-    SetUpAutoAnchorFallbackData();
   }
 
   const StyleRulePositionFallback* GetPositionFallbackRule(
@@ -330,51 +228,6 @@ class OOFCandidateStyleIterator {
     }
     return element_->GetDocument().GetStyleEngine().GetPositionFallbackRule(
         *scoped_name);
-  }
-
-  void SetUpAutoAnchorFallbackData() {
-    ClearAutoAnchorFallbackData();
-    if (!style_->HasAutoAnchorPositioning()) {
-      return;
-    }
-    // We create a "flipped" fallback in an axis only if one inset uses auto
-    // anchor positioning and the opposite inset is `auto`.
-    // Note that for styles created from a `@try` rule, we create "flipped"
-    // fallback only if the `@try` rule itself uses auto anchor positioning.
-    // Usage in the base style doesn't create fallbacks.
-    // TODO(crbug.com/1477314): Handle inset-area
-    bool flippable_in_x = false;
-    if (!position_fallback_index_ ||
-        style_->HasAutoAnchorPositioningInXAxisFromTryBlock()) {
-      flippable_in_x = (style_->UsedLeft().IsAuto() &&
-                        style_->UsedRight().HasAutoAnchorPositioning()) ||
-                       (style_->UsedRight().IsAuto() &&
-                        style_->UsedLeft().HasAutoAnchorPositioning());
-    }
-    bool flippable_in_y = false;
-    if (!position_fallback_index_ ||
-        style_->HasAutoAnchorPositioningInYAxisFromTryBlock()) {
-      flippable_in_y = (style_->UsedTop().IsAuto() &&
-                        style_->UsedBottom().HasAutoAnchorPositioning()) ||
-                       (style_->UsedBottom().IsAuto() &&
-                        style_->UsedTop().HasAutoAnchorPositioning());
-    }
-    if (!flippable_in_x && !flippable_in_y) {
-      return;
-    }
-    const bool is_horizontal = style_->IsHorizontalWritingMode();
-    auto_anchor_flippable_in_inline_ =
-        is_horizontal ? flippable_in_x : flippable_in_y;
-    auto_anchor_flippable_in_block_ =
-        is_horizontal ? flippable_in_y : flippable_in_x;
-  }
-
-  void ClearAutoAnchorFallbackData() {
-    auto_anchor_style_ = nullptr;
-    auto_anchor_flippable_in_block_ = false;
-    auto_anchor_flippable_in_inline_ = false;
-    auto_anchor_flip_block_ = false;
-    auto_anchor_flip_inline_ = false;
   }
 
   bool HasTryRule(wtf_size_t index) const {
@@ -418,16 +271,6 @@ class OOFCandidateStyleIterator {
   // If the current style is created from an `@try` rule, index of the rule;
   // Otherwise nullopt.
   std::optional<wtf_size_t> position_fallback_index_;
-
-  // Created when the current style is generated by auto anchor positioning
-  // and has any axis flipped compared to the base style.
-  // https://drafts.csswg.org/css-anchor-position-1/#automatic-anchor-fallbacks
-  const ComputedStyle* auto_anchor_style_ = nullptr;
-
-  bool auto_anchor_flippable_in_block_ = false;
-  bool auto_anchor_flippable_in_inline_ = false;
-  bool auto_anchor_flip_block_ = false;
-  bool auto_anchor_flip_inline_ = false;
 };
 
 }  // namespace

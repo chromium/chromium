@@ -68,7 +68,6 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
                             : Length::ValueRange::kAll;
   }
   bool HasAnchorQueries() const;
-  bool HasAutoAnchorPositioning() const;
   bool HasContentOrIntrinsicSize() const;
 
   float Pixels() const {

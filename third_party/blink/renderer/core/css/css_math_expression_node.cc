@@ -2373,10 +2373,6 @@ namespace {
 
 CSSAnchorValue CSSValueIDToAnchorValueEnum(CSSValueID value) {
   switch (value) {
-    case CSSValueID::kAuto:
-      return CSSAnchorValue::kAuto;
-    case CSSValueID::kAutoSame:
-      return CSSAnchorValue::kAutoSame;
     case CSSValueID::kTop:
       return CSSAnchorValue::kTop;
     case CSSValueID::kLeft:
@@ -2590,10 +2586,10 @@ class CSSMathExpressionNodeParser {
     switch (anchor_query_type) {
       case CSSAnchorQueryType::kAnchor:
         value = css_parsing_utils::ConsumeIdent<
-            CSSValueID::kAuto, CSSValueID::kAutoSame, CSSValueID::kTop,
-            CSSValueID::kLeft, CSSValueID::kRight, CSSValueID::kBottom,
-            CSSValueID::kStart, CSSValueID::kEnd, CSSValueID::kSelfStart,
-            CSSValueID::kSelfEnd, CSSValueID::kCenter>(tokens);
+            CSSValueID::kTop, CSSValueID::kLeft, CSSValueID::kRight,
+            CSSValueID::kBottom, CSSValueID::kStart, CSSValueID::kEnd,
+            CSSValueID::kSelfStart, CSSValueID::kSelfEnd, CSSValueID::kCenter>(
+            tokens);
         if (!value) {
           value = css_parsing_utils::ConsumePercent(
               tokens, context_, CSSPrimitiveValue::ValueRange::kAll);
@@ -3233,10 +3229,6 @@ CSSValue* AnchorQueryValueToCSSValue(
     const CalculationExpressionAnchorQueryNode& anchor_query) {
   if (anchor_query.Type() == CSSAnchorQueryType::kAnchor) {
     switch (anchor_query.AnchorSide()) {
-      case CSSAnchorValue::kAuto:
-        return CSSIdentifierValue::Create(CSSValueID::kAuto);
-      case CSSAnchorValue::kAutoSame:
-        return CSSIdentifierValue::Create(CSSValueID::kAutoSame);
       case CSSAnchorValue::kTop:
         return CSSIdentifierValue::Create(CSSValueID::kTop);
       case CSSAnchorValue::kLeft:
