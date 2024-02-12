@@ -20,6 +20,7 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -306,6 +307,13 @@ export class SettingsCupsSavedPrintersElement extends
         'filteredPrinters_',
         (printer: PrinterListEntry) => printer.printerInfo.printerId,
         updatedPrinters);
+
+    // Trigger a resize to display additional printers when the list size
+    // increases.
+    const printerEntryList =
+        this.shadowRoot!.querySelector<IronListElement>('#printerEntryList');
+    assert(printerEntryList);
+    printerEntryList.notifyResize();
   }
 
   private onOpenActionMenu_(
