@@ -3236,7 +3236,10 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "Canvas2DHibernation"
+                        "BatchMainThreadReleaseCallbacks",
+                        "Canvas2DHibernation",
+                        "EvictionUnlocksResources",
+                        "ReclaimResourcesDelayedFlushInBackground"
                     ]
                 }
             ]
