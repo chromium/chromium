@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -33,7 +35,11 @@ public class PostPasswordMigrationSheetCoordinatorFactory {
         if (bottomSheetController == null) {
             return null;
         }
-        return new PostPasswordMigrationSheetCoordinator(bottomSheetController);
+        Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return null;
+        }
+        return new PostPasswordMigrationSheetCoordinator(context, bottomSheetController);
     }
 
     public static void setCoordinatorInstanceForTesting(

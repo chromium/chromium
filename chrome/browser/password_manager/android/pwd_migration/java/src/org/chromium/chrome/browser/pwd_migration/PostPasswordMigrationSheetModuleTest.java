@@ -5,8 +5,14 @@
 package org.chromium.chrome.browser.pwd_migration;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetProperties.VISIBLE;
+
+import android.content.Context;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,14 +43,16 @@ public class PostPasswordMigrationSheetModuleTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        Context context = RuntimeEnvironment.application.getApplicationContext();
         mPostPasswordMigrationSheetCoordinator =
-                new PostPasswordMigrationSheetCoordinator(mBottomSheetController);
+                new PostPasswordMigrationSheetCoordinator(context, mBottomSheetController);
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
     }
 
     @Test
     public void showPostPasswordMigrationSheetCreatesTheCoordinator() {
         mPostPasswordMigrationSheetCoordinator.showSheet();
         assertTrue(mPostPasswordMigrationSheetCoordinator.getModelForTesting().get(VISIBLE));
-        // TODO(b/323821929): Verify that the BottomSheetController.requestShowContent was called.
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
     }
 }

@@ -52,6 +52,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetMediator.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetView.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/ScrollablePasswordMigrationWarningContent.java",
   ]
 
@@ -73,12 +75,14 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/ui/android/signin:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
@@ -108,6 +112,7 @@ android_library("javatests") {
   sources = [
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningRenderTest.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewTest.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PostPasswordMigrationSheetViewTest.java",
   ]
 
   deps = [
@@ -148,6 +153,7 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
+    "java/res/layout/post_pwd_migration_sheet.xml",
     "java/res/layout/pwd_migration_warning.xml",
     "java/res/layout/pwd_migration_warning_intro_fragment.xml",
     "java/res/layout/pwd_migration_warning_options.xml",
