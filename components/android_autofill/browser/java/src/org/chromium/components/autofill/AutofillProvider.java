@@ -119,7 +119,7 @@ public class AutofillProvider {
     }
 
     public void destroy() {
-        mAutofillUMA.recordSession(mAutofillManager.isDisabled());
+        mAutofillUMA.recordSession();
         detachFromJavaAutofillProvider();
         mAutofillManager.destroy();
     }
@@ -464,7 +464,7 @@ public class AutofillProvider {
         forceNotifyFormValues();
         mAutofillManager.commit(submissionSource);
         mRequest = null;
-        mAutofillUMA.onFormSubmitted(submissionSource, mAutofillManager.isDisabled());
+        mAutofillUMA.onFormSubmitted(submissionSource);
     }
 
     /**
@@ -668,7 +668,7 @@ public class AutofillProvider {
 
     public void setWebContents(WebContents webContents) {
         if (webContents == mWebContents) return;
-        mAutofillUMA.recordSession(mAutofillManager.isDisabled());
+        mAutofillUMA.recordSession();
         if (mWebContents != null) mRequest = null;
         mWebContents = webContents;
         detachFromJavaAutofillProvider();

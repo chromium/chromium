@@ -103,8 +103,7 @@ public class AutofillSessionUMATest {
                                 histogramBucket)
                         .build();
         mAutofillUMA.onUserChangeFieldValue(/* isPreviouslyAutofilled= */ false);
-        mAutofillUMA.onFormSubmitted(
-                SubmissionSource.FORM_SUBMISSION, /* autofillDisabled= */ false);
+        mAutofillUMA.onFormSubmitted(SubmissionSource.FORM_SUBMISSION);
         histogramWatcher.assertExpected();
     }
 
@@ -148,7 +147,7 @@ public class AutofillSessionUMATest {
                                 histogramBucket)
                         .build();
         mAutofillUMA.onUserChangeFieldValue(/* isPreviouslyAutofilled= */ false);
-        mAutofillUMA.recordSession(/* autofillDisabled= */ false);
+        mAutofillUMA.recordSession();
         histogramWatcher.assertExpected();
     }
 
@@ -191,8 +190,7 @@ public class AutofillSessionUMATest {
                                 AutofillProviderUMA.UMA_AUTOFILL_AUTOFILL_SESSION_WITH_BOTTOM_SHEET,
                                 histogramBucket)
                         .build();
-        mAutofillUMA.onFormSubmitted(
-                SubmissionSource.FORM_SUBMISSION, /* autofillDisabled= */ false);
+        mAutofillUMA.onFormSubmitted(SubmissionSource.FORM_SUBMISSION);
         histogramWatcher.assertExpected();
     }
 
@@ -235,7 +233,7 @@ public class AutofillSessionUMATest {
                                 AutofillProviderUMA.UMA_AUTOFILL_AUTOFILL_SESSION_WITH_BOTTOM_SHEET,
                                 histogramBucket)
                         .build();
-        mAutofillUMA.recordSession(/* autofillDisabled= */ false);
+        mAutofillUMA.recordSession();
         histogramWatcher.assertExpected();
     }
 }

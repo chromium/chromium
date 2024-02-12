@@ -55,7 +55,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.components.autofill.AutofillHintsServiceTestHelper;
 import org.chromium.components.autofill.AutofillManagerWrapper;
@@ -1751,10 +1750,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .expectNoRecords(
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY)
-                                    .expectBooleanRecord(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD,
-                                            false)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
@@ -1786,10 +1781,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY,
                                             AutofillProviderUMA.AWG_NO_SUGGESTION)
-                                    .expectBooleanRecord(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD,
-                                            false)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
@@ -1821,9 +1812,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY,
                                             AutofillProviderUMA.AWG_HAS_SUGGESTION_AUTOFILLED)
-                                    .expectNoRecords(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
@@ -1854,9 +1842,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .expectNoRecords(
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY)
-                                    .expectNoRecords(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
@@ -1887,9 +1872,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .expectNoRecords(
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY)
-                                    .expectNoRecords(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
@@ -1921,9 +1903,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY,
                                             AutofillProviderUMA.AWG_HAS_SUGGESTION_NO_AUTOFILL)
-                                    .expectNoRecords(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
@@ -1953,9 +1932,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .expectNoRecords(
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY)
-                                    .expectNoRecords(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
@@ -1986,40 +1962,10 @@ public class AwAutofillTest extends AwParameterizedTest {
                                             AutofillProviderUMA
                                                     .UMA_AUTOFILL_AWG_SUGGESTION_AVAILABILITY,
                                             AutofillProviderUMA.AWG_NO_SUGGESTION)
-                                    .expectNoRecords(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
         invokeOnProvideAutoFillVirtualStructure();
-        mUMATestHelper.submitForm();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    histograms.assertExpected();
-                });
-    }
-
-    /**
-     * Tests that the "false" bucket of the
-     * "Autofill.WebView.AutofillState.NoVirtualStructureProvided" histogram is recorded. This can
-     * only be recorded if autofill unexpectedly gets disabled between session start and form
-     * submission.
-     */
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testUMANoVirtualStructureAutofillDisabled() throws Throwable {
-        var histograms =
-                TestThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return HistogramWatcher.newSingleRecordWatcher(
-                                    AutofillProviderUMA
-                                            .UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED,
-                                    false);
-                        });
-        mUMATestHelper.triggerAutofill();
-        mTestAutofillManagerWrapper.setDisabled();
         mUMATestHelper.submitForm();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -2042,53 +1988,12 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .expectIntRecord(
                                             AutofillProviderUMA.UMA_AUTOFILL_AUTOFILL_SESSION,
                                             AutofillProviderUMA.NO_STRUCTURE_PROVIDED)
-                                    .expectBooleanRecord(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED,
-                                            true)
                                     .expectNoRecords(
                                             AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE)
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
         mUMATestHelper.startNewSession();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    histograms.assertExpected();
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-    public void testUMAAwGIsCurrentService() throws Throwable {
-        var histograms =
-                TestThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return HistogramWatcher.newSingleRecordWatcher(
-                                    AutofillProviderUMA.UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE, true);
-                        });
-        doSetUp(/* isAwGCurrentAutofillService= */ true);
-        mUMATestHelper.triggerAutofill();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    histograms.assertExpected();
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-    public void testUMAAwGIsNotCurrentService() throws Throwable {
-        var histograms =
-                TestThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return HistogramWatcher.newSingleRecordWatcher(
-                                    AutofillProviderUMA.UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE, false);
-                        });
-        setUpAwGNotCurrent();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     histograms.assertExpected();
@@ -2204,39 +2109,6 @@ public class AwAutofillTest extends AwParameterizedTest {
                                     .build();
                         });
         mUMATestHelper.triggerAutofill();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    histograms.assertExpected();
-                });
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    public void testUMAUserChangeAutofilledField() throws Throwable {
-        var histograms =
-                TestThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return HistogramWatcher.newBuilder()
-                                    .expectIntRecord(
-                                            AutofillProviderUMA.UMA_AUTOFILL_AUTOFILL_SESSION,
-                                            AutofillProviderUMA
-                                                    .USER_SELECT_SUGGESTION_USER_CHANGE_FORM_FORM_SUBMITTED)
-                                    .expectIntRecord(
-                                            AutofillProviderUMA.UMA_AUTOFILL_SUBMISSION_SOURCE,
-                                            AutofillProviderUMA.FORM_SUBMISSION)
-                                    .expectBooleanRecord(
-                                            AutofillProviderUMA
-                                                    .UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD,
-                                            true)
-                                    .build();
-                        });
-        mUMATestHelper.triggerAutofill();
-        invokeOnProvideAutoFillVirtualStructure();
-        invokeOnInputUIShown();
-        mUMATestHelper.simulateUserSelectSuggestion();
-        mUMATestHelper.simulateUserChangeAutofilledField();
-        mUMATestHelper.submitForm();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     histograms.assertExpected();
