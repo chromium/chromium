@@ -231,6 +231,11 @@ bool IsAnotherWindowSnappedOppositeOf(aura::Window* window) {
   // state of the opposite snapped window.
   gfx::Rect union_bounds;
   for (aura::Window* top_window : windows) {
+    if (top_window->GetRootWindow() != window->GetRootWindow()) {
+      // Skip any windows that aren't on the same root as `window`.
+      continue;
+    }
+
     const auto* top_window_state = WindowState::Get(top_window);
     // The `top_window` should be excluded for occlusion check under the
     // following conditions:
