@@ -6,11 +6,11 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
@@ -351,7 +351,7 @@ class SystemProxyManagerPolicyCredentialsBrowserTest
     SessionManagerClient::InitializeFakeInMemory();
 
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
-    constexpr base::StringPiece kAffiliationID = "id";
+    constexpr std::string_view kAffiliationID = "id";
     // Initialize device policy.
     auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
         FakeSessionManagerClient::Get());
