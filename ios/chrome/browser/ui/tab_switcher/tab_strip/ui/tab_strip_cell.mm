@@ -356,17 +356,6 @@ UIImage* DefaultFavicon() {
   return defaultRegion;
 }
 
-- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
-                       styleForRegion:(UIPointerRegion*)region {
-  UIPointerHoverEffect* effect = [UIPointerHoverEffect
-      effectWithPreview:[[UITargetedPreview alloc]
-                            initWithView:self.contentView
-                              parameters:[self dragPreviewParameters]]];
-  effect.prefersScaledContent = NO;
-  effect.prefersShadow = NO;
-  return [UIPointerStyle styleWithEffect:effect shape:nil];
-}
-
 - (void)pointerInteraction:(UIPointerInteraction*)interaction
            willEnterRegion:(UIPointerRegion*)region
                   animator:(id<UIPointerInteractionAnimating>)animator {
