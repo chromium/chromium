@@ -33,13 +33,13 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PriceFieldParserTest, ParsePrice) {
   AddTextFormFieldData("userPrice", "name your price", PRICE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(PriceFieldParserTest, ParseNonPrice) {
   AddTextFormFieldData("firstName", "Name", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 }  // namespace autofill

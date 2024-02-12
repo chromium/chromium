@@ -95,15 +95,35 @@ void FormFieldParserTestBase::ClassifyAndVerify(
   AutofillScanner scanner(list_);
   ParsingContext context(client_country, page_language,
                          *GetActivePatternSource());
-  field_ = Parse(context, &scanner);
+  std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
 
-  if (parse_result == ParseResult::NOT_PARSED) {
-    ASSERT_EQ(nullptr, field_.get());
+  if (parse_result == ParseResult::kNotParsed) {
+    ASSERT_EQ(nullptr, field.get());
     return;
   }
-  ASSERT_NE(nullptr, field_.get());
-  field_->AddClassificationsForTesting(field_candidates_map_);
+  ASSERT_NE(nullptr, field.get());
+  field->AddClassificationsForTesting(field_candidates_map_);
 
+  TestClassificationExpectations();
+}
+
+// Runs multiple parsing attempts until the end of the form is reached.
+void FormFieldParserTestBase::ClassifyAndVerifyWithMultipleParses(
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language) {
+  ParsingContext context(client_country, page_language,
+                         *GetActivePatternSource());
+  AutofillScanner scanner(list_);
+  while (!scanner.IsEnd()) {
+    // An empty page_language means the language is unknown and patterns of
+    // all languages are used.
+    std::unique_ptr<FormFieldParser> field = Parse(context, &scanner);
+    if (field == nullptr) {
+      scanner.Advance();
+    } else {
+      field->AddClassificationsForTesting(field_candidates_map_);
+    }
+  }
   TestClassificationExpectations();
 }
 
@@ -130,7 +150,6 @@ FieldRendererId FormFieldParserTestBase::MakeFieldRendererId() {
 }
 
 void FormFieldParserTestBase::ClearFieldsAndExpectations() {
-  field_ = nullptr;
   list_.clear();
   expected_classifications_.clear();
   field_candidates_map_.clear();

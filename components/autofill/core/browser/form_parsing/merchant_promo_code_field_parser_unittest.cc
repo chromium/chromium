@@ -38,7 +38,7 @@ TEST_P(MerchantPromoCodeFieldParserTest, ParsePromoCode) {
   AddTextFormFieldData("promoCodeField", "Enter promo code here",
                        MERCHANT_PROMO_CODE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Match promo(tion|tional)?[-_. ]*code
@@ -46,7 +46,7 @@ TEST_P(MerchantPromoCodeFieldParserTest, ParsePromotionalCode) {
   AddTextFormFieldData("promoCodeField", "Use the promotional code here",
                        MERCHANT_PROMO_CODE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Match promo(tion|tional)?[-_. ]*code
@@ -54,7 +54,7 @@ TEST_P(MerchantPromoCodeFieldParserTest, ParsePromoCodeWithPrefixAndSuffix) {
   AddTextFormFieldData("mypromocodefield", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Match coupon[-_. ]*code
@@ -62,7 +62,7 @@ TEST_P(MerchantPromoCodeFieldParserTest, ParseCouponCode) {
   AddTextFormFieldData("couponCodeField", "Enter new coupon__code",
                        MERCHANT_PROMO_CODE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Match gift[-_. ]*code
@@ -70,7 +70,7 @@ TEST_P(MerchantPromoCodeFieldParserTest, ParseGiftCode) {
   AddTextFormFieldData("giftCodeField", "Check out with gift.codes",
                        MERCHANT_PROMO_CODE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Match discount[-_. ]*code
@@ -78,7 +78,7 @@ TEST_P(MerchantPromoCodeFieldParserTest, ParseDiscountCode) {
   AddTextFormFieldData("discountCodeField", "Check out with discount-code",
                        MERCHANT_PROMO_CODE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(MerchantPromoCodeFieldParserTest, ParseNonPromoCode) {
@@ -86,7 +86,7 @@ TEST_P(MerchantPromoCodeFieldParserTest, ParseNonPromoCode) {
   AddTextFormFieldData("otherField", "Field for gift card or promo details",
                        UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 }  // namespace autofill
