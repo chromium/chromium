@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/url_formatter/elide_url.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
@@ -17,6 +21,61 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/default_apps_util.h"
 #endif
+
+namespace {
+
+std::vector<std::string> GetSupportedLinks(const std::string& app_id,
+                                           web_app::WebAppProvider& provider) {
+  GURL app_scope = provider.registrar_unsafe().GetAppScope(app_id);
+  if (!web_app::IsValidScopeForLinkCapturing(app_scope)) {
+    return std::vector<std::string>();
+  }
+
+  std::string scope_str(app_scope.host());
+  if (app_scope.has_port()) {
+    scope_str += ":" + app_scope.port();
+  }
+  scope_str += app_scope.path();
+  if (scope_str.back() == '/') {
+    scope_str = scope_str + "*";
+  } else {
+    scope_str = scope_str + "/*";
+  }
+  return {scope_str};
+}
+
+std::string GetFormattedOrigin(const webapps::AppId& app_id,
+                               web_app::WebAppProvider& provider) {
+  GURL origin_url = provider.registrar_unsafe().GetAppStartUrl(app_id);
+  // Format origin URL to not show the scheme and default port numbers.
+  std::u16string origin_url_formatted =
+      url_formatter::FormatOriginForSecurityDisplay(
+          url::Origin::Create(origin_url),
+          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+  return base::UTF16ToUTF8(origin_url_formatted);
+}
+
+// Returns a list of origin URLs from scope_extensions of an app's Manifest.
+std::vector<std::string> GetScopeExtensions(const webapps::AppId& app_id,
+                                            web_app::WebAppProvider& provider) {
+  std::vector<std::string> scope_extensions_vector;
+
+  for (const auto& scope_extension :
+       provider.registrar_unsafe().GetScopeExtensions(app_id)) {
+    url::Origin origin = scope_extension.origin;
+    // Format origin URL to not show the scheme and default port numbers.
+    std::u16string origin_formatted =
+        url_formatter::FormatOriginForSecurityDisplay(
+            origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
+    if (scope_extension.has_origin_wildcard) {
+      origin_formatted = u"*." + origin_formatted;
+    }
+    scope_extensions_vector.push_back(base::UTF16ToUTF8(origin_formatted));
+  }
+  return scope_extensions_vector;
+}
+
+}  // namespace
 
 WebAppSettingsPageHandler::WebAppSettingsPageHandler(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
@@ -115,4 +174,36 @@ void WebAppSettingsPageHandler::OnWebAppUserLinkCapturingPreferencesChanged(
     const webapps::AppId& app_id,
     bool is_preferred) {
   NotifyAppChanged(app_id);
+}
+
+app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
+    const std::string& app_id) {
+  app_management::mojom::AppPtr app =
+      AppManagementPageHandlerBase::CreateApp(app_id);
+  if (!app) {
+    return nullptr;
+  }
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile());
+  CHECK(provider);
+  app->is_preferred_app =
+      provider->registrar_unsafe().CapturesLinksInScope(app_id);
+
+  // This allows us to bypass showing the supported links item if the feature is
+  // disabled.
+  if (apps::features::ShouldShowLinkCapturingUX()) {
+    app->supported_links = GetSupportedLinks(app->id, *provider);
+  } else {
+    app->supported_links = std::vector<std::string>();
+  }
+
+  if (!provider->registrar_unsafe().GetScopeExtensions(app->id).empty()) {
+    app->formatted_origin = GetFormattedOrigin(app->id, *provider);
+    app->scope_extensions = GetScopeExtensions(app->id, *provider);
+  }
+
+  app->hide_window_mode = provider->registrar_unsafe().IsIsolated(app->id);
+
+  return app;
 }

@@ -73,6 +73,11 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
       Profile* profile,
       Delegate& delegate);
 
+  // Creates an AppPtr for the given `app_id`. Can be overridden to add
+  // additional platform-specific data to the App. Returns nullptr if the given
+  // app is not installed or should not be shown in App Management.
+  virtual app_management::mojom::AppPtr CreateApp(const std::string& app_id);
+
   // Notify the WebUI frontend that the app with a given `app_id` has changed on
   // the backend. Will generate a new AppPtr and send it to the frontend.
   void NotifyAppChanged(const std::string& app_id);
@@ -80,7 +85,8 @@ class AppManagementPageHandlerBase : public app_management::mojom::PageHandler,
   Profile* profile() { return profile_; }
 
  private:
-  app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);
+  app_management::mojom::AppPtr CreateAppFromAppUpdate(
+      const apps::AppUpdate& update);
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override;

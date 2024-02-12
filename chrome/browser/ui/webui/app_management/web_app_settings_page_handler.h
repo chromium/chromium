@@ -58,6 +58,9 @@ class WebAppSettingsPageHandler : public AppManagementPageHandlerBase,
   void OnWebAppUserLinkCapturingPreferencesChanged(const webapps::AppId& app_id,
                                                    bool is_preferred) override;
 
+  // AppManagementPageHandlerBase:
+  app_management::mojom::AppPtr CreateApp(const std::string& app_id) override;
+
  private:
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::WebAppRegistrarObserver>
