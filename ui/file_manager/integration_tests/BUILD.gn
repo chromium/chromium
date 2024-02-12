@@ -50,7 +50,6 @@ js_files = [
   "file_manager/test_data.js",
   "file_manager/toolbar.js",
   "file_manager/transfer.js",
-  "file_manager/traverse.js",
   "file_manager/zip_files.js",
 
   # Page Objects.
@@ -163,7 +162,7 @@ ts_files = [
 
   "file_manager/trash.ts",
 
-  # "file_manager/traverse.ts",
+  "file_manager/traverse.ts",
 
   # "file_manager/zip_files.ts",
 

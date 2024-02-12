@@ -50,7 +50,7 @@ import * as shareTests from './file_manager/share.js';
 // import * as toolbarTests from './file_manager/toolbar.js';
 // import * as transferTests from './file_manager/transfer.js';
 import * as trashTests from './file_manager/trash.js';
-// import * as traverseTests from './file_manager/traverse.js';
+import * as traverseTests from './file_manager/traverse.js';
 // import * as zipFilesTests from './file_manager/zip_files.js';
 // clang-format on
 
@@ -108,6 +108,6 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...toolbarTests,
   // ...transferTests,
   ...trashTests,
-  // ...traverseTests,
+  ...traverseTests,
   // ...zipFilesTests,
 };
