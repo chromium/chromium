@@ -141,7 +141,7 @@ public class WebsiteAddress implements Comparable<WebsiteAddress>, Serializable 
             mDomainAndRegistry =
                     UrlUtilities.getDomainAndRegistry(
                             (mOrigin != null) ? mOrigin : UrlConstants.HTTP_URL_PREFIX + mHost,
-                            false);
+                            /* includePrivateRegistries= */ true);
             if (mDomainAndRegistry == null || mDomainAndRegistry.isEmpty()) {
                 mDomainAndRegistry = mHost;
             }
