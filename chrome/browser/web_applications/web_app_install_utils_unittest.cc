@@ -55,20 +55,16 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "base/test/test_future.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
-#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
+#include "chrome/browser/web_applications/test/mock_os_integration_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "url/gurl.h"
-#endif
+#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock-actions.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
+#endif
 namespace web_app {
 
 using Purpose = blink::mojom::ManifestImageResource_Purpose;
@@ -1815,161 +1811,151 @@ INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 
 #if BUILDFLAG(IS_WIN)
 
-class RegisterOsSettingsTest : public WebAppTest {
- public:
-  RegisterOsSettingsTest() = default;
-  ~RegisterOsSettingsTest() override = default;
-
-  void SetUp() override {
-    WebAppTest::SetUp();
-    test::AwaitStartWebAppProviderAndSubsystems(profile());
-  }
-
-  void TearDown() override {
-    test::UninstallAllWebApps(profile());
-    WebAppTest::TearDown();
-  }
-
- protected:
-  webapps::AppId InstallWebApp(
-      const webapps::WebappInstallSource install_source) {
-    return test::InstallDummyWebApp(
-        profile(), "Name", GURL("https://example_app.com"), install_source);
-  }
-  const WebApp* GetWebApp(const webapps::AppId& app_id) {
-    return registrar().GetAppById(app_id);
-  }
-
-  void AddSourcesForWebApp(
-      const webapps::AppId& app_id,
-      base::flat_set<WebAppManagement::Type> types_to_add) {
-    WebApp* web_app_to_update =
-        provider().sync_bridge_unsafe().BeginUpdate()->UpdateApp(app_id);
-    ASSERT_NE(web_app_to_update, nullptr);
-    for (const WebAppManagement::Type& type : types_to_add) {
-      web_app_to_update->AddSource(type);
-    }
-  }
-
-  bool IsUninstallViaOsRegistered(const webapps::AppId& app_id) {
-    std::optional<proto::WebAppOsIntegrationState> os_state =
-        registrar().GetAppCurrentOsIntegrationState(app_id);
-    if (!os_state.has_value()) {
-      return false;
-    }
-
-    if (!os_state->has_uninstall_registration()) {
-      return false;
-    }
-
-    if (!os_state->uninstall_registration().has_registered_with_os()) {
-      return false;
-    }
-
-    return os_state->uninstall_registration().registered_with_os();
-  }
-
-  FakeOsIntegrationManager& os_integration_manager() {
-    return static_cast<FakeOsIntegrationManager&>(
-        provider().os_integration_manager());
-  }
-
- private:
-  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
-
-  WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
-};
+// TODO(crbug.com/1403999): Refactor to not using MockOsIntegrationManager once
+// removed.
+using RegisterOsSettingsTest = testing::Test;
 
 TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
+  if (AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
+                    "existing OS integration flow";
+  }
+  content::BrowserTaskEnvironment task_environment;
+
+  // MaybeRegisterOsUninstall
+  // Scenario 1.
   // web app sources: kDefault, kPolicy
   // removed source: kPolicy
-  // OS integration is not registered
-  const webapps::AppId app_id =
-      InstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY);
+  // check web_app.CanUserUninstallWebApp is false
+  // check RegisterWebAppOsUninstallation is called
+  const webapps::AppId app_id = "test";
+  testing::StrictMock<MockOsIntegrationManager> manager;
+  // InstallOsHooks from MaybeRegisterOsUninstall
+  // sets only kUninstallationViaOsSettings that will async call from
+  // InstallOsHooks. Test ends before async is called so we test against
+  // InstallOsHooks.
+  EXPECT_CALL(manager, MacAppShimOnAppInstalledForProfile(app_id)).Times(1);
+  EXPECT_CALL(manager, RegisterWebAppOsUninstallation(app_id, testing::_))
+      .Times(1);
+  EXPECT_CALL(manager, Synchronize(app_id, testing::_, testing::_))
+      .WillOnce(base::test::RunOnceCallback<1>());
 
-  AddSourcesForWebApp(app_id, {WebAppManagement::kDefault});
+  // Scenario 1.
+  auto web_app = std::make_unique<WebApp>(app_id);
+  web_app->AddSource(WebAppManagement::kDefault);
+  web_app->AddSource(WebAppManagement::kPolicy);
+  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
 
-  base::test::TestFuture<OsHooksErrors> os_hooks_run;
-  MaybeRegisterOsUninstall(GetWebApp(app_id), WebAppManagement::kPolicy,
-                           os_integration_manager(),
-                           os_hooks_run.GetCallback());
-  EXPECT_TRUE(os_hooks_run.Wait());
-
-  EXPECT_FALSE(IsUninstallViaOsRegistered(app_id));
+  base::RunLoop run_loop;
+  MaybeRegisterOsUninstall(
+      web_app.get(), WebAppManagement::kPolicy, manager,
+      base::BindLambdaForTesting(
+          [&](OsHooksErrors os_hooks_errors) { run_loop.Quit(); }));
+  run_loop.Run();
 }
 
-TEST_F(RegisterOsSettingsTest,
-       MaybeRegisterOsSettings_NoRegistration_SyncRemovalPolicy) {
+TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
+  // MaybeRegisterOsUninstall
+  // Scenario 2.
   // web app sources: kSync, kPolicy
   // removed source: kSync
-  // check OS integration is not registered
-  // Installing from a source of OMNIBOX_INSTALL_ICON should add the kSync
-  // source for the web app.
-  const webapps::AppId app_id =
-      InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  AddSourcesForWebApp(app_id, {WebAppManagement::kPolicy});
-  base::test::TestFuture<OsHooksErrors> os_hooks_run;
-  MaybeRegisterOsUninstall(GetWebApp(app_id), WebAppManagement::kSync,
-                           os_integration_manager(),
-                           os_hooks_run.GetCallback());
-  EXPECT_TRUE(os_hooks_run.Wait());
-  EXPECT_FALSE(IsUninstallViaOsRegistered(app_id));
-}
+  // check web_app.CanUserUninstallWebApp is false
+  // check RegisterWebAppOsUninstallation is not called
 
-TEST_F(RegisterOsSettingsTest,
-       MaybeRegisterOsSettings_NoRegistration_SyncRemovalDefaultWebAppStore) {
-  // web app sources: kDefault, kSync, kWebAppStore
+  // Scenario 3.
+  // web app sources: kDefault, kSync, kWewbAppStore
   // removed source: kSync
-  // check OS integration is not registered
-  const webapps::AppId app_id =
-      InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  AddSourcesForWebApp(
-      app_id, {WebAppManagement::kDefault, WebAppManagement::kWebAppStore});
-  base::test::TestFuture<OsHooksErrors> os_hooks_run;
-  MaybeRegisterOsUninstall(GetWebApp(app_id), WebAppManagement::kSync,
-                           os_integration_manager(),
-                           os_hooks_run.GetCallback());
-  EXPECT_TRUE(os_hooks_run.Wait());
-  EXPECT_FALSE(IsUninstallViaOsRegistered(app_id));
+  // check web_app.CanUserUninstallWebApp is true
+  // check RegisterWebAppOsUninstallation is not called
+  const webapps::AppId app_id = "test";
+  testing::StrictMock<MockOsIntegrationManager> manager;
+  // InstallOsHooks from MaybeRegisterOsUninstall
+  // sets only kUninstallationViaOsSettings that will async call from
+  // InstallOsHooks. Test ends before async is called so we test against
+  // InstallOsHooks.
+  EXPECT_CALL(manager, RegisterWebAppOsUninstallation(app_id, testing::_))
+      .Times(0);
+
+  // Scenario 2.
+  auto web_app = std::make_unique<WebApp>(app_id);
+  web_app->AddSource(WebAppManagement::kSync);
+  web_app->AddSource(WebAppManagement::kPolicy);
+  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
+  MaybeRegisterOsUninstall(web_app.get(), WebAppManagement::kSync, manager,
+                           base::DoNothing());
+
+  // Scenario 3.
+  auto web_app2 = std::make_unique<WebApp>(app_id);
+  web_app2->AddSource(WebAppManagement::kDefault);
+  web_app2->AddSource(WebAppManagement::kSync);
+  web_app2->AddSource(WebAppManagement::kWebAppStore);
+  EXPECT_TRUE(web_app2->CanUserUninstallWebApp());
+  MaybeRegisterOsUninstall(web_app2.get(), WebAppManagement::kDefault, manager,
+                           base::DoNothing());
 }
 
 TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
+  if (AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
+                    "existing OS integration flow";
+  }
+  content::BrowserTaskEnvironment task_environment;
+
+  // MaybeUnregisterOsUninstall
+  // Scenario 1.
   // web app sources: kDefault
   // added source: kPolicy
-  // check UnregisterWebAppOsUninstallation is false since Synchronize() was not
-  // called during installation.
-  const webapps::AppId app_id =
-      InstallWebApp(webapps::WebappInstallSource::EXTERNAL_DEFAULT);
-  AddSourcesForWebApp(app_id, {WebAppManagement::kPolicy});
-  MaybeUnregisterOsUninstall(GetWebApp(app_id), WebAppManagement::kPolicy,
-                             os_integration_manager());
-  EXPECT_FALSE(IsUninstallViaOsRegistered(app_id));
+  // check web_app.CanUserUninstallWebApp is false
+  // check UnregisterWebAppOsUninstallation is called
+  const webapps::AppId app_id = "test";
+  testing::StrictMock<MockOsIntegrationManager> manager;
+  // InstallOsHooks from MaybeRegisterOsUninstall
+  // sets only kUninstallationViaOsSettings that will async call from
+  // InstallOsHooks. Test ends before async is called so we test against
+  // InstallOsHooks.
+  EXPECT_CALL(manager, Synchronize(app_id, testing::_, testing::_)).Times(1);
+  EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(1);
+
+  // Scenario 1.
+  auto web_app = std::make_unique<WebApp>(app_id);
+  web_app->AddSource(WebAppManagement::kDefault);
+  EXPECT_TRUE(web_app->CanUserUninstallWebApp());
+  MaybeUnregisterOsUninstall(web_app.get(), WebAppManagement::kPolicy, manager);
 }
 
-TEST_F(RegisterOsSettingsTest,
-       MaybeUnregisterOsSettings_NoUnregistration_SyncPolicy) {
-  // web app sources: kPolicy
+TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsSettings_NoUnregistration) {
+  // MaybeUnregisterOsUninstall
+  // Scenario 2.
+  // web app sources: kSync, kPolicy
   // added source: kSync
-  // check Synchronize() is not called.
-  const webapps::AppId app_id =
-      InstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY);
-  AddSourcesForWebApp(app_id, {WebAppManagement::kSync});
-  MaybeUnregisterOsUninstall(GetWebApp(app_id), WebAppManagement::kSync,
-                             os_integration_manager());
-  EXPECT_FALSE(IsUninstallViaOsRegistered(app_id));
-}
+  // check web_app.CanUserUninstallWebApp is false
+  // check UnregisterWebAppOsUninstallation is not called
 
-TEST_F(RegisterOsSettingsTest,
-       MaybeUnregisterOsSettings_NoUnregistration_SyncDefault) {
+  // Scenario 3.
   // web app sources: kSync
-  // added source: kDefault
-  // check Synchronize() is not called.
-  const webapps::AppId app_id =
-      InstallWebApp(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  AddSourcesForWebApp(app_id, {WebAppManagement::kDefault});
-  MaybeUnregisterOsUninstall(GetWebApp(app_id), WebAppManagement::kDefault,
-                             os_integration_manager());
-  EXPECT_FALSE(IsUninstallViaOsRegistered(app_id));
+  // added source: kSync
+  // check web_app.CanUserUninstallWebApp is true
+  // check UnregisterWebAppOsUninstallation is not called
+  const webapps::AppId app_id = "test";
+  testing::StrictMock<MockOsIntegrationManager> manager;
+  // InstallOsHooks from MaybeRegisterOsUninstall
+  // sets only kUninstallationViaOsSettings that will async call from
+  // InstallOsHooks. Test ends before async is called so we test against
+  // InstallOsHooks.
+  EXPECT_CALL(manager, UnregisterWebAppOsUninstallation(app_id)).Times(0);
+
+  // Scenario 2.
+  auto web_app = std::make_unique<WebApp>(app_id);
+  web_app->AddSource(WebAppManagement::kPolicy);
+  EXPECT_FALSE(web_app->CanUserUninstallWebApp());
+  MaybeUnregisterOsUninstall(web_app.get(), WebAppManagement::kSync, manager);
+
+  // Scenario 3.
+  auto web_app2 = std::make_unique<WebApp>(app_id);
+  web_app2->AddSource(WebAppManagement::kSync);
+  EXPECT_TRUE(web_app2->CanUserUninstallWebApp());
+  MaybeUnregisterOsUninstall(web_app2.get(), WebAppManagement::kDefault,
+                             manager);
 }
 
 #endif  // BUILDFLAG(IS_WIN)
