@@ -157,6 +157,10 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
  private:
   friend class test::WindowOcclusionTrackerTestApi;
   friend class Env;
+  friend void Window::GetDebugInfo(const aura::Window* active_window,
+                                   const aura::Window* focused_window,
+                                   const aura::Window* capture_window,
+                                   std::ostringstream* out) const;
   friend std::unique_ptr<WindowOcclusionTracker>::deleter_type;
 
   struct RootWindowState {
@@ -207,10 +211,10 @@ class AURA_EXPORT WindowOcclusionTracker : public ui::LayerAnimationObserver,
   // Returns true if |window| can occlude other windows (e.g. because it is
   // not transparent or has opaque regions for occlusion).
   // |window| must be visible.
-  bool VisibleWindowCanOccludeOtherWindows(Window* window) const;
+  bool VisibleWindowCanOccludeOtherWindows(const Window* window) const;
 
   // Returns true if |window| has content.
-  bool WindowHasContent(Window* window) const;
+  bool WindowHasContent(const Window* window) const;
 
   // Removes windows whose bounds and transform are not animated from
   // |animated_windows_|. Marks the root of those windows as dirty.

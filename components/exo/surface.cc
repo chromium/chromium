@@ -53,6 +53,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -100,18 +101,46 @@ bool ListContainsEntry(T& list, U key) {
   return FindListEntry(list, key) != list.end();
 }
 
-// Helper function that returns true if |format| may have an alpha channel.
-// Note: False positives are allowed but false negatives are not.
 bool FormatHasAlpha(gfx::BufferFormat format) {
+  return gfx::AlphaBitsForBufferFormat(format) != 0;
+}
+
+std::string FormatToString(const gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::BGR_565:
+      return "BGR_565";
     case gfx::BufferFormat::RGBX_8888:
+      return "RGBX_8888";
     case gfx::BufferFormat::BGRX_8888:
+      return "RGRX_8888";
     case gfx::BufferFormat::YVU_420:
+      return "YUV_420";
     case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return false;
-    default:
-      return true;
+      return "YUV_420_BIPLANAR";
+    case gfx::BufferFormat::R_8:
+      return "R_8";
+    case gfx::BufferFormat::R_16:
+      return "R_16";
+    case gfx::BufferFormat::RG_88:
+      return "RG_88";
+    case gfx::BufferFormat::RG_1616:
+      return "RG_1616";
+    case gfx::BufferFormat::RGBA_4444:
+      return "RGBA_4444";
+    case gfx::BufferFormat::RGBA_8888:
+      return "RGBA_8888";
+    case gfx::BufferFormat::BGRA_1010102:
+      return "BGRA_1010102";
+    case gfx::BufferFormat::RGBA_1010102:
+      return "RGBA_1010102";
+    case gfx::BufferFormat::BGRA_8888:
+      return "BGRA_8888";
+    case gfx::BufferFormat::RGBA_F16:
+      return "RGBA_F16";
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return "YUVA_420_TRIPLANAR";
+    case gfx::BufferFormat::P010:
+      return "P010";
   }
 }
 
@@ -1965,6 +1994,35 @@ Buffer* Surface::GetBuffer() {
     return state_.buffer->buffer().get();
   }
   return nullptr;
+}
+
+std::string Surface::DumpDebugInfo() const {
+  const gfx::GpuMemoryBuffer* gfx_buffer = nullptr;
+  if (state_.buffer.has_value() && state_.buffer->buffer().get() &&
+      state_.buffer->buffer()->gfx_buffer()) {
+    gfx_buffer = state_.buffer->buffer()->gfx_buffer();
+  }
+
+  auto blend_mode_str = [](SkBlendMode mode) -> std::string {
+    switch (mode) {
+      case SkBlendMode::kSrc:
+        return " kSrc";
+      case SkBlendMode::kSrcOver:
+        return " kSrcOver";
+      default:
+        NOTREACHED();
+        return " InvalidBlendMode";
+    }
+  };
+
+  return "content-size=" + content_size_.ToString() +
+         (current_resource_has_alpha_ ? std::string(" has_alpha") : "") +
+         blend_mode_str(state_.basic_state.blend_mode) +
+         +" opaque-region=" + state_.basic_state.opaque_region.ToString() +
+         " " +
+         (gfx_buffer ? ("format=" + FormatToString(gfx_buffer->GetFormat()) +
+                        (FormatHasAlpha(gfx_buffer->GetFormat()) ? "(a)" : ""))
+                     : "");
 }
 
 }  // namespace exo

@@ -505,6 +505,9 @@ class Surface final : public ui::PropertyHandler {
   // Returns the last committed buffer.
   Buffer* GetBuffer();
 
+  // Dump Debug Info.
+  std::string DumpDebugInfo() const;
+
  private:
   struct State {
     State();
