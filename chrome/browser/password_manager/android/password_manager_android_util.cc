@@ -72,24 +72,51 @@ bool IsPasswordSyncEnabled(PrefService* pref_service) {
 // defers the base::Feature checks to avoid adding ineligible users to the A/B
 // experiment.
 bool HasMinGmsVersionAndFlagEnabled(const base::Feature& feature) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSkipLocalUpmGmsCoreVersionCheckForTesting)) {
+    return base::FeatureList::IsEnabled(feature);
+  }
+
+  std::string gms_version_str =
+      base::android::BuildInfo::GetInstance()->gms_version_code();
   int gms_version = 0;
   // gms_version_code() must be converted to int for comparison, because it can
   // have legacy values "3(...)" and those evaluate > "2023(...)".
-  // Compare with the compile-time `default_value` before comparing with the
+  if (!base::StringToInt(gms_version_str, &gms_version)) {
+    return false;
+  }
+
+  // Compare with the compile-time constant before comparing with the
   // runtime value, as the latter will add the user to the A/B experiment.
-  bool has_min_gms_version =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSkipLocalUpmGmsCoreVersionCheckForTesting) ||
-      (base::StringToInt(
-           base::android::BuildInfo::GetInstance()->gms_version_code(),
-           &gms_version) &&
-       gms_version >=
-           password_manager::features::kDefaultLocalUpmMinGmsVersion &&
-       gms_version >=
-           base::GetFieldTrialParamByFeatureAsInt(
-               feature, password_manager::features::kLocalUpmMinGmsVersionParam,
-               password_manager::features::kDefaultLocalUpmMinGmsVersion));
-  return has_min_gms_version && base::FeatureList::IsEnabled(feature);
+  //
+  // Note: We need to use this value as a sentinel value for auto as well
+  // at this point, to allow server-side changes to activate the feature without
+  // client-side changes being needed, once a min version is established.
+  // As soon as the min GMS version for auto can be changed client-side,
+  // consider using it as a sentinel value here instead.
+  if (gms_version < password_manager::features::kDefaultLocalUpmMinGmsVersion) {
+    return false;
+  }
+
+  if (base::android::BuildInfo::GetInstance()->is_automotive() &&
+      gms_version <
+          base::GetFieldTrialParamByFeatureAsInt(
+              feature,
+              password_manager::features::kLocalUpmMinGmsVersionParamForAuto,
+              password_manager::features::
+                  kDefaultLocalUpmMinGmsVersionForAuto)) {
+    return false;
+  }
+
+  if (!base::android::BuildInfo::GetInstance()->is_automotive() &&
+      gms_version <
+          base::GetFieldTrialParamByFeatureAsInt(
+              feature, password_manager::features::kLocalUpmMinGmsVersionParam,
+              password_manager::features::kDefaultLocalUpmMinGmsVersion)) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(feature);
 }
 
 bool MustMigrateLocalPasswordsOrSettingsOnActivation(
