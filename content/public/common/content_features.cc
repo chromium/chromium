@@ -1272,6 +1272,11 @@ BASE_FEATURE(kAccessibilityPageZoomEnhancements,
              "AccessibilityPageZoomEnhancements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the use of a unified code path for AXTree snapshots.
+BASE_FEATURE(kAccessibilityUnifiedSnapshots,
+             "AccessibilityUnifiedSnapshots",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);

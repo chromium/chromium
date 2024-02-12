@@ -3904,6 +3904,12 @@ const char kAccessibilitySnapshotStressTestsDescription[] =
     "Enable experiment that will disable max node and timeout limits for the "
     "AXTreeSnapshotter, and track performance stats.";
 
+const char kAccessibilityUnifiedSnapshotsName[] =
+    "Accessibility Unified Snapshots";
+const char kAccessibilityUnifiedSnapshotsDescription[] =
+    "When enabled, use the experimental unified code path for AXTree "
+    "snapshots.";
+
 const char kAccountBookmarksAndReadingListBehindOptInName[] =
     "Account bookmarks and reading list behind opt-in";
 const char kAccountBookmarksAndReadingListBehindOptInDescription[] =

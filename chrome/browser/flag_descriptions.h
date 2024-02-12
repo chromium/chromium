@@ -2265,6 +2265,8 @@ extern const char kAccessibilityPageZoomEnhancementsName[];
 extern const char kAccessibilityPageZoomEnhancementsDescription[];
 extern const char kAccessibilitySnapshotStressTestsName[];
 extern const char kAccessibilitySnapshotStressTestsDescription[];
+extern const char kAccessibilityUnifiedSnapshotsName[];
+extern const char kAccessibilityUnifiedSnapshotsDescription[];
 
 extern const char kAccountBookmarksAndReadingListBehindOptInName[];
 extern const char kAccountBookmarksAndReadingListBehindOptInDescription[];

@@ -20219,6 +20219,7 @@ from previous Chrome versions.
   <int value="-183541827"
       label="AutofillEnableEmailOtpForVcnYellowPath:disabled"/>
   <int value="-183246373" label="enable-multilingual-spellchecker"/>
+  <int value="-182215094" label="AccessibilityUnifiedSnapshots:enabled"/>
   <int value="-181590721"
       label="AutofillEnforceMinRequiredFieldsForHeuristics:enabled"/>
   <int value="-181279574" label="NativeFilesystemAPI:enabled"/>
@@ -23463,6 +23464,7 @@ from previous Chrome versions.
   <int value="1308537004" label="force-pnacl-subzero"/>
   <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>
   <int value="1308795362" label="HelpAppAppsList:enabled"/>
+  <int value="1309372374" label="AccessibilityUnifiedSnapshots:disabled"/>
   <int value="1309807376" label="IgnoreCSPInWebPaymentAPI:enabled"/>
   <int value="1310000273" label="ReleaseNotesNotificationAllChannels:disabled"/>
   <int value="1310316934" label="OptimizationGuideModelDownloading:enabled"/>
