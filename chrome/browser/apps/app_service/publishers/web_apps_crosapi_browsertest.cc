@@ -315,6 +315,14 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseCrosapiBrowserTest,
     return;
   }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // TODO(b/324499540): Disable this test variant on
+  // ci/linux-chromeos-chrome-with-lacros since it fails.
+  if (!IsPreventCloseEnabled()) {
+    GTEST_SKIP();
+  }
+#endif
+
   {
     base::test::TestFuture<bool> waiter;
     GetStandaloneBrowserTestController()->SetWebAppInstallForceListPref(
