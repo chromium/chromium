@@ -451,9 +451,13 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
           V8GPUPipelineErrorReason::Enum::kInternal));
       break;
     }
-
     default: {
-      NOTREACHED();
+      // TODO(dawn:1987): Remove the default case after handling
+      // InstanceDropped.
+      resolver->Reject(GPUPipelineError::Create(
+          script_state->GetIsolate(), StringFromASCIIAndUTF8(message),
+          V8GPUPipelineErrorReason::Enum::kInternal));
+      break;
     }
   }
 }
