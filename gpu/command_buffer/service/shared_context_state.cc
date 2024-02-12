@@ -4,8 +4,11 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include <atomic>
+
 #include "base/debug/dump_without_crashing.h"
 #include "base/immediate_crash.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -15,6 +18,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/context_state.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
 #include "gpu/command_buffer/service/gr_cache_controller.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
@@ -66,6 +70,7 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
+namespace gpu {
 namespace {
 
 static constexpr size_t kInitialScratchDeserializationBufferSize = 1024;
@@ -102,9 +107,54 @@ int32_t GetDawnMaxTextureSize(gpu::DawnContextProvider* context_provider) {
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
-}  // anonymous namespace
+// Used to represent Skia backend type for UMA.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class SkiaBackendType {
+  kUnknown = 0,
+  kNone = 1,
+  kGaneshGL = 2,
+  kGaneshVulkan = 3,
+  kGraphiteDawnVulkan = 4,
+  kGraphiteDawnMetal = 5,
+  kGraphiteDawnD3D11 = 6,
+  kGraphiteDawnD3D12 = 7,
+  // It's not clear what granularity of kGraphiteDawnGL* backend dawn will
+  // provided yet so those values are to be added later.
+  kMaxValue = kGraphiteDawnD3D12
+};
 
-namespace gpu {
+SkiaBackendType FindSkiaBackendType(SharedContextState* context) {
+  switch (context->gr_context_type()) {
+    case gpu::GrContextType::kNone:
+      return SkiaBackendType::kNone;
+    case gpu::GrContextType::kGL:
+      return SkiaBackendType::kGaneshGL;
+    case gpu::GrContextType::kVulkan:
+      return SkiaBackendType::kGaneshVulkan;
+    case gpu::GrContextType::kGraphiteMetal:
+      // Graphite/Metal isn't expected to be used outside tests.
+      return SkiaBackendType::kUnknown;
+    case gpu::GrContextType::kGraphiteDawn: {
+      CHECK(context->dawn_context_provider());
+      switch (context->dawn_context_provider()->backend_type()) {
+        case wgpu::BackendType::Vulkan:
+          return SkiaBackendType::kGraphiteDawnVulkan;
+        case wgpu::BackendType::D3D11:
+          return SkiaBackendType::kGraphiteDawnD3D11;
+        case wgpu::BackendType::D3D12:
+          return SkiaBackendType::kGraphiteDawnD3D12;
+        case wgpu::BackendType::Metal:
+          return SkiaBackendType::kGraphiteDawnMetal;
+        default:
+          break;
+      }
+    }
+  }
+  return SkiaBackendType::kUnknown;
+}
+
+}  // anonymous namespace
 
 void SharedContextState::compileError(const char* shader,
                                       const char* errors,
@@ -325,6 +375,15 @@ bool SharedContextState::InitializeSkia(
     gl::ProgressReporter* progress_reporter) {
   static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
   crash_key.Set(GrContextTypeToString(gr_context_type_));
+
+  // Record the Skia backend type the first time Skia/SharedContextState is
+  // initialized. This can happen more than once and on different threads but
+  // the backend type should never change.
+  static std::atomic<bool> once(true);
+  if (once.exchange(false, std::memory_order_relaxed)) {
+    SkiaBackendType context_enum = FindSkiaBackendType(this);
+    base::UmaHistogramEnumeration("GPU.SkiaBackendType", context_enum);
+  }
 
   if (gr_context_type_ == GrContextType::kNone) {
     // SharedContextState only exists to hold a GL context for WebGL fallback

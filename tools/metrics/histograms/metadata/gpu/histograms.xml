@@ -1306,6 +1306,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SkiaBackendType" enum="SkiaBackendType"
+    expires_after="2025-02-01">
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metrics@google.com</owner>
+  <summary>
+    Records what backend Skia is initialized with for compositing/rasterization
+    in the GPU process. This is only recorded the first time Skia is initialized
+    per GPU process launch, in case it's initialized on more than one thread or
+    reinitialized on context loss.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
     expires_after="2024-07-21">
   <owner>zmo@chromium.org</owner>
