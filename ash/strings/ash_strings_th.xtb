@@ -604,11 +604,11 @@
 <translation id="3526440770046466733">เปิดลิงก์ในแท็บใหม่และอยู่ในแท็บปัจจุบันต่อ</translation>
 <translation id="353086728817903341">เชื่อมต่ออยู่กับอุปกรณ์ <ph name="NUM_DEVICES" /> เครื่อง</translation>
 <translation id="3533126039236445965">แอปในแถบ</translation>
-<translation id="3537350467437346467">คุณเคยดู</translation>
+<translation id="3537350467437346467">คุณดูเมื่อ</translation>
 <translation id="3539957339480430241">ฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">ปิดการตั้งค่าการดูรูปภาพและสื่อล่าสุดของโทรศัพท์</translation>
 <translation id="3542066395059568317">คุณจะเห็นคำแนะนำเพื่อให้ดำเนินการต่อจากจุดที่คุณค้างไว้ได้ โดยสามารถคลิกขวาหากต้องการนำคำแนะนำออก</translation>
-<translation id="3547318469722231257">คุณเคยแก้ไข</translation>
+<translation id="3547318469722231257">คุณได้แก้ไขเมื่อ</translation>
 <translation id="3552189655002856821">Wi-Fi ปิดอยู่</translation>
 <translation id="3554215588514239132">แสดงหรือซ่อนแผงเครื่องมือสำหรับนักพัฒนาแอป</translation>
 <translation id="3554637740840164787">ปักหมุด <ph name="ITEM_TITLE" /> แล้ว</translation>
@@ -698,7 +698,7 @@
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
 <translation id="3859364108019690">สตรีมแอปไม่ได้</translation>
 <translation id="3861651314799684201">กด Enter เพื่อบันทึกแบบเต็มหน้าจอ</translation>
-<translation id="3882323608730650973">เคยแก้ไข</translation>
+<translation id="3882323608730650973">แก้ไขเมื่อ</translation>
 <translation id="3886872229787704059">เปิดวันนี้</translation>
 <translation id="3891340733213178823">กด Ctrl+Shift+Q 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="3893630138897523026">ChromeVox (การตอบสนองด้วยเสียง)</translation>
@@ -840,7 +840,6 @@
 <translation id="4389184120735010762">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายหน้าจอบางส่วน จะเปิดแว่นขยายไหม</translation>
 <translation id="439598569299422042">หยุดชั่วคราว <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">บันทึก Screencast ไม่ได้</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> เชื่อมต่อและพร้อมใช้งานแล้ว คุณปรับแต่งเมาส์ได้ในการตั้งค่า</translation>
 <translation id="4405151984121254935">ไม่รองรับอุปกรณ์ต่อพ่วงที่เชื่อมต่ออยู่</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ปิดอยู่</translation>
@@ -890,7 +889,7 @@
 <translation id="4582666543382004902">ปิดฮอตสปอตเพื่อใช้ Wi-Fi แล้ว หากต้องการใช้ฮอตสปอต ให้ปิด Wi-Fi</translation>
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
-<translation id="4596442969149038771"><ph name="USER" /> เคยแชร์</translation>
+<translation id="4596442969149038771"><ph name="USER" /> แชร์เมื่อ</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
 <translation id="462160925400706389">เชื่อมต่อ <ph name="NAME" /> แล้ว</translation>
 <translation id="4623167406982293031">ยืนยันบัญชี</translation>
@@ -1311,7 +1310,6 @@
 <translation id="6199775032047436064">โหลดหน้าปัจจุบันใหม่</translation>
 <translation id="6200515304866777730">แอปไม่รองรับ</translation>
 <translation id="6210042900243040400">เชื่อมต่อ <ph name="NAME" /> ที่บันทึกไว้ก่อนหน้านี้ใน <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">ปรับแต่ง <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">จับภาพหน้าจอหรือบันทึกหน้าจอแบบบางส่วน</translation>
 <translation id="6220928844947387476">ตอนนี้สามารถบันทึกตัวคุณเองไปพร้อมกับหน้าจอได้แล้ว</translation>
 <translation id="622484624075952240">ลง</translation>
@@ -1951,7 +1949,6 @@
 <translation id="888982883502837004">มีการอัปเดตเฟิร์มแวร์พร้อมใช้งานกับอุปกรณ์ คลิกเพื่อตรวจสอบและอัปเดต</translation>
 <translation id="8896630965521842259">ระบบจะลบ <ph name="DESK_TEMPLATE_NAME" /> ออกอย่างถาวร</translation>
 <translation id="889790758758811533">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) โปรดเชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> เชื่อมต่อและพร้อมใช้งานแล้ว คุณปรับแต่งแท็บเล็ตสำหรับวาดรูปได้ในการตั้งค่า</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>
 <translation id="8905919797434099235">(ไม่มีชื่อ)</translation>
 <translation id="890616557918890486">เปลี่ยนแหล่งที่มา</translation>
@@ -2036,7 +2033,7 @@
 <translation id="953431725143473984">ปิดอุปกรณ์ใช่ไหม</translation>
 <translation id="954052413789300507">มีพื้นที่ไม่เพียงพอสำหรับ <ph name="FILENAME" /> เพิ่มพื้นที่ว่าง</translation>
 <translation id="954520015070501466">30 นาที</translation>
-<translation id="954786879461589145"><ph name="USER" /> เคยแก้ไข</translation>
+<translation id="954786879461589145"><ph name="USER" /> ได้แก้ไขเมื่อ</translation>
 <translation id="974545358917229949">กำลังแสดงผลการค้นหา <ph name="RESULT_COUNT" /> รายการสำหรับ "<ph name="QUERY" />"</translation>
 <translation id="981011780479609956">ไม่มีวันที่ครบกำหนด</translation>
 <translation id="98120814841227350">ไปที่ส่วนท้ายของเอกสาร</translation>

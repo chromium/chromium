@@ -3915,6 +3915,7 @@
 <translation id="3957844511978444971">ಈ Google ಸೇವಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ನಿಮ್ಮ ಆಯ್ಕೆಯನ್ನು ಖಚಿತಪಡಿಸಲು "ಸಮ್ಮತಿಸಿ" ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="3958088479270651626">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
 <translation id="3958110062351175311">ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿ ವಿನಂತಿಗಳನ್ನು ತೋರಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> ಅನ್ನು ಈಗಾಗಲೇ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3959747296451923142">ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ತೆಗೆದುಹಾಕುವಿಕೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> ಗಾಗಿ ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
@@ -6546,6 +6547,7 @@
 <translation id="6065289257230303064">ಪ್ರಮಾಣಪತ್ರ ವಿಷಯ ಡೈರೆಕ್ಟರಿ ಆಟ್ರಿಬ್ಯೂಟ್‌ಗಳು</translation>
 <translation id="6066794465984119824">ಚಿತ್ರದ ಹ್ಯಾಶ್ ಸೆಟ್ ಮಾಡಿಲ್ಲ</translation>
 <translation id="6069464830445383022">ನಿಮ್ಮ Google ಖಾತೆಯು ನಿಮ್ಮ Chromebook ಸೈನ್ ಇನ್ ಆಗಿದೆ</translation>
+<translation id="6069500411969514374">ಕೆಲಸ</translation>
 <translation id="6071181508177083058">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಖಚಿತಪಡಿಸು</translation>
 <translation id="6071576563962215370">ಸಾಧನ ಇನ್‌ಸ್ಟಾಲೇಶನ್-ಸಮಯದ ಗುಣಲಕ್ಷಣಗಳ ಲಾಕ್ ಅನ್ನು ಸ್ಥಾಪಿಸಲು ಸಿಸ್ಟಂ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> ಯಷ್ಟು ಮೆಮೊರಿಯನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -7530,7 +7532,6 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">ಎಡಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
-<translation id="6833996806551876956">ಗೌಪ್ಯತೆ ಸ್ಯಾಂಡ್‌ಬಾಕ್ಸ್ ಪ್ರಯೋಗ</translation>
 <translation id="6835762382653651563">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ದಯವಿಟ್ಟು ಇಂಟರ್ನೆಟ್‌ಗೆ ಸಂಪರ್ಕಗೊಳಿಸಿ.</translation>
 <translation id="683630338945552556">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ ಮತ್ತು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="6839225236531462745">ಪ್ರಮಾಣಪತ್ರ ಅಳಿಸುವಿಕೆಯ ದೋಷ</translation>
@@ -10016,6 +10017,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ಒಂದು ಸೀರಿಯಲ್ ಪೋರ್ಟ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="8750346984209549530">ಸೆಲ್ಯುಲರ್ APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex ಆಡಿಯೊ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="8751034568832412184">ಶಾಲೆ</translation>
 <translation id="8752451679755290210">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಐಟಂಗಳ ನಡುವೆ ಸರಿಸಿ</translation>
 <translation id="8753948258138515839">ನೀವು Google Drive, ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆ ಅಥವಾ ನಿಮ್ಮ ChromeOS Flex ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿರುವ ಫೈಲ್‌ಗಳಿಗೆ Files ಆ್ಯಪ್ ತ್ವರಿತ ಆ್ಯಕ್ಸೆಸ್ ಒದಗಿಸುತ್ತದೆ.</translation>
 <translation id="8754200782896249056">&lt;p&gt;ಬೆಂಬಲಿತ ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಪರಿಸರದ ಅಡಿಯಲ್ಲಿ <ph name="PRODUCT_NAME" /> ಅನ್ನು ರನ್‌ ಮಾಡುವಾಗ, ಸಿಸ್ಟಂನ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ಆದಾಗ್ಯೂ ನಿಮ್ಮ ಸಿಸ್ಟಂಗೆ ಬೆಂಬಲ ಸಿಗುತ್ತಿಲ್ಲ ಇಲ್ಲವೇ ನಿಮ್ಮ ಸಿಸ್ಟಂ ಕಾನ್ಫಿಗರೇಶನ್‌ ಪ್ರಾರಂಭಿಸುವಲ್ಲಿ ಸಮಸ್ಯೆ ಇದೆ.&lt;/p&gt;

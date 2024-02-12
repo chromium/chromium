@@ -3919,6 +3919,7 @@
 <translation id="3957844511978444971">ဤ Google ဝန်ဆောင်မှုဆက်တင်များ ရွေးချယ်မှုကို အတည်ပြုရန်အတွက် "သဘောတူရန်" ကို တို့ပါ။</translation>
 <translation id="3958088479270651626">စာညှပ်များ နှင့် ဆက်တင်များကို တင်သွင်းရန်</translation>
 <translation id="3958110062351175311">ကိရိယာဘားတွင် တောင်းဆိုချက်များပြရန် ခွင့်ပြုထားသည်</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> ကို ထည့်သွင်းပြီးဖြစ်သည်</translation>
 <translation id="3959747296451923142">စနစ်ထည့်သွင်းမှု ဖယ်ရှားချက် အတည်ပြုရန်</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
@@ -6548,6 +6549,7 @@
 <translation id="6065289257230303064">လက်မှတ် အကြောင်းအရာ ဒါရိုက်ထရီ အချင်းလက္ခဏာများ</translation>
 <translation id="6066794465984119824">ပုံဟက်ရှ်ကုဒ်ကို သတ်မှတ်မထားပါ</translation>
 <translation id="6069464830445383022">သင့် Google Account သည် သင်၏ Chromebook သို့ လက်မှတ်ထိုးဝင်ရမည့်အကောင့်ဖြစ်သည်</translation>
+<translation id="6069500411969514374">အလုပ်သုံး</translation>
 <translation id="6071181508177083058">စကားဝှက် အတည်ပြုပါ</translation>
 <translation id="6071576563962215370">စနစ်သည် စက်ပစ္စည်းထည့်သွင်းမှုအချိန် ရည်ညွှန်းချက်လော့ခ်ကို သတ်မှတ်၍မရပါ။</translation>
 <translation id="6071938745001252305">မှတ်ဉာဏ်နေရာ <ph name="MEMORY_VALUE" /> သက်သာ သွားသည်</translation>
@@ -7529,7 +7531,6 @@
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>
 <translation id="6832218595502288407">ဘယ်သို့ ကပ်ရန်</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> အုပ်စုမှ တဘ်ကို ဖယ်ရှားလိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Privacy Sandbox အစမ်းသုံးခြင်း</translation>
 <translation id="6835762382653651563">သင့် <ph name="DEVICE_TYPE" /> ကို အသစ်မွမ်းမံရန် ကျေးဇူးပြု၍ အင်တာနက်နှင့် ချိတ်ဆက်ပါ။</translation>
 <translation id="683630338945552556">သင့် Google Account တွင် စကားဝှက်များ သုံးရန်နှင့် သိမ်းရန်</translation>
 <translation id="6839225236531462745">အသိမှတ်ပြု လက်မှတ် ဖျက်ခြင်း မှားယွင်းမှု</translation>
@@ -10017,6 +10018,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> က အမှတ်စဉ်ပို့တ်ကို ချိတ်ဆက်လိုသည်</translation>
 <translation id="8750346984209549530">ဆယ်လူလာ APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex အသံဆက်တင်များကို စီမံရန်</translation>
+<translation id="8751034568832412184">ကျောင်းသုံး</translation>
 <translation id="8752451679755290210">အကြောင်းအရာများအကြား အလိုအလျောက်ရွှေ့ခြင်း</translation>
 <translation id="8753948258138515839">Files အက်ပ်က သင် Google Drive တွင် သိမ်းထားသော ဖိုင်များ၊ ပြင်ပသိုလှောင်ခန်း (သို့) သင့် ChromeOS Flex စက်များကို အမြန်သုံးခွင့်ပေးသည်။</translation>
 <translation id="8754200782896249056">&lt;p&gt; ပံ့ပိုးထားသော အလုပ်ခုံပတ်ဝန်းကျင်တွင် <ph name="PRODUCT_NAME" /> အား လည်ပတ်စဉ်၊ စနစ်ပရောက်စီ ကြိုတင်ချိန်ညှိချက်များကို အသုံးပြုပါမည်။ သို့သော်၊ သင့်စနစ်အား မပံ့ပိုးခြင်း သို့မဟုတ် သင့်စနစ် ပြုပြင်မှုအားဖွင့်ရန် ပြဿနာတက်နေခြင်း တစ်ခုခုဖြစ်နိုင်ပါသည်။&lt;/p&gt;

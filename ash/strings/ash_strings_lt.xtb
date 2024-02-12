@@ -845,7 +845,6 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4389184120735010762">Paspaudėte prie doko prijungto didintuvo spartųjį klavišą. Ar norite jį įjungti?</translation>
 <translation id="439598569299422042">Pristabdyta, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nepavyko išsaugoti ekrano vaizdo įrašo</translation>
-<translation id="4403371424034411727">„<ph name="PERIPHERAL_NAME" />“ prijungtas ir paruoštas naudoti. Galite tinkinti pelę skiltyje „Nustatymai“.</translation>
 <translation id="4405151984121254935">Prijungto išorinio įrenginio tipas nepalaikomas</translation>
 <translation id="4406883609789734330">Subtitrai realiuoju laiku</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ išjungta.</translation>
@@ -1316,7 +1315,6 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6199775032047436064">Iš naujo įkelti dabartinį puslapį</translation>
 <translation id="6200515304866777730">Nepalaikoma programoje</translation>
 <translation id="6210042900243040400">Susiekite su įrenginiu „<ph name="NAME" />“, kuris anksčiau buvo išsaugotas adresu <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">„<ph name="PERIPHERAL_NAME" />“ tinkinimas</translation>
 <translation id="6213808132343683860">Kurti dalies ekrano kopiją ar dalies ekrano vaizdo įrašą</translation>
 <translation id="6220928844947387476">Dabar galite įrašyti save ir savo ekraną tuo pačiu metu</translation>
 <translation id="622484624075952240">Žemiau</translation>
@@ -1956,7 +1954,6 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="888982883502837004">Pasiekiami jūsų įrenginio programinės aparatinės įrangos naujiniai. Spustelėkite, kad peržiūrėtumėte ir atnaujintumėte.</translation>
 <translation id="8896630965521842259">Šablonas „<ph name="DESK_TEMPLATE_NAME" />“ bus visam laikui ištrintas.</translation>
 <translation id="889790758758811533">Liko <ph name="PERCENTAGE" /> proc. akumuliatoriaus energijos (apie <ph name="TIME_LEFT" />). Prijunkite įrenginį prie maitinimo šaltinio.</translation>
-<translation id="8897940060812808966">„<ph name="PERIPHERAL_NAME" />“ prijungtas ir paruoštas naudoti. Galite tinkinti grafikos planšetinį kompiuterį skiltyje „Nustatymai“.</translation>
 <translation id="88986195241502842">Puslapiu žemyn</translation>
 <translation id="8905919797434099235">(Nėra pavadinimo)</translation>
 <translation id="890616557918890486">Keisti šaltinį</translation>

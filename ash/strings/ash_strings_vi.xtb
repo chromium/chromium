@@ -845,7 +845,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4389184120735010762">Bạn đã nhấn phím tắt của tính năng phóng to ở vị trí cố định. Bạn có muốn bật tính năng này không?</translation>
 <translation id="439598569299422042">Đã tạm dừng, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Không lưu được video ghi lại chuyển động trên màn hình</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> đã được kết nối và sẵn sàng cho bạn sử dụng. Bạn có thể tuỳ chỉnh chuột trong phần Cài đặt.</translation>
 <translation id="4405151984121254935">Loại thiết bị ngoại vi đã kết nối không được hỗ trợ</translation>
 <translation id="4406883609789734330">Phụ đề trực tiếp</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> đang tắt.</translation>
@@ -1316,7 +1315,6 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="6199775032047436064">Tải lại trang hiện tại</translation>
 <translation id="6200515304866777730">Không được ứng dụng hỗ trợ</translation>
 <translation id="6210042900243040400">Kết nối <ph name="NAME" /> (trước đó đã được lưu vào <ph name="EMAIL" />)</translation>
-<translation id="6212097153736801627">Tuỳ chỉnh <ph name="PERIPHERAL_NAME" /> của bạn</translation>
 <translation id="6213808132343683860">Chụp hoặc ghi một phần màn hình</translation>
 <translation id="6220928844947387476">Giờ đây bạn có thể ghi hình đồng thời cả chính mình và màn hình</translation>
 <translation id="622484624075952240">Xuống</translation>
@@ -1956,7 +1954,6 @@ Mới cài đặt</translation>
 <translation id="888982883502837004">Bạn có thể tải bản cập nhật chương trình cơ sở xuống thiết bị của mình. Nhấp để xem lại và cập nhật.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> sẽ bị xoá vĩnh viễn</translation>
 <translation id="889790758758811533">Còn <ph name="PERCENTAGE" />% pin (khoảng <ph name="TIME_LEFT" />). Hãy sạc thiết bị.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> đã được kết nối và sẵn sàng cho bạn sử dụng. Bạn có thể tuỳ chỉnh máy tính bảng đồ hoạ trong phần Cài đặt.</translation>
 <translation id="88986195241502842">Trang dưới</translation>
 <translation id="8905919797434099235">(Không có tiêu đề)</translation>
 <translation id="890616557918890486">Thay đổi nguồn</translation>

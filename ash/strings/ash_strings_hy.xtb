@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">Դուք սեղմել եք ամրացված խոշորացույցի դյուրանցման ստեղները: Ուզում եք միացնե՞լ այն:</translation>
 <translation id="439598569299422042">Դադարեցված է, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Չհաջողվեց պահել սքրինքաստը</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> սարքը միացված է և պատրաստ է օգտագործման։ Դուք կարող եք անհատականացնել մկնիկը կարգավորումներում։</translation>
 <translation id="4405151984121254935">Միացված արտաքին սարքի տիպը չի աջակցվում</translation>
 <translation id="4406883609789734330">Կենդանի ենթագրեր</translation>
 <translation id="4412944820643904175">«<ph name="FEATURE_NAME" />» գործառույթն անջատված է։</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">Վերաբեռնել ընթացիկ էջը</translation>
 <translation id="6200515304866777730">Չի աջակցվում հավելվածի կողմից</translation>
 <translation id="6210042900243040400">Միացեք սարքին (<ph name="NAME" />), որը նախկինում պահել եք <ph name="EMAIL" /> հաշվում</translation>
-<translation id="6212097153736801627">Անհատականացրեք ձեր <ph name="PERIPHERAL_NAME" /> սարքը</translation>
 <translation id="6213808132343683860">Էկրանի մի մասի սքրինշոթ կամ տեսագրություն անել</translation>
 <translation id="6220928844947387476">Այժմ դուք կարող եք միաժամանակ տեսագրել ձեզ և ձեր էկրանը</translation>
 <translation id="622484624075952240">Վար</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">Ձեր սարքի համար հասանելի են ներկառուցված ծրագրի թարմացումներ։ Սեղմեք՝ դրանք տեսնելու և թարմացնելու համար։</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />-ն ընդմիշտ կջնջվի</translation>
 <translation id="889790758758811533">Մարտկոցի լիցքը՝ <ph name="PERCENTAGE" />% (մոտ <ph name="TIME_LEFT" />)։ Միացրեք սարքը հոսանքին։</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> սարքը միացված է և պատրաստ է օգտագործման։ Դուք կարող եք անհատականացնել գրաֆիկական պլանշետը կարգավորումներում։</translation>
 <translation id="88986195241502842">Էջը վար</translation>
 <translation id="8905919797434099235">(Անանուն)</translation>
 <translation id="890616557918890486">Փոխել աղբյուրը</translation>

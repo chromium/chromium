@@ -380,7 +380,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3027644380269727216">Na základě vaší aktivity na webu. Toto nastavení je zapnuté.</translation>
 <translation id="3029276696788198026">Žádné předběžné načítání</translation>
 <translation id="3029704984691124060">Heslové fráze se neshodují</translation>
-<translation id="303514781271618814">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně dat</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Zobrazit nápovědu<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037517125981011456">Zobrazuje výzvy k přihlášení do Chromu</translation>
@@ -1108,7 +1107,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6828070228333235514">Ukončit sledování ceny</translation>
 <translation id="6830728435402077660">Nezabezpečeno</translation>
 <translation id="6831043979455480757">Přeložit</translation>
-<translation id="6833996806551876956">Testování izolovaného prostoru ochrany soukromí</translation>
 <translation id="6836206421467243968">Obnovit skupinu karet <ph name="TITLE_OF_GROUP" /> jako novou skupinu karet na pozadí.</translation>
 <translation id="6846298663435243399">Načítání…</translation>
 <translation id="6850409657436465440">Stahování stále probíhá</translation>

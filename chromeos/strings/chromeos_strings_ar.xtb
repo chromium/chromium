@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1020274983236703756">مواد العرض الحصرية لأجهزة <ph name="PRODUCT_NAME" /> متاحة الآن</translation>
 <translation id="1022628058306505708">انسياب أرضي</translation>
+<translation id="1026212596705997935">يتم حاليًا استخدام هذا الاختصار لتنفيذ الإجراء "<ph name="CONFLICT_ACCEL_NAME" />". يُرجى الضغط على اختصار جديد. لاستبدال الاختصار الحالي، اضغط على هذا الاختصار مرة أخرى.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
 <translation id="1049663189809099096">أصفر باستيل</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
 <translation id="2407209115954268704">‏حالة قفل شريحة SIM</translation>
 <translation id="241419523391571119">أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
+<translation id="2414660853550118611">لمحة عامة عن الخلفية</translation>
 <translation id="2414886740292270097">داكن</translation>
 <translation id="2418150275289244458">الفتح من خلال "الإعدادات"</translation>
 <translation id="2421798028054665193">الصورة في الصفحة رقم <ph name="CURRENT_PAGE" /> من إجمالي <ph name="TOTAL_PAGES" />.</translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">‏تم إنشاء الخلفية بتاريخ ‎<ph name="DATE" />.</translation>
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
 <translation id="6196607555925437199">إعادة إنشاء</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">تفعيل شاشة التوقف</translation>
 <translation id="6324916366299863871">تعديل الاختصار</translation>
 <translation id="6325525973963619867">إخفاق</translation>
+<translation id="6327262166342360252">‏تم إنشاء هذه الخلفية بواسطة الذكاء الاصطناعي (AI) باستخدام النص التالي: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">المظهر الداكن التلقائي</translation>
 <translation id="6340526405444716530">التخصيص</translation>
 <translation id="6348738456043757611">اسم المستخدم وكلمة المرور</translation>

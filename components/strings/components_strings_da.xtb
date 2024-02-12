@@ -199,7 +199,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1348198688976932919">Det website, du er på vej til, indeholder farlige apps</translation>
 <translation id="1348779747280417563">Bekræft navn</translation>
-<translation id="1352798470428594123">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for <ph name="LINK" />.</translation>
+<translation id="1352798470428594123">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="LINK" />.</translation>
 <translation id="1354976809542763843">Ejendomsfinansiering</translation>
 <translation id="1355158069018170842">Vis prisfald på faner</translation>
 <translation id="1355301061807280185">Job</translation>
@@ -246,6 +246,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1428729058023778569">Du får vist denne advarsel, fordi dette website ikke understøtter HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Selvklæbende film</translation>
 <translation id="1430915738399379752">Udskriv</translation>
+<translation id="1431021750861456539">Automatisk fuld skærm</translation>
 <translation id="1432187715652018471">Denne side ønsker at installere en tjenestehandler.</translation>
 <translation id="1432581352905426595">Administrer søgemaskiner</translation>
 <translation id="1433225466058025572">Prøv at flytte dine filer igen</translation>
@@ -2285,6 +2286,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
     <ph name="LINE_BREAK" />
     Prøv at kontakte din systemadministrator.</translation>
 <translation id="549333378215107354">Størrelse 3</translation>
+<translation id="5501712702042287009">automatisk fuld skærm</translation>
 <translation id="550365051221576010">Udfyld alt</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Administrerede bogmærker</translation>
@@ -3822,7 +3824,7 @@ Yderligere oplysninger:
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8474910779563686872">Vis udvikleroplysninger</translation>
 <translation id="8479754468255770962">Hæftning nederst til venstre</translation>
-<translation id="8479926481822108747">administrer din sporingsbeskyttelse</translation>
+<translation id="8479926481822108747">administrere din sporingsbeskyttelse</translation>
 <translation id="8483229036294884935">Denne adresse slettes fra din Google-konto, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Gælder for</translation>
 <translation id="8490137692873530638">Stabler 10</translation>

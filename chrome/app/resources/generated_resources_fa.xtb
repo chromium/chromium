@@ -3918,6 +3918,7 @@
 <translation id="3957844511978444971">‏برای تأیید انتخاب خود از میان این تنظیمات سرویس‌های Google، روی «پذیرفتن» ضربه بزنید.</translation>
 <translation id="3958088479270651626">وارد کردن نشانک‌ها و تنظیمات</translation>
 <translation id="3958110062351175311">مجاز به نمایش درخواست‌ها در نوارابزار</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> قبلاً نصب شده است</translation>
 <translation id="3959747296451923142">تأیید حذف اشتراک</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">کنش‌های بیشتر برای <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6548,6 +6549,7 @@
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
 <translation id="6066794465984119824">درهم‌سازی تصویر تنظیم نشده است</translation>
 <translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>
+<translation id="6069500411969514374">کار</translation>
 <translation id="6071181508177083058">تأیید گذرواژه</translation>
 <translation id="6071576563962215370">این سیستم نتوانست قفل ویژگی‌های زمان نصب دستگاه را ایجاد کند.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> در حافظه صرفه‌جویی شد</translation>
@@ -7532,7 +7534,6 @@
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6832218595502288407">تراز به چپ</translation>
 <translation id="6833479554815567477">برگه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">دوره آزمایشی «جعبه شنی حریم خصوصی»</translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
 <translation id="683630338945552556">‏استفاده و ذخیره گذرواژه‌ها در «حساب Google» شما</translation>
 <translation id="6839225236531462745">خطای حذف مجوز</translation>
@@ -10021,6 +10022,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> می‌خواهد به درگاه سریالی متصل شود</translation>
 <translation id="8750346984209549530">‏نام نقطه دستیابی (APN) شبکه تلفن همراه</translation>
 <translation id="8750786237117206586">‏مدیریت تنظیمات صدای ChromeOS Flex</translation>
+<translation id="8751034568832412184">مدرسه</translation>
 <translation id="8752451679755290210">جابه‌جا شدن خودکار میان موارد</translation>
 <translation id="8753948258138515839">‏با برنامه Files می‌توانید به فایل‌هایی که در Google Drive، فضای ذخیره‌سازی خارجی، یا دستگاه ChromeOS Flex ذخیره کرده‌اید دسترسی سریع داشته باشید.</translation>
 <translation id="8754200782896249056">‏&lt;p&gt;هنگام اجرای <ph name="PRODUCT_NAME" /> تحت محیط پشتیبانی شده دسک تاپ، تنظیمات پروکسی سیستم استفاده خواهد شد. اما، سیستم شما پشتیبانی نمی‌شود یا مشکلی در راه‌اندازی پیکربندی سیستم شما وجود دارد.&lt;/p&gt;

@@ -100,6 +100,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1312604459020188865">Moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vedno pokaži polico</translation>
 <translation id="132346741904777634">Fotoaparat je pripet v zgornji levi kot. To je v navzkrižju s sistemskim okoljem.</translation>
+<translation id="132415371743256095">Zapri namizje »<ph name="DESK_NAME" />« in okna</translation>
 <translation id="1333308631814936910">Zaslon <ph name="DISPLAY_NAME" /> je povezan</translation>
 <translation id="1340378040547539434">Pomanjšanje strani</translation>
 <translation id="1341651618736211726">Presežek</translation>
@@ -331,6 +332,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2397416548179033562">Prikaz Chromovega menija</translation>
 <translation id="240006516586367791">Kontrolniki predstavnosti</translation>
 <translation id="2402411679569069051">Če želite odkleniti Chromebook, uporabite prstni odtis ali odklenite telefon.</translation>
+<translation id="240545663114741956">Dvakrat pritisnite bližnjične tipke <ph name="ACCELERATOR" />, da se odjavite.</translation>
 <translation id="2405664212338326887">Ni povezano</translation>
 <translation id="2408955596600435184">Vnos kode PIN</translation>
 <translation id="2412593942846481727">Na voljo je posodobitev</translation>
@@ -352,7 +354,9 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2478076885740497414">Namestitev aplikacije</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2484513351006226581">Pritisnite <ph name="KEYBOARD_SHORTCUT" />, če želite preklopiti postavitev tipkovnice</translation>
+<translation id="2486214324139475545">Predogled namizja »<ph name="DESK_NAME" />«. Aktivno namizje.</translation>
 <translation id="2487915095798731898">Pridruži se</translation>
+<translation id="250047928202119308">Meni profila namizja</translation>
 <translation id="2501920221385095727">Zaklepanje tipk</translation>
 <translation id="2504454902900101003">Opustitev nastavitve nedavnih fotografij, predstavnosti in obvestil telefona</translation>
 <translation id="2509468283778169019">Tipka CAPS LOCK je vklopljena</translation>
@@ -845,7 +849,6 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4389184120735010762">Pritisnili ste bližnjično tipko za zasidrano lupo. Ali jo želite vklopiti?</translation>
 <translation id="439598569299422042">Začasno zaustavljeno, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Snemanja zaslona ni mogoče shraniti</translation>
-<translation id="4403371424034411727">Naprava <ph name="PERIPHERAL_NAME" /> je povezana in pripravljena za uporabo. Miško lahko prilagodite v nastavitvah.</translation>
 <translation id="4405151984121254935">Vrsta povezane zunanje naprave ni podprta.</translation>
 <translation id="4406883609789734330">Samodejni podnapisi</translation>
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> je izklopljena.</translation>
@@ -906,6 +909,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
 <translation id="4644727592819780893">Območje je premajhno za prikaz kamere</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, priporočilo aplikacije</translation>
+<translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Potrditveno polje je označeno.</translation>
 <translation id="4657775630156561295">Ta predlog bo trajno odstranjen iz zgodovine predlogov v računu:
 
 <ph name="QUERY" /></translation>
@@ -1032,6 +1036,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="5111930673176965299">Zameglitev ozadja</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
 <translation id="5121628974188116412">Premik na dno strani</translation>
+<translation id="5122517996953421795">Predogled namizja »<ph name="DESK_NAME" />«. Neaktivno namizje.</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
 <translation id="5147567197700016471">Odklenjeno</translation>
 <translation id="5150070631291639005">Nastavitve zasebnosti</translation>
@@ -1316,7 +1321,6 @@ Nekatere funkcije so omejene zaradi podaljšanja časa delovanja baterije.</tran
 <translation id="6199775032047436064">Znova naloži trenutno stran</translation>
 <translation id="6200515304866777730">Aplikacija ne podpira</translation>
 <translation id="6210042900243040400">Vzpostavite povezavo z napravo <ph name="NAME" />, ki je že shranjena v računu <ph name="EMAIL" />.</translation>
-<translation id="6212097153736801627">Prilagodite napravo <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Ustvarjanje delnega posnetka zaslona ali snemanja zaslona</translation>
 <translation id="6220928844947387476">Sebe in zaslon lahko zdaj posnamete istočasno.</translation>
 <translation id="622484624075952240">Dol</translation>
@@ -1433,6 +1437,7 @@ Nova namestitev</translation>
 <translation id="6683022854667115063">Slušalke</translation>
 <translation id="6686023075541098243">Nastavitev ogleda obvestil telefona</translation>
 <translation id="6696025732084565524">Snemljiva tipkovnica potrebuje nujno posodobitev</translation>
+<translation id="6697913454192220372">Dodajanje novega namizja</translation>
 <translation id="6700713906295497288">Menijski gumb UNV-ja</translation>
 <translation id="6707693040195709527">Rok za spremembo naprave na prejšnjo različico je potekel.</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
@@ -1564,6 +1569,7 @@ Nova namestitev</translation>
 <translation id="7262906531272962081">Ustvarjanje opomnika</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + vračalka</translation>
 <translation id="7285232777292757180">Za ustvarjanje posnetkov zaslona v hitrih nastavitvah uporabite orodje za zajem zaslonske slike</translation>
+<translation id="7301826272005790482">Opustitev predlogov za okna</translation>
 <translation id="7302889331339392448">Samodejni podnapisi so izklopljeni.</translation>
 <translation id="7303365578352795231">Odgovor v drugi napravi.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1770,6 +1776,7 @@ Nova namestitev</translation>
 <translation id="8054466585765276473">Izračunavanje časa trajanja akumulatorja.</translation>
 <translation id="8079538659226626406">Deljenje zaslona</translation>
 <translation id="8083540854303889870">Shranjeno za pozneje</translation>
+<translation id="8088141034189573826">Za več možnosti uporabite tabulatorko. Za dostop do vseh namizij uporabite puščici levo in desno.</translation>
 <translation id="8091153018031979607">Začne se ob <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">Samodejne posodobitve</translation>
 <translation id="8092380135549145188">Kontrolniki za pomikanje</translation>
@@ -1956,7 +1963,6 @@ Nova namestitev</translation>
 <translation id="888982883502837004">Posodobitve vdelane programske opreme so na voljo za vašo napravo. Kliknite, če si želite ogledati in posodobiti.</translation>
 <translation id="8896630965521842259">Predloga <ph name="DESK_TEMPLATE_NAME" /> bo trajno izbrisana.</translation>
 <translation id="889790758758811533">Še <ph name="PERCENTAGE" /> % baterije (približno <ph name="TIME_LEFT" />). Napravo priklopite na napajanje.</translation>
-<translation id="8897940060812808966">Naprava <ph name="PERIPHERAL_NAME" /> je povezana in pripravljena za uporabo. Grafično tablico lahko prilagodite v nastavitvah.</translation>
 <translation id="88986195241502842">Page Down</translation>
 <translation id="8905919797434099235">(Brez naslova)</translation>
 <translation id="890616557918890486">Spremeni vir</translation>
@@ -1968,6 +1974,7 @@ Nova namestitev</translation>
 <translation id="8936501819958976551">deaktivirano</translation>
 <translation id="8938800817013097409">Naprava USB-C (vrata desno zadaj)</translation>
 <translation id="8940956008527784070">Akumulator je skoraj prazen (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Potrditveno polje ni označeno.</translation>
 <translation id="8949925099261528566">Vzpostavljena povezava, brez interneta</translation>
 <translation id="8951539504029375108">Z vašim Chromebookom so združljive samo odobrene naprave Thunderbolt.</translation>
 <translation id="8964525410783593407">1 h</translation>

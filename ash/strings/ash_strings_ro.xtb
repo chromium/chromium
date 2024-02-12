@@ -845,7 +845,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="4389184120735010762">Ai accesat comanda rapidă de la tastatură pentru lupa andocată. Vrei să o activezi?</translation>
 <translation id="439598569299422042">Întreruptă, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nu se poate salva înregistrarea de pe ecran</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> este conectat și gata de folosire. Poți personaliza mouse-ul din Setări.</translation>
 <translation id="4405151984121254935">Tipul de dispozitiv periferic conectat nu este acceptat</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> este dezactivat.</translation>
@@ -1316,7 +1315,6 @@ Unele funcții sunt limitate pentru a crește autonomia.</translation>
 <translation id="6199775032047436064">Reîncarcă pagina actuală</translation>
 <translation id="6200515304866777730">Nu este acceptată de aplicație</translation>
 <translation id="6210042900243040400">Conectează <ph name="NAME" /> salvat anterior în <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personalizează-ți <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Fă o captură de ecran sau o înregistrare de ecran parțială</translation>
 <translation id="6220928844947387476">Acum poți să te înregistrezi pe tine și ecranul tău în același timp</translation>
 <translation id="622484624075952240">Jos</translation>
@@ -1956,7 +1954,6 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="888982883502837004">Sunt disponibile actualizări de firmware pentru dispozitivul tău. Dă clic pentru a examina și actualiza.</translation>
 <translation id="8896630965521842259">Șablonul <ph name="DESK_TEMPLATE_NAME" /> va fi șters definitiv</translation>
 <translation id="889790758758811533">Baterie rămasă: <ph name="PERCENTAGE" /> % (aproximativ <ph name="TIME_LEFT" />). Conectează dispozitivul la o sursă de alimentare.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> este conectat și gata de folosire. Poți personaliza tableta grafică din Setări.</translation>
 <translation id="88986195241502842">O pagină mai jos</translation>
 <translation id="8905919797434099235">(Fără titlu)</translation>
 <translation id="890616557918890486">Schimbă sursa</translation>

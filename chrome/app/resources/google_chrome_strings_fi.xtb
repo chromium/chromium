@@ -135,7 +135,6 @@
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chrome</translation>
 <translation id="3018957014024118866">Poista data myös Chromesta (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Päivitä &amp;ChromeOS Flex käynnistämällä se uudelleen</translation>
-<translation id="303514781271618814">Chrome kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmällä datalla.</translation>
 <translation id="3037838751736561277">Google Chrome on käynnissä taustalla.</translation>
 <translation id="3038232873781883849">Asennetaan…</translation>
 <translation id="3059710691562604940">Selaussuoja on pois päältä. Chrome suosittelee laittamaan sen päälle.</translation>
@@ -428,7 +427,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8086881907087796310">Asennus epäonnistui, koska tietokoneesi ei täytä laitteiston vähimmäisvaatimuksia.</translation>
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
-<translation id="813913629614996137">Käynnistetään…</translation>
+<translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8255190535488645436">Google Chrome käyttää kameraasi ja mikrofoniasi.</translation>
 <translation id="8267953129876836456">Chrome on löytänyt turvallisuussuosituksia, jotka sinun täytyy tarkistaa</translation>
 <translation id="8270775718612349140">Chromen hallinnoimat varmenteet</translation>

@@ -380,7 +380,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3027644380269727216">Based on your activity on a site. This setting is on.</translation>
 <translation id="3029276696788198026">No preloading</translation>
 <translation id="3029704984691124060">Passphrases do not match</translation>
-<translation id="303514781271618814">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your data</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
@@ -1108,7 +1107,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6828070228333235514">Stop tracking price</translation>
 <translation id="6830728435402077660">Not secure</translation>
 <translation id="6831043979455480757">Translate</translation>
-<translation id="6833996806551876956">Privacy sandbox trial</translation>
 <translation id="6836206421467243968">Restore tab group <ph name="TITLE_OF_GROUP" /> as a new background tab group.</translation>
 <translation id="6846298663435243399">Loading…</translation>
 <translation id="6850409657436465440">Your download is still in progress</translation>

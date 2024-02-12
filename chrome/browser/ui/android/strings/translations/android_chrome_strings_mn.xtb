@@ -379,7 +379,6 @@
 <translation id="3027644380269727216">Таны сайт дээрх үйл ажиллагаанд тулгуурласан. Энэ тохиргоо асаалттай байна.</translation>
 <translation id="3029276696788198026">Урьдчилан ачаалахгүй</translation>
 <translation id="3029704984691124060">Нэвтрэх хэллэг тохирохгүй байна</translation>
-<translation id="303514781271618814">Chrome нь сайтуудад таны өгөгдлийг бага хэмжээгээр ашиглах боломжийг олгодог шинэ боломжуудыг судалж байна</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Тусламж авах<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Үнийг хянаж байна</translation>
 <translation id="3037517125981011456">Chrome-д нэвтрэх сануулгыг харуулна</translation>
@@ -1105,7 +1104,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6828070228333235514">Үнэ хянахыг зогсоох</translation>
 <translation id="6830728435402077660">Аюултай</translation>
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
-<translation id="6833996806551876956">Нууцлалын sandbox-н туршилт</translation>
 <translation id="6836206421467243968"><ph name="TITLE_OF_GROUP" /> табын бүлгийг шинэ дэвсгэр табын бүлгээр сэргээнэ үү.</translation>
 <translation id="6846298663435243399">Ачаалж байна...</translation>
 <translation id="6850409657436465440">Таны таталт үргэлжилж байна</translation>

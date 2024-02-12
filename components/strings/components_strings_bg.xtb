@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">Виждате това предупреждение, защото сайтът не поддържа HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Самозалепващо се покритие</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1431021750861456539">Автоматичен цял екран</translation>
 <translation id="1432187715652018471">Страницата иска да инсталира манипулатор на услуги.</translation>
 <translation id="1432581352905426595">Управление на търсещите машини</translation>
 <translation id="1433225466058025572">Опитайте отново да преместите файловете си</translation>
@@ -2285,6 +2286,7 @@
 <ph name="LINE_BREAK" />
 Опитайте да се свържете със системния си администратор.</translation>
 <translation id="549333378215107354">Размер 3</translation>
+<translation id="5501712702042287009">автоматичен цял екран</translation>
 <translation id="550365051221576010">Попълване на всичко</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управлявани отметки</translation>

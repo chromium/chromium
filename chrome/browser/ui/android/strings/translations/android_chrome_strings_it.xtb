@@ -379,7 +379,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3027644380269727216">In base alla tua attività svolta su un sito. Questa impostazione è attiva.</translation>
 <translation id="3029276696788198026">Nessun precaricamento</translation>
 <translation id="3029704984691124060">Le passphrase non corrispondono</translation>
-<translation id="303514781271618814">Chrome sta esplorando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno dati di tua proprietà</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
 <translation id="3037517125981011456">Vengono mostrate richieste di accesso a Chrome</translation>
@@ -1106,7 +1105,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6828070228333235514">Interrompi monitoraggio prezzo</translation>
 <translation id="6830728435402077660">Non sicuro</translation>
 <translation id="6831043979455480757">Traduci</translation>
-<translation id="6833996806551876956">Prova di Privacy Sandbox</translation>
 <translation id="6836206421467243968">Ripristina il gruppo di schede <ph name="TITLE_OF_GROUP" /> come nuovo gruppo di schede in background.</translation>
 <translation id="6846298663435243399">Caricamento in corso…</translation>
 <translation id="6850409657436465440">Il download è ancora in corso</translation>

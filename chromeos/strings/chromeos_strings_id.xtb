@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1020274983236703756">Aset <ph name="PRODUCT_NAME" /> eksklusif kini tersedia</translation>
 <translation id="1022628058306505708">Aliran Bumi</translation>
+<translation id="1026212596705997935">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baru. Untuk mengganti pintasan lama, tekan lagi pintasan ini.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Fitur baru tersedia, gunakan tombol Panah atas untuk mempelajari lebih lanjut.</translation>
 <translation id="1049663189809099096">kuning pastel</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
 <translation id="241419523391571119">Buka kembali penutup untuk menguji</translation>
+<translation id="2414660853550118611">Tentang wallpaper</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2418150275289244458">Buka di setelan</translation>
 <translation id="2421798028054665193">Gambar <ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Dibuat pada <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Kapasitas baterai menurun seiring penggunaan</translation>
 <translation id="6191293864534840972">Format server nama salah</translation>
 <translation id="6196607555925437199">Buat ulang</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Nyalakan screen saver</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6325525973963619867">Gagal</translation>
+<translation id="6327262166342360252">Wallpaper ini dibuat dengan AI menggunakan teks berikut: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema gelap otomatis</translation>
 <translation id="6340526405444716530">Personalisasi</translation>
 <translation id="6348738456043757611">Nama pengguna dan sandi</translation>
@@ -892,10 +896,10 @@
 <translation id="7317831949569936035">Pendaftaran sekolah</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7328475450575141167">bunga cendrawasih</translation>
-<translation id="7331297744262591636">Anda harus berusia minimal 18 tahun dan setuju bahwa penggunaan wallpaper AI oleh Anda tunduk pada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Persyaratan Layanan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Persyaratan Layanan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
+<translation id="7331297744262591636">Anda harus berusia minimal 18 tahun dan setuju bahwa penggunaan wallpaper AI oleh Anda tunduk kepada <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Persyaratan Layanan Google<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> dan <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />Persyaratan Layanan Tambahan AI Generatif<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Anda hanya dapat membuat wallpaper dengan AI untuk penggunaan pribadi dan non-komersial. Saat Anda mendapatkan bantuan terkait wallpaper, teks akan dikirim ke server AI Google untuk membuat saran wallpaper, yang tunduk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kebijakan Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
+          Anda hanya dapat membuat wallpaper dengan AI untuk penggunaan pribadi dan non-komersial. Saat Anda mendapatkan bantuan terkait wallpaper, teks akan dikirim ke server AI Google untuk membuat saran wallpaper, yang tunduk kepada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kebijakan Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Pelajari lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Tekan tombol Penelusuran dan Spasi untuk melihat hasil di Google Penelusuran.</translation>
 <translation id="7343649194310845056">Perangkat Jaringan</translation>
 <translation id="7353413232959255829">Hasil penelusuran <ph name="LIST_POSITION" /> dari <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Tekan Enter untuk membuka pintasan.</translation>

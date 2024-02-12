@@ -3921,6 +3921,7 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="3957844511978444971">Tryck på Godkänn om du vill bekräfta valet av dessa inställningar för Googles tjänster.</translation>
 <translation id="3958088479270651626">Importera bokmärken och inställningar</translation>
 <translation id="3958110062351175311">Får visa begäranden i verktygsfältet</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> har redan installerats</translation>
 <translation id="3959747296451923142">Bekräfta att du vill ta bort prenumerationen</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Fler åtgärder för <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6551,6 +6552,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6065289257230303064">Attribut för certifikatämneskatalog</translation>
 <translation id="6066794465984119824">Avbildningens hashvärde har inte angetts</translation>
 <translation id="6069464830445383022">Du loggar in på Chromebook med ditt Google-konto.</translation>
+<translation id="6069500411969514374">Jobb</translation>
 <translation id="6071181508177083058">bekräfta lösenord</translation>
 <translation id="6071576563962215370">Det gick inte att fastställa enhetens attributlås för installationstid.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> minne har sparats</translation>
@@ -7533,7 +7535,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6832218595502288407">Vänsterjustera</translation>
 <translation id="6833479554815567477">Fliken togs bort från gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Privacy Sandbox – provperiod</translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="683630338945552556">Använd och spara lösenord i Google-kontot</translation>
 <translation id="6839225236531462745">Fel vid borttagning av certifikat</translation>
@@ -10023,6 +10024,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8750155211039279868"><ph name="ORIGIN" /> vill ansluta till en serieport</translation>
 <translation id="8750346984209549530">APN i mobilnätverk</translation>
 <translation id="8750786237117206586">Hantera ljudinställningar för ChromeOS Flex</translation>
+<translation id="8751034568832412184">Skola</translation>
 <translation id="8752451679755290210">Flytta mellan objekt automatiskt</translation>
 <translation id="8753948258138515839">Med appen Filer kommer du snabbt åt filer som du har sparat på Google Drive, externa lagringsenheter eller din ChromeOS Flex-enhet.</translation>
 <translation id="8754200782896249056">&lt;p&gt;När <ph name="PRODUCT_NAME" /> körs i en skrivbordsmiljö som stöds används datorns proxyinställningar. Det kan hända att din dator inte stöds eller att det uppstod ett problem vid start av systemkonfigurationen.&lt;/p&gt;

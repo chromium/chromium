@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">لغو شده</translation>
 <translation id="1020274983236703756">اکنون دارایی‌های انحصاری <ph name="PRODUCT_NAME" /> دردسترس است</translation>
 <translation id="1022628058306505708">جریان خاک</translation>
+<translation id="1026212596705997935">از این میان‌بر برای «<ph name="CONFLICT_ACCEL_NAME" />» استفاده می‌شود. میان‌بر جدیدی اختصاص دهید. برای جایگزین کردن میان‌بر موجود، این میان‌بر را دوباره فشار دهید.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> رشته، <ph name="CPU_MAX_CLOCK_SPEED" /> گیگاهرتز)</translation>
 <translation id="1047773237499189053">ویژگی جدید دردسترس است، برای اطلاعات بیشتر از کلید «پیکان روبه بالا» استفاده کنید.</translation>
 <translation id="1049663189809099096">زرد پاستیلی</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">ارسال گزارش بازخورد</translation>
 <translation id="2407209115954268704">وضعیت قفل سیم‌کارت</translation>
 <translation id="241419523391571119">برای آزمایش کردن، در دستگاه را دوباره باز کنید</translation>
+<translation id="2414660853550118611">درباره کاغذدیواری</translation>
 <translation id="2414886740292270097">تاریک</translation>
 <translation id="2418150275289244458">باز کردن در تنظیمات</translation>
 <translation id="2421798028054665193">تصویر <ph name="CURRENT_PAGE" /> از <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">تاریخ ایجاد: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">ظرفیت باتری با استفاده کاهش می‌یابد</translation>
 <translation id="6191293864534840972">سرورهای نام دامنه ناقص است</translation>
 <translation id="6196607555925437199">ایجاد مجدد</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">روشن کردن محافظ صفحه</translation>
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>
 <translation id="6325525973963619867">ناموفق بود</translation>
+<translation id="6327262166342360252">این کاغذدیواری ازطریق هوش مصنوعی بااستفاده از نوشتار زیر ایجاد شده است: «<ph name="PROMPT" />».</translation>
 <translation id="6331191339300272798">زمینه تیره خودکار</translation>
 <translation id="6340526405444716530">شخصی‌سازی</translation>
 <translation id="6348738456043757611">نام کاربری و گذرواژه</translation>

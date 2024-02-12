@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
 <translation id="439598569299422042">موقتاً متوقف شده است، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ضبط ویدیویی از صفحه ذخیره نشد</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> متصل و آماده استفاده است. می‌توانید موشواره‌تان را در «تنظیمات» سفارشی‌سازی کنید.</translation>
 <translation id="4405151984121254935">دستگاه جانبی متصل پشتیبانی نمی‌شود</translation>
 <translation id="4406883609789734330">زیرنویس زنده</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> خاموش است.</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">بارگیری مجدد صفحه فعلی</translation>
 <translation id="6200515304866777730">در این برنامه پشتیبانی نمی‌شود</translation>
 <translation id="6210042900243040400">به <ph name="NAME" /> که قبلاً در <ph name="EMAIL" /> ذخیره شده متصل شوید</translation>
-<translation id="6212097153736801627">سفارشی‌سازی <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">ثبت نماگرفت یا ضبط بخشی از صفحه</translation>
 <translation id="6220928844947387476">اکنون می‌توانید هم‌زمان هم از خودتان و هم از صفحه‌نمایش فیلم‌برداری کنید</translation>
 <translation id="622484624075952240">پیکان پایین</translation>
@@ -1955,7 +1953,6 @@
 <translation id="888982883502837004">به‌روزرسانی‌های سفت‌افزار برای دستگاهتان دردسترس است. برای مرور و به‌روزرسانی، کلیک کنید.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> برای همیشه حذف می‌شود</translation>
 <translation id="889790758758811533">‫<ph name="PERCENTAGE" />٪ از شارژ باتری باقی مانده است (حدود <ph name="TIME_LEFT" />). دستگاه را به برق وصل کنید.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> متصل و آماده استفاده است. می‌توانید رایانه لوحی ویژه طراحی‌تان را در «تنظیمات» سفارشی‌سازی کنید.</translation>
 <translation id="88986195241502842">صفحه پایین</translation>
 <translation id="8905919797434099235">(بدون عنوان)</translation>
 <translation id="890616557918890486">تغییر منبع</translation>

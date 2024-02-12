@@ -3900,6 +3900,7 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3957844511978444971">Para confirmar a selección destas opcións de configuración de servizos de Google, toca Aceptar.</translation>
 <translation id="3958088479270651626">Importar marcadores e configuración</translation>
 <translation id="3958110062351175311">Permítese mostrar solicitudes na barra de ferramentas</translation>
+<translation id="3958821725268247062">A aplicación <ph name="APP_NAME" /> xa está instalada</translation>
 <translation id="3959747296451923142">Confirmar a eliminación da subscrición</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Máis accións para <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6524,6 +6525,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6065289257230303064">Atributos de directorio da entidade do certificado</translation>
 <translation id="6066794465984119824">Non se configurou o hash da imaxe</translation>
 <translation id="6069464830445383022">A túa Conta de Google permite iniciar sesión no Chromebook</translation>
+<translation id="6069500411969514374">Traballo</translation>
 <translation id="6071181508177083058">confirma o contrasinal</translation>
 <translation id="6071576563962215370">O sistema non puido establecer o bloqueo de atributos do tempo de instalación do dispositivo.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> de memoria aforrada</translation>
@@ -7506,7 +7508,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6832218595502288407">Aliñar á esquerda</translation>
 <translation id="6833479554815567477">A pestana quitouse automaticamente do grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
-<translation id="6833996806551876956">Proba de Privacy Sandbox</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="683630338945552556">Usar e gardar contrasinais na túa Conta de Google</translation>
 <translation id="6839225236531462745">Erro de eliminación do certificado</translation>
@@ -9992,6 +9993,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8750155211039279868"><ph name="ORIGIN" /> quere conectarse a un porto en serie</translation>
 <translation id="8750346984209549530">APN móbil</translation>
 <translation id="8750786237117206586">Xestionar a configuración de audio de ChromeOS Flex</translation>
+<translation id="8751034568832412184">Centro educativo</translation>
 <translation id="8752451679755290210">Desprázate polos distintos elementos de forma automática</translation>
 <translation id="8753948258138515839">A aplicación Ficheiros permite acceder rapidamente aos ficheiros que gardases en Google Drive, no almacenamento externo ou no dispositivo Chrome OS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Cando se execute <ph name="PRODUCT_NAME" /> nun contorno de escritorio compatible, utilizarase a configuración do proxy do sistema. Non obstante, ou o sistema non é compatible ou se produciu un problema ao iniciar a configuración do sistema.&lt;/p&gt;

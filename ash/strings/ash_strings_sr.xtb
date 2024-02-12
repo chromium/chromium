@@ -846,7 +846,6 @@
 <translation id="4389184120735010762">Притиснули сте тастерску пречицу за монтирану лупу екрана. Желите ли да је укључите?</translation>
 <translation id="439598569299422042">Паузирано, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Чување видео снимка екрана није успело</translation>
-<translation id="4403371424034411727">Уређај <ph name="PERIPHERAL_NAME" /> је повезан и спреман за коришћење. Миш можете да прилагодите у Подешавањима.</translation>
 <translation id="4405151984121254935">Тип повезаног периферног уређаја није подржан</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4412944820643904175">Функција <ph name="FEATURE_NAME" /> је искључена.</translation>
@@ -1317,7 +1316,6 @@
 <translation id="6199775032047436064">Поновно учитавање тренутне странице</translation>
 <translation id="6200515304866777730">Апликација не подржава</translation>
 <translation id="6210042900243040400">Повежите уређај <ph name="NAME" /> претходно сачуван на <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Прилагодите уређај <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Направите снимак дела екрана или снимите видео дела екрана</translation>
 <translation id="6220928844947387476">Сада истовремено можете да снимате себе и екран</translation>
 <translation id="622484624075952240">Надоле</translation>
@@ -1958,7 +1956,6 @@
 <translation id="888982883502837004">Доступна су ажурирања фирмвера за уређај. Кликните да бисте их прегледали и ажурирали.</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> ће бити трајно избрисан</translation>
 <translation id="889790758758811533">Преостало је још <ph name="PERCENTAGE" />% батерије (око <ph name="TIME_LEFT" />). Повежите уређај на напајање.</translation>
-<translation id="8897940060812808966">Уређај <ph name="PERIPHERAL_NAME" /> је повезан и спреман за коришћење. Графички таблет можете да прилагодите у Подешавањима.</translation>
 <translation id="88986195241502842">Страница надоле</translation>
 <translation id="8905919797434099235">(Без назива)</translation>
 <translation id="890616557918890486">Промени извор</translation>

@@ -846,7 +846,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4389184120735010762">Vajutasite dokitud luubi otseteed. Kas soovite luubi sisse lülitada?</translation>
 <translation id="439598569299422042">Pausil, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ei saa ekraaniülekannet salvestada</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> on ühendatud ja kasutamiseks valmis. Hiirt saate kohandada menüüs Seaded.</translation>
 <translation id="4405151984121254935">Ühendatud välisseadme tüüpi ei toetata</translation>
 <translation id="4406883609789734330">Reaalajas subtiitrid</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> on väljas.</translation>
@@ -1317,7 +1316,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6199775032047436064">Laadib praeguse lehe uuesti</translation>
 <translation id="6200515304866777730">Rakendus ei toeta</translation>
 <translation id="6210042900243040400">Ühendage <ph name="NAME" />, mis oli varem salvestatud kontole <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Seadme <ph name="PERIPHERAL_NAME" /> kohandamine</translation>
 <translation id="6213808132343683860">Jäädvusta osaline ekraanipilt või ekraanisalvestis</translation>
 <translation id="6220928844947387476">Saate nüüd ennast ja oma ekraanikuva salvestada samaaegselt</translation>
 <translation id="622484624075952240">Alla</translation>
@@ -1957,7 +1955,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="888982883502837004">Teie seadme jaoks on saadaval püsivara värskendused. Klõpsake ülevaatamiseks ja värskendamiseks.</translation>
 <translation id="8896630965521842259">Mall <ph name="DESK_TEMPLATE_NAME" /> kustutatakse jäädavalt</translation>
 <translation id="889790758758811533">Akut on jäänud <ph name="PERCENTAGE" />% (umbes <ph name="TIME_LEFT" />). Ühendage seade toiteallikaga.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> on ühendatud ja kasutamiseks valmis. Joonestustahvlit saate kohandada menüüs Seaded.</translation>
 <translation id="88986195241502842">Lehe lõppu</translation>
 <translation id="8905919797434099235">(Pealkirjata)</translation>
 <translation id="890616557918890486">Vaheta allikat</translation>

@@ -845,7 +845,6 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4389184120735010762">Painoit kiinnitetyn suurennuksen pikanäppäintä. Haluatko ottaa sen käyttöön?</translation>
 <translation id="439598569299422042">Keskeytetty, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ruutukaappausvideota ei voi tallentaa</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> on yhdistetty ja käyttövalmis. Voit yksilöidä hiirtä asetuksista.</translation>
 <translation id="4405151984121254935">Yhdistettyä lisälaitetyyppiä ei tueta</translation>
 <translation id="4406883609789734330">Livetekstitys</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ei ole päällä.</translation>
@@ -1316,7 +1315,6 @@ Joidenkin ominaisuuksien käyttöä on rajoitettu akunkeston pidentämiseksi.</t
 <translation id="6199775032047436064">Lataa nykyinen sivu uudelleen</translation>
 <translation id="6200515304866777730">Sovellus ei tue tätä</translation>
 <translation id="6210042900243040400">Yhdistä <ph name="NAME" />, joka tallennettiin aiemmin tänne: <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Yksilöi <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Ota osittainen kuvakaappaus tai tallennus näytöltä</translation>
 <translation id="6220928844947387476">Voit nyt kuvata itseäsi ja näyttöäsi samaan aikaan</translation>
 <translation id="622484624075952240">Alas</translation>
@@ -1785,7 +1783,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8131994907636310308">Sulje lajitteluilmoitus</translation>
 <translation id="8132793192354020517">Yhteys muodostettu verkkoon <ph name="NAME" /></translation>
 <translation id="8138705869659070104">Aktivoi käyttöönoton jälkeen</translation>
-<translation id="813913629614996137">Käynnistetään…</translation>
+<translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8142441511840089262">Kaksoisklikkaus</translation>
 <translation id="8142699993796781067">Yksityinen verkko</translation>
 <translation id="8144760705599030999">Tallenna <ph name="NAME" /> tilille <ph name="EMAIL" />, jotta laiteparin muodostaminen muiden laitteidesi kanssa sujuu nopeammin</translation>
@@ -1955,7 +1953,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="888982883502837004">Laitteellesi on saatavilla laiteohjelmiston päivityksiä. Katso ja päivitä klikkaamalla.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> poistetaan pysyvästi</translation>
 <translation id="889790758758811533">Akkua jäljellä <ph name="PERCENTAGE" /> % (noin <ph name="TIME_LEFT" />). Yhdistä laite virtalähteeseen.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> on yhdistetty ja käyttövalmis. Voit yksilöidä grafiikkatablettia asetuksista.</translation>
 <translation id="88986195241502842">Sivu alas</translation>
 <translation id="8905919797434099235">(Ei nimeä)</translation>
 <translation id="890616557918890486">Vaihda lähdettä</translation>

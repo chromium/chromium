@@ -845,7 +845,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4389184120735010762">Naciśnięto skrót klawiszowy lupy zadokowanej. Czy chcesz ją włączyć?</translation>
 <translation id="439598569299422042">Wstrzymano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nie udało się zapisać screencastu</translation>
-<translation id="4403371424034411727">Urządzenie <ph name="PERIPHERAL_NAME" /> jest połączone i gotowe do użycia. Możesz dostosować mysz w Ustawieniach.</translation>
 <translation id="4405151984121254935">Typ podłączonego urządzenia peryferyjnego nie jest obsługiwany</translation>
 <translation id="4406883609789734330">Napisy na żywo</translation>
 <translation id="4412944820643904175">Funkcja <ph name="FEATURE_NAME" /> jest wyłączona.</translation>
@@ -1316,7 +1315,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="6199775032047436064">Załaduj bieżącą stronę ponownie</translation>
 <translation id="6200515304866777730">Nieobsługiwana przez aplikację</translation>
 <translation id="6210042900243040400">Połącz urządzenie <ph name="NAME" /> wcześniej zapisane na koncie <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Dostosuj urządzenie <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Zrób zrzut lub nagranie części ekranu</translation>
 <translation id="6220928844947387476">Teraz możesz jednocześnie nagrywać siebie i swój ekran</translation>
 <translation id="622484624075952240">W dół</translation>
@@ -1955,7 +1953,6 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="888982883502837004">Dostępne są aktualizacje oprogramowania układowego urządzenia. Kliknij, aby je zobaczyć i zainstalować.</translation>
 <translation id="8896630965521842259">Sablon <ph name="DESK_TEMPLATE_NAME" /> zostanie trwale usunięty</translation>
 <translation id="889790758758811533">Bateria: pozostało <ph name="PERCENTAGE" />% (około <ph name="TIME_LEFT" />). Podłącz urządzenie do zasilania.</translation>
-<translation id="8897940060812808966">Urządzenie <ph name="PERIPHERAL_NAME" /> jest połączone i gotowe do użycia. Możesz dostosować tablet graficzny w Ustawieniach.</translation>
 <translation id="88986195241502842">Strona w dół</translation>
 <translation id="8905919797434099235">(Bez tytułu)</translation>
 <translation id="890616557918890486">Zmień źródło</translation>

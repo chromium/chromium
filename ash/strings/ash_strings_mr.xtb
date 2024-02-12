@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">तुम्ही डॉक मॅग्निफायरसाठी कीबोर्ड शॉर्टकट दाबला आहे. तुम्हाला ते सुरू करायचे आहे का?</translation>
 <translation id="439598569299422042">थांबवले, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">स्क्रीनकास्ट सेव्ह करता आले नाही</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> कनेक्ट केला आहे आणि वापरण्यासाठी तयार आहे. तुम्ही सेटिंग्ज मध्ये तुमचा माउस कस्टमाइझ करू शकता.</translation>
 <translation id="4405151984121254935">कनेक्ट केलेल्या पेरिफेरल प्रकाराला सपोर्ट नाही</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> बंद आहे.</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">वर्तमान पेज रीलोड करा</translation>
 <translation id="6200515304866777730">अ‍ॅप सपोर्ट करत नाही</translation>
 <translation id="6210042900243040400">याआधी <ph name="EMAIL" /> मध्ये सेव्ह केलेले <ph name="NAME" /> कनेक्ट करा</translation>
-<translation id="6212097153736801627">तुमचा <ph name="PERIPHERAL_NAME" /> कस्टमाइझ करा</translation>
 <translation id="6213808132343683860">आंशिक स्क्रीनशॉट किंवा स्क्रीन रेकॉर्डिंग करा</translation>
 <translation id="6220928844947387476">तुम्ही आता एकाच वेळी स्वतःला आणि तुमची स्क्रीन रेकॉर्ड करू शकता</translation>
 <translation id="622484624075952240">Down</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">तुमच्या डिव्हाइससाठी फर्मवेअरसंबंधित अपडेट उपलब्ध आहेत. पुनरावलोकन आणि अपडेट करण्यासाठी क्लिक करा.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> कायमचे हटवले जाईल</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% बॅटरी शिल्लक आहे (सुमारे <ph name="TIME_LEFT" />). तुमचे डिव्हाइस पॉवरशी कनेक्ट करा.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> कनेक्ट केला आहे आणि वापरण्यासाठी तयार आहे. तुम्ही सेटिंग्ज मध्ये तुमचा ग्राफिक टॅबलेट कस्टमाइझ करू शकता.</translation>
 <translation id="88986195241502842">पेज डाउन</translation>
 <translation id="8905919797434099235">(शीर्षक नाही)</translation>
 <translation id="890616557918890486">स्रोत बदला</translation>

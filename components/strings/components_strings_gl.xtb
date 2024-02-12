@@ -246,6 +246,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1428729058023778569">Estás a ver esta advertencia porque o sitio non é compatible con HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Máis información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Filme autoadhesivo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1431021750861456539">Pantalla completa automática</translation>
 <translation id="1432187715652018471">esta páxina quere instalar un controlador de servizo.</translation>
 <translation id="1432581352905426595">Xestionar motores de busca</translation>
 <translation id="1433225466058025572">Proba a mover os ficheiros de novo</translation>
@@ -2282,6 +2283,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     <ph name="LINE_BREAK" />
     Tenta pórte en contacto coa persoa que administra o sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
+<translation id="5501712702042287009">pantalla completa automática</translation>
 <translation id="550365051221576010">Cubrir todo</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcadores xestionados</translation>

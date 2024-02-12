@@ -846,7 +846,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4389184120735010762">Has pulsado la combinación de teclas que activa la lupa fijada. ¿Quieres activarla?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">No se puede guardar la grabación de pantalla</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> está conectado y listo para usarse. Puedes personalizar tu ratón en Configuración.</translation>
 <translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4406883609789734330">Subtítulos automáticos</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> está desactivado.</translation>
@@ -1317,7 +1316,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6199775032047436064">Cargar de nuevo la página actual</translation>
 <translation id="6200515304866777730">No compatible con la aplicación</translation>
 <translation id="6210042900243040400">Conectar dispositivo <ph name="NAME" /> guardado anteriormente en <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personaliza tu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Hacer captura o grabación de pantalla parcial</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti mismo y tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Flecha hacia abajo</translation>
@@ -1957,7 +1955,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="888982883502837004">Hay actualizaciones de firmware disponibles para tu dispositivo. Haz click para verlas y actualizar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se eliminará permanentemente.</translation>
 <translation id="889790758758811533">Queda un <ph name="PERCENTAGE" /> % de batería (aproximadamente <ph name="TIME_LEFT" />). Conecta tu dispositivo a la corriente.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> está conectado y listo para usarse. Puedes personalizar tu tableta gráfica en Ajustes.</translation>
 <translation id="88986195241502842">Avanzar página</translation>
 <translation id="8905919797434099235">(Sin título)</translation>
 <translation id="890616557918890486">Cambiar fuente</translation>

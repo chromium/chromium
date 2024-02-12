@@ -204,6 +204,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2132122640199389833">Ondoa vifaa vyote vilivyounganishwa</translation>
 <translation id="213279576345780926">Umefunga <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Ongeza kwenye skrini ya kwanza</translation>
+<translation id="2139414603196655536">Shughuli zako katika Maarifa ya Ukurasa huhifadhiwa kwenye Akaunti yako ya Google. <ph name="BEGIN_LINK" />Pata maelezo kuhusu jinsi ya kudhibiti hali hii<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Kulingana na matumizi yako</translation>
 <translation id="2149973817440762519">Badilisha Alamisho</translation>
 <translation id="2155214902713132423">Njia hii ya uthibitishaji haipatikani kwenye kifaa hiki. Teua chaguo tofauti kwenye kifaa chako kingine.</translation>
@@ -379,7 +380,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3027644380269727216">Kulingana na shughuli zako kwenye tovuti. Mipangilio hii imewashwa.</translation>
 <translation id="3029276696788198026">Hakuna kupakia mapema</translation>
 <translation id="3029704984691124060">Kaulisiri hazilingani</translation>
-<translation id="303514781271618814">Chrome inachunguza vipengele vipya vinavyoruhusu tovuti zikupe hali ile ile ya kuvinjari kwa kutumia data kidogo</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Pata usaidizi<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Unafuatilia bei</translation>
 <translation id="3037517125981011456">Huonyesha vidokezo vya kuingia katika akaunti kwenye Chrome</translation>
@@ -1082,6 +1082,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="670498945988402717">Ilikaguliwa jana</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="671481426037969117">Kipindi cha kipima muda cha <ph name="FQDN" /> kimeisha. Kitaanza tena kesho.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Alamisho imehifadhiwa kwenye <ph name="FOLDER_NAME" />. Imehifadhiwa kwenye kifaa hiki pekee.}other{Alamisho zimehifadhiwa kwenye <ph name="FOLDER_NAME" />. Zimehifadhiwa kwenye kifaa hiki pekee.}}</translation>
 <translation id="6715020873764921614">Je, ungependa kupakua <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) licha ya hayo?</translation>
 <translation id="6719634564325948108">Ungependa kuunganisha kupitia msimbo wa QR?</translation>
 <translation id="6723740634201835758">Katika Akaunti yako ya Google</translation>
@@ -1106,7 +1107,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6828070228333235514">Acha kufuatilia bei</translation>
 <translation id="6830728435402077660">Si salama</translation>
 <translation id="6831043979455480757">Tafsiri</translation>
-<translation id="6833996806551876956">Jaribio la kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha</translation>
 <translation id="6836206421467243968">Rejesha kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> kiwe kikundi kipya cha vichupo vinavyofanya kazi chinichini.</translation>
 <translation id="6846298663435243399">Inapakia…</translation>
 <translation id="6850409657436465440">Bado inapakua faili</translation>
@@ -1403,6 +1403,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8237871086242677046">Safu ya chini ya maarifa ya ukurasa</translation>
 <translation id="8243077599929149377">Weka jina lako la mtumiaji</translation>
 <translation id="8250920743982581267">Hati</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Alamisho imehifadhiwa kwenye <ph name="FOLDER_NAME" /> katika akaunti yako, <ph name="ACCOUNT_EMAIL" />.}other{Alamisho zimehifadhiwa kwenye <ph name="FOLDER_NAME" /> katika akaunti yako, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Tovuti zinaweza tu kutumia vidakuzi vyako kuona shughuli zako za kuvinjari kwenye tovuti hizo pekee</translation>
 <translation id="8259179246279078674">Kwa sababu kurasa zilizopakiwa mapema zimesimbwa kwa njia fiche, Google haitapata maelezo yoyote kuhusu maudhui ya kurasa hizo. Seva za Google zitafahamu ni tovuti gani zilizopakiwa mapema kwa njia ya faragha. Maelezo haya yanatumiwa tu kwa ajili ya kupakia kurasa mapema na hayahusishwi na taarifa zingine kutoka kwenye Akaunti yako ya Google.</translation>
 <translation id="8260126382462817229">Jaribu kuingia katika akaunti tena</translation>

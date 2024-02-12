@@ -1428,6 +1428,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="206308717637808771">Barcha oynalar yopilganda maʼlumotlar oʻchirilsin. Maʼlumotlar siz koʻrayotgan sayt bilan bir xil hisoblanadi</translation>
 <translation id="2065405795449409761">Chrome avtomatlashtirilgan sinov dasturi tomonidan boshqariladi.</translation>
 <translation id="2067591192939433190">Taʼminotchi: “<ph name="VENDOR_NAME" />”</translation>
+<translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> printerida chop etishni yakunladi</translation>
 <translation id="2071393345806050157">Mahalliy jurnal fayli yo‘q.</translation>
 <translation id="2071692954027939183">Odatda ruxsat bermasligingiz uchun bildirishnomalar avtomatik bloklanadi</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{Kengaytmani oʻrnatish uchun bosing}other{Kengaytmalarni oʻrnatish uchun bosing}}</translation>
@@ -1806,6 +1807,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="233471714539944337">Maxfiy kontent</translation>
 <translation id="2335111415680198280">{0,plural, =1{# ta oynani yopish}other{# ta oynani yopish}}</translation>
 <translation id="2336228925368920074">Barcha ichki oynalarni xatcho‘plarga qo‘shish...</translation>
+<translation id="2336258397628212480"><ph name="APP_NAME" /> 1 sahifani <ph name="PRINTER_NAME" /> printerida chop etmoqda</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> faylini xavfsiz yuklab olish imkonsiz</translation>
 <translation id="2342180549977909852">Farzandingiz bu qurilma qulfini parol oʻrniga raqamli kod (PIN) bilan ochishi mumkin. PIN kodni Sozlamalar orqali keyinroq sozlash mumkin.</translation>
@@ -3987,6 +3989,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4021909830315618592">Nashr tafsilotlarini nusxalash</translation>
 <translation id="4021941025609472374">Varaqlarni chapga yopish</translation>
 <translation id="4022426551683927403">&amp;Lug‘atga qo‘shish</translation>
+<translation id="4023048917751563912"><ph name="APP_NAME" /> <ph name="PAGE_NUMBER" /> sahifani <ph name="PRINTER_NAME" /> printerida chop etmoqda</translation>
 <translation id="4024768890073681126">Brauzer ota-onangiz boshqaruvida</translation>
 <translation id="4025039777635956441">Tanlangan saytni ovozsiz qilish</translation>
 <translation id="402707738228916911"><ph name="AUTHORIZE_INSTRUCTION_NAME" /> koʻrsatmasi qabul qilindi</translation>
@@ -4587,6 +4590,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4507128560633489176">Maʼlumotlar tozalandi</translation>
 <translation id="4507373251891673233"><ph name="HOST" /> saytida barcha kengaytmalar bloklangan</translation>
 <translation id="4507401683427517298">“Yorliq yaratish” ustiga bosing</translation>
+<translation id="4508332912150723117">foydalanuvchi (<ph name="USER_EMAIL" />). Tafsilotlar</translation>
 <translation id="450867954911715010">Qulayliklar</translation>
 <translation id="4508765956121923607">Sahifa &amp;kodini ko‘rish</translation>
 <translation id="4509277363725254222"><ph name="BEGIN_BOLD_USERNAME" />foydalanuvchi nomi<ph name="END_BOLD_USERNAME" /> va <ph name="BEGIN_BOLD_PASSWORD" />parol<ph name="END_BOLD_PASSWORD" /> nusxasini ulashsangiz, oila aʼzosi ularni Google Parollar menejeri yordamida toʻldirishlari mumkin</translation>
@@ -6511,6 +6515,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6050189528197190982">Kulrang tuslari</translation>
 <translation id="6051354611314852653">Bu qurilmada API ruxsatini berib bo‘lmadi.</translation>
 <translation id="6051811090255711417">Bu fayl xavfsizlik siyosatiga mos kelmagani uchun tashkilotingiz uni bloklagan</translation>
+<translation id="6052261338768299955"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> printerida chop etishga urinmoqda</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="6052488962264772833">Ruxsat kodini kiriting va translatsiyani boshlang</translation>
 <translation id="6052976518993719690">SSL sertifikatlash markazi</translation>
@@ -7440,6 +7445,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="67862343314499040">Siyohrang</translation>
 <translation id="6786747875388722282">Kengaytmalar</translation>
 <translation id="6787097042755590313">Boshqa varaq</translation>
+<translation id="6787531944787756058">foydalanuvchi (<ph name="USER_EMAIL" />) maʼlumotlari faqat shu qurilmada saqlanadi. Tafsilotlar</translation>
 <translation id="6787839852456839824">Klaviatura yorliqlari</translation>
 <translation id="6788210894632713004">To‘plamdan chiqarilgan kengaytma</translation>
 <translation id="6789592661892473991">Gorizontal ajratish</translation>
@@ -7520,7 +7526,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6831043979455480757">Tarjima</translation>
 <translation id="6832218595502288407">Chapga tekislash</translation>
 <translation id="6833479554815567477">Varaq <ph name="GROUP_NAME" /> guruhidan olib tashlandi – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Privacy Sandbox sinov versiyasi</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> qurilmasini yangilash uchun Internetga ulaning.</translation>
 <translation id="683630338945552556">Parollarni Google hisobiga saqlash va ishlatish</translation>
 <translation id="6839225236531462745">Sertifikatni o‘chirishda xatolik</translation>

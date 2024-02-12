@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1020274983236703756">Exklusiva <ph name="PRODUCT_NAME" />-tillgångar är nu tillgängliga</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Kortkommandot används för <ph name="CONFLICT_ACCEL_NAME" />. Tryck på ett nytt kortkommando. Tryck på det befintliga kortkommandot igen om du vill ersätta det.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> trådar, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Det finns en ny funktion. Tryck på uppåtpilen om du vill läsa mer.</translation>
 <translation id="1049663189809099096">pastellgul</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
 <translation id="2407209115954268704">Status för SIM-lås</translation>
 <translation id="241419523391571119">Öppna locket igen för att testa</translation>
+<translation id="2414660853550118611">Om bakgrunden</translation>
 <translation id="2414886740292270097">Mörk</translation>
 <translation id="2418150275289244458">Öppna i inställningarna</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Skapades den <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterikapaciteten avtar genom användning</translation>
 <translation id="6191293864534840972">Namnserveradresserna har fel format</translation>
 <translation id="6196607555925437199">Återskapa</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">Slå på skärmsläckare</translation>
 <translation id="6324916366299863871">Redigera genväg</translation>
 <translation id="6325525973963619867">Misslyckades</translation>
+<translation id="6327262166342360252">Den här bakgrunden skapades med AI utifrån följande text: ”<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatiskt mörkt tema</translation>
 <translation id="6340526405444716530">Anpassning</translation>
 <translation id="6348738456043757611">Användarnamn och lösenord</translation>

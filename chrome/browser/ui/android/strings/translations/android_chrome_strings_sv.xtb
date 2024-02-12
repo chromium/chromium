@@ -204,6 +204,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2132122640199389833">Ta bort alla länkade enheter</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> har stängts</translation>
 <translation id="2139186145475833000">Lägg till på startskärmen</translation>
+<translation id="2139414603196655536">Din aktivitet i sidinsikter sparas i Google-kontot. <ph name="BEGIN_LINK" />Läs mer om hur du hanterar detta<ph name="END_LINK" />.</translation>
 <translation id="2141396931810938595">Utifrån din användning</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2155214902713132423">Den här verifieringsmetoden är inte tillgänglig för den här enheten. Välj ett annat alternativ på den andra enheten.</translation>
@@ -379,7 +380,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3027644380269727216">Baserat på din aktivitet på en webbplats. Inställningen är aktiverad.</translation>
 <translation id="3029276696788198026">Ingen förinläsning</translation>
 <translation id="3029704984691124060">Lösenfraserna matchar inte</translation>
-<translation id="303514781271618814">Chrome utforskar nya funktioner som gör att webbplatser kan leverera samma upplevelse av webbläsaren med mindre av din data</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037517125981011456">Visar meddelanden om att logga in i Chrome</translation>
@@ -1083,6 +1083,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="670498945988402717">Genomsöktes i går</translation>
 <translation id="6710213216561001401">Föregående</translation>
 <translation id="671481426037969117">Timern för <ph name="FQDN" /> har löpt ut. Den börjar om igen i morgon.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bokmärket har sparats i <ph name="FOLDER_NAME" />. Det är bara sparat på den här enheten.}other{Bokmärkena har sparats i <ph name="FOLDER_NAME" />. De är bara sparade på den här enheten.}}</translation>
 <translation id="6715020873764921614">Vill du ladda ned <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ändå?</translation>
 <translation id="6719634564325948108">Vill du ansluta med QR-kod?</translation>
 <translation id="6723740634201835758">I Google-kontot</translation>
@@ -1107,7 +1108,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6828070228333235514">Avbryt bevakningen av priset</translation>
 <translation id="6830728435402077660">Inte säkert</translation>
 <translation id="6831043979455480757">Översätt</translation>
-<translation id="6833996806551876956">Privacy Sandbox – provperiod</translation>
 <translation id="6836206421467243968">Återställ flikgruppen <ph name="TITLE_OF_GROUP" /> som en ny flikgrupp i bakgrunden.</translation>
 <translation id="6846298663435243399">Läser in …</translation>
 <translation id="6850409657436465440">Nedladdningen pågår fortfarande</translation>
@@ -1404,6 +1404,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8237871086242677046">Ark för sidinsikter på nedre delen av skärmen</translation>
 <translation id="8243077599929149377">Lägg till ditt användarnamn</translation>
 <translation id="8250920743982581267">Dokument</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bokmärket har sparats i <ph name="FOLDER_NAME" /> i kontot <ph name="ACCOUNT_EMAIL" />.}other{Bokmärkena har sparats i <ph name="FOLDER_NAME" /> i kontot <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Webbplatser får endast se din webbaktivitet på den aktuella webbplatsen med hjälp av cookies</translation>
 <translation id="8259179246279078674">Eftersom förinlästa sidor är krypterade får Google ingen information om innehållet på dem. Googles servrar lär sig vilka webbplatser som läses in privat i förväg. Den här informationen används endast för att läsa in sidor i förväg och är inte länkar till andra uppgifter från ditt Google-konto.</translation>
 <translation id="8260126382462817229">Försök att logga in igen</translation>

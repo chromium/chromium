@@ -844,7 +844,6 @@
 <translation id="4389184120735010762">הקשת על מקש הקיצור של זכוכית מגדלת במצב עגינה. להפעיל אותה?</translation>
 <translation id="439598569299422042">בהשהיה, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">לא ניתן לשמור את הקלטת המסך</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> מחובר ומוכן לשימוש. אפשר להתאים אישית את העכבר בהגדרות.</translation>
 <translation id="4405151984121254935">סוג הציוד ההיקפי שמחובר אינו נתמך</translation>
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4412944820643904175">התכונה <ph name="FEATURE_NAME" /> מושבתת.</translation>
@@ -1315,7 +1314,6 @@
 <translation id="6199775032047436064">טען מחדש את הדף הנוכחי</translation>
 <translation id="6200515304866777730">האפליקציה לא תומכת בפעולה</translation>
 <translation id="6210042900243040400">יש לקשר את המכשיר <ph name="NAME" /> שנשמר בעבר בחשבון <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">התאמה אישית של <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">יצירת צילום מסך או הקלטת מסך חלקיים</translation>
 <translation id="6220928844947387476">יש לך אפשרות להקליט את עצמך ואת המסך באותו הזמן</translation>
 <translation id="622484624075952240">למטה</translation>
@@ -1953,7 +1951,6 @@
 <translation id="888982883502837004">יש עדכוני קושחה למכשיר שלך. צריך ללחוץ כדי לבדוק ולעדכן.</translation>
 <translation id="8896630965521842259">התבנית <ph name="DESK_TEMPLATE_NAME" /> תימחק באופן סופי</translation>
 <translation id="889790758758811533">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" /> (בערך <ph name="TIME_LEFT" />). צריך לחבר את המכשיר למקור חשמל.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> מחובר ומוכן לשימוש. ניתן להתאים אישית את הלוח הגרפי בהגדרות.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(ללא שם)</translation>
 <translation id="890616557918890486">שינוי המקור</translation>

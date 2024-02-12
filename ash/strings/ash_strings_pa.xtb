@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">ਤੁਸੀਂ ਡੌਕ ਕੀਤੇ ਵੱਡਦਰਸ਼ੀ ਲਈ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਦਬਾਇਆ ਹੈ। ਕੀ ਤੁਸੀਂ ਇਸਨੂੰ ਚਾਲੂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="439598569299422042">ਰੋਕਿਆ ਗਿਆ, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ਸਕ੍ਰੀਨਕਾਸਟ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> ਕਨੈਕਟ ਹੈ ਅਤੇ ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਮਾਊਸ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4405151984121254935">ਇਸ ਕਨੈਕਟ ਕੀਤੀ ਪੈਰੀਫੈਰਲ ਕਿਸਮ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
 <translation id="4406883609789734330">ਲਾਈਵ ਸੁਰਖੀਆਂ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ਬੰਦ ਹੈ।</translation>
@@ -1317,7 +1316,6 @@
 <translation id="6199775032047436064">ਮੌਜੂਦਾ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="6200515304866777730">ਐਪ ਰਾਹੀਂ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ਵਿੱਚ ਪਹਿਲਾਂ ਤੋਂ ਰੱਖਿਅਤ ਕੀਤੇ <ph name="NAME" /> ਨੂੰ ਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="6212097153736801627">ਆਪਣੇ <ph name="PERIPHERAL_NAME" /> ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="6213808132343683860">ਅੰਸ਼ਕ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ ਜਾਂ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕਰੋ</translation>
 <translation id="6220928844947387476">ਤੁਸੀਂ ਹੁਣ ਖੁਦ ਨੂੰ ਅਤੇ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਇੱਕੋ ਸਮੇਂ ਰਿਕਾਰਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="622484624075952240">ਹੇਠਾਂ</translation>
@@ -1957,7 +1955,6 @@
 <translation id="888982883502837004">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ ਫ਼ਰਮਵੇਅਰ ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ। ਸਮੀਖਿਆ ਕਰਨ ਅਤੇ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ਨੂੰ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟਾਇਆ ਜਾਵੇਗਾ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ਬੈਟਰੀ ਬਾਕੀ ਬਚੀ ਹੈ (ਲਗਭਗ <ph name="TIME_LEFT" />)। ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> ਕਨੈਕਟ ਹੈ ਅਤੇ ਵਰਤਣ ਲਈ ਤਿਆਰ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਆਪਣੇ ਗ੍ਰਾਫ਼ਿਕ ਟੈਬਲੈੱਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="88986195241502842">ਸਫ਼ਾ ਹੇਠਾਂ</translation>
 <translation id="8905919797434099235">(ਕੋਈ ਸਿਰਲੇਖ ਨਹੀਂ)</translation>
 <translation id="890616557918890486">ਸਰੋਤ ਬਦਲੋ</translation>

@@ -845,7 +845,6 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4389184120735010762">Pritisnuli ste tipkovni prečac za usidreno povećalo. Želite li ga uključiti?</translation>
 <translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Spremanje zaslonske prezentacije nije uspjelo</translation>
-<translation id="4403371424034411727">Uređaj <ph name="PERIPHERAL_NAME" /> povezan je i spreman za upotrebu. Miš možete prilagoditi u postavkama.</translation>
 <translation id="4405151984121254935">Povezani periferni uređaj nije podržan</translation>
 <translation id="4406883609789734330">Automatski titlovi</translation>
 <translation id="4412944820643904175">Značajka <ph name="FEATURE_NAME" /> je isključena.</translation>
@@ -1316,7 +1315,6 @@ Neke su značajke ograničene i mogu produljiti trajanje baterije.</translation>
 <translation id="6199775032047436064">Ponovno učitaj trenutačnu stranicu</translation>
 <translation id="6200515304866777730">Nije podržano u aplikaciji</translation>
 <translation id="6210042900243040400">Povežite uređaj <ph name="NAME" /> koji je prethodno spremljen na e-adresu <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Prilagodite svoj <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Izrada djelomične snimke zaslona ili snimanje zaslona</translation>
 <translation id="6220928844947387476">Sad možete snimiti sebe i zaslon istovremeno.</translation>
 <translation id="622484624075952240">Dolje</translation>
@@ -1956,7 +1954,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="888982883502837004">Za vaš uređaj dostupna su ažuriranja opreme. Kliknite radi pregleda i ažuriranja.</translation>
 <translation id="8896630965521842259">Predložak <ph name="DESK_TEMPLATE_NAME" /> trajno će se izbrisati</translation>
 <translation id="889790758758811533">Preostalo baterije: <ph name="PERCENTAGE" />% (oko <ph name="TIME_LEFT" />). Priključite uređaj na napajanje.</translation>
-<translation id="8897940060812808966">Uređaj <ph name="PERIPHERAL_NAME" /> povezan je i spreman za upotrebu. Grafički tablet možete prilagoditi u postavkama.</translation>
 <translation id="88986195241502842">Stranica prema dolje</translation>
 <translation id="8905919797434099235">(Bez naslova)</translation>
 <translation id="890616557918890486">Promijeni izvor</translation>

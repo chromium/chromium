@@ -3909,6 +3909,7 @@
 <translation id="3957844511978444971">‏انقر على "قبول" لتأكيد اختيارك لهذه الإعدادات في خدمات Google.</translation>
 <translation id="3958088479270651626">استيراد الإشارات المرجعية والإعدادات</translation>
 <translation id="3958110062351175311">مسموح للإضافة بعرض الطلبات في شريط الأدوات</translation>
+<translation id="3958821725268247062">سبق أن تم تثبيت "<ph name="APP_NAME" />"</translation>
 <translation id="3959747296451923142">تأكيد إزالة الاشتراك</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">مزيد من الإجراءات لـ "<ph name="IBAN_DESCRIPTION" />"</translation>
@@ -6538,6 +6539,7 @@
 <translation id="6065289257230303064">سمات دليل صاحب الشهادة</translation>
 <translation id="6066794465984119824">لم يتم إعداد تجزئة الصورة.</translation>
 <translation id="6069464830445383022">‏تسجيل الدخول إلى Chromebook من خلال حسابك على Google</translation>
+<translation id="6069500411969514374">عمل</translation>
 <translation id="6071181508177083058">تأكيد كلمة المرور</translation>
 <translation id="6071576563962215370">تعذَّر على النظام إنشاء قفل سمات وقت تثبيت الجهاز.</translation>
 <translation id="6071938745001252305">تم حفظ <ph name="MEMORY_VALUE" /> من الذاكرة</translation>
@@ -7528,7 +7530,6 @@
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6832218595502288407">محاذاة إلى اليسار</translation>
 <translation id="6833479554815567477">تمت إزالة علامة التبويب من المجموعة <ph name="GROUP_NAME" /> والتي تحتوي على <ph name="GROUP_CONTENTS" />.</translation>
-<translation id="6833996806551876956">‏الفترة التجريبية لاستخدام ميزة Privacy Sandbox</translation>
 <translation id="6835762382653651563">يُرجى الاتصال بالإنترنت لتحديث <ph name="DEVICE_TYPE" />.</translation>
 <translation id="683630338945552556">‏استخدام كلمات المرور من حسابك على Google وحفظها</translation>
 <translation id="6839225236531462745">خطأ حذف الشهادة</translation>
@@ -10019,6 +10020,7 @@
 <translation id="8750155211039279868">يجب ربط <ph name="ORIGIN" /> بمنفذ تسلسلي</translation>
 <translation id="8750346984209549530">‏نقطة وصول APN لشبكة الجوّال</translation>
 <translation id="8750786237117206586">‏إدارة إعدادات الصوت على ChromeOS Flex</translation>
+<translation id="8751034568832412184">مؤسسة تعليمية</translation>
 <translation id="8752451679755290210">التنقُّل بين العناصر تلقائيًا</translation>
 <translation id="8753948258138515839">‏يتيح تطبيق "الملفات" وصولاً سريعًا إلى الملفات التي تم حفظها على Google Drive أو وحدة التخزين الخارجية أو الجهاز الذي يعمل بنظام التشغيل ChromeOS Flex.</translation>
 <translation id="8754200782896249056">‏&lt;p&gt;عند تشغيل <ph name="PRODUCT_NAME" /> من خلال بيئة معتمدة لسطح المكتب، سيتم استخدام إعدادات الخادم الوكيل للنظام. ومع ذلك، يحتمل إما أن يكون نظامك غير مدعم أو أنه ربما حدثت مشكلة أثناء تشغيل إعداد نظامك.&lt;/p&gt;

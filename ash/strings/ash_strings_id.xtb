@@ -845,7 +845,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4389184120735010762">Anda menekan pintasan keyboard untuk kaca pembesar tersemat. Ingin mengaktifkannya?</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Tidak dapat menyimpan screencast</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> terhubung dan siap digunakan. Anda dapat menyesuaikan mouse di Setelan.</translation>
 <translation id="4405151984121254935">Jenis periferal yang terhubung tidak didukung</translation>
 <translation id="4406883609789734330">Teks Otomatis</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> nonaktif.</translation>
@@ -1316,7 +1315,6 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="6199775032047436064">Muat ulang halaman aktif</translation>
 <translation id="6200515304866777730">Tidak didukung oleh aplikasi</translation>
 <translation id="6210042900243040400">Hubungkan <ph name="NAME" /> yang sebelumnya disimpan ke <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Sesuaikan <ph name="PERIPHERAL_NAME" /> Anda</translation>
 <translation id="6213808132343683860">Ambil screenshot atau rekaman layar sebagian</translation>
 <translation id="6220928844947387476">Anda kini dapat merekam diri Anda dan layar secara bersamaan</translation>
 <translation id="622484624075952240">Bawah</translation>
@@ -1956,7 +1954,6 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="888982883502837004">Update firmware tersedia untuk perangkat Anda. Klik untuk meninjau dan mengupdate.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> akan dihapus secara permanen</translation>
 <translation id="889790758758811533">Daya baterai tersisa <ph name="PERCENTAGE" />% (sekitar <ph name="TIME_LEFT" />). Hubungkan perangkat ke sumber listrik.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> terhubung dan siap digunakan. Anda dapat menyesuaikan tablet grafis di Setelan.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(Tanpa judul)</translation>
 <translation id="890616557918890486">Ubah sumber</translation>

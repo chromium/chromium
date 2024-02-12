@@ -845,7 +845,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="439598569299422042">Onderbroken, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Kan screencast niet opslaan</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> is verbonden en klaar voor gebruik. Je kunt je muis aanpassen in Instellingen.</translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
@@ -1316,7 +1315,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="6199775032047436064">De huidige pagina opnieuw laden</translation>
 <translation id="6200515304866777730">Niet ondersteund door app</translation>
 <translation id="6210042900243040400">Verbinding maken met <ph name="NAME" /> (eerder opgeslagen in <ph name="EMAIL" />)</translation>
-<translation id="6212097153736801627">Je <ph name="PERIPHERAL_NAME" /> aanpassen</translation>
 <translation id="6213808132343683860">Gedeeltelijk screenshot of schermopname maken</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
@@ -1956,7 +1954,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="888982883502837004">Firmware-updates zijn beschikbaar voor je apparaat. Klik om te bekijken en te updaten.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> wordt definitief verwijderd</translation>
 <translation id="889790758758811533">Nog <ph name="PERCENTAGE" />% batterijlading (ongeveer <ph name="TIME_LEFT" />). Sluit je apparaat aan op een voeding.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> is verbonden en klaar voor gebruik. Je kunt je grafische tablet aanpassen in Instellingen.</translation>
 <translation id="88986195241502842">Page Down</translation>
 <translation id="8905919797434099235">(Geen titel)</translation>
 <translation id="890616557918890486">Bron wijzigen</translation>

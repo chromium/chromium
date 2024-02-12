@@ -3904,6 +3904,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="3957844511978444971">Bu Google hizmetleri ayarlarına ait seçiminizi onaylamak için "Kabul et" seçeneğine dokunun.</translation>
 <translation id="3958088479270651626">Yer işaretlerini ve ayarları içe aktar</translation>
 <translation id="3958110062351175311">Araç çubuğunda istek göstermesine izin verilen siteler</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> zaten yüklü</translation>
 <translation id="3959747296451923142">Aboneliğin kaldırılmasını onayla</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> ile ilgili diğer işlemler</translation>
@@ -6534,6 +6535,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6065289257230303064">Sertifika Konusu Dizin Öznitelikleri</translation>
 <translation id="6066794465984119824">Görüntü karması ayarlanmamış</translation>
 <translation id="6069464830445383022">Google Hesabınızla Chromebook'unuzda oturum açarsınız</translation>
+<translation id="6069500411969514374">İş</translation>
 <translation id="6071181508177083058">şifreyi onaylayın</translation>
 <translation id="6071576563962215370">Sistem, cihaz yükleme zamanı özellikleri kilidini oluşturamadı.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> bellek tasarruf edildi</translation>
@@ -7516,7 +7518,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6832218595502288407">Sola hizala</translation>
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Özel Korumalı Alan denemesi</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
 <translation id="683630338945552556">Google Hesabınızdaki şifreleri kullanma ve kaydetme</translation>
 <translation id="6839225236531462745">Sertifika Silme Hatası</translation>
@@ -10005,6 +10006,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8750155211039279868"><ph name="ORIGIN" /> bir seri bağlantı noktasına bağlanmak istiyor</translation>
 <translation id="8750346984209549530">Hücresel APN</translation>
 <translation id="8750786237117206586">ChromeOS Flex ses ayarlarını yönetme</translation>
+<translation id="8751034568832412184">Okul</translation>
 <translation id="8752451679755290210">Öğeler arasında otomatik olarak gezinin</translation>
 <translation id="8753948258138515839">Files uygulaması; Google Drive'a, harici depolama birimine veya ChromeOS Flex cihazınıza kaydettiğiniz dosyalara hızlı bir şekilde erişebilmenizi sağlar.</translation>
 <translation id="8754200782896249056">&lt;p&gt;<ph name="PRODUCT_NAME" />, desteklenen bir masaüstü ortamında çalışırken sistem proxy ayarları kullanılır. Ancak, ya sisteminiz desteklenmiyor ya da sistem yapılandırmanız başlatılırken bir hata oluştu.&lt;/p&gt;

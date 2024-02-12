@@ -845,7 +845,6 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="4389184120735010762">Ucindezele isinqamuleli sekhibhodi sesikhulisi esidokhiwe. Uyafuna ukusivula?</translation>
 <translation id="439598569299422042">Kuphunyuziwe, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ayikwazi ukulondoloza i-screencast</translation>
-<translation id="4403371424034411727">I-<ph name="PERIPHERAL_NAME" /> ixhunyiwe futhi ilungele ukusetshenziswa. Ungahlela ngendlela oyithandayo i-mouse yakho Kumasethingi.</translation>
 <translation id="4405151984121254935">Uhlobo lwe-peripheral oluxhunyiwe alusekelwa</translation>
 <translation id="4406883609789734330">Okushuthwe Bukhoma</translation>
 <translation id="4412944820643904175">I-<ph name="FEATURE_NAME" /> ivaliwe.</translation>
@@ -1316,7 +1315,6 @@ Ezinye izakhi zikhawulelwe ukuze kwandiswe impilo yebhethri.</translation>
 <translation id="6199775032047436064">Phinda ulayishe ikhasi lamanje</translation>
 <translation id="6200515304866777730">Akusekelwa i-app</translation>
 <translation id="6210042900243040400">Xhuma i-<ph name="NAME" /> elondolozwe ngokwedlule ku-<ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Yenza ngokwezifiso i-<ph name="PERIPHERAL_NAME" /> yakho</translation>
 <translation id="6213808132343683860">Thatha isithombe-skrini esiyingxenye noma ukurekhoda kwesikrini</translation>
 <translation id="6220928844947387476">Manje usungakwazi ukuzirekhoda wena nesikrini sakho ngesikhathi esifanayo</translation>
 <translation id="622484624075952240">Phansi</translation>
@@ -1956,7 +1954,6 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="888982883502837004">Izibuyekezo ze-firmware ziyatholakala kudivayisi yakho. Chofoza ukuze ubuyekeze futhi uvuselele.</translation>
 <translation id="8896630965521842259">I-<ph name="DESK_TEMPLATE_NAME" /> izosuswa unomphela</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% yebhethri esele (cishe u-<ph name="TIME_LEFT" />). Xhuma idivayisi yakho emandleni.</translation>
-<translation id="8897940060812808966">I-<ph name="PERIPHERAL_NAME" /> ixhunyiwe futhi ilungele ukusetshenziswa. Ungahlela ngendlela oyithandayo ukubukeka kwethebulethi Kumasethingi.</translation>
 <translation id="88986195241502842">Pheyija uye phansi</translation>
 <translation id="8905919797434099235">(Asikho isihloko)</translation>
 <translation id="890616557918890486">Guqula umthombo</translation>

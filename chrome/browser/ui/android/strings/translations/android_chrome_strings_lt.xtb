@@ -204,6 +204,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2132122640199389833">Pašalinti visus susietus įrenginius</translation>
 <translation id="213279576345780926">„<ph name="TAB_TITLE" />“ uždaryta</translation>
 <translation id="2139186145475833000">Pridėti prie pagr. ekrano</translation>
+<translation id="2139414603196655536">Jūsų veikla puslapio įžvalgose išsaugoma „Google“ paskyroje. <ph name="BEGIN_LINK" />Sužinokite, kaip tai tvarkyti<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Pagal jūsų naudojimą</translation>
 <translation id="2149973817440762519">Redaguoti žymes</translation>
 <translation id="2155214902713132423">Šis patvirtinimo metodas šiame įrenginyje nepasiekiamas. Pasirinkite kitą parinktį kitame įrenginyje.</translation>
@@ -379,7 +380,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3027644380269727216">Pagrįsta jūsų veikla svetainėje. Šis nustatymas įjungtas.</translation>
 <translation id="3029276696788198026">Neįkelti iš anksto</translation>
 <translation id="3029704984691124060">Slaptafrazės neatitinka</translation>
-<translation id="303514781271618814">„Chrome“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų duomenų</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Gaukite pagalbos<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Kaina stebima</translation>
 <translation id="3037517125981011456">Rodomi raginimai prisijungti prie „Chrome“.</translation>
@@ -1082,6 +1082,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="670498945988402717">Tikrinta vakar</translation>
 <translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> laikmatis sustojo. Jis vėl bus paleistas rytoj.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Žymė išsaugota aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}one{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}few{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}many{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}other{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“. Tai išsaugoma tik šiame įrenginyje.}}</translation>
 <translation id="6715020873764921614">Ar vis tiek norite atsisiųsti „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Prijungti naudojant QR kodą?</translation>
 <translation id="6723740634201835758">„Google“ paskyroje</translation>
@@ -1106,7 +1107,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6828070228333235514">Stabdyti kainos stebėjimą</translation>
 <translation id="6830728435402077660">Nesaugu</translation>
 <translation id="6831043979455480757">Vertėjas</translation>
-<translation id="6833996806551876956">„Privacy Sandbox“ bandomasis laikotarpis</translation>
 <translation id="6836206421467243968">Atkurkite skirtukų grupę „<ph name="TITLE_OF_GROUP" />“ kaip naują foninę skirtukų grupę.</translation>
 <translation id="6846298663435243399">Įkeliama…</translation>
 <translation id="6850409657436465440">Atsisiuntimas vis dar vykdomas</translation>
@@ -1403,6 +1403,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8237871086242677046">Puslapio įžvalgų apatinis lapas</translation>
 <translation id="8243077599929149377">Naudotojo vardo pridėjimas</translation>
 <translation id="8250920743982581267">Dokumentai</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Žymė išsaugota aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}one{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}few{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}many{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}other{Žymės išsaugotos aplanke „<ph name="FOLDER_NAME" />“ jūsų paskyroje (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">Svetainės slapukai gali būti naudojami tik siekiant peržiūrėti naršymo veiklą toje svetainėje.</translation>
 <translation id="8259179246279078674">Kadangi iš anksto įkelti puslapiai yra šifruojami, „Google“ nežinos nieko apie iš anksto įkelto puslapio turinį. „Google“ serveriai žinos, kurios svetainės yra privačiai iš anksto įkeltos. Ši informacija naudojama tik puslapiams iš anksto įkelti ir nėra susieta su kita informacija iš jūsų „Google“ paskyros.</translation>
 <translation id="8260126382462817229">Bandykite prisijungti dar kartą</translation>

@@ -3905,6 +3905,7 @@
 <translation id="3957844511978444971">輕觸「接受」即表示您確認所選的這些 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3958110062351175311">已允許在工具列中顯示要求</translation>
+<translation id="3958821725268247062">你已經安裝過「<ph name="APP_NAME" />」了</translation>
 <translation id="3959747296451923142">確認移除訂閱</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可對<ph name="IBAN_DESCRIPTION" /> 執行的其他動作</translation>
@@ -6530,6 +6531,7 @@
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
 <translation id="6066794465984119824">未設定映像檔雜湊</translation>
 <translation id="6069464830445383022">你的 Google 帳戶就是你用來登入 Chromebook 的帳戶</translation>
+<translation id="6069500411969514374">公司</translation>
 <translation id="6071181508177083058">確認密碼</translation>
 <translation id="6071576563962215370">系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="6071938745001252305">已節省 <ph name="MEMORY_VALUE" /> 的記憶體</translation>
@@ -7512,7 +7514,6 @@
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6832218595502288407">靠左對齊</translation>
 <translation id="6833479554815567477">分頁已從包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組中移除</translation>
-<translation id="6833996806551876956">Privacy Sandbox 試用期</translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="683630338945552556">將密碼儲存到 Google 帳戶並自動填入</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
@@ -10002,6 +10003,7 @@
 <translation id="8750155211039279868"><ph name="ORIGIN" /> 要求與序列埠連線</translation>
 <translation id="8750346984209549530">行動數據 APN</translation>
 <translation id="8750786237117206586">管理 ChromeOS Flex 音訊設定</translation>
+<translation id="8751034568832412184">學校</translation>
 <translation id="8752451679755290210">自動在項目之間移動</translation>
 <translation id="8753948258138515839">「檔案」應用程式可以讓你快速存取自己存放在 Google 雲端硬碟、外部儲存空間或 ChromeOS Flex 裝置中的檔案。</translation>
 <translation id="8754200782896249056">&lt;p&gt;在受支援的桌面環境下執行「<ph name="PRODUCT_NAME" />」時，瀏覽器會使用系統的 Proxy 設定。不過，您的系統可能不受支援，或在啟動系統設定時發生問題。&lt;/p&gt;

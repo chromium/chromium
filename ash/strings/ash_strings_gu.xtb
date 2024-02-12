@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">તમે ડૉક કરેલ મૅગ્નિફાયર માટે કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="439598569299422042">ડાઉનલોડ થોભાવ્યું, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">સ્ક્રીનકાસ્ટ સાચવી શકાયું નથી</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> કનેક્ટેડ છે અને ઉપયોગ કરવા માટે તૈયાર છે. તમે સેટિંગમાં જઈને તમારા માઉસને કસ્ટમાઇઝ કરી શકો છો.</translation>
 <translation id="4405151984121254935">કનેક્ટ કરવામાં આવેલા પેરિફેરલ પ્રકારને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4406883609789734330">લાઇવ કૅપ્શન</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> બંધ છે.</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">ચાલુ પૃષ્ઠ ફરીથી લોડ કરો </translation>
 <translation id="6200515304866777730">ઍપ દ્વારા સપોર્ટ કરવામાં આવતી નથી</translation>
 <translation id="6210042900243040400">અગાઉ <ph name="EMAIL" /> પર સાચવેલા <ph name="NAME" />ને કનેક્ટ કરો</translation>
-<translation id="6212097153736801627">તમારા <ph name="PERIPHERAL_NAME" />ને કસ્ટમાઇઝ કરો</translation>
 <translation id="6213808132343683860">આંશિક સ્ક્રીનશૉટ અથવા આંશિક સ્ક્રીન રેકોર્ડિંગ લો</translation>
 <translation id="6220928844947387476">હવે તમે તમારું અને તમારી સ્ક્રીનનું રેકોર્ડિંગ એક સાથે કરી શકો છો</translation>
 <translation id="622484624075952240">Down</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">તમારા ડિવાઇસ માટે ફર્મવેયર અપડેટ ઉપલબ્ધ છે. રિવ્યૂ અને અપડેટ કરવા માટે ક્લિક કરો.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" />ને કાયમ માટે ડિલીટ કરવામાં આવશે</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% બૅટરી બાકી છે (લગભગ <ph name="TIME_LEFT" />). તમારા ડિવાઇસને પાવર સૉર્સ સાથે કનેક્ટ કરો.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> કનેક્ટેડ છે અને ઉપયોગ કરવા માટે તૈયાર છે. તમે સેટિંગમાં જઈને તમારા ગ્રાફિક ટૅબ્લેટને કસ્ટમાઇઝ કરી શકો છો.</translation>
 <translation id="88986195241502842">Page Down</translation>
 <translation id="8905919797434099235">(કોઈ શીર્ષક નથી)</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>

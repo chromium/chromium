@@ -846,7 +846,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4389184120735010762">Lupa ainguratuaren lasterbidea sakatu duzu. Aktibatu egin nahi duzu?</translation>
 <translation id="439598569299422042">Pausatuta, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ezin da gorde pantaila-bideoa</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> konektatuta dago, eta erabiltzeko prest. Sagua pertsonalizatzeko, joan ezarpenetara.</translation>
 <translation id="4405151984121254935">Ez da onartzen konektatutako gailu periferiko mota</translation>
 <translation id="4406883609789734330">Istanteko azpitituluak</translation>
 <translation id="4412944820643904175">Desaktibatuta dago <ph name="FEATURE_NAME" />.</translation>
@@ -1317,7 +1316,6 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="6199775032047436064">Kargatu berriro oraingo orria</translation>
 <translation id="6200515304866777730">Aplikazioak ez du onartzen</translation>
 <translation id="6210042900243040400">Konektatu <ph name="EMAIL" /> helbidean gordeta zegoen gailu hau: <ph name="NAME" /></translation>
-<translation id="6212097153736801627">Pertsonalizatu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Egin zati baten pantaila-argazki edo -grabaketa bat</translation>
 <translation id="6220928844947387476">Zeure burua eta pantaila aldi berean graba ditzakezu orain</translation>
 <translation id="622484624075952240">Behera</translation>
@@ -1957,7 +1955,6 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="888982883502837004">Firmware-eguneratze batzuk erabilgarri daude gailurako. Sakatu hau eguneratzeak berrikusi eta instalatzeko.</translation>
 <translation id="8896630965521842259">Betiko ezabatuko da "<ph name="DESK_TEMPLATE_NAME" />".</translation>
 <translation id="889790758758811533">Bateriari % <ph name="PERCENTAGE" /> geratzen zaio (<ph name="TIME_LEFT" /> inguru). Konektatu gailua korrontera.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> konektatuta dago, eta erabiltzeko prest. Tableta grafikoa pertsonalizatzeko, joan ezarpenetara.</translation>
 <translation id="88986195241502842">Orrian behera</translation>
 <translation id="8905919797434099235">(Izengabea)</translation>
 <translation id="890616557918890486">Aldatu iturburua</translation>

@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">Πατήσατε τη συντόμευση πληκτρολογίου για τον μεγεθυντικό φακό σε παράθυρο. Θέλετε να τον ενεργοποιήσετε;</translation>
 <translation id="439598569299422042">Σε παύση, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Δεν είναι δυνατή η αποθήκευση της ψηφιακής εγγραφής οθόνης</translation>
-<translation id="4403371424034411727">Η συσκευή <ph name="PERIPHERAL_NAME" /> συνδέθηκε και είναι έτοιμη για χρήση. Μπορείτε να προσαρμόσετε το ποντίκι στις Ρυθμίσεις.</translation>
 <translation id="4405151984121254935">Δεν υποστηρίζεται ο συνδεδεμένος τύπος περιφερειακού.</translation>
 <translation id="4406883609789734330">Ζωντανοί υπότιτλοι</translation>
 <translation id="4412944820643904175">Η λειτουργία <ph name="FEATURE_NAME" /> είναι απενεργοποιημένη.</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">Επανάληψη φόρτωσης τρέχουσας σελίδας</translation>
 <translation id="6200515304866777730">Δεν υποστηρίζεται από την εφαρμογή</translation>
 <translation id="6210042900243040400">Σύνδεση της συσκευής <ph name="NAME" /> που είχε αποθηκευτεί στη διεύθυνση <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Προσαρμόστε τη συσκευή <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Λήψη μερικού στιγμιότυπου οθόνης ή μερικής εγγραφής οθόνης</translation>
 <translation id="6220928844947387476">Μπορείτε πλέον να κάνετε ταυτόχρονη εγγραφή του εαυτού σας και της οθόνης σας.</translation>
 <translation id="622484624075952240">Κάτω</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">Διατίθενται ενημερώσεις υλικολογισμικού για τη συσκευή σας. Κάντε κλικ για έλεγχο και ενημέρωση.</translation>
 <translation id="8896630965521842259">Το <ph name="DESK_TEMPLATE_NAME" /> θα διαγραφεί οριστικά.</translation>
 <translation id="889790758758811533">Απομένει <ph name="PERCENTAGE" />% μπαταρία (περίπου <ph name="TIME_LEFT" />). Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
-<translation id="8897940060812808966">Η συσκευή <ph name="PERIPHERAL_NAME" /> συνδέθηκε και είναι έτοιμη για χρήση. Μπορείτε να προσαρμόσετε το tablet σχεδίασης στις Ρυθμίσεις.</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(Χωρίς τίτλο)</translation>
 <translation id="890616557918890486">Αλλαγή πηγής</translation>

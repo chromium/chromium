@@ -246,6 +246,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1428729058023778569">Matote šį įspėjimą, nes ši svetainė nepalaiko HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Lipni juosta</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
+<translation id="1431021750861456539">Automatinis viso ekrano režimas</translation>
 <translation id="1432187715652018471">puslapis prašo leidimo įdiegti paslaugos doroklę.</translation>
 <translation id="1432581352905426595">Tvarkyti paieškos sistemas</translation>
 <translation id="1433225466058025572">Pabandykite dar kartą perkelti failus</translation>
@@ -2286,6 +2287,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
     <ph name="LINE_BREAK" />
     Pabandykite susisiekti su sistemos administratoriumi.</translation>
 <translation id="549333378215107354">Dydis: 3</translation>
+<translation id="5501712702042287009">automatinis viso ekrano režimas</translation>
 <translation id="550365051221576010">Užpildyti visus laukus</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Tvarkomos žymės</translation>

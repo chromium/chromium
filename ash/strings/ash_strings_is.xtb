@@ -845,7 +845,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4389184120735010762">Þú ýttir á flýtilykilinn fyrir stækkunargler í föstum glugga. Viltu kveikja á því?</translation>
 <translation id="439598569299422042">Í bið, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Ekki tókst að vista skjáupptöku</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> er tengt og tilbúið til notkunar. Þú getur sérsniðið músina þína í stillingum.</translation>
 <translation id="4405151984121254935">Gerð tengda jaðartækisins er ekki studd</translation>
 <translation id="4406883609789734330">Skjátextar í rauntíma</translation>
 <translation id="4412944820643904175">Slökkt er á <ph name="FEATURE_NAME" />.</translation>
@@ -1316,7 +1315,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="6199775032047436064">Endurhlaða þessa síðu</translation>
 <translation id="6200515304866777730">Ekki stutt af forriti</translation>
 <translation id="6210042900243040400">Tengdu <ph name="NAME" />, sem áður var vistað á <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Sérsníddu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Taka skjámynd eða skjáupptöku af hluta skjás</translation>
 <translation id="6220928844947387476">Nú geturðu tekið þig og skjáinn upp á sama tíma</translation>
 <translation id="622484624075952240">Niður</translation>
@@ -1956,7 +1954,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="888982883502837004">Fastbúnaðaruppfærslur eru tiltækar fyrir tækið þitt. Smelltu til að skoða og uppfæra.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> verður eytt varanlega</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% eftir af rafhlöðu (u.þ.b. <ph name="TIME_LEFT" />). Tengdu tækið við rafmagn til að hlaða.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> er tengt og tilbúið til notkunar. Þú getur sérsniðið teikniborðið þitt í stillingum.</translation>
 <translation id="88986195241502842">Niður um síðu</translation>
 <translation id="8905919797434099235">(Ekkert heiti)</translation>
 <translation id="890616557918890486">Breyta uppruna</translation>

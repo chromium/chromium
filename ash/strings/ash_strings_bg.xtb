@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">Използвахте клавишната комбинация за лупата в прикрепен режим. Искате ли да включите функцията?</translation>
 <translation id="439598569299422042">На пауза, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Скрийнкастът не може да се запази</translation>
-<translation id="4403371424034411727">Устройството <ph name="PERIPHERAL_NAME" /> е свързано и готово за употреба. Можете да персонализирате мишката си от настройките.</translation>
 <translation id="4405151984121254935">Типът на свързаното периферно устройство не се поддържа</translation>
 <translation id="4406883609789734330">Надписи на живо</translation>
 <translation id="4412944820643904175">„<ph name="FEATURE_NAME" />“ е изключено.</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">Презареждане на текущата страница</translation>
 <translation id="6200515304866777730">Не се поддържа от приложението</translation>
 <translation id="6210042900243040400">Свържете устройството <ph name="NAME" />, запазено преди това в(ъв) <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Персонализиране на устройството ви <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Създаване на частична екранна снимка или записване на част от екрана</translation>
 <translation id="6220928844947387476">Вече можете да записвате себе си и екрана си едновременно</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">За устройството ви са налице актуализации на фърмуера. Кликнете, за да прегледате и актуализирате.</translation>
 <translation id="8896630965521842259">Шаблонът „<ph name="DESK_TEMPLATE_NAME" />“ ще бъде изтрит за постоянно</translation>
 <translation id="889790758758811533">Оставащият заряд на батерията е <ph name="PERCENTAGE" />% (около <ph name="TIME_LEFT" />). Включете устройството си в захранването.</translation>
-<translation id="8897940060812808966">Устройството <ph name="PERIPHERAL_NAME" /> е свързано и готово за употреба. Можете да персонализирате графичния си таблет от настройките.</translation>
 <translation id="88986195241502842">Страница надолу</translation>
 <translation id="8905919797434099235">(Без заглавие)</translation>
 <translation id="890616557918890486">Промяна на източника</translation>

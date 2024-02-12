@@ -844,7 +844,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4389184120735010762">Vous avez appuyé sur le raccourci-clavier de loupe en mode ancré. Voulez-vous l'activer?</translation>
 <translation id="439598569299422042">Téléchargement interrompu, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Impossible d'enregistrer la vidéocapture d'écran</translation>
-<translation id="4403371424034411727">La <ph name="PERIPHERAL_NAME" /> est connectée et prête à être utilisée. Vous pouvez personnaliser votre souris dans les paramètres.</translation>
 <translation id="4405151984121254935">Le périphérique connecté n'est pas pris en charge</translation>
 <translation id="4406883609789734330">Sous-titres instantanés</translation>
 <translation id="4412944820643904175">La fonctionnalité <ph name="FEATURE_NAME" /> est désactivée.</translation>
@@ -1315,7 +1314,6 @@ Certaines fonctionnalités sont limitées pour augmenter l'autonomie de la pile.
 <translation id="6199775032047436064">Actualiser la page actuelle</translation>
 <translation id="6200515304866777730">Non pris en charge par l'application</translation>
 <translation id="6210042900243040400">Connectez <ph name="NAME" /> précédemment enregistré dans <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personnaliser votre <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Prendre une capture d'écran partielle ou un enregistrement d'écran</translation>
 <translation id="6220928844947387476">Vous pouvez maintenant vous enregistrer en même temps que votre écran</translation>
 <translation id="622484624075952240">Bas</translation>
@@ -1954,7 +1952,6 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="888982883502837004">Des mises à jour du micrologiciel sont disponibles pour votre appareil. Cliquez pour les passer en revue et lancer la mise à jour.</translation>
 <translation id="8896630965521842259">Le modèle <ph name="DESK_TEMPLATE_NAME" /> sera définitivement supprimé</translation>
 <translation id="889790758758811533">Il reste <ph name="PERCENTAGE" /> % de pile (environ <ph name="TIME_LEFT" />). Branchez votre appareil à une source d'alimentation.</translation>
-<translation id="8897940060812808966">La <ph name="PERIPHERAL_NAME" /> est connectée et prête à être utilisée. Vous pouvez personnaliser votre tablette graphique dans les paramètres.</translation>
 <translation id="88986195241502842">Page suivante</translation>
 <translation id="8905919797434099235">(Sans titre)</translation>
 <translation id="890616557918890486">Changer de source</translation>

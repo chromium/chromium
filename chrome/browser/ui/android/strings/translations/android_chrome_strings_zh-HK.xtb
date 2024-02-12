@@ -204,6 +204,7 @@
 <translation id="2132122640199389833">移除所有已連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="2139186145475833000">新增至主螢幕</translation>
+<translation id="2139414603196655536">你在「網頁深入分析」中的活動會儲存至 Google 帳戶。<ph name="BEGIN_LINK" />瞭解如何管理這項設定<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">根據使用情況</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2155214902713132423">此裝置不支援此驗證方法。請在另一部裝置上採用其他選項。</translation>
@@ -379,7 +380,6 @@
 <translation id="3027644380269727216">根據您在網站上的活動推薦。此設定已開啟。</translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">複雜密碼不符</translation>
-<translation id="303514781271618814">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
@@ -1082,6 +1082,7 @@
 <translation id="670498945988402717">曾在昨天檢查</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="671481426037969117">「<ph name="FQDN" />」計時器已結束計時，將於明天重新開始。</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{書籤已儲存到「<ph name="FOLDER_NAME" />」，且只會儲存在這部裝置上。}other{書籤已儲存到「<ph name="FOLDER_NAME" />」，且只會儲存在這部裝置上。}}</translation>
 <translation id="6715020873764921614">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="6719634564325948108">要使用 QR 碼連線嗎？</translation>
 <translation id="6723740634201835758">在您的 Google 帳戶中</translation>
@@ -1106,7 +1107,6 @@
 <translation id="6828070228333235514">停止追蹤價格</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻譯</translation>
-<translation id="6833996806551876956">私隱沙箱試用</translation>
 <translation id="6836206421467243968">還原分頁群組 <ph name="TITLE_OF_GROUP" /> 做新嘅背景分頁群組。</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">仍在下載</translation>
@@ -1403,6 +1403,7 @@
 <translation id="8237871086242677046">頁面分析資料頁底面板</translation>
 <translation id="8243077599929149377">新增你的使用者名稱</translation>
 <translation id="8250920743982581267">文件</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{書籤已儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的「<ph name="FOLDER_NAME" />」。}other{書籤已儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的「<ph name="FOLDER_NAME" />」。}}</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看您在該網站的瀏覽活動</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已加密，Google 不會得知預先載入網頁內容的相關資料。Google 伺服器會知道哪些網站已透過私密方式預先載入。此資料只用於預先載入網頁，不會與您 Google 帳戶的其他資料連結。</translation>
 <translation id="8260126382462817229">請嘗試再次登入</translation>

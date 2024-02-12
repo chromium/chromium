@@ -846,7 +846,6 @@
 <translation id="4389184120735010762">Ја притиснавте кратенката од тастатура за закотвената лупа. Дали сакате да ја вклучите?</translation>
 <translation id="439598569299422042">Паузирано, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не може да се зачува снимка на екран</translation>
-<translation id="4403371424034411727">Уредот <ph name="PERIPHERAL_NAME" /> е поврзан и подготвен за користење. Глувчето може да го приспособите во „Поставки“.</translation>
 <translation id="4405151984121254935">Поврзаниот вид периферен уред не е поддржан</translation>
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
@@ -1317,7 +1316,6 @@
 <translation id="6199775032047436064">Повторно вчитај ја тековната страница</translation>
 <translation id="6200515304866777730">Не е поддржано од апликацијата</translation>
 <translation id="6210042900243040400">Поврзете го уредот (<ph name="NAME" />) претходно зачуван на <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Приспособете го вашиот <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Снимете делумна слика од екранот или снимка од екранот</translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
 <translation id="622484624075952240">Долу</translation>
@@ -1957,7 +1955,6 @@
 <translation id="888982883502837004">Има ажурирања за фирмверот на уредот. Кликнете за да ги прегледате и да ажурирате.</translation>
 <translation id="8896630965521842259">Трајно ќе се избрише <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата (околу <ph name="TIME_LEFT" />). Приклучете го уредот во струја.</translation>
-<translation id="8897940060812808966">Уредот <ph name="PERIPHERAL_NAME" /> е поврзан и подготвен за користење. Таблетот за графика може да го приспособите во „Поставки“.</translation>
 <translation id="88986195241502842">Страница подолу</translation>
 <translation id="8905919797434099235">(Без наслов)</translation>
 <translation id="890616557918890486">Промени го изворот</translation>

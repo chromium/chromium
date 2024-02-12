@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">ଆପଣ ଡକ୍‍ ହୋ‍ଇଥିବା ମ୍ୟାଗ୍ନିଫାୟର୍‌ ପାଇଁ କୀବୋର୍ଡ ସର୍ଟକଟ୍‍ ଦବାଇଛନ୍ତି। ଆପଣ କ’ଣ ଏହାକୁ ଚାଲୁ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="439598569299422042">ବିରତ କରାଯାଇଛି, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ସ୍କ୍ରିନକାଷ୍ଟକୁ ସେଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> କନେକ୍ଟ ଅଛି ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି। ଆପଣ ସେଟିଂସରେ ଆପଣଙ୍କ ମାଉସକୁ କଷ୍ଟମାଇଜ କରିପାରିବେ।</translation>
 <translation id="4405151984121254935">ସଂଯୋଗ କରାଯାଇଥିବା ପେରିଫେରାଲର ପ୍ରକାର ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="4406883609789734330">ଲାଇଭ୍ କ୍ୟାପସନ୍</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">ବର୍ତ୍ତମାନର ପୃଷ୍ଠାକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ</translation>
 <translation id="6200515304866777730">ଆପ ଦ୍ଵାରା ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" />ରେ ପୂର୍ବରୁ ସେଭ କରାଯାଇଥିବା <ph name="NAME" /> ସହ କନେକ୍ଟ କରନ୍ତୁ</translation>
-<translation id="6212097153736801627">ଆପଣଙ୍କ <ph name="PERIPHERAL_NAME" />କୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="6213808132343683860">ଆଂଶିକ ସ୍କ୍ରିନସଟ ନିଅନ୍ତୁ କିମ୍ବା ସ୍କ୍ରିନ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="6220928844947387476">ଆପଣ ବର୍ତ୍ତମାନ ନିଜକୁ ଏବଂ ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ସମାନ ସମୟରେ ରେକର୍ଡ କରିପାରିବେ</translation>
 <translation id="622484624075952240">ଡାଉନ୍‍ କୀ</translation>
@@ -1955,7 +1953,6 @@
 <translation id="888982883502837004">ଆପଣଙ୍କ ଡିଭାଇସ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି। ସମୀକ୍ଷା କରି ଅପଡେଟ କରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି (ପ୍ରାୟ <ph name="TIME_LEFT" />)। ଆପଣଙ୍କ ଡିଭାଇସକୁ ପାୱାର ସହ କନେକ୍ଟ କରନ୍ତୁ।</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> କନେକ୍ଟ ଅଛି ଏବଂ ବ୍ୟବହାର କରିବା ପାଇଁ ପ୍ରସ୍ତୁତ ଅଛି। ଆପଣ ସେଟିଂସରେ ଆପଣଙ୍କ ଗ୍ରାଫିକ୍ସକୁ କଷ୍ଟମାଇଜ କରିପାରିବେ।</translation>
 <translation id="88986195241502842">ନିମ୍ନ ପୃଷ୍ଠା</translation>
 <translation id="8905919797434099235">(କୌଣସି ଟାଇଟେଲ ନାହିଁ)</translation>
 <translation id="890616557918890486">ଉତ୍ସ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>

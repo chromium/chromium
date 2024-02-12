@@ -845,7 +845,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4389184120735010762">Você pressionou o atalho de teclado para a lupa em área fixa. Gostaria de ativá-la?</translation>
 <translation id="439598569299422042">Pausado, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Falha ao salvar screencast</translation>
-<translation id="4403371424034411727">O <ph name="PERIPHERAL_NAME" /> está conectado e pronto para uso. Você pode personalizar o mouse nas configurações.</translation>
 <translation id="4405151984121254935">O tipo do periférico conectado não é compatível</translation>
 <translation id="4406883609789734330">Legenda instantânea</translation>
 <translation id="4412944820643904175">O recurso <ph name="FEATURE_NAME" /> está desativado.</translation>
@@ -1316,7 +1315,6 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="6199775032047436064">Recarregar página atual</translation>
 <translation id="6200515304866777730">O app não oferece suporte</translation>
 <translation id="6210042900243040400">Conectar o dispositivo <ph name="NAME" /> salvo anteriormente em <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personalize seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Fazer uma captura ou gravação de tela parcial</translation>
 <translation id="6220928844947387476">Agora é possível gravar você e a tela ao mesmo tempo</translation>
 <translation id="622484624075952240">Seta para baixo</translation>
@@ -1956,7 +1954,6 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="888982883502837004">Há atualizações de firmware disponíveis para seu dispositivo. Clique para revisar e atualizar.</translation>
 <translation id="8896630965521842259">O modelo <ph name="DESK_TEMPLATE_NAME" /> será excluído permanentemente</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% de bateria (cerca de <ph name="TIME_LEFT" />). Conecte o dispositivo a uma fonte de energia.</translation>
-<translation id="8897940060812808966">O <ph name="PERIPHERAL_NAME" /> está conectado e pronto para uso. Você pode personalizar sua mesa digitalizadora nas configurações.</translation>
 <translation id="88986195241502842">Página para baixo</translation>
 <translation id="8905919797434099235">(Sem título)</translation>
 <translation id="890616557918890486">Alterar origem</translation>

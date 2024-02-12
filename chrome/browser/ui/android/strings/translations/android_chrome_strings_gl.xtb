@@ -204,6 +204,7 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="2132122640199389833">Quitar todos os dispositivos vinculados</translation>
 <translation id="213279576345780926">Pechouse <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Engadir á pantalla inicio</translation>
+<translation id="2139414603196655536">A túa actividade de Estatísticas da páxina gárdase na túa Conta de Google. <ph name="BEGIN_LINK" />Máis información sobre como xestionar esta opción<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Segundo o uso que fas do navegador</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2155214902713132423">Este método de verificación non está dispoñible para este dispositivo. Escolle unha opción distinta no outro dispositivo.</translation>
@@ -379,7 +380,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="3027644380269727216">En función da túa actividade nun sitio. Esta opción de configuración está activada.</translation>
 <translation id="3029276696788198026">Sen precarga</translation>
 <translation id="3029704984691124060">Os contrasinais non coinciden</translation>
-<translation id="303514781271618814">Chrome está explorando novas funcións que lles permiten aos sitios ofrecer a mesma experiencia de navegación usando menos datos</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obter axuda<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3037517125981011456">Mostra solicitudes para iniciar sesión en Chrome</translation>
@@ -1081,6 +1081,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="670498945988402717">A comprobación realizouse onte</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">O temporizador de <ph name="FQDN" /> chegou ao final. Volverá comezar mañá.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{O marcador gardouse en <ph name="FOLDER_NAME" />. Só está gardado neste dispositivo.}other{Os marcadores gardáronse en <ph name="FOLDER_NAME" />. Só están gardados neste dispositivo.}}</translation>
 <translation id="6715020873764921614">Queres descargar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de todas as formas?</translation>
 <translation id="6719634564325948108">Queres conectarte cun código QR?</translation>
 <translation id="6723740634201835758">Na túa Conta de Google</translation>
@@ -1105,7 +1106,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6828070228333235514">Deter seguimento do prezo</translation>
 <translation id="6830728435402077660">Non seguro</translation>
 <translation id="6831043979455480757">Traducir</translation>
-<translation id="6833996806551876956">Proba de Privacy Sandbox</translation>
 <translation id="6836206421467243968">Restablecer grupo de pestanas <ph name="TITLE_OF_GROUP" /> como un novo grupo de pestanas en segundo plano.</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">A descarga aínda está en curso</translation>
@@ -1402,6 +1402,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8237871086242677046">Panel inferior de estatísticas da páxina</translation>
 <translation id="8243077599929149377">Engade un nome de usuario</translation>
 <translation id="8250920743982581267">Documentos</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{O marcador gardouse en <ph name="FOLDER_NAME" />, na túa conta (<ph name="ACCOUNT_EMAIL" />).}other{Os marcadores gardáronse en <ph name="FOLDER_NAME" />, na túa conta (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="8255617931166444521">Os distintos sitios só poden utilizar as túas cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio</translation>
 <translation id="8259179246279078674">Como as páxinas precargadas están encriptadas, Google non recibirá información sobre o seu contido. Os nosos servidores saberán que sitios se precargan de forma privada. Esta información só se utilizará para precargar as páxinas e non se vinculará a outros datos da túa Conta de Google.</translation>
 <translation id="8260126382462817229">Proba a volver iniciar sesión</translation>

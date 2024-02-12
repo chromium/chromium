@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">თქვენ დააჭირეთ ჩამაგრებული ლუპის კლავიატურის მალსახმობს. გსურთ მისი ჩართვა?</translation>
 <translation id="439598569299422042">დაპაუზებულია, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">სკრინკასტის შენახვა ვერ მოხერხდა</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> დაკავშირებულია და მზადაა გამოსაყენებლად. მაუსის მორგება შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="4405151984121254935">დაკავშირებული პერიფერიული მოწყობილობის ტიპი მხარდაუჭერელია</translation>
 <translation id="4406883609789734330">ავტოსუბტიტრები</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> გამორთულია.</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">მიმდინარე გვერდის ხელახლა ჩატვირთვა</translation>
 <translation id="6200515304866777730">მხარდაუჭერელია აპის მიერ</translation>
 <translation id="6210042900243040400">დააკავშირეთ <ph name="NAME" />, რომლებიც ადრე შენახული იყო <ph name="EMAIL" />-ში</translation>
-<translation id="6212097153736801627">მოირგეთ <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">ეკრანის ნაწილობრივი ანაბეჭდის გადაღება ან ეკრანის ჩაწერა</translation>
 <translation id="6220928844947387476">ახლა თქვენი თავის და ეკრანის ჩაწერა ერთდროულად შეგიძლიათ</translation>
 <translation id="622484624075952240">ქვემოთ</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">თქვენი მოწყობილობისთვის ხელმისაწვდომია ჩაშენებული პროგრამული უზრუნველყოფის განახლებები. დააწკაპუნეთ გადასახედად და გასაახლებლად.</translation>
 <translation id="8896630965521842259">„<ph name="DESK_TEMPLATE_NAME" />“ სამუდამოდ წაიშლება</translation>
 <translation id="889790758758811533">დარჩენილია ბატარეის <ph name="PERCENTAGE" />% (დაახლოებით <ph name="TIME_LEFT" />). მიაერთეთ თქვენი მოწყობილობა ელკვების წყაროს.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> დაკავშირებულია და მზადაა გამოსაყენებლად. გრაფიკული ტაბლეტის მორგება შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="88986195241502842">ერთი გვერდით ქვემოთ</translation>
 <translation id="8905919797434099235">(უსათაურო)</translation>
 <translation id="890616557918890486">წყაროს შეცვლა</translation>

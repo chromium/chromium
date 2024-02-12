@@ -845,7 +845,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4389184120735010762">Napindot mo ang keyboard shortcut para sa naka-dock na magnifier. Gusto mo ba itong i-on?</translation>
 <translation id="439598569299422042">Naka-pause, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Hindi ma-save ang screencast</translation>
-<translation id="4403371424034411727">Nakakonekta at handa nang magamit ang <ph name="PERIPHERAL_NAME" />. Puwede mong i-customize ang iyong mouse sa Mga Setting.</translation>
 <translation id="4405151984121254935">Hindi sinusuportahan ang nakakonektang uri ng peripheral</translation>
 <translation id="4406883609789734330">Instant Caption</translation>
 <translation id="4412944820643904175">Naka-off ang <ph name="FEATURE_NAME" />.</translation>
@@ -1316,7 +1315,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6199775032047436064">I-reload ang iyong kasalukuyang pahina</translation>
 <translation id="6200515304866777730">Hindi sinusuportahan ng app</translation>
 <translation id="6210042900243040400">Ikonekta ang <ph name="NAME" /> na dating na-save sa <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">I-customize ang iyong <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Kumuha ng hindi buong screenshot o recording ng screen</translation>
 <translation id="6220928844947387476">Puwede mo na ngayong sabay na i-record ang iyong sarili at ang screen mo</translation>
 <translation id="622484624075952240">Down</translation>
@@ -1954,7 +1952,6 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="888982883502837004">May mga available na update sa firmware para sa iyong device. I-click para suriin at i-update.</translation>
 <translation id="8896630965521842259">Permanenteng ide-delete ang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% na lang ang baterya (humigit-kumulang <ph name="TIME_LEFT" />). Isaksak ang iyong device.</translation>
-<translation id="8897940060812808966">Nakakonekta at handa nang magamit ang <ph name="PERIPHERAL_NAME" />. Puwede mong i-customize ang iyong graphics tablet sa Mga Setting.</translation>
 <translation id="88986195241502842">Pababa sa pahina</translation>
 <translation id="8905919797434099235">(Walang title)</translation>
 <translation id="890616557918890486">Baguhin ang source</translation>

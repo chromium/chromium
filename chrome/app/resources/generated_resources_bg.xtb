@@ -3918,6 +3918,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3957844511978444971">Докоснете „Приемам“, за да потвърдите избора си на съответните настройки за услугите на Google.</translation>
 <translation id="3958088479270651626">Импортиране на отметки и настройки</translation>
 <translation id="3958110062351175311">Има разрешение да показва заявки в лентата с инструменти</translation>
+<translation id="3958821725268247062">Приложението <ph name="APP_NAME" /> вече е инсталирано</translation>
 <translation id="3959747296451923142">Потвърждаване на премахването на абонамента</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Още действия за <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6549,6 +6550,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6065289257230303064">Атрибути за директорията на субекта на сертификата</translation>
 <translation id="6066794465984119824">Хеш стойността на изображението не е зададена</translation>
 <translation id="6069464830445383022">Влизате в Chromebook с профила си в Google</translation>
+<translation id="6069500411969514374">Служебен</translation>
 <translation id="6071181508177083058">потвърждаване на паролата</translation>
 <translation id="6071576563962215370">Системата не успя да заключи атрибутите за времето за инсталиране за устройството.</translation>
 <translation id="6071938745001252305">Икономисана памет: <ph name="MEMORY_VALUE" /></translation>
@@ -7531,7 +7533,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6832218595502288407">Подравняване вляво</translation>
 <translation id="6833479554815567477">Разделът бе премахнат от групата „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Пробен период за Privacy Sandbox</translation>
 <translation id="6835762382653651563">Моля, свържете се с интернет, за да актуализирате устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="683630338945552556">Използване и запазване на пароли в профила ви в Google</translation>
 <translation id="6839225236531462745">Грешка при изтриване на сертификат</translation>
@@ -10021,6 +10022,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8750155211039279868"><ph name="ORIGIN" /> иска да се свърже със сериен порт</translation>
 <translation id="8750346984209549530">Име на точката за достъп (APN) за мобилна мрежа</translation>
 <translation id="8750786237117206586">Управление на настройките за звука на ChromeOS Flex</translation>
+<translation id="8751034568832412184">Училище</translation>
 <translation id="8752451679755290210">Автоматично придвижване между елементите</translation>
 <translation id="8753948258138515839">Приложението „Файлове“ предоставя бърз достъп до файловете, които сте запазили в Google Диск, във външно хранилище или на устройството си с ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Когато изпълнявате <ph name="PRODUCT_NAME" /> в поддържана среда на компютър, ще се използват системните настройки за прокси сървър. Но системата ви или не се поддържа, или е възникнал проблем при стартирането на системната конфигурация.&lt;/p&gt;

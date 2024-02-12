@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Nakansela</translation>
 <translation id="1020274983236703756">Available na ngayon ang mga eksklusibong asset sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />." Pumindot ng bagong shortcut. Para palitan ang kasalukuyang shortcut, pindutin ulit ang shortcut na ito.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1049663189809099096">pastel yellow</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">Magpadala ng Ulat ng Feedback</translation>
 <translation id="2407209115954268704">Status ng Lock ng SIM</translation>
 <translation id="241419523391571119">Buksan ulit ang takip para subukan</translation>
+<translation id="2414660853550118611">Tungkol sa wallpaper</translation>
 <translation id="2414886740292270097">Madilim</translation>
 <translation id="2418150275289244458">Buksan sa mga setting</translation>
 <translation id="2421798028054665193">Larawan <ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Ginawa noong <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
 <translation id="6196607555925437199">Gawin ulit</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">I-on ang screen saver</translation>
 <translation id="6324916366299863871">I-edit ang shortcut</translation>
 <translation id="6325525973963619867">Nabigo</translation>
+<translation id="6327262166342360252">Ginawa ang wallpaper na ito sa pamamagitan ng AI gamit ang sumusunod na text: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Awtomatikong madilim na tema</translation>
 <translation id="6340526405444716530">Pag-personalize</translation>
 <translation id="6348738456043757611">Username at password</translation>

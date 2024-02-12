@@ -845,7 +845,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="4389184120735010762">Umebofya mikato ya kibodi ya kikuzaji kilichoambatishwa. Ungependa kukiwasha?</translation>
 <translation id="439598569299422042">Umesitishwa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Imeshindwa kuhifadhi kionyesha skrini</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> imeunganishwa na iko tayari kutumika. Unaweza kuweka mapendeleo ya kipanya chako katika Mipangilio.</translation>
 <translation id="4405151984121254935">Aina ya kifaa ulichounganisha haiwezi kutumika</translation>
 <translation id="4406883609789734330">Manukuu Papo Hapo</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> kimezimwa.</translation>
@@ -1316,7 +1315,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="6199775032047436064">Pakia upya ukurasa wa sasa</translation>
 <translation id="6200515304866777730">Haitumiki kwenye programu</translation>
 <translation id="6210042900243040400">Unganisha <ph name="NAME" /> zilizohifadhiwa hapo awali kwenye <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Weka mapendeleo ya <ph name="PERIPHERAL_NAME" /> yako</translation>
 <translation id="6213808132343683860">Piga picha ya skrini au rekodi sehemu ya skrini</translation>
 <translation id="6220928844947387476">Sasa unaweza kujirekodi wewe mwenyewe na skrini yako kwa wakati mmoja</translation>
 <translation id="622484624075952240">Chini</translation>
@@ -1957,7 +1955,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="888982883502837004">Masasisho ya programu dhibiti yanapatikana kwa kifaa chako. Bofya ili ukague na usasishe.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> itafutwa kabisa</translation>
 <translation id="889790758758811533">Zimesalia asilimia <ph name="PERCENTAGE" /> za chaji ya betri (takribani <ph name="TIME_LEFT" />). Chomeka kifaa chako kwenye umeme.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> imeunganishwa na iko tayari kutumika. Unaweza kuweka mapendeleo ya kishikwambi chako cha kuchorea katika Mipangilio.</translation>
 <translation id="88986195241502842">Ukurasa mmoja chini</translation>
 <translation id="8905919797434099235">(Hakuna mada)</translation>
 <translation id="890616557918890486">Badilisha chanzo</translation>

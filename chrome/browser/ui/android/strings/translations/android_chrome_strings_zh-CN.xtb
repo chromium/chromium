@@ -204,6 +204,7 @@
 <translation id="2132122640199389833">移除所有已关联的设备</translation>
 <translation id="213279576345780926">已关闭“<ph name="TAB_TITLE" />”</translation>
 <translation id="2139186145475833000">添加到主屏幕</translation>
+<translation id="2139414603196655536">您在 Page Insights 中的活动记录会保存在您的 Google 账号中。<ph name="BEGIN_LINK" />了解如何管理此设置<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">根据您的使用情况</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2155214902713132423">此设备无法使用这种验证方法。请在您的另一部设备上选择一个不同的选项。</translation>
@@ -379,7 +380,6 @@
 <translation id="3027644380269727216">根据您在网站上的活动推测得出。此设置已开启。</translation>
 <translation id="3029276696788198026">无预加载</translation>
 <translation id="3029704984691124060">密码不匹配</translation>
-<translation id="303514781271618814">Chrome 团队正在探索新功能，以便网站只需使用您的较少数据就能提供同样的浏览体验</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />获取帮助<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037517125981011456">显示意在引导用户登录 Chrome 的提示</translation>
@@ -1082,6 +1082,7 @@
 <translation id="670498945988402717">昨天检查过</translation>
 <translation id="6710213216561001401">上一项</translation>
 <translation id="671481426037969117">您的 <ph name="FQDN" /> 计时器已结束计时。它将于明天重新开始。</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{书签已保存到 <ph name="FOLDER_NAME" /> 中。它只会保存到此设备上。}other{书签已保存到 <ph name="FOLDER_NAME" /> 中。它只会保存到此设备上。}}</translation>
 <translation id="6715020873764921614">您仍要下载 <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) 吗？</translation>
 <translation id="6719634564325948108">使用二维码连接？</translation>
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
@@ -1106,7 +1107,6 @@
 <translation id="6828070228333235514">停止跟踪价格</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻译</translation>
-<translation id="6833996806551876956">隐私沙盒试用</translation>
 <translation id="6836206421467243968">将标签页分组“<ph name="TITLE_OF_GROUP" />”恢复为新的背景标签页分组。</translation>
 <translation id="6846298663435243399">正在加载…</translation>
 <translation id="6850409657436465440">您的下载仍在进行中</translation>
@@ -1403,6 +1403,7 @@
 <translation id="8237871086242677046">显示网页数据洞见的底部工作表</translation>
 <translation id="8243077599929149377">添加您的用户名</translation>
 <translation id="8250920743982581267">文档</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{书签已保存到您的账号 <ph name="ACCOUNT_EMAIL" /> 的 <ph name="FOLDER_NAME" /> 中。}other{书签已保存到您的账号 <ph name="ACCOUNT_EMAIL" /> 的 <ph name="FOLDER_NAME" /> 中。}}</translation>
 <translation id="8255617931166444521">网站只能使用 Cookie 查看您在此网站上的浏览活动</translation>
 <translation id="8259179246279078674">由于预加载的网页均已加密，因此 Google 不会得知与预加载的网页内容有关的任何信息。不过，Google 服务器会得知哪些网站是以私密方式预加载的。该信息仅用于预加载网页，不会关联到您 Google 账号中的其他信息。</translation>
 <translation id="8260126382462817229">请尝试重新登录</translation>

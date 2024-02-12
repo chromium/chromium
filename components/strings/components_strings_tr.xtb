@@ -246,6 +246,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1428729058023778569">Bu site HTTPS'yi desteklemediği için bu uyarıyı görüyorsunuz. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Kendinden Yapışkanlı Film</translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1431021750861456539">Otomatik tam ekran</translation>
 <translation id="1432187715652018471">sayfa bir servis işleyici yüklemek istiyor.</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1433225466058025572">Dosyalarınızı tekrar taşımayı deneyin</translation>
@@ -2285,6 +2286,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     <ph name="LINE_BREAK" />
     Sistem yöneticinize başvurmayı deneyin.</translation>
 <translation id="549333378215107354">Boyut 3</translation>
+<translation id="5501712702042287009">otomatik tam ekran</translation>
 <translation id="550365051221576010">Tüm alanları doldur</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Yönetilen yer işaretleri</translation>

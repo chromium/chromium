@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 专有资源现已推出</translation>
 <translation id="1022628058306505708">地球的风景变化</translation>
+<translation id="1026212596705997935">此快捷键已用于“<ph name="CONFLICT_ACCEL_NAME" />”。请按新的快捷键。如要替换现有的快捷键，请再次按这个快捷键。</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1049663189809099096">粉黄色</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2407209115954268704">SIM 卡锁定状态</translation>
 <translation id="241419523391571119">重新打开设备的盖子即可进行测试</translation>
+<translation id="2414660853550118611">壁纸简介</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2418150275289244458">在“设置”中打开</translation>
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 张图片，共 <ph name="TOTAL_PAGES" /> 张</translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">创建日期：<ph name="DATE" /></translation>
 <translation id="6189418609903030344">电池容量会随使用时长的增加而减少</translation>
 <translation id="6191293864534840972">域名服务器格式不正确</translation>
 <translation id="6196607555925437199">重新创建</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">开启屏保功能</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6325525973963619867">失败</translation>
+<translation id="6327262166342360252">此壁纸是通过 AI 使用以下文字制作的：“<ph name="PROMPT" />”。</translation>
 <translation id="6331191339300272798">自动深色主题</translation>
 <translation id="6340526405444716530">个性化</translation>
 <translation id="6348738456043757611">用户名和密码</translation>

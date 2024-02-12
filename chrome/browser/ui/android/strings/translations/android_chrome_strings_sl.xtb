@@ -204,6 +204,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2132122640199389833">Odstrani vse povezane naprave</translation>
 <translation id="213279576345780926">Zaprt zavihek: <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Dodajanje na začetni zaslon</translation>
+<translation id="2139414603196655536">Vaša dejavnost v podrobnih podatkih o strani se shranjuje v računu Google. <ph name="BEGIN_LINK" />Preberite, kako to upravljate<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Na podlagi uporabe</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2155214902713132423">Ta način preverjanja ni na voljo za to napravo. V drugi napravi izberite drugo možnost.</translation>
@@ -379,7 +380,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3027644380269727216">Na podlagi vaše dejavnosti na spletnem mestu. Ta nastavitev je vklopljena.</translation>
 <translation id="3029276696788198026">Brez vnaprejšnjega nalaganja</translation>
 <translation id="3029704984691124060">Gesli se ne ujemata</translation>
-<translation id="303514781271618814">Chrome raziskuje nove funkcije, ki spletnim mestom omogočajo, da z manjšo količino prenesenih podatkov zagotavljajo isto izkušnjo pri brskanju.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poiščite pomoč<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Spremljanje cene</translation>
 <translation id="3037517125981011456">Pokaže pozive za prijavo v Chrome.</translation>
@@ -1082,6 +1082,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="670498945988402717">Preverjeno včeraj</translation>
 <translation id="6710213216561001401">Prejšnji</translation>
 <translation id="671481426037969117">Merilnik časa za <ph name="FQDN" /> je potekel. Jutri se začne znova.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Zaznamek je shranjen v mapi <ph name="FOLDER_NAME" />. Shranjen je samo v tej napravi.}one{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" />. Shranjeni so samo v tej napravi.}two{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" />. Shranjeni so samo v tej napravi.}few{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" />. Shranjeni so samo v tej napravi.}other{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" />. Shranjeni so samo v tej napravi.}}</translation>
 <translation id="6715020873764921614">Ali želite vseeno prenesti datoteko <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Se želite povezati s kodo QR?</translation>
 <translation id="6723740634201835758">V računu za Google</translation>
@@ -1106,7 +1107,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6828070228333235514">Ustavi spremljanje cene</translation>
 <translation id="6830728435402077660">Ni varno</translation>
 <translation id="6831043979455480757">Prevedi</translation>
-<translation id="6833996806551876956">Preizkus za Privacy Sandbox</translation>
 <translation id="6836206421467243968">Obnovitev skupine zavihkov <ph name="TITLE_OF_GROUP" /> kot nove skupine zavihkov v ozadju.</translation>
 <translation id="6846298663435243399">Nalaganje poteka …</translation>
 <translation id="6850409657436465440">Prenos še poteka</translation>
@@ -1403,6 +1403,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8237871086242677046">Razdelek na dnu zaslona s podrobnimi podatki o strani</translation>
 <translation id="8243077599929149377">Dodajte uporabniško ime</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Zaznamek je shranjen v mapi <ph name="FOLDER_NAME" /> v računu, <ph name="ACCOUNT_EMAIL" />.}one{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" /> v računu, <ph name="ACCOUNT_EMAIL" />.}two{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" /> v računu, <ph name="ACCOUNT_EMAIL" />.}few{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" /> v računu, <ph name="ACCOUNT_EMAIL" />.}other{Zaznamki so shranjeni v mapi <ph name="FOLDER_NAME" /> v računu, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Spletna mesta smejo uporabljati piškotke samo za ogled dejavnosti brskanja samo na danem spletnem mestu.</translation>
 <translation id="8259179246279078674">Ker so vnaprej naložene strani šifrirane, Google ne bo izvedel ničesar o vsebini vnaprej naložene strani. Googlovi strežniki bodo izvedeli, katera spletna mesta so zasebno vnaprej naložena. Ti podatki so uporabljeni samo za vnaprejšnje nalaganje strani in niso povezani z nobenimi podatki v vašem računu Google.</translation>
 <translation id="8260126382462817229">Poskusite se znova prijaviti.</translation>

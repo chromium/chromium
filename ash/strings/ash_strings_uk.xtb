@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">Ви натиснули комбінацію клавіш для закріпленої лупи. Увімкнути?</translation>
 <translation id="439598569299422042">Призупинено, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не вдалося зберегти скрінкаст</translation>
-<translation id="4403371424034411727">Мишу <ph name="PERIPHERAL_NAME" /> підключено й можна використовувати. Ви можете змінити її параметри в Налаштуваннях.</translation>
 <translation id="4405151984121254935">Тип підключеного периферійного пристрою не підтримується</translation>
 <translation id="4406883609789734330">Живі субтитри</translation>
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">Перезавантажити поточну сторінку</translation>
 <translation id="6200515304866777730">Не підтримується додатком</translation>
 <translation id="6210042900243040400">Підключіть пристрій <ph name="NAME" />, який уже збережено в обліковому записі <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Персоналізуйте свій пристрій <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Зробити знімок частини екрана або почати запис відео з неї</translation>
 <translation id="6220928844947387476">Тепер ви можете робити запис з екрана й веб-камери одночасно</translation>
 <translation id="622484624075952240">Донизу</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">Для вашого пристрою доступні оновлення мікропрограми. Натисніть, щоб переглянути й оновити.</translation>
 <translation id="8896630965521842259">Шаблон <ph name="DESK_TEMPLATE_NAME" /> буде видалено назавжди</translation>
 <translation id="889790758758811533">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора (приблизно на <ph name="TIME_LEFT" />). Підключіть пристрій до джерела живлення.</translation>
-<translation id="8897940060812808966">Графічний планшет <ph name="PERIPHERAL_NAME" /> підключено й можна використовувати. Ви можете змінити його параметри в Налаштуваннях.</translation>
 <translation id="88986195241502842">Сторінка вниз</translation>
 <translation id="8905919797434099235">(Без назви)</translation>
 <translation id="890616557918890486">Змінити джерело</translation>

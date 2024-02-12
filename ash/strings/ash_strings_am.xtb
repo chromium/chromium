@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">የተተከለ የማጉያ የቁልፍ ሰሌዳ አቋራጩን ተጭነዋል። ሊያበሩት ይፈልጋሉ?</translation>
 <translation id="439598569299422042">ባለበት ቆሟል፣ <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ማያገጽ መቅርጽ ማስቀመጥ አይቻልም</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> ተገናኝቷል እና ጥቅም ላይ ለመዋል ዝግጁ ነው። መዳፊትዎን በቅንብሮች ውስጥ ማበጀት ይችላሉ።</translation>
 <translation id="4405151984121254935">የተገናኘው የዳርቻ ዓይነት አይደገፍም</translation>
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ጠፍቷል</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">የአሁኑን ገፅ ዳግም ይጭናል</translation>
 <translation id="6200515304866777730">በመተግበሪያ አይደገፍም</translation>
 <translation id="6210042900243040400">ከዚህ ቀደም በ<ph name="EMAIL" /> ላይ ከተቀመጠ <ph name="NAME" /> ጋር ይገናኙ</translation>
-<translation id="6212097153736801627">የእርስዎን <ph name="PERIPHERAL_NAME" /> ያብጁ</translation>
 <translation id="6213808132343683860">ከፊል ቅጽበታዊ ገፅ ዕይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
 <translation id="6220928844947387476">አሁን እራስዎን እና ማያ ገጽዎን በተመሳሳይ ጊዜ መቅረጽ ይችላሉ</translation>
 <translation id="622484624075952240">ታች</translation>
@@ -1958,7 +1956,6 @@
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> እስከመጨረሻው ይሰረዛል</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ባትሪ ይቀራል (<ph name="TIME_LEFT" /> አካባቢ)።
 መሣሪያዎን ከኃይል ጋር ያገናኙ።</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> ተገናኝቷል እና ጥቅም ላይ ለመዋል ዝግጁ ነው። የግራፊክስ ጡባዊዎን በቅንብሮች ውስጥ ማበጀት ይችላሉ።</translation>
 <translation id="88986195241502842">ገፅ ወደ ታች</translation>
 <translation id="8905919797434099235">(ርዕስ የለም)</translation>
 <translation id="890616557918890486">ምንጭ ይለውጡ</translation>

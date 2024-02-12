@@ -845,7 +845,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4389184120735010762">Premiches o atallo de teclado para a lupa ancorada. Queres activala?</translation>
 <translation id="439598569299422042">En pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Non se puido gardar a gravación da pantalla</translation>
-<translation id="4403371424034411727">O rato <ph name="PERIPHERAL_NAME" /> está conectado e listo para usar. Podes personalizalo en Configuración.</translation>
 <translation id="4405151984121254935">O tipo de periférico conectado non é compatible</translation>
 <translation id="4406883609789734330">Subtítulos instantáneos</translation>
 <translation id="4412944820643904175">A función <ph name="FEATURE_NAME" /> está desactivada.</translation>
@@ -1316,7 +1315,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="6199775032047436064">Recargar páxina actual</translation>
 <translation id="6200515304866777730">Función non admitida pola aplicación</translation>
 <translation id="6210042900243040400">Conecta o dispositivo (<ph name="NAME" />), que xa está gardado en <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personaliza o dispositivo <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Fai unha captura de pantalla parcial ou grava a pantalla</translation>
 <translation id="6220928844947387476">Xa podes gravarte ao mesmo tempo que gravas a túa pantalla</translation>
 <translation id="622484624075952240">Frecha abaixo</translation>
@@ -1952,7 +1950,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="888982883502837004">Hai actualizacións de firmware dispoñibles para o teu dispositivo. Fai clic para revisalas e instalalas.</translation>
 <translation id="8896630965521842259">Eliminarase <ph name="DESK_TEMPLATE_NAME" /> de forma permanente</translation>
 <translation id="889790758758811533">Queda un <ph name="PERCENTAGE" /> % de batería. Tempo restante aproximado: <ph name="TIME_LEFT" />. Conecta o dispositivo á corrente.</translation>
-<translation id="8897940060812808966">A tableta gráfica <ph name="PERIPHERAL_NAME" /> está conectada e lista para usar. Podes personalizala en Configuración.</translation>
 <translation id="88986195241502842">Avanzar páxina</translation>
 <translation id="8905919797434099235">(Sen título)</translation>
 <translation id="890616557918890486">Cambiar fonte</translation>

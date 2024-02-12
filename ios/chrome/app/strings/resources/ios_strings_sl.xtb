@@ -213,6 +213,7 @@
 <translation id="20638360198452347">Izbirnik vrste enote</translation>
 <translation id="2073572773299281212">Aktivna pred toliko dnevi: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">V <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
+<translation id="2078437078822043850">Za brskanje v anonimnem načinu lahko povlečete desno.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2080409463824088391">Odpri v aplikaciji …</translation>
 <translation id="2080769225927880590">Prijavite se z veljavnim računom</translation>
@@ -278,6 +279,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2421004566762153674">Blokiranje piškotkov drugih spletnih mest</translation>
 <translation id="2421044535038393232">Nadaljuj urejanje</translation>
 <translation id="2434405374328098816">Na <ph name="WEBSITE" /> ste že shranili geslo za »<ph name="USERNAME" />«.</translation>
+<translation id="2434918313224755415">Za brskanje v anonimnem načinu lahko povlečete levo.</translation>
 <translation id="2435457462613246316">Pokaži geslo</translation>
 <translation id="2459155039684421202">V naslovni vrstici vnesite opravilo, kot je »clear my history« (počisti mojo zgodovino) ali »edit passwords« (uredi gesla).</translation>
 <translation id="2461070143328828326">Nastavitve gesel</translation>
@@ -513,6 +515,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3603009562372709545">Kopiraj URL povezave</translation>
 <translation id="3607167657931203000">Autofill Data</translation>
 <translation id="3609785682760573515">Sinhroniziranje ...</translation>
+<translation id="3625008969091706597">Za premik nazaj lahko povlečete po robu.</translation>
 <translation id="3630104167004786843">Brez prejemanja obvestil</translation>
 <translation id="3631443864840848029">Poskrbite, da boste shranili trenutno geslo za to spletno mesto.</translation>
 <translation id="3638472932233958418">Vnaprej naloži spletne strani</translation>
@@ -630,6 +633,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4267586310863245665">{COUNT,plural, =1{Opustili ste {COUNT} opozorilo}one{Opustili ste {COUNT} opozorilo}two{Opustili ste {COUNT} opozorili}few{Opustili ste {COUNT} opozorila}other{Opustili ste {COUNT} opozoril}}</translation>
 <translation id="4272631900155121838">Če želite optično prebrati kodo QR, v nastavitvah omogočite fotoaparat</translation>
 <translation id="4277990410970811858">Varno brskanje</translation>
+<translation id="4279431713294750185">Za premik naprej lahko povlečete po robu.</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
 <translation id="4286718549648564014">Naslov je bil premaknjen v račun <ph name="USER_EMAIL" /></translation>
 <translation id="4293080268407233932">Iskanje</translation>
@@ -1288,6 +1292,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7583004045319035904">Za odklepanje anonimnih zavihkov uporabite to: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nikoli ne prevedi iz jezika: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pojavna okna so blokirana (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7606639338662398635">Skupine zavihkov</translation>
 <translation id="7607521702806708809">Izbriši geslo</translation>
 <translation id="7638584964844754484">Napačno geslo</translation>
 <translation id="7640669552036055091">Zavihki iz Androida</translation>

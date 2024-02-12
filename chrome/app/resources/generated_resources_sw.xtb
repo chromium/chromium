@@ -3918,6 +3918,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3957844511978444971">Gusa “Kubali” ili uthibitishe chaguo lako la mipangilio hii ya huduma za Google.</translation>
 <translation id="3958088479270651626">Leta alamisho na mipangilio</translation>
 <translation id="3958110062351175311">Kinaruhusiwa kuonyesha maombi katika upau wa vidhibiti</translation>
+<translation id="3958821725268247062">Programu ya <ph name="APP_NAME" /> tayari imewekwa kwenye kifaa</translation>
 <translation id="3959747296451923142">Thibitisha uondoaji wa usajili</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Vitendo zaidi vya <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6546,6 +6547,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6065289257230303064">Vipengele vya Saraka ya Vichwa cha Vyeti</translation>
 <translation id="6066794465984119824">Kiwakilishi kifupi cha picha hakijawekwa</translation>
 <translation id="6069464830445383022">Tumia Akaunti yako ya Google kuingia katika Chromebook yako</translation>
+<translation id="6069500411969514374">Kazi</translation>
 <translation id="6071181508177083058">thibitisha nenosiri</translation>
 <translation id="6071576563962215370">Mfumo umeshindwa kuanzisha kufungwa kwa sifa za muda wa usakinishaji wa kifaa.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> za hifadhi zimeokolewa</translation>
@@ -7528,7 +7530,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6832218595502288407">Pangilia kushoto</translation>
 <translation id="6833479554815567477">Kichupo kimeondolewa kwenye kikundi kiitwacho <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Jaribio la kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha</translation>
 <translation id="6835762382653651563">Tafadhali unganisha kwenye Intaneti ili usasishe <ph name="DEVICE_TYPE" /> yako.</translation>
 <translation id="683630338945552556">Tumia na uhifadhi manenosiri kwenye Akaunti yako ya Google</translation>
 <translation id="6839225236531462745">Hitilafu ya Ufutaji wa Cheti</translation>
@@ -10019,6 +10020,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8750155211039279868"><ph name="ORIGIN" /> inataka kuunganisha kwenye mlango wa kuwekea vifaa</translation>
 <translation id="8750346984209549530">APN ya Mtandao wa Simu</translation>
 <translation id="8750786237117206586">Dhibiti mipangilio ya sauti ya ChromeOS Flex</translation>
+<translation id="8751034568832412184">Shule</translation>
 <translation id="8752451679755290210">Sogea kati ya vipengee mbalimbali kiotomatiki</translation>
 <translation id="8753948258138515839">Programu ya Faili inatoa ufikiaji wa haraka kwenye faili ambazo umeweka kwenye Hifadhi ya Google, hifadhi ya nje au kwenye kifaa chako cha ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Unapotekeleza <ph name="PRODUCT_NAME" /> chini ya mazingira ya eneo-kazi yanayotumika, mipangilio ya mfumo ya proksi itatumiwa. Hata hivyo, huenda mfumo wako hautumiki au kulikuwa na tatizo wakati wa kufungua usanidi wako wa mfumo.&lt;/p&gt;

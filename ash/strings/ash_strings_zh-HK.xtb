@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">您已按下固定放大鏡的鍵盤快速鍵。確定要旋轉螢幕嗎？</translation>
 <translation id="439598569299422042">已暫停，下載進度：<ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">無法儲存螢幕錄影</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> 已連線，可以開始使用。你可在「設定」中自訂滑鼠。</translation>
 <translation id="4405151984121254935">不支援已連接的周邊裝置類型</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
@@ -1315,7 +1314,6 @@
 <translation id="6199775032047436064">重新載入目前網頁</translation>
 <translation id="6200515304866777730">應用程式不支援</translation>
 <translation id="6210042900243040400">連線至 <ph name="EMAIL" /> 先前儲存的 <ph name="NAME" /></translation>
-<translation id="6212097153736801627">自訂你的 <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">擷取部分螢幕截圖或進行部分螢幕錄影</translation>
 <translation id="6220928844947387476">您現在可以錄製鏡頭畫面和螢幕畫面</translation>
 <translation id="622484624075952240">向下鍵</translation>
@@ -1954,7 +1952,6 @@
 <translation id="888982883502837004">有適用於裝置的韌體更新，按一下即可查看並更新。</translation>
 <translation id="8896630965521842259">「<ph name="DESK_TEMPLATE_NAME" />」將被永久刪除</translation>
 <translation id="889790758758811533">剩餘 <ph name="PERCENTAGE" />% 電量 (大約 <ph name="TIME_LEFT" />)。請將裝置接上電源。</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> 已連線，可以開始使用。你可在「設定」中自訂繪圖板。</translation>
 <translation id="88986195241502842">下一頁</translation>
 <translation id="8905919797434099235">(無標題)</translation>
 <translation id="890616557918890486">變更來源</translation>

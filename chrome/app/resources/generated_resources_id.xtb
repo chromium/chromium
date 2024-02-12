@@ -3921,6 +3921,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3957844511978444971">Ketuk “Setuju” untuk mengonfirmasi pilihan setelan layanan Google ini.</translation>
 <translation id="3958088479270651626">Impor bookmark dan setelan</translation>
 <translation id="3958110062351175311">Diizinkan menampilkan permintaan di toolbar</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> sudah diinstal</translation>
 <translation id="3959747296451923142">Konfirmasi penghapusan langganan</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Tindakan lainnya untuk <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6551,6 +6552,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6065289257230303064">Atribut Direktori Subjek Sertifikat</translation>
 <translation id="6066794465984119824">Hash gambar tidak disetel</translation>
 <translation id="6069464830445383022">Akun Google Anda adalah kunci akses Chromebook Anda</translation>
+<translation id="6069500411969514374">Kerja</translation>
 <translation id="6071181508177083058">konfirmasikan sandi</translation>
 <translation id="6071576563962215370">Sistem gagal membuat kunci atribut waktu penginstalan perangkat.</translation>
 <translation id="6071938745001252305">Menghemat <ph name="MEMORY_VALUE" /> memori</translation>
@@ -7533,7 +7535,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6831043979455480757">Terjemahkan</translation>
 <translation id="6832218595502288407">Rata kiri</translation>
 <translation id="6833479554815567477">Tab dihapus dari grup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Uji coba Privacy Sandbox</translation>
 <translation id="6835762382653651563">Sambungkan ke internet untuk memperbarui <ph name="DEVICE_TYPE" /> Anda.</translation>
 <translation id="683630338945552556">Simpan dan gunakan sandi di Akun Google Anda</translation>
 <translation id="6839225236531462745">Kesalahan Penghapusan Sertifikat</translation>
@@ -10022,6 +10023,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8750155211039279868"><ph name="ORIGIN" /> ingin terhubung ke port serial</translation>
 <translation id="8750346984209549530">APN Seluler</translation>
 <translation id="8750786237117206586">Kelola setelan audio ChromeOS Flex</translation>
+<translation id="8751034568832412184">Sekolah</translation>
 <translation id="8752451679755290210">Berpindah-pindah item secara otomatis</translation>
 <translation id="8753948258138515839">Aplikasi File memberikan akses cepat ke file yang telah Anda simpan di Google Drive, penyimpanan eksternal, atau perangkat ChromeOS Flex.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Saat mengoperasikan <ph name="PRODUCT_NAME" /> pada lingkungan desktop yang didukung, setelan proxy sistem akan digunakan. Akan tetapi, tampaknya kami tidak dapat mendukung sistem Anda atau mungkin ada masalah saat meluncurkan konfigurasi sistem.&lt;/p&gt;
@@ -10652,7 +10654,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="932327136139879170">Beranda</translation>
 <translation id="932508678520956232">Tidak dapat memulai pencetakan.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{File ini terlalu besar untuk pemeriksaan keamanan. Anda dapat mengupload file hingga 50 MB.}other{Beberapa file ini terlalu besar untuk pemeriksaan keamanan. Anda dapat mengupload file hingga 50 MB.}}</translation>
-<translation id="93343527085570547">Buka <ph name="BEGIN_LINK1" />halaman Bantuan Hukum<ph name="END_LINK1" /> untuk meminta perubahan konten karena alasan hukum.  Sebagian informasi akun dan sistem dapat dikirimkan ke Google.  Kami akan menggunakan informasi yang Anda berikan untuk membantu mengatasi masalah teknis dan untuk menyempurnakan layanan kami. Penggunaan informasi ini tunduk pada <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami.</translation>
+<translation id="93343527085570547">Buka <ph name="BEGIN_LINK1" />halaman Bantuan Hukum<ph name="END_LINK1" /> untuk meminta perubahan konten karena alasan hukum.  Sebagian informasi akun dan sistem dapat dikirimkan ke Google.  Kami akan menggunakan informasi yang Anda berikan untuk membantu mengatasi masalah teknis dan untuk menyempurnakan layanan kami. Penggunaan informasi ini tunduk kepada <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami.</translation>
 <translation id="93393615658292258">Sandi saja</translation>
 <translation id="934244546219308557">Beri nama grup ini</translation>
 <translation id="93480724622239549">Bug atau Error</translation>

@@ -328,6 +328,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2369165858548251131">Xitoy tilida “Salom”</translation>
 <translation id="2382875860893882175">Translatsiya hozir pauzada. Translatsiyani instalgan vaqt davom ettirish yoki tugatish mumkin.</translation>
 <translation id="2386292613071805067">Sahifadagi barcha kontentni tanlash</translation>
+<translation id="2392659840443812875">Hech qanday hotspot topilmadi. Qurilma yoningizda va Bluetooth sozlamasi yoniqligini tekshiring.</translation>
 <translation id="2397416548179033562">Chrome menyusini ko‘rsatish</translation>
 <translation id="240006516586367791">Media boshqaruvi</translation>
 <translation id="2402411679569069051">Chromebook qulfini ochish uchun barmoq izi yoki telefondan foydalaning</translation>
@@ -845,7 +846,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="4389184120735010762">Qadalgan lupa tezkor havolasini bosdingiz. Ishga tushirilsinmi?</translation>
 <translation id="439598569299422042">Pauzada, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Skrinkast saqlanmadi</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> ulangan va foydalanish uchun tayyor. Sichqonchani Sozlamalar orqali sozlash mumkin.</translation>
 <translation id="4405151984121254935">Ulangan tashqi qurilma tizimda ishlamaydi</translation>
 <translation id="4406883609789734330">Jonli izoh</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> yoqilmagan</translation>
@@ -1079,6 +1079,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="5313326810920013265">Bluetooth sozlamalari</translation>
 <translation id="5314219114274263156">Ekran yozib olindi</translation>
 <translation id="5314489738835854379">Oynalar sahifasini orqaga qaytarish</translation>
+<translation id="5315931444962548795">Atrofdagi hotspotlarni qidirish uchun Bluetooth aloqasini yoqing</translation>
 <translation id="5316716239522500219">Monitordagi tasvirni boshqa monitorga uzatish</translation>
 <translation id="5317780077021120954">Saqlash</translation>
 <translation id="5319712128756744240">Yangi qurilmani juftlash</translation>
@@ -1316,7 +1317,6 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="6199775032047436064">Joriy sahifani qayta yuklash</translation>
 <translation id="6200515304866777730">Ilovada ishlamaydi</translation>
 <translation id="6210042900243040400"><ph name="NAME" /> qurilmasini oldin saqlangan <ph name="EMAIL" /> hisobiga ulang</translation>
-<translation id="6212097153736801627"><ph name="PERIPHERAL_NAME" /> qurilmangizni moslang</translation>
 <translation id="6213808132343683860">Qisman skrinshot olish yoki ekranni yozib olish</translation>
 <translation id="6220928844947387476">Endi siz bir vaqtda ekran va veb kamera tasvirlarini yozib olishingiz mumkin.</translation>
 <translation id="622484624075952240">Pastga</translation>
@@ -1956,7 +1956,6 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="888982883502837004">Qurilmangiz uchun chiqqan mikrodastur yangilanishlari. Koʻrib chiqish va yangilash uchun bosing.</translation>
 <translation id="8896630965521842259">“<ph name="DESK_TEMPLATE_NAME" />” soʻrovi butunlay oʻchirib tashlanadi</translation>
 <translation id="889790758758811533">Batareyada <ph name="PERCENTAGE" />% quvvat qoldi (taxminan: <ph name="TIME_LEFT" />). Qurilmani quvvat manbaiga ulang.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> ulangan va foydalanish uchun tayyor. Grafik planshetni Sozlamalar orqali sozlash mumkin.</translation>
 <translation id="88986195241502842">Pastki sahifa</translation>
 <translation id="8905919797434099235">(Nomsiz)</translation>
 <translation id="890616557918890486">Manbani almashtirish</translation>

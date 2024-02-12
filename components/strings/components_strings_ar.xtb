@@ -246,6 +246,7 @@
 <translation id="1428729058023778569">‏يظهر هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">شريط لاصق ذاتي</translation>
 <translation id="1430915738399379752">طباعة</translation>
+<translation id="1431021750861456539">وضع ملء الشاشة تلقائيًا</translation>
 <translation id="1432187715652018471">تريد هذه الصفحة تثبيت معالج الخدمة.</translation>
 <translation id="1432581352905426595">إدارة محركات البحث</translation>
 <translation id="1433225466058025572">حاوِل نقل ملفاتك مرة أخرى.</translation>
@@ -2290,6 +2291,7 @@
     <ph name="LINE_BREAK" />
     حاول الاتصال بمشرف النظام.</translation>
 <translation id="549333378215107354">الحجم 3</translation>
+<translation id="5501712702042287009">وضع ملء الشاشة تلقائيًا</translation>
 <translation id="550365051221576010">ملء كل الحقول</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">الإشارات المرجعية المُدارة</translation>

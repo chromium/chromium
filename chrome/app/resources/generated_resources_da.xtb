@@ -3922,6 +3922,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3957844511978444971">Tryk på "Acceptér" for at bekræfte dit valg af disse indstillinger for Google-tjenester.</translation>
 <translation id="3958088479270651626">Importér bogmærker og indstillinger</translation>
 <translation id="3958110062351175311">Har tilladelse til at vise anmodninger på værktøjslinjen</translation>
+<translation id="3958821725268247062"><ph name="APP_NAME" /> er allerede installeret</translation>
 <translation id="3959747296451923142">Bekræft fjernelse af abonnement</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Flere handlinger for <ph name="IBAN_DESCRIPTION" /></translation>
@@ -6552,6 +6553,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6065289257230303064">Indeksattributter for certifikatets emne</translation>
 <translation id="6066794465984119824">Systembilledets hash-værdi er ikke angivet</translation>
 <translation id="6069464830445383022">Brug din Google-konto, når du logger ind på din Chromebook</translation>
+<translation id="6069500411969514374">Arbejde</translation>
 <translation id="6071181508177083058">bekræft adgangskode</translation>
 <translation id="6071576563962215370">Systemet kunne ikke fastslå installationstidspunktet for enhedens attributlås.</translation>
 <translation id="6071938745001252305"><ph name="MEMORY_VALUE" /> hukommelse er sparet</translation>
@@ -7536,7 +7538,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="6832218595502288407">Venstrejusteret</translation>
 <translation id="6833479554815567477">Fanen blev fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
-<translation id="6833996806551876956">Prøveperiode til Privacy Sandbox</translation>
 <translation id="6835762382653651563">Opret forbindelse til internettet for at opdatere din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="683630338945552556">Brug og gem adgangskoder på din Google-konto</translation>
 <translation id="6839225236531462745">Fejl under sletning af certifikat</translation>
@@ -10025,6 +10026,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8750155211039279868"><ph name="ORIGIN" /> anmoder om at oprette forbindelse til en seriel port</translation>
 <translation id="8750346984209549530">APN for mobilnetværk</translation>
 <translation id="8750786237117206586">Administrer lydindstillinger for ChromeOS Flex</translation>
+<translation id="8751034568832412184">Skole</translation>
 <translation id="8752451679755290210">Gå automatisk frem og tilbage mellem elementer</translation>
 <translation id="8753948258138515839">Appen Filer giver hurtig adgang til filer, som du har gemt i Google Drev, på et eksternt lager eller på din ChromeOS Flex-enhed.</translation>
 <translation id="8754200782896249056">&lt;p&gt;Når <ph name="PRODUCT_NAME" /> kører i et understøttet computermiljø, anvendes systemets proxyindstillinger. Dit system understøttes imidlertid ikke, eller også er der opstået et problem ved opstart af din systemkonfiguration.

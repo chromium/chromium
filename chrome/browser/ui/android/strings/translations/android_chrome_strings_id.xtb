@@ -204,6 +204,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2132122640199389833">Hapus semua perangkat tertaut</translation>
 <translation id="213279576345780926">Menutup <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Tambahkan ke Layar Utama</translation>
+<translation id="2139414603196655536">Aktivitas Anda di Insight Halaman disimpan di Akun Google Anda. <ph name="BEGIN_LINK" />Pelajari cara mengelola proses ini<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Berdasarkan penggunaan Anda</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2155214902713132423">Metode verifikasi ini tidak tersedia untuk perangkat ini. Pilih opsi lain di perangkat lainnya.</translation>
@@ -379,7 +380,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3027644380269727216">Berdasarkan aktivitas Anda di situs. Setelan ini aktif.</translation>
 <translation id="3029276696788198026">Tidak ada pramuat</translation>
 <translation id="3029704984691124060">Frasa sandi tidak cocok</translation>
-<translation id="303514781271618814">Chrome sedang menjelajahi fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit data Anda</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Memantau harga</translation>
 <translation id="3037517125981011456">Menampilkan perintah untuk login ke Chrome</translation>
@@ -1082,6 +1082,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="670498945988402717">Diperiksa kemarin</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="671481426037969117">Timer <ph name="FQDN" /> Anda telah berakhir. Timer akan dimulai lagi besok.</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Bookmark disimpan ke <ph name="FOLDER_NAME" />. Bookmark hanya disimpan ke perangkat ini.}other{Bookmark disimpan ke <ph name="FOLDER_NAME" />. Bookmark hanya disimpan ke perangkat ini.}}</translation>
 <translation id="6715020873764921614">Ingin tetap mendownload <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">Terhubung dengan Kode QR?</translation>
 <translation id="6723740634201835758">Di Akun Google Anda</translation>
@@ -1106,7 +1107,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6828070228333235514">Berhenti memantau harga</translation>
 <translation id="6830728435402077660">Tidak aman</translation>
 <translation id="6831043979455480757">Terjemahkan</translation>
-<translation id="6833996806551876956">Uji coba Privacy Sandbox</translation>
 <translation id="6836206421467243968">Pulihkan grup tab <ph name="TITLE_OF_GROUP" /> sebagai grup tab latar belakang baru.</translation>
 <translation id="6846298663435243399">Memuat...</translation>
 <translation id="6850409657436465440">Download sedang berlangsung</translation>
@@ -1403,6 +1403,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8237871086242677046">Sheet bawah insight halaman</translation>
 <translation id="8243077599929149377">Tambahkan nama pengguna Anda</translation>
 <translation id="8250920743982581267">Dokumen</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Bookmark disimpan ke <ph name="FOLDER_NAME" /> di akun Anda, <ph name="ACCOUNT_EMAIL" />.}other{Bookmark disimpan ke <ph name="FOLDER_NAME" /> di akun Anda, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="8255617931166444521">Situs hanya dapat menggunakan cookie Anda untuk melihat aktivitas penjelajahan Anda di situs itu sendiri</translation>
 <translation id="8259179246279078674">Karena halaman yang dipramuat terenkripsi, Google tidak akan mempelajari apa pun tentang konten halaman yang dipramuat. Server Google akan mempelajari situs mana yang dipramuat secara pribadi. Informasi ini hanya digunakan untuk melakukan pramuat halaman tersebut dan tidak akan ditautkan ke informasi lain dari Akun Google Anda.</translation>
 <translation id="8260126382462817229">Coba masuk lagi</translation>

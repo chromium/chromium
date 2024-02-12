@@ -845,7 +845,6 @@
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
 <translation id="439598569299422042">Приостановлено, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не удалось сохранить скринкаст</translation>
-<translation id="4403371424034411727">Мышь <ph name="PERIPHERAL_NAME" /> подключена и готова к работе. Ее параметры можно изменить в настройках.</translation>
 <translation id="4405151984121254935">Подключенное периферийное устройство этого типа не поддерживается.</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
 <translation id="4412944820643904175">Функция "<ph name="FEATURE_NAME" />" отключена</translation>
@@ -1316,7 +1315,6 @@
 <translation id="6199775032047436064">Обновление страницы</translation>
 <translation id="6200515304866777730">Не поддерживается приложением</translation>
 <translation id="6210042900243040400">Можно подключиться к устройству <ph name="NAME" />, которое уже сохранено в аккаунте <ph name="EMAIL" />.</translation>
-<translation id="6212097153736801627">Настройте устройство <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Сделать скриншот или запись видео с части экрана</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">Для вашего устройства доступны обновления встроенного ПО. Нажмите, чтобы посмотреть и установить их.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будет удален без возможности восстановления.</translation>
 <translation id="889790758758811533">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />. Подключите устройство к источнику питания.</translation>
-<translation id="8897940060812808966">Графический планшет <ph name="PERIPHERAL_NAME" /> подключен и готов к работе. Его параметры можно изменить в настройках.</translation>
 <translation id="88986195241502842">На страницу вниз</translation>
 <translation id="8905919797434099235">Без названия</translation>
 <translation id="890616557918890486">Изменить источник</translation>

@@ -845,7 +845,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4389184120735010762">Gwnaethoch bwyso'r llwybr byr bysellfwrdd ar gyfer y chwyddwydr sydd wedi'i docio. Ydych chi am ei droi ymlaen?</translation>
 <translation id="439598569299422042">Seibiwyd, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Methu â chadw'r sgrinlediad</translation>
-<translation id="4403371424034411727">Mae <ph name="PERIPHERAL_NAME" /> wedi'i gysylltu ac yn barod i'w ddefnyddio. Gallwch addasu'ch llygoden yn y Gosodiadau.</translation>
 <translation id="4405151984121254935">Ni chefnogir y math perifferol sydd wedi'i gysylltu</translation>
 <translation id="4406883609789734330">Capsiynau Byw</translation>
 <translation id="4412944820643904175">Mae <ph name="FEATURE_NAME" /> wedi'i ddiffodd.</translation>
@@ -1316,7 +1315,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="6199775032047436064">Ail-lwytho'r dudalen bresennol</translation>
 <translation id="6200515304866777730">Ni chefnogir hyn gan yr ap</translation>
 <translation id="6210042900243040400">Cysylltu <ph name="NAME" /> a gadwyd yn flaenorol i <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Addasu eich <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Tynnu sgrinlun neu gwneud recordiad sgrîn rhannol</translation>
 <translation id="6220928844947387476">Gallwch bellach recordio eich hun a'ch sgrîn ar yr un pryd</translation>
 <translation id="622484624075952240">I lawr</translation>
@@ -1956,7 +1954,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="888982883502837004">Mae diweddariadau cadarnwedd ar gael ar gyfer eich dyfais. Cliciwch i adolygu a diweddaru.</translation>
 <translation id="8896630965521842259">Bydd <ph name="DESK_TEMPLATE_NAME" /> yn cael ei ddileu'n barhaol</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% o fatri ar ôl (tua <ph name="TIME_LEFT" />). Cysylltwch eich dyfais â phŵer.</translation>
-<translation id="8897940060812808966">Mae <ph name="PERIPHERAL_NAME" /> wedi'i gysylltu ac yn barod i'w ddefnyddio. Gallwch addasu eich llechen graffeg yn y Gosodiadau.</translation>
 <translation id="88986195241502842">I lawr y dudalen</translation>
 <translation id="8905919797434099235">(Dim teitl)</translation>
 <translation id="890616557918890486">Newid ffynhonnell</translation>

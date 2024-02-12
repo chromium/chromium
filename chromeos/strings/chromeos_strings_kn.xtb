@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1020274983236703756">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ <ph name="PRODUCT_NAME" /> ಸ್ವತ್ತುಗಳು ಈಗ ಲಭ್ಯವಿವೆ</translation>
 <translation id="1022628058306505708">ಅರ್ಥ್ ಫ್ಲೋ</translation>
+<translation id="1026212596705997935">"<ph name="CONFLICT_ACCEL_NAME" />" ಗಾಗಿ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಲಾಗುತ್ತಿದೆ. ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ. ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿರಿ.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1049663189809099096">ಪೇಸ್ಟಲ್ ಹಳದಿ</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">ಪ್ರತಿಕ್ರಿಯೆ ವರದಿ ಕಳುಹಿಸಿ</translation>
 <translation id="2407209115954268704">SIM ಲಾಕ್ ಸ್ಥಿತಿ</translation>
 <translation id="241419523391571119">ಪರೀಕ್ಷಿಸಲು ಮುಚ್ಚಳವನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ</translation>
+<translation id="2414660853550118611">ವಾಲ್‌ಪೇಪರ್ ಕುರಿತು</translation>
 <translation id="2414886740292270097">ಗಾಢ</translation>
 <translation id="2418150275289244458">ಸೆಟ್ಟಿಂಗ್‍ಗಳಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="2421798028054665193">ಚಿತ್ರ <ph name="TOTAL_PAGES" /> ರಲ್ಲಿ <ph name="CURRENT_PAGE" /></translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319"><ph name="DATE" /> ರಂದು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="6189418609903030344">ಬಳಕೆಯಿಂದಾಗಿ ಬ್ಯಾಟರಿ ಸಾಮರ್ಥ್ಯವು ಕಡಿಮೆಯಾಗುತ್ತದೆ</translation>
 <translation id="6191293864534840972">ದೋಷಪೂರಿತ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="6196607555925437199">ಪುನಃ ರಚಿಸಿ</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="6324916366299863871">ಶಾರ್ಟ್‌ಕಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6325525973963619867">ವಿಫಲವಾಗಿದೆ</translation>
+<translation id="6327262166342360252">ಈ ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು AI ಮೂಲಕ ಈ ಕೆಳಗಿನ ಪಠ್ಯವನ್ನು ಬಳಸಿಕೊಂಡು ರಚಿಸಲಾಗಿದೆ: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ಸ್ವಯಂಚಾಲಿತ ಡಾರ್ಕ್‌ ಥೀಮ್</translation>
 <translation id="6340526405444716530">ವೈಯಕ್ತೀಕರಣ</translation>
 <translation id="6348738456043757611">ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್</translation>

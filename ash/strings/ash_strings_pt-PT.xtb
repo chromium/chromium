@@ -845,7 +845,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Quer ativá-la?</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Não é possível guardar a gravação de ecrã</translation>
-<translation id="4403371424034411727">O <ph name="PERIPHERAL_NAME" /> está ligado e pronto a usar. Pode personalizar o rato nas Definições.</translation>
 <translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
@@ -1316,7 +1315,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="6199775032047436064">Recarregar a página actual</translation>
 <translation id="6200515304866777730">Não suportado pela app</translation>
 <translation id="6210042900243040400">Ligue o dispositivo <ph name="NAME" /> guardado anteriormente em <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personalize o seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Fazer uma gravação de ecrã ou uma captura de ecrã parcial</translation>
 <translation id="6220928844947387476">Agora, pode gravar-se a si e ao ecrã em simultâneo</translation>
 <translation id="622484624075952240">Para baixo</translation>
@@ -1956,7 +1954,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="888982883502837004">Estão disponíveis atualizações de firmware para o seu dispositivo. Clique para rever e atualizar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> será eliminado permanentemente</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />). Ligue o dispositivo à alimentação.</translation>
-<translation id="8897940060812808966">O <ph name="PERIPHERAL_NAME" /> está ligado e pronto a usar. Pode personalizar o tablet de gráficos nas Definições.</translation>
 <translation id="88986195241502842">Página para baixo</translation>
 <translation id="8905919797434099235">(Sem título)</translation>
 <translation id="890616557918890486">Alterar origem</translation>

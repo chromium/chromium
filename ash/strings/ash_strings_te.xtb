@@ -846,7 +846,6 @@
 <translation id="4389184120735010762">మీరు డాక్ చేసిన మాగ్నిఫైయర్‌ కోసం కీబోర్డ్ షార్ట్‌కట్‌ను నొక్కారు. మీరు దీన్ని ఆన్ చేయాలనుకుంటున్నారా?</translation>
 <translation id="439598569299422042">పాజ్ చేయబడింది, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">స్క్రీన్‌కాస్ట్‌ను సేవ్ చేయడం సాధ్యం కాదు</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> కనెక్ట్ అయింది, ఉపయోగించడానికి సిద్ధంగా ఉంది. సెట్టింగ్‌లలో మీ మౌస్‌ను అనుకూలంగా మార్చుకోవచ్చు.</translation>
 <translation id="4405151984121254935">కనెక్ట్ చేయబడిన పెరిఫెరల్ రకానికి సపోర్ట్ లేదు</translation>
 <translation id="4406883609789734330">లైవ్ క్యాప్షన్</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ఆఫ్‌లో ఉంది.</translation>
@@ -1317,7 +1316,6 @@
 <translation id="6199775032047436064">ప్రస్తుత పేజీని మళ్ళీ లోడ్ చేయి</translation>
 <translation id="6200515304866777730">యాప్ సపోర్ట్ చేయనివి</translation>
 <translation id="6210042900243040400"><ph name="EMAIL" /> ఈమెయిల్‌కు మునుపు సేవ్ చేయబడిన <ph name="NAME" />‌కు కనెక్ట్ చేయండి</translation>
-<translation id="6212097153736801627">మీ <ph name="PERIPHERAL_NAME" />‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="6213808132343683860">పాక్షిక స్క్రీన్‌షాట్ తీయండి లేదా స్క్రీన్ రికార్డింగ్ చేయండి</translation>
 <translation id="6220928844947387476">ఇప్పుడు మీరు మిమ్మల్ని, మీ స్క్రీన్‌ను ఒకే సమయంలో రికార్డ్ చేయవచ్చు</translation>
 <translation id="622484624075952240">Down</translation>
@@ -1957,7 +1955,6 @@
 <translation id="888982883502837004">మీ పరికరం కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు అందుబాటులో ఉన్నాయి. రివ్యూ చేసి, అప్‌డేట్ చేయడానికి క్లిక్ చేయండి.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> శాశ్వతంగా తొలగించబడుతుంది</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% బ్యాటరీ మిగిలి ఉంది (<ph name="TIME_LEFT" /> సమయం మిగిలి ఉంది). మీ పరికరాన్ని పవర్‌కు కనెక్ట్ చేయండి.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> కనెక్ట్ అయింది, ఉపయోగించడానికి సిద్ధంగా ఉంది. సెట్టింగ్‌లలో మీ గ్రాఫిక్స్ టాబ్లెట్‌ను అనుకూలంగా మార్చుకోవచ్చు.</translation>
 <translation id="88986195241502842">దిగువ పేజీకి వెళుతుంది</translation>
 <translation id="8905919797434099235">(టైటిల్ లేదు)</translation>
 <translation id="890616557918890486">మూలాధారాన్ని మార్చు</translation>

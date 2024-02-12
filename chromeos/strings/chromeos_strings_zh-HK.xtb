@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1020274983236703756">現已推出 <ph name="PRODUCT_NAME" /> 專屬廣告元素</translation>
 <translation id="1022628058306505708">地球動態</translation>
+<translation id="1026212596705997935">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用這組快速鍵。請按下新的快速鍵。如要取代現有快速鍵，請再次按下這組快速鍵。</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">推出咗新功能，請用向上箭咀掣了解詳情。</translation>
 <translation id="1049663189809099096">淡彩黃</translation>
@@ -222,6 +223,7 @@
 <translation id="2391082728065870591">傳送意見反映報告</translation>
 <translation id="2407209115954268704">SIM 卡鎖定狀態</translation>
 <translation id="241419523391571119">請重新打開機蓋以進行測試</translation>
+<translation id="2414660853550118611">關於桌布</translation>
 <translation id="2414886740292270097">灰暗</translation>
 <translation id="2418150275289244458">在設定中開啟</translation>
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 張圖，總共有 <ph name="TOTAL_PAGES" /> 張</translation>
@@ -725,6 +727,7 @@
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">建立時間：<ph name="DATE" /></translation>
 <translation id="6189418609903030344">電池容量會隨使用時間增加而下降</translation>
 <translation id="6191293864534840972">域名伺服器格式錯誤</translation>
 <translation id="6196607555925437199">重新建立</translation>
@@ -748,6 +751,7 @@
 <translation id="6321407676395378991">開啟螢幕保護程式</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6325525973963619867">失敗</translation>
+<translation id="6327262166342360252">這張桌布是使用下列文字由 AI 建立而成：「<ph name="PROMPT" />」。</translation>
 <translation id="6331191339300272798">自動深色主題背景</translation>
 <translation id="6340526405444716530">個人化</translation>
 <translation id="6348738456043757611">使用者名稱和密碼</translation>
