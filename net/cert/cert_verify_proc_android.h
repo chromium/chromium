@@ -32,7 +32,8 @@ class NET_EXPORT CertVerifyProcAndroid : public CertVerifyProc {
                      const std::string& sct_list,
                      int flags,
                      CertVerifyResult* verify_result,
-                     const NetLogWithSource& net_log) override;
+                     const NetLogWithSource& net_log,
+                     std::optional<base::Time>) override;
 
   scoped_refptr<CertNetFetcher> cert_net_fetcher_;
 };

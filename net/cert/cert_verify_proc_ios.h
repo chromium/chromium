@@ -43,7 +43,8 @@ class CertVerifyProcIOS : public CertVerifyProc {
                      const std::string& sct_list,
                      int flags,
                      CertVerifyResult* verify_result,
-                     const NetLogWithSource& net_log) override;
+                     const NetLogWithSource& net_log,
+                     std::optional<base::Time> time_now) override;
 };
 
 }  // namespace net
