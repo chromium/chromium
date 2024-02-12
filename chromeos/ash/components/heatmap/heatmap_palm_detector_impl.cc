@@ -25,11 +25,11 @@ struct HeatmapModelMetadata {
 };
 
 using MetadataMap =
-    std::map<HeatmapPalmDetectorImpl::DeviceId, HeatmapModelMetadata>;
+    std::map<HeatmapPalmDetectorImpl::ModelId, HeatmapModelMetadata>;
 
 // Returns a map from device ID to model metadata for each supported device.
 MetadataMap GetHeatmapModelMetadata() {
-  return {{HeatmapPalmDetectorImpl::DeviceId::kRex,
+  return {{HeatmapPalmDetectorImpl::ModelId::kRex,
            {
                .model_file =
                    "mlservice-model-poncho_palm_rejection-20230907-v0.tflite",
@@ -44,11 +44,12 @@ HeatmapPalmDetectorImpl::HeatmapPalmDetectorImpl() : client_(this) {}
 
 HeatmapPalmDetectorImpl::~HeatmapPalmDetectorImpl() = default;
 
-void HeatmapPalmDetectorImpl::Start(DeviceId device, std::string_view path) {
+void HeatmapPalmDetectorImpl::Start(ModelId model_id,
+                                    std::string_view hidraw_path) {
   const MetadataMap model_metadata = GetHeatmapModelMetadata();
-  const auto metadata_lookup = model_metadata.find(device);
+  const auto metadata_lookup = model_metadata.find(model_id);
   if (metadata_lookup == model_metadata.end()) {
-    LOG(ERROR) << "Invalid device ID";
+    LOG(ERROR) << "Invalid model ID: " << static_cast<int>(model_id);
     return;
   }
 
@@ -58,7 +59,7 @@ void HeatmapPalmDetectorImpl::Start(DeviceId device, std::string_view path) {
   config->input_node = metadata_lookup->second.input_node;
   config->output_node = metadata_lookup->second.output_node;
   config->palm_threshold = metadata_lookup->second.palm_threshold;
-  config->heatmap_hidraw_device = path;
+  config->heatmap_hidraw_device = hidraw_path;
 
   if (!ml_service_) {
     chromeos::machine_learning::ServiceConnection::GetInstance()

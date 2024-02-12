@@ -9,8 +9,6 @@
 
 #include <string_view>
 
-#include <optional>
-
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 
@@ -20,9 +18,10 @@ namespace ui {
 class COMPONENT_EXPORT(EVDEV) HeatmapPalmDetector {
  public:
   enum class DetectionResult { kNoPalm = 0, kPalm = 1 };
-  enum class DeviceId {
-    kRex = 0,
-    kGeralt = 1,
+  enum class ModelId {
+    kNotSupported = 0,
+    kRex = 1,
+    kGeralt = 2,
   };
 
   using DetectionDoneCallback = base::OnceCallback<void(DetectionResult)>;
@@ -36,8 +35,8 @@ class COMPONENT_EXPORT(EVDEV) HeatmapPalmDetector {
   HeatmapPalmDetector& operator=(const HeatmapPalmDetector&) = delete;
   virtual ~HeatmapPalmDetector();
 
-  // Starts the palm detection service based on the device id and path.
-  virtual void Start(DeviceId device, std::string_view path) = 0;
+  // Starts the palm detection service based on the model id and hidraw path.
+  virtual void Start(ModelId model_id, std::string_view hidraw_path) = 0;
 
   // Gets the palm detection results of the latest heatmap data.
   virtual DetectionResult GetDetectionResult() const = 0;

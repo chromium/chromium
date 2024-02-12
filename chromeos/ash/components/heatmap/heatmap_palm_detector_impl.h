@@ -23,7 +23,7 @@ class HeatmapPalmDetectorImpl
   ~HeatmapPalmDetectorImpl() override;
 
   // ui::HeatmapPalmDetector:
-  void Start(DeviceId device, std::string_view path) override;
+  void Start(ModelId model_id, std::string_view hidraw_path) override;
   DetectionResult GetDetectionResult() const override;
   bool IsReady() const override;
 

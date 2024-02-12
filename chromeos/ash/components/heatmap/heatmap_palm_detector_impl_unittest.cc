@@ -34,7 +34,7 @@ class HeatmapPalmDetectorImplTest : public testing::Test {
 TEST_F(HeatmapPalmDetectorImplTest, StartsService) {
   HeatmapPalmDetectorImpl detector;
   EXPECT_FALSE(detector.IsReady());
-  detector.Start(HeatmapPalmDetectorImpl::DeviceId::kRex, "/dev/hidraw0");
+  detector.Start(HeatmapPalmDetectorImpl::ModelId::kRex, "/dev/hidraw0");
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(detector.IsReady());
   EXPECT_EQ(detector.GetDetectionResult(),
