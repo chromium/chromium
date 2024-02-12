@@ -1433,6 +1433,8 @@ TEST_F(BrowserAutofillManagerTest,
 #else
 TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_UnclassifiedField_SuggestionsShown) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillForUnclassifiedFieldsAvailable);
   // Create a form where the first field is unclassifiable.
   FormData form = CreateTestAddressFormData();
   form.fields[0].label = u"unclassified";
@@ -1444,13 +1446,12 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, first_field);
   external_delegate()->CheckSuggestionsNotReturned(first_field.global_id());
 
-  // Expect that no suggestions are returned because the field is unclassified.
-  // TODO(crbug.com/1493361): Revisit when address suggestions are generated for
-  // unclassified fields.
+  // Expect 3 address suggestions + footer because the fixture created three
+  // profiles during set up (see `CreateTestAutofillProfiles()`).
   GetAutofillSuggestions(
       form, first_field,
       AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  external_delegate()->CheckNoSuggestions(first_field.global_id());
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 5);
   // Expect 3 credit card suggestions + footer because the fixture created 3
   // credit cards during setup (see `CreateTestCreditCards()`).
   GetAutofillSuggestions(
@@ -1472,13 +1473,12 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, first_field);
   external_delegate()->CheckNoSuggestions(first_field.global_id());
 
-  // Expect 2 address suggestions + footer because the fixture created three
-  // profiles during set up, one of which is empty and cannot be suggested
-  // (see `CreateTestAutofillProfiles()`).
+  // Expect 3 address suggestions + footer because the fixture created three
+  // profiles during set up (see `CreateTestAutofillProfiles()`).
   GetAutofillSuggestions(
       form, first_field,
       AutofillSuggestionTriggerSource::kManualFallbackAddress);
-  external_delegate()->CheckSuggestionCount(first_field.global_id(), 4);
+  external_delegate()->CheckSuggestionCount(first_field.global_id(), 5);
   // Expect 4 credit card suggestions + footer because the fixture created 3
   // credit cards during setup (see `CreateTestCreditCards()`).
   GetAutofillSuggestions(
@@ -1501,12 +1501,11 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   for (const auto& field : form.fields) {
-    // Expect 2 address suggestions + footer because the fixture created three
-    // profiles during set up, one of which is empty and cannot be suggested
-    // (see `CreateTestAutofillProfiles()`).
+    // Expect 3 address suggestions + footer because the fixture created three
+    // profiles during set up (see `CreateTestAutofillProfiles()`).
     GetAutofillSuggestions(
         form, field, AutofillSuggestionTriggerSource::kManualFallbackAddress);
-    external_delegate()->CheckSuggestionCount(field.global_id(), 4);
+    external_delegate()->CheckSuggestionCount(field.global_id(), 5);
     base::ranges::all_of(
         external_delegate()->suggestions(), [](const Suggestion& suggestion) {
           return suggestion.popup_item_id == PopupItemId::kAddressEntry;
@@ -1526,15 +1525,20 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_ClassifiedField_PaymentsForm_ShowSuggestions) {
+  base::test::ScopedFeatureList enabled_features(
+      features::kAutofillForUnclassifiedFieldsAvailable);
   // Create a form where all fields can be classified.
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
-
-  // TODO(crbug.com/1493361): add expectation on the address manual fallback
-  // suggestions shown after the address suggestions are generated for
-  // unclassified fields.
   const FormFieldData& cc_name_field = form.fields[0];
+
+  // Expect 3 address suggestions + footer because the fixture created three
+  // profiles during set up (see `CreateTestAutofillProfiles()`).
+  GetAutofillSuggestions(
+      form, cc_name_field,
+      AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  external_delegate()->CheckSuggestionCount(cc_name_field.global_id(), 5);
   // Expect 2 credit card suggestions + footer because manual fallback flow
   // triggered on a classified credit card field should generate regular
   // suggestions.
