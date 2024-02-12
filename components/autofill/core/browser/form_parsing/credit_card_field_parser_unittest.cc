@@ -150,7 +150,7 @@ TEST_P(CreditCardFieldParserTest, ParseMiniumCreditCardWith2DigitYearHint) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_2_DIGIT_YEAR);
-  list_.back()->placeholder = u"YY";
+  fields_.back()->placeholder = u"YY";
   ClassifyAndVerify(ParseResult::kParsed);
 }
 
@@ -163,8 +163,8 @@ TEST_P(CreditCardFieldParserTest, ParseMiniumCreditCardWithMaxLength) {
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_2_DIGIT_YEAR);
   // Even though the placehodler indicates YYYY, the max-length only enables
   // a YY expiration format.
-  list_.back()->max_length = 2u;
-  list_.back()->placeholder = u"YYYY";
+  fields_.back()->max_length = 2u;
+  fields_.back()->placeholder = u"YYYY";
   ClassifyAndVerify(ParseResult::kParsed);
 }
 
@@ -214,7 +214,7 @@ TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
                             expected_type());
 
   if (ShouldSwapMonthAndYear())
-    std::swap(list_[1], list_[2]);
+    std::swap(fields_[1], fields_[2]);
 
   ClassifyAndVerify(ParseResult::kParsed);
 }

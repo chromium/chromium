@@ -36,7 +36,7 @@ class FormFieldParserTest
                       LanguageCode language = LanguageCode("")) {
     ParsingContext context(client_country, language,
                            GetActivePatternSource().value());
-    FormFieldParser::ParseFormFields(context, list_,
+    FormFieldParser::ParseFormFields(context, fields_,
                                      /*is_form_tag=*/true,
                                      field_candidates_map_);
     return field_candidates_map_.size();
@@ -46,7 +46,7 @@ class FormFieldParserTest
   int ParseSingleFieldForms() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternSource().value());
-    FormFieldParser::ParseSingleFieldForms(context, list_,
+    FormFieldParser::ParseSingleFieldForms(context, fields_,
                                            /*is_form_tag=*/true,
                                            field_candidates_map_);
     return field_candidates_map_.size();
@@ -55,7 +55,7 @@ class FormFieldParserTest
   int ParseStandaloneCVCFields() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternSource().value());
-    FormFieldParser::ParseStandaloneCVCFields(context, list_,
+    FormFieldParser::ParseStandaloneCVCFields(context, fields_,
                                               field_candidates_map_);
     return field_candidates_map_.size();
   }
@@ -63,7 +63,7 @@ class FormFieldParserTest
   int ParseStandaloneEmailFields() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternSource().value());
-    FormFieldParser::ParseStandaloneEmailFields(context, list_,
+    FormFieldParser::ParseStandaloneEmailFields(context, fields_,
                                                 field_candidates_map_);
     return field_candidates_map_.size();
   }
@@ -170,7 +170,7 @@ TEST_P(FormFieldParserTest, ParseFormFieldsEnforceMinFillableFields) {
 // Test that the parseable label is used when the feature is enabled.
 TEST_P(FormFieldParserTest, TestParseableLabels) {
   AddTextFormFieldData("", "not a parseable label", UNKNOWN_TYPE);
-  AutofillField* autofill_field = list_.back().get();
+  AutofillField* autofill_field = fields_.back().get();
   autofill_field->set_parseable_label(u"First Name");
 
   {
