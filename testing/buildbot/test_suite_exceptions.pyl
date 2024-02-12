@@ -3699,11 +3699,13 @@
     },
   },
   'ondevice_stability_tests Intel UHD 630': {
-    'remove_from': [
-      # TODO(b:324122374): Enable this suite on the win32 builder
-      # once GPU issue is resolved.
-      'optimization_guide-win32',
-    ]
+    'modifications': {
+      'optimization_guide-win32': {
+        'args': [
+          '--target-platform=win32',
+        ],
+      },
+    },
   },
   'ondevice_stability_tests NVIDIA GeForce GTX 1660': {
     'modifications': {
