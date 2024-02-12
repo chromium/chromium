@@ -87,6 +87,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
 
   // ComposeSessionPageHandler
+  // Tracks that there was a user action to cancel an input edit in the current
+  // session in `session_events`.
+  void LogCancelEdit() override;
 
   // Requests a compose response for `input`. The result will be sent through
   // the ComposeDialog interface rather than through a callback, as it might
@@ -97,6 +100,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // should be changed. An empty `style` without a tone or length requests a
   // rewrite without changes to the tone or length.
   void Rewrite(compose::mojom::StyleModifiersPtr style) override;
+
+  // Tracks that there was a user action to edit the input in the current
+  // session in `session_events`.
+  void LogEditInput() override;
 
   // Retrieves and returns (through `callback`) state information for the last
   // field the user selected compose on.

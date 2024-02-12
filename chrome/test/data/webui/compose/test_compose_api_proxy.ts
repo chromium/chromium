@@ -41,9 +41,11 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'acceptComposeResult',
+      'logCancelEdit',
       'closeUi',
       'compose',
       'rewrite',
+      'logEditInput',
       'openBugReportingLink',
       'openComposeLearnMorePage',
       'openFeedbackSurveyLink',
@@ -59,6 +61,10 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   acceptComposeResult(): Promise<boolean> {
     this.methodCalled('acceptComposeResult');
     return Promise.resolve(true);
+  }
+
+  logCancelEdit() {
+    this.methodCalled('logCancelEdit');
   }
 
   completeFirstRun() {}
@@ -77,6 +83,10 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
 
   rewrite(style: StyleModifiers): void {
     this.methodCalled('rewrite', style);
+  }
+
+  logEditInput() {
+    this.methodCalled('logEditInput');
   }
 
   undo(): Promise<(ComposeState | null)> {

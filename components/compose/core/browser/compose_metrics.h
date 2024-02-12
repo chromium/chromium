@@ -118,7 +118,9 @@ enum class ComposeSessionEventTypes {
   kThumbsUp = 16,
   kInsertClicked = 17,
   kCloseClicked = 18,
-  kMaxValue = kCloseClicked,
+  kEditClicked = 19,
+  kCancelEditClicked = 20,
+  kMaxValue = kCancelEditClicked,
 };
 
 // Enum for recording the show status of the Compose context menu item.
@@ -229,6 +231,10 @@ struct ComposeSessionEvents {
   bool inserted_results = false;
   // True if the the user closed the compose session via the "x" button.
   bool close_clicked = false;
+  // True if the user has pressed the "Edit" button this session.
+  bool did_click_edit = false;
+  // True if the user has pressed "Cancel" on the editing view for this session.
+  bool did_click_cancel_on_edit = false;
   // Number of on-device responses received.
   unsigned int on_device_responses = 0;
   // Number of server responses received.

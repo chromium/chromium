@@ -547,6 +547,7 @@ suite('ComposeApp', () => {
     // Mock clicking edit in the textarea and verify new textarea shows.
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await testProxy.whenCalled('logEditInput');
     assertTrue(isVisible(app.$.editTextarea));
 
     // Mock updating input and cancelling.
@@ -554,6 +555,7 @@ suite('ComposeApp', () => {
     app.$.editTextarea.value = 'Here is a better input.';
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     app.$.cancelEditButton.click();
+    await testProxy.whenCalled('logCancelEdit');
     assertFalse(isVisible(app.$.editTextarea));
     assertEquals('Initial input.', app.$.textarea.value);
 

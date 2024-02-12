@@ -122,6 +122,9 @@ enum UserFeedback {
 
 // Interface for calls from Compose dialog JS into the Browser process.
 interface ComposeSessionPageHandler {
+  // Asks the browser to track a cancel edit action for logging purposes.
+  LogCancelEdit();
+
   // Asks the Browser to compose `input`, informing the Browser if the compose
   // call was based on the user input being 'edited' in the dialog after the
   // initial compose response.
@@ -131,6 +134,9 @@ interface ComposeSessionPageHandler {
   // response should be changed. A null `style` requests a rewrite without
   // changes to the tone or length.
   Rewrite(StyleModifiers? style);
+
+  // Asks the browser to track an edit input action for logging purposes.
+  LogEditInput();
 
   // Asks the native handler to store `webui_state` for the last field the user
   // selected compose on.

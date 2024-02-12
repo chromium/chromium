@@ -135,6 +135,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Thumbs Up Clicked"/>
   <int value="17" label="Insert Clicked"/>
   <int value="18" label="Close Clicked"/>
+  <int value="19" label="Edit Clicked"/>
+  <int value="20" label="Cancel Edit Clicked"/>
 </enum>
 
 <enum name="ComposeShowStatus">

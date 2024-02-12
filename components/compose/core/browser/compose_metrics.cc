@@ -149,6 +149,14 @@ void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kCloseClicked);
   }
+  if (session_events.did_click_edit) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kEditClicked);
+  }
+  if (session_events.did_click_cancel_on_edit) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kCancelEditClicked);
+  }
 }
 
 }  // namespace

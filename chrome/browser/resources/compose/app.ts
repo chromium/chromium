@@ -433,6 +433,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.animator_.transitionFromEditingToResult(resultContainerHeight);
     this.$.textarea.transitionToResult(fullBodyHeight);
     this.$.editTextarea.transitionToResult(fullBodyHeight);
+
+    this.apiProxy_.logCancelEdit();
   }
 
   private onClose_(e: Event) {
@@ -467,6 +469,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.animator_.transitionFromResultToEditing(resultContainerHeight);
     this.$.textarea.transitionToEditing(fullBodyHeight);
     this.$.editTextarea.transitionToEditing(fullBodyHeight);
+
+    this.apiProxy_.logEditInput();
   }
 
   private onIsEditingSubmittedInputChanged_() {

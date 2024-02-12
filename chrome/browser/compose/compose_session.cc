@@ -336,6 +336,11 @@ void ComposeSession::Bind(
   dialog_remote_.Bind(std::move(dialog));
 }
 
+// TODO(b/f3213db859d47): Add histogram test for Sessions triggering CancelEdit.
+void ComposeSession::LogCancelEdit() {
+  session_events_.did_click_cancel_on_edit = true;
+}
+
 // ComposeSessionPageHandler
 void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   if (is_input_edited) {
@@ -380,6 +385,11 @@ void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
   request.mutable_rewrite_params()->set_previous_response(
       most_recent_ok_state_->mojo_state()->response->result);
   MakeRequest(std::move(request), false);
+}
+
+// TODO(b/300974056): Add histogram test for Sessions triggering EditInput.
+void ComposeSession::LogEditInput() {
+  session_events_.did_click_edit = true;
 }
 
 void ComposeSession::MakeRequest(

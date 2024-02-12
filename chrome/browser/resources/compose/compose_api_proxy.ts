@@ -8,10 +8,12 @@ import {ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSess
 /** @interface */
 export interface ComposeApiProxy {
   acceptComposeResult(): Promise<boolean>;
+  logCancelEdit(): void;
   completeFirstRun(): void;
   closeUi(reason: CloseReason): void;
   compose(input: string, edited: boolean): void;
   rewrite(style: StyleModifiers|null): void;
+  logEditInput(): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
   openComposeLearnMorePage(): void;
@@ -54,6 +56,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
         res => res.success);
   }
 
+  logCancelEdit(): void {
+    this.composeSessionPageHandler.logCancelEdit();
+  }
+
   completeFirstRun(): void {
     this.composeClientPageHandler.completeFirstRun();
   }
@@ -72,6 +78,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   rewrite(style: StyleModifiers|null): void {
     this.composeSessionPageHandler.rewrite(style);
+  }
+
+  logEditInput(): void {
+    this.composeSessionPageHandler.logEditInput();
   }
 
   getRouter() {
