@@ -35,6 +35,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/file_stream_reader_to_data_pipe.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
@@ -450,6 +451,10 @@ void IndexedDBBucketContext::ForceClose(bool doom) {
 
   // Initiate deletion if appropriate.
   RunTasks();
+}
+
+int64_t IndexedDBBucketContext::GetInMemorySize() {
+  return backing_store_->GetInMemorySize();
 }
 
 void IndexedDBBucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
@@ -911,6 +916,18 @@ void IndexedDBBucketContext::CompactBackingStoreForTesting() {
       break;
     }
   }
+}
+
+void IndexedDBBucketContext::WriteToIndexedDBForTesting(
+    const std::string& key,
+    const std::string& value,
+    base::OnceClosure callback) {
+  TransactionalLevelDBDatabase* db = backing_store_->db();
+  std::string value_copy = value;
+  leveldb::Status s = db->Put(key, &value_copy);
+  CHECK(s.ok()) << s.ToString();
+  ForceClose(true);
+  std::move(callback).Run();
 }
 
 // static

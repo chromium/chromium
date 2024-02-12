@@ -1097,6 +1097,8 @@ source_set("browser") {
     "image_capture/image_capture_impl.h",
     "indexed_db/database_impl.cc",
     "indexed_db/database_impl.h",
+    "indexed_db/file_path_util.cc",
+    "indexed_db/file_path_util.h",
     "indexed_db/file_stream_reader_to_data_pipe.cc",
     "indexed_db/file_stream_reader_to_data_pipe.h",
     "indexed_db/indexed_db.h",

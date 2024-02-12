@@ -602,7 +602,8 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // Returns true if a blob cleanup job is pending on journal_cleaning_timer_.
   bool IsBlobCleanupPending();
 
-  int64_t GetInMemoryBlobSize() const;
+  // Gets the total size of blobs and the database for in-memory backing stores.
+  int64_t GetInMemorySize() const;
 
 #if DCHECK_IS_ON()
   int NumBlobFilesDeletedForTesting() {

@@ -29,7 +29,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/values.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -39,10 +38,9 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
-#include "content/browser/indexed_db/indexed_db_backing_store.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
@@ -77,34 +75,6 @@ bool IsAllowedPath(const std::vector<base::FilePath>& allowed_paths,
       return true;
   }
   return false;
-}
-
-leveldb::Status GetDBSizeFromEnv(leveldb::Env* env,
-                                 const std::string& path,
-                                 int64_t* total_size_out) {
-  *total_size_out = 0;
-  // Root path should be /, but in MemEnv, a path name is not tailed with '/'
-  DCHECK_EQ(path.back(), '/');
-  const std::string path_without_slash = path.substr(0, path.length() - 1);
-
-  // This assumes that leveldb will not put a subdirectory into the directory
-  std::vector<std::string> file_names;
-  leveldb::Status s = env->GetChildren(path_without_slash, &file_names);
-  if (!s.ok()) {
-    return s;
-  }
-
-  for (std::string& file_name : file_names) {
-    file_name.insert(0, path);
-    uint64_t file_size;
-    s = env->GetFileSize(file_name, &file_size);
-    if (!s.ok()) {
-      return s;
-    } else {
-      *total_size_out += static_cast<int64_t>(file_size);
-    }
-  }
-  return s;
 }
 
 // Used to field IDBFactory requests when the quota system failed to
@@ -562,45 +532,9 @@ void IndexedDBContextImpl::WriteToIndexedDBForTesting(
     const std::string& key,
     const std::string& value,
     base::OnceClosure callback) {
-  IndexedDBBucketContext* bucket_context =
-      GetBucketContextForTesting(bucket_locator.id);  // IN-TEST
-
-  TransactionalLevelDBDatabase* db = bucket_context->backing_store()->db();
-  std::string value_copy = value;
-  leveldb::Status s = db->Put(key, &value_copy);
-  CHECK(s.ok()) << s.ToString();
-  bucket_context->ForceClose(true);
-  std::move(callback).Run();
-}
-
-void IndexedDBContextImpl::GetBlobCountForTesting(
-    const BucketLocator& bucket_locator,
-    GetBlobCountForTestingCallback callback) {
-  std::move(callback).Run(GetBucketBlobFileCount(bucket_locator));
-}
-
-void IndexedDBContextImpl::GetNextBlobNumberForTesting(
-    const BucketLocator& bucket_locator,
-    int64_t database_id,
-    GetNextBlobNumberForTestingCallback callback) {
-  IndexedDBBucketContext* bucket_context =
-      GetBucketContextForTesting(bucket_locator.id);  // IN-TEST
-
-  TransactionalLevelDBDatabase* db = bucket_context->backing_store()->db();
-
-  const std::string key_gen_key = DatabaseMetaDataKey::Encode(
-      database_id, DatabaseMetaDataKey::BLOB_KEY_GENERATOR_CURRENT_NUMBER);
-  std::string data;
-  bool found = false;
-  bool ok = db->Get(key_gen_key, &data, &found).ok();
-  CHECK(found);
-  CHECK(ok);
-  std::string_view slice(data);
-  int64_t number;
-  CHECK(DecodeVarInt(&slice, &number));
-  CHECK(DatabaseMetaDataKey::IsValidBlobNumber(number));
-
-  std::move(callback).Run(number);
+  bucket_contexts_.find(bucket_locator.id)
+      ->second->WriteToIndexedDBForTesting(key, value,  // IN-TEST
+                                           std::move(callback));
 }
 
 void IndexedDBContextImpl::GetPathForBlobForTesting(
@@ -608,22 +542,15 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
     int64_t database_id,
     int64_t blob_number,
     GetPathForBlobForTestingCallback callback) {
-  IndexedDBBucketContext* bucket_context =
-      GetBucketContextForTesting(bucket_locator.id);  // IN-TEST
-
-  IndexedDBBackingStore* backing_store = bucket_context->backing_store();
-  base::FilePath path =
-      backing_store->GetBlobFileName(database_id, blob_number);
-  std::move(callback).Run(path);
+  std::move(callback).Run(indexed_db::GetBlobFileNameForKey(
+      GetBlobStorePath(bucket_locator), database_id, blob_number));
 }
 
 void IndexedDBContextImpl::CompactBackingStoreForTesting(
     const BucketLocator& bucket_locator,
     base::OnceClosure callback) {
-  auto it = bucket_contexts_.find(bucket_locator.id);
-  if (it != bucket_contexts_.end()) {
-    it->second->CompactBackingStoreForTesting();  // IN-TEST
-  }
+  bucket_contexts_.find(bucket_locator.id)
+      ->second->CompactBackingStoreForTesting();  // IN-TEST
   std::move(callback).Run();
 }
 
@@ -672,19 +599,6 @@ std::optional<BucketLocator> IndexedDBContextImpl::LookUpBucket(
     return std::nullopt;
 
   return *bucket_locator;
-}
-
-int IndexedDBContextImpl::GetBucketBlobFileCount(
-    const BucketLocator& bucket_locator) {
-  DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
-  int count = 0;
-  base::FileEnumerator file_enumerator(GetBlobStorePath(bucket_locator), true,
-                                       base::FileEnumerator::FILES);
-  for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
-       file_path = file_enumerator.Next()) {
-    count++;
-  }
-  return count;
 }
 
 int64_t IndexedDBContextImpl::GetBucketDiskUsage(
@@ -880,7 +794,7 @@ int64_t IndexedDBContextImpl::ReadUsageFromDisk(
     const BucketLocator& bucket_locator,
     bool write_in_progress) const {
   if (is_incognito()) {
-    return GetInMemoryDBSize(bucket_locator);
+    return GetInMemorySize(bucket_locator);
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -1066,20 +980,13 @@ void IndexedDBContextImpl::ForEachBucketContext(
   }
 }
 
-int64_t IndexedDBContextImpl::GetInMemoryDBSize(
+int64_t IndexedDBContextImpl::GetInMemorySize(
     const BucketLocator& bucket_locator) const {
   auto it = bucket_contexts_.find(bucket_locator.id);
   if (it == bucket_contexts_.end()) {
     return 0;
   }
-  IndexedDBBackingStore* backing_store = it->second->backing_store();
-  int64_t level_db_size = 0;
-  leveldb::Status s =
-      GetDBSizeFromEnv(backing_store->db()->env(), "/", &level_db_size);
-  if (!s.ok()) {
-    LOG(ERROR) << "Failed to GetDBSizeFromEnv: " << s.ToString();
-  }
-  return backing_store->GetInMemoryBlobSize() + level_db_size;
+  return it->second->GetInMemorySize();
 }
 
 std::vector<storage::BucketId>

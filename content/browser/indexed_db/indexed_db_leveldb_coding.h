@@ -321,7 +321,7 @@ class DatabaseMetaDataKey {
   };
 
   CONTENT_EXPORT static const int64_t kAllBlobsNumber;
-  static const int64_t kBlobNumberGeneratorInitialNumber;
+  CONTENT_EXPORT static const int64_t kBlobNumberGeneratorInitialNumber;
   // All keys <= 0 are invalid.  This one's just a convenient example.
   static const int64_t kInvalidBlobNumber;
 

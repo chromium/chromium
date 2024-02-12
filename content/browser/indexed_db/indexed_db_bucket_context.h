@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -186,6 +187,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // with `doom` set to true, they will self-close.
   void ForceClose(bool doom);
 
+  int64_t GetInMemorySize();
+
   bool IsClosing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return closing_stage_ != ClosingState::kNotClosing;
@@ -294,6 +297,9 @@ class CONTENT_EXPORT IndexedDBBucketContext
       base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
 
   void CompactBackingStoreForTesting();
+  void WriteToIndexedDBForTesting(const std::string& key,
+                                  const std::string& value,
+                                  base::OnceClosure callback);
 
   // Called when a fatal error has occurred that should result in tearing down
   // the backing store. `IndexedDBBucketContext` *may* be synchronously

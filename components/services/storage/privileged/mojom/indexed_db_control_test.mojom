@@ -48,14 +48,6 @@ interface IndexedDBControlTest {
   WriteToIndexedDBForTesting(storage.mojom.BucketLocator bucket_locator,
                              string key, string value) => ();
 
-  // Returns the number of blobs for a given `bucket_locator`.
-  GetBlobCountForTesting(storage.mojom.BucketLocator bucket_locator) =>
-    (int64 num_blobs);
-
-  // Returns the next blob id for a given `bucket_locator`.
-  GetNextBlobNumberForTesting(storage.mojom.BucketLocator bucket_locator,
-                              int64 database_id) => (int64 next_blob_number);
-
   // Returns the path for a given key/database/blob.
   GetPathForBlobForTesting(storage.mojom.BucketLocator bucket_locator,
                            int64 database_id, int64 blob_number) =>

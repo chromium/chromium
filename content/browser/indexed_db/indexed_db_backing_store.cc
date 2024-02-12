@@ -25,7 +25,6 @@
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -42,6 +41,7 @@
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
+#include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
@@ -109,33 +109,38 @@ class AutoDidCommitTransaction {
 
 namespace {
 
-base::FilePath GetBlobDirectoryName(const base::FilePath& path_base,
-                                    int64_t database_id) {
-  return path_base.AppendASCII(base::StringPrintf("%" PRIx64, database_id));
-}
-
-base::FilePath GetBlobDirectoryNameForKey(const base::FilePath& path_base,
-                                          int64_t database_id,
-                                          int64_t blob_number) {
-  base::FilePath path = GetBlobDirectoryName(path_base, database_id);
-  path = path.AppendASCII(base::StringPrintf(
-      "%02x", static_cast<int>(blob_number & 0x000000000000ff00) >> 8));
-  return path;
-}
-
-base::FilePath GetBlobFileNameForKey(const base::FilePath& path_base,
-                                     int64_t database_id,
-                                     int64_t blob_number) {
-  base::FilePath path =
-      GetBlobDirectoryNameForKey(path_base, database_id, blob_number);
-  path = path.AppendASCII(base::StringPrintf("%" PRIx64, blob_number));
-  return path;
-}
-
 std::string ComputeOriginIdentifier(
     const storage::BucketLocator& bucket_locator) {
   return storage::GetIdentifierFromOrigin(bucket_locator.storage_key.origin()) +
          "@1";
+}
+
+leveldb::Status GetDBSizeFromEnv(leveldb::Env* env,
+                                 const std::string& path,
+                                 int64_t* total_size_out) {
+  *total_size_out = 0;
+  // Root path should be /, but in MemEnv, a path name is not tailed with '/'.
+  DCHECK_EQ(path.back(), '/');
+  const std::string path_without_slash = path.substr(0, path.length() - 1);
+
+  // This assumes that leveldb will not put a subdirectory into the directory.
+  std::vector<std::string> file_names;
+  leveldb::Status s = env->GetChildren(path_without_slash, &file_names);
+  if (!s.ok()) {
+    return s;
+  }
+
+  for (std::string& file_name : file_names) {
+    file_name.insert(0, path);
+    uint64_t file_size;
+    s = env->GetFileSize(file_name, &file_size);
+    if (!s.ok()) {
+      return s;
+    } else {
+      *total_size_out += static_cast<int64_t>(file_size);
+    }
+  }
+  return s;
 }
 
 // TODO(ericu): Error recovery. If we persistently can't read the
@@ -1883,19 +1888,27 @@ Status IndexedDBBackingStore::GetRecord(Transaction* transaction,
                                                   record);
 }
 
-int64_t IndexedDBBackingStore::GetInMemoryBlobSize() const {
+int64_t IndexedDBBackingStore::GetInMemorySize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(in_memory());
 
-  int64_t total_size = 0;
+  int64_t blob_size = 0;
   for (const auto& kvp : in_memory_external_object_map_) {
     for (const IndexedDBExternalObject& object :
          kvp.second->external_objects()) {
       if (object.object_type() == IndexedDBExternalObject::ObjectType::kBlob) {
-        total_size += object.size();
+        blob_size += object.size();
       }
     }
   }
-  return total_size;
+
+  int64_t level_db_size = 0;
+  leveldb::Status s = GetDBSizeFromEnv(db_->env(), "/", &level_db_size);
+  if (!s.ok()) {
+    LOG(ERROR) << "Failed to GetDBSizeFromEnv: " << s.ToString();
+  }
+
+  return blob_size + level_db_size;
 }
 
 Status IndexedDBBackingStore::PutRecord(
@@ -2355,7 +2368,8 @@ base::FilePath IndexedDBBackingStore::GetBlobFileName(
     int64_t database_id,
     int64_t blob_number) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetBlobFileNameForKey(blob_path_, database_id, blob_number);
+  return indexed_db::GetBlobFileNameForKey(blob_path_, database_id,
+                                           blob_number);
 }
 
 bool IndexedDBBackingStore::RemoveBlobFile(int64_t database_id,
@@ -2372,7 +2386,8 @@ bool IndexedDBBackingStore::RemoveBlobFile(int64_t database_id,
 
 bool IndexedDBBackingStore::RemoveBlobDirectory(int64_t database_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::FilePath path = GetBlobDirectoryName(blob_path_, database_id);
+  base::FilePath path =
+      indexed_db::GetBlobDirectoryName(blob_path_, database_id);
   return base::DeletePathRecursively(path);
 }
 
@@ -4250,7 +4265,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
             continue;
           // If this directory creation fails then the WriteBlobToFile call
           // will fail. So there is no need to special-case handle it here.
-          base::FilePath path = GetBlobDirectoryNameForKey(
+          base::FilePath path = indexed_db::GetBlobDirectoryNameForKey(
               backing_store_->blob_path_, database_id_, entry.blob_number());
           base::CreateDirectory(path);
           // TODO(dmurph): Refactor IndexedDBExternalObject to not use a

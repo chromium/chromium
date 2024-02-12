@@ -112,12 +112,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
                                   const std::string& key,
                                   const std::string& value,
                                   base::OnceClosure callback) override;
-  void GetBlobCountForTesting(const storage::BucketLocator& bucket_locator,
-                              GetBlobCountForTestingCallback callback) override;
-  void GetNextBlobNumberForTesting(
-      const storage::BucketLocator& bucket_locator,
-      int64_t database_id,
-      GetNextBlobNumberForTestingCallback callback) override;
   void GetPathForBlobForTesting(
       const storage::BucketLocator& bucket_locator,
       int64_t database_id,
@@ -174,7 +168,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   const base::FilePath GetFirstPartyDataPathForTesting() const;
 
   bool IsInMemoryContext() const { return base_data_path_.empty(); }
-  int GetBucketBlobFileCount(const storage::BucketLocator& bucket_locator);
 
   bool is_incognito() const { return base_data_path_.empty(); }
 
@@ -278,8 +271,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // Applies the given `callback` to all bucket contexts.
   void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
 
-  // For usage reporting.
-  int64_t GetInMemoryDBSize(const storage::BucketLocator& bucket_locator) const;
+  // Calculates in-memory/incognito usage for usage reporting.
+  int64_t GetInMemorySize(const storage::BucketLocator& bucket_locator) const;
 
   std::vector<storage::BucketId> GetOpenBucketIdsForTesting() const;
 
