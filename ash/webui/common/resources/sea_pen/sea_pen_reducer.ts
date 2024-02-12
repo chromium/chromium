@@ -157,7 +157,7 @@ function pendingSelectedReducer(
       return action.image;
     case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
       const {key} = action;
-      if (!key) {
+      if (state && !key) {
         console.warn('pendingSelectedReducer: Failed to get selected image.');
         return null;
       } else if (globalState.loading.setImage == 0) {
