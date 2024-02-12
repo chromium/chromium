@@ -561,7 +561,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Dawn.InfoCollectionTimeMS" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-06-25">
   <owner>enga@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
