@@ -13,7 +13,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='target'",
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [200, 200],
       "backgroundColor": "#00800080",
       "invalidations": [

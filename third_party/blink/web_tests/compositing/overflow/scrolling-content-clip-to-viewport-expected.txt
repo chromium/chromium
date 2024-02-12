@@ -23,10 +23,8 @@
       "contentsOpaque": true
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV class='column'",
-      "position": [10, 10],
-      "bounds": [284, 1204],
-      "contentsOpaque": true,
+      "name": "LayoutNGBlockFlow DIV class='scroller'",
+      "bounds": [305, 1224],
       "backgroundColor": "#C0C0C0"
     }
   ]

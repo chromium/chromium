@@ -843,19 +843,37 @@ TEST_P(ScrollingTest, touchActionOnScrollingElement) {
   )HTML");
   ForceFullCompositingUpdate();
 
-  // The outer layer (not scrollable) will be fully marked as pan-y (100x100)
-  // and the scrollable layer will only have the contents marked as pan-y
-  // (50x150).
+  // The scrolling contents layer is fully marked as pan-y.
   const auto* scrolling_contents_layer =
       ScrollingContentsLayerByDOMElementId("scrollable");
   cc::Region region =
       scrolling_contents_layer->touch_action_region().GetRegionForTouchAction(
           TouchAction::kPanY | TouchAction::kInternalNotWritable);
-  EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 150));
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_EQ(scrolling_contents_layer->bounds(), gfx::Size(100, 150));
+    EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 100, 150));
+  } else {
+    // When HitTestOpaqueness is not enabled, the scrolling contents layer
+    // contains only the drawable contents due to the lack of the hit test
+    // data for the whole scrolling contents.
+    EXPECT_EQ(scrolling_contents_layer->bounds(), gfx::Size(50, 150));
+    EXPECT_EQ(region.bounds(), gfx::Rect(0, 0, 50, 150));
+  }
 
-  const auto* container_layer = MainFrameScrollingContentsLayer();
+  const auto* container_layer = LayerByDOMElementId("scrollable");
   region = container_layer->touch_action_region().GetRegionForTouchAction(
       TouchAction::kPanY | TouchAction::kInternalNotWritable);
+  EXPECT_EQ(region.bounds(), gfx::Rect());
+  // TODO(crbug.com/324285520): Do we need touch action data in a ScrollHitTest
+  // layer?
+  EXPECT_EQ(container_layer->bounds(), gfx::Size(100, 100));
+
+  // The area of the scroller (8,8 100x100) in the main frame scrolling
+  // contents layer is also marked as pan-y.
+  const auto* main_frame_scrolling_layer = MainFrameScrollingContentsLayer();
+  region =
+      main_frame_scrolling_layer->touch_action_region().GetRegionForTouchAction(
+          TouchAction::kPanY | TouchAction::kInternalNotWritable);
   EXPECT_EQ(region.bounds(), gfx::Rect(8, 8, 100, 100));
 }
 

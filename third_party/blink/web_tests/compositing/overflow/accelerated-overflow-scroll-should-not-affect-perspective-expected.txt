@@ -32,6 +32,12 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [185, 290],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV class='child first'",
       "bounds": [60, 200],
       "contentsOpaque": true,

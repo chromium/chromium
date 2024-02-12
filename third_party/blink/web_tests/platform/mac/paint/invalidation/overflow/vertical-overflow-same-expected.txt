@@ -14,15 +14,6 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV class='vertical-rl container'",
-      "position": [1, 1],
-      "bounds": [2100, 100],
-      "invalidations": [
-        [0, 0, 100, 100]
-      ],
-      "transform": 1
-    },
-    {
       "name": "HorizontalScrollbar",
       "position": [1, 186],
       "bounds": [285, 15],
@@ -33,6 +24,15 @@
       "name": "VerticalScrollbar",
       "position": [286, 1],
       "bounds": [15, 200],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV class='vertical-rl container'",
+      "position": [1, 1],
+      "bounds": [2100, 185],
+      "invalidations": [
+        [0, 0, 100, 100]
+      ],
       "transform": 1
     }
   ],

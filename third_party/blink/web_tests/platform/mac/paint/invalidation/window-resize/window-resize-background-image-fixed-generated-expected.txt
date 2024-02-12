@@ -10,8 +10,8 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
-      "bounds": [600, 8],
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [600, 250],
       "drawsContent": false
     }
   ]
@@ -28,8 +28,8 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
-      "bounds": [400, 8],
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [400, 250],
       "drawsContent": false
     }
   ]
@@ -46,8 +46,8 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
-      "bounds": [400, 8],
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [400, 600],
       "drawsContent": false
     }
   ]
@@ -64,8 +64,8 @@
       ]
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
-      "bounds": [800, 8],
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
       "drawsContent": false
     }
   ]

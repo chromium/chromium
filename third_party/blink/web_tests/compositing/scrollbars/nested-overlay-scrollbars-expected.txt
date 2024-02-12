@@ -14,9 +14,10 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
-      "bounds": [204, 204],
-      "transform": 3
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV id='outer'",
+      "position": [2, 2],
+      "bounds": [400, 704],
+      "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
@@ -28,14 +29,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
       "position": [2, 2],
-      "bounds": [2000, 9000],
-      "transform": 3
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='spacer'",
-      "position": [2, 2002],
-      "bounds": [5000, 1000],
-      "drawsContent": false,
+      "bounds": [5000, 9000],
       "transform": 3
     },
     {

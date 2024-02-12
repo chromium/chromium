@@ -231,7 +231,13 @@ TEST_P(ViewPainterTest, TouchActionRect) {
   EXPECT_THAT(
       ContentPaintChunks(),
       ElementsAre(IsPaintChunk(
-          1, 1, PaintChunk::Id(html->Layer()->Id(), DisplayItem::kLayerChunk),
+          1, 1,
+          RuntimeEnabledFeatures::HitTestOpaquenessEnabled()
+              ? PaintChunk::Id(view->GetScrollableArea()
+                                   ->GetScrollingBackgroundDisplayItemClient()
+                                   .Id(),
+                               DisplayItem::kDocumentBackground)
+              : PaintChunk::Id(html->Layer()->Id(), DisplayItem::kLayerChunk),
           scrolling_properties, &scrolling_hit_test_data,
           gfx::Rect(0, 0, 800, 3000))));
 }

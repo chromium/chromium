@@ -13,6 +13,13 @@
       "transform": 1
     },
     {
+      "name": "VerticalScrollbar",
+      "position": [769, 0],
+      "bounds": [15, 300],
+      "contentsOpaque": true,
+      "transform": 1
+    },
+    {
       "name": "LayoutNGBlockFlow DIV id='outerDiv'",
       "bounds": [769, 700],
       "transform": 2
@@ -24,13 +31,6 @@
       "transform": 3
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='innerDiv'",
-      "bounds": [300, 800],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 4
-    },
-    {
       "name": "VerticalScrollbar",
       "position": [754, 0],
       "bounds": [15, 400],
@@ -38,11 +38,9 @@
       "transform": 3
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [769, 0],
-      "bounds": [15, 300],
-      "contentsOpaque": true,
-      "transform": 1
+      "name": "LayoutNGBlockFlow DIV id='innerDiv'",
+      "bounds": [754, 800],
+      "transform": 4
     }
   ],
   "transforms": [

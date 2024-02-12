@@ -26,11 +26,10 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV",
-      "position": [0, 100],
-      "bounds": [585, 400],
+      "name": "LayoutNGBlockFlow DIV",
+      "bounds": [585, 500],
       "invalidations": [
-        [400, 0, 20, 20]
+        [400, 100, 20, 20]
       ],
       "transform": 1
     }
