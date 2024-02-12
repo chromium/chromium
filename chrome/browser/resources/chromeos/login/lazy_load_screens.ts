@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { assert } from '//resources/ash/common/assert.js';
+import { assert } from '//resources/js/assert.js';
 
 import {loadTimeData} from './i18n_setup.js';
 import {addScreensToMainContainer} from './login_ui_tools.js';
 import {TraceEvent, traceExecution} from './oobe_trace.js';
 import {commonScreensList, loginScreensList, oobeScreensList} from './screens.js';
+
+assert(window.scheduler, 'Prioritized Task Scheduling API unavailable');
 
 // Add OOBE or LOGIN screens to the document.
 const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
@@ -23,7 +25,6 @@ if (isBootAnimation) {
   }, {once: true});
 }
 
-
 // Right now we have only one priority screen and it is WelcomeScreen, that
 // means that there is no effect from async loading of screens on the login
 // page.
@@ -36,7 +37,7 @@ if (lazyLoadingEnabled) {
 /**
  * Add screens to the document synchronously, blocking the main thread.
  */
-function addScreensSynchronously() {
+function addScreensSynchronously(): void {
   addScreensToMainContainer(commonScreensList);
   traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
   addScreensToMainContainer(flowSpecificScreensList);
@@ -54,30 +55,35 @@ function addScreensSynchronously() {
  * 'scheduler.postTask' is more appropriate for this use case since it is not
  * impacted by Tab Throttling like 'setTimeout' is.
  */
-function addScreensAsync() {
+function addScreensAsync(): void {
   // Optimization to make the shrink animation smooth by delaying the next
   // screen to be added by 'animationTransitionTime' milliseconds, leaving the
   // renderer solely with the task of animating.
   if (aboutToShrink) {
     aboutToShrink = false;
-    scheduler.postTask(addScreensAsync, { delay: animationTransitionTime });
+    window.scheduler.postTask(addScreensAsync,
+        { delay: animationTransitionTime });
     return;
   }
 
   if (commonScreensList.length > 0) {
-    const nextScreens = commonScreensList.pop();
-    addScreensToMainContainer([nextScreens]);
-    scheduler.postTask(addScreensAsync);
+    const nextScreen = commonScreensList.pop();
+    if (nextScreen) {
+      addScreensToMainContainer([nextScreen]);
+    }
+    window.scheduler.postTask(addScreensAsync);
 
     if (commonScreensList.length == 0) {
       traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
     }
   } else if (flowSpecificScreensList.length > 0) {
-    const nextScreens = flowSpecificScreensList.pop();
-    addScreensToMainContainer([nextScreens]);
+    const nextScreen = flowSpecificScreensList.pop();
+    if (nextScreen) {
+      addScreensToMainContainer([nextScreen]);
+    }
 
     if (flowSpecificScreensList.length > 0) {
-      scheduler.postTask(addScreensAsync);
+      window.scheduler.postTask(addScreensAsync);
     } else {
       traceExecution(TraceEvent.REMAINING_SCREENS_ADDED);
       document.dispatchEvent(new CustomEvent('oobe-screens-loaded'));
@@ -85,5 +91,13 @@ function addScreensAsync() {
     }
   } else {
     assert(false, 'NOTREACHED()');
+  }
+}
+
+// TODO(b/324873528) Replace type definition with official interface definition
+// of blink
+declare global {
+  interface Window {
+    scheduler: any;
   }
 }
