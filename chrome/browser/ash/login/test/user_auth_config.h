@@ -21,6 +21,7 @@ inline constexpr char kGaiaPassword[] = "gaiaPassword";
 // Use this constant in the flows where password have to be updated.
 inline constexpr char kNewPassword[] = "newPassword";
 inline constexpr char kLocalPassword[] = "localPassword";
+inline constexpr char kWrongPassword[] = "wrongPassword";
 inline constexpr char kAuthPin[] = "123456";
 inline constexpr char kPinStubSalt[] = "pin-salt";
 
