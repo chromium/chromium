@@ -45,7 +45,6 @@ inline size_t FastHash(std::string_view str) {
 //
 // WARNING: This hash function should not be used for any cryptographic purpose.
 BASE_EXPORT uint32_t PersistentHash(base::span<const uint8_t> data);
-BASE_EXPORT uint32_t PersistentHash(const void* data, size_t length);
 BASE_EXPORT uint32_t PersistentHash(std::string_view str);
 
 // Hash pairs of 32-bit or 64-bit numbers.

@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/location.h"
@@ -1413,8 +1414,10 @@ bool SimpleSynchronousEntry::CheckHeaderAndKey(base::File* file,
     header = reinterpret_cast<const SimpleFileHeader*>(header_data.data());
   }
 
-  char* key_data = header_data.data() + sizeof(*header);
-  if (base::PersistentHash(key_data, header->key_length) != header->key_hash) {
+  const char* key_data = header_data.data() + sizeof(*header);
+  base::span<const char> key_span =
+      base::make_span(key_data, header->key_length);
+  if (base::PersistentHash(base::as_bytes(key_span)) != header->key_hash) {
     RecordSyncOpenResult(cache_type_, OPEN_ENTRY_KEY_HASH_MISMATCH);
     return false;
   }

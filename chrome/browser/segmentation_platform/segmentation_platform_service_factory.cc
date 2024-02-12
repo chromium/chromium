@@ -5,6 +5,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/no_destructor.h"
@@ -151,9 +152,8 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   auto profile_path = profile->GetPath().value();
-  params->profile_id = base::NumberToString(base::PersistentHash(
-      profile_path.data(),
-      profile_path.length() * sizeof(base::FilePath::CharType)));
+  params->profile_id = base::NumberToString(
+      base::PersistentHash(base::as_byte_span(profile_path)));
   params->history_service = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/strings/string_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -156,7 +157,7 @@ std::optional<double> MediaImageManager::GetImageTypeScore(
     const std::u16string& type) {
   // These hashes are calculated in
   // MediaImageManagerTest_CheckExpectedImageTypeHashes
-  switch (base::PersistentHash(type.data(), type.size() * sizeof(char16_t))) {
+  switch (base::PersistentHash(base::as_byte_span(type))) {
     case 0xfd295465:  // image/bmp
       return kBMPTypeScore;
     case 0xce81e113:  // image/gif
