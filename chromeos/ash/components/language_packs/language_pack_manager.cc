@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
@@ -18,11 +19,13 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/language_packs/handwriting.h"
@@ -61,26 +64,65 @@ std::optional<std::string> GetDlcIdForBasePack(const std::string& feature_id) {
   return it->second;
 }
 
+// Run a callback later in the current `SingleThreadedTaskRunner`.
+void RunCallbackLater(base::OnceClosure task) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                              std::move(task));
+}
+
 void InstallDlc(const std::string& dlc_id,
                 DlcserviceClient::InstallCallback callback) {
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(dlc_id);
-  DlcserviceClient::Get()->Install(install_request, std::move(callback),
-                                   base::DoNothing());
+  DlcserviceClient* client = DlcserviceClient::Get();
+  if (client) {
+    dlcservice::InstallRequest install_request;
+    install_request.set_id(dlc_id);
+    client->Install(install_request, std::move(callback), base::DoNothing());
+  } else {
+    CHECK_IS_TEST();
+    DlcserviceClient::InstallResult result;
+    result.error = dlcservice::kErrorInternal;
+
+    RunCallbackLater(base::BindOnce(std::move(callback), std::move(result)));
+  }
 }
 
 void GetDlcState(const std::string& dlc_id,
                  DlcserviceClient::GetDlcStateCallback callback) {
-  DlcserviceClient::Get()->GetDlcState(dlc_id, std::move(callback));
+  DlcserviceClient* client = DlcserviceClient::Get();
+  if (client) {
+    client->GetDlcState(dlc_id, std::move(callback));
+  } else {
+    CHECK_IS_TEST();
+    dlcservice::DlcState state;
+    state.set_id(dlc_id);
+    state.set_state(dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED);
+    RunCallbackLater(base::BindOnce(
+        std::move(callback), dlcservice::kErrorInternal, std::move(state)));
+  }
 }
 
 void UninstallDlc(const std::string& dlc_id,
                   DlcserviceClient::UninstallCallback callback) {
-  DlcserviceClient::Get()->Uninstall(dlc_id, std::move(callback));
+  DlcserviceClient* client = DlcserviceClient::Get();
+  if (client) {
+    client->Uninstall(dlc_id, std::move(callback));
+  } else {
+    CHECK_IS_TEST();
+    RunCallbackLater(
+        base::BindOnce(std::move(callback), dlcservice::kErrorInternal));
+  }
 }
 
 void GetExistingDlcs(DlcserviceClient::GetExistingDlcsCallback callback) {
-  DlcserviceClient::Get()->GetExistingDlcs(std::move(callback));
+  DlcserviceClient* client = DlcserviceClient::Get();
+  if (client) {
+    client->GetExistingDlcs(std::move(callback));
+  } else {
+    CHECK_IS_TEST();
+    RunCallbackLater(base::BindOnce(std::move(callback),
+                                    dlcservice::kErrorInternal,
+                                    dlcservice::DlcsWithContent()));
+  }
 }
 
 void OnInstallDlcComplete(OnInstallCompleteCallback callback,
@@ -535,7 +577,13 @@ LanguagePackManager::LanguagePackManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!g_instance);
   g_instance = this;
-  obs_.Observe(DlcserviceClient::Get());
+  DlcserviceClient* client = DlcserviceClient::Get();
+  if (client) {
+    obs_.Observe(client);
+  } else {
+    CHECK_IS_TEST();
+    // No observation.
+  }
 }
 
 LanguagePackManager::~LanguagePackManager() {
