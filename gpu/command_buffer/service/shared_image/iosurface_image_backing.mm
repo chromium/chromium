@@ -709,6 +709,22 @@ bool IOSurfaceImageBacking::OverlayRepresentation::IsInUseByWindowServer()
 }
 
 #if BUILDFLAG(USE_DAWN)
+IOSurfaceImageBacking::SharedTextureData::SharedTextureData() = default;
+
+IOSurfaceImageBacking::SharedTextureData::~SharedTextureData() {
+  for (auto element : texture_cache) {
+    auto texture = element.second;
+    texture.Destroy();
+  }
+}
+
+IOSurfaceImageBacking::SharedTextureData::SharedTextureData(
+    SharedTextureData&&) = default;
+
+IOSurfaceImageBacking::SharedTextureData&
+IOSurfaceImageBacking::SharedTextureData::operator=(SharedTextureData&&) =
+    default;
+
 ///////////////////////////////////////////////////////////////////////////////
 // DawnRepresentation
 
@@ -793,18 +809,25 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   begin_access_desc.fences = shared_fences.data();
   begin_access_desc.signaledValues = signaled_values.data();
 
-  texture_ =
-      CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
-                        wgpu_format_, view_formats_, wgpu_texture_usage);
+  texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
+  if (!texture_) {
+    texture_ =
+        CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
+                          wgpu_format_, view_formats_, wgpu_texture_usage);
+    iosurface_backing->MaybeCacheWGPUTexture(device_, texture_);
+  }
+
   if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
     // NOTE: WebGPU CTS tests intentionally pass in formats that are
     // incompatible with the format of the backing IOSurface to check error
     // handling.
     LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed";
+    iosurface_backing->RemoveWGPUTextureFromCache(device_, texture_);
     texture_ = {};
 
     iosurface_backing->EndAccess(readonly);
   }
+
   return texture_.Get();
 }
 
@@ -845,9 +868,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
                                                   readonly);
   }
 
-  // All further operations on the textures are errors (they would be racy
-  // with other backings).
-  texture_.Destroy();
+  iosurface_backing->DestroyWGPUTextureIfNotCached(device_, texture_);
 
   // TODO(b/252731382): the following WaitForCommandsToBeScheduled call should
   // no longer be necessary, but for some reason it is. Removing it
@@ -1184,6 +1205,75 @@ IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
                                                  io_surface_);
 }
 
+#if BUILDFLAG(USE_DAWN)
+IOSurfaceImageBacking::WGPUTextureCache*
+IOSurfaceImageBacking::GetWGPUTextureCache(wgpu::Device device) {
+  auto iter = shared_texture_data_cache_.find(device.Get());
+  if (iter == shared_texture_data_cache_.end()) {
+    return nullptr;
+  }
+  return &iter->second.texture_cache;
+}
+
+wgpu::Texture IOSurfaceImageBacking::GetCachedWGPUTexture(
+    wgpu::Device device,
+    wgpu::TextureUsage texture_usage) {
+  auto* texture_cache = GetWGPUTextureCache(device);
+  if (!texture_cache) {
+    return nullptr;
+  }
+
+  auto iter = texture_cache->find(texture_usage);
+  if (iter == texture_cache->end()) {
+    return nullptr;
+  }
+
+  return iter->second;
+}
+
+void IOSurfaceImageBacking::RemoveWGPUTextureFromCache(wgpu::Device device,
+                                                       wgpu::Texture texture) {
+  auto* texture_cache = GetWGPUTextureCache(device);
+  if (!texture_cache) {
+    return;
+  }
+
+  texture_cache->erase(texture.GetUsage());
+}
+
+void IOSurfaceImageBacking::MaybeCacheWGPUTexture(wgpu::Device device,
+                                                  wgpu::Texture texture) {
+  if (!texture) {
+    return;
+  }
+
+  auto* texture_cache = GetWGPUTextureCache(device);
+  if (!texture_cache) {
+    return;
+  }
+
+  // Determine whether `texture` needs to be cached.
+  auto texture_usage = texture.GetUsage();
+  auto iter = texture_cache->find(texture_usage);
+  if (iter == texture_cache->end()) {
+    texture_cache->emplace(texture_usage, texture);
+  } else {
+    CHECK_EQ(texture.Get(), iter->second.Get());
+  }
+}
+
+void IOSurfaceImageBacking::DestroyWGPUTextureIfNotCached(
+    wgpu::Device device,
+    wgpu::Texture texture) {
+  if (auto cached_texture = GetCachedWGPUTexture(device, texture.GetUsage())) {
+    CHECK_EQ(cached_texture.Get(), texture.Get());
+    return;
+  }
+
+  texture.Destroy();
+}
+#endif
+
 std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -1217,17 +1307,18 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     // importantly ensures that a new SharedTextureMemory instance will be
     // created if another Device occupies the same memory as a previously-used,
     // now-lost Device.
-    for (auto iter : shared_texture_memory_cache_) {
-      if (iter.second.IsDeviceLost()) {
-        shared_texture_memory_cache_.erase(iter.first);
+    for (auto& [wgpu_device, shared_texture_data] :
+         shared_texture_data_cache_) {
+      if (shared_texture_data.memory.IsDeviceLost()) {
+        shared_texture_data_cache_.erase(wgpu_device);
       }
     }
 
     CHECK(device.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface));
-    auto iter = shared_texture_memory_cache_.find(device.Get());
+    auto iter = shared_texture_data_cache_.find(device.Get());
 
     wgpu::SharedTextureMemory shared_texture_memory;
-    if (iter == shared_texture_memory_cache_.end()) {
+    if (iter == shared_texture_data_cache_.end()) {
       wgpu::SharedTextureMemoryIOSurfaceDescriptor io_surface_desc;
       io_surface_desc.ioSurface = io_surface_.get();
       wgpu::SharedTextureMemoryDescriptor desc = {};
@@ -1257,10 +1348,13 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
           dawn_context_provider->GetDevice().Get() == device.Get()) {
         // This is the Graphite device, so its SharedTextureMemory instance can
         // and should be cached.
-        shared_texture_memory_cache_[device.Get()] = shared_texture_memory;
+        SharedTextureData shared_texture_data;
+        shared_texture_data.memory = shared_texture_memory;
+        shared_texture_data_cache_.emplace(device.Get(),
+                                           std::move(shared_texture_data));
       }
     } else {
-      shared_texture_memory = iter->second;
+      shared_texture_memory = iter->second.memory;
     }
 
     return std::make_unique<DawnRepresentation>(
