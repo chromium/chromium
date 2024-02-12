@@ -296,7 +296,6 @@ struct RecipeTrait<
   static bool IsResizable(v8::Local<v8::Value> buffer) {
     return buffer.As<typename ABVTrait<T>::V8ViewType>()
         ->Buffer()
-        ->GetBackingStore()
         ->IsResizableByUserJavaScript();
   }
 };
