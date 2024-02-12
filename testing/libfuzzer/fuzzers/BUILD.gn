@@ -408,6 +408,7 @@ fuzzer_test("javascript_parser_proto_fuzzer") {
   deps = [
     ":gen_javascript_parser_proto",
     ":javascript_parser_proto",
+    "//base",
     "//third_party/libprotobuf-mutator",
     "//v8:v8",
     "//v8:v8_libplatform",
