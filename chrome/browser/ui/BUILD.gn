@@ -1445,7 +1445,6 @@ static_library("ui") {
       "sync/browser_synced_window_delegate.h",
       "sync/browser_synced_window_delegates_getter.cc",
       "sync/browser_synced_window_delegates_getter.h",
-      "sync/bubble_sync_promo_delegate.h",
       "sync/profile_signin_confirmation_helper.cc",
       "sync/profile_signin_confirmation_helper.h",
       "sync/sync_promo_ui.cc",
@@ -4273,6 +4272,7 @@ static_library("ui") {
       sources += [
         "profiles/signin_intercept_first_run_experience_dialog.cc",
         "profiles/signin_intercept_first_run_experience_dialog.h",
+        "signin/bubble_signin_promo_delegate.h",
         "signin/dice_web_signin_interceptor_delegate.cc",
         "signin/dice_web_signin_interceptor_delegate.h",
         "startup/first_run_service_dice_statics.cc",
@@ -6397,6 +6397,10 @@ static_library("ui") {
         "views/accessibility/accessibility_focus_highlight.h",
         "views/policy/enterprise_startup_dialog_view.cc",
         "views/policy/enterprise_startup_dialog_view.h",
+        "views/promos/bubble_signin_promo_signin_button_view.cc",
+        "views/promos/bubble_signin_promo_signin_button_view.h",
+        "views/promos/bubble_signin_promo_view.cc",
+        "views/promos/bubble_signin_promo_view.h",
         "views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop.cc",
         "views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop.h",
         "views/relaunch_notification/relaunch_recommended_bubble_view.cc",
@@ -6405,10 +6409,6 @@ static_library("ui") {
         "views/relaunch_notification/relaunch_recommended_timer.h",
         "views/relaunch_notification/relaunch_required_dialog_view.cc",
         "views/relaunch_notification/relaunch_required_dialog_view.h",
-        "views/sync/bubble_sync_promo_signin_button_view.cc",
-        "views/sync/bubble_sync_promo_signin_button_view.h",
-        "views/sync/bubble_sync_promo_view.cc",
-        "views/sync/bubble_sync_promo_view.h",
       ]
     }
 

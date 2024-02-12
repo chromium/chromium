@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sync/bubble_sync_promo_signin_button_view.h"
+#include "chrome/browser/ui/views/promos/bubble_signin_promo_signin_button_view.h"
 
 #include <memory>
 #include <string>
@@ -24,11 +24,11 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
-BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
+BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     views::Button::PressedCallback callback,
     ui::ButtonStyle button_style)
     : account_(std::nullopt) {
-  views::Builder<BubbleSyncPromoSigninButtonView>(this)
+  views::Builder<BubbleSignInPromoSignInButtonView>(this)
       .SetUseDefaultFillLayout(true)
       .AddChild(
           // Regular MD text button when there is no account.
@@ -40,7 +40,7 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
       .BuildChildren();
 }
 
-BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
+BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     const AccountInfo& account,
     const gfx::Image& account_icon,
     views::Button::PressedCallback callback,
@@ -71,7 +71,7 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
                               views::BoxLayoutFlexSpecification());
   }
 
-  views::Builder<BubbleSyncPromoSigninButtonView>(this)
+  views::Builder<BubbleSignInPromoSignInButtonView>(this)
       .SetLayoutManager(std::move(button_layout))
       .AddChildren(views::Builder<HoverButton>(std::move(hover_button))
                        .SetBorder(std::unique_ptr<views::Border>(nullptr))
@@ -84,7 +84,8 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
       .BuildChildren();
 }
 
-BubbleSyncPromoSigninButtonView::~BubbleSyncPromoSigninButtonView() = default;
+BubbleSignInPromoSignInButtonView::
+    ~BubbleSignInPromoSignInButtonView() = default;
 
-BEGIN_METADATA(BubbleSyncPromoSigninButtonView)
+BEGIN_METADATA(BubbleSignInPromoSignInButtonView)
 END_METADATA

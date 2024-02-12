@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/signin/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -61,7 +61,7 @@ void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
 void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {
   auto delegate =
       std::make_unique<BookmarkBubbleSignInDelegate>(browser->profile());
-  delegate->OnEnableSync(AccountInfo());
+  delegate->OnSignIn(AccountInfo());
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, OnSignInLinkClicked) {
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
 
   int starting_tab_count = extra_browser->tab_strip_model()->count();
 
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate =
+  std::unique_ptr<BubbleSignInPromoDelegate> delegate =
       std::make_unique<BookmarkBubbleSignInDelegate>(profile());
 
   BrowserList::SetLastActive(extra_browser);
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
   browser()->tab_strip_model()->CloseAllTabs();
   content::RunAllPendingInMessageLoop();
 
-  delegate->OnEnableSync(AccountInfo());
+  delegate->OnSignIn(AccountInfo());
 
   int tab_count = extra_browser->tab_strip_model()->count();
   // A new tab should have been opened in the extra browser, which should be

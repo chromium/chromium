@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SYNC_BUBBLE_SYNC_PROMO_SIGNIN_BUTTON_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_SYNC_BUBBLE_SYNC_PROMO_SIGNIN_BUTTON_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_BUBBLE_SIGNIN_PROMO_SIGNIN_BUTTON_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PROMOS_BUBBLE_SIGNIN_PROMO_SIGNIN_BUTTON_VIEW_H_
 
 #include <optional>
 
@@ -15,30 +15,30 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
-// Sign-in button view used by Sync promos that presents the
+// Sign-in button view used by Sign in promos that presents the
 // account information (avatar image and email) and allows the user to
-// sign in to Chrome or to enable sync.
-class BubbleSyncPromoSigninButtonView : public views::View {
-  METADATA_HEADER(BubbleSyncPromoSigninButtonView, views::View)
+// sign in to Chrome.
+class BubbleSignInPromoSignInButtonView : public views::View {
+  METADATA_HEADER(BubbleSignInPromoSignInButtonView, views::View)
 
  public:
   // Create a non-personalized sign-in button with |button_style|.
   // |callback| is called every time the user interacts with this button.
-  explicit BubbleSyncPromoSigninButtonView(
+  explicit BubbleSignInPromoSignInButtonView(
       views::Button::PressedCallback callback,
       ui::ButtonStyle button_style);
 
   // Creates a sign-in button personalized with the data from |account|.
   // |callback| is called every time the user interacts with this button.
-  BubbleSyncPromoSigninButtonView(const AccountInfo& account_info,
+  BubbleSignInPromoSignInButtonView(const AccountInfo& account_info,
                                   const gfx::Image& account_icon,
                                   views::Button::PressedCallback callback,
                                   bool use_account_name_as_title = false);
-  BubbleSyncPromoSigninButtonView(const BubbleSyncPromoSigninButtonView&) =
+  BubbleSignInPromoSignInButtonView(const BubbleSignInPromoSignInButtonView&) =
       delete;
-  BubbleSyncPromoSigninButtonView& operator=(
-      const BubbleSyncPromoSigninButtonView&) = delete;
-  ~BubbleSyncPromoSigninButtonView() override;
+  BubbleSignInPromoSignInButtonView& operator=(
+      const BubbleSignInPromoSignInButtonView&) = delete;
+  ~BubbleSignInPromoSignInButtonView() override;
 
   std::optional<AccountInfo> account() const { return account_; }
 
@@ -46,9 +46,9 @@ class BubbleSyncPromoSigninButtonView : public views::View {
   const std::optional<AccountInfo> account_;
 };
 
-BEGIN_VIEW_BUILDER(, BubbleSyncPromoSigninButtonView, views::View)
+BEGIN_VIEW_BUILDER(, BubbleSignInPromoSignInButtonView, views::View)
 END_VIEW_BUILDER
 
-DEFINE_VIEW_BUILDER(, BubbleSyncPromoSigninButtonView)
+DEFINE_VIEW_BUILDER(, BubbleSignInPromoSignInButtonView)
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SYNC_BUBBLE_SYNC_PROMO_SIGNIN_BUTTON_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROMOS_BUBBLE_SIGNIN_PROMO_SIGNIN_BUTTON_VIEW_H_

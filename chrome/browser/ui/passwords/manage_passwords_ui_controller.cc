@@ -898,7 +898,7 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
   password_manager::LogPasswordCheckReferrer(referrer);
 }
 
-void ManagePasswordsUIController::EnableSync(const AccountInfo& account) {
+void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()), account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);

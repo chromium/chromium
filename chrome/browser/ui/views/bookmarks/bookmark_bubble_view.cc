@@ -60,7 +60,7 @@
 #include "ui/views/controls/styled_label.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/views/sync/bubble_sync_promo_view.h"
+#include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
 #endif
 
 using base::UserMetricsAction;
@@ -200,7 +200,7 @@ bool ShouldShowShoppingCollectionFootnote(Profile* profile,
 class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
  public:
-  BookmarkBubbleDelegate(std::unique_ptr<BubbleSyncPromoDelegate> delegate,
+  BookmarkBubbleDelegate(std::unique_ptr<BubbleSignInPromoDelegate> delegate,
                          Browser* browser,
                          const GURL& url,
                          bool simplified_flow_shown)
@@ -333,10 +333,10 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
             ->combobox_model());
   }
 
-  BubbleSyncPromoDelegate* delegate() { return delegate_.get(); }
+  BubbleSignInPromoDelegate* delegate() { return delegate_.get(); }
 
  private:
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate_;
+  std::unique_ptr<BubbleSignInPromoDelegate> delegate_;
   const raw_ptr<Browser> browser_;
   const GURL url_;
   base::OnceCallback<void()> close_callback_;
@@ -350,14 +350,14 @@ void BookmarkBubbleView::ShowBubble(
     views::View* anchor_view,
     content::WebContents* web_contents,
     views::Button* highlighted_button,
-    std::unique_ptr<BubbleSyncPromoDelegate> delegate,
+    std::unique_ptr<BubbleSignInPromoDelegate> delegate,
     Browser* browser,
     const GURL& url,
     bool already_bookmarked) {
   if (bookmark_bubble_)
     return;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  BubbleSyncPromoDelegate* const delegate_ptr = delegate.get();
+  BubbleSignInPromoDelegate* const delegate_ptr = delegate.get();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = browser->profile();
   bookmarks::BookmarkModel* bookmark_model =
@@ -517,7 +517,7 @@ void BookmarkBubbleView::ShowBubble(
     // not need to be tied to views.
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
     // widget to account for it.
-    bubble->SetFootnoteView(std::make_unique<BubbleSyncPromoView>(
+    bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
         profile, delegate_ptr,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
         IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE, ui::ButtonStyle::kDefault));

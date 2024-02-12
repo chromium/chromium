@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/sync/bubble_sync_promo_view.h"
+#include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
 
 #include <memory>
 #include <utility>
@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "chrome/browser/ui/views/sync/bubble_sync_promo_signin_button_view.h"
+#include "chrome/browser/ui/views/promos/bubble_signin_promo_signin_button_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -27,9 +27,9 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
-BubbleSyncPromoView::BubbleSyncPromoView(
+BubbleSignInPromoView::BubbleSignInPromoView(
     Profile* profile,
-    BubbleSyncPromoDelegate* delegate,
+    BubbleSignInPromoDelegate* delegate,
     signin_metrics::AccessPoint access_point,
     int accounts_promo_message_resource_id,
     ui::ButtonStyle button_style,
@@ -84,12 +84,12 @@ BubbleSyncPromoView::BubbleSyncPromoView(
   }
 
   views::Button::PressedCallback callback = base::BindRepeating(
-      &BubbleSyncPromoView::EnableSync, base::Unretained(this));
+      &BubbleSignInPromoView::SignIn, base::Unretained(this));
 
-  std::unique_ptr<BubbleSyncPromoSigninButtonView> signin_button_pointer;
+  std::unique_ptr<BubbleSignInPromoSignInButtonView> signin_button_pointer;
 
   if (account.IsEmpty()) {
-    signin_button_pointer = std::make_unique<BubbleSyncPromoSigninButtonView>(
+    signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
         std::move(callback), button_style);
   } else {
     gfx::Image account_icon = account.account_image;
@@ -97,7 +97,7 @@ BubbleSyncPromoView::BubbleSyncPromoView(
       account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
           profiles::GetPlaceholderAvatarIconResourceID());
     }
-    signin_button_pointer = std::make_unique<BubbleSyncPromoSigninButtonView>(
+    signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
         account, account_icon, std::move(callback),
         /*use_account_name_as_title=*/true);
   }
@@ -128,12 +128,12 @@ BubbleSyncPromoView::BubbleSyncPromoView(
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(access_point);
 }
 
-BubbleSyncPromoView::~BubbleSyncPromoView() = default;
+BubbleSignInPromoView::~BubbleSignInPromoView() = default;
 
-void BubbleSyncPromoView::EnableSync() {
+void BubbleSignInPromoView::SignIn() {
   std::optional<AccountInfo> account = signin_button_view_->account();
-  delegate_->OnEnableSync(account.value_or(AccountInfo()));
+  delegate_->OnSignIn(account.value_or(AccountInfo()));
 }
 
-BEGIN_METADATA(BubbleSyncPromoView)
+BEGIN_METADATA(BubbleSignInPromoView)
 END_METADATA
