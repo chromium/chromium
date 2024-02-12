@@ -204,7 +204,9 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
         case kPseudoViewTransitionOld:
         case kPseudoViewTransitionNew: {
           CHECK(!IdentList().empty());
-          return IdentList()[0].IsNull() ? 0 : kClassLikeSpecificity;
+          return (IdentList().size() == 1u && IdentList()[0].IsNull())
+                     ? 0
+                     : kClassLikeSpecificity;
         }
         default:
           break;
