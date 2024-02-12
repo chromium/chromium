@@ -10,6 +10,7 @@
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
@@ -96,7 +97,8 @@ const CGFloat kSpacing = 4;
     _topTrailingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
     _bottomLeadingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
     _bottomTrailingSnapshotView.translatesAutoresizingMaskIntoConstraints = NO;
-    _closeTapTargetButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _closeTapTargetButton =
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
     _closeTapTargetButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_closeTapTargetButton addTarget:self
                               action:@selector(closeButtonTapped:)
