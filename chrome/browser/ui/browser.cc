@@ -2117,6 +2117,12 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
   if (window_->IsFullscreen())
     return blink::mojom::DisplayMode::kFullscreen;
 
+  if (is_type_picture_in_picture() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kCSSDisplayModePictureInPicture)) {
+    return blink::mojom::DisplayMode::kPictureInPicture;
+  }
+
   if (is_type_app() || is_type_devtools() || is_type_app_popup()) {
     if (app_controller_ && app_controller_->HasMinimalUiButtons())
       return blink::mojom::DisplayMode::kMinimalUi;

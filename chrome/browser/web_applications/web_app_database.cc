@@ -1853,6 +1853,8 @@ DisplayMode ToMojomDisplayMode(WebAppProto::DisplayMode display_mode) {
       return DisplayMode::kTabbed;
     case WebAppProto::BORDERLESS:
       return DisplayMode::kBorderless;
+    case WebAppProto::PICTURE_IN_PICTURE:
+      return DisplayMode::kPictureInPicture;
   }
 }
 
@@ -1891,6 +1893,8 @@ WebAppProto::DisplayMode ToWebAppProtoDisplayMode(DisplayMode display_mode) {
       return WebAppProto::TABBED;
     case DisplayMode::kBorderless:
       return WebAppProto::BORDERLESS;
+    case DisplayMode::kPictureInPicture:
+      return WebAppProto::PICTURE_IN_PICTURE;
   }
 }
 

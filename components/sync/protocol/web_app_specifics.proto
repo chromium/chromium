@@ -50,6 +50,7 @@ message WebAppSpecifics {
     // WINDOW_CONTROLS_OVERLAY is never serialized.
     TABBED = 6;
     // BORDERLESS is never serialized.
+    // PICTURE_IN_PICTURE is never serialized.
   }
 
   optional string start_url = 1;

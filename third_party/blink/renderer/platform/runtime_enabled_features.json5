@@ -878,6 +878,10 @@
       status: "stable",
     },
     {
+      name: "CSSDisplayModePictureInPicture",
+      status: "experimental",
+    },
+    {
       // crbug.com/880802
       name: "CssDisplayRuby",
       depends_on: ["RubySimplePairing"],

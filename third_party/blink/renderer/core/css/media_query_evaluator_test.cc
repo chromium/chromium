@@ -114,6 +114,7 @@ MediaQueryEvaluatorTestCase g_screen_test_cases[] = {
     {"(display-mode: 'browser')", false},
     {"(display-mode: @junk browser)", false},
     {"(display-mode: tabbed)", false},
+    {"(display-mode: picture-in-picture)", false},
     {"(max-device-aspect-ratio: 4294967295/1)", true},
     {"(min-device-aspect-ratio: 1/4294967296)", true},
     {"(max-device-aspect-ratio: 0.5)", false},

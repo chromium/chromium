@@ -111,8 +111,10 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kDocumentPictureInPictureAPI);
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kDocumentPictureInPictureAPI,
+         blink::features::kCSSDisplayModePictureInPicture},
+        /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
   }
 
@@ -774,4 +776,20 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
             opener_web_contents);
 
   ASSERT_EQ(true, EvalJs(opener_web_contents, "loadAndPlayVideo();"));
+}
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       MatchMediaQuery) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* opener_web_contents = window_controller()->GetWebContents();
+  auto* web_contents = window_controller()->GetChildWebContents();
+  ASSERT_TRUE(opener_web_contents);
+  ASSERT_TRUE(web_contents);
+
+  std::string match_media_picture_in_picture =
+      "window.matchMedia('(display-mode: picture-in-picture)').matches;";
+  ASSERT_FALSE(EvalJs(opener_web_contents, match_media_picture_in_picture)
+                   .ExtractBool());
+  ASSERT_TRUE(
+      EvalJs(web_contents, match_media_picture_in_picture).ExtractBool());
 }

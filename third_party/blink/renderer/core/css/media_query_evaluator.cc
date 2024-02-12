@@ -448,6 +448,8 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
       return mode == blink::mojom::DisplayMode::kBorderless;
     case CSSValueID::kTabbed:
       return mode == blink::mojom::DisplayMode::kTabbed;
+    case CSSValueID::kPictureInPicture:
+      return mode == blink::mojom::DisplayMode::kPictureInPicture;
     default:
       NOTREACHED();
       return false;

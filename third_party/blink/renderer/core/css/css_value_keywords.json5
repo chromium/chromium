@@ -1114,6 +1114,7 @@
     "browser",
     "window-controls-overlay",
     "tabbed",
+    "picture-in-picture",
 
     // (display-state:) media feature
     // normal
