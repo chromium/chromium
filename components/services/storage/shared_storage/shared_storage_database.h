@@ -174,6 +174,7 @@ class SharedStorageDatabase {
   // Bundles info about an origin's shared storage for DevTools integration.
   struct MetadataResult {
     int length = -1;
+    int bytes_used = -1;
     base::Time creation_time = base::Time::Min();
     double remaining_budget = 0;
     OperationResult time_result = OperationResult::kSqlError;

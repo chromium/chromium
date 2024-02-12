@@ -973,6 +973,8 @@ SharedStorageDatabase::MetadataResult SharedStorageDatabase::GetMetadata(
 
   metadata.length = Length(context_origin);
 
+  metadata.bytes_used = BytesUsed(context_origin);
+
   TimeResult time_result = GetCreationTime(context_origin);
   metadata.time_result = time_result.result;
   if (time_result.result == OperationResult::kSuccess)

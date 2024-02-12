@@ -293,7 +293,7 @@ void SharedStorageManager::GetMetadata(
         if (manager) {
           // We'll count it as failure if any of the operation results failed.
           OperationResult op_result =
-              (metadata.length != -1 &&
+              (metadata.length != -1 && metadata.bytes_used != -1 &&
                (metadata.time_result == OperationResult::kSuccess ||
                 metadata.time_result == OperationResult::kNotFound) &&
                metadata.budget_result == OperationResult::kSuccess)

@@ -963,6 +963,7 @@ TEST_F(SharedStorageManagerFromFileTest, CurrentVersion_LoadFromFile) {
             abc_xyz_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds());
   EXPECT_EQ(2, abc_xyz_metadata.length);
+  EXPECT_EQ(46, abc_xyz_metadata.bytes_used);
   EXPECT_DOUBLE_EQ(kBitBudget - 5.3, abc_xyz_metadata.remaining_budget);
   EXPECT_EQ(46, BytesUsedSync(abc_xyz));
 
@@ -979,6 +980,7 @@ TEST_F(SharedStorageManagerFromFileTest, CurrentVersion_LoadFromFile) {
             growwithgoogle_com_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds());
   EXPECT_EQ(3, growwithgoogle_com_metadata.length);
+  EXPECT_EQ(32, growwithgoogle_com_metadata.bytes_used);
   EXPECT_DOUBLE_EQ(kBitBudget - 1.2,
                    growwithgoogle_com_metadata.remaining_budget);
 
@@ -1449,6 +1451,7 @@ TEST_P(SharedStorageManagerParamTest, DevTools) {
   EXPECT_EQ(OperationResult::kSuccess, origin1_metadata.time_result);
   EXPECT_EQ(OperationResult::kSuccess, origin1_metadata.budget_result);
   EXPECT_EQ(3, origin1_metadata.length);
+  EXPECT_EQ(8 + 12 + 8 + 12 + 8 + 12, origin1_metadata.bytes_used);
   EXPECT_GT(origin1_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds(),
             0);
@@ -1463,6 +1466,7 @@ TEST_P(SharedStorageManagerParamTest, DevTools) {
   EXPECT_EQ(OperationResult::kSuccess, origin2_metadata.time_result);
   EXPECT_EQ(OperationResult::kSuccess, origin2_metadata.budget_result);
   EXPECT_EQ(2, origin2_metadata.length);
+  EXPECT_EQ(8 + 12 + 8 + 12, origin2_metadata.bytes_used);
   EXPECT_GT(origin2_metadata.creation_time.ToDeltaSinceWindowsEpoch()
                 .InMicroseconds(),
             0);
@@ -1478,6 +1482,7 @@ TEST_P(SharedStorageManagerParamTest, DevTools) {
   EXPECT_EQ(OperationResult::kNotFound, origin3_metadata.time_result);
   EXPECT_EQ(OperationResult::kSuccess, origin3_metadata.budget_result);
   EXPECT_EQ(0, origin3_metadata.length);
+  EXPECT_EQ(0, origin3_metadata.bytes_used);
   EXPECT_DOUBLE_EQ(kBitBudget, origin3_metadata.remaining_budget);
 }
 

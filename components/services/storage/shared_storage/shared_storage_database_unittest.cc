@@ -449,6 +449,8 @@ TEST_F(SharedStorageDatabaseTest, DestroyTooNew) {
             db_->ResetBudgetForDevTools(kOrigin));
 
   auto metadata = db_->GetMetadata(kOrigin);
+  EXPECT_EQ(-1, metadata.length);
+  EXPECT_EQ(-1, metadata.bytes_used);
   EXPECT_EQ(OperationResult::kInitFailure, metadata.time_result);
   EXPECT_EQ(OperationResult::kInitFailure, metadata.budget_result);
 
