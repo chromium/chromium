@@ -75,6 +75,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.HasDateModified" enum="BooleanSuccess"
+    expires_after="2024-08-04">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording if we were able to retrieve dateModified for the
+    requested tab. False value could mean that the page either doesn't specify
+    dateModified or there was an error during retrieval.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.HighlightingEnabled" enum="BooleanEnabled"
     expires_after="2024-08-04">
   <owner>andreaxg@google.com</owner>

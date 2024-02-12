@@ -33,6 +33,7 @@ public class ReadAloudMetrics {
     public static String TIME_SPENT_LISTENING = "ReadAloud.DurationListened";
     public static String TIME_SPENT_LISTENING_LOCKED_SCREEN =
             "ReadAloud.DurationListened.LockedScreen";
+    public static String HAS_DATE_MODIFIED = "ReadAloud.HasDateModified";
 
     /**
      * The reason why we clear the prepared message.
@@ -161,5 +162,9 @@ public class ReadAloudMetrics {
 
     public static void recordVoicePreviewed(String voiceID) {
         RecordHistogram.recordBooleanHistogram(VOICE_PREVIEWED + voiceID, true);
+    }
+
+    public static void recordHasDateModified(boolean hasDateModified) {
+        RecordHistogram.recordBooleanHistogram(HAS_DATE_MODIFIED, hasDateModified);
     }
 }
