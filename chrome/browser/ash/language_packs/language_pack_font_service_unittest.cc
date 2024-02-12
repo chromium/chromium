@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/language_packs/language_pack_font_service.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -43,7 +44,10 @@ using MockAddFontDir =
 
 class LanguagePackFontServiceTest : public testing::Test {
  public:
-  PrefService* prefs() { return profile_.GetPrefs(); }
+  LanguagePackFontServiceTest()
+      : profile_(std::make_unique<TestingProfile>()) {}
+
+  PrefService* prefs() { return profile_->GetPrefs(); }
   FakeDlcserviceClient* dlcservice_client() { return &dlcservice_client_; }
   MockAddFontDir* add_font_dir() { return &add_font_dir_; }
 
@@ -51,7 +55,7 @@ class LanguagePackFontServiceTest : public testing::Test {
   MockAddFontDir add_font_dir_;
   FakeDlcserviceClient dlcservice_client_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
