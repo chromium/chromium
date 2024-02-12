@@ -62,5 +62,8 @@ class TabStripNewTabButton: UIView {
     button.translatesAutoresizingMaskIntoConstraints = false
     button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     button.isPointerInteractionEnabled = true
+    if #available(iOS 17.0, *) {
+      button.hoverStyle = .init(shape: .circle)
+    }
   }
 }
