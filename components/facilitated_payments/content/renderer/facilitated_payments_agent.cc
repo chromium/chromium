@@ -30,10 +30,11 @@ FacilitatedPaymentsAgent::FacilitatedPaymentsAgent(
 FacilitatedPaymentsAgent::~FacilitatedPaymentsAgent() = default;
 
 void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback) {
   if (will_destruct_ || !render_frame() || !render_frame()->IsMainFrame() ||
       !render_frame()->GetWebFrame()) {
-    std::move(callback).Run(/*found_pix_code=*/false);
+    std::move(callback).Run(
+        mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun);
     return;
   }
 
@@ -44,7 +45,15 @@ void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
   std::string trimmed = base::UTF16ToUTF8(
       base::TrimWhitespace(result.Utf16(), base::TrimPositions::TRIM_ALL));
 
-  std::move(callback).Run(/*found_pix_code=*/IsValidPixCode(trimmed));
+  if (trimmed.empty()) {
+    std::move(callback).Run(mojom::PixCodeDetectionResult::kPixCodeNotFound);
+    return;
+  }
+
+  std::move(callback).Run(
+      IsValidPixCode(trimmed)
+          ? mojom::PixCodeDetectionResult::kValidPixCodeFound
+          : mojom::PixCodeDetectionResult::kInvalidPixCodeFound);
 }
 
 void FacilitatedPaymentsAgent::OnDestruct() {

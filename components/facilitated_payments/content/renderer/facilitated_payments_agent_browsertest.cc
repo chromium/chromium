@@ -23,11 +23,14 @@ class FacilitatedPaymentsAgentTest : public content::RenderViewTest {
                                                       &associated_interfaces_);
   }
 
-  bool IsPixCodeFound(FacilitatedPaymentsAgent* agent) {
-    bool actual = false;
+  mojom::PixCodeDetectionResult IsPixCodeFound(
+      FacilitatedPaymentsAgent* agent) {
+    mojom::PixCodeDetectionResult actual =
+        mojom::PixCodeDetectionResult::kPixCodeNotFound;
     static_cast<mojom::FacilitatedPaymentsAgent*>(agent)
         ->TriggerPixCodeDetection(base::BindOnce(
-            [](bool* output, bool found_pix_code) { *output = found_pix_code; },
+            [](mojom::PixCodeDetectionResult* output,
+               mojom::PixCodeDetectionResult result) { *output = result; },
             /*output=*/&actual));
     return actual;
   }
@@ -37,7 +40,8 @@ class FacilitatedPaymentsAgentTest : public content::RenderViewTest {
 };
 
 TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_NotFound) {
-  EXPECT_FALSE(IsPixCodeFound(CreateAgentFor(R"(
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kPixCodeNotFound,
+            IsPixCodeFound(CreateAgentFor(R"(
    <body>
     <div>
       Hello world!
@@ -46,11 +50,23 @@ TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_NotFound) {
   )").get()));
 }
 
-TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_Found) {
-  EXPECT_TRUE(IsPixCodeFound(CreateAgentFor(R"(
+TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundValid) {
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kValidPixCodeFound,
+            IsPixCodeFound(CreateAgentFor(R"(
    <body>
     <div>
       00020126370014br.gov.bcb.pix2515www.example.com6304EA3F
+    </div>
+  </form>
+  )").get()));
+}
+
+TEST_F(FacilitatedPaymentsAgentTest, TriggerPixCodeDetection_FoundInvalid) {
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kInvalidPixCodeFound,
+            IsPixCodeFound(CreateAgentFor(R"(
+   <body>
+    <div>
+      0014br.gov.bcb.pix
     </div>
   </form>
   )").get()));
@@ -71,7 +87,8 @@ TEST_F(FacilitatedPaymentsAgentTest,
 
   static_cast<content::RenderFrameObserver*>(unowned_agent)->OnDestruct();
 
-  EXPECT_FALSE(IsPixCodeFound(unowned_agent));
+  EXPECT_EQ(mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun,
+            IsPixCodeFound(unowned_agent));
 }
 
 }  // namespace
