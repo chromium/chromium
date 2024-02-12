@@ -2,3 +2,6 @@ monorail: {
   component: "Internals>Network>Library"
 }
 team_email: "net-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456244
+}
