@@ -9,6 +9,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/tray/system_nudge.h"
 #include "ash/system/tray/system_nudge_controller.h"
@@ -53,10 +55,13 @@ constexpr int kIconLabelSpacing = 16;
 // The padding which separates the nudge's border with its inner contents in px.
 constexpr int kNudgePadding = 16;
 
+// The id used for the diacritics nudge.
+constexpr char kDiacriticsNudgeId[] = "DiacriticsNudge";
+
 class DiacriticsNudge : public ash::SystemNudge {
  public:
   DiacriticsNudge()
-      : SystemNudge("DiacriticsNudge",
+      : SystemNudge(kDiacriticsNudgeId,
                     ash::NudgeCatalogName::kDisableDiacritics,
                     kIconSize,
                     kIconLabelSpacing,
@@ -187,7 +192,7 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
   std::vector<std::u16string> diacritics_candidates =
       GetDiacriticsFor(key_character, engine_id_);
   if (diacritics_candidates.empty()) {
-    nudge_controller_.ShowNudge();
+    ShowDiacriticsNudge();
     return false;
   }
   AssistiveWindowProperties properties;
@@ -364,6 +369,19 @@ void LongpressDiacriticsSuggester::DismissSuggestion() {
 
 AssistiveType LongpressDiacriticsSuggester::GetProposeActionType() {
   return AssistiveType::kLongpressDiacritics;
+}
+
+void LongpressDiacriticsSuggester::ShowDiacriticsNudge() {
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    AnchoredNudgeData nudge_data(
+        kDiacriticsNudgeId, ash::NudgeCatalogName::kDisableDiacritics,
+        l10n_util::GetStringUTF16(IDS_CHROMEOS_DIACRITIC_NUDGE_TEXT));
+    // TODO: Set an `image_model` in `nudge_data`.
+
+    AnchoredNudgeManager::Get()->Show(nudge_data);
+  } else {
+    nudge_controller_.ShowNudge();
+  }
 }
 
 void LongpressDiacriticsSuggester::SetButtonHighlighted(size_t index,

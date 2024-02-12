@@ -65,6 +65,7 @@ class LongpressDiacriticsSuggester : public LongpressSuggester {
   AssistiveType GetProposeActionType() override;
 
  private:
+  void ShowDiacriticsNudge();
   void SetButtonHighlighted(size_t index, bool highlighted);
   DiacriticsNudgeController nudge_controller_;
   std::vector<std::u16string> GetCurrentShownDiacritics();
