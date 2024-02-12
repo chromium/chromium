@@ -171,8 +171,6 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/power/histograms.xml",
   "//tools/metrics/histograms/metadata/prefetch/histograms.xml",
   "//tools/metrics/histograms/metadata/preloading/histograms.xml",
-  "//tools/metrics/histograms/metadata/print/enums.xml",
-  "//tools/metrics/histograms/metadata/print/histograms.xml",
   "//tools/metrics/histograms/metadata/printing/enums.xml",
   "//tools/metrics/histograms/metadata/printing/histograms.xml",
   "//tools/metrics/histograms/metadata/privacy/histograms.xml",
