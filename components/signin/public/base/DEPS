@@ -5,4 +5,5 @@ include_rules = [
   "+components/signin/public/android/jni_headers/SigninFeatureMap_jni.h",
   #TODO(b/309104936): Remove this unwanted include rule.
   "+components/signin/public/identity_manager/primary_account_change_event.h",
+  "+third_party/boringssl/src/include",
 ]
