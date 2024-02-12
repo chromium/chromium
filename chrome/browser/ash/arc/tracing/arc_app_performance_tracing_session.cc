@@ -253,6 +253,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
 
   result.fps = commit_deltas.size() / tracing_period.InSecondsF();
   result.perceived_fps = num_presents / tracing_period.InSecondsF();
+  result.janks_per_minute = 0;
   if (ArcGraphicsJankDetector::IsEnoughSamplesToDetect(num_presents)) {
     result.janks_per_minute = CalcJanksPerMinute(presents, tracing_period);
   }
