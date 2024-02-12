@@ -4,6 +4,7 @@
 
 #include "ash/system/focus_mode/focus_mode_tray.h"
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/constants/tray_background_view_catalog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -15,6 +16,7 @@
 #include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
@@ -52,7 +54,7 @@ std::u16string GetAccessibleTrayName(
     const FocusModeSession::Snapshot& session_snapshot) {
   if (session_snapshot.state == FocusModeSession::State::kEnding) {
     return l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ENDING_MOMENT_ACCESSIBLE_NAME);
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE);
   }
 
   const std::u16string time_remaining =
@@ -319,6 +321,8 @@ void FocusModeTray::ShowBubble() {
 
   if (controller->in_ending_moment()) {
     controller->EnablePersistentEnding();
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kFocusModeEndingMomentNudge);
   }
 
   auto bubble_view =

@@ -57,6 +57,8 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // views::View:
   void Layout(PassKey) override;
 
+  views::ImageView* image_view() { return image_view_; }
+
   FocusModeCountdownView* countdown_view_for_testing() {
     return countdown_view_;
   }

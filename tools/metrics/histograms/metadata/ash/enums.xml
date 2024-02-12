@@ -1289,6 +1289,11 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Capture Mode Education Shortcut Nudge"/>
   <int value="23" label="Capture Mode Education Shortcut Tutorial"/>
   <int value="24" label="Capture Mode Education Quick Settings Nudge"/>
+  <int value="25" label="Game Dashboard Controls Nudge"/>
+  <int value="26"
+      label="Website Telemetry Reporting Nudge (deprecated 01/2024)"/>
+  <int value="27" label="Standalone Window Migration Ux"/>
+  <int value="28" label="Focus Mode Ending Moment Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
