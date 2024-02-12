@@ -324,6 +324,10 @@ class SharedStorageDatabase {
       mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener);
 
+  // Returns the number of bytes used by unexpired entries for `context_origin`
+  // in the database, or -1 on error.
+  [[nodiscard]] int64_t BytesUsed(url::Origin context_origin);
+
   // Clears all origins that match `storage_key_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have any key with a
   // `last_used_time` between the times `begin` and `end`. If
@@ -418,6 +422,12 @@ class SharedStorageDatabase {
   // case of database initialization failure or SQL error.
   [[nodiscard]] int64_t GetTotalNumBudgetEntriesForTesting();
 
+  // Returns the total number of bytes used by `context_origin`, including for
+  // any expired entries, or -1 in case of database initialization failure or
+  // SQL error.
+  [[nodiscard]] int64_t NumBytesUsedIncludeExpiredForTesting(
+      const url::Origin& context_origin);
+
  private:
   // Policy to tell `LazyInit()` whether or not to create a new database if a
   // pre-existing on-disk database is not found.
@@ -464,14 +474,33 @@ class SharedStorageDatabase {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the total number of entries for `context_origin`, including any
-  // expired entries for `context_origin` that have not yet been purged.
-  [[nodiscard]] int64_t NumEntriesTotal(const std::string& context_origin)
+  // expired entries for `context_origin` that have not yet been purged. Returns
+  // 0 if there is a database error.
+  [[nodiscard]] int64_t NumEntriesIncludeExpired(
+      const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Returns the number of entries for `context_origin`, as determined by a
-  // manual "COUNT(*)" query, rather than relying on the `length` recorded in
-  // `per_origin_mapping`. Returns -1 if there is a database error.
-  [[nodiscard]] int64_t NumEntriesManualCount(const std::string& context_origin)
+  // Returns the number of entries for `context_origin`, not including any
+  // expired entries, as determined by a manual "COUNT(*)" query, rather than by
+  // relying on the `length` recorded in `per_origin_mapping`. Returns -1 if
+  // there is a database error.
+  [[nodiscard]] int64_t NumEntriesManualCountExcludeExpired(
+      const std::string& context_origin)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Returns the total number of bytes used by `context_origin`, including for
+  // any expired entries that have not yet been purged. Returns -1 if there is a
+  // database error.
+  [[nodiscard]] int64_t NumBytesUsedIncludeExpired(
+      const std::string& context_origin)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Returns the number of bytes used by `context_origin`, not including for any
+  // expired entries, as determined by a manual "SUM(LENGTH(key) +
+  // LENGTH(value))" query, rather than by relying on the `num_bytes` recorded
+  // in `per_origin_mapping`. Returns -1 if there is a database error.
+  [[nodiscard]] int64_t NumBytesUsedManualCountExcludeExpired(
+      const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the corresponding `value` if an entry exists for `context_origin`

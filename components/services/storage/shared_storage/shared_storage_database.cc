@@ -471,7 +471,7 @@ int64_t SharedStorageDatabase::Length(url::Origin context_origin) {
       return -1;
   }
 
-  return NumEntriesManualCount(SerializeOrigin(context_origin));
+  return NumEntriesManualCountExcludeExpired(SerializeOrigin(context_origin));
 }
 
 SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
@@ -502,7 +502,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Keys(
   }
 
   std::string origin_str(SerializeOrigin(context_origin));
-  int64_t key_count = NumEntriesManualCount(origin_str);
+  int64_t key_count = NumEntriesManualCountExcludeExpired(origin_str);
 
   if (key_count == -1) {
     keys_listener->DidReadEntries(
@@ -615,7 +615,7 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
   }
 
   std::string origin_str(SerializeOrigin(context_origin));
-  int64_t entry_count = NumEntriesManualCount(origin_str);
+  int64_t entry_count = NumEntriesManualCountExcludeExpired(origin_str);
 
   if (entry_count == -1) {
     entries_listener->DidReadEntries(
@@ -709,6 +709,22 @@ SharedStorageDatabase::OperationResult SharedStorageDatabase::Entries(
   }
 
   return OperationResult::kSuccess;
+}
+
+int64_t SharedStorageDatabase::BytesUsed(url::Origin context_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
+    // We do not return -1 (to signifiy an error) if the database doesn't exist,
+    // but only if it pre-exists on disk and yet fails to initialize.
+    if (db_status_ == InitStatus::kUnattempted) {
+      return 0L;
+    } else {
+      return -1;
+    }
+  }
+
+  return NumBytesUsedManualCountExcludeExpired(SerializeOrigin(context_origin));
 }
 
 SharedStorageDatabase::OperationResult
@@ -1173,6 +1189,23 @@ int64_t SharedStorageDatabase::GetTotalNumBudgetEntriesForTesting() {
   return -1;
 }
 
+int64_t SharedStorageDatabase::NumBytesUsedIncludeExpiredForTesting(
+    const url::Origin& context_origin) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (LazyInit(DBCreationPolicy::kIgnoreIfAbsent) != InitStatus::kSuccess) {
+    // We do not return an error if the database doesn't exist, but only if it
+    // pre-exists on disk and yet fails to initialize.
+    if (db_status_ == InitStatus::kUnattempted) {
+      return 0;
+    } else {
+      return -1;
+    }
+  }
+
+  return NumBytesUsedIncludeExpired(SerializeOrigin(context_origin));
+}
+
 SharedStorageDatabase::InitStatus SharedStorageDatabase::LazyInit(
     DBCreationPolicy policy) {
   // Early return in case of previous failure, to prevent an unbounded
@@ -1365,7 +1398,7 @@ bool SharedStorageDatabase::Purge(const std::string& context_origin) {
   return transaction.Commit();
 }
 
-int64_t SharedStorageDatabase::NumEntriesTotal(
+int64_t SharedStorageDatabase::NumEntriesIncludeExpired(
     const std::string& context_origin) {
   // In theory, there ought to be at most one entry found. But we make no
   // assumption about the state of the disk. In the rare case that multiple
@@ -1385,7 +1418,7 @@ int64_t SharedStorageDatabase::NumEntriesTotal(
   return num_entries;
 }
 
-int64_t SharedStorageDatabase::NumEntriesManualCount(
+int64_t SharedStorageDatabase::NumEntriesManualCountExcludeExpired(
     const std::string& context_origin) {
   static constexpr char kCountSql[] =
       "SELECT COUNT(*) FROM values_mapping "
@@ -1400,9 +1433,57 @@ int64_t SharedStorageDatabase::NumEntriesManualCount(
     length = statement.ColumnInt64(0);
 
   if (!statement.Succeeded())
-    length = -1;
+    return -1;
 
   return length;
+}
+
+int64_t SharedStorageDatabase::NumBytesUsedIncludeExpired(
+    const std::string& context_origin) {
+  // In theory, there ought to be at most one entry found. But we make no
+  // assumption about the state of the disk. In the rare case that multiple
+  // entries are found, we return only the `num_bytes` from the first entry
+  // found.
+  static constexpr char kSelectSql[] =
+      "SELECT num_bytes FROM per_origin_mapping "
+      "WHERE context_origin=? "
+      "LIMIT 1";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, context_origin);
+
+  int64_t num_bytes = 0;
+  if (statement.Step()) {
+    num_bytes = statement.ColumnInt64(0);
+  }
+
+  if (!statement.Succeeded()) {
+    return -1;
+  }
+
+  return num_bytes;
+}
+
+int64_t SharedStorageDatabase::NumBytesUsedManualCountExcludeExpired(
+    const std::string& context_origin) {
+  static constexpr char kCountSql[] =
+      "SELECT SUM(LENGTH(key) + LENGTH(value)) FROM values_mapping "
+      "WHERE context_origin=? AND last_used_time>=?";
+
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kCountSql));
+  statement.BindString(0, context_origin);
+  statement.BindTime(1, clock_->Now() - staleness_threshold_);
+
+  int64_t num_bytes = 0;
+  if (statement.Step()) {
+    num_bytes = statement.ColumnInt64(0);
+  }
+
+  if (!statement.Succeeded()) {
+    return -1;
+  }
+
+  return num_bytes;
 }
 
 std::optional<std::u16string> SharedStorageDatabase::MaybeGetValueFor(
@@ -1629,7 +1710,7 @@ bool SharedStorageDatabase::UpdatePerOriginMapping(
 }
 
 bool SharedStorageDatabase::HasCapacity(const std::string& context_origin) {
-  return NumEntriesTotal(context_origin) < max_entries_per_origin_;
+  return NumEntriesIncludeExpired(context_origin) < max_entries_per_origin_;
 }
 
 // TODO(crbug.com/324464353): Also log histograms for each number in a 5-number
