@@ -1184,7 +1184,7 @@ void TabSearchPageHandler::OnChangeInFeatureCurrentlyEnabledState(
   if (enabled) {
     organization_service_ =
         TabOrganizationServiceFactory::GetForProfile(profile);
-    if (organization_service_) {
+    if (organization_service_ && !organization_service_->HasObserver(this)) {
       organization_service_->AddObserver(this);
     }
   } else if (organization_service_) {

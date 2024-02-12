@@ -184,7 +184,8 @@ void TabSearchBubbleHost::OnChangeInFeatureCurrentlyEnabledState(
 
   auto* const tab_organization_service =
       TabOrganizationServiceFactory::GetForProfile(profile_);
-  if (!tab_organization_service) {
+  if (!tab_organization_service ||
+      tab_organization_service->HasObserver(this)) {
     return;
   }
 
