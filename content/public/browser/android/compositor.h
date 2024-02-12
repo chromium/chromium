@@ -88,9 +88,6 @@ class CONTENT_EXPORT Compositor {
   // Composite *without* having modified the layer tree.
   virtual void SetNeedsComposite() = 0;
 
-  // Request a draw and swap even if there is no change to the layer tree.
-  virtual void SetNeedsRedraw() = 0;
-
   // Returns the UI resource provider associated with the compositor.
   virtual base::WeakPtr<ui::UIResourceProvider> GetUIResourceProvider() = 0;
 
@@ -131,8 +128,8 @@ class CONTENT_EXPORT Compositor {
   // Control whether `CompositorClient::DidSwapBuffers` should be called. The
   // default is false. Note this is asynchronous. Any pending callbacks may
   // immediately after enabling may still be missed; best way to avoid this is
-  // to call this before calling `SetNeedsComposite` or `SetNeedsRedraw`. Also
-  // there may be trailing calls to `DidSwapBuffers` after unsetting this.
+  // to call this before calling `SetNeedsComposite`. Also there may be trailing
+  // calls to `DidSwapBuffers` after unsetting this.
   virtual void SetDidSwapBuffersCallbackEnabled(bool enable) = 0;
 
  protected:

@@ -1012,6 +1012,7 @@ static_library("browsertest_support") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//cc/slim",
     "//components/network_session_configurator/common:common",
     "//components/services/storage:storage",
     "//content/app:for_content_tests",

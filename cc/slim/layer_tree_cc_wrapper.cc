@@ -160,10 +160,6 @@ void LayerTreeCcWrapper::SetNeedsAnimate() {
   host_->SetNeedsAnimate();
 }
 
-void LayerTreeCcWrapper::SetNeedsRedraw() {
-  host_->SetNeedsRedrawRect(host_->device_viewport_rect());
-}
-
 const scoped_refptr<Layer>& LayerTreeCcWrapper::root() const {
   return root_;
 }
@@ -202,6 +198,11 @@ const LayerTree::SurfaceRangesAndCounts&
 LayerTreeCcWrapper::GetSurfaceRangesForTesting() const {
   const auto* const_host = host_.get();
   return const_host->pending_commit_state()->surface_ranges;
+}
+
+void LayerTreeCcWrapper::SetNeedsRedrawForTesting() {
+  host_->SetNeedsRedrawRect(host_->device_viewport_rect());
+  host_->SetNeedsCommit();
 }
 
 void LayerTreeCcWrapper::BeginMainFrame(const viz::BeginFrameArgs& args) {

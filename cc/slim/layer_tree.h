@@ -147,9 +147,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
   virtual base::OnceClosure DeferBeginFrame() = 0;
 
   // Requests to produce a new frame even if no content has changed.
-  // See `cc::LayerTreeHost` for distinction between these methods.
+  // See `cc::LayerTreeHost` for distinction between this and
+  // `SetNeedsRedrawForTesting()`.
   virtual void SetNeedsAnimate() = 0;
-  virtual void SetNeedsRedraw() = 0;
 
   // Works in combination with DelayedScheduler to indicate all the updates in
   // for a frame has arrived and a frame should be produced now. If compositor
@@ -168,6 +168,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTree {
 
   // Exposes the ranges of referenced surfaces for testing.
   virtual const SurfaceRangesAndCounts& GetSurfaceRangesForTesting() const = 0;
+
+  // Force to produce a compositor frame even if nothing has changed.
+  virtual void SetNeedsRedrawForTesting() = 0;
 };
 
 }  // namespace cc::slim

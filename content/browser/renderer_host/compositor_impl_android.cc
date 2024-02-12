@@ -556,10 +556,6 @@ void CompositorImpl::MaybeCompositeNow() {
   host_->MaybeCompositeNow();
 }
 
-void CompositorImpl::SetNeedsRedraw() {
-  host_->SetNeedsRedraw();
-}
-
 void CompositorImpl::BeginFrame(const viz::BeginFrameArgs& args) {
   client_->UpdateLayerTreeHost();
   if (needs_animate_) {
