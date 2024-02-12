@@ -2899,6 +2899,12 @@ if (!is_android) {
         "supervised_user/family_live_test.h",
         "supervised_user/family_member.cc",
         "supervised_user/family_member.h",
+        "supervised_user/test_state_seeded_observer.cc",
+        "supervised_user/test_state_seeded_observer.h",
+      ]
+      deps += [
+        "//components/supervised_user/core/browser:fetcher",
+        "//components/supervised_user/test_support",
       ]
       if (enable_extensions) {
         sources +=

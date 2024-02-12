@@ -189,6 +189,8 @@ class SupervisedUserURLFilter {
   // Sets the set of manually allowed or blocked hosts.
   void SetManualHosts(std::map<std::string, bool> host_map);
 
+  bool IsManualHostsEmpty() const;
+
   // Sets the set of manually allowed or blocked URLs.
   void SetManualURLs(std::map<GURL, bool> url_map);
 
