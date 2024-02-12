@@ -9488,12 +9488,11 @@ void RenderFrameHostImpl::HandleAXEvents(
   }
 
   if (!accessibility_reset_start_.is_null()) {
-    base::UmaHistogramCustomMicrosecondsTimes(
+    base::UmaHistogramTimes(
         is_first_accessibility_request_
-            ? "Accessibility.EventProcessingTime.First"
-            : "Accessibility.EventProcessingTime.NotFirst",
-        base::TimeTicks::Now() - accessibility_reset_start_,
-        base::Microseconds(1), base::Seconds(1), 50);
+            ? "Accessibility.EventProcessingTime2.First"
+            : "Accessibility.EventProcessingTime2.NotFirst",
+        base::TimeTicks::Now() - accessibility_reset_start_);
     accessibility_reset_start_ = base::TimeTicks();
   }
 }
