@@ -168,12 +168,7 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
     [self initialLayoutAnimated:enableFocusAnimation];
 
-    if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
-      self.bottomConstraintPhone.active = YES;
-      self.bottomSeparator.hidden = NO;
-    } else {
-      self.bottomConstraintTablet.active = YES;
-    }
+    [self updateBottomConstraints];
 
     self.open = YES;
     [self.delegate popupDidOpenForPresenter:self];
@@ -195,12 +190,23 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
 
   // Re-add necessary constraints.
   [self initialLayoutAnimated:NO];
+  [self updateBottomConstraints];
+}
 
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+- (void)updateBottomConstraints {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (IsIpadPopoutOmniboxEnabled()) {
+      BOOL showRegularLayout =
+          IsRegularXRegularSizeClass(self.popupContainerView.traitCollection);
+      self.bottomConstraintPhone.active = !showRegularLayout;
+      self.bottomConstraintTablet.active = showRegularLayout;
+    } else {
+      self.bottomConstraintPhone.active = NO;
+      self.bottomConstraintTablet.active = YES;
+    }
+  } else {
     self.bottomConstraintPhone.active = YES;
     self.bottomSeparator.hidden = NO;
-  } else {
-    self.bottomConstraintTablet.active = YES;
   }
 }
 
@@ -217,9 +223,17 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
   UIView* popup = self.popupContainerView;
   // Creates the constraints if the view is newly added to the view hierarchy.
 
-  // On phone form factor the popup is taking the full height.
-  self.bottomConstraintPhone =
-      [popup.bottomAnchor constraintEqualToAnchor:popup.superview.bottomAnchor];
+  if (IsIpadPopoutOmniboxEnabled()) {
+    self.bottomConstraintPhone = [popup.superview.bottomAnchor
+        constraintGreaterThanOrEqualToAnchor:popup.bottomAnchor
+                                    constant:
+                                        kPopupBottomPaddingTablet +
+                                        kSecondaryToolbarWithoutOmniboxHeight];
+  } else {
+    self.bottomConstraintPhone = [popup.bottomAnchor
+        constraintEqualToAnchor:popup.superview.bottomAnchor];
+  }
+
   // On tablet form factor the popup is padded on the bottom to allow the user
   // to defocus the omnibox.
   self.bottomConstraintTablet = [popup.superview.bottomAnchor
