@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -18,10 +19,12 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/arc_game_controls_flag.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/compositor/layer.h"
@@ -88,9 +91,7 @@ GameDashboardContext::GameDashboardContext(aura::Window* game_window)
     : game_window_(game_window),
       toolbar_snap_location_(ToolbarSnapLocation::kTopRight) {
   DCHECK(game_window_);
-  // TODO(b/316141148): Update `show_welcome_dialog_` to reflect the welcome
-  // dialog state in the settings.
-  show_welcome_dialog_ = true;
+  show_welcome_dialog_ = ShouldShowWelcomeDialog();
   CreateAndAddGameDashboardButtonWidget();
   // ARC windows handle displaying the welcome dialog once the
   // `game_dashboard_button_` becomes available.
@@ -455,6 +456,14 @@ void GameDashboardContext::CloseWelcomeDialog() {
     welcome_dialog_widget_->RemoveObserver(this);
     welcome_dialog_widget_.reset();
   }
+}
+
+bool GameDashboardContext::ShouldShowWelcomeDialog() const {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(prefs) << "A valid PrefService is needed to determine whether to show "
+                   "the welcome dialog.";
+  return prefs->GetBoolean(prefs::kGameDashboardShowWelcomeDialog);
 }
 
 }  // namespace ash

@@ -16,6 +16,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -78,6 +79,13 @@ class GameDashboardCaptureModeTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     EXPECT_TRUE(features::IsGameDashboardEnabled());
+
+    // Disable the Game Dashboard welcome dialog for all game windows.
+    PrefService* active_user_prefs =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    ASSERT_TRUE(active_user_prefs);
+    active_user_prefs->SetBoolean(prefs::kGameDashboardShowWelcomeDialog,
+                                  false);
 
     game_window_ = CreateAppWindow(gfx::Rect(0, 100, 300, 200));
     game_window_->SetProperty(kAppIDKey,
@@ -757,9 +765,6 @@ TEST_F(GameDashboardCaptureModeTest, CursorAndClickBehaviorWhenAnchored) {
 
   // The game window should be the top most active window.
   wm::ActivateWindow(game_window());
-  // TODO(b/316141148): Remove this call once the welcome dialog is disabled by
-  // default for tests.
-  WaitForSeconds(/*seconds=*/4);
   auto* controller = StartGameCaptureModeSession();
 
   // Hover over empty space where there is no window.

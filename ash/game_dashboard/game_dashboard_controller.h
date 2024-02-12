@@ -20,6 +20,8 @@
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
+class PrefRegistrySimple;
+
 namespace aura {
 class Window;
 class WindowTracker;
@@ -47,6 +49,9 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
 
   // Checks whether the `window` can respond to accelerator commands.
   static bool ReadyForAccelerator(aura::Window* window);
+
+  // Registers preferences used by this class in the provided `registry`.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Gets the app name by `app_id`.
   std::string GetArcAppName(const std::string& app_id) const;
