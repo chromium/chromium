@@ -909,10 +909,6 @@ class PersonalDataManager : public KeyedService,
   virtual std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card);
 
-  // Finds the country code that occurs most frequently among all profiles.
-  // Prefers verified profiles over unverified ones.
-  std::string MostCommonCountryCodeFromProfiles() const;
-
   // Called when the value of prefs::kAutofillCreditCardEnabled or
   // prefs::kAutofillProfileEnabled changes.
   void EnableAutofillPrefChanged();

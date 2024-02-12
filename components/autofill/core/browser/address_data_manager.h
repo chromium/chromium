@@ -84,9 +84,21 @@ class AddressDataManager : public WebDataServiceConsumer {
   // Removes the profile by `guid`.
   virtual void RemoveProfile(const std::string& guid);
 
+  // Migrates a given kLocalOrSyncable `profile` to source kAccount. This has
+  // multiple side-effects for the profile:
+  // - It is stored in a different backend.
+  // - It receives a new GUID.
+  // Like all database operations, the migration happens asynchronously.
+  // `profile` (the kLocalOrSyncable one) will not be available in the
+  // PersonalDataManager anymore once the migrating has finished.
+  void MigrateProfileToAccount(const AutofillProfile& profile);
+
   // Asynchronously loads all `AutofillProfile`s (from all sources) into the
   // class's state. See `synced_local_profiles_` and `account_profiles_`.
   virtual void LoadProfiles();
+
+  // Updates the `profile`'s use count and use date in the database.
+  virtual void RecordUseOf(const AutofillProfile& profile);
 
   void CancelAllPendingQueries() {
     CancelPendingQuery(pending_synced_local_profiles_query_);
@@ -148,6 +160,10 @@ class AddressDataManager : public WebDataServiceConsumer {
   // Remove the change from the |ongoing_profile_changes_|, handle next task or
   // Refresh.
   void OnProfileChangeDone(const std::string& guid);
+
+  // Finds the country code that occurs most frequently among all profiles.
+  // Prefers verified profiles over unverified ones.
+  std::string MostCommonCountryCodeFromProfiles() const;
 
   // Logs metrics around the number of stored profiles after the initial load
   // has finished.

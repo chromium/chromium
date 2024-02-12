@@ -40,14 +40,9 @@ void TestPersonalDataManager::RecordUseOf(
 
     if (credit_card)
       credit_card->RecordAndLogUse();
-  }
-
-  if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
-    AutofillProfile* profile = GetProfileByGUID(
-        absl::get<const AutofillProfile*>(profile_or_credit_card)->guid());
-
-    if (profile)
-      profile->RecordAndLogUse();
+  } else {
+    address_data_manager_->RecordUseOf(
+        *absl::get<const AutofillProfile*>(profile_or_credit_card));
   }
 }
 

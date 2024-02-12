@@ -50,6 +50,12 @@ void TestAddressDataManager::LoadProfiles() {
   // after the initial load.
 }
 
+void TestAddressDataManager::RecordUseOf(const AutofillProfile& profile) {
+  if (AutofillProfile* adm_profile = GetProfileByGUID(profile.guid())) {
+    adm_profile->RecordAndLogUse();
+  }
+}
+
 void TestAddressDataManager::ClearProfiles() {
   GetProfileStorage(AutofillProfile::Source::kLocalOrSyncable).clear();
   GetProfileStorage(AutofillProfile::Source::kAccount).clear();

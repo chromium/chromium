@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -218,6 +221,16 @@ void AddressDataManager::RemoveProfile(const std::string& guid) {
   HandleNextProfileChange(guid);
 }
 
+void AddressDataManager::MigrateProfileToAccount(
+    const AutofillProfile& profile) {
+  CHECK_EQ(profile.source(), AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile account_profile = profile.ConvertToAccountProfile();
+  DCHECK_NE(profile.guid(), account_profile.guid());
+  // Update the database (and this way indirectly Sync).
+  RemoveProfile(profile.guid());
+  AddProfile(account_profile);
+}
+
 void AddressDataManager::LoadProfiles() {
   if (!webdata_service_) {
     return;
@@ -229,6 +242,16 @@ void AddressDataManager::LoadProfiles() {
       AutofillProfile::Source::kLocalOrSyncable, this);
   pending_account_profiles_query_ = webdata_service_->GetAutofillProfiles(
       AutofillProfile::Source::kAccount, this);
+}
+
+void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
+  AutofillProfile* adm_profile = GetProfileByGUID(profile.guid());
+  if (!adm_profile) {
+    return;
+  }
+  AutofillProfile updated_profile = *adm_profile;
+  updated_profile.RecordAndLogUse();
+  UpdateProfile(updated_profile);
 }
 
 void AddressDataManager::CancelPendingQuery(
@@ -387,6 +410,30 @@ void AddressDataManager::OnProfileChangeDone(const std::string& guid) {
   ongoing_profile_changes_[guid].pop_front();
   notify_pdm_observers_.Run();
   HandleNextProfileChange(guid);
+}
+
+std::string AddressDataManager::MostCommonCountryCodeFromProfiles() const {
+  // Count up country codes from existing profiles.
+  std::map<std::string, int> votes;
+  const std::vector<AutofillProfile*>& profiles = GetProfiles();
+  const std::vector<std::string>& country_codes =
+      CountryDataMap::GetInstance()->country_codes();
+  for (const AutofillProfile* profile : profiles) {
+    std::string country_code = base::ToUpperASCII(
+        base::UTF16ToASCII(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
+    if (base::Contains(country_codes, country_code)) {
+      votes[country_code]++;
+    }
+  }
+
+  // Take the most common country code.
+  if (!votes.empty()) {
+    return base::ranges::max_element(
+               votes, [](auto& a, auto& b) { return a.second < b.second; })
+        ->first;
+  }
+
+  return std::string();
 }
 
 void AddressDataManager::LogStoredDataMetrics() const {

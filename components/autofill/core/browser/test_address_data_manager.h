@@ -21,6 +21,7 @@ class TestAddressDataManager : public AddressDataManager {
   void UpdateProfile(const AutofillProfile& profile) override;
   void RemoveProfile(const std::string& guid) override;
   void LoadProfiles() override;
+  void RecordUseOf(const AutofillProfile& profile) override;
 
   void ClearProfiles();
 };

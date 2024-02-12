@@ -41,7 +41,6 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
-#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -782,15 +781,8 @@ void PersonalDataManager::RecordUseOf(
 
     Refresh();
   } else {
-    AutofillProfile* profile = GetProfileByGUID(
-        absl::get<const AutofillProfile*>(profile_or_credit_card)->guid());
-    if (!profile) {
-      return;
-    }
-
-    AutofillProfile updated_profile = *profile;
-    updated_profile.RecordAndLogUse();
-    UpdateProfile(updated_profile);
+    address_data_manager_->RecordUseOf(
+        *absl::get<const AutofillProfile*>(profile_or_credit_card));
   }
 }
 
@@ -841,12 +833,7 @@ bool PersonalDataManager::IsCountryEligibleForAccountStorage(
 
 void PersonalDataManager::MigrateProfileToAccount(
     const AutofillProfile& profile) {
-  CHECK_EQ(profile.source(), AutofillProfile::Source::kLocalOrSyncable);
-  AutofillProfile account_profile = profile.ConvertToAccountProfile();
-  DCHECK_NE(profile.guid(), account_profile.guid());
-  // Update the database (and this way indirectly Sync).
-  RemoveByGUID(profile.guid());
-  AddProfile(account_profile);
+  address_data_manager_->MigrateProfileToAccount(profile);
 }
 
 std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
@@ -1697,8 +1684,10 @@ void PersonalDataManager::FetchImagesForURLs(
 
 const std::string& PersonalDataManager::GetDefaultCountryCodeForNewAddress()
     const {
-  if (default_country_code_.empty())
-    default_country_code_ = MostCommonCountryCodeFromProfiles();
+  if (default_country_code_.empty() && IsAutofillEnabled()) {
+    default_country_code_ =
+        address_data_manager_->MostCommonCountryCodeFromProfiles();
+  }
 
   // Failing that, use the country code determined for experiment groups.
   if (default_country_code_.empty())
@@ -2324,33 +2313,6 @@ void PersonalDataManager::LogStoredPaymentsDataMetrics() const {
   autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
   autofill_metrics::LogStoredVirtualCardUsageCount(
       autofill_virtual_card_usage_data_.size());
-}
-
-std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {
-  if (!IsAutofillEnabled())
-    return std::string();
-
-  // Count up country codes from existing profiles.
-  std::map<std::string, int> votes;
-  const std::vector<AutofillProfile*>& profiles = GetProfiles();
-  const std::vector<std::string>& country_codes =
-      CountryDataMap::GetInstance()->country_codes();
-  for (const AutofillProfile* profile : profiles) {
-    std::string country_code = base::ToUpperASCII(
-        base::UTF16ToASCII(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
-    if (base::Contains(country_codes, country_code)) {
-      votes[country_code]++;
-    }
-  }
-
-  // Take the most common country code.
-  if (!votes.empty()) {
-    return base::ranges::max_element(
-               votes, [](auto& a, auto& b) { return a.second < b.second; })
-        ->first;
-  }
-
-  return std::string();
 }
 
 void PersonalDataManager::EnableAutofillPrefChanged() {
