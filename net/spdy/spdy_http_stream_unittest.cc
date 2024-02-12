@@ -141,7 +141,8 @@ class SpdyHttpStreamTest : public testing::TestWithParam<bool>,
              SessionUsage::kDestination,
              SocketTag(),
              NetworkAnonymizationKey(),
-             SecureDnsPolicy::kAllow),
+             SecureDnsPolicy::kAllow,
+             /*disable_cert_verification_network_fetches=*/false),
         ssl_(SYNCHRONOUS, OK) {
     if (PriorityHeaderEnabled()) {
       feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);

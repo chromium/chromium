@@ -864,10 +864,15 @@ SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   if (params_->proxy_chain_index() == 0) {
     DCHECK(session_key_proxy_chain.is_direct());
   }
+
+  // Note that `disable_cert_network_fetches` must be true for proxies to avoid
+  // deadlock. See comment on
+  // `SSLConfig::disable_cert_verification_network_fetches`.
   return SpdySessionKey(
       params_->proxy_server().host_port_pair(), PRIVACY_MODE_DISABLED,
       session_key_proxy_chain, SessionUsage::kProxy, socket_tag(),
-      params_->network_anonymization_key(), params_->secure_dns_policy());
+      params_->network_anonymization_key(), params_->secure_dns_policy(),
+      /*disable_cert_verification_network_fetches=*/true);
 }
 
 }  // namespace net

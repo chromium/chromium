@@ -350,7 +350,8 @@ class WebSocketHandshakeStreamCreateHelperTest
         const SpdySessionKey key(
             HostPortPair::FromURL(url), PRIVACY_MODE_DISABLED,
             ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            /*disable_cert_verification_network_fetches=*/false);
         base::WeakPtr<SpdySession> spdy_session =
             CreateSpdySession(http_network_session.get(), key, net_log);
         std::unique_ptr<WebSocketHandshakeStreamBase> handshake =

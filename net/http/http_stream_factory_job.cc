@@ -163,15 +163,11 @@ HttpStreamFactory::Job::Job(
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == kProtoHTTP2 && !using_quic_),
       quic_request_(session_->quic_session_pool()),
-      spdy_session_key_(
-          using_quic_
-              ? SpdySessionKey()
-              : GetSpdySessionKey(proxy_info_.proxy_chain(),
-                                  origin_url_,
-                                  request_info_.privacy_mode,
-                                  request_info_.socket_tag,
-                                  request_info_.network_anonymization_key,
-                                  request_info_.secure_dns_policy)) {
+      spdy_session_key_(using_quic_
+                            ? SpdySessionKey()
+                            : GetSpdySessionKey(proxy_info_.proxy_chain(),
+                                                origin_url_,
+                                                request_info_)) {
   // Websocket `destination` schemes should be converted to HTTP(S).
   DCHECK(base::EqualsCaseInsensitiveASCII(destination_.scheme(),
                                           url::kHttpScheme) ||
@@ -442,10 +438,7 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
 SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     const ProxyChain& proxy_chain,
     const GURL& origin_url,
-    PrivacyMode privacy_mode,
-    const SocketTag& socket_tag,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    SecureDnsPolicy secure_dns_policy) {
+    const HttpRequestInfo& request_info) {
   // In the case that we'll be sending a GET request to the proxy, look for a
   // HTTP/2 proxy session *to* the proxy, instead of to the origin server. The
   // way HTTP over HTTPS proxies work is that the ConnectJob makes a SpdyProxy,
@@ -461,14 +454,20 @@ SpdySessionKey HttpStreamFactory::Job::GetSpdySessionKey(
     auto [last_proxy_partial_chain, last_proxy_server] =
         proxy_chain.SplitLast();
     const auto& last_proxy_host_port_pair = last_proxy_server.host_port_pair();
-    return SpdySessionKey(last_proxy_host_port_pair, PRIVACY_MODE_DISABLED,
-                          last_proxy_partial_chain, SessionUsage::kProxy,
-                          socket_tag, network_anonymization_key,
-                          secure_dns_policy);
+    // Note that `disable_cert_network_fetches` must be true for proxies to
+    // avoid deadlock. See comment on
+    // `SSLConfig::disable_cert_verification_network_fetches`.
+    return SpdySessionKey(
+        last_proxy_host_port_pair, PRIVACY_MODE_DISABLED,
+        last_proxy_partial_chain, SessionUsage::kProxy, request_info.socket_tag,
+        request_info.network_anonymization_key, request_info.secure_dns_policy,
+        /*disable_cert_network_fetches=*/true);
   }
-  return SpdySessionKey(HostPortPair::FromURL(origin_url), privacy_mode,
-                        proxy_chain, SessionUsage::kDestination, socket_tag,
-                        network_anonymization_key, secure_dns_policy);
+  return SpdySessionKey(
+      HostPortPair::FromURL(origin_url), request_info.privacy_mode, proxy_chain,
+      SessionUsage::kDestination, request_info.socket_tag,
+      request_info.network_anonymization_key, request_info.secure_dns_policy,
+      request_info.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
 }
 
 // static

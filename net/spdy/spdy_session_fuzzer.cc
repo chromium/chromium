@@ -131,7 +131,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       net::HostPortPair("127.0.0.1", 80), net::PRIVACY_MODE_DISABLED,
       net::ProxyChain::Direct(), net::SessionUsage::kDestination,
       net::SocketTag(), net::NetworkAnonymizationKey(),
-      net::SecureDnsPolicy::kAllow);
+      net::SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<net::SpdySession> spdy_session(net::CreateSpdySession(
       http_session.get(), session_key, net_log_with_source));
 

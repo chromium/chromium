@@ -228,13 +228,15 @@ SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
       proxy_host_port_(kProxyHost, kProxyPort),
       endpoint_host_port_pair_(kOriginHost, kOriginPort),
       proxy_chain_(ProxyServer::SCHEME_HTTPS, proxy_host_port_),
-      endpoint_spdy_session_key_(endpoint_host_port_pair_,
-                                 PRIVACY_MODE_DISABLED,
-                                 proxy_chain_,
-                                 SessionUsage::kDestination,
-                                 SocketTag(),
-                                 NetworkAnonymizationKey(),
-                                 SecureDnsPolicy::kAllow),
+      endpoint_spdy_session_key_(
+          endpoint_host_port_pair_,
+          PRIVACY_MODE_DISABLED,
+          proxy_chain_,
+          SessionUsage::kDestination,
+          SocketTag(),
+          NetworkAnonymizationKey(),
+          SecureDnsPolicy::kAllow,
+          /*disable_cert_verification_network_fetches=*/false),
       ssl_(SYNCHRONOUS, OK) {
   session_deps_.net_log = NetLog::Get();
 }

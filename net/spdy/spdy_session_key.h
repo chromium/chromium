@@ -22,13 +22,19 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
  public:
   SpdySessionKey();
 
+  // Note that if `session_usage` is kProxy, then:
+  // * `privacy_mode` must be PRIVACY_MODE_DISABLED to pool credentialed and
+  //     uncredetialed requests onto the same proxy connections.
+  // * `disable_cert_verification_network_fetches` must be true, to avoid
+  //     depending on cert fetches, which would be made through the proxy.
   SpdySessionKey(const HostPortPair& host_port_pair,
                  PrivacyMode privacy_mode,
                  const ProxyChain& proxy_chain,
                  SessionUsage session_usage,
                  const SocketTag& socket_tag,
                  const NetworkAnonymizationKey& network_anonymization_key,
-                 SecureDnsPolicy secure_dns_policy);
+                 SecureDnsPolicy secure_dns_policy,
+                 bool disable_cert_verification_network_fetches);
 
   SpdySessionKey(const SpdySessionKey& other);
 
@@ -85,6 +91,10 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
 
   SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
 
+  bool disable_cert_verification_network_fetches() const {
+    return disable_cert_verification_network_fetches_;
+  }
+
  private:
   HostPortProxyPair host_port_proxy_pair_;
   // If enabled, then session cannot be tracked by the server.
@@ -95,6 +105,7 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   // partitioning is disabled this will be set to an empty key.
   NetworkAnonymizationKey network_anonymization_key_;
   SecureDnsPolicy secure_dns_policy_;
+  bool disable_cert_verification_network_fetches_;
 };
 
 }  // namespace net

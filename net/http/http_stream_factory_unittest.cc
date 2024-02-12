@@ -595,7 +595,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
     SpdySessionKey key(host_port_pair, PRIVACY_MODE_DISABLED,
                        ProxyChain::Direct(), SessionUsage::kDestination,
                        SocketTag(), NetworkAnonymizationKey(),
-                       SecureDnsPolicy::kAllow);
+                       SecureDnsPolicy::kAllow,
+                       /*disable_cert_verification_network_fetches=*/false);
     std::ignore = CreateFakeSpdySession(session->spdy_session_pool(), key);
 
     CommonConnectJobParams common_connect_job_params =

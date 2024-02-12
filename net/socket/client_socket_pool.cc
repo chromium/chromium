@@ -203,7 +203,8 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
                        group_id.privacy_mode(), proxy_chain,
                        SessionUsage::kDestination, socket_tag,
                        group_id.network_anonymization_key(),
-                       group_id.secure_dns_policy()),
+                       group_id.secure_dns_policy(),
+                       group_id.disable_cert_network_fetches()),
         is_for_websockets_);
   }
 
