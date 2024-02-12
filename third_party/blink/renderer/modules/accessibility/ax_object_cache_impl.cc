@@ -4776,6 +4776,9 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
+  if (!obj) {
+    return;
+  }
   MarkAXObjectDirtyWithCleanLayoutHelper(obj, active_event_from_,
                                          active_event_from_action_);
   for (auto agent : agents_) {
@@ -4806,6 +4809,9 @@ void AXObjectCacheImpl::NotifySubtreeDirty(AXObject* obj) {
 }
 
 void AXObjectCacheImpl::MarkAXSubtreeDirtyWithCleanLayout(AXObject* obj) {
+  if (!obj) {
+    return;
+  }
   MarkAXObjectDirtyWithCleanLayoutHelper(obj, active_event_from_,
                                          active_event_from_action_);
   NotifySubtreeDirty(obj);
@@ -4821,7 +4827,7 @@ void AXObjectCacheImpl::MarkAXSubtreeDirty(AXObject* obj) {
 void AXObjectCacheImpl::MarkSubtreeDirty(Node* node) {
   if (AXObject* obj = Get(node)) {
     MarkAXSubtreeDirty(obj);
-  } else {
+  } else if (node) {
     // There is no AXObject, so there is no subtree to mark dirty.
     MarkElementDirty(node);
   }
