@@ -497,6 +497,14 @@ class SourceRegistrationTableModel extends
   }
 }
 
+function isHttpError(code: number): boolean {
+  return code < 200 || code >= 400;
+}
+
+function styleReportRow(tr: HTMLElement, report: {sendFailed: boolean}): void {
+  tr.classList.toggle('send-error', report.sendFailed);
+}
+
 class Report extends Selectable {
   id: ReportID;
   reportBody: string;
@@ -524,7 +532,7 @@ class Report extends Selectable {
 
     if (mojo.status.sent !== undefined) {
       this.status = `Sent: HTTP ${mojo.status.sent}`;
-      this.sendFailed = mojo.status.sent < 200 || mojo.status.sent >= 400;
+      this.sendFailed = isHttpError(mojo.status.sent);
     } else if (mojo.status.pending !== undefined) {
       this.status = 'Pending';
     } else if (mojo.status.replacedByHigherPriorityReport !== undefined) {
@@ -629,9 +637,7 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     this.rowsChangedListeners.add(() => this.updateHiddenDebugReportsSpan_());
   }
 
-  override styleRow(tr: HTMLElement, report: Report): void {
-    tr.classList.toggle('send-error', report.sendFailed);
-  }
+  override styleRow = styleReportRow;
 
   override rowCount(): number {
     return this.sentOrDroppedReports.length + this.storedReports.length +
@@ -774,6 +780,7 @@ class DebugReport {
   url: string;
   time: Date;
   status: string;
+  sendFailed: boolean;
 
   constructor(mojo: WebUIDebugReport) {
     this.body = mojo.body;
@@ -782,8 +789,10 @@ class DebugReport {
 
     if (mojo.status.httpResponseCode !== undefined) {
       this.status = `HTTP ${mojo.status.httpResponseCode}`;
+      this.sendFailed = isHttpError(mojo.status.httpResponseCode);
     } else if (mojo.status.networkError !== undefined) {
       this.status = `Network error: ${mojo.status.networkError}`;
+      this.sendFailed = true;
     } else {
       throw new Error('invalid DebugReportStatus union');
     }
@@ -803,7 +812,7 @@ class DebugReportTableModel extends ArrayTableModel<DebugReport> {
     );
   }
 
-  // TODO(apaseltiner): Style error rows like `ReportTableModel`
+  override styleRow = styleReportRow;
 }
 
 /**
