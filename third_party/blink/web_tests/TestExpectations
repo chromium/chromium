@@ -5419,7 +5419,7 @@ crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ 
 crbug.com/1406896 [ Debug Linux ] http/tests/inspector-protocol/cpu-profiler/record-cpu-profile-with-cpu-throttling.js [ Crash ]
 crbug.com/1370749 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/animations/add-keyframes-recalc.html [ Failure ]
 crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-move-to-document-pip.html [ Failure ]
-crbug.com/1434123 media/video-source-type.html [ Failure Pass ]
+crbug.com/1434123 media/video-source-type.html [ Failure Pass Timeout ]
 crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
 crbug.com/1418393 [ Debug Linux ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-attributes.tentative.window.html [ Failure ]
 crbug.com/1445674 [ Linux ] webaudio/internals/audioworkletprocessor-gc.https.html [ Timeout ]
@@ -5990,7 +5990,7 @@ crbug.com/1186788 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 
 # TODO(crbug.com/1419063): Deflake.
-http/tests/media/media-load-nonmedia-crossorigin.html [ Failure Pass ]
+http/tests/media/media-load-nonmedia-crossorigin.html [ Failure Pass Timeout ]
 
 # TODO(crbug.com/1404614): Fix this test on MacOS (sheriff 2023-01-03).
 crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Failure Pass ]
