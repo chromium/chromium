@@ -50,6 +50,7 @@ class DeviceSettingsBaseTest : public InteractiveAshTest {
   ~DeviceSettingsBaseTest() override;
 
   ui::test::InteractiveTestApi::MultiStep LaunchSettingsApp(
+      const ui::ElementIdentifier& element_id,
       const std::string& sub_page);
   ui::test::InteractiveTestApi::StepBuilder SetupInternalKeyboard();
 

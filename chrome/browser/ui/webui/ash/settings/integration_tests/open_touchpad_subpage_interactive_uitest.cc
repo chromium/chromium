@@ -45,7 +45,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsTouchpadInteractiveUiTest,
                        OpenTouchpadSubpage) {
   SetTouchpadDevices({kSampleTouchpadInternal});
   RunTestSequence(
-      LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDeviceSectionPath),
       WaitForElementExists(webcontents_id_, kTouchpadRowQuery),
       ClickElement(webcontents_id_, kTouchpadRowQuery),
       WaitForElementTextContains(webcontents_id_, kTouchpadNameQuery,

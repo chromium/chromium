@@ -63,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsMouseInteractiveUiTest,
   scrolling_speed_slider_enabled.test_function = "el => !el.disabled";
 
   RunTestSequence(
-      LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDeviceSectionPath),
       WaitForElementExists(webcontents_id_, kMouseRowQuery),
       ClickElement(webcontents_id_, kMouseRowQuery),
       WaitForStateChange(webcontents_id_, scrolling_speed_slider_disabled),

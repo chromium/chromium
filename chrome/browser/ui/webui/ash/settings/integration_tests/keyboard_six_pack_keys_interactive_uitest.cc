@@ -60,7 +60,8 @@ class DeviceSettingsSixPackKeysTest : public DeviceSettingsBaseTest {
 IN_PROC_BROWSER_TEST_F(DeviceSettingsSixPackKeysTest, SixPackKeys) {
   RunTestSequence(
       Log("Adding a fake internal keyboard"), SetupInternalKeyboard(),
-      LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDeviceSectionPath),
       WaitForElementExists(webcontents_id_, kKeyboardRowQuery),
       ClickElement(webcontents_id_, kKeyboardRowQuery),
       WaitForElementTextContains(webcontents_id_, kKeyboardNameQuery,

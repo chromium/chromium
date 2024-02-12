@@ -34,6 +34,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, TopRow) {
   RunTestSequence(
       Log("Adding a fake internal keyboard"), SetupInternalKeyboard(),
       LaunchSettingsApp(
+          webcontents_id_,
           chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
       Log("Enabling 'Treat top-row keys as function keys' setting"),
       ClickElement(webcontents_id_, kTopRowAreFkeysToggleQuery),

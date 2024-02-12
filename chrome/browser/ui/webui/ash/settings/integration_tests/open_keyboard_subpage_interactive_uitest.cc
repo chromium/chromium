@@ -22,7 +22,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsKeyboardInteractiveUiTest,
                        OpenKeyboardSubpage) {
   RunTestSequence(
       SetupInternalKeyboard(),
-      LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDeviceSectionPath),
       WaitForElementExists(webcontents_id_, kKeyboardRowQuery),
       ClickElement(webcontents_id_, kKeyboardRowQuery),
       WaitForElementTextContains(webcontents_id_, kKeyboardNameQuery,

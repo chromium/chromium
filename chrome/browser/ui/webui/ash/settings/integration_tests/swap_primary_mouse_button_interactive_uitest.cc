@@ -62,7 +62,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsSwapPrimaryMouseButtonInteractiveUiTest,
   cursor_acceleration_toggle_enabled.test_function = "el => !el.disabled";
 
   RunTestSequence(
-      LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDeviceSectionPath),
       Log("Waiting for per device mouse row to be visible"),
       WaitForElementExists(webcontents_id_, kMouseRowQuery),
       ClickElement(webcontents_id_, kMouseRowQuery),

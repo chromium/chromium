@@ -62,20 +62,23 @@ DeviceSettingsBaseTest::DeviceSettingsBaseTest() {
 
 DeviceSettingsBaseTest::~DeviceSettingsBaseTest() = default;
 
+// `element_id` is the identifier for the top-level Settings window.
+// `subpage` contains the page that the Settings app should be launched to.
 ui::test::InteractiveTestApi::MultiStep
-DeviceSettingsBaseTest::LaunchSettingsApp(const std::string& subpage) {
+DeviceSettingsBaseTest::LaunchSettingsApp(
+    const ui::ElementIdentifier& element_id,
+    const std::string& subpage) {
   return Steps(
       Log(std::format("Open OS Settings to {0}", subpage)),
-      InstrumentNextTab(webcontents_id_, AnyBrowser()), Do([&]() {
+      InstrumentNextTab(element_id, AnyBrowser()), Do([&]() {
         chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
             GetActiveUserProfile(), subpage);
       }),
-      WaitForShow(webcontents_id_),
+      WaitForShow(element_id),
       Log(std::format("Waiting for OS Settings {0} page to load", subpage)),
 
       Log("Waiting for OS settings audio settings page to load"),
-      WaitForWebContentsReady(webcontents_id_,
-                              chrome::GetOSSettingsUrl(subpage)));
+      WaitForWebContentsReady(element_id, chrome::GetOSSettingsUrl(subpage)));
 }
 
 // Enters lower-case text into the focused html input element.

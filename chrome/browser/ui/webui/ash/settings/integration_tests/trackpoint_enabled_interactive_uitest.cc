@@ -42,7 +42,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsTrackpointInteractiveUiTest,
                        TrackpointEnabled) {
   SetPointingStickDevices({kSamplePointingStickInternal});
   RunTestSequence(
-      LaunchSettingsApp(chromeos::settings::mojom::kDeviceSectionPath),
+      LaunchSettingsApp(webcontents_id_,
+                        chromeos::settings::mojom::kDeviceSectionPath),
       WaitForElementExists(webcontents_id_, kPointingStickRowQuery),
       ClickElement(webcontents_id_, kPointingStickRowQuery),
       WaitForElementTextContains(webcontents_id_, kPointingStickNameQuery,

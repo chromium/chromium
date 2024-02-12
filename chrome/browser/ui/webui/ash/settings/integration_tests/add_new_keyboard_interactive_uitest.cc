@@ -12,6 +12,7 @@ namespace {
 IN_PROC_BROWSER_TEST_F(DeviceSettingsBaseTest, AddNewKeyboard) {
   RunTestSequence(SetupInternalKeyboard(),
                   LaunchSettingsApp(
+                      webcontents_id_,
                       chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
                   Log("Waiting for keyboard to exist"),
                   WaitForElementExists(webcontents_id_, kKeyboardNameQuery),
