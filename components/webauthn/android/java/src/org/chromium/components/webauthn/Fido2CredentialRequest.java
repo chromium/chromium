@@ -1057,8 +1057,6 @@ public class Fido2CredentialRequest
         final int errorCode = error.first;
         @Nullable final String errorMsg = error.second;
 
-        // TODO(b/113347251): Use specific error codes instead of strings when GmsCore Fido2
-        // provides them.
         switch (errorCode) {
             case Fido2Api.SECURITY_ERR:
                 // AppId or rpID fails validation.
