@@ -5051,6 +5051,9 @@
         <message name="IDS_INPUT_OVERLAY_BUTTON_OPTIONS_ACTION_EDIT_BUTTON_A11Y_LABEL" desc="Action edit button a11y label for button options menu. Spoken by screen readers when the list item button gets focus but not visually rendered." translateable="false">
           Tap on the button to focus on the label
         </message>
+        <message name="IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_A11Y_LABEL" desc="A11y label for button placement mode. Spoken by screen readers when in button placement mode but not visually rendered." translateable="false">
+          Use arrow keys to move this control to the game action you want. Use the enter key to place the control. Use the escape key to cancel.
+        </message>
         <message name="IDS_INPUT_OVERLAY_EDITING_LIST_FIRST_CONTROL_LABEL" desc="The label to the left of the '+' button in the row below the title in the Game Controls editor menu without having created any buttons." translateable="false">
           Assign first control
         </message>
