@@ -58,11 +58,22 @@ void ShowExtensionSigninPrompt(Profile* profile,
 void ShowSigninPromptFromPromo(Profile* profile,
                                signin_metrics::AccessPoint access_point);
 
+// This function is used to sign in a given account:
+// * This function does nothing if the user is already signed in to Chrome.
+// * If |account| is empty, then it presents the Chrome sign-in page.
+// * If token service has an invalid refresh token for account |account|,
+//   then it presents the Chrome sign-in page with |account.email| prefilled.
+// * If token service has a valid refresh token for |account|, then it
+//   signs in the |account|.
+void SignInFromSingleAccountPromo(Profile* profile,
+                                  const CoreAccountInfo& account,
+                                  signin_metrics::AccessPoint access_point);
+
 // This function is used to enable sync for a given account:
 // * This function does nothing if the user is already signed in to Chrome.
 // * If |account| is empty, then it presents the Chrome sign-in page.
-// * If token service has an invalid refreh token for account |account|,
-//   then it presents the Chrome sign-in page with |account.emil| prefilled.
+// * If token service has an invalid refresh token for account |account|,
+//   then it presents the Chrome sign-in page with |account.email| prefilled.
 // * If token service has a valid refresh token for |account|, then it
 //   enables sync for |account|.
 void EnableSyncFromSingleAccountPromo(Profile* profile,

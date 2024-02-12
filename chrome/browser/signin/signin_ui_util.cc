@@ -47,6 +47,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/text_elider.h"
@@ -289,6 +290,62 @@ void ShowSigninPromptFromPromo(Profile* profile,
       signin_metrics::PromoAction::
           PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void SignInFromSingleAccountPromo(Profile* profile,
+                                  const CoreAccountInfo& account,
+                                  signin_metrics::AccessPoint access_point) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
+  DCHECK(!profile->IsOffTheRecord());
+
+  // The user is already signed in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    DVLOG(1) << "There is already a primary account.";
+    return;
+  }
+
+  // No account with refresh tokens is present.
+  if (account.IsEmpty()) {
+    signin_metrics::PromoAction new_account_promo_action =
+        identity_manager->GetAccountsWithRefreshTokens().empty()
+            ? signin_metrics::PromoAction::
+                  PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+            : signin_metrics::PromoAction::
+                  PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT;
+    GetSigninUiDelegate()->ShowSigninUI(profile, /*enable_sync=*/false,
+                                        access_point, new_account_promo_action);
+    return;
+  }
+
+  CHECK(!account.account_id.empty());
+  CHECK(!account.email.empty());
+  CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) ||
+        AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
+
+  // There is an account, but it needs re-authentication.
+  bool needs_reauth_before_signin =
+      !identity_manager->HasAccountWithRefreshToken(account.account_id) ||
+      identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          account.account_id);
+  if (needs_reauth_before_signin) {
+    GetSigninUiDelegate()->ShowReauthUI(
+        profile, account.email,
+        /*enable_sync=*/false, access_point,
+        signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
+    return;
+  }
+
+  // If the account's refresh token are fine, sign in directly.
+  IdentityManagerFactory::GetForProfile(profile)
+      ->GetPrimaryAccountMutator()
+      ->SetPrimaryAccount(account.account_id, signin::ConsentLevel::kSignin,
+                          access_point);
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void EnableSyncFromSingleAccountPromo(

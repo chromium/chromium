@@ -69,6 +69,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -899,7 +900,9 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
 }
 
 void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
+  CHECK(IsExplicitBrowserSigninUIOnDesktopEnabled(
+      switches::ExplicitBrowserSigninPhase::kFull));
+  signin_ui_util::SignInFromSingleAccountPromo(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()), account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
 }
