@@ -1207,6 +1207,7 @@ BASE_FEATURE(kForceReSyncDrive,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling/disabling the forest feature.
+// For more info, see go/crosforest.
 BASE_FEATURE(kForestFeature,
              "ForestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
