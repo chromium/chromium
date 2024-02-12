@@ -163,6 +163,10 @@ void PasswordCheckBridge::RemoveCredential(
       ConvertJavaObjectToCredential(env, credential));
 }
 
+bool PasswordCheckBridge::HasAccountForRequest(JNIEnv* env) {
+  return check_manager_.HasAccountForRequest();
+}
+
 void PasswordCheckBridge::Destroy(JNIEnv* env) {
   check_manager_.StopCheck();
   delete this;

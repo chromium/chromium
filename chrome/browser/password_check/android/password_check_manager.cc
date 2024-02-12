@@ -8,9 +8,11 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_check/android/password_check_bridge.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -343,4 +345,11 @@ void PasswordCheckManager::ResetPrecondition(CheckPreconditions condition) {
 
 void PasswordCheckManager::OnEditUIDismissed() {
   credential_edit_bridge_.reset();
+}
+
+bool PasswordCheckManager::HasAccountForRequest() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
+      identity_manager);
 }
