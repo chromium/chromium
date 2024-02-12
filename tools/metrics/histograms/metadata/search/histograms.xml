@@ -120,6 +120,28 @@ chromium-metrics-reviews@google.com.
   <token key="AuxiliarySearchDataType" variants="AuxiliarySearchDataType"/>
 </histogram>
 
+<histogram name="Search.ChoiceDebug.InsertedDefaultProvider" units="id"
+    expires_after="2024-08-04">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records whether the current default search provided was inserted in the
+    choice screen. Recorded when the list of search engines is fetched for the
+    dialog, on Desktop.
+  </summary>
+</histogram>
+
+<histogram name="Search.ChoiceDebug.UnknownSearchEngineId" enum="Boolean"
+    expires_after="2024-08-04">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the id of an unexpected search engine that causes the choice screen
+    to be suppressed. Might be recorded at each navigation, in a sparse
+    histogram, until the choice screen ends up being shown.
+  </summary>
+</histogram>
+
 <histogram name="Search.ChoiceReprompt{Category}"
     enum="SearchEngineChoiceReprompt" expires_after="2024-11-30">
   <owner>droger@chromium.org</owner>
