@@ -113,6 +113,7 @@ class FindBadConstructsConsumer
                                   clang::CXXRecordDecl* record);
   void CheckEnumMaxValue(clang::EnumDecl* decl);
   void CheckVarDecl(clang::VarDecl* decl);
+  void CheckDeducedAutoPointerBadVersion(clang::VarDecl* decl);
   void CheckDeducedAutoPointer(clang::VarDecl* decl);
 
   void ParseFunctionTemplates(clang::TranslationUnitDecl* decl);

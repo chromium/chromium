@@ -86,6 +86,9 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg == "check-allow-auto-typedefs") {
       // TODO(danakj): Remove once enabled in Chromium.
       options_.allow_auto_typedefs = true;
+    } else if (arg == "check-allow-auto-typedefs-better") {
+      // TODO(danakj): Remove once enabled in Chromium.
+      options_.allow_auto_typedefs_better = true;
     } else if (arg == "check-base-classes") {
       // TODO(rsleevi): Remove this once http://crbug.com/123295 is fixed.
       options_.check_base_classes = true;

@@ -120,3 +120,29 @@ void use_concept() {
   // an implementation detail of the matching type.
   Concept auto c = &x;
 }
+
+template <class T>
+T auto_function_return_alias_with_ptr() {
+  return return_alias_with_ptr();
+}
+
+void template_function() {
+  // The auto is a type alias that was provided as a template parameter. Simple
+  // repro of things like std::find().
+  auto auto_alias = auto_function_return_alias_with_ptr<AliasWithPtr>();
+}
+
+template <class T>
+using AliasOfT = T;
+
+template <class T>
+AliasOfT<T> auto_function_return_elaborated_alias_with_ptr() {
+  return return_alias_with_ptr();
+}
+
+void alias_template_specialization_function() {
+  // The auto is a type alias that was provided as a template parameter, but
+  // returned as another alias (an "ElaboratedType" in this case).
+  auto auto_alias =
+      auto_function_return_elaborated_alias_with_ptr<AliasWithPtr>();
+}

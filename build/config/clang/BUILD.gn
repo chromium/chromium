@@ -37,6 +37,12 @@ config("find_bad_constructs") {
       "-Xclang",
       "check-allow-auto-typedefs",
 
+      # TODO(danakj): Delete this and the option from the plugin.
+      #"-Xclang",
+      #"-plugin-arg-find-bad-constructs",
+      #"-Xclang",
+      #"check-allow-auto-typedefs-better",
+
       "-Xclang",
       "-plugin-arg-find-bad-constructs",
       "-Xclang",

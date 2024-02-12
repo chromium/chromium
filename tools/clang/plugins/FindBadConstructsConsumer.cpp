@@ -296,8 +296,10 @@ bool FindBadConstructsConsumer::VisitCallExpr(CallExpr* call_expr) {
 }
 
 bool FindBadConstructsConsumer::VisitVarDecl(clang::VarDecl* var_decl) {
-  if (options_.allow_auto_typedefs) {
+  if (options_.allow_auto_typedefs_better) {
     CheckDeducedAutoPointer(var_decl);
+  } else if (options_.allow_auto_typedefs) {
+    CheckDeducedAutoPointerBadVersion(var_decl);
   } else {
     // TODO(danakj): Remove this path once the other is enabled in Chromium.
     CheckVarDecl(var_decl);
@@ -1225,8 +1227,10 @@ void FindBadConstructsConsumer::CheckVarDecl(clang::VarDecl* var_decl) {
   }
 }
 
-// Check whether auto deduces to a raw pointer.
-void FindBadConstructsConsumer::CheckDeducedAutoPointer(
+// OLD PATH: Replaced with CheckDeducedAutoPointer().
+// TODO(danakj): Remove once CheckDeducedAutoPointer() is enabled to replace
+// this method.
+void FindBadConstructsConsumer::CheckDeducedAutoPointerBadVersion(
     clang::VarDecl* var_decl) {
   // Lambda init-captures should be ignored.
   if (var_decl->isInitCapture()) {
@@ -1288,6 +1292,125 @@ void FindBadConstructsConsumer::CheckDeducedAutoPointer(
     return;
   }
   // Last, if it's not a pointer at all then `auto` is allowed.
+  if (!deduced_type->getAs<clang::PointerType>()) {
+    return;
+  }
+
+  // Check if we should even be considering this type. This is the most
+  // expensive check, so we check this last.
+  LocationType location_type = ClassifyLocation(var_decl->getBeginLoc());
+  // We don't generate errors in third-party code.
+  if (location_type == LocationType::kThirdParty) {
+    return;
+  }
+
+  // Report an error, the code should say `auto*` instead of `auto`.
+  //
+  // The range starts from |var_decl|'s loc start, which is the
+  // beginning of the full expression defining this |var_decl|. It
+  // ends, however, where this |var_decl|'s type loc ends, since
+  // that's the end of the type of |var_decl|.
+  // Note that the beginning source location of type loc omits cv
+  // qualifiers, which is why it's not a good candidate to use for the
+  // start of the range.
+  clang::SourceRange range(
+      var_decl->getBeginLoc(),
+      var_decl->getTypeSourceInfo()->getTypeLoc().getEndLoc());
+  ReportIfSpellingLocNotIgnored(range.getBegin(),
+                                diag_auto_deduced_to_a_pointer_type_)
+      << FixItHint::CreateReplacement(
+             range,
+             GetAutoReplacementTypeAsString(var_decl->getType(),
+                                            var_decl->getStorageClass(), true));
+}
+
+// Check whether auto deduces to a raw pointer.
+void FindBadConstructsConsumer::CheckDeducedAutoPointer(
+    clang::VarDecl* var_decl) {
+  // Lambda init-captures should be ignored.
+  if (var_decl->isInitCapture()) {
+    return;
+  }
+
+  QualType qualtype = var_decl->getType().getNonReferenceType();
+  // Dependent types in templates can not be fully deduced as they depend on
+  // what the template parameter will be. They result in a 'null' deduced_type
+  // later. To catch this would require looking at each instantiation but then
+  // we could get inconsistent errors for some instantiations and not others.
+  if (qualtype->isDependentType()) {
+    return;
+  }
+
+  // Find the `clang::AutoType` which may be inside a `PointerType`. Since
+  // `AutoType` is 'sugar', care must be taken to not skip over it.
+  const clang::AutoType* auto_type = nullptr;
+  while (!auto_type) {
+    // We need to look for AutoType before looking for PointerType, or we will
+    // skip right past it, since AutoType is 'sugar'.
+    auto_type = qualtype->getAs<clang::AutoType>();
+    // If we have a type `auto*` then the pointer needs to be pulled off before
+    // we can find the AutoType. If we're not at a pointer, then stop searching
+    // for AutoType.
+    if (auto* ptr_type = qualtype->getAs<clang::PointerType>()) {
+      qualtype = ptr_type->getPointeeType();
+    } else {
+      break;
+    }
+  }
+  if (!auto_type) {
+    return;
+  }
+
+  // If not deduced yet, we can't tell if we require `auto*`.
+  if (!auto_type->isDeduced()) {
+    return;
+  }
+  // `Concept auto x` should be allowed even if the Concept matches to a pointer
+  // type.
+  if (auto_type->isConstrained()) {
+    return;
+  }
+
+  QualType deduced_type = auto_type->getDeducedType();
+  // If `auto` resolves to a function pointer, it's always allowed.
+  if (deduced_type.getCanonicalType()->isFunctionPointerType()) {
+    return;
+  }
+  // Elaborated types wrap the type that we're interested in, so we need to
+  // step through them. Inside, there may be a template param type, a pointer
+  // type, etc. For example, this function returns an ElaboratedType, which
+  // has a pointer inside. But has additional sugar around the pointer that
+  // we want to examine first.
+  // ```
+  // template <class T>
+  // AliasOfT<T> auto_function_return_elaborated_alias_with_ptr() { ... }
+  // ```
+  if (auto* elaborated = deduced_type->getAs<clang::ElaboratedType>()) {
+    deduced_type = elaborated->getNamedType();
+  }
+  // If the `auto` resolves to a type that comes from a template parameter, the
+  // input type may have been a type alias and we can't tell how the type was
+  // actually spelt, so just allow it. This handles the return type of
+  // std::find() for example.
+  if (deduced_type->getAs<clang::SubstTemplateTypeParmType>()) {
+    return;
+  }
+  // If `auto` resolves to a type alias, it's allowed, even if there's a pointer
+  // inside the alias, which would be an implementation detail of the alias
+  // type. This includes stdlib iterator aliases.
+  if (deduced_type->getAs<clang::TypedefType>()) {
+    return;
+  }
+  // It's also possible to resolve to a template specialization of a type alias,
+  // in which the same applies as for TypedefType.
+  if (auto* spec = deduced_type->getAs<clang::TemplateSpecializationType>()) {
+    if (spec->isTypeAlias()) {
+      return;
+    }
+  }
+  // Last, if it's not a pointer at all then `auto` is allowed. This comes last
+  // because `getAs()` will jump past 'sugar' in the type, so we need to look
+  // for other things before jumping past them to the PointerType.
   if (!deduced_type->getAs<clang::PointerType>()) {
     return;
   }
