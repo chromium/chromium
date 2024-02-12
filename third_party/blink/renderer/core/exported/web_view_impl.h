@@ -114,7 +114,6 @@ class TextAutosizerPageInfo;
 using PaintHoldingCommitTrigger = cc::PaintHoldingCommitTrigger;
 
 class CORE_EXPORT WebViewImpl final : public WebView,
-                                      public RefCounted<WebViewImpl>,
                                       public mojom::blink::PageBroadcast {
  public:
   static WebViewImpl* Create(
@@ -656,7 +655,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   friend class frame_test_helpers::WebViewHelper;
   friend class SimCompositor;
   friend class WebView;  // So WebView::Create can call our constructor
-  friend class WTF::RefCounted<WebViewImpl>;
 
   void AcceptLanguagesChanged();
   void ThemeChanged();
