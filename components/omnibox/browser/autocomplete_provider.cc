@@ -291,12 +291,6 @@ size_t AutocompleteProvider::TrimSchemePrefix(std::u16string* url,
   return (scheme_pos == 0) ? prefix_end : 0;
 }
 
-// static
-bool AutocompleteProvider::InKeywordMode(const AutocompleteInput& input) {
-  return input.keyword_mode_entry_method() !=
-         metrics::OmniboxEventProto::INVALID;
-}
-
 void AutocompleteProvider::ResizeMatches(size_t max_matches,
                                          bool ml_scoring_enabled) {
   if (matches_.size() <= max_matches) {

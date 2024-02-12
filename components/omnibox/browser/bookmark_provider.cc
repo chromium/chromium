@@ -135,7 +135,7 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // In keyword mode, it's possible we only provide results from one or two
   // autocomplete provider(s), so it's sometimes necessary to show more results
   // than provider_max_matches_.
-  size_t max_matches = InKeywordMode(adjusted_input)
+  size_t max_matches = adjusted_input.InKeywordMode()
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
 
@@ -154,7 +154,7 @@ query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
   //  specifically, since we might still get bookmarks suggestions in
   //  non-bookmarks keyword mode. This is enough of an edge case it makes sense
   //  to just stick with simplicity for now.
-  if (InKeywordMode(input)) {
+  if (input.InKeywordMode()) {
     return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
   }
 
