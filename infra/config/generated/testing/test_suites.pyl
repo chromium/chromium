@@ -2799,7 +2799,7 @@
           'webgpu_telemetry_cts',
         ],
         'args': [
-          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-blink-features=WebGPUExperimentalFeatures',
+          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures',
         ],
         'swarming': {
           'shards': 14,
