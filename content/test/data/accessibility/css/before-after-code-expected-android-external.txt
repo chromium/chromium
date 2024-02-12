@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"start" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++TextView text:"text with " actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

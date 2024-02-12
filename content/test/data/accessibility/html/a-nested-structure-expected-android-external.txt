@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++View text:"null" contentDescription:"Header 1 List element 1 List element 2 List element 3" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", roleDescription="link", targetUrl="http://www.foobar.com/"]
 ++++++TextView text:"Header 1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", clickableScore="100", roleDescription="heading 1"]

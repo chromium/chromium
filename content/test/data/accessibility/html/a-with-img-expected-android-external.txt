@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
 ++++View text:"null" contentDescription:"Link with image at start." clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", hasImage="true", roleDescription="link", targetUrl="http://www.google.com/"]
 ++++++Image text:"Link" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", clickableScore="100", hasImage="true", roleDescription="graphic", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/bullet.png"]

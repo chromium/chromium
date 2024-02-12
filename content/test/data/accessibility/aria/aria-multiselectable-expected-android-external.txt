@@ -1,3 +1,3 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++ListView text:"My Listbox" stateDescription:"multiselectable, none selected." clickable focusable CollectionInfo:[rows=4, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
 ++ListView text:"My Listbox" stateDescription:"multiselectable, none selected." clickable focusable CollectionInfo:[rows=4, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]

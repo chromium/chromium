@@ -1,4 +1,4 @@
-WebView text:"Table example - th rowheader" focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
+WebView text:"Table example - th rowheader" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
 ++GridView CollectionInfo:[rows=2, cols=2] actions:[AX_FOCUS] bundle:[chromeRole="table", roleDescription="table"]
 ++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
 ++++++View text:"Firstname" CollectionItemInfo:[heading, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rowHeader", roleDescription="row header"]

@@ -176,7 +176,7 @@ public class WebContentsAccessibilityTreeTest {
         int rootNodevvId =
                 mActivityTestRule.waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
         AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(rootNodevvId);
-        builder.append(AccessibilityNodeInfoUtils.toString(nodeInfo));
+        builder.append(AccessibilityNodeInfoUtils.toString(nodeInfo, false));
 
         // Recursively generate strings for all descendants.
         for (int i = 0; i < nodeInfo.getChildCount(); ++i) {
@@ -207,7 +207,9 @@ public class WebContentsAccessibilityTreeTest {
      */
     private void recursivelyFormatTree(
             AccessibilityNodeInfoCompat node, StringBuilder builder, String indent) {
-        builder.append("\n").append(indent).append(AccessibilityNodeInfoUtils.toString(node));
+        builder.append("\n")
+                .append(indent)
+                .append(AccessibilityNodeInfoUtils.toString(node, false));
         for (int j = 0; j < node.getChildCount(); ++j) {
             int childId = mActivityTestRule.getChildId(node, j);
             AccessibilityNodeInfoCompat childNodeInfo = createAccessibilityNodeInfo(childId);
