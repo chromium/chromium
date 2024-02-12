@@ -17,7 +17,6 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, cast} from '../assert_extras.js';
-import {recordSettingChange} from '../metrics_recorder.js';
 
 import {ContainerInfo, getVMNameForGuestOsType, GuestId, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsSharedUsbDevice, GuestOsType} from './guest_os_browser_proxy.js';
 import {containerLabel, equalContainerId} from './guest_os_container_select.js';
@@ -172,7 +171,6 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
     this.browserProxy_.setGuestOsUsbDeviceShared(
         this.vmName_(), this.defaultGuestId.container_name, device.guid,
         target.checked);
-    recordSettingChange();
   }
 
   private onReassignCancel_(): void {
@@ -185,7 +183,6 @@ export class SettingsGuestOsSharedUsbDevicesElement extends
         this.vmName_(), this.defaultGuestId.container_name,
         this.reassignDevice_.guid, true);
     this.reassignDevice_ = null;
-    recordSettingChange();
   }
 
   private vmName_(): string {

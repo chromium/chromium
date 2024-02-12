@@ -15,7 +15,6 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getVMNameForGuestOsType, GuestOsBrowserProxy, GuestOsBrowserProxyImpl, GuestOsType} from './guest_os_browser_proxy.js';
 import {getTemplate} from './guest_os_shared_paths.html.js';
@@ -117,7 +116,6 @@ export class SettingsGuestOsSharedPathsElement extends
             this.sharedPathWhichFailedRemoval_ = path;
           }
         });
-    recordSettingChange();
   }
 
   private onRemoveSharedPathClick_(event: DomRepeatEvent<PathObject>): void {
