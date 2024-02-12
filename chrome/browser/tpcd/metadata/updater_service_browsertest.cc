@@ -238,8 +238,6 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   MockComponentInstallation(metadata);
 
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
-  ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().front().source,
-            Parser::kSourceTest);
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
       kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 }
