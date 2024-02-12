@@ -68,6 +68,7 @@ struct DidOverscrollParams;
 namespace content {
 
 class CursorManager;
+class DevicePosturePlatformProvider;
 class MouseWheelPhaseHandler;
 class RenderWidgetHostImpl;
 class RenderWidgetHostViewBaseObserver;
@@ -548,6 +549,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
 
   virtual void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) = 0;
+
+  DevicePosturePlatformProvider* GetDevicePosturePlatformProvider();
 
   // Returns the associated RenderWidgetHostImpl.
   RenderWidgetHostImpl* host() const { return host_; }

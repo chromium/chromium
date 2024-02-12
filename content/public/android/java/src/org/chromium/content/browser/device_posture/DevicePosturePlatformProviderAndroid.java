@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.device_posture;
 
+import android.graphics.Rect;
+
 import androidx.annotation.Nullable;
 import androidx.window.extensions.layout.DisplayFeature;
 import androidx.window.extensions.layout.FoldingFeature;
@@ -53,7 +55,8 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
 
     @CalledByNative
     private void startListening() {
-        if (ContentFeatureMap.isEnabled(ContentFeatures.DEVICE_POSTURE)) {
+        if (ContentFeatureMap.isEnabled(ContentFeatures.DEVICE_POSTURE)
+                || ContentFeatureMap.isEnabled(ContentFeatures.VIEWPORT_SEGMENTS)) {
             mListening = true;
             observeWindowLayoutListener(mWebContents.getTopLevelNativeWindow());
         }
@@ -100,18 +103,51 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
         }
     }
 
-    private boolean isWindowLayoutFolded(WindowLayoutInfo windowLayoutInfo) {
-        for (DisplayFeature f : windowLayoutInfo.getDisplayFeatures()) {
-            if (f instanceof FoldingFeature) {
-                return ((FoldingFeature) f).getState() == FoldingFeature.STATE_HALF_OPENED;
+    // At this time Chrome only supports one display feature so let's return the first one.
+    private @Nullable FoldingFeature getFirstFoldingFeature(WindowLayoutInfo windowLayoutInfo) {
+        if (windowLayoutInfo.getDisplayFeatures().isEmpty()) {
+            return null;
+        }
+
+        for (DisplayFeature feature : windowLayoutInfo.getDisplayFeatures()) {
+            if (feature instanceof FoldingFeature) {
+                return (FoldingFeature) feature;
             }
         }
-        return false;
+        return null;
     }
 
     public void onWindowLayoutInfoChanged(WindowLayoutInfo windowLayoutInfo) {
         if (mNativeDevicePosturePlatformProvider != 0) {
-            notifyNativePlatformProvider(isWindowLayoutFolded(windowLayoutInfo));
+            // The display feature works as follow on Android:
+            // - If the application is running on a single physical, but not foldable screen (for
+            // e.g. the cover screen on a foldable device) the display feature list will be empty.
+            // - If the application is running on one of the physical screen of a dual screen (not
+            // spanned) the display feature list will be empty.
+            // - If the application is running across the two physical screens of a dual screen
+            // device (spanned) the display feature will contain its bounds and the posture.
+            // - If the application is running side by side on a foldable screen, the display
+            // feature list will be empty.
+            // - If the application is running spanned on a foldable screen the display feature will
+            // *always* have bounds set but the posture will be updated accordingly.
+            FoldingFeature feature = getFirstFoldingFeature(windowLayoutInfo);
+            Rect displayFeatureBounds = new Rect();
+            // The display feature may have been removed so we need to notify the clients.
+            if (feature == null) {
+                notifyNativePlatformProvider(false, displayFeatureBounds);
+                return;
+            }
+
+            boolean isFolded = feature.getState() == FoldingFeature.STATE_HALF_OPENED;
+            // If the device is a dual screen and it's spanning we always need to send the bounds
+            // since content could be occluded.
+            // If the device is a foldable device we only need to send the bounds if the posture is
+            // folded.
+            if (feature.getType() == FoldingFeature.TYPE_HINGE || isFolded) {
+                displayFeatureBounds = feature.getBounds();
+            }
+
+            notifyNativePlatformProvider(isFolded, displayFeatureBounds);
         }
     }
 
@@ -119,14 +155,26 @@ public class DevicePosturePlatformProviderAndroid implements WindowEventObserver
     // R8 can inline DevicePosturePlatformProviderAndroidJni correctly. If we use
     // WindowLayoutInfo, R8 will not be able to inline the code because it's not available on all
     // devices.
-    private void notifyNativePlatformProvider(boolean isFolded) {
+    private void notifyNativePlatformProvider(boolean isFolded, Rect displayFeatureBounds) {
         assert mNativeDevicePosturePlatformProvider != 0;
         DevicePosturePlatformProviderAndroidJni.get()
-                .setDeviceFolded(mNativeDevicePosturePlatformProvider, isFolded);
+                .updateDisplayFeature(
+                        mNativeDevicePosturePlatformProvider,
+                        isFolded,
+                        displayFeatureBounds.left,
+                        displayFeatureBounds.top,
+                        displayFeatureBounds.right,
+                        displayFeatureBounds.bottom);
     }
 
     @NativeMethods
     interface Natives {
-        void setDeviceFolded(long nativeDevicePosturePlatformProviderAndroid, boolean isFolded);
+        void updateDisplayFeature(
+                long nativeDevicePosturePlatformProviderAndroid,
+                boolean isFolded,
+                int displayFeatureBoundsLeft,
+                int displayFeatureBoundsTop,
+                int displayFeatureBoundsRight,
+                int displayFeatureBoundsBottom);
     }
 }

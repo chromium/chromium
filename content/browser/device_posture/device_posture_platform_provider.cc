@@ -36,9 +36,8 @@ DevicePosturePlatformProvider::GetDevicePosture() {
   return current_posture_;
 }
 
-const std::vector<gfx::Rect>&
-DevicePosturePlatformProvider::GetViewportSegments() {
-  return current_viewport_segments_;
+const gfx::Rect& DevicePosturePlatformProvider::GetDisplayFeatureBounds() {
+  return current_display_feature_bounds_;
 }
 
 void DevicePosturePlatformProvider::AddObserver(Observer* observer) {
@@ -61,10 +60,10 @@ void DevicePosturePlatformProvider::NotifyDevicePostureChanged(
   }
 }
 
-void DevicePosturePlatformProvider::NotifyWindowSegmentsChanged(
-    const std::vector<gfx::Rect>& segments) {
+void DevicePosturePlatformProvider::NotifyDisplayFeatureBoundsChanged(
+    const gfx::Rect& display_feature_bounds) {
   for (auto& observer : observers_) {
-    observer.OnViewportSegmentsChanged(segments);
+    observer.OnDisplayFeatureBoundsChanged(display_feature_bounds);
   }
 }
 

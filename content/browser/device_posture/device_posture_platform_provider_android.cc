@@ -11,6 +11,7 @@
 namespace content {
 
 using base::android::AttachCurrentThread;
+using blink::mojom::DevicePostureType;
 
 DevicePosturePlatformProviderAndroid::DevicePosturePlatformProviderAndroid(
     WebContents* web_contents) {
@@ -38,17 +39,41 @@ void DevicePosturePlatformProviderAndroid::StopListening() {
       AttachCurrentThread(), java_device_posture_provider_);
 }
 
-void DevicePosturePlatformProviderAndroid::SetDeviceFolded(JNIEnv* env,
-                                                           bool is_folded) {
-  blink::mojom::DevicePostureType new_posture =
-      is_folded ? blink::mojom::DevicePostureType::kFolded
-                : blink::mojom::DevicePostureType::kContinuous;
+void DevicePosturePlatformProviderAndroid::NotifyDevicePostureChangeIfNeeded(
+    bool is_folded) {
+  DevicePostureType new_posture =
+      is_folded ? DevicePostureType::kFolded : DevicePostureType::kContinuous;
   if (current_posture_ == new_posture) {
     return;
   }
 
   current_posture_ = new_posture;
   NotifyDevicePostureChanged(current_posture_);
+}
+
+void DevicePosturePlatformProviderAndroid::NotifyDisplayFeatureChangeIfNeeded(
+    const gfx::Rect& display_feature_bounds) {
+  if (current_display_feature_bounds_ == display_feature_bounds) {
+    return;
+  }
+
+  current_display_feature_bounds_ = display_feature_bounds;
+  NotifyDisplayFeatureBoundsChanged(current_display_feature_bounds_);
+}
+
+void DevicePosturePlatformProviderAndroid::UpdateDisplayFeature(
+    JNIEnv* env,
+    bool is_folded,
+    int display_feature_bounds_left,
+    int display_feature_bounds_top,
+    int display_feature_bounds_right,
+    int display_feature_bounds_bottom) {
+  gfx::Rect display_feature;
+  display_feature.SetByBounds(
+      display_feature_bounds_left, display_feature_bounds_top,
+      display_feature_bounds_right, display_feature_bounds_bottom);
+  NotifyDisplayFeatureChangeIfNeeded(display_feature);
+  NotifyDevicePostureChangeIfNeeded(is_folded);
 }
 
 }  // namespace content

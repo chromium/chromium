@@ -24,6 +24,11 @@ namespace {
 //
 // FOLED stands for Foldable OLED.
 constexpr wchar_t kFoledRegKeyPath[] = L"Software\\Intel\\Foled";
+
+// On Windows the platform returns [left][fold][right] and so far we support
+// only one display feature in Chromium.
+constexpr int kFirstFoldInSegmentsArray = 1;
+
 }  // namespace
 
 namespace content {
@@ -120,9 +125,16 @@ void DevicePosturePlatformProviderWin::ComputeFoldableState(
     return;
   }
 
-  current_viewport_segments_ = segments.value();
+  // If there is not enough segments then the display feature is empty.
+  if (segments->size() < 2) {
+    current_display_feature_bounds_ = gfx::Rect();
+  } else {
+    // We want the first fold segment of the segment array.
+    current_display_feature_bounds_ = segments->at(kFirstFoldInSegmentsArray);
+  }
+
   if (notify_changes) {
-    NotifyWindowSegmentsChanged(current_viewport_segments_);
+    NotifyDisplayFeatureBoundsChanged(current_display_feature_bounds_);
   }
 }
 

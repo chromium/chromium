@@ -8,7 +8,6 @@
 #include "content/test/content_unittests_jni_headers/TestViewAndroidDelegate_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/view_android.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace content {
 
@@ -25,14 +24,6 @@ void TestViewAndroidDelegate::SetupTestDelegate(ui::ViewAndroid* view_android) {
 void TestViewAndroidDelegate::InsetViewportBottom(int bottom) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_TestViewAndroidDelegate_insetViewportBottom(env, j_delegate_, bottom);
-}
-
-void TestViewAndroidDelegate::SetDisplayFeatureForTesting(
-    const gfx::Rect& display_feature) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TestViewAndroidDelegate_setDisplayFeature(
-      env, j_delegate_, display_feature.x(), display_feature.y(),
-      display_feature.right(), display_feature.bottom());
 }
 
 }  // namespace content

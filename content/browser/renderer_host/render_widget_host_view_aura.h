@@ -676,14 +676,14 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   void SetTooltipText(const std::u16string& tooltip_text);
 
 #if BUILDFLAG(IS_WIN)
-  // Ensure that we're connecting to the device posture provider to
-  // get the DisplayFeatures.
+  // Ensure that we're observing the device posture platform provider to
+  // get the display feature changes.
   void ObserveDevicePosturePlatformProvider();
 #endif
 
   // DevicePosturePlatformProvider::Observer.
-  void OnViewportSegmentsChanged(
-      const std::vector<gfx::Rect>& segments) override;
+  void OnDisplayFeatureBoundsChanged(
+      const gfx::Rect& display_feature_bounds) override;
 
   // Provided a list of viewport segments, calculate and set the
   // DisplayFeature.
@@ -815,8 +815,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // are expressed in DIPs relative to the view. See display_feature.h for more
   // details.
   std::optional<DisplayFeature> display_feature_;
-  // Viewport segments returned by the platform.
-  std::vector<gfx::Rect> viewport_segments_;
+  bool display_feature_overridden_for_testing_ = false;
+  // Display feature bounds returned by the OS.
+  gfx::Rect display_feature_bounds_;
 
 #if BUILDFLAG(IS_WIN)
   base::ScopedObservation<DevicePosturePlatformProvider,

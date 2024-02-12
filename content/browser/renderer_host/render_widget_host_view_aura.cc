@@ -31,7 +31,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/delegated_frame_host_client_aura.h"
@@ -731,43 +730,37 @@ void RenderWidgetHostViewAura::ObserveDevicePosturePlatformProvider() {
     return;
   }
 
-  if (!host() || !host()->delegate()) {
-    return;
-  }
-
-  DevicePostureProviderImpl* posture_provider =
-      host()->delegate()->GetDevicePostureProvider();
-  if (!posture_provider) {
-    return;
-  }
-
   DevicePosturePlatformProvider* platform_provider =
-      posture_provider->platform_provider();
+      GetDevicePosturePlatformProvider();
+  if (!platform_provider) {
+    return;
+  }
+
   device_posture_observation_.Observe(platform_provider);
-  OnViewportSegmentsChanged(platform_provider->GetViewportSegments());
+  OnDisplayFeatureBoundsChanged(platform_provider->GetDisplayFeatureBounds());
 }
 #endif
 
-void RenderWidgetHostViewAura::OnViewportSegmentsChanged(
-    const std::vector<gfx::Rect>& segments) {
+void RenderWidgetHostViewAura::OnDisplayFeatureBoundsChanged(
+    const gfx::Rect& display_feature_bounds) {
   display_feature_ = std::nullopt;
-  viewport_segments_.clear();
-  if (segments.empty()) {
+  display_feature_bounds_ = gfx::Rect();
+  if (display_feature_bounds.IsEmpty()) {
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                                 window_->GetLocalSurfaceId());
     return;
   }
 
-  if (segments.size() >= 2) {
-    viewport_segments_ = std::move(segments);
-    ComputeDisplayFeature();
-  }
+  display_feature_bounds_ = display_feature_bounds;
+  ComputeDisplayFeature();
+
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                               window_->GetLocalSurfaceId());
 }
 
 void RenderWidgetHostViewAura::ComputeDisplayFeature() {
-  if (viewport_segments_.size() < 2) {
+  if (display_feature_bounds_.IsEmpty() ||
+      display_feature_overridden_for_testing_) {
     return;
   }
 
@@ -788,7 +781,7 @@ void RenderWidgetHostViewAura::ComputeDisplayFeature() {
   float dip_scale = 1 / device_scale_factor_;
   // Segments coming from the platform are in native resolution.
   gfx::Rect transformed_display_feature =
-      gfx::ScaleToRoundedRect(viewport_segments_[1], dip_scale);
+      gfx::ScaleToRoundedRect(display_feature_bounds_, dip_scale);
   transformed_display_feature.Offset(-GetViewBounds().x(),
                                      -GetViewBounds().y());
   transformed_display_feature.Intersect(gfx::Rect(GetVisibleViewportSize()));
@@ -809,10 +802,12 @@ std::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
 
 void RenderWidgetHostViewAura::SetDisplayFeatureForTesting(
     const DisplayFeature* display_feature) {
-  if (display_feature)
+  if (display_feature) {
     display_feature_ = *display_feature;
-  else
+  } else {
     display_feature_ = std::nullopt;
+  }
+  display_feature_overridden_for_testing_ = true;
 }
 
 void RenderWidgetHostViewAura::WindowTitleChanged() {
@@ -2577,7 +2572,7 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
   if (!in_bounds_changed_)
     window_->SetBounds(rect);
 
-  if (!viewport_segments_.empty()) {
+  if (!display_feature_bounds_.IsEmpty()) {
     // The view bounds have changed so if we have viewport segments from the
     // platform we need to make sure display_feature_ is updated considering the
     // new view bounds.
