@@ -3,11 +3,12 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "cpu", "os", "reclient", "xcode")
+load("//lib/builders.star", "builders", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
+load("//lib/xcode.star", "xcode")
 load("//console-header.star", "HEADER")
 
 luci.bucket(

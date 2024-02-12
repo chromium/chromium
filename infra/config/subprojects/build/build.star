@@ -6,10 +6,11 @@
 # Note that CI builders can't use `mirrors`.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "cpu", "os", "reclient", "siso", "xcode")
+load("//lib/builders.star", "cpu", "os", "reclient", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/xcode.star", "xcode")
 load("//project.star", "settings")
 
 luci.bucket(

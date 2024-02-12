@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient", "xcode")
+load("//lib/builders.star", "builder", "cpu", "defaults", "os", "reclient")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/xcode.star", "xcode")
 
 luci.bucket(
     name = "webrtc.fyi",
