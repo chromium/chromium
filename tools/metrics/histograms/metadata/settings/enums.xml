@@ -58,6 +58,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="External Intent"/>
   <int value="3" label="Set Up List"/>
   <int value="4" label="External Action"/>
+  <int value="5" label="Tips Notification"/>
 </enum>
 
 <enum name="LockScreenProgress">
