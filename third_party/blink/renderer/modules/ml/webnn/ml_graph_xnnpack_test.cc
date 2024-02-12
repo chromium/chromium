@@ -862,7 +862,7 @@ struct SoftmaxTester {
 
     xnn_operator_t softmax_op = nullptr;
     const xnn_status status = xnn_create_softmax_nc_f32(
-        channels, channels, channels, /*flags=*/0, &softmax_op);
+        /*flags=*/0, &softmax_op);
     ASSERT_EQ(xnn_status_success, status);
     ASSERT_THAT(softmax_op, testing::NotNull());
     std::unique_ptr<xnn_operator, decltype(&xnn_delete_operator)> auto_op(
@@ -875,7 +875,8 @@ struct SoftmaxTester {
     Vector<float> xnnpack_output(batch_size * channels +
                                  XNN_EXTRA_BYTES / sizeof(float));
     ASSERT_EQ(xnn_status_success,
-              xnn_reshape_softmax_nc_f32(softmax_op, batch_size,
+              xnn_reshape_softmax_nc_f32(softmax_op, channels, channels,
+                                         channels, batch_size,
                                          /*threadpool=*/nullptr));
     ASSERT_EQ(xnn_status_success,
               xnn_setup_softmax_nc_f32(softmax_op, xnnpack_input.data(),
