@@ -58,7 +58,9 @@ config("pgo_optimization_flags") {
       _pgo_target = "linux"
     } else if (is_chromeos_lacros) {
       if (target_cpu == "arm") {
-        _pgo_target = "lacros-arm"
+        # We don't have the arm device to train arm pgo data. So Lacros arm
+        # would use arm64 profile.
+        _pgo_target = "lacros-arm64"
       } else if (target_cpu == "arm64") {
         _pgo_target = "lacros-arm64"
       } else {

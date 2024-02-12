@@ -5435,7 +5435,8 @@ hooks = [
     'condition': 'checkout_pgo_profiles and checkout_lacros_sdk',
     'action': [ 'python3',
                 'src/tools/update_pgo_profiles.py',
-                '--target=lacros-arm',
+                # Use arm64 profile.
+                '--target=lacros-arm64',
                 'update',
                 '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
     ],
