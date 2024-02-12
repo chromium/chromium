@@ -236,11 +236,13 @@ public class ReadAloudController
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
                     ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
 
-                    // isPlaybackEnabled() should only be checked if isReadable == true.
-                    isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
+                    // Register _KnownReadable trial before checking more playback conditions
                     if (isReadable) {
                         ReadAloudFeatures.activateKnownReadableTrial();
                     }
+
+                    // isPlaybackEnabled() should only be checked if isReadable == true.
+                    isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
 
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
