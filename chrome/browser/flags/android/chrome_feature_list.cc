@@ -180,6 +180,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTBrandTransparencyMemoryImprovement,
     &kCCTClientDataHeader,
     &kCCTEmbedderSpecialBehaviorTrigger,
+    &kCCTExtendTrustedCdnPublisher,
     &kCCTFeatureUsage,
     &kCCTIncognitoAvailableToThirdParty,
     &kCCTIntentFeatureOverrides,
@@ -491,6 +492,10 @@ BASE_FEATURE(kCCTClientDataHeader,
 BASE_FEATURE(kCCTEmbedderSpecialBehaviorTrigger,
              "CCTEmbedderSpecialBehaviorTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTExtendTrustedCdnPublisher,
+             "CCTExtendTrustedCdnPublisher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTFeatureUsage,
              "CCTFeatureUsage",
