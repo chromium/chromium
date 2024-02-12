@@ -891,7 +891,7 @@ BASE_FEATURE(kFencedFramesReportingAttestationsChanges,
 // that sets the automatic beacon data.
 BASE_FEATURE(kFencedFramesCrossOriginAutomaticBeacons,
              "FencedFramesCrossOriginAutomaticBeacons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Temporarily un-disable credentials on fenced frame automatic beacons until
 // third party cookie deprecation.
