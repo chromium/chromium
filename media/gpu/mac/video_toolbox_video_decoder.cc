@@ -364,6 +364,7 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
     // to them.
     metadata->color_space = config_.color_space_info().ToGfxColorSpace();
   }
+
   metadata->hdr_metadata = accelerator_->GetHDRMetadata();
   if (!metadata->hdr_metadata) {
     // Note: The VP9 accelerator contains this same logic so that the format
