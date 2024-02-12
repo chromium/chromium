@@ -1470,12 +1470,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       if (willShowActivityIndicator) {
         // User interaction still needs to be disabled as a way to
         // force reload all the web states and to reset NTPs.
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.mainBrowserProvider.browser)
-            ->SetWebUsageEnabled(false);
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.incognitoBrowserProvider.browser)
-            ->SetWebUsageEnabled(false);
+        if (Browser* mainBrowser =
+                browserProviderInterface.mainBrowserProvider.browser) {
+          WebUsageEnablerBrowserAgent::FromBrowser(mainBrowser)
+              ->SetWebUsageEnabled(false);
+        }
+        if (Browser* incognitoBrowser =
+                browserProviderInterface.incognitoBrowserProvider.browser) {
+          WebUsageEnablerBrowserAgent::FromBrowser(incognitoBrowser)
+              ->SetWebUsageEnabled(false);
+        }
 
         if (didShowActivityIndicator &&
             browserProviderInterface.mainBrowserProvider.browser) {
@@ -1486,14 +1490,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           [handler hideActivityOverlay];
         }
       }
-      if (browserProviderInterface.mainBrowserProvider.browser) {
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.mainBrowserProvider.browser)
+      if (Browser* mainBrowser =
+              browserProviderInterface.mainBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(mainBrowser)
             ->SetWebUsageEnabled(true);
       }
-      if (browserProviderInterface.incognitoBrowserProvider.browser) {
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.incognitoBrowserProvider.browser)
+      if (Browser* incognitoBrowser =
+              browserProviderInterface.incognitoBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(incognitoBrowser)
             ->SetWebUsageEnabled(true);
       }
       [browserProviderInterface.currentBrowserProvider setPrimary:YES];
