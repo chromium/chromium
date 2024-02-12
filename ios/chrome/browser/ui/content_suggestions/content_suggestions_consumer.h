@@ -8,17 +8,16 @@
 #import "base/ios/block_types.h"
 
 enum class ContentSuggestionsModuleType;
-@class MostVisitedTilesConfig;
 @class ContentSuggestionsReturnToRecentTabItem;
 @class ContentSuggestionsWhatsNewItem;
-@class QuerySuggestionConfig;
+@class MostVisitedTilesConfig;
 @class SafetyCheckState;
 @class SetUpListConfig;
 enum class SetUpListItemType;
 @class SetUpListItemViewData;
 @class ShortcutsConfig;
-@class TabResumptionItem;
 @class ParcelTrackingItem;
+@class TabResumptionItem;
 
 // MagicStackOrderChange is used in `updateMagicStackOrder:withStatus:` to
 // indicate what module has changed and how it needs to be updated.

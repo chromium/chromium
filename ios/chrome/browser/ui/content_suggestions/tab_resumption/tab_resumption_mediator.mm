@@ -207,6 +207,11 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
   }
 }
 
+- (void)disableModule {
+  tab_resumption_prefs::DisableTabResumption(_localState);
+  [self.delegate removeTabResumptionModule];
+}
+
 - (void)setDelegate:(id<TabResumptionHelperDelegate>)delegate {
   _delegate = delegate;
   if (_delegate) {
@@ -249,7 +254,7 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 
 - (void)mostRecentTabWasRemoved:(web::WebState*)webState {
   if (self.itemConfig && self.itemConfig.itemType == kMostRecentTab) {
-    [_delegate removeTabResumptionModule];
+    [self.delegate removeTabResumptionModule];
   }
 }
 

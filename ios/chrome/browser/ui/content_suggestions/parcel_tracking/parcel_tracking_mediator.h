@@ -62,7 +62,7 @@ class UrlLoadingBrowserAgent;
 - (NSArray<ParcelTrackingItem*>*)allParcelTrackingItems;
 
 // Disables and hides the parcel tracking module.
-- (void)disableParcelTracking;
+- (void)disableModule;
 
 // Indicates that `parcelID` should be untracked.
 - (void)untrackParcel:(NSString*)parcelID;

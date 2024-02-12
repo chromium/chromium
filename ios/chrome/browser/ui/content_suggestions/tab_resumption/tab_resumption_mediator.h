@@ -45,6 +45,9 @@ class IdentityManager;
 
 - (void)disconnect;
 
+// Disables the tab resumption module.
+- (void)disableModule;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_TAB_RESUMPTION_TAB_RESUMPTION_MEDIATOR_H_

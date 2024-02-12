@@ -72,7 +72,7 @@
   return _parcelTrackingItems;
 }
 
-- (void)disableParcelTracking {
+- (void)disableModule {
   DisableParcelTracking(GetApplicationContext()->GetLocalState());
   _shoppingService->StopTrackingAllParcels(base::BindOnce(^(bool){
   }));

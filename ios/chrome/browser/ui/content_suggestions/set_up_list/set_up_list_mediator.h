@@ -55,6 +55,9 @@ class SyncService;
 
 - (void)disconnect;
 
+// Returns YES if the conditions are right to display the Set Up List.
+- (BOOL)shouldShowSetUpList;
+
 // Sends the SetUpList items up to the consumer.
 - (void)showSetUpList;
 
@@ -69,7 +72,7 @@ class SyncService;
 - (BOOL)allItemsComplete;
 
 // Indicates to the mediator to disable SetUpList entirely.
-- (void)disableSetUpList;
+- (void)disableModule;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;

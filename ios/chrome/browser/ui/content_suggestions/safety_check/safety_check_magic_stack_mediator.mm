@@ -109,6 +109,11 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
   return _safetyCheckState;
 }
 
+- (void)disableModule {
+  safety_check_prefs::DisableSafetyCheckInMagicStack(_localState);
+  [self.delegate removeSafetyCheckModule];
+}
+
 #pragma mark - SafetyCheckManagerObserver
 
 - (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state {

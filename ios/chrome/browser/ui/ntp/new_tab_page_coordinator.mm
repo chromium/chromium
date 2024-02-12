@@ -1159,8 +1159,7 @@
 }
 
 - (void)refreshNTPContent {
-  [self.contentSuggestionsCoordinator
-          .contentSuggestionsMediator refreshMostVisitedTiles];
+  [self.contentSuggestionsCoordinator refresh];
   self.discoverFeedService->RefreshFeed(
       FeedRefreshTrigger::kForegroundFeedVisibleOther);
 }

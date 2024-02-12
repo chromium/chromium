@@ -695,7 +695,7 @@ bool ShouldHideIrrelevantModules() {
 
 int TimeUntilShowingCompactedSetUpList() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      kMagicStack, kSetUpListCompactedTimeThresholdDays, 3);
+      kMagicStack, kSetUpListCompactedTimeThresholdDays, 0);
 }
 
 bool IsExternalActionSchemeHandlingEnabled() {
