@@ -681,10 +681,6 @@ void SupervisedUserURLFilter::SetManualHosts(
   }
 }
 
-bool SupervisedUserURLFilter::IsManualHostsEmpty() const {
-  return allowed_host_list_.empty() && blocked_host_list_.empty();
-}
-
 void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   url_map_ = std::move(url_map);
