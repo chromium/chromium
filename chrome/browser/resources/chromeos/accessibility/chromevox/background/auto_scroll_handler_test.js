@@ -13,9 +13,6 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    globalThis.AutoScrollHandler = exports.AutoScrollHandler;
-    globalThis.ChromeVoxRange = exports.ChromeVoxRange;
-    globalThis.CursorRange = exports.CursorRange;
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;
     this.forceContextualLastOutput();

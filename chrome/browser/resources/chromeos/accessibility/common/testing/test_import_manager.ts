@@ -21,23 +21,23 @@ export class TestImportManager {
     TestImportManager.exports_ = TestImportManager.exports_.concat(exports);
   }
 
-  static importForTesting(): void {
+  static getImports(): {[exportName: string]: any} {
+    const exports: {[exportName: string]: any} = {};
     for (const exportValue of TestImportManager.exports_) {
       if (typeof exportValue === 'function') {
-        globalThis.exports[exportValue.name as string] = exportValue;
+        exports[exportValue.name as string] = exportValue;
       } else if (exportValue instanceof Array) {
-        globalThis.exports[exportValue[0] as string] = exportValue[1];
+        exports[exportValue[0] as string] = exportValue[1];
       } else {
         console.warn('invalid test import:', exportValue);
       }
     }
+    return exports;
   }
 }
 
 declare global {
-  var exports: {[exportName: string]: any};
   var TestImportManager: Function;
 }
 
-globalThis.exports = {};
 globalThis.TestImportManager = TestImportManager;
