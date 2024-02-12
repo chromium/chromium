@@ -533,6 +533,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/autofill/core/common:features",
+    "//components/browser_sync",
     "//components/browser_ui/device_lock/android:android",
     "//components/device_reauth:device_reauth",
     "//components/device_reauth:test_support",
