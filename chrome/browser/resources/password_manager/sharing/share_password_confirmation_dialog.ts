@@ -115,6 +115,10 @@ export class SharePasswordConfirmationDialogElement extends
   }
 
   private stateChange_() {
+    // Don't reset focus on loading stage. Initially it is set correctly.
+    if (this.isStage_(ConfirmationDialogStage.LOADING)) {
+      return;
+    }
     // Force the screen reader to focus on the updated dialog header.
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur();
