@@ -194,6 +194,26 @@ void SharedStorageManager::Clear(
                    GetOperationResultCallback(std::move(callback)));
 }
 
+void SharedStorageManager::BytesUsed(url::Origin context_origin,
+                                     base::OnceCallback<void(int)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  auto new_callback = base::BindOnce(
+      [](base::WeakPtr<SharedStorageManager> manager,
+         base::OnceCallback<void(int)> callback, int bytes_used) {
+        OperationResult result = (bytes_used != -1)
+                                     ? OperationResult::kSuccess
+                                     : OperationResult::kSqlError;
+        if (manager) {
+          manager->OnOperationResult(result);
+        }
+        std::move(callback).Run(bytes_used);
+      },
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  database_->BytesUsed(std::move(context_origin), std::move(new_callback));
+}
+
 void SharedStorageManager::PurgeMatchingOrigins(
     StorageKeyPolicyMatcherFunction storage_key_matcher,
     base::Time begin,

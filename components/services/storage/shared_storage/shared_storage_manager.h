@@ -192,11 +192,14 @@ class SharedStorageManager {
   // of the Shared Storage API, or else by
   // `browsing_data::SharedStorageHelper::DeleteOrigin()` in order to clear
   // browsing data via the Settings UI.
-  //
-  // TODO(cammie): Add `browsing_data::SharedStorageHelper` and the rest of the
-  // clear browsing data integration.
   void Clear(url::Origin context_origin,
              base::OnceCallback<void(OperationResult)> callback);
+
+  // The parameter of `callback` reports the number of bytes used by
+  // `context_origin` in unexpired entries, 0 if the origin has no unexpired
+  // entries, or -1 on operation failure.
+  void BytesUsed(url::Origin context_origin,
+                 base::OnceCallback<void(int)> callback);
 
   // Clears all StorageKeys that match `storage_key_matcher` run on the owning
   // StoragePartition's `SpecialStoragePolicy` and have `last_used_time` between

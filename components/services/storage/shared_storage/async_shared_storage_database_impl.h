@@ -106,6 +106,8 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
                mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
                    pending_listener,
                base::OnceCallback<void(OperationResult)> callback) override;
+  void BytesUsed(url::Origin context_origin,
+                 base::OnceCallback<void(int)> callback) override;
   void PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction storage_key_matcher,
                             base::Time begin,
                             base::Time end,
