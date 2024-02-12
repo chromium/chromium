@@ -1,0 +1,41 @@
+[
+    {
+      "can_be_recommended": false,
+      "os": [
+        "chromeos_ash"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+            "policies": {},
+            "prefs": {
+              "filebrowser.local_user_files_allowed": {
+                "location": "local_state",
+                "default_value": true
+              }
+            }
+        },
+        {
+            "policies": {
+                "LocalUserFilesAllowed": true
+            },
+            "prefs": {
+              "filebrowser.local_user_files_allowed": {
+                "location": "local_state",
+                "value": true
+              }
+            }
+        },
+        {
+            "policies": {
+                "LocalUserFilesAllowed": false
+            },
+            "prefs": {
+              "filebrowser.local_user_files_allowed": {
+                "location": "local_state",
+                "value": false
+              }
+            }
+        }
+      ]
+    }
+  ]

@@ -2890,6 +2890,10 @@ inline constexpr char
 // set for child users only, and kept on the known user storage.
 inline constexpr char kKnownUserParentAccessCodeConfig[] =
     "child_user.parent_access_code.config";
+
+// Pref that contains the value of the LocalUserFilesAllowed policy.
+inline constexpr char kLocalUserFilesAllowed[] =
+    "filebrowser.local_user_files_allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // String which specifies where to store the disk cache.

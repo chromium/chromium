@@ -1616,6 +1616,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   {key::kGoogleLocationServicesEnabled,
     ash::prefs::kUserGeolocationAccessLevel,
     base::Value::Type::INTEGER},
+  { key::kLocalUserFilesAllowed,
+    prefs::kLocalUserFilesAllowed,
+    base::Value::Type::BOOLEAN
+  },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
