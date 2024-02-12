@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_ARC_RECOMMEND_APPS_FETCHER_IMPL_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher.h"
@@ -84,7 +84,7 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
   //    }
   // ]
 
-  std::optional<base::Value> ParseResponse(base::StringPiece response);
+  std::optional<base::Value> ParseResponse(std::string_view response);
 
   raw_ptr<RecommendAppsFetcherDelegate> delegate_;
 

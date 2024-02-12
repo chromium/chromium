@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/accelerators/keyboard_code_util.h"
@@ -23,7 +24,6 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -261,8 +261,8 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
 // This map matches the `keyToIconNameMap` of the shortcuts app frontend:
 // https://crsrc.org/c/ash/webui/shortcut_customization_ui/resources/js/input_key.ts;l=30.
 std::optional<ash::SearchResultTextItem::IconCode>
-KeyboardShortcutResult::GetIconCodeByKeyString(base::StringPiece16 key_string) {
-  static constexpr auto kIconCodes = base::MakeFixedFlatMap<base::StringPiece16,
+KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
+  static constexpr auto kIconCodes = base::MakeFixedFlatMap<std::u16string_view,
                                                             IconCode>(
       {{u"ArrowDown", IconCode::kKeyboardShortcutDown},
        {u"ArrowLeft", IconCode::kKeyboardShortcutLeft},
