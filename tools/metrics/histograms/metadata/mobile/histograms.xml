@@ -614,6 +614,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
+    units="notifications" expires_after="2024-07-07">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Records the number of notifications that were suspended, each time the user
+    hits the `PRE_UNSUBSCRIBE` action button. The count includes the clicked
+    notification.
+  </summary>
+</histogram>
+
 <histogram name="Mobile.SystemNotification.Permission.OSPromptResult"
     enum="BooleanEnabled" expires_after="2024-07-07">
   <owner>salg@google.com</owner>
