@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "UI>Browser>TabContents"
+}
+buganizer_public: {
+  component_id: 1457078
 }
