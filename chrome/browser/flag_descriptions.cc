@@ -3951,6 +3951,10 @@ const char kAndroidHubDescription[] =
     "Replaces the Tab Switcher with a UI surface containing more types of "
     "data.";
 
+const char kAndroidOpenPdfInlineName[] = "Open PDF Inline on Android";
+const char kAndroidOpenPdfInlineDescription[] =
+    "Enable Open PDF Inline on Android.";
+
 const char kAndroidTabGroupStableIdsName[] = "Android Tab Group Stable IDs";
 const char kAndroidTabGroupStableIdsDescription[] =
     "Replaces the tab group ID system on Android with stable IDs. A logical "

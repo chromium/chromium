@@ -1259,6 +1259,11 @@ BASE_FEATURE(kAccessibilityUnifiedSnapshots,
              "AccessibilityUnifiedSnapshots",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable open PDF inline on Android.
+BASE_FEATURE(kAndroidOpenPdfInline,
+             "AndroidOpenPdfInline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);

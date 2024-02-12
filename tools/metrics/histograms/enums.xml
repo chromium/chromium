@@ -16899,6 +16899,7 @@ from previous Chrome versions.
   <int value="-1715180530"
       label="OmniboxUIExperimentShowSuffixOnAllSearchSuggestions:disabled"/>
   <int value="-1715158522" label="GuestOSGenericInstaller:enabled"/>
+  <int value="-1714913321" label="AndroidOpenPdfInline:enabled"/>
   <int value="-1714128884" label="disable-launcher-search-provider-api"/>
   <int value="-1713842726" label="GridTabSwitcherAndroidAnimations:enabled"/>
   <int value="-1713602121" label="BentoOffline:enabled"/>
@@ -22480,6 +22481,7 @@ from previous Chrome versions.
   <int value="846887449" label="BluetoothFlossTelephony:disabled"/>
   <int value="846951416" label="CopylessPaste:enabled"/>
   <int value="847000540" label="HoldingSpaceWallpaperNudge:disabled"/>
+  <int value="847187839" label="AndroidOpenPdfInline:disabled"/>
   <int value="848005486" label="WebViewLegacyTlsSupport:disabled"/>
   <int value="848324390" label="enable-lock-screen-apps"/>
   <int value="849235409" label="Prerender2InNewTab:enabled"/>
