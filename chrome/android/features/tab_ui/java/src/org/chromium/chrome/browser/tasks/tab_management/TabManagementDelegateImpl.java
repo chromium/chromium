@@ -221,7 +221,9 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Context context,
             @NonNull List<Integer> colors,
             @NonNull @LayoutRes int colorPickerLayout,
-            @NonNull @ColorPickerType int colorPickerType) {
-        return new ColorPickerCoordinator(context, colors, colorPickerLayout, colorPickerType);
+            @NonNull @ColorPickerType int colorPickerType,
+            @NonNull boolean isIncognito) {
+        return new ColorPickerCoordinator(
+                context, colors, colorPickerLayout, colorPickerType, isIncognito);
     }
 }

@@ -6,12 +6,16 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.widget.FrameLayout;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Coordinator for the color picker interface. */
@@ -19,18 +23,49 @@ public class ColorPickerCoordinator implements ColorPicker {
     private final ColorPickerContainer mContainerView;
     private final ColorPickerMediator mMediator;
 
-    /** Coordinator for the color picker interface. */
+    /**
+     * Coordinator for the color picker interface.
+     *
+     * @param context The current context.
+     * @param colors The list of color ids corresponding to the color items in this color picker.
+     * @param colorPickerLayout The layout resource to be inflated for this color picker.
+     * @param colorPickerType The {@link ColorPickerType} associated with this color picker.
+     * @param isIncognito Whether the current tab model is in incognito mode.
+     */
     public ColorPickerCoordinator(
             @NonNull Context context,
             @NonNull List<Integer> colors,
             @NonNull @LayoutRes int colorPickerLayout,
-            @NonNull @ColorPickerType int colorPickerType) {
+            @NonNull @ColorPickerType int colorPickerType,
+            @NonNull boolean isIncognito) {
         mContainerView =
                 (ColorPickerContainer)
                         LayoutInflater.from(context).inflate(colorPickerLayout, /* root= */ null);
 
-        mMediator = new ColorPickerMediator(colors, colorPickerType);
-        mMediator.setColorListItems(mContainerView);
+        List<PropertyModel> colorItems = new ArrayList<>();
+        List<FrameLayout> colorViews = new ArrayList<>();
+
+        for (int color : colors) {
+            FrameLayout view = (FrameLayout) ColorPickerItemViewBinder.createItemView(context);
+            colorViews.add(view);
+
+            PropertyModel model =
+                    ColorPickerItemProperties.create(
+                            /* color= */ color,
+                            /* colorPickerType= */ colorPickerType,
+                            /* isIncognito= */ isIncognito,
+                            /* onClickListener= */ () -> {
+                                setSelectedColorItem(color);
+                            },
+                            /* isSelected= */ false);
+            colorItems.add(model);
+            PropertyModelChangeProcessor.create(model, view, ColorPickerItemViewBinder::bind);
+        }
+
+        // Set all color item views on the parent container view.
+        mContainerView.setColorViews(colorViews);
+
+        mMediator = new ColorPickerMediator(colorItems);
     }
 
     /** Returns the container view hosting the color picker component */

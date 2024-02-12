@@ -6,11 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.widget.FrameLayout;
@@ -49,20 +45,21 @@ public class ColorPickerMediatorUnitTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mColorIds = ColorPickerUtils.getTabGroupColorIdList();
-        mMediator = new ColorPickerMediator(mColorIds, mColorItems, ColorPickerType.TAB_GROUP);
-    }
 
-    @Test
-    public void testColorPicker_setColorListItems() {
-        when(mContainerView.getContext()).thenReturn(mActivity);
+        for (int color : mColorIds) {
+            PropertyModel model =
+                    ColorPickerItemProperties.create(
+                            /* color= */ color,
+                            /* colorPickerType= */ ColorPickerType.TAB_GROUP,
+                            /* isIncognito= */ false,
+                            /* onClickListener= */ () -> {
+                                mMediator.setSelectedColorItem(color);
+                            },
+                            /* isSelected= */ false);
+            mColorItems.add(model);
+        }
 
-        mMediator.setColorListItems(mContainerView);
-        verify(mContainerView, times(1)).setColorViews(mColorViewsCaptor.capture());
-
-        List<FrameLayout> colorViewsValue = mColorViewsCaptor.getValue();
-
-        assertNotNull(colorViewsValue);
-        assertEquals(mColorIds.size(), colorViewsValue.size());
+        mMediator = new ColorPickerMediator(mColorItems);
     }
 
     @Test

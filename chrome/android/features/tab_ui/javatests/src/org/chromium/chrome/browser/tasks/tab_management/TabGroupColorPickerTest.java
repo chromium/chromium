@@ -24,22 +24,42 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.RenderTestRule;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Integration tests for the ColorPicker feature. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+/** Integration and render tests for the ColorPicker feature. */
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 public class TabGroupColorPickerTest {
+    @ParameterAnnotations.ClassParameter
+    public static List<ParameterSet> sClassParams =
+            new NightModeTestUtils.NightModeParams().getParameters();
+
+    @Rule
+    public final ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_TAB_GROUPS)
+                    .setRevision(1)
+                    .build();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
@@ -48,6 +68,11 @@ public class TabGroupColorPickerTest {
     private ColorPickerContainer mContainerView;
     private FrameLayout mRootView;
     private List<Integer> mColorList;
+
+    public TabGroupColorPickerTest(boolean nightModeEnabled) {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+    }
 
     @Before
     public void setUp() {
@@ -70,7 +95,8 @@ public class TabGroupColorPickerTest {
                                     mActivityTestRule.getActivity(),
                                     colors,
                                     R.layout.tab_group_color_picker_container,
-                                    ColorPickerType.TAB_GROUP);
+                                    ColorPickerType.TAB_GROUP,
+                                    false);
                     mCoordinator.setSelectedColorItem(colors.get(selectedIndex));
                     mContainerView = (ColorPickerContainer) mCoordinator.getContainerView();
                     mColorList = colors;
@@ -217,6 +243,78 @@ public class TabGroupColorPickerTest {
                             mContainerView.findViewById(R.id.color_picker_first_row);
 
                     Assert.assertEquals(mColorList.size(), firstRow.getChildCount());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testColorPicker_singleRowRender() throws IOException {
+        mRenderTestRule.render(mRootView, "tab_group_color_picker_single_row");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testColorPicker_doubleRowRender() throws IOException {
+        // Change the width of the parent view to enact a row split on the colors
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * (mColorList.size() - 1);
+
+                    ViewGroup.LayoutParams params = mRootView.getLayoutParams();
+                    params.width = containerWidthPx;
+                    mRootView.setLayoutParams(params);
+                });
+
+        // Enforce that the change was made to the parent view of the container
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * (mColorList.size() - 1);
+
+                    // Refresh the layout and re-measure the widths
+                    ViewUtils.requestLayout(mContainerView, "TabGroupColorPicker.TestDoubleRow");
+                    Criteria.checkThat(
+                            "Width was not set properly",
+                            mRootView.getMeasuredWidth(),
+                            Matchers.is(containerWidthPx));
+                });
+
+        mRenderTestRule.render(mRootView, "tab_group_color_picker_double_row");
+
+        // Change the width of the parent view to enact a single row on the colors
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * mColorList.size();
+
+                    ViewGroup.LayoutParams params = mRootView.getLayoutParams();
+                    params.width = containerWidthPx;
+                    mRootView.setLayoutParams(params);
+                });
+
+        // Enforce that the change was made to the parent view of the container
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    LinearLayout firstRow =
+                            mContainerView.findViewById(R.id.color_picker_first_row);
+                    int containerWidthPx =
+                            firstRow.getChildAt(0).getMeasuredWidth() * mColorList.size();
+
+                    // Refresh the layout and re-measure the widths
+                    ViewUtils.requestLayout(mContainerView, "TabGroupColorPicker.TestDoubleRow");
+                    Criteria.checkThat(
+                            "Width was not set properly",
+                            mRootView.getMeasuredWidth(),
+                            Matchers.is(containerWidthPx));
                 });
     }
 }

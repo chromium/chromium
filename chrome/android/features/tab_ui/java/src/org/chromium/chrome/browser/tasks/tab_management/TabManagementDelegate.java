@@ -221,10 +221,12 @@ public interface TabManagementDelegate {
      * @param colors The list of colors used for this color picker component.
      * @param colorPickerLayout The layout resource to be inflated.
      * @param colorPickerType The {@link ColorPickerType} that this color picker use.
+     * @param isIncognito Whether the current tab model is in incognito mode.
      */
     ColorPicker createColorPickerCoordinator(
             @NonNull Context context,
             @NonNull List<Integer> colors,
             @NonNull @LayoutRes int colorPickerLayout,
-            @NonNull @ColorPickerType int colorPickerType);
+            @NonNull @ColorPickerType int colorPickerType,
+            @NonNull boolean isIncognito);
 }

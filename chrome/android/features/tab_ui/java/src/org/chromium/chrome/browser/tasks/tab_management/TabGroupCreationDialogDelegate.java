@@ -78,7 +78,9 @@ public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
                     public void didCreateNewGroup(int newRootId) {
                         // TODO(crbug.com/1517346): Consider removing the cancel button for
                         // longpress add as the undo flow does not exist there.
-                        showDialog(filter.getRelatedTabCountForRootId(newRootId));
+                        showDialog(
+                                filter.getRelatedTabCountForRootId(newRootId),
+                                filter.isIncognito());
                     }
 
                     // Handles the drag and dropping of two single tabs to create a group.
@@ -91,7 +93,7 @@ public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
                             return;
                         }
                         // Pass in the tab count of the two tab items to be merged.
-                        showDialog(newRootIdTabCount + 1);
+                        showDialog(newRootIdTabCount + 1, filter.isIncognito());
                     }
                 };
         filter.addTabGroupObserver(observer);
@@ -121,7 +123,7 @@ public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
         }
     }
 
-    protected void showDialog(int tabCount) {
+    protected void showDialog(int tabCount, boolean isIncognito) {
         View customView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_group_creation_dialog, null);
         ((AppCompatEditText) customView.findViewById(R.id.title_input_text))
@@ -139,7 +141,8 @@ public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
                         mActivity,
                         colors,
                         R.layout.tab_group_color_picker_container,
-                        ColorPickerType.TAB_GROUP);
+                        ColorPickerType.TAB_GROUP,
+                        isIncognito);
         colorPickerCoordinator.setSelectedColorItem(colors.get(1));
 
         TabGroupCreationTextInputLayout groupTitle = customView.findViewById(R.id.tab_group_title);
