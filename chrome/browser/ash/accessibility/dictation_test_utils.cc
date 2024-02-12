@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/accessibility/dictation_test_utils.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/base_paths.h"
@@ -366,7 +368,7 @@ void DictationTestUtils::WaitForPumpkinTaggerReady() {
   std::string locale =
       profile_->GetPrefs()->GetString(prefs::kAccessibilityDictationLocale);
   static constexpr auto kPumpkinLocales =
-      base::MakeFixedFlatSet<base::StringPiece>(
+      base::MakeFixedFlatSet<std::string_view>(
           {"en-US", "fr-FR", "it-IT", "de-DE", "es-ES"});
   if (!base::Contains(kPumpkinLocales, locale)) {
     // If Pumpkin doesn't support the dictation locale, then it will never

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string_view>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -37,7 +38,6 @@
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1466,9 +1466,9 @@ void AccessibilityManager::UpdateBrailleImeState() {
   PrefService* pref_service = profile_->GetPrefs();
   std::string preload_engines_str =
       pref_service->GetString(::prefs::kLanguagePreloadEngines);
-  std::vector<base::StringPiece> preload_engines = base::SplitStringPiece(
+  std::vector<std::string_view> preload_engines = base::SplitStringPiece(
       preload_engines_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::vector<base::StringPiece>::iterator it = base::ranges::find(
+  std::vector<std::string_view>::iterator it = base::ranges::find(
       preload_engines, extension_ime_util::kBrailleImeEngineId);
   bool is_enabled = (it != preload_engines.end());
   bool should_be_enabled =

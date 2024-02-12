@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/accessibility/dictation.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,7 +59,7 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
   // map also includes a map from Open Speech API "cmn" languages to
   // their equivalent default locale.
   static constexpr auto kLangsToDefaultLocales =
-      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+      base::MakeFixedFlatMap<std::string_view, std::string_view>(
           {{"af", "af-ZA"},          {"am", "am-ET"},
            {"ar", "ar-001"},         {"az", "az-AZ"},
            {"bg", "bg-BG"},          {"bn", "bn-IN"},
@@ -111,7 +112,7 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
 
   // If it's only a language code, we can return early, because no other
   // language-only codes are supported.
-  std::pair<base::StringPiece, base::StringPiece> lang_and_locale_pair =
+  std::pair<std::string_view, std::string_view> lang_and_locale_pair =
       language::SplitIntoMainAndTail(lang_or_locale);
   if (lang_and_locale_pair.second.size() == 0)
     return std::string();
