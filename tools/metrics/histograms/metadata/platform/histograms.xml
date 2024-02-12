@@ -2088,6 +2088,74 @@ chromium-metrics-reviews@google.com.
   <summary>Number of pages swapped OUT over a day, sampled daily.</summary>
 </histogram>
 
+<histogram name="Platform.ThinpoolMigration.LvmMetadataTime" units="ms"
+    expires_after="2025-03-01">
+  <owner>sarthakkukreti@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Time taken to persist LVM metadata. Recorded once per migration attempt.
+  </summary>
+</histogram>
+
+<histogram name="Platform.ThinpoolMigration.ResizeTime" units="ms"
+    expires_after="2025-03-01">
+  <owner>sarthakkukreti@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Time taken to resize the filesystem. Recorded once per migration attempt.
+  </summary>
+</histogram>
+
+<histogram name="Platform.ThinpoolMigration.Result"
+    enum="ThinpoolMigrationResult" expires_after="2025-03-01">
+  <owner>sarthakkukreti@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Result of stateful migration to thinpool. Recorded once per migration
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="Platform.ThinpoolMigration.RevertTime" units="ms"
+    expires_after="2025-03-01">
+  <owner>sarthakkukreti@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Time taken to revert the migration. Recorded once per failed migration
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="Platform.ThinpoolMigration.ThinpoolMetadataTime" units="ms"
+    expires_after="2025-03-01">
+  <owner>sarthakkukreti@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Time taken to persist thinpool metadata. Recorded once per migration
+    attempt.
+  </summary>
+</histogram>
+
+<histogram name="Platform.ThinpoolMigration.TotalTime" units="ms"
+    expires_after="2025-03-01">
+  <owner>sarthakkukreti@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Time taken for a migration attempt. Recorded once per migration attempt.
+  </summary>
+</histogram>
+
+<histogram name="Platform.ThinpoolMigration.TriesLeftAtCompletion"
+    units="units" expires_after="2025-03-01">
+  <owner>sarthakkukreti@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Number of migration attempts left at completion. Captures whether multiple
+    attempts were required to complete migration. Recorded once after successful
+    migration.
+  </summary>
+</histogram>
+
 <histogram name="Platform.TPM.ApRoVerificationTime" units="ms"
     expires_after="2024-06-30">
   <owner>granaghan@google.com</owner>
