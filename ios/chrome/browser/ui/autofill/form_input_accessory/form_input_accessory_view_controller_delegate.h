@@ -32,6 +32,11 @@
             (FormInputAccessoryViewController*)formInputAccessoryViewController
                   didPressPasswordButton:(UIButton*)passwordButton;
 
+// Invoked after the user taps the `manual fill` button.
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                didPressManualFillButton:(UIButton*)manualFillButton;
+
 // Invoked after the user taps the form input accessory view.
 - (void)formInputAccessoryViewController:
             (FormInputAccessoryViewController*)formInputAccessoryViewController

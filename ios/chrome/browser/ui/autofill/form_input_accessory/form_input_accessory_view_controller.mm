@@ -185,24 +185,9 @@
 - (void)manualFillButtonPressed:(UIButton*)button {
   DCHECK(IsKeyboardAccessoryUpgradeEnabled());
 
-  switch (_mainFillingProduct) {
-    case autofill::FillingProduct::kAddress:
-    case autofill::FillingProduct::kPlusAddresses:
-      [self.manualFillAccessoryViewController accountButtonPressed:button];
-      break;
-    case autofill::FillingProduct::kCreditCard:
-    case autofill::FillingProduct::kIban:
-      [self.manualFillAccessoryViewController cardButtonPressed:button];
-      break;
-    case autofill::FillingProduct::kCompose:
-    case autofill::FillingProduct::kMerchantPromoCode:
-    case autofill::FillingProduct::kPassword:
-    case autofill::FillingProduct::kAutocomplete:
-    case autofill::FillingProduct::kNone:
-      [self.manualFillAccessoryViewController passwordButtonPressed:button];
-      break;
-  }
-
+  [_formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+              didPressManualFillButton:button];
   [self showManualFillView:YES];
 }
 

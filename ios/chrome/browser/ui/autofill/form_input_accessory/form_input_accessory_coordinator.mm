@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/address_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_coordinator.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/expanded_manual_fill_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator_delegate.h"
@@ -256,6 +257,7 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.childCoordinators removeAllObjects];
 }
 
+// Starts the password coordinator and displays its view controller.
 - (void)startPasswordsFromButton:(UIButton*)button
           invokedOnPasswordField:(BOOL)invokedOnPasswordField {
   WebStateList* webStateList = self.browser->GetWebStateList();
@@ -285,6 +287,7 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.childCoordinators addObject:passwordCoordinator];
 }
 
+// Starts the card coordinator and displays its view controller.
 - (void)startCardsFromButton:(UIButton*)button {
   CardCoordinator* cardCoordinator = [[CardCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -301,6 +304,7 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.childCoordinators addObject:cardCoordinator];
 }
 
+// Starts the address coordinator and displays its view controller.
 - (void)startAddressFromButton:(UIButton*)button {
   AddressCoordinator* addressCoordinator = [[AddressCoordinator alloc]
       initWithBaseViewController:self.baseViewController
@@ -315,6 +319,20 @@ const CGFloat kIPHVerticalOffset = -5;
   }
 
   [self.childCoordinators addObject:addressCoordinator];
+}
+
+// Starts the expanded manual fill coordinator and displays its view controller.
+- (void)startManualFill {
+  ExpandedManualFillCoordinator* expandedManualFillCoordinator =
+      [[ExpandedManualFillCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:self.browser];
+  [expandedManualFillCoordinator start];
+
+  self.formInputViewController = expandedManualFillCoordinator.viewController;
+  [GetFirstResponder() reloadInputViews];
+
+  [self.childCoordinators addObject:expandedManualFillCoordinator];
 }
 
 #pragma mark - FormInputAccessoryMediatorHandler
@@ -361,8 +379,7 @@ const CGFloat kIPHVerticalOffset = -5;
                    didPressAccountButton:(UIButton*)accountButton {
   [self stopChildren];
   [self startAddressFromButton:accountButton];
-  [self.formInputAccessoryViewController lockManualFallbackView];
-  [self.formInputAccessoryMediator disableSuggestions];
+  [self updateKeyboardAccessoryForManualFilling];
 }
 
 - (void)formInputAccessoryViewController:
@@ -370,8 +387,7 @@ const CGFloat kIPHVerticalOffset = -5;
                 didPressCreditCardButton:(UIButton*)creditCardButton {
   [self stopChildren];
   [self startCardsFromButton:creditCardButton];
-  [self.formInputAccessoryViewController lockManualFallbackView];
-  [self.formInputAccessoryMediator disableSuggestions];
+  [self updateKeyboardAccessoryForManualFilling];
 }
 
 - (void)formInputAccessoryViewController:
@@ -382,8 +398,17 @@ const CGFloat kIPHVerticalOffset = -5;
       [self.formInputAccessoryMediator lastFocusedFieldWasPassword];
   [self startPasswordsFromButton:passwordButton
           invokedOnPasswordField:invokedOnPasswordField];
-  [self.formInputAccessoryViewController lockManualFallbackView];
-  [self.formInputAccessoryMediator disableSuggestions];
+  [self updateKeyboardAccessoryForManualFilling];
+}
+
+- (void)formInputAccessoryViewController:
+            (FormInputAccessoryViewController*)formInputAccessoryViewController
+                didPressManualFillButton:(UIButton*)manualFillButton {
+  CHECK(IsKeyboardAccessoryUpgradeEnabled());
+
+  [self stopChildren];
+  [self startManualFill];
+  [self updateKeyboardAccessoryForManualFilling];
 }
 
 - (void)formInputAccessoryViewController:
@@ -707,6 +732,13 @@ const CGFloat kIPHVerticalOffset = -5;
 
   self.formInputViewController = nil;
   [GetFirstResponder() reloadInputViews];
+}
+
+// Updates the keyboard accessory to the state it should be in when a manual
+// fill view is displayed.
+- (void)updateKeyboardAccessoryForManualFilling {
+  [self.formInputAccessoryViewController lockManualFallbackView];
+  [self.formInputAccessoryMediator disableSuggestions];
 }
 
 @end
