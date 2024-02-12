@@ -63,18 +63,18 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
       tr.append(th);
     });
 
-    this.addSpanningText_();
-    this.model_.rowsChangedListeners.add(() => this.updateTbody_());
+    this.updateRowCount_();
+
+    this.model_.rowsChangedListeners.add(() => {
+      this.updateRowCount_();
+      this.updateTbody_();
+    });
   }
 
-  private addSpanningText_(): void {
-    const td = document.createElement('td');
-    td.innerText = this.model_!.emptyRowText;
+  private updateRowCount_(): void {
+    const td = this.$<HTMLTableCellElement>('tfoot td')!;
     td.colSpan = this.model_!.cols.length;
-    const tr = document.createElement('tr');
-    tr.append(td);
-    const tbody = this.$<HTMLElement>('tbody')!;
-    tbody.append(tr);
+    td.innerText = `Rows: ${this.model_!.rowCount()}`;
   }
 
   private changeSortHeader_(idx: number): void {
@@ -110,7 +110,6 @@ export class AttributionInternalsTableElement<T> extends CustomElement {
 
     const rows = this.model_!.getRows();
     if (rows.length === 0) {
-      this.addSpanningText_();
       return;
     }
 

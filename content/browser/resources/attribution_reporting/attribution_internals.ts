@@ -393,7 +393,6 @@ class SourceTableModel extends ArrayTableModel<Source> {
               asList(asNumber)),
         ],
         5,  // Sort by registration time by default.
-        'No sources.',
     );
   }
 }
@@ -432,7 +431,6 @@ class RegistrationTableModel<T extends Registration> extends
           ...cols,
         ],
         0,  // Sort by time by default.
-        'No registrations.',
     );
   }
 }
@@ -606,7 +604,6 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
           ValueColumn.of('Report Body', 'reportBody', asCode),
         ],
         4,  // Sort by report time by default; the extra column is added below
-        'No sent or pending reports.',
     );
 
     // This can't be included in the super call above, as `this` can't be
@@ -636,11 +633,9 @@ class ReportTableModel<T extends Report> extends TableModel<T> {
     tr.classList.toggle('send-error', report.sendFailed);
   }
 
-  override empty(): boolean {
-    return this.sentOrDroppedReports.length === 0 &&
-        this.storedReports.length === 0 &&
-        (!this.showDebugReportsCheckbox.checked ||
-         this.debugReports.length === 0);
+  override rowCount(): number {
+    return this.sentOrDroppedReports.length + this.storedReports.length +
+        (this.showDebugReportsCheckbox.checked ? this.debugReports.length : 0);
   }
 
   override getRows(): T[] {
@@ -770,7 +765,6 @@ class OsRegistrationTableModel extends ArrayTableModel<OsRegistration> {
           ValueColumn.of('Result', 'result', asStringOrBool),
         ],
         0,
-        'No OS registrations.',
     );
   }
 }
@@ -806,7 +800,6 @@ class DebugReportTableModel extends ArrayTableModel<DebugReport> {
           ValueColumn.of('Body', 'body', asCode),
         ],
         0,  // Sort by report time by default.
-        'No verbose debug reports.',
     );
   }
 
@@ -1154,11 +1147,9 @@ class AttributionInternals implements ObserverInterface {
 
 function installUnreadIndicator<T>(
     model: TableModel<T>, tab: HTMLElement): void {
-  model.rowsChangedListeners.add(() => {
-    if (!tab.hasAttribute('selected') && !model.empty()) {
-      tab.classList.add('unread');
-    }
-  });
+  model.rowsChangedListeners.add(
+      () => tab.classList.toggle(
+          'unread', !tab.hasAttribute('selected') && model.rowCount() > 0));
 }
 
 document.addEventListener('DOMContentLoaded', function() {

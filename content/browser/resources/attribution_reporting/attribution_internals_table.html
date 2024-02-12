@@ -20,7 +20,7 @@
     height: 1px;
   }
 
-  tbody tr {
+  tbody tr, tfoot tr {
     border-top-color: rgba(0,0,0,.12);
     border-top-style: solid;
     border-top-width: 1px;
@@ -28,6 +28,10 @@
 
   thead tr {
     border: 0;
+  }
+
+  tfoot {
+    font-weight: bold;
   }
 
   td, th {
@@ -92,4 +96,7 @@
     <tr></tr>
   </thead>
   <tbody></tbody>
+  <tfoot>
+    <tr><td></td></tr>
+  </tfoot>
 </table>
