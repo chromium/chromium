@@ -203,8 +203,8 @@ void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
     return;
   }
 
-  frames_->ListenForPresent(surface);
   frame_times_.emplace_back(ticks_now_callback_.Run());
+  frames_->ListenForPresent(surface);
 }
 
 void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
@@ -212,8 +212,8 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   const size_t num_presents = presents.size(),
                num_frame_times = frame_times_.size();
 
-  if (num_frame_times < 2 || num_presents < 2 ||
-      tracing_period <= base::TimeDelta() || DetectIdle()) {
+  if (num_frame_times < 2 || tracing_period <= base::TimeDelta() ||
+      DetectIdle()) {
     LOG(ERROR) << "Failed to meet minimum requirements to analyze tracing";
     Stop(std::nullopt);
     return;
@@ -222,10 +222,8 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   VLOG(1) << "Analyze tracing.";
 
   std::vector<base::TimeDelta> commit_deltas, present_deltas;
-  commit_deltas.reserve(num_frame_times - 1);
-  present_deltas.reserve(num_presents - 1);
-
   PerfTraceResult result;
+  commit_deltas.reserve(num_frame_times - 1);
   double vsync_error_deviation_accumulator = 0;
   for (auto fitr = frame_times_.begin() + 1; fitr != frame_times_.end();
        fitr++) {
@@ -235,14 +233,25 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   }
   result.commit_deviation =
       sqrt(vsync_error_deviation_accumulator / commit_deltas.size());
-  vsync_error_deviation_accumulator = 0;
-  for (auto fitr = presents.begin() + 1; fitr != presents.end(); fitr++) {
-    const auto frame_delta = base::Microseconds(*fitr - *(fitr - 1));
-    present_deltas.push_back(frame_delta);
-    vsync_error_deviation_accumulator += CalcVSyncError(frame_delta);
+
+  // Number of presents could be zero if display-less device (e.g. Chromebox),
+  // in this case skip calculating present metrics with less than two frames.
+  result.present_deviation = result.perceived_fps = result.janks_per_minute = 0;
+  if (num_presents > 1) {
+    present_deltas.reserve(num_presents - 1);
+    vsync_error_deviation_accumulator = 0;
+    for (auto fitr = presents.begin() + 1; fitr != presents.end(); fitr++) {
+      const auto frame_delta = base::Microseconds(*fitr - *(fitr - 1));
+      present_deltas.push_back(frame_delta);
+      vsync_error_deviation_accumulator += CalcVSyncError(frame_delta);
+    }
+    result.present_deviation =
+        sqrt(vsync_error_deviation_accumulator / present_deltas.size());
+    result.perceived_fps = num_presents / tracing_period.InSecondsF();
+    if (ArcGraphicsJankDetector::IsEnoughSamplesToDetect(num_presents)) {
+      result.janks_per_minute = CalcJanksPerMinute(presents, tracing_period);
+    }
   }
-  result.present_deviation =
-      sqrt(vsync_error_deviation_accumulator / present_deltas.size());
 
   std::sort(commit_deltas.begin(), commit_deltas.end());
   // Get 10% and 90% indices.
@@ -250,13 +259,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   const size_t upper_position = commit_deltas.size() - 1 - lower_position;
   result.render_quality =
       commit_deltas[lower_position] / commit_deltas[upper_position];
-
   result.fps = commit_deltas.size() / tracing_period.InSecondsF();
-  result.perceived_fps = num_presents / tracing_period.InSecondsF();
-  result.janks_per_minute = 0;
-  if (ArcGraphicsJankDetector::IsEnoughSamplesToDetect(num_presents)) {
-    result.janks_per_minute = CalcJanksPerMinute(presents, tracing_period);
-  }
 
   Stop(result);
 }
