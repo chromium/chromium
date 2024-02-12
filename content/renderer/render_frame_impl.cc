@@ -4887,7 +4887,12 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // get the base url from it too.
   if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
       (params->url.IsAboutBlank() || params->url.IsAboutSrcdoc())) {
-    params->initiator_base_url = frame_document.BaseURL();
+    GURL base_url = frame_document.BaseURL();
+    // Only pass the base URL if it is valid and can be serialized by Mojo.
+    if (base_url.is_valid() &&
+        base_url.possibly_invalid_spec().length() <= url::kMaxURLChars) {
+      params->initiator_base_url = base_url;
+    }
   }
 
   // Don't send commit URLs to the browser that are known to be unsupported

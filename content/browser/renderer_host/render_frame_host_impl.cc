@@ -12775,6 +12775,19 @@ bool RenderFrameHostImpl::ValidateDidCommitParams(
     return false;
   }
 
+  // An initiator base URL should either be nullopt or non-empty, to satisfy
+  // checks later in the navigation.
+  if (params->initiator_base_url.has_value() &&
+      params->initiator_base_url->is_empty()) {
+    // For now, replace the empty URL with nullopt.
+    // TODO(https://crbug.com/324772617): Upgrade this DumpWithoutCrashing to a
+    // renderer kill once we confirm there aren't reports of it happening.
+    SCOPED_CRASH_KEY_STRING32("ValidateDidCommit_empty_baseurl", "url",
+                              params->url.possibly_invalid_spec());
+    base::debug::DumpWithoutCrashing();
+    params->initiator_base_url = absl::nullopt;
+  }
+
   // A cross-document navigation requires an embedding token. Navigations
   // activating an existing document do not require new embedding tokens as the
   // token is already set.
