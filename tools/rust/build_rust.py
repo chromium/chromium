@@ -523,16 +523,6 @@ def BuildLLVMLibraries(skip_build):
             RUST_HOST_LLVM_INSTALL_DIR
         ])
 
-        # The FileCheck binary is built but is not installed, and the rust build
-        # only looks for stuff in the install dir.
-        # TODO(danakj): Set LLVM_INSTALL_UTILS in the llvm build so we don't
-        # need to do this:
-        # https://github.com/rust-lang/rust/blob/021861aea8de20c76c7411eb8ada7e8235e3d9b5/src/bootstrap/src/core/build_steps/llvm.rs#L348
-        EXE = '.exe' if sys.platform == 'win32' else ''
-        CopyFile(
-            os.path.join(RUST_HOST_LLVM_BUILD_DIR, 'bin', f'FileCheck{EXE}'),
-            os.path.join(RUST_HOST_LLVM_INSTALL_DIR, 'bin', f'FileCheck{EXE}'))
-
 
 def GitCherryPick(git_repository, git_remote, commit):
     print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
