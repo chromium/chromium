@@ -7845,18 +7845,9 @@ TEST_F(SplitViewOverviewSessionTest, SelectUnsnappableWindowInSplitView) {
 
 // Verify that when in overview mode, the selector items unsnappable indicator
 // shows up when expected.
-// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
-// MSAN/ASAN on CrOS.
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
-#define MAYBE_OverviewUnsnappableIndicatorVisibility \
-  DISABLED_OverviewUnsnappableIndicatorVisibility
-#else
-#define MAYBE_OverviewUnsnappableIndicatorVisibility \
-  OverviewUnsnappableIndicatorVisibility
-#endif
+// TODO(crbug.com/324024580): Re-enable this flaky test.
 TEST_F(SplitViewOverviewSessionTest,
-       MAYBE_OverviewUnsnappableIndicatorVisibility) {
+       DISABLED_OverviewUnsnappableIndicatorVisibility) {
   // Create three windows; two normal and one unsnappable, so that when after
   // snapping |window1| to enter split view we can test the state of each normal
   // and unsnappable windows.
@@ -8305,18 +8296,9 @@ TEST_F(SplitViewOverviewSessionTest, SnappedWindowBoundsWithMinimumSizeTest) {
 // Verify that if the split view divider is dragged all the way to the edge, the
 // window being dragged gets returned to the overview list, if overview mode is
 // still active.
-// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
-// MSAN/ASAN on CrOS.
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
-#define MAYBE_DividerDraggedToEdgeReturnsWindowToOverviewList \
-  DISABLED_DividerDraggedToEdgeReturnsWindowToOverviewList
-#else
-#define MAYBE_DividerDraggedToEdgeReturnsWindowToOverviewList \
-  DividerDraggedToEdgeReturnsWindowToOverviewList
-#endif
+// TODO(crbug.com/324024580): Re-enable this flaky test.
 TEST_F(SplitViewOverviewSessionTest,
-       MAYBE_DividerDraggedToEdgeReturnsWindowToOverviewList) {
+       DISABLED_DividerDraggedToEdgeReturnsWindowToOverviewList) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
@@ -8361,19 +8343,10 @@ TEST_F(SplitViewOverviewSessionTest,
 // all the way to the opposite edge, then the split view window is reinserted
 // into the overview grid at the correct position according to MRU order, and
 // the stacking order is also correct.
-// TODO(crbug.com/324024580): Re-enable this test. Causes build failures on
-// MSAN/ASAN on CrOS.
-#if BUILDFLAG(IS_CHROMEOS) && \
-    (defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER))
-#define MAYBE_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded \
-  DISABLED_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded
-#else
-#define MAYBE_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded \
-  SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded
-#endif
+// TODO(crbug.com/324024580): Re-enable this flaky test.
 TEST_F(
     SplitViewOverviewSessionTest,
-    MAYBE_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded) {
+    DISABLED_SplitViewWindowReinsertedToOverviewAtCorrectPositionWhenSplitViewIsEnded) {
   const gfx::Rect bounds(400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
