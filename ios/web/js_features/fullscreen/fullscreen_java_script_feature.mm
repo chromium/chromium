@@ -70,10 +70,12 @@ void FullscreenJavaScriptFeature::ScriptMessageReceived(
     // update the incorrect navigation item.
     return;
   }
-  auto cover = script_dict->FindBool(kScriptMessageViewportFitCoverKey).value();
-  CRWWebController* web_controller =
-      WebStateImpl::FromWebState(web_state)->GetWebController();
-  [web_controller handleViewportFit:static_cast<BOOL>(cover)];
+  auto cover = script_dict->FindBool(kScriptMessageViewportFitCoverKey);
+  if (cover.has_value()) {
+    CRWWebController* web_controller =
+        WebStateImpl::FromWebState(web_state)->GetWebController();
+    [web_controller handleViewportFit:static_cast<BOOL>(cover.value())];
+  }
 }
 
 }  // namespace web
