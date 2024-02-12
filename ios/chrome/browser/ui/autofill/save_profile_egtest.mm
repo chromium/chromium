@@ -94,6 +94,9 @@ BOOL WaitForKeyboardToAppear() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
+  config.features_disabled.push_back(
+      autofill::features::test::kAutofillServerCommunication);
+
   if ([self isRunningTest:@selector(testUserData_MigrationToAccount)]) {
     config.features_enabled.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);
@@ -112,8 +115,7 @@ BOOL WaitForKeyboardToAppear() {
 #pragma mark - Tests
 
 // Ensures that the profile is saved to Chrome after submitting the form.
-// TODO(crbug.com/1517656): Test is failing.
-- (void)DISABLED_testUserData_LocalSave {
+- (void)testUserData_LocalSave {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
@@ -140,8 +142,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Ensures that the profile is saved to Chrome after submitting and editing the
 // form.
-// TODO(crbug.com/1517656): Test is failing.
-- (void)DISABLED_testUserData_LocalEdit {
+- (void)testUserData_LocalEdit {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
@@ -176,8 +177,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Ensures that the profile is saved to Account after submitting the form.
-// TODO(crbug.com/1517656): Test is failing.
-- (void)DISABLED_testUserData_AccountSave {
+- (void)testUserData_AccountSave {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:YES];
 
@@ -215,8 +215,7 @@ BOOL WaitForKeyboardToAppear() {
 
 // Ensures that the profile is saved to Account after submitting and editing the
 // form.
-// TODO(crbug.com/1517656): Test is failing.
-- (void)DISABLED_testUserData_AccountEdit {
+- (void)testUserData_AccountEdit {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:YES];
 
