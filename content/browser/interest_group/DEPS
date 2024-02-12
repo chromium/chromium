@@ -11,5 +11,8 @@ specific_include_rules = {
   ],
   ".*_fuzzer.cc": [
     "+third_party/libprotobuf-mutator/src/src/libfuzzer",
+    # Like unit tests, MojoLPM fuzzers directly instantiate an in-process
+    # auction_worklet service.
+    "+content/services/auction_worklet",
   ],
 }

@@ -96,5 +96,9 @@ BrowserTaskEnvironment* RenderViewHostTestHarnessAdapter::task_environment() {
   return RenderViewHostTestHarness::task_environment();
 }
 
+BrowserContext* RenderViewHostTestHarnessAdapter::browser_context() {
+  return RenderViewHostTestHarness::browser_context();
+}
+
 }  // namespace mojolpm
 }  // namespace content

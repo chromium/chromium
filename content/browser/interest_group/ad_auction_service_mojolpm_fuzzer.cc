@@ -7,8 +7,10 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,14 +24,18 @@
 #include "components/aggregation_service/features.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/ad_auction_service_mojolpm_fuzzer.pb.h"
+#include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_features.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host.h"
@@ -44,6 +50,10 @@
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace content {
+class SiteInstance;
+}  // namespace content
 
 class AllowInterestGroupContentBrowserClient
     : public content::TestContentBrowserClient {
@@ -88,13 +98,38 @@ constexpr char kInterestGroupUpdate[] = R"({
         }]
 })";
 
+constexpr char kFledgeScriptHeaders[] =
+    "HTTP/1.1 200 OK\n"
+    "Content-type: Application/Javascript\n"
+    "Ad-Auction-Allowed: true\n";
+
+constexpr char kBasicScript[] = R"(
+function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+    trustedBiddingSignals, browserSignals, directFromSellerSignals) {
+  const ad = interestGroup.ads[0];
+  return {'ad': ad, 'bid': 1, 'render': ad.renderURL,
+                'allowComponentAuction': true};
+}
+
+function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                 browserSignals) {
+  return {desirability: bid,
+          allowComponentAuction: true};
+}
+)";
+
 // For handling network requests made by the Protected Audience API -- also
 // prevents those requests from being made to real servers.
 class NetworkResponder {
  private:
   bool RequestHandler(content::URLLoaderInterceptor::RequestParams* params) {
-    content::URLLoaderInterceptor::WriteResponse(
-        kFledgeUpdateHeaders, kInterestGroupUpdate, params->client.get());
+    if (params->url_request.url.path().find(".js") != std::string::npos) {
+      content::URLLoaderInterceptor::WriteResponse(
+          kFledgeScriptHeaders, kBasicScript, params->client.get());
+    } else {
+      content::URLLoaderInterceptor::WriteResponse(
+          kFledgeUpdateHeaders, kInterestGroupUpdate, params->client.get());
+    }
     return true;
   }
 
@@ -102,6 +137,45 @@ class NetworkResponder {
   content::URLLoaderInterceptor network_interceptor_{
       base::BindRepeating(&NetworkResponder::RequestHandler,
                           base::Unretained(this))};
+};
+
+// AuctionProcessManager that allows running auctions in-proc.
+class SameProcessAuctionProcessManager : public content::AuctionProcessManager {
+ public:
+  SameProcessAuctionProcessManager() = default;
+  SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
+      delete;
+  SameProcessAuctionProcessManager& operator=(
+      const SameProcessAuctionProcessManager&) = delete;
+  ~SameProcessAuctionProcessManager() override = default;
+
+ private:
+  content::RenderProcessHost* LaunchProcess(
+      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+          auction_worklet_service_receiver,
+      const ProcessHandle* handle,
+      const std::string& display_name) override {
+    // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
+    // production code. Don't bother to delete the service on pipe close,
+    // though; just keep it in a vector instead.
+    auction_worklet_services_.push_back(
+        auction_worklet::AuctionWorkletServiceImpl::CreateForService(
+            std::move(auction_worklet_service_receiver)));
+    return nullptr;
+  }
+
+  scoped_refptr<content::SiteInstance> MaybeComputeSiteInstance(
+      content::SiteInstance* frame_site_instance,
+      const url::Origin& worklet_origin) override {
+    return nullptr;
+  }
+
+  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
+    return false;
+  }
+
+  std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
+      auction_worklet_services_;
 };
 
 const char* const kCmdline[] = {"ad_auction_service_mojolpm_fuzzer", nullptr};
@@ -283,6 +357,15 @@ void AdAuctionServiceTestcase::SetUpOnUIThread() {
   render_frame_host_->InitializeRenderFrameIfNeeded();
   old_content_browser_client_ =
       SetBrowserClientForTesting(&content_browser_client_);
+
+  auto* manager_ = static_cast<content::InterestGroupManagerImpl*>(
+      test_adapter_.browser_context()
+          ->GetDefaultStoragePartition()
+          ->GetInterestGroupManager());
+  // Process creation crashes in the Chrome zygote init in unit tests, so run
+  // the auction "processes" in-process instead.
+  manager_->set_auction_process_manager_for_testing(
+      std::make_unique<SameProcessAuctionProcessManager>());
 }
 
 void AdAuctionServiceTestcase::TearDown(base::OnceClosure done_closure) {
