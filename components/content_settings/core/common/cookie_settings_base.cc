@@ -396,13 +396,6 @@ CookieSettingsBase::DecideAccess(const GURL& url,
         ThirdPartyCookieAllowMechanism::kAllowByCORSException};
   }
 
-  const bool has_storage_access_opt_in =
-      ShouldConsiderStorageAccessGrants(overrides);
-  const bool has_storage_access_permission_grant =
-      IsAllowedByStorageAccessGrant(url, first_party_url);
-  net::cookie_util::FireStorageAccessInputHistogram(
-      has_storage_access_opt_in, has_storage_access_permission_grant);
-
   if (IsStorageAccessApiEnabled()) {
     if (ShouldConsiderTopLevelStorageAccessGrants(overrides) &&
         GetContentSetting(url, first_party_url,
@@ -411,7 +404,8 @@ CookieSettingsBase::DecideAccess(const GURL& url,
       return AllowAllCookies{
           ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess};
     }
-    if (has_storage_access_opt_in && has_storage_access_permission_grant) {
+    if (ShouldConsiderStorageAccessGrants(overrides) &&
+        IsAllowedByStorageAccessGrant(url, first_party_url)) {
       return AllowAllCookies{
           ThirdPartyCookieAllowMechanism::kAllowByStorageAccess};
     }

@@ -269,25 +269,6 @@ chromium-metrics-reviews@google.com.
              deleted)"/>
 </enum>
 
-<enum name="StorageAccessInputState">
-  <int value="0" label="OptInWithMatchingGrant">
-    The frame-level opt-in bool was provided, and there is a matching permission
-    grant.
-  </int>
-  <int value="1" label="OptInWithoutGrant">
-    The frame-level opt-in bool was provided, but there is no matching
-    permission grant.
-  </int>
-  <int value="2" label="MatchingGrantWithoutOptIn">
-    There is a matching permission grant, but no frame-level opt-in bool was
-    provided.
-  </int>
-  <int value="3" label="NoOptInNoGrant">
-    No frame-level opt-in bool was provided, and there is no matching permission
-    grant.
-  </int>
-</enum>
-
 <enum name="StorageAccessResult">
   <int value="0" label="Storage access blocked"/>
   <int value="1" label="Storage access allowed"/>

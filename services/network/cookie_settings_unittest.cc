@@ -43,9 +43,6 @@ using testing::UnorderedElementsAre;
 constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests2";
 
-constexpr char kStorageAccessInputStateHistogram[] =
-    "API.StorageAccess.InputState";
-
 constexpr char kDomainURL[] = "http://example.com";
 constexpr char kURL[] = "http://foo.com";
 constexpr char kOtherURL[] = "http://other.com";
@@ -443,12 +440,6 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
   EXPECT_EQ(settings.GetCookieSetting(third_url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
-  histogram_tester.ExpectBucketCount(
-      kStorageAccessInputStateHistogram,
-      IsStorageAccessGrantEligible()
-          ? net::cookie_util::StorageAccessInputState::kOptInWithoutGrant
-          : net::cookie_util::StorageAccessInputState::kNoOptInNoGrant,
-      3);
 
   // If third-party cookies are blocked, SAA grant takes precedence over
   // possible override to allow 3PCs.
@@ -460,13 +451,6 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
               SettingWithSaaOverride(CONTENT_SETTING_ALLOW));
     histogram_tester_2.ExpectUniqueSample(
         kAllowedRequestsHistogram, BlockedStorageAccessResultWithSaaOverride(),
-        1);
-
-    histogram_tester_2.ExpectUniqueSample(
-        kStorageAccessInputStateHistogram,
-        IsStorageAccessGrantEligible()
-            ? net::cookie_util::StorageAccessInputState::kOptInWithGrant
-            : net::cookie_util::StorageAccessInputState::kGrantWithoutOptIn,
         1);
   }
 
@@ -484,7 +468,6 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
     histogram_tester_2.ExpectUniqueSample(
         kAllowedRequestsHistogram,
         net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
-    histogram_tester_2.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
   }
 }
 
@@ -645,8 +628,6 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
-
-  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
 }
 
 // Once a grant expires access should no longer be given.
@@ -673,12 +654,6 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
             SettingWithSaaOverride(CONTENT_SETTING_ALLOW));
-  histogram_tester.ExpectUniqueSample(
-      kStorageAccessInputStateHistogram,
-      IsStorageAccessGrantEligible()
-          ? net::cookie_util::StorageAccessInputState::kOptInWithGrant
-          : net::cookie_util::StorageAccessInputState::kGrantWithoutOptIn,
-      1);
 
   // If we fastforward past the expiration of our grant the result should be
   // CONTENT_SETTING_BLOCK now.
@@ -686,12 +661,6 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   EXPECT_EQ(settings.GetCookieSetting(url, top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
-  histogram_tester.ExpectBucketCount(
-      kStorageAccessInputStateHistogram,
-      IsStorageAccessGrantEligible()
-          ? net::cookie_util::StorageAccessInputState::kOptInWithoutGrant
-          : net::cookie_util::StorageAccessInputState::kNoOptInNoGrant,
-      1);
 }
 
 
@@ -1936,7 +1905,6 @@ TEST_P(CookieSettingsTpcdMetadataGrantsTest, ExplicitSettingPreserved) {
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 
-  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
   histogram_tester.ExpectUniqueSample(
       kAllowedRequestsHistogram,
       net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
@@ -2070,7 +2038,6 @@ TEST_P(CookieSettingsTpcdTrialTest, PreserveBlockAllCookiesSetting) {
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 
-  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
   histogram_tester.ExpectUniqueSample(
       kAllowedRequestsHistogram,
       net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
@@ -2107,7 +2074,6 @@ TEST_P(CookieSettingsTpcdTrialTest, PreserveExplicitBlock3pcSetting) {
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 
-  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
   histogram_tester.ExpectUniqueSample(
       kAllowedRequestsHistogram,
       net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
@@ -2352,7 +2318,6 @@ TEST_P(CookieSettingsTopLevelTpcdTrialTest, PreserveBlockAllCookiesSetting) {
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 
-  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
   histogram_tester.ExpectUniqueSample(
       kAllowedRequestsHistogram,
       net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
@@ -2389,7 +2354,6 @@ TEST_P(CookieSettingsTopLevelTpcdTrialTest, PreserveExplicitBlock3pcSetting) {
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
 
-  histogram_tester.ExpectTotalCount(kStorageAccessInputStateHistogram, 0);
   histogram_tester.ExpectUniqueSample(
       kAllowedRequestsHistogram,
       net::cookie_util::StorageAccessResult::ACCESS_BLOCKED, 1);
