@@ -413,6 +413,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "dawn-try-win-x64-nvidia-exp",
+    description_html = "Runs ToT Dawn tests on experimental NVIDIA configs",
+    mirrors = [
+        "ci/Dawn Win10 x64 Builder",
+        "ci/Dawn Win10 x64 Experimental Release (NVIDIA)",
+    ],
+    gn_args = "ci/Dawn Win10 x64 Builder",
+    pool = "luci.chromium.gpu.win10.nvidia.try",
+    builderless = True,
+    os = os.WINDOWS_ANY,
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
     name = "dawn-try-win-x86-intel-exp",
     mirrors = [
         "ci/Dawn Win10 x86 Builder",

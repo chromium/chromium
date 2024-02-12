@@ -2689,6 +2689,21 @@
           'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
+      'Dawn Win10 x64 Experimental Release (NVIDIA)': {
+        'os_type': 'win',
+        'browser_config': 'release_x64',
+        'mixins': [
+          'limited_capacity_bot',
+          'win10_nvidia_gtx_1660_experimental',
+        ],
+        # When the experimental driver is identical to the stable driver, this
+        # should be running the gpu_noop_sleep_telemetry_test. Otherwise, it
+        # should be running the same test_suites as
+        # 'Dawn Win10 x64 Release (NVIDIA)'
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Dawn Win10 x64 Release (Intel)': {
         'os_type': 'win',
         'browser_config': 'release_x64',
