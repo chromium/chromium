@@ -154,6 +154,12 @@ PerformanceMark::GetUseCounterMapping() {
          WebFeature::kUserFeatureNextThirdPartiesGoogleMapsEmbed},
         {"nuxt-image", WebFeature::kUserFeatureNuxtImage},
         {"nuxt-picture", WebFeature::kUserFeatureNuxtPicture},
+        {"nuxt-third-parties-ga", WebFeature::kUserFeatureNuxtThirdPartiesGA},
+        {"nuxt-third-parties-gtm", WebFeature::kUserFeatureNuxtThirdPartiesGTM},
+        {"nuxt-third-parties-YouTubeEmbed",
+         WebFeature::kUserFeatureNuxtThirdPartiesYouTubeEmbed},
+        {"nuxt-third-parties-GoogleMaps",
+         WebFeature::kUserFeatureNuxtThirdPartiesGoogleMaps},
     };
   }
   return *map;

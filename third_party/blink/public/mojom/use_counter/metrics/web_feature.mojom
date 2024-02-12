@@ -4201,6 +4201,10 @@ enum WebFeature {
   kCanvas2DLayers = 4837,
   kUserFeatureNuxtImage = 4838,
   kUserFeatureNuxtPicture = 4839,
+  kUserFeatureNuxtThirdPartiesGA = 4840,
+  kUserFeatureNuxtThirdPartiesGTM = 4841,
+  kUserFeatureNuxtThirdPartiesYouTubeEmbed = 4842,
+  kUserFeatureNuxtThirdPartiesGoogleMaps = 4843,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

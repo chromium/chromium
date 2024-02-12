@@ -11207,6 +11207,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4837" label="Canvas2DLayers"/>
   <int value="4838" label="UserFeatureNuxtImage"/>
   <int value="4839" label="UserFeatureNuxtPicture"/>
+  <int value="4840" label="UserFeatureNuxtThirdPartiesGA"/>
+  <int value="4841" label="UserFeatureNuxtThirdPartiesGTM"/>
+  <int value="4842" label="UserFeatureNuxtThirdPartiesYouTubeEmbed"/>
+  <int value="4843" label="UserFeatureNuxtThirdPartiesGoogleMaps"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

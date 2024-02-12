@@ -389,6 +389,10 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kFirstPartySharedWorkerSameSiteCookiesNone,
           WebFeature::kUserFeatureNuxtImage,
           WebFeature::kUserFeatureNuxtPicture,
+          WebFeature::kUserFeatureNuxtThirdPartiesGA,
+          WebFeature::kUserFeatureNuxtThirdPartiesGTM,
+          WebFeature::kUserFeatureNuxtThirdPartiesYouTubeEmbed,
+          WebFeature::kUserFeatureNuxtThirdPartiesGoogleMaps,
           WebFeature::kMouseDragOnCancelledMouseMove,
       }));
   return *opt_in_features;
