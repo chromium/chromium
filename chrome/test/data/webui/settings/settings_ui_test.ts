@@ -27,12 +27,14 @@ suite('SettingsUIToolbarAndDrawer', function() {
     });
   });
 
-  test('showing menu in toolbar is dependent on narrow mode', function() {
+  test('showing menu in toolbar is dependent on narrow mode', async function() {
     assertTrue(!!toolbar);
     toolbar.narrow = true;
+    await toolbar.updateComplete;
     assertTrue(toolbar.showMenu);
 
     toolbar.narrow = false;
+    await toolbar.updateComplete;
     assertFalse(toolbar.showMenu);
   });
 
@@ -137,18 +139,18 @@ suite('SettingsUISearch', function() {
   test('MaintainsFocusOnMenus', async () => {
     // Start in non-narrow mode with focus in the left menu.
     toolbar.narrow = false;
+    await toolbar.updateComplete;
     ui.$.leftMenu.focusFirstItem();
     assertEquals(ui.$.leftMenu, ui.shadowRoot!.activeElement);
 
     // Switch to narrow mode and test that focus moves to menu button.
     toolbar.narrow = true;
-    flush();
-    await new Promise(resolve => requestAnimationFrame(resolve));
-    assertTrue(ui.$.toolbar.isMenuFocused());
+    await eventToPromise('focusin', toolbar);
+    assertTrue(toolbar.isMenuFocused());
 
     // Switch back to non-narrow mode and test that focus moves to left menu.
     toolbar.narrow = false;
-    flush();
+    await toolbar.updateComplete;
     assertEquals(ui.$.leftMenu, ui.shadowRoot!.activeElement);
   });
 });

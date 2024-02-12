@@ -132,23 +132,19 @@ suite('ExtensionManagerTest', function() {
     assertViewActive('extensions-item-list');
   });
 
-  test(
-      'CloseDrawerOnNarrowModeExit', async function() {
-        manager.$.toolbar.narrow = true;
-        flush();
+  test('CloseDrawerOnNarrowModeExit', async function() {
+    manager.$.toolbar.narrow = true;
+    const toolbar = manager.$.toolbar.$.toolbar;
+    await toolbar.updateComplete;
+    toolbar.shadowRoot!.querySelector<HTMLElement>('#menuButton')!.click();
 
-        manager.shadowRoot!.querySelector('extensions-toolbar')!.shadowRoot!
-            .querySelector('cr-toolbar')!.shadowRoot!
-            .querySelector<HTMLElement>('#menuButton')!.click();
-        flush();
+    await eventToPromise('cr-drawer-opened', manager);
+    const drawer = manager.shadowRoot!.querySelector('cr-drawer');
+    assertTrue(!!drawer);
 
-        const drawer = manager.shadowRoot!.querySelector('cr-drawer')!;
-        await eventToPromise('cr-drawer-opened', drawer);
-
-        manager.$.toolbar.narrow = false;
-        flush();
-        await eventToPromise('close', drawer);
-      });
+    manager.$.toolbar.narrow = false;
+    await eventToPromise('close', drawer);
+  });
 
   test('PageTitleUpdate', function() {
     assertEquals('Extensions', document.title);
