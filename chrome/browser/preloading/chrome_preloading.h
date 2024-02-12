@@ -110,6 +110,14 @@ static constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
 // be reused in the future.
 static constexpr content::PreloadingPredictor kLinkPreview(112, "LinkPreview");
 
+// When a mousehover or mousedown event happens on a bookmark bar linking to an
+// HTTPS origin, we may attempt to preload the link. This predictor, instead of
+// using kPointerDownOnBookmarkBar or kMouseHoverOnBookmarkBar, is for solving
+// the problem in https://crbug.com/1516514.
+static constexpr content::PreloadingPredictor
+    kMouseHoverOrMouseDownOnBookmarkBar(113,
+                                        "MouseHoverOrMouseDownOnBookmarkBar");
+
 // TODO(crbug.com/1309934): Integrate more Preloading predictors with
 // Preloading logging APIs.
 }  // namespace chrome_preloading_predictor

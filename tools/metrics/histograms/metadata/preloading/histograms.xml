@@ -49,6 +49,9 @@ chromium-metrics-reviews@google.com.
                the link element."/>
   <variant name="MouseBackButton"
       summary="When a mouse down of a mouse back button is seen."/>
+  <variant name="MouseHoverOrMouseDownOnBookmarkBar"
+      summary="When preloading is triggered by mouse hover bookmarkbar or
+               mouse down bookmark bar."/>
   <variant name="OmniboxDirectURLInput"
       summary="When preloading is triggered from the Omnibox DUI."/>
   <variant name="OmniboxMousePredictor"

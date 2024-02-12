@@ -401,7 +401,7 @@ class BookmarkButton : public BookmarkButtonBase {
         content::PreloadingData* preloading_data =
             content::PreloadingData::GetOrCreateForWebContents(web_contents);
         preloading_data->SetIsNavigationInDomainCallback(
-            chrome_preloading_predictor::kPointerDownOnBookmarkBar,
+            chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
             base::BindRepeating(
                 [](content::NavigationHandle* navigation_handle) -> bool {
                   return ui::PageTransitionCoreTypeIs(
@@ -454,8 +454,9 @@ class BookmarkButton : public BookmarkButtonBase {
     if (event.IsOnlyLeftMouseButton() &&
         base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
         kPrerenderBookmarkBarOnMousePressedTrigger.Get()) {
-      StartPrerendering(chrome_preloading_predictor::kPointerDownOnBookmarkBar,
-                        *url_);
+      StartPrerendering(
+          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
+          *url_);
     }
     return result;
   }
@@ -477,8 +478,9 @@ class BookmarkButton : public BookmarkButtonBase {
     if (kPrerenderStartDelayOnMouseHoverByMiliseconds.Get() -
             kPreconnectStartDelayOnMouseHoverByMiliseconds.Get() <=
         0) {
-      StartPrerendering(chrome_preloading_predictor::kMouseHoverOnBookmarkBar,
-                        url);
+      StartPrerendering(
+          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
+          url);
     } else {
       auto* loading_predictor =
           predictors::LoadingPredictorFactory::GetForProfile(
@@ -495,7 +497,8 @@ class BookmarkButton : public BookmarkButtonBase {
               kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
           base::BindRepeating(
               &BookmarkButton::StartPrerendering, base::Unretained(this),
-              chrome_preloading_predictor::kMouseHoverOnBookmarkBar, url));
+              chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
+              url));
     }
   }
 
@@ -510,8 +513,7 @@ class BookmarkButton : public BookmarkButtonBase {
       PrerenderManager::CreateForWebContents(&(*prerender_web_contents_));
       auto* prerender_manager =
           PrerenderManager::FromWebContents(&(*prerender_web_contents_));
-      prerender_handle_ =
-          prerender_manager->StartPrerenderBookmark(url, predictor);
+      prerender_handle_ = prerender_manager->StartPrerenderBookmark(url);
     }
   }
 
