@@ -122,6 +122,10 @@ class GPU_GLES2_EXPORT SharedContextState
                     scoped_refptr<gles2::FeatureInfo> feature_info);
   bool IsGLInitialized() const { return !!feature_info_; }
 
+  // Returns true if context state is using GL, either for Skia to run on
+  // or if there is no skia context and context state exists for WebGL fallback
+  // only.
+  bool IsUsingGL() const;
   bool MakeCurrent(gl::GLSurface* surface, bool needs_gl = false);
   void ReleaseCurrent(gl::GLSurface* surface);
   void MarkContextLost(error::ContextLostReason reason = error::kUnknown);

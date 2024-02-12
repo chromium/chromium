@@ -290,6 +290,13 @@ SharedContextState::~SharedContextState() {
       this);
 }
 
+bool SharedContextState::IsUsingGL() const {
+  // If context type is none then SharedContextState exists for WebGL fallback
+  // to hold a GL context.
+  return gr_context_type_ == GrContextType::kGL ||
+         gr_context_type_ == GrContextType::kNone;
+}
+
 bool SharedContextState::IsGraphiteDawnVulkan() const {
 #if BUILDFLAG(SKIA_USE_DAWN)
   return gr_context_type_ == GrContextType::kGraphiteDawn &&
@@ -317,8 +324,14 @@ bool SharedContextState::InitializeSkia(
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
   static crash_reporter::CrashKeyString<16> crash_key("gr-context-type");
-  crash_key.Set(
-      base::StringPrintf("%u", static_cast<uint32_t>(gr_context_type_)));
+  crash_key.Set(GrContextTypeToString(gr_context_type_));
+
+  if (gr_context_type_ == GrContextType::kNone) {
+    // SharedContextState only exists to hold a GL context for WebGL fallback
+    // if context type is set to none. We don't need to initialization Skia
+    // for raster/compositing work.
+    return true;
+  }
 
   if (gr_context_type_ == GrContextType::kGraphiteDawn ||
       gr_context_type_ == GrContextType::kGraphiteMetal) {
@@ -644,7 +657,7 @@ bool SharedContextState::MakeCurrent(gl::GLSurface* surface, bool needs_gl) {
     return false;
   }
 
-  const bool using_gl = GrContextIsGL() || needs_gl;
+  const bool using_gl = IsUsingGL() || needs_gl;
   if (using_gl) {
     gl::GLSurface* dont_care_surface =
         last_current_surface_ ? last_current_surface_.get() : surface_.get();
@@ -703,8 +716,9 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
 }
 
 bool SharedContextState::IsCurrent(gl::GLSurface* surface, bool needs_gl) {
-  if (!GrContextIsGL() && !needs_gl)
+  if (!IsUsingGL() && !needs_gl) {
     return true;
+  }
   if (context_lost())
     return false;
   return context_->IsCurrent(surface);
@@ -947,8 +961,9 @@ std::optional<error::ContextLostReason> SharedContextState::GetResetStatus(
 #endif
 
   // Not using GL.
-  if (!GrContextIsGL() && !needs_gl)
+  if (!IsUsingGL() && !needs_gl) {
     return std::nullopt;
+  }
 
   // GL is not initialized.
   if (!context_state_)
@@ -1021,7 +1036,7 @@ void SharedContextState::ScheduleSkiaCleanup() {
 
 int32_t SharedContextState::GetMaxTextureSize() const {
   int32_t max_texture_size = 0;
-  if (GrContextIsGL()) {
+  if (IsUsingGL()) {
     gl::GLApi* const api = gl::g_current_gl_context;
     api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size);
   } else if (GrContextIsVulkan()) {
@@ -1059,6 +1074,8 @@ int32_t SharedContextState::GetMaxTextureSize() const {
 Microsoft::WRL::ComPtr<ID3D11Device> SharedContextState::GetD3D11Device()
     const {
   switch (gr_context_type_) {
+    case GrContextType::kNone:
+      return nullptr;
     case GrContextType::kGL:
     case GrContextType::kVulkan:
       return gl::QueryD3D11DeviceObjectFromANGLE();

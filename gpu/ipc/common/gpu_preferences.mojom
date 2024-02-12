@@ -38,6 +38,7 @@ enum WebGPUPowerPreference {
 
 // Corresponds to gpu::GrContextType.
 enum GrContextType {
+  kNone,
   kGL,  // Ganesh
   kVulkan,  // Ganesh
   kGraphiteDawn,

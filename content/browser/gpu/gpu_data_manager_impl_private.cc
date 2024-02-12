@@ -1461,7 +1461,9 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
     gpu_preferences->use_vulkan = gpu::VulkanImplementationName::kNone;
 #endif
 
-  if (gpu_mode_ != gpu::GpuMode::HARDWARE_GRAPHITE) {
+  if (!HardwareAccelerationEnabled()) {
+    gpu_preferences->gr_context_type = gpu::GrContextType::kNone;
+  } else if (gpu_mode_ != gpu::GpuMode::HARDWARE_GRAPHITE) {
     // Recompute the `gr_context_type` pref with Graphite explicitly disabled,
     // as it may currently be set to Graphite.
     auto command_line_with_graphite_disabled(*command_line);

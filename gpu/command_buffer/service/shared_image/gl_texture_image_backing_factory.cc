@@ -179,13 +179,17 @@ bool GLTextureImageBackingFactory::IsSupported(
     }
   }
 
-  // Doesn't support contexts other than GL for OOPR Canvas
+  // Using GLTextureImageBacking for raster/display is only appropriate when
+  // running on top of GL. For the case WebGL fallback (GrContextType::kNone)
+  // this usages aren't actually relevant but WebGL still adds them so ignore.
   if (gr_context_type != GrContextType::kGL &&
-      ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
-       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER_WRITE))) {
-    return false;
+      gr_context_type != GrContextType::kNone) {
+    constexpr uint32_t kUnsupportedUsages =
+        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+    if (usage & kUnsupportedUsages) {
+      return false;
+    }
   }
 
   // Only supports WebGPU usages on Dawn's OpenGLES backend.
