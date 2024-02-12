@@ -66,6 +66,8 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
           return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
         },
       },
+
+      deviceOnlyCredentialsAccessibilityLabelText_: String,
     };
   }
 
@@ -76,6 +78,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   private numberOfAccounts_: string;
   private tooltipText_: string;
   private enableButterOnDesktopFollowup_: boolean;
+  private deviceOnlyCredentialsAccessibilityLabelText_: string;
 
   private computeElementClass_(): string {
     return this.first ? 'flex-centered' : 'flex-centered hr';
@@ -129,6 +132,13 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
           await PluralStringProxyImpl.getInstance().getPluralString(
               'deviceOnlyPasswordsIconTooltip',
               this.getNumberOfCredentialsOnDevice_());
+      if (this.shouldShowDeviceOnlyCredentialsIcon_()) {
+        this.deviceOnlyCredentialsAccessibilityLabelText_ =
+            await PluralStringProxyImpl.getInstance()
+                .getPluralString(
+                    'deviceOnlyListItemAriaLabel', this.item.entries.length)
+                .then(label => label.replace('$1', this.item.name));
+      }
     }
   }
 
@@ -179,6 +189,9 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
   }
 
   private getAriaLabel_(): string {
+    if (this.shouldShowDeviceOnlyCredentialsIcon_()) {
+      return this.deviceOnlyCredentialsAccessibilityLabelText_;
+    }
     return this.i18n('viewPasswordAriaDescription', this.item.name);
   }
 }
