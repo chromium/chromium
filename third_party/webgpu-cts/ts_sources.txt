@@ -623,6 +623,7 @@ src/webgpu/shader/execution/expression/call/builtin/atomics/atomicStore.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicSub.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomics/atomicXor.spec.ts
 src/webgpu/shader/execution/expression/call/user/ptr_params.spec.ts
+src/webgpu/shader/execution/expression/unary/address_of_and_indirection.spec.ts
 src/webgpu/shader/execution/expression/unary/af_arithmetic.cache.ts
 src/webgpu/shader/execution/expression/unary/unary.ts
 src/webgpu/shader/execution/expression/unary/af_arithmetic.spec.ts
@@ -647,7 +648,6 @@ src/webgpu/shader/execution/expression/unary/i32_complement.cache.ts
 src/webgpu/shader/execution/expression/unary/i32_complement.spec.ts
 src/webgpu/shader/execution/expression/unary/i32_conversion.cache.ts
 src/webgpu/shader/execution/expression/unary/i32_conversion.spec.ts
-src/webgpu/shader/execution/expression/unary/indirection.spec.ts
 src/webgpu/shader/execution/expression/unary/u32_complement.cache.ts
 src/webgpu/shader/execution/expression/unary/u32_complement.spec.ts
 src/webgpu/shader/execution/expression/unary/u32_conversion.cache.ts
