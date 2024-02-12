@@ -612,9 +612,9 @@ declare namespace chrome {
     }
 
     export interface SetDocumentSelectionParams {
-      anchorObject: {[key: string]: any};
+      anchorObject: AutomationNode;
       anchorOffset: number;
-      focusObject: {[key: string]: any};
+      focusObject: AutomationNode;
       focusOffset: number;
     }
 

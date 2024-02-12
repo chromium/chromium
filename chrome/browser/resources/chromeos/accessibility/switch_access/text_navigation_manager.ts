@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EventGenerator} from '../common/event_generator.js';
-import {EventHandler} from '../common/event_handler.js';
-import {KeyCode} from '../common/key_code.js';
+import {EventGenerator} from '/common/event_generator.js';
+import {EventHandler} from '/common/event_handler.js';
+import {KeyCodeData} from '/common/key_code.js';
 
 import {ActionManager} from './action_manager.js';
 import {Navigator} from './navigator.js';
 import {SwitchAccess} from './switch_access.js';
 import {ErrorType} from './switch_access_constants.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
 const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
 
 /**
@@ -19,39 +20,23 @@ const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
  * navigation and selection in editable text fields is supported.
  */
 export class TextNavigationManager {
-  /** @private */
-  constructor() {
-    /** @private {number} */
-    this.selectionStartIndex_ = TextNavigationManager.NO_SELECT_INDEX;
+  private static instance_?: TextNavigationManager;
 
-    /** @private {number} */
-    this.selectionEndIndex_ = TextNavigationManager.NO_SELECT_INDEX;
+  private currentlySelecting_ = false;
+  /** Keeps track of when there's a selection in the current node. */
+  private selectionExists_ = false;
+  /** Keeps track of when the clipboard is empty. */
+  private clipboardHasData_ = false;
 
-    /** @private {AutomationNode} */
-    this.selectionStartObject_;
+  private selectionStartIndex_ = TextNavigationManager.NO_SELECT_INDEX;
+  private selectionStartObject_?: AutomationNode;
+  private selectionEndIndex_ = TextNavigationManager.NO_SELECT_INDEX;
+  private selectionEndObject_?: AutomationNode;
+  private selectionListener_: EventHandler;
 
-    /** @private {AutomationNode} */
-    this.selectionEndObject_;
-
-    /** @private {boolean} */
-    this.currentlySelecting_ = false;
-
-    /** @private {!EventHandler} */
+  private constructor() {
     this.selectionListener_ = new EventHandler(
-        [], chrome.automation.EventType.TEXT_SELECTION_CHANGED,
-        () => this.onNavChange_());
-
-    /**
-     * Keeps track of when there's a selection in the current node.
-     * @private {boolean}
-     */
-    this.selectionExists_ = false;
-
-    /**
-     * Keeps track of when the clipboard is empty.
-     * @private {boolean}
-     */
-    this.clipboardHasData_ = false;
+        [], EventType.TEXT_SELECTION_CHANGED, () => this.onNavChange_());
 
     if (SwitchAccess.improvedTextInputEnabled()) {
       chrome.clipboard.onClipboardDataChanged.addListener(
@@ -59,7 +44,7 @@ export class TextNavigationManager {
     }
   }
 
-  static get instance() {
+  static get instance(): TextNavigationManager {
     if (!TextNavigationManager.instance_) {
       TextNavigationManager.instance_ = new TextNavigationManager();
     }
@@ -70,9 +55,8 @@ export class TextNavigationManager {
 
   /**
    * Returns if the selection start index is set in the current node.
-   * @return {boolean}
    */
-  static currentlySelecting() {
+  static currentlySelecting(): boolean {
     const manager = TextNavigationManager.instance;
     return (
         manager.selectionStartIndex_ !==
@@ -84,24 +68,24 @@ export class TextNavigationManager {
    * Jumps to the beginning of the text field (does nothing
    * if already at the beginning).
    */
-  static jumpToBeginning() {
+  static jumpToBeginning(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.HOME, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCodeData.HOME.code, {ctrl: true});
   }
 
   /**
    * Jumps to the end of the text field (does nothing if
    * already at the end).
    */
-  static jumpToEnd() {
+  static jumpToEnd(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.END, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCodeData.END.code, {ctrl: true});
   }
 
   /**
@@ -109,12 +93,12 @@ export class TextNavigationManager {
    * if there are no more characters preceding the current
    * location of the caret).
    */
-  static moveBackwardOneChar() {
+  static moveBackwardOneChar(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.LEFT);
+    EventGenerator.sendKeyPress(KeyCodeData.LEFT.code);
   }
 
   /**
@@ -123,12 +107,12 @@ export class TextNavigationManager {
    * text caret is in the middle of a word, moves the caret
    * to the beginning of that word.
    */
-  static moveBackwardOneWord() {
+  static moveBackwardOneWord(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.LEFT, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCodeData.LEFT.code, {ctrl: true});
   }
 
   /**
@@ -136,12 +120,12 @@ export class TextNavigationManager {
    * if there are no lines below the current location of
    * the caret).
    */
-  static moveDownOneLine() {
+  static moveDownOneLine(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.DOWN);
+    EventGenerator.sendKeyPress(KeyCodeData.DOWN.code);
   }
 
   /**
@@ -149,12 +133,12 @@ export class TextNavigationManager {
    * if there are no more characters following the current
    * location of the caret).
    */
-  static moveForwardOneChar() {
+  static moveForwardOneChar(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.RIGHT);
+    EventGenerator.sendKeyPress(KeyCodeData.RIGHT.code);
   }
 
   /**
@@ -163,12 +147,12 @@ export class TextNavigationManager {
    * in the middle of a word, moves the caret to the end of
    * that word.
    */
-  static moveForwardOneWord() {
+  static moveForwardOneWord(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(false /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.RIGHT, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCodeData.RIGHT.code, {ctrl: true});
   }
 
   /**
@@ -176,19 +160,19 @@ export class TextNavigationManager {
    * if there are no lines above the current location of
    * the caret).
    */
-  static moveUpOneLine() {
+  static moveUpOneLine(): void {
     const manager = TextNavigationManager.instance;
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.UP);
+    EventGenerator.sendKeyPress(KeyCodeData.UP.code);
   }
 
   /**
    * Reset the currentlySelecting variable to false, reset the selection
    * indices, and remove the listener on navigation.
    */
-  static resetCurrentlySelecting() {
+  static resetCurrentlySelecting(): void {
     const manager = TextNavigationManager.instance;
     manager.currentlySelecting_ = false;
     manager.manageNavigationListener_(false /** Removing listener */);
@@ -197,53 +181,34 @@ export class TextNavigationManager {
     if (manager.currentlySelecting_) {
       manager.setupDynamicSelection_(true /* resetCursor */);
     }
-    EventGenerator.sendKeyPress(KeyCode.DOWN);
+    EventGenerator.sendKeyPress(KeyCodeData.DOWN.code);
   }
 
-  /** @return {boolean} */
-  static get clipboardHasData() {
+  static get clipboardHasData(): boolean {
     return TextNavigationManager.instance.clipboardHasData_;
   }
 
-  /** @return {boolean} */
-  static get selectionExists() {
+  static get selectionExists(): boolean {
     return TextNavigationManager.instance.selectionExists_;
   }
 
-  /** @param {boolean} newVal */
-  static set selectionExists(newVal) {
+  static set selectionExists(newVal: boolean) {
     TextNavigationManager.instance.selectionExists_ = newVal;
   }
 
-  /**
-   * Returns the selection end index.
-   * @return {number}
-   */
-  getSelEndIndex() {
+  getSelEndIndex(): number {
     return this.selectionEndIndex_;
   }
 
-  /**
-   * Reset the selectionStartIndex to NO_SELECT_INDEX.
-   */
-  resetSelStartIndex() {
+  resetSelStartIndex(): void {
     this.selectionStartIndex_ = TextNavigationManager.NO_SELECT_INDEX;
   }
 
-  /**
-   * Returns the selection start index.
-   * @return {number}
-   */
-  getSelStartIndex() {
+  getSelStartIndex(): number {
     return this.selectionStartIndex_;
   }
 
-  /**
-   * Sets the selection start index.
-   * @param {number} startIndex
-   * @param {!AutomationNode} textNode
-   */
-  setSelStartIndexAndNode(startIndex, textNode) {
+  setSelStartIndexAndNode(startIndex: number, textNode: AutomationNode): void {
     this.selectionStartIndex_ = startIndex;
     this.selectionStartObject_ = textNode;
   }
@@ -252,12 +217,13 @@ export class TextNavigationManager {
    * Sets the selectionStart variable based on the selection of the current
    * node. Also sets the currently selecting boolean to true.
    */
-  static saveSelectStart() {
+  static saveSelectStart(): void {
     const manager = TextNavigationManager.instance;
-    chrome.automation.getFocus(focusedNode => {
+    chrome.automation.getFocus((focusedNode: AutomationNode | undefined) => {
       manager.selectionStartObject_ = focusedNode;
       manager.selectionStartIndex_ = manager.getSelectionIndexFromNode_(
-          manager.selectionStartObject_,
+          // TODO(b/314203187): Not null asserted, check that this is correct.
+          manager.selectionStartObject_!,
           true /* We are getting the start index.*/);
       manager.currentlySelecting_ = true;
     });
@@ -268,18 +234,17 @@ export class TextNavigationManager {
   /**
    * Returns either the selection start index or the selection end index of the
    * node based on the getStart param.
-   * @param {!AutomationNode} node
-   * @param {boolean} getStart
-   * @return {number} selection start if getStart is true otherwise selection
+   * @return selection start if getStart is true otherwise selection
    * end
-   * @private
    */
-  getSelectionIndexFromNode_(node, getStart) {
+  private getSelectionIndexFromNode_(
+      node: AutomationNode, getStart: boolean): number {
     let indexFromNode = TextNavigationManager.NO_SELECT_INDEX;
+    // TODO(b/314203187): Not null asserted, check that this is correct.
     if (getStart) {
-      indexFromNode = node.textSelStart;
+      indexFromNode = node.textSelStart!;
     } else {
-      indexFromNode = node.textSelEnd;
+      indexFromNode = node.textSelEnd!;
     }
     if (indexFromNode === undefined) {
       return TextNavigationManager.NO_SELECT_INDEX;
@@ -287,12 +252,8 @@ export class TextNavigationManager {
     return indexFromNode;
   }
 
-  /**
-   * Adds or removes the selection listener based on a boolean parameter.
-   * @param {boolean} addListener
-   * @private
-   */
-  manageNavigationListener_(addListener) {
+  /** Adds or removes the selection listener. */
+  private manageNavigationListener_(addListener: boolean): void {
     if (!this.selectionStartObject_) {
       return;
     }
@@ -309,9 +270,8 @@ export class TextNavigationManager {
    * Function to handle changes in the cursor position during selection.
    * This function will remove the selection listener and set the end of the
    * selection based on the new position.
-   * @private
    */
-  onNavChange_() {
+  private onNavChange_(): void {
     this.manageNavigationListener_(false);
     if (this.currentlySelecting_) {
       TextNavigationManager.saveSelectEnd();
@@ -321,7 +281,7 @@ export class TextNavigationManager {
   /**
    * Sets the selectionEnd variable based on the selection of the current node.
    */
-  static saveSelectEnd() {
+  static saveSelectEnd(): void {
     const manager = TextNavigationManager.instance;
     chrome.automation.getFocus(focusedNode => {
       manager.selectionEndObject_ = focusedNode;
@@ -332,11 +292,8 @@ export class TextNavigationManager {
     });
   }
 
-  /**
-   * Sets the selection after verifying that the bounds are set.
-   * @private
-   */
-  saveSelection_() {
+  /** Sets the selection after verifying that the bounds are set. */
+  private saveSelection_(): void {
     if (this.selectionStartIndex_ === TextNavigationManager.NO_SELECT_INDEX ||
         this.selectionEndIndex_ === TextNavigationManager.NO_SELECT_INDEX) {
       console.error(SwitchAccess.error(
@@ -353,10 +310,8 @@ export class TextNavigationManager {
    * If the needToResetCursor boolean is true, the function will move the cursor
    * to the end point of the selection before adding the event listener. If not,
    * it will simply add the listener.
-   * @param {boolean} needToResetCursor
-   * @private
    */
-  setupDynamicSelection_(needToResetCursor) {
+  private setupDynamicSelection_(needToResetCursor: boolean): void {
     /**
      * TODO(crbug.com/999400): Work on text selection dynamic highlight and
      * text selection implementation.
@@ -376,15 +331,16 @@ export class TextNavigationManager {
    * AutomationNode.setSelection. Otherwise calls
    * chrome.automation.setDocumentSelection.
    */
-  setSelection_() {
+  private setSelection_(): void {
     if (this.selectionStartObject_ === this.selectionEndObject_) {
-      this.selectionStartObject_.setSelection(
+      // TODO(b/314203187): Not null asserted, check that this is correct.
+      this.selectionStartObject_!.setSelection(
           this.selectionStartIndex_, this.selectionEndIndex_);
     } else {
       chrome.automation.setDocumentSelection({
-        anchorObject: this.selectionStartObject_,
+        anchorObject: this.selectionStartObject_!,
         anchorOffset: this.selectionStartIndex_,
-        focusObject: this.selectionEndObject_,
+        focusObject: this.selectionEndObject_!,
         focusOffset: this.selectionEndIndex_,
       });
     }
@@ -394,9 +350,8 @@ export class TextNavigationManager {
    * TODO(rosalindag): Add functionality to catch when clipboardHasData_ needs
    * to be set to false.
    * Set the clipboardHasData variable to true and reload the menu.
-   * @private
    */
-  updateClipboardHasData_() {
+  private updateClipboardHasData_(): void {
     this.clipboardHasData_ = true;
     const node = Navigator.byItem.currentNode;
     if (node.hasAction(MenuAction.PASTE)) {
@@ -405,5 +360,6 @@ export class TextNavigationManager {
   }
 }
 
-// Constant to indicate selection index is not set.
-TextNavigationManager.NO_SELECT_INDEX = -1;
+export namespace TextNavigationManager {
+  export const NO_SELECT_INDEX = -1;
+}
