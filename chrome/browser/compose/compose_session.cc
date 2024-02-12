@@ -501,7 +501,7 @@ void ComposeSession::ModelExecutionComplete(
 
   if (status != compose::mojom::ComposeStatus::kOk) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
-                                       /* is_valid */ false);
+                                       /* is_ok */ false);
     if (content::GetNetworkConnectionTracker()->IsOffline()) {
       ProcessError(eval_location, compose::mojom::ComposeStatus::kOffline);
     } else {
@@ -518,7 +518,7 @@ void ComposeSession::ModelExecutionComplete(
 
   if (!response) {
     compose::LogComposeRequestDuration(request_delta, eval_location,
-                                       /* is_valid */ false);
+                                       /* is_ok */ false);
     ProcessError(eval_location, compose::mojom::ComposeStatus::kNoResponse);
     SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
                                 was_input_edited);
@@ -535,7 +535,7 @@ void ComposeSession::ModelExecutionComplete(
   compose::LogComposeRequestStatus(eval_location,
                                    compose::mojom::ComposeStatus::kOk);
   compose::LogComposeRequestDuration(request_delta, eval_location,
-                                     /* is_valid */ true);
+                                     /* is_ok */ true);
 
   SaveMostRecentOkStateToUndoStack();
   most_recent_ok_state_->SetMojoState(current_state_->Clone());

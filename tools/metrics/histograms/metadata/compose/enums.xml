@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Formal modifier"/>
 </enum>
 
-<enum name="ComposeResponseStatus">
+<enum name="ComposeRequestStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Generic client error, not specified"/>
   <int value="2" label="DEPRECATED: Request was unable to be processed"/>

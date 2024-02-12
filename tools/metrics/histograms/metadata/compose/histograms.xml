@@ -120,26 +120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compose.Request.Duration.Error" units="ms"
-    expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for an invalid Compose request to complete. Logged each
-    time a request receives a response status not equal to OK.
-  </summary>
-</histogram>
-
-<histogram name="Compose.Request.Duration.Ok" units="ms"
-    expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for a valid Compose request to complete. Logged each
-    time a request receives a response OK status.
-  </summary>
-</histogram>
-
 <histogram name="Compose.Request.Reason" enum="ComposeRequestReason"
     expires_after="2024-07-02">
   <owner>cuianthony@chromium.org</owner>
@@ -252,47 +232,48 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Compose.{ComposeEvalLocation}Request.Duration.Error"
+    units="ms" expires_after="2024-06-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds for a Compose service request to be completed with an
+    error result. Logged each time a response with status not equal to OK is
+    received. {ComposeEvalLocation}
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
+<histogram name="Compose.{ComposeEvalLocation}Request.Duration.Ok" units="ms"
+    expires_after="2024-06-02">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Time in milliseconds for a Compose service request to be completed
+    successfully. each time a response with status OK is received.
+    {ComposeEvalLocation}
+  </summary>
+  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
+</histogram>
+
 <histogram name="Compose.{ComposeEvalLocation}Request.Feedback"
     enum="ComposeRequestFeedback" expires_after="2024-07-02">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Records the final value of feedback for each Compose Request. Logged when
-    feedback can no longer be modified for a request. {ComposeEvalLocation}.
+    feedback can no longer be modified for a request. {ComposeEvalLocation}
   </summary>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Request.Status"
-    enum="ComposeResponseStatus" expires_after="2024-08-04">
+    enum="ComposeRequestStatus" expires_after="2024-08-04">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
     Histogram for recording the Compose server request status. Logged each time
-    a Compose request receives a response. {ComposeEvalLocation}.
-  </summary>
-  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
-</histogram>
-
-<histogram name="Compose.{ComposeEvalLocation}Response.Duration.Error"
-    units="ms" expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for an invalid response from the Compose service.
-    Logged each time a response with status not equal to OK is received.
-    {ComposeEvalLocation}.
-  </summary>
-  <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
-</histogram>
-
-<histogram name="Compose.{ComposeEvalLocation}Response.Duration.Ok" units="ms"
-    expires_after="2024-06-02">
-  <owner>perrier@chromium.org</owner>
-  <owner>chrome-compose-frontend@google.com</owner>
-  <summary>
-    Time in milliseconds for a valid response from the Compose service. Logged
-    each time a response with status OK is received. {ComposeEvalLocation}.
+    a Compose request receives a response. {ComposeEvalLocation}
   </summary>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
@@ -304,7 +285,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     When a session ends, record how we exited the session, whether by accepting
     the input, canceling with the close button, or losing focus and not going
-    back to the session. {ComposeEvalLocation}, if a mix of Server and OnDevice
+    back to the session. {ComposeEvalLocation} If a mix of Server and OnDevice
     requests were used for this session, neither Server or OnDevice variants are
     recorded.
   </summary>
@@ -319,8 +300,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count of the number of Compose requests in a session where {FinalStatus}.
     Recorded once per session when it is closed or destroyed.
-    {ComposeEvalLocation}, if a mix of Server and OnDevice requests were used
-    for this session, neither Server or OnDevice variants are recorded.
+    {ComposeEvalLocation} If a mix of Server and OnDevice requests were used for
+    this session, neither Server or OnDevice variants are recorded.
   </summary>
   <token key="FinalStatus">
     <variant name="Accepted" summary="the Compose response was inserted"/>
@@ -342,8 +323,8 @@ chromium-metrics-reviews@google.com.
 
     All buckets are emitted once at the end of each Compose Session.
 
-    {ComposeEvalLocation}, if a mix of Server and OnDevice requests were used
-    for this session, neither Server or OnDevice variants are recorded.
+    {ComposeEvalLocation} If a mix of Server and OnDevice requests were used for
+    this session, neither Server or OnDevice variants are recorded.
   </summary>
   <token key="ComposeEvalLocation" variants="ComposeEvalLocation"/>
 </histogram>
@@ -356,7 +337,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count of the number of Compose requests resulting from submitting an input
     edit in a session where {FinalStatus}. Recorded once per session when it is
-    closed or destroyed. {ComposeEvalLocation}, if a mix of Server and OnDevice
+    closed or destroyed. {ComposeEvalLocation} If a mix of Server and OnDevice
     requests were used for this session, neither Server or OnDevice variants are
     recorded.
   </summary>
@@ -374,8 +355,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Count of the number of times undo is done in a session where {FinalStatus}.
     Recorded once per session when it is closed or destroyed.
-    {ComposeEvalLocation}, if a mix of Server and OnDevice requests were used
-    for this session, neither Server or OnDevice variants are recorded.
+    {ComposeEvalLocation} If a mix of Server and OnDevice requests were used for
+    this session, neither Server or OnDevice variants are recorded.
   </summary>
   <token key="FinalStatus">
     <variant name="Accepted" summary="the Compose response was inserted"/>

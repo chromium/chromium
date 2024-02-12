@@ -20,8 +20,8 @@ namespace compose {
 extern const char kComposeDialogOpenLatency[];
 extern const char kComposeDialogSelectionLength[];
 extern const char kComposeRequestReason[];
-extern const char kComposeRequestDurationOk[];
-extern const char kComposeRequestDurationError[];
+extern const char kComposeRequestDurationOkSuffix[];
+extern const char kComposeRequestDurationErrorSuffix[];
 extern const char kComposeRequestStatus[];
 extern const char kComposeSessionComposeCount[];
 extern const char kComposeSessionCloseReason[];
@@ -313,7 +313,7 @@ void LogComposeRequestReason(ComposeRequestReason reason);
 void LogComposeRequestStatus(EvalLocation eval_location,
                              compose::mojom::ComposeStatus status);
 
-// Log the duration of a compose request. |is_valid| indicates the status of
+// Log the duration of a compose request. |is_ok| indicates the status of
 // the request.
 void LogComposeRequestDuration(base::TimeDelta duration,
                                EvalLocation eval_location,
