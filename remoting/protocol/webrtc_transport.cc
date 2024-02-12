@@ -108,8 +108,8 @@ void UpdateCodecParameters(SdpMessage* sdp_message, bool incoming) {
 
 std::string GetTransportProtocol(const cricket::CandidatePair& candidate_pair) {
   const cricket::Candidate& local_candidate = candidate_pair.local_candidate();
-  return (local_candidate.type() == "relay") ? local_candidate.relay_protocol()
-                                             : local_candidate.protocol();
+  return local_candidate.is_relay() ? local_candidate.relay_protocol()
+                                    : local_candidate.protocol();
 }
 
 // Returns true if the selected candidate-pair indicates a relay connection.
@@ -119,24 +119,20 @@ std::optional<bool> IsConnectionRelayed(
       selected_candidate_pair.local_candidate();
   const cricket::Candidate& remote_candidate =
       selected_candidate_pair.remote_candidate();
-  return local_candidate.type() == "relay" ||
-         remote_candidate.type() == "relay";
+  return local_candidate.is_relay() || remote_candidate.is_relay();
 }
 
 // Utility function to map a cricket::Candidate string type to a
 // TransportRoute::RouteType enum value.
 TransportRoute::RouteType CandidateTypeToTransportRouteType(
-    const std::string& candidate_type) {
-  if (candidate_type == "local") {
-    return TransportRoute::DIRECT;
-  } else if (candidate_type == "stun" || candidate_type == "prflx") {
+    const cricket::Candidate& candidate) {
+  if (candidate.is_stun() || candidate.is_prflx()) {
     return TransportRoute::STUN;
-  } else if (candidate_type == "relay") {
+  } else if (candidate.is_relay()) {
     return TransportRoute::RELAY;
-  } else {
-    LOG(ERROR) << "Unknown candidate type: " << candidate_type;
-    return TransportRoute::DIRECT;
   }
+  DCHECK(candidate.is_local());
+  return TransportRoute::DIRECT;
 }
 
 void SetSenderParameters(webrtc::RtpSenderInterface& sender,
@@ -1008,9 +1004,8 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
   static_assert(TransportRoute::DIRECT < TransportRoute::STUN &&
                     TransportRoute::STUN < TransportRoute::RELAY,
                 "Route type enum values are ordered by 'indirectness'");
-  route.type =
-      std::max(CandidateTypeToTransportRouteType(local_candidate.type()),
-               CandidateTypeToTransportRouteType(remote_candidate.type()));
+  route.type = std::max(CandidateTypeToTransportRouteType(local_candidate),
+                        CandidateTypeToTransportRouteType(remote_candidate));
 
   VLOG(0) << "Selected candidate-pair changed, reason = " << event.reason;
   VLOG(0) << "  Local IP = " << local_candidate.address().ToString()
