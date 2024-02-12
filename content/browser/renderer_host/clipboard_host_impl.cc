@@ -29,7 +29,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
-#include "content/public/browser/last_clipboard_writer_info.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
@@ -60,6 +59,44 @@ namespace content {
 
 namespace {
 
+// Used to skip content analysis checks when the source and destination of the
+// clipboard data are the same.
+struct LastClipboardWriterInfo {
+  // RFH ID of the last RFH to have committed data to the clipboard.
+  GlobalRenderFrameHostId rfh_id;
+
+  // The sequence number of the last commit made to the clipboard by the
+  // browser.
+  ui::ClipboardSequenceNumberToken seqno;
+};
+
+LastClipboardWriterInfo& LastClipboardWriterInfoStorage() {
+  static LastClipboardWriterInfo info;
+  return info;
+}
+
+// Helper to check if an `rfh`/`seqno` pair was the last browser tab to write
+// to the clipboard.
+bool IsLastClipboardWrite(const RenderFrameHost& rfh,
+                          ui::ClipboardSequenceNumberToken seqno) {
+  const auto& info = LastClipboardWriterInfoStorage();
+  return info.rfh_id == rfh.GetGlobalId() && info.seqno == seqno;
+}
+
+// Helpers to set/clear the last RFH to write to the clipboard.
+void SetLastClipboardWrite(const RenderFrameHost& rfh,
+                           ui::ClipboardSequenceNumberToken seqno) {
+  LastClipboardWriterInfoStorage() = {
+      .rfh_id = rfh.GetGlobalId(),
+      .seqno = std::move(seqno),
+  };
+}
+void ClearIfLastClipboardWriterIs(const RenderFrameHost& rfh) {
+  if (LastClipboardWriterInfoStorage().rfh_id == rfh.GetGlobalId()) {
+    LastClipboardWriterInfoStorage() = {};
+  }
+}
+
 std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
                            std::unique_ptr<ui::DataTransferEndpoint> data_dst) {
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
@@ -88,6 +125,47 @@ std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
 // correctly.
 constexpr base::TimeDelta ClipboardHostImpl::kIsPasteAllowedRequestTooOld =
     base::Milliseconds(5000);
+
+ClipboardEndpoint GetSourceClipboardEndpoint(
+    ui::ClipboardSequenceNumberToken seqno,
+    ui::ClipboardBuffer clipboard_buffer) {
+  const auto& info = LastClipboardWriterInfoStorage();
+  auto* rfh = RenderFrameHost::FromID(info.rfh_id);
+
+  if (info.seqno != seqno || !rfh) {
+    // Fall back to the clipboard source if there is no `seqno` match or RFH, as
+    // `ui::DataTransferEndpoint` can be populated differently based on
+    // platform.
+    return ClipboardEndpoint(
+        ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer));
+  }
+
+  std::optional<ui::DataTransferEndpoint> source_dte;
+  auto clipboard_source_dte =
+      ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer);
+  if (clipboard_source_dte) {
+    if (clipboard_source_dte->IsUrlType()) {
+      source_dte = std::make_optional<ui::DataTransferEndpoint>(
+          *clipboard_source_dte->GetURL(),
+          rfh->GetBrowserContext()->IsOffTheRecord());
+    } else {
+      source_dte = std::move(clipboard_source_dte);
+    }
+  }
+
+  return ClipboardEndpoint(
+      std::move(source_dte),
+      base::BindRepeating(
+          [](GlobalRenderFrameHostId rfh_id) -> BrowserContext* {
+            auto* rfh = RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          info.rfh_id),
+      *rfh);
+}
 
 ClipboardHostImpl::IsPasteAllowedRequest::IsPasteAllowedRequest() = default;
 ClipboardHostImpl::IsPasteAllowedRequest::~IsPasteAllowedRequest() = default;
@@ -666,8 +744,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
 
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .IsClipboardPasteAllowedByPolicy(
-          ClipboardEndpoint(ui::Clipboard::GetForCurrentThread()->GetSource(
-              clipboard_buffer)),
+          GetSourceClipboardEndpoint(seqno, clipboard_buffer),
           CreateClipboardEndpoint(),
           {
               .size = data_size,
