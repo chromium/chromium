@@ -627,6 +627,7 @@ void AuthenticatorCommonImpl::StartMakeCredentialRequest(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kMakeCredential,
       req_state_->make_credential_options->resident_key,
+      req_state_->ctap_make_credential_request->user_verification,
       base::span<const device::CableDiscoveryData>(),
       GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
           GetBrowserContext()),
@@ -680,7 +681,8 @@ void AuthenticatorCommonImpl::StartGetAssertionRequest(
   req_state_->request_delegate->ConfigureDiscoveries(
       req_state_->caller_origin, req_state_->relying_party_id, RequestSource(),
       device::FidoRequestType::kGetAssertion,
-      /*resident_key_requirement=*/std::nullopt, cable_pairings,
+      /*resident_key_requirement=*/std::nullopt,
+      req_state_->ctap_get_assertion_request->user_verification, cable_pairings,
       GetWebAuthenticationDelegate()->IsEnclaveAuthenticatorAvailable(
           GetBrowserContext()),
       discovery_factory());

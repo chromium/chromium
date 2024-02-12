@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -30,6 +31,7 @@ class Value;
 
 namespace crypto {
 class UnexportableSigningKey;
+class UserVerifyingSigningKey;
 }  // namespace crypto
 
 namespace network {
@@ -96,6 +98,8 @@ class EnclaveManager : public KeyedService {
   bool is_ready() const;
   // Returns the number of times that `StoreKeys` has been called.
   unsigned store_keys_count() const;
+  // Returns true when a UV signing key has been configured.
+  bool is_uv_key_available() const;
 
   // Start by loading the persisted state from disk. Harmless to call multiple
   // times.
@@ -106,6 +110,9 @@ class EnclaveManager : public KeyedService {
   // Get a callback to sign with the registered "hw" key. Only valid to call if
   // `is_ready`.
   device::enclave::SigningCallback HardwareKeySigningCallback();
+  // Get a callback to sign with the registered "uv" key. Only valid to call if
+  // `is_ready`.
+  device::enclave::SigningCallback UserVerifyingKeySigningCallback();
   // Fetch a wrapped security domain secret for the given epoch. Only valid to
   // call if `is_ready`.
   std::optional<std::vector<uint8_t>> GetWrappedSecret(int32_t version);
@@ -147,7 +154,7 @@ class EnclaveManager : public KeyedService {
     kIdle,
     kNextAction,
     kLoading,
-    kGeneratingKey,
+    kGeneratingKeys,
     kWaitingForEnclaveTokenForRegistration,
     kRegisteringWithEnclave,
     kWaitingForEnclaveTokenForWrapping,
@@ -160,9 +167,10 @@ class EnclaveManager : public KeyedService {
   using Failure =
       base::StrongAlias<class KeyGenerationFailure, absl::monostate>;
   using FileContents = base::StrongAlias<class FileContents, std::string>;
-  using KeyReady =
-      base::StrongAlias<class KeyGenerated,
-                        std::unique_ptr<crypto::UnexportableSigningKey>>;
+  using KeyReady = base::StrongAlias<
+      class KeyGenerated,
+      std::pair<std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                std::unique_ptr<crypto::UnexportableSigningKey>>>;
   using EnclaveResponse = base::StrongAlias<class EnclaveResponse, cbor::Value>;
   using JoinStatus =
       base::StrongAlias<class JoinStatus,
@@ -189,7 +197,7 @@ class EnclaveManager : public KeyedService {
   void HandleIdentityChange();
   void StartEnclaveRegistration();
   void DoLoading(Event event);
-  void DoGeneratingKey(Event event);
+  void DoGeneratingKeys(Event event);
   void DoWaitingForEnclaveTokenForRegistration(Event event);
   void DoRegisteringWithEnclave(Event event);
   void DoWaitingForEnclaveTokenForWrapping(Event event);
@@ -204,6 +212,9 @@ class EnclaveManager : public KeyedService {
   void WriteState();
   void DoWriteState();
   void WriteStateComplete(bool success);
+
+  void GenerateHardwareKey(
+      std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key);
 
   void GetAccessTokenInternal();
   static base::flat_map<int32_t, std::vector<uint8_t>> GetNewSecretsToStore(
@@ -232,6 +243,7 @@ class EnclaveManager : public KeyedService {
   // non-idle states. Every time the state machine idles, all these members are
   // reset.
   std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
+  std::unique_ptr<crypto::UserVerifyingSigningKey> user_verifying_key_;
   std::unique_ptr<crypto::UnexportableSigningKey> hardware_key_;
   base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets_;
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request> join_request_;

@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "crypto/sha2.h"
 #include "device/fido/fido_constants.h"
 #include "url/gurl.h"
 
@@ -57,10 +58,13 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ClientSignature {
   ClientKeyType key_type;
 };
 
-// A SigningCallback is used to sign an encoded array of enclave requests. This
-// callback is invoked on a thread-pool thread and may block.
-using SigningCallback =
-    base::RepeatingCallback<ClientSignature(base::span<const uint8_t>)>;
+// Message format that can be signed by SignedCallback.
+using SignedMessage = std::array<uint8_t, 2 * crypto::kSHA256Length>;
+
+// A SigningCallback is used to sign an encoded array of enclave requests.
+using SigningCallback = base::OnceCallback<void(
+    SignedMessage,
+    base::OnceCallback<void(std::optional<ClientSignature>)>)>;
 
 // A CredentialRequest contains the values that, in addition to a CTAP request,
 // are needed for building a fully-formed enclave request.

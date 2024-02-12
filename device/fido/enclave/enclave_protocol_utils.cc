@@ -6,7 +6,6 @@
 
 #include <array>
 
-#include "base/base64url.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -379,7 +378,7 @@ void BuildCommandRequestBody(
     return;
   }
 
-  std::array<uint8_t, 2 * crypto::kSHA256Length> signed_message;
+  SignedMessage signed_message;
   memcpy(signed_message.data(), handshake_hash.data(), crypto::kSHA256Length);
   memcpy(signed_message.data() + crypto::kSHA256Length,
          serialized_requests_hash.data(), crypto::kSHA256Length);
@@ -387,30 +386,35 @@ void BuildCommandRequestBody(
   auto append_signature_and_finish =
       [](cbor::Value::MapValue request_body_map,
          base::OnceCallback<void(std::vector<uint8_t>)> complete_callback,
-         ClientSignature client_signature) {
+         std::optional<ClientSignature> client_signature) {
+        if (!client_signature) {
+          // If the signing fails, this acts the same as if we didn't have a
+          // signing callback at all.
+          // TODO(enclave): This might not be the best way to fail.
+          std::move(complete_callback)
+              .Run(*cbor::Writer::Write(
+                  cbor::Value(std::move(request_body_map))));
+          return;
+        }
         request_body_map.emplace(
             cbor::Value(kCommandDeviceIdKey),
-            cbor::Value(std::move(client_signature.device_id)));
+            cbor::Value(std::move(client_signature->device_id)));
         request_body_map.emplace(
             cbor::Value(kCommandAuthLevelKey),
-            cbor::Value(ToString(client_signature.key_type)));
+            cbor::Value(ToString(client_signature->key_type)));
         request_body_map.emplace(
             cbor::Value(kCommandSigKey),
-            cbor::Value(std::move(client_signature.signature)));
+            cbor::Value(std::move(client_signature->signature)));
         std::optional<std::vector<uint8_t>> serialized_request =
             cbor::Writer::Write(cbor::Value(std::move(request_body_map)));
         std::move(complete_callback).Run(*serialized_request);
       };
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](SigningCallback callback,
-             const std::array<uint8_t, 2 * crypto::kSHA256Length>
-                 signed_message) { return callback.Run(signed_message); },
-          std::move(signing_callback), signed_message),
-      base::BindOnce(append_signature_and_finish, std::move(request_body_map),
-                     std::move(complete_callback)));
+  std::move(signing_callback)
+      .Run(std::move(signed_message),
+           base::BindOnce(append_signature_and_finish,
+                          std::move(request_body_map),
+                          std::move(complete_callback)));
 }
 
 }  // namespace device::enclave

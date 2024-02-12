@@ -86,7 +86,7 @@ std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
 }
 
 void SignInternal(
-    base::span<const uint8_t> data,
+    std::vector<uint8_t> data,
     ComPtr<IKeyCredential> credential,
     base::OnceCallback<void(ComPtr<IKeyCredentialOperationResult>)>
         success_callback,
@@ -146,9 +146,10 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
         caller_task_runner,
         base::BindRepeating(&UserVerifyingSigningKeyWin::OnSigningError,
                             weak_factory_.GetWeakPtr()));
+    std::vector<uint8_t> vec_data(data.begin(), data.end());
     task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(&SignInternal, data, credential_,
+        base::BindOnce(&SignInternal, std::move(vec_data), credential_,
                        std::move(success_callback), std::move(error_callback)));
   }
 

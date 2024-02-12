@@ -90,7 +90,8 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
 };
 
 // GetUserVerifyingKeyProvider returns |UserVerifyingKeyProvider| for the
-// current platform, or nullptr if there isn't one.
+// current platform, or nullptr if this is not implemented on the current
+// platform.
 CRYPTO_EXPORT std::unique_ptr<UserVerifyingKeyProvider>
 GetUserVerifyingKeyProvider();
 
