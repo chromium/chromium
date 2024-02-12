@@ -389,6 +389,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kFirstPartySharedWorkerSameSiteCookiesNone,
           WebFeature::kUserFeatureNuxtImage,
           WebFeature::kUserFeatureNuxtPicture,
+          WebFeature::kMouseDragOnCancelledMouseMove,
       }));
   return *opt_in_features;
 }
