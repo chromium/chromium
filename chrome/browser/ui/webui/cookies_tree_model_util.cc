@@ -122,18 +122,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
 
       break;
     }
-    case CookieTreeNode::DetailedInfo::TYPE_INDEXED_DB: {
-      dict.Set(kKeyType, "indexed_db");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      dict.Set(kKeyModified,
-               base::TimeFormatFriendlyDateAndTime(usage_info.last_modified));
-      break;
-    }
     case CookieTreeNode::DetailedInfo::TYPE_QUOTA: {
       dict.Set(kKeyType, "quota");
 
@@ -145,17 +133,6 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
       dict.Set(kKeyOrigin, quota_info.storage_key.origin().host());
       dict.Set(kKeyTotalUsage, ui::FormatBytes(quota_info.temporary_usage));
       dict.Set(kKeyTemporaryUsage, ui::FormatBytes(quota_info.temporary_usage));
-      break;
-    }
-    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER: {
-      dict.Set(kKeyType, "service_worker");
-
-      const content::StorageUsageInfo& usage_info =
-          *node.GetDetailedInfo().usage_info;
-
-      dict.Set(kKeyOrigin, usage_info.storage_key.origin().Serialize());
-      dict.Set(kKeySize, ui::FormatBytes(usage_info.total_size_bytes));
-      // TODO(jsbell): Include kKeyModified like other storage types.
       break;
     }
     case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER: {

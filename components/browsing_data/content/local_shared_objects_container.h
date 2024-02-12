@@ -23,7 +23,6 @@ class StoragePartition;
 namespace browsing_data {
 class CannedCacheStorageHelper;
 class CannedCookieHelper;
-class CannedServiceWorkerHelper;
 class CannedSharedWorkerHelper;
 class CannedLocalStorageHelper;
 
@@ -69,9 +68,6 @@ class LocalSharedObjectsContainer {
   CannedLocalStorageHelper* local_storages() const {
     return local_storages_.get();
   }
-  CannedServiceWorkerHelper* service_workers() const {
-    return service_workers_.get();
-  }
   CannedSharedWorkerHelper* shared_workers() const {
     return shared_workers_.get();
   }
@@ -87,7 +83,6 @@ class LocalSharedObjectsContainer {
 
   scoped_refptr<CannedCookieHelper> cookies_;
   scoped_refptr<CannedLocalStorageHelper> local_storages_;
-  scoped_refptr<CannedServiceWorkerHelper> service_workers_;
   scoped_refptr<CannedSharedWorkerHelper> shared_workers_;
   scoped_refptr<CannedCacheStorageHelper> cache_storages_;
   scoped_refptr<CannedLocalStorageHelper> session_storages_;

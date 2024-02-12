@@ -15,7 +15,6 @@
 #include "components/browsing_data/content/canonical_cookie_hash.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
-#include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "content/public/browser/storage_partition.h"
@@ -47,8 +46,6 @@ LocalSharedObjectsContainer::LocalSharedObjectsContainer(
       local_storages_(base::MakeRefCounted<CannedLocalStorageHelper>(
           storage_partition,
           /*update_ignored_empty_keys_on_fetch=*/ignore_empty_localstorage)),
-      service_workers_(base::MakeRefCounted<CannedServiceWorkerHelper>(
-          storage_partition->GetServiceWorkerContext())),
       shared_workers_(
           base::MakeRefCounted<CannedSharedWorkerHelper>(storage_partition)),
       cache_storages_(
@@ -63,7 +60,6 @@ size_t LocalSharedObjectsContainer::GetObjectCount() const {
   size_t count = 0;
   count += cookies()->GetCookieCount();
   count += local_storages()->GetCount();
-  count += service_workers()->GetCount();
   count += shared_workers()->GetSharedWorkerCount();
   count += cache_storages()->GetCount();
   count += session_storages()->GetCount();
@@ -134,9 +130,6 @@ LocalSharedObjectsContainer::GetObjectCountPerOriginMap() const {
     origins[storage_key.origin()]++;
   }
 
-  for (const auto& origin : service_workers()->GetOrigins())
-    origins[origin]++;
-
   for (const auto& info : shared_workers()->GetSharedWorkerInfo())
     origins[info.storage_key.origin()]++;
 
@@ -156,7 +149,6 @@ void LocalSharedObjectsContainer::UpdateIgnoredEmptyStorageKeys(
 void LocalSharedObjectsContainer::Reset() {
   cookies_->Reset();
   local_storages_->Reset();
-  service_workers_->Reset();
   shared_workers_->Reset();
   cache_storages_->Reset();
   session_storages_->Reset();

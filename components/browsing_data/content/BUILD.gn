@@ -24,8 +24,6 @@ static_library("content") {
     "local_shared_objects_container.h",
     "local_storage_helper.cc",
     "local_storage_helper.h",
-    "service_worker_helper.cc",
-    "service_worker_helper.h",
     "shared_worker_helper.cc",
     "shared_worker_helper.h",
     "shared_worker_info.cc",
@@ -62,7 +60,6 @@ source_set("unit_tests") {
     "cache_storage_helper_unittest.cc",
     "cookie_helper_unittest.cc",
     "local_storage_helper_unittest.cc",
-    "service_worker_helper_unittest.cc",
     "shared_worker_helper_unittest.cc",
   ]
 
@@ -97,8 +94,6 @@ source_set("test_support") {
     "mock_cookie_helper.h",
     "mock_local_storage_helper.cc",
     "mock_local_storage_helper.h",
-    "mock_service_worker_helper.cc",
-    "mock_service_worker_helper.h",
     "mock_shared_worker_helper.cc",
     "mock_shared_worker_helper.h",
     "test_browsing_data_model_delegate.cc",

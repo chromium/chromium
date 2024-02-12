@@ -33,7 +33,6 @@
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
-#include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -145,7 +144,6 @@ bool TypeIsProtected(CookieTreeNode::DetailedInfo::NodeType type) {
     // Fall through each below cases to return true.
     case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE:
     case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGE:
-    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE:
       return true;
@@ -222,14 +220,6 @@ CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitQuota(
     const BrowsingDataQuotaHelper::QuotaInfo* quota) {
   Init(TYPE_QUOTA);
   quota_info = quota;
-  return *this;
-}
-
-CookieTreeNode::DetailedInfo& CookieTreeNode::DetailedInfo::InitServiceWorker(
-    const content::StorageUsageInfo* storage_usage_info) {
-  Init(TYPE_SERVICE_WORKER);
-  usage_info = storage_usage_info;
-  origin = usage_info->storage_key.origin();
   return *this;
 }
 
@@ -456,50 +446,6 @@ class CookieTreeQuotaNode : public CookieTreeNode {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// CookieTreeServiceWorkerNode
-
-class CookieTreeServiceWorkerNode : public CookieTreeNode {
- public:
-  // |usage_info| should remain valid at least as long as the
-  // CookieTreeServiceWorkerNode is valid.
-  explicit CookieTreeServiceWorkerNode(
-      std::list<content::StorageUsageInfo>::iterator usage_info)
-      : CookieTreeNode(
-            base::UTF8ToUTF16(usage_info->storage_key.origin().Serialize())),
-        usage_info_(usage_info) {}
-
-  CookieTreeServiceWorkerNode(const CookieTreeServiceWorkerNode&) = delete;
-  CookieTreeServiceWorkerNode& operator=(const CookieTreeServiceWorkerNode&) =
-      delete;
-
-  ~CookieTreeServiceWorkerNode() override {}
-
-  // CookieTreeNode methods:
-  void DeleteStoredObjects() override {
-    LocalDataContainer* container = GetLocalDataContainerForNode(this);
-
-    if (container) {
-      container->service_worker_helper_->DeleteServiceWorkers(
-          usage_info_->storage_key.origin());
-      container->service_worker_info_list_.erase(usage_info_);
-    }
-  }
-
-  DetailedInfo GetDetailedInfo() const override {
-    return DetailedInfo().InitServiceWorker(&*usage_info_);
-  }
-
-  int64_t InclusiveSize() const override {
-    return usage_info_->total_size_bytes;
-  }
-
- private:
-  // |usage_info_| is expected to remain valid as long as the
-  // CookieTreeServiceWorkerNode is valid.
-  std::list<content::StorageUsageInfo>::iterator usage_info_;
-};
-
-///////////////////////////////////////////////////////////////////////////////
 // CookieTreeSharedWorkerNode
 
 class CookieTreeSharedWorkerNode : public CookieTreeNode {
@@ -714,31 +660,6 @@ class CookieTreeSessionStoragesNode : public CookieTreeNode {
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// CookieTreeServiceWorkersNode
-
-class CookieTreeServiceWorkersNode : public CookieTreeCollectionNode {
- public:
-  CookieTreeServiceWorkersNode()
-      : CookieTreeCollectionNode(
-            l10n_util::GetStringUTF16(IDS_COOKIES_SERVICE_WORKERS)) {}
-
-  CookieTreeServiceWorkersNode(const CookieTreeServiceWorkersNode&) = delete;
-  CookieTreeServiceWorkersNode& operator=(const CookieTreeServiceWorkersNode&) =
-      delete;
-
-  ~CookieTreeServiceWorkersNode() override = default;
-
-  DetailedInfo GetDetailedInfo() const override {
-    return DetailedInfo().Init(DetailedInfo::TYPE_SERVICE_WORKERS);
-  }
-
-  void AddServiceWorkerNode(
-      std::unique_ptr<CookieTreeServiceWorkerNode> child) {
-    AddChildSortedByTitle(std::move(child));
-  }
-};
-
-///////////////////////////////////////////////////////////////////////////////
 // CookieTreeSharedWorkersNode
 
 class CookieTreeSharedWorkersNode : public CookieTreeNode {
@@ -856,16 +777,6 @@ CookieTreeQuotaNode* CookieTreeHostNode::UpdateOrCreateQuotaNode(
   quota_child_ = quota_node.get();
   AddChildSortedByTitle(std::move(quota_node));
   return quota_child_;
-}
-
-CookieTreeServiceWorkersNode*
-CookieTreeHostNode::GetOrCreateServiceWorkersNode() {
-  if (service_workers_child_)
-    return service_workers_child_;
-  auto service_workers_node = std::make_unique<CookieTreeServiceWorkersNode>();
-  service_workers_child_ = service_workers_node.get();
-  AddChildSortedByTitle(std::move(service_workers_node));
-  return service_workers_child_;
 }
 
 CookieTreeSharedWorkersNode*
@@ -989,7 +900,6 @@ std::optional<size_t> CookiesTreeModel::GetIconIndex(ui::TreeModelNode* node) {
 
     case CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGE:
     case CookieTreeNode::DetailedInfo::TYPE_SESSION_STORAGE:
-    case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_SHARED_WORKER:
     case CookieTreeNode::DetailedInfo::TYPE_CACHE_STORAGE:
       return 1;
@@ -1031,7 +941,6 @@ void CookiesTreeModel::UpdateSearchResults(const std::u16string& filter) {
   PopulateLocalStorageInfoWithFilter(data_container(), &notifier, filter);
   PopulateSessionStorageInfoWithFilter(data_container(), &notifier, filter);
   PopulateQuotaInfoWithFilter(data_container(), &notifier, filter);
-  PopulateServiceWorkerUsageInfoWithFilter(data_container(), &notifier, filter);
   PopulateSharedWorkerInfoWithFilter(data_container(), &notifier, filter);
   PopulateCacheStorageUsageInfoWithFilter(data_container(), &notifier, filter);
 }
@@ -1084,13 +993,6 @@ void CookiesTreeModel::PopulateSessionStorageInfo(
 void CookiesTreeModel::PopulateQuotaInfo(LocalDataContainer* container) {
   ScopedBatchUpdateNotifier notifier(this, GetRoot());
   PopulateQuotaInfoWithFilter(container, &notifier, std::u16string());
-}
-
-void CookiesTreeModel::PopulateServiceWorkerUsageInfo(
-    LocalDataContainer* container) {
-  ScopedBatchUpdateNotifier notifier(this, GetRoot());
-  PopulateServiceWorkerUsageInfoWithFilter(container, &notifier,
-                                           std::u16string());
 }
 
 void CookiesTreeModel::PopulateSharedWorkerInfo(LocalDataContainer* container) {
@@ -1180,34 +1082,6 @@ void CookiesTreeModel::PopulateSessionStorageInfoWithFilter(
           host_node->GetOrCreateSessionStoragesNode();
       session_storages_node->AddSessionStorageNode(
           std::make_unique<CookieTreeSessionStorageNode>(session_storage_info));
-    }
-  }
-}
-
-void CookiesTreeModel::PopulateServiceWorkerUsageInfoWithFilter(
-    LocalDataContainer* container,
-    ScopedBatchUpdateNotifier* notifier,
-    const std::u16string& filter) {
-  CookieTreeRootNode* root = static_cast<CookieTreeRootNode*>(GetRoot());
-
-  if (container->service_worker_info_list_.empty())
-    return;
-
-  notifier->StartBatchUpdate();
-  for (auto service_worker_info = container->service_worker_info_list_.begin();
-       service_worker_info != container->service_worker_info_list_.end();
-       ++service_worker_info) {
-    const url::Origin& origin = service_worker_info->storage_key.origin();
-
-    if (filter.empty() ||
-        (CookieTreeHostNode::TitleForUrl(origin.GetURL()).find(filter) !=
-         std::u16string::npos)) {
-      CookieTreeHostNode* host_node =
-          root->GetOrCreateHostNode(origin.GetURL());
-      CookieTreeServiceWorkersNode* service_workers_node =
-          host_node->GetOrCreateServiceWorkersNode();
-      service_workers_node->AddServiceWorkerNode(
-          std::make_unique<CookieTreeServiceWorkerNode>(service_worker_info));
     }
   }
 }
