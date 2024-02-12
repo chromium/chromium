@@ -180,6 +180,20 @@ message RTLookupResponse {
   repeated string url_categories = 3;
 }
 
+// mirrors google.protobuf.Timestamp
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  optional int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  optional int32 nanos = 2;
+}
+
 // Contains information about a matched URL Filtering rule defined by
 // enterprise policies.
 message MatchedUrlNavigationRule {
@@ -225,4 +239,23 @@ message MatchedUrlNavigationRule {
   }
   // Contains custom interstitial message associated with this rule.
   optional CustomMessage custom_message = 5;
+
+  message WatermarkMessage {
+    // Custom message provided by admin during rule creation. Contains text
+    // only.
+    optional string watermark_message = 1;
+
+    // Identifier for the user/device that triggered the watermark rule.
+    optional string user_email = 2;
+    optional string obfuscated_device_id = 3;
+
+    // Triggered rule timestamp to be displayed in the watermark for easy admin
+    // investigation.
+    optional Timestamp timestamp = 4;
+  }
+
+  // Contains the watermarking message, provided by Admin during rule creation.
+  // Also includes information about the user for whom the rule was triggered,
+  // and the timestamp of the triggered rule event.
+  optional WatermarkMessage watermark_message = 6;
 }
