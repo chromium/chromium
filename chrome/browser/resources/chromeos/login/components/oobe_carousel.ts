@@ -23,31 +23,31 @@ import '//resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/ash/common/cr_elements/icons.html.js';
 import './common_styles/oobe_common_styles.css.js';
 
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {DomRepeatEvent, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeScrollableBehavior, OobeScrollableBehaviorInterface} from './behaviors/oobe_scrollable_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {OobeScrollableBehaviorInterface}
- */
+import {getTemplate} from './oobe_carousel.html.js';
+
 const OobeCarouselBase =
-    mixinBehaviors([OobeScrollableBehavior], PolymerElement);
+    mixinBehaviors([OobeScrollableBehavior],
+      PolymerElement) as { new (): PolymerElement
+      & OobeScrollableBehaviorInterface,
+    };
 
-
-/** @polymer */
-class OobeCarousel extends OobeCarouselBase {
+export class OobeCarousel extends OobeCarouselBase {
   static get is() {
-    return 'oobe-carousel';
+    return 'oobe-carousel' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * Current slide index.
@@ -55,7 +55,7 @@ class OobeCarousel extends OobeCarouselBase {
       slideIndex: {
         type: Number,
         value: 0,
-        observer: 'onSlideIndexChanged_',
+        observer: 'onSlideIndexChanged',
       },
 
       /**
@@ -67,7 +67,7 @@ class OobeCarousel extends OobeCarouselBase {
       autoTransition: {
         type: Boolean,
         value: false,
-        observer: 'restartAutoTransition_',
+        observer: 'restartAutoTransition',
       },
 
       /**
@@ -76,25 +76,42 @@ class OobeCarousel extends OobeCarouselBase {
       slideDurationInSeconds: {
         type: Number,
         value: 8,
-        observer: 'restartAutoTransition_',
+        observer: 'restartAutoTransition',
       },
 
       /**
        * Slide aria-label.
        */
-      slideLabel: String,
+      slideLabel: {
+        type: String,
+      },
 
       /**
        * Selected button aria-label.
        */
-      selectedButtonLabel: String,
+      selectedButtonLabel: {
+        type: String,
+      },
 
       /**
        * Unselected button aria-label.
        */
-      unselectedButtonLabel: String,
+      unselectedButtonLabel: {
+        type: String,
+      },
     };
   }
+
+  private slideIndex: number;
+  private autoTransition: boolean;
+  private slideDurationInSeconds: number;
+  private slideLabel: string;
+  private selectedButtonLabel: string;
+  private unselectedButtonLabel: string;
+  private dots: number[];
+  private slides: HTMLElement[];
+  private totalSlides: number;
+  private timerId: number|null;
 
   constructor() {
     super();
@@ -102,76 +119,73 @@ class OobeCarousel extends OobeCarouselBase {
     /**
      * Array for storing number leading up to totalSlides
      * Example: [ 0 1 2 3 ... ]
-     * @type {Array<number>}
      */
     this.dots = [];
 
     /**
      * Array of slotted slides.
-     * @type {Array<HTMLElement>}
      */
     this.slides = [];
 
     /**
      * Total number of slides.
-     * @type {number}
      */
     this.totalSlides = 0;
 
     /**
      * ID of the timer which rotates slides.
-     * @type {number|null}
      */
-    this.timerID = null;
+    this.timerId = null;
   }
 
-  ready() {
+  override ready() {
     super.ready();
-    this.prepareCarousel_();
-    this.restartAutoTransition_();
-    this.hideNonActiveSlides_();
+    this.prepareCarousel();
+    this.restartAutoTransition();
+    this.hideNonActiveSlides();
 
-    const slidesContainer = this.shadowRoot.querySelector('#slidesContainer');
+    const slidesContainer = this.shadowRoot?.querySelector('#slidesContainer');
+    assert(slidesContainer instanceof HTMLDivElement);
     slidesContainer.addEventListener(
-        'mouseenter', (e) => this.stopAutoTransition_());
+        'mouseenter', () => this.stopAutoTransition());
     slidesContainer.addEventListener(
-        'mouseleave', (e) => this.startAutoTransition_());
+        'mouseleave', () => this.startAutoTransition());
 
-    const scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
-    if (!scrollContainer || !slidesContainer) {
-      return;
-    }
+    const scrollContainer = this.shadowRoot?.querySelector('#scrollContainer');
+    assert(scrollContainer instanceof HTMLDivElement);
     this.initScrollableObservers(scrollContainer, slidesContainer);
   }
 
   /**
-   * @private
    * Count slides and create dots. Set a11y label on slides.
    */
-  prepareCarousel_() {
-    this.slides = this.shadowRoot.querySelector('#slot').assignedElements();
+  private prepareCarousel(): void {
+    const slot = this.shadowRoot?.querySelector('#slot');
+    assert(slot instanceof HTMLSlotElement);
+
+    const slotted = slot.assignedElements() as HTMLElement[];
+    assert(Array.isArray(slotted) &&
+      slotted.every(elem => elem instanceof HTMLElement));
+    this.slides = slotted;
+
     this.totalSlides = this.slides.length;
     this.dots = [...Array(this.totalSlides).keys()];
     for (let i = 0; i < this.totalSlides; ++i) {
-      this.slides[i].setAttribute('aria-label', this.getSlideLabel_(i));
+      this.slides[i].setAttribute('aria-label', this.getSlideLabel(i));
       this.slides[i].setAttribute('role', 'group');
     }
   }
 
   /**
-   * @private
-   * @param {number} index Index of slide.
+   * @param index Index of slide.
    * Returns string label for slide.
    */
-  getSlideLabel_(index) {
+  private getSlideLabel(index: number): string {
     return loadTimeData.getStringF(
         this.slideLabel, index + 1, this.totalSlides);
   }
 
-  /**
-   * @private
-   */
-  hideNonActiveSlides_() {
+  private hideNonActiveSlides(): void {
     for (let idx = 0; idx < this.totalSlides; ++idx) {
       if (idx != this.slideIndex) {
         OobeCarousel.hideSlide(this.slides[idx]);
@@ -180,140 +194,132 @@ class OobeCarousel extends OobeCarouselBase {
   }
 
   /**
-   * @private
    * Re-inits timer which rotates slides if |autorotation| is set.
    */
-  restartAutoTransition_() {
-    this.stopAutoTransition_();
-    this.startAutoTransition_();
+  private restartAutoTransition(): void {
+    this.stopAutoTransition();
+    this.startAutoTransition();
   }
 
   /**
-   * @private
    * Inits timer which rotates slides if |autoTransition| is set.
    */
-  startAutoTransition_() {
+  private startAutoTransition(): void {
     if (this.autoTransition && this.slideDurationInSeconds != null) {
-      this.timerID = setInterval(
+      this.timerId = setInterval(
           () => this.moveNext(), (this.slideDurationInSeconds * 1000));
     }
   }
 
   /**
-   * @private
    * Stops timer which rotates slides.
    */
-  stopAutoTransition_() {
-    if (this.timerID != null) {
-      clearInterval(this.timerID);
-      this.timerID = null;
+  private stopAutoTransition(): void {
+    if (this.timerId != null) {
+      clearInterval(this.timerId);
+      this.timerId = null;
     }
   }
 
   /**
-   * @private
-   * @param {number} toIndex Index of slide which should be shown.
-   * @param {number|undefined} fromIndex Index of slide which should be hidden.
+   * @param Index of slide which should be shown.
+   * @param fromIndex Index of slide which should be hidden.
    * Method which moves slides to show active one.
    */
-  animateSlides_(toIndex, fromIndex) {
+  private animateSlides(toIndex: number, fromIndex: number): void {
     if (fromIndex == 0 && toIndex == this.totalSlides - 1) {
-      this.animateInternal_(toIndex, fromIndex, false);
+      this.animateInternal(toIndex, fromIndex, false);
       return;
     }
     if (fromIndex == this.totalSlides - 1 && toIndex == 0) {
-      this.animateInternal_(toIndex, fromIndex, true);
+      this.animateInternal(toIndex, fromIndex, true);
       return;
     }
 
     if (toIndex < fromIndex) {
-      this.animateInternal_(toIndex, fromIndex, false);
+      this.animateInternal(toIndex, fromIndex, false);
     }
     if (toIndex > fromIndex) {
-      this.animateInternal_(toIndex, fromIndex, true);
+      this.animateInternal(toIndex, fromIndex, true);
     }
   }
 
   /**
-   * @private
-   * @param {number} toIndex Index of slide which should be shown.
-   * @param {number|undefined} fromIndex Index of slide which should be hidden.
-   * @param {boolean} forward Show forward animation or backward.
+   * @param toIndex Index of slide which should be shown.
+   * @param fromIndex Index of slide which should be hidden.
+   * @param forward Show forward animation or backward.
    * Method which moves slides to show active one using set direction.
    */
-  animateInternal_(toIndex, fromIndex, forward) {
+  private animateInternal(toIndex: number, fromIndex: number,
+      forward: boolean): void {
     if (forward) {
-      this.animateInternalWithStyles_(
+      this.animateInternalWithStyles(
           toIndex, fromIndex, 'forward', 'backward');
     } else {
-      this.animateInternalWithStyles_(
+      this.animateInternalWithStyles(
           toIndex, fromIndex, 'backward', 'forward');
     }
   }
 
   /**
-   * @private
-   * @param {EventTarget|null} slide
+   * @param slide
    */
-  static hideSlide(slide) {
+  private static hideSlide(slide: HTMLElement): void {
     slide.setAttribute('aria-hidden', 'true');
     slide.hidden = true;
   }
 
   /**
-   * @private
-   * @param {EventTarget|null} slide
+   * @param slide
    */
-  static showSlide(slide) {
+  private static showSlide(slide: HTMLElement): void {
     slide.removeAttribute('aria-hidden');
     slide.hidden = false;
   }
 
   /**
-   * @private
-   * @param {EventTarget|null} slide
+   * @param slide
    */
-  static cleanStyles(slide) {
+  private static cleanStyles(slide: HTMLElement): void {
     slide.classList.remove('animated', 'forward', 'backward', 'hide-slide');
   }
 
   /**
-   * @private
-   * @param {Event} event transitionend event.
+   * @param event transitionend event.
    */
-  static removeAnimateTo_(event) {
+  private static removeAnimateTo(event: Event): void {
     const toElement = event.target;
+    assert(toElement instanceof HTMLElement);
 
     OobeCarousel.cleanStyles(toElement);
     toElement.removeEventListener(
-        'transitionend', OobeCarousel.removeAnimateTo_);
+        'transitionend', OobeCarousel.removeAnimateTo);
   }
 
   /**
-   * @private
-   * @param {Event} event transitionend event.
+   * @param event transitionend event.
    */
-  static removeAnimateFrom_(event) {
+  private static removeAnimateFrom(event: Event): void {
     const fromElement = event.target;
+    assert(fromElement instanceof HTMLElement);
 
     OobeCarousel.hideSlide(fromElement);
     OobeCarousel.cleanStyles(fromElement);
     fromElement.removeEventListener(
-        'transitionend', OobeCarousel.removeAnimateFrom_);
+        'transitionend', OobeCarousel.removeAnimateFrom);
   }
 
   /**
-   * @private
-   * @param {number} fromIndex Index of slide which should be hidden.
+   * @param fromIndex Index of slide which should be hidden.
    * Clean the state the could be uncertain due to several transitions started
    * one after another without waiting for their end.
    */
-  cleanUpState_(fromIndex) {
+  private cleanUpState(fromIndex: number): void {
     for (let idx = 0; idx < this.totalSlides; ++idx) {
       const slide = this.slides[idx];
       slide.removeEventListener(
-          'transitionend', OobeCarousel.removeAnimateFrom_);
-      slide.removeEventListener('transitionend', OobeCarousel.removeAnimateTo_);
+          'transitionend', OobeCarousel.removeAnimateFrom);
+      slide.removeEventListener('transitionend', OobeCarousel.removeAnimateTo);
       if (idx != fromIndex) {
         OobeCarousel.hideSlide(slide);
       }
@@ -323,19 +329,18 @@ class OobeCarousel extends OobeCarouselBase {
   }
 
   /**
-   * @private
-   * @param {number} toIndex Index of slide which should be shown.
-   * @param {number|undefined} fromIndex Index of slide which should be hidden.
-   * @param {string} toStyle CSS class to apply on the slide to be shown.
-   * @param {string} fromStyle CSS class to apply on the slide to be hidden.
-   * @suppress {uselessCode} To avoid error on calling void operator.
+   * @param toIndex Index of slide which should be shown.
+   * @param fromIndex Index of slide which should be hidden.
+   * @param toStyle CSS class to apply on the slide to be shown.
+   * @param fromStyle CSS class to apply on the slide to be hidden.
    * Animates slides using given CSS class animation.
    */
-  animateInternalWithStyles_(toIndex, fromIndex, toStyle, fromStyle) {
+  private animateInternalWithStyles(toIndex: number, fromIndex: number,
+      toStyle: string, fromStyle: string): void {
     if (fromIndex == null) {
       return;
     }
-    this.cleanUpState_(fromIndex);
+    this.cleanUpState(fromIndex);
 
     const toElement = this.slides[toIndex];
     const fromElement = this.slides[fromIndex];
@@ -356,55 +361,41 @@ class OobeCarousel extends OobeCarouselBase {
     fromElement.classList.add(fromStyle);
     fromElement.classList.add('hide-slide');
 
-    toElement.addEventListener('transitionend', OobeCarousel.removeAnimateTo_);
+    toElement.addEventListener('transitionend', OobeCarousel.removeAnimateTo);
     fromElement.addEventListener(
-        'transitionend', OobeCarousel.removeAnimateFrom_);
+        'transitionend', OobeCarousel.removeAnimateFrom);
     // Trigger oobe_scroll_behavior to update scroll indicators
     // in case the transition was from a tall to a narrow slide
     fromElement.addEventListener(
         'transitionend', () => this.applyScrollClassTags_(), {once: true});
   }
 
-  /**
-   * @private
-   * @param {Event} e keypress event.
-   * On key press function.
-   */
-  onKeypress_(e) {
-    // Space (32) and enter (13) key codes.
-    if (e.keyCode == 32 || e.keyCode == 13) {
+  private onKeypress(e: DomRepeatEvent< number, KeyboardEvent >): void {
+    if (e.key == 'Space' || e.key == 'Enter') {
       this.slideIndex = e.model.item;
     }
   }
 
-  /**
-   * @private
-   * @param {Event} e click event.
-   * On dot click function.
-   */
-  onClick_(e) {
+  private onClick(e: DomRepeatEvent< number, MouseEvent >): void {
     this.slideIndex = e.model.item;
     // Set a timer to remove the focus ring.
     setTimeout(
-        element => element.blur(), this.slideDurationInSeconds * 1000,
-        e.currentTarget);
+      (element: HTMLElement) => element.blur(),
+      this.slideDurationInSeconds * 1000,
+      e.currentTarget);
   }
 
   /**
-   * @private
-   * @param {number} index Index of dot.
    * Returns whether a dot is active.
    */
-  isActive_(index) {
+  private isActive(index: number): boolean {
     return index == this.slideIndex;
   }
 
   /**
-   * @private
-   * @param {number} index Index of slide.
    * Returns string label for dot.
    */
-  getDotLabel_(index) {
+  private getDotLabel(index: number): string {
     if (index == this.slideIndex) {
       return loadTimeData.getStringF(
           this.selectedButtonLabel, index + 1, this.totalSlides);
@@ -416,22 +407,28 @@ class OobeCarousel extends OobeCarouselBase {
   /**
    * @private
    * @param {number} toIndex Index of slide which should be shown.
-   * @param {number|undefined} fromIndex Index of slide which should be hidden.
+   * @param {number} fromIndex Index of slide which should be hidden.
    * Observe index change and activates all animation and slides attributes
    * changes.
    */
-  onSlideIndexChanged_(toIndex, fromIndex) {
-    this.restartAutoTransition_();
-    this.animateSlides_(toIndex, fromIndex);
+  private onSlideIndexChanged(toIndex: number, fromIndex: number): void {
+    this.restartAutoTransition();
+    this.animateSlides(toIndex, fromIndex);
   }
 
-  moveNext() {
+  private moveNext(): void {
     this.slideIndex = (this.slideIndex + 1) % this.totalSlides;
   }
 
-  movePrev() {
+  private movePrev(): void {
     this.slideIndex =
         (this.slideIndex + this.totalSlides - 1) % this.totalSlides;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeCarousel.is]: OobeCarousel;
   }
 }
 

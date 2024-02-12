@@ -20,19 +20,21 @@
 
 import './common_styles/oobe_dialog_host_styles.css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-/** @polymer */
+import {getTemplate} from './oobe_slide.html.js';
+
 class OobeSlide extends PolymerElement {
   static get is() {
-    return 'oobe-slide';
+    return 'oobe-slide' as const;
   }
 
-  static get template() {
-    return html`{__html_template__}`;
+  static get template(): HTMLTemplateElement {
+    return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /* If true title is colored red, else blue.
        */
@@ -41,6 +43,14 @@ class OobeSlide extends PolymerElement {
         value: false,
       },
     };
+  }
+
+  private isWarning: boolean;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OobeSlide.is]: OobeSlide;
   }
 }
 

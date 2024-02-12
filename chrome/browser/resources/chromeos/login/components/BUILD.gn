@@ -42,7 +42,6 @@ group("closure_compile") {
     ":display_manager_types",
     ":hd_iron_icon",
     ":oobe_a11y_option",
-    ":oobe_carousel",
     ":oobe_display_size_selector",
     ":oobe_i18n_dropdown",
     ":oobe_icons.html",
@@ -50,7 +49,6 @@ group("closure_compile") {
     ":oobe_network_icons.html",
     ":oobe_screens_list",
     ":oobe_select",
-    ":oobe_slide",
     ":oobe_types",
   ]
 }
@@ -107,15 +105,6 @@ js_library("oobe_i18n_dropdown") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("oobe_carousel") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_carousel.js" ]
-  deps = [
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
 js_library("oobe_display_size_selector") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_display_size_selector.js" ]
   deps = [
@@ -144,14 +133,6 @@ js_library("oobe_select") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_select.js" ]
   deps = []
   extra_deps = [ ":copy_js" ]
-}
-
-js_library("oobe_slide") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_slide.js" ]
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_types") {
@@ -184,10 +165,8 @@ html_to_js("web_components_local") {
     "api_keys_notice.js",
     "hd_iron_icon.js",
     "oobe_a11y_option.js",
-    "oobe_carousel.js",
     "oobe_display_size_selector.js",
     "oobe_i18n_dropdown.js",
     "oobe_screens_list.js",
-    "oobe_slide.js",
   ]
 }
