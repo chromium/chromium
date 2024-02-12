@@ -1300,11 +1300,6 @@ BASE_FEATURE(kSelectionMenuItemModification,
              "SelectionMenuItemModification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Send background signal to GPU stack for synchronous compositor.
-BASE_FEATURE(kSynchronousCompositorBackgroundSignal,
-             "SynchronousCompositorBackgroundSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Screen Capture API support for Android
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",

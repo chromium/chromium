@@ -204,17 +204,11 @@ bool SynchronousCompositorHost::IsReadyForSynchronousCall() {
 }
 
 void SynchronousCompositorHost::OnCompositorVisible() {
-  if (base::FeatureList::IsEnabled(
-          features::kSynchronousCompositorBackgroundSignal)) {
-    CompositorDependenciesAndroid::Get().OnSynchronousCompositorVisible();
-  }
+  CompositorDependenciesAndroid::Get().OnSynchronousCompositorVisible();
 }
 
 void SynchronousCompositorHost::OnCompositorHidden() {
-  if (base::FeatureList::IsEnabled(
-          features::kSynchronousCompositorBackgroundSignal)) {
-    CompositorDependenciesAndroid::Get().OnSynchronousCompositorHidden();
-  }
+  CompositorDependenciesAndroid::Get().OnSynchronousCompositorHidden();
 }
 
 scoped_refptr<SynchronousCompositor::FrameFuture>
