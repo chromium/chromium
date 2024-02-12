@@ -2223,7 +2223,7 @@ See your search engine’s instructions for deleting your search history, if app
         Add Language
       </message>
       <message name="IDS_IOS_LANGUAGE_SETTINGS_HEADER" desc="Header for the fluent languages section in the language settings page. [Length: unlimited] [iOS only]">
-        Websites will show text in your preferred language, when possible.
+        Let websites know the languages you speak. They'll show content in those languages, when possible.
       </message>
       <message name="IDS_IOS_LANGUAGE_SETTINGS_NEVER_TRANSLATE_TITLE" desc="Label shown next to a language for which translation is not offered. [Length: 25em] [iOS only]">
         Never Translate
