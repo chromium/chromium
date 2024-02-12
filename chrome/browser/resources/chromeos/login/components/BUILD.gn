@@ -35,7 +35,6 @@ group("closure_compile") {
   deps = [
     "behaviors:closure_compile",
     "common_styles:closure_compile",
-    "oobe_vars:closure_compile",
 
     # Local targets
     ":api_keys_notice",

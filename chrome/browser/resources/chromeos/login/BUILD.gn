@@ -53,7 +53,7 @@ generate_grd("build_oobe_conditional_grd") {
     ":preprocess_conditional",
   ]
   input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
-  input_files = conditional_files
+  input_files = conditional_js_files
 }
 
 # Files that are served conditionally
@@ -313,5 +313,5 @@ ts_library("build_ts") {
 
   # These files can be added conditionally in the runtime, so they shouldn't
   # be added to the same grd file as the rest of the sources.
-  manifest_excludes = conditional_files
+  manifest_excludes = conditional_js_files
 }
