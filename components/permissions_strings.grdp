@@ -95,10 +95,10 @@
     Control and reprogram your MIDI devices
   </message>
   <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's microphone.">
-    Use your microphone
+    Use your microphones
   </message>
   <message name="IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's camera.">
-    Use your camera
+    Use your cameras
   </message>
   <message name="IDS_MEDIA_CAPTURE_CAMERA_PAN_TILT_ZOOM_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions prompt when a web page requests access to the computer's camera, including zoom and move.">
     Use &amp; move your camera
