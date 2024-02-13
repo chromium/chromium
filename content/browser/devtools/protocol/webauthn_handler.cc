@@ -496,6 +496,33 @@ Response WebAuthnHandler::SetAutomaticPresenceSimulation(
   return Response::Success();
 }
 
+Response WebAuthnHandler::SetCredentialProperties(
+    const String& authenticator_id,
+    const Binary& in_credential_id,
+    Maybe<bool> backup_eligibility,
+    Maybe<bool> backup_state) {
+  VirtualAuthenticator* authenticator;
+  Response response = FindAuthenticator(authenticator_id, &authenticator);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  std::vector<uint8_t> credential_id = CopyBinaryToVector(in_credential_id);
+  auto registration = authenticator->registrations().find(credential_id);
+  if (registration == authenticator->registrations().end()) {
+    return Response::InvalidParams(kCredentialNotFound);
+  }
+
+  if (backup_eligibility.has_value()) {
+    authenticator->SetBackupEligibility(credential_id,
+                                        backup_eligibility.value());
+  }
+  if (backup_state.has_value()) {
+    authenticator->SetBackupState(credential_id, backup_state.value());
+  }
+  return Response::Success();
+}
+
 Response WebAuthnHandler::FindAuthenticator(
     const String& id,
     VirtualAuthenticator** out_authenticator) {

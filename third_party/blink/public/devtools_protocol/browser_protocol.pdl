@@ -11506,6 +11506,15 @@ experimental domain WebAuthn
       AuthenticatorId authenticatorId
       boolean enabled
 
+  # Allows setting credential properties.
+  # https://w3c.github.io/webauthn/#sctn-automation-set-credential-properties
+  command setCredentialProperties
+    parameters
+      AuthenticatorId authenticatorId
+      binary credentialId
+      optional boolean backupEligibility
+      optional boolean backupState
+
   # Triggered when a credential is added to an authenticator.
   event credentialAdded
     parameters

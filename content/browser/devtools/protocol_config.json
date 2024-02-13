@@ -160,9 +160,7 @@
             },
             {
                 "domain": "WebAuthn",
-                "include": ["enable", "disable", "addVirtualAuthenticator", "removeVirtualAuthenticator", "addCredential", "removeCredential", "clearCredentials", "getCredential", "getCredentials", "setUserVerified", "setAutomaticPresenceSimulation", "setResponseOverrideBits"],
-                "async": ["addCredential", "getCredential", "getCredentials"],
-                "include_events": ["credentialAdded", "credentialAsserted"]
+                "async": ["addCredential", "getCredential", "getCredentials"]
             },
             {
                 "domain": "DeviceAccess",
