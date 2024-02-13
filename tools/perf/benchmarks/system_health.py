@@ -24,6 +24,7 @@ SYSTEM_HEALTH_BENCHMARK_UMA = [
     'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
+    'Memory.Experimental.Renderer2.Small.Malloc.BRPQuarantined',
 ]
 
 
