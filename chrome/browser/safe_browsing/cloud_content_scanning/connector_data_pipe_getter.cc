@@ -295,6 +295,7 @@ bool ConnectorDataPipeGetter::WriteMultipartRequestFormat(
 
 bool ConnectorDataPipeGetter::WriteFileData() {
   int64_t file_offset = write_position_ - metadata_.size();
+  CHECK(file_->IsValid());
   CHECK_GE(file_offset, 0);
   CHECK_LT(file_offset, static_cast<int64_t>(file_->length()));
 
