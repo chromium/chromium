@@ -87,13 +87,13 @@ class LauncherInternalsElement extends PolymerElement {
     }
 
     if (searchResults.length > 0) {
-      if (this.query != query) {
+      if (this.query !== query) {
         // Only reset search results if the query changes.
         this.$.searchResults.clearResults();
         this.query = query;
       }
 
-      if (this.keywords != keywords) {
+      if (this.keywords !== keywords) {
         this.keywords = keywords;
       }
 
