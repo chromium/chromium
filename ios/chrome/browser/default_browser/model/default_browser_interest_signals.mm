@@ -23,4 +23,23 @@ void NotifyCredentialExtensionUsed() {
   // TODO(b/322358517): Migrate to FET.
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }
+
+void NotifyAutofillSuggestionsShown() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+}
+
+void NotifyPasswordAutofillSuggestionUsed() {
+  // TODO(b/322358517): Migrate to FET.
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+
+  LogAutofillUseForCriteriaExperiment();
+}
+
+void NotifyPasswordSavedOrUpdated() {
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+
+  LogAutofillUseForCriteriaExperiment();
+}
+
 }  // namespace default_browser

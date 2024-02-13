@@ -214,7 +214,7 @@ void LogCopyPasteInOmniboxForDefaultBrowserPromo();
 void LogBookmarkUseForDefaultBrowserPromo();
 
 // Logs in NSUserDefaults that user used autofill suggestions
-void LogAutofillUseForDefaultBrowserPromo();
+void LogAutofillUseForCriteriaExperiment();
 
 // Logs that the user has used remote tabs.
 void LogRemoteTabsUsedForDefaultBrowserPromo();

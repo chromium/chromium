@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -424,7 +424,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 // Perform suggestion selection
 - (void)selectSuggestion:(FormSuggestion*)suggestion {
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+  default_browser::NotifyPasswordAutofillSuggestionUsed();
   [self.suggestionsProvider didSelectSuggestion:suggestion];
   [self disconnect];
 }

@@ -751,7 +751,7 @@ TEST_F(DefaultBrowserUtilsTest, CalculatePromoStatisticsTest_AutofillUseCount) {
   }
 
   // Adding current timestamp should be counted.
-  LogAutofillUseForDefaultBrowserPromo();
+  LogAutofillUseForCriteriaExperiment();
 
   {
     PromoStatistics* promo_stats = CalculatePromoStatistics();

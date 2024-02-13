@@ -13,8 +13,19 @@ void NotifyStartWithWidget();
 // Records all necessary information for Chrome start with URL event.
 void NotifyStartWithURL();
 
-// Record all necessary information for Credential Extension use.
+// Records all necessary information for Credential Extension use.
 void NotifyCredentialExtensionUsed();
+
+// Records all necessary information when autofill suggestions were shown to the
+// user. Except passwords.
+void NotifyAutofillSuggestionsShown();
+
+// Records all necessary information when password suggestion is used.
+void NotifyPasswordAutofillSuggestionUsed();
+
+// Records all necessary information when password is saved or updated through
+// infobar.
+void NotifyPasswordSavedOrUpdated();
 
 }  // namespace default_browser
 
