@@ -89,6 +89,7 @@ source_set("eg2_tests") {
 
   deps = [
     ":feature_flags",
+    "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/content_suggestions:constants",
