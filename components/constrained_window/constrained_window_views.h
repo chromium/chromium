@@ -108,6 +108,9 @@ views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
 // supported by most platforms except linux-wayland.
 bool SupportsGlobalScreenCoordinates();
 
+// True if the platform clips child widgets to their parent's viewport.
+bool PlatformClipsChildrenToViewport();
+
 }  // namespace constrained_window
 
 #endif  // COMPONENTS_CONSTRAINED_WINDOW_CONSTRAINED_WINDOW_VIEWS_H_
