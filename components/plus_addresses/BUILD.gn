@@ -7,8 +7,8 @@ import("//components/plus_addresses/buildflags.gni")
 
 source_set("plus_addresses") {
   sources = [
-    "plus_address_client.cc",
-    "plus_address_client.h",
+    "plus_address_http_client.cc",
+    "plus_address_http_client.h",
     "plus_address_metrics.cc",
     "plus_address_metrics.h",
     "plus_address_parser.cc",
@@ -57,7 +57,7 @@ buildflag_header("plus_addresses_buildflags") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "plus_address_client_unittest.cc",
+    "plus_address_http_client_unittest.cc",
     "plus_address_parser_unittest.cc",
     "plus_address_service_unittest.cc",
   ]

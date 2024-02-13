@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_CLIENT_H_
-#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_CLIENT_H_
+#ifndef COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_H_
+#define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_H_
 
 #include <list>
 #include <optional>
@@ -42,16 +42,16 @@ constexpr char kServerReservePlusAddressEndpoint[] = "v1/profiles/reserve";
 constexpr char kServerCreatePlusAddressEndpoint[] = "v1/profiles/create";
 
 // A move-only class for communicating with a remote plus-address server.
-class PlusAddressClient {
+class PlusAddressHttpClient {
  public:
   using TokenReadyCallback =
       base::OnceCallback<void(std::optional<std::string>)>;
-  PlusAddressClient(
+  PlusAddressHttpClient(
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  ~PlusAddressClient();
-  PlusAddressClient(PlusAddressClient&&);
-  PlusAddressClient& operator=(PlusAddressClient&&);
+  ~PlusAddressHttpClient();
+  PlusAddressHttpClient(PlusAddressHttpClient&&);
+  PlusAddressHttpClient& operator=(PlusAddressHttpClient&&);
 
   // Initiates a request to get a plus address for use on `origin` and runs
   // `on_completed` when the request is completed.
@@ -129,4 +129,4 @@ class PlusAddressClient {
 
 }  // namespace plus_addresses
 
-#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_CLIENT_H_
+#endif  // COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_HTTP_CLIENT_H_

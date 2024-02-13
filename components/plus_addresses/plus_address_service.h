@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/plus_addresses/plus_address_client.h"
+#include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -51,7 +51,7 @@ class PlusAddressService : public KeyedService,
   // and a `SharedURLLoaderFactory`.
   PlusAddressService(signin::IdentityManager* identity_manager,
                      PrefService* pref_service,
-                     PlusAddressClient plus_address_client);
+                     PlusAddressHttpClient plus_address_client);
 
   // autofill::AutofillPlusAddressDelegate:
 
@@ -85,15 +85,15 @@ class PlusAddressService : public KeyedService,
   // form prior to persistence.
   void SavePlusAddress(url::Origin origin, std::string plus_address);
 
-  // Asks the PlusAddressClient to reserve a plus address for use on `origin`,
-  // and returns the plus address via `on_completed`.
+  // Asks the PlusAddressHttpClient to reserve a plus address for use on
+  // `origin`, and returns the plus address via `on_completed`.
   //
   // Virtual to allow overriding the behavior in tests.
   virtual void ReservePlusAddress(const url::Origin& origin,
                                   PlusAddressRequestCallback on_completed);
 
-  // Asks the PlusAddressClient to confirm `plus_address` for use on `origin`.
-  // and returns the plus address via `on_completed`.
+  // Asks the PlusAddressHttpClient to confirm `plus_address` for use on
+  // `origin`. and returns the plus address via `on_completed`.
   //
   // Virtual to allow overriding the behavior in tests.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
@@ -105,7 +105,7 @@ class PlusAddressService : public KeyedService,
   virtual std::optional<std::string> GetPrimaryEmail();
 
   // Gets the up-to-date mapping from the remote server from the
-  // PlusAddressClient and returns it via `callback`.
+  // PlusAddressHttpClient and returns it via `callback`.
   // This is only intended to be called by the `repeating_timer_`.
   //
   // TODO (crbug.com/1467623): Make this private when testing improves.
@@ -167,7 +167,7 @@ class PlusAddressService : public KeyedService,
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 
   // Handles requests to a remote server that this service uses.
-  PlusAddressClient plus_address_client_;
+  PlusAddressHttpClient plus_address_client_;
 
   // Store set of excluded sites ETLD+1 where PlusAddressService is not
   // supported.

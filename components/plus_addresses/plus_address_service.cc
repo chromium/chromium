@@ -8,7 +8,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_client.h"
+#include "components/plus_addresses/plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -37,21 +37,22 @@ PlusAddressService::PlusAddressService(
     : PlusAddressService(
           identity_manager,
           /*pref_service=*/nullptr,
-          PlusAddressClient(identity_manager, /*url_loader_factory=*/nullptr)) {
-}
+          PlusAddressHttpClient(identity_manager,
+                                /*url_loader_factory=*/nullptr)) {}
 
 PlusAddressService::PlusAddressService()
-    : PlusAddressService(/*identity_manager=*/nullptr,
-                         /*pref_service=*/nullptr,
-                         PlusAddressClient(/*identity_manager=*/nullptr,
-                                           /*url_loader_factory=*/nullptr)) {}
+    : PlusAddressService(
+          /*identity_manager=*/nullptr,
+          /*pref_service=*/nullptr,
+          PlusAddressHttpClient(/*identity_manager=*/nullptr,
+                                /*url_loader_factory=*/nullptr)) {}
 
 PlusAddressService::~PlusAddressService() = default;
 
 PlusAddressService::PlusAddressService(
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    PlusAddressClient plus_address_client)
+    PlusAddressHttpClient plus_address_client)
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
       plus_address_client_(std::move(plus_address_client)),
@@ -146,7 +147,7 @@ void PlusAddressService::ReservePlusAddress(
             std::move(callback).Run(maybe_profile);
           },
           // base::Unretained is safe here since PlusAddressService owns
-          // the PlusAddressClient and they will have the same lifetime.
+          // the PlusAddressHttpClient and they will have the same lifetime.
           base::Unretained(this), origin, std::move(on_completed)));
 }
 
@@ -178,7 +179,7 @@ void PlusAddressService::ConfirmPlusAddress(
             std::move(callback).Run(maybe_profile);
           },
           // base::Unretained is safe here since PlusAddressService owns
-          // the PlusAddressClient and they will have the same lifetime.
+          // the PlusAddressHttpClient and they will have the same lifetime.
           base::Unretained(this), origin, std::move(on_completed)));
 }
 
@@ -249,7 +250,7 @@ void PlusAddressService::SyncPlusAddressMapping() {
         }
       },
       // base::Unretained is safe here since PlusAddressService owns
-      // the PlusAddressClient and they have the same lifetime.
+      // the PlusAddressHttpClient and they have the same lifetime.
       base::Unretained(this)));
 }
 

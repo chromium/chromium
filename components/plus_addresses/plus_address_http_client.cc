@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/plus_addresses/plus_address_client.h"
+#include "components/plus_addresses/plus_address_http_client.h"
 
 #include <optional>
 
@@ -132,7 +132,7 @@ std::optional<GURL> ValidateAndGetUrl() {
 
 }  // namespace
 
-PlusAddressClient::PlusAddressClient(
+PlusAddressHttpClient::PlusAddressHttpClient(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
@@ -140,43 +140,43 @@ PlusAddressClient::PlusAddressClient(
       server_url_(ValidateAndGetUrl()),
       scopes_({kEnterprisePlusAddressOAuthScope.Get()}) {}
 
-PlusAddressClient::~PlusAddressClient() = default;
-PlusAddressClient::PlusAddressClient(PlusAddressClient&&) = default;
-PlusAddressClient& PlusAddressClient::operator=(PlusAddressClient&&) = default;
+PlusAddressHttpClient::~PlusAddressHttpClient() = default;
+PlusAddressHttpClient::PlusAddressHttpClient(PlusAddressHttpClient&&) = default;
+PlusAddressHttpClient& PlusAddressHttpClient::operator=(PlusAddressHttpClient&&) = default;
 
-void PlusAddressClient::ReservePlusAddress(
+void PlusAddressHttpClient::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
     return;
   }
-  GetAuthToken(base::BindOnce(&PlusAddressClient::ReservePlusAddressInternal,
+  GetAuthToken(base::BindOnce(&PlusAddressHttpClient::ReservePlusAddressInternal,
                               base::Unretained(this), origin,
                               std::move(on_completed)));
 }
 
-void PlusAddressClient::ConfirmPlusAddress(
+void PlusAddressHttpClient::ConfirmPlusAddress(
     const url::Origin& origin,
     const std::string& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!server_url_) {
     return;
   }
-  GetAuthToken(base::BindOnce(&PlusAddressClient::ConfirmPlusAddressInternal,
+  GetAuthToken(base::BindOnce(&PlusAddressHttpClient::ConfirmPlusAddressInternal,
                               base::Unretained(this), origin, plus_address,
                               std::move(on_completed)));
 }
 
-void PlusAddressClient::GetAllPlusAddresses(
+void PlusAddressHttpClient::GetAllPlusAddresses(
     PlusAddressMapRequestCallback on_completed) {
   if (!server_url_) {
     return;
   }
-  GetAuthToken(base::BindOnce(&PlusAddressClient::GetAllPlusAddressesInternal,
+  GetAuthToken(base::BindOnce(&PlusAddressHttpClient::GetAllPlusAddressesInternal,
                               base::Unretained(this), std::move(on_completed)));
 }
 
-void PlusAddressClient::ReservePlusAddressInternal(
+void PlusAddressHttpClient::ReservePlusAddressInternal(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed,
     std::optional<std::string> auth_token) {
@@ -210,7 +210,7 @@ void PlusAddressClient::ReservePlusAddressInternal(
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressClient::OnReserveOrConfirmPlusAddressComplete,
+      base::BindOnce(&PlusAddressHttpClient::OnReserveOrConfirmPlusAddressComplete,
                      // Safe since this class owns the list of loaders.
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
@@ -220,7 +220,7 @@ void PlusAddressClient::ReservePlusAddressInternal(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void PlusAddressClient::ConfirmPlusAddressInternal(
+void PlusAddressHttpClient::ConfirmPlusAddressInternal(
     const url::Origin& origin,
     const std::string& plus_address,
     PlusAddressRequestCallback on_completed,
@@ -256,7 +256,7 @@ void PlusAddressClient::ConfirmPlusAddressInternal(
   // TODO(b/301984623) - Measure average downloadsize and change this.
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressClient::OnReserveOrConfirmPlusAddressComplete,
+      base::BindOnce(&PlusAddressHttpClient::OnReserveOrConfirmPlusAddressComplete,
                      // Safe since this class owns the list of loaders.
                      base::Unretained(this),
                      loaders_for_creation_.insert(loaders_for_creation_.begin(),
@@ -266,7 +266,7 @@ void PlusAddressClient::ConfirmPlusAddressInternal(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void PlusAddressClient::GetAllPlusAddressesInternal(
+void PlusAddressHttpClient::GetAllPlusAddressesInternal(
     PlusAddressMapRequestCallback on_completed,
     std::optional<std::string> auth_token) {
   if (!auth_token.has_value()) {
@@ -293,7 +293,7 @@ void PlusAddressClient::GetAllPlusAddressesInternal(
   loader_for_sync_->SetTimeoutDuration(kRequestTimeout);
   loader_for_sync_->DownloadToString(
       url_loader_factory_.get(),
-      base::BindOnce(&PlusAddressClient::OnGetAllPlusAddressesComplete,
+      base::BindOnce(&PlusAddressHttpClient::OnGetAllPlusAddressesComplete,
                      // Safe since this class owns the loader_for_sync_.
                      base::Unretained(this), clock_->Now(),
                      std::move(on_completed)),
@@ -301,7 +301,7 @@ void PlusAddressClient::GetAllPlusAddressesInternal(
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
-void PlusAddressClient::OnReserveOrConfirmPlusAddressComplete(
+void PlusAddressHttpClient::OnReserveOrConfirmPlusAddressComplete(
     UrlLoaderList::iterator it,
     PlusAddressNetworkRequestType type,
     base::Time request_start,
@@ -343,7 +343,7 @@ void PlusAddressClient::OnReserveOrConfirmPlusAddressComplete(
               std::move(on_completed))));
 }
 
-void PlusAddressClient::OnGetAllPlusAddressesComplete(
+void PlusAddressHttpClient::OnGetAllPlusAddressesComplete(
     base::Time request_start,
     PlusAddressMapRequestCallback on_completed,
     std::unique_ptr<std::string> response) {
@@ -389,7 +389,7 @@ void PlusAddressClient::OnGetAllPlusAddressesComplete(
               std::move(on_completed))));
 }
 
-void PlusAddressClient::GetAuthToken(TokenReadyCallback callback) {
+void PlusAddressHttpClient::GetAuthToken(TokenReadyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (access_token_fetcher_) {
     pending_callbacks_.emplace(std::move(callback));
@@ -397,8 +397,8 @@ void PlusAddressClient::GetAuthToken(TokenReadyCallback callback) {
   }
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          /*consumer_name=*/"PlusAddressClient", identity_manager_, scopes_,
-          base::BindOnce(&PlusAddressClient::OnTokenFetched,
+          /*consumer_name=*/"PlusAddressHttpClient", identity_manager_, scopes_,
+          base::BindOnce(&PlusAddressHttpClient::OnTokenFetched,
                          // It is safe to use base::Unretained as
                          // |this| owns |access_token_fetcher_|.
                          base::Unretained(this), std::move(callback)),
@@ -411,7 +411,7 @@ void PlusAddressClient::GetAuthToken(TokenReadyCallback callback) {
           signin::ConsentLevel::kSignin);
 }
 
-void PlusAddressClient::OnTokenFetched(
+void PlusAddressHttpClient::OnTokenFetched(
     TokenReadyCallback callback,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {

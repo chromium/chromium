@@ -71,7 +71,8 @@ class PlusAddressMetrics {
   static void RecordNetworkRequestResponseSize(
       PlusAddressNetworkRequestType type,
       int response_size);
-  // Log the OAuth errors that occur when PlusAddressClient requests a token.
+  // Log the OAuth errors that occur when PlusAddressHttpClient requests a
+  // token.
   static void RecordNetworkRequestOauthError(GoogleServiceAuthError error);
   static std::string PlusAddressNetworkRequestTypeToString(
       PlusAddressNetworkRequestType type);

@@ -7,7 +7,7 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_client.h"
+#import "components/plus_addresses/plus_address_http_client.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -50,7 +50,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
       IdentityManagerFactory::GetForBrowserState(browser_state);
   return std::make_unique<plus_addresses::PlusAddressService>(
       identity_manager, browser_state->GetPrefs(),
-      plus_addresses::PlusAddressClient(
+      plus_addresses::PlusAddressHttpClient(
           identity_manager, browser_state->GetSharedURLLoaderFactory()));
 }
 
