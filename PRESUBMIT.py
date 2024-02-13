@@ -1806,7 +1806,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       )
     ),
     BanRule(
-      pattern = r'/absl::(optional|nullopt|make_optional|in_place|in_place_t)',
+      pattern = r'/\babsl::(optional|nullopt|make_optional|in_place|in_place_t)\b',
       explanation = (
          'Don\'t use `absl::optional`. Use `std::optional`.',
       ),
