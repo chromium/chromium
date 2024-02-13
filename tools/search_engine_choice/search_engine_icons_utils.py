@@ -47,7 +47,6 @@ def get_used_engines(src_dir):
   Returns the set of used engines. by checking which engines are used in
   `template_url_prepopulate_data.cc`.
   """
-  print('Populating used engines set')
   used_engines = set()
   SE_NAME_REGEX = re.compile(r'.*SearchEngineTier::[A-Za-z]+, &(.+)},')
   with open(src_dir + config_file_path, 'r',
