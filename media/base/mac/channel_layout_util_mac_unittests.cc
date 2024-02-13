@@ -153,19 +153,19 @@ TEST(ChannelLayoutUtilMac, ChannelLayout7Point1ToAudioChannelLayout) {
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[3].mChannelFlags,
             kAudioChannelFlags_AllOff);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[4].mChannelLabel,
-            kAudioChannelLabel_LeftSurround);
+            kAudioChannelLabel_RearSurroundLeft);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[4].mChannelFlags,
             kAudioChannelFlags_AllOff);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[5].mChannelLabel,
-            kAudioChannelLabel_RightSurround);
+            kAudioChannelLabel_RearSurroundRight);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[5].mChannelFlags,
             kAudioChannelFlags_AllOff);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[6].mChannelLabel,
-            kAudioChannelLabel_RearSurroundLeft);
+            kAudioChannelLabel_LeftSurround);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[6].mChannelFlags,
             kAudioChannelFlags_AllOff);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[7].mChannelLabel,
-            kAudioChannelLabel_RearSurroundRight);
+            kAudioChannelLabel_RightSurround);
   EXPECT_EQ(output_layout->layout()->mChannelDescriptions[7].mChannelFlags,
             kAudioChannelFlags_AllOff);
 }
