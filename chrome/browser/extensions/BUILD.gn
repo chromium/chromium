@@ -966,7 +966,6 @@ static_library("extensions") {
     "//third_party/leveldatabase",
     "//third_party/libaddressinput:util",
     "//third_party/re2",
-    "//third_party/sqlite",
     "//third_party/zlib/google:compression_utils",
     "//third_party/zlib/google:zip",
     "//ui/accessibility:ax_enums_mojo",
