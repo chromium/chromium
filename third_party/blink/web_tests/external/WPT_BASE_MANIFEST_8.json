@@ -399493,7 +399493,7 @@
      []
     ],
     "RTCPeerConnection-helper.js": [
-     "5d188328e80331748677d77832eb44c3018cc5ef",
+     "b28c1e4dbd072d49925de94664dd04bd1ca87644",
      []
     ],
     "RTCPeerConnection-mandatory-getStats.https-expected.txt": [
@@ -450531,8 +450531,22 @@
        {}
       ]
      ],
+     "font-size-adjust-interpolation-math-functions.tentative.html": [
+      "d173fb03bbb6b67569e1fc09a023832309747a5d",
+      [
+       null,
+       {}
+      ]
+     ],
      "font-size-relative-across-calc-ff-bug-001.html": [
       "167de8888725ca55090ac80cda43cddb299b7c7d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "font-stretch-interpolation-math-functions.tentative.html": [
+      "9029eefcb44169ac870d0545a47dae0d11ac18e9",
       [
        null,
        {}
@@ -671968,7 +671982,7 @@
      ]
     ],
     "RTCRtpReceiver-getStats.https.html": [
-     "bfa82b979c08bdbe056f82e2b6eb5449a716b063",
+     "2fcf33dc2e4aac738f3da39663a7812320deb5e2",
      [
       null,
       {
@@ -672002,7 +672016,7 @@
      ]
     ],
     "RTCRtpSender-getStats.https.html": [
-     "5c27af2134a033dc0bffdca9909afe12ea375183",
+     "6aeed650e58c7be225b773095b8f035cd216d5d0",
      [
       null,
       {
@@ -711938,7 +711952,7 @@
       },
       "get_element_text": {
        "get.py": [
-        "547152b2a72e3c9d27da81c010fd681378e6529d",
+        "924a4e8d79771d78de59e48f61bb6e88ab34a7b9",
         [
          null,
          {}
