@@ -1495,7 +1495,6 @@ targets.legacy_basic_suite(
     tests = {
         "chrome_wpt_tests": targets.legacy_test_config(
             args = [
-                "--no-retry-failures",
                 "--test-type",
                 "testharness",
                 "reftest",
@@ -1503,7 +1502,7 @@ targets.legacy_basic_suite(
                 "print-reftest",
             ],
             swarming = targets.swarming(
-                shards = 15,
+                shards = 20,
             ),
         ),
         "chrome_wpt_tests_headful": targets.legacy_test_config(
@@ -1520,10 +1519,10 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 30,
             ),
+            experiment_percentage = 10,
         ),
         "chrome_wpt_tests_old_headless": targets.legacy_test_config(
             args = [
-                "--no-retry-failures",
                 "--test-type",
                 "testharness",
                 "reftest",
@@ -1534,6 +1533,7 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 15,
             ),
+            experiment_percentage = 100,
         ),
     },
 )

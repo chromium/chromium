@@ -1567,7 +1567,6 @@
           'has_native_resultdb_integration',
         ],
         'args': [
-          '--no-retry-failures',
           '--test-type',
           'testharness',
           'reftest',
@@ -1575,7 +1574,7 @@
           'print-reftest',
         ],
         'swarming': {
-          'shards': 15,
+          'shards': 20,
         },
         'merge': {
           'script': '//third_party/blink/tools/merge_web_test_results.py',
@@ -1609,6 +1608,7 @@
             '--verbose',
           ],
         },
+        'experiment_percentage': 10,
       },
       'chrome_wpt_tests_old_headless': {
         'test': 'chrome_wpt_tests',
@@ -1617,7 +1617,6 @@
           'has_native_resultdb_integration',
         ],
         'args': [
-          '--no-retry-failures',
           '--test-type',
           'testharness',
           'reftest',
@@ -1634,6 +1633,7 @@
             '--verbose',
           ],
         },
+        'experiment_percentage': 100,
       },
     },
 

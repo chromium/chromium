@@ -46047,7 +46047,6 @@
     "isolated_scripts": [
       {
         "args": [
-          "--no-retry-failures",
           "--test-type",
           "testharness",
           "reftest",
@@ -46071,7 +46070,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 20
         },
         "test": "chrome_wpt_tests",
         "test_id_prefix": "ninja://:chrome_wpt_tests/"
@@ -46087,6 +46086,7 @@
           "crashtest",
           "print-reftest"
         ],
+        "experiment_percentage": 10,
         "merge": {
           "args": [
             "--verbose"
@@ -46111,7 +46111,6 @@
       },
       {
         "args": [
-          "--no-retry-failures",
           "--test-type",
           "testharness",
           "reftest",
@@ -46119,6 +46118,7 @@
           "print-reftest",
           "--additional-driver-flag=--headless"
         ],
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
