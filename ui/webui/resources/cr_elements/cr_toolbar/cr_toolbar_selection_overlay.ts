@@ -13,15 +13,12 @@
  * tab-traversal.
  */
 
-import '../cr_button/cr_button.js';
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 
 import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import type {CrButtonElement} from '../cr_button/cr_button.js';
 
 import {getTemplate} from './cr_toolbar_selection_overlay.html.js';
 
@@ -38,13 +35,11 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
     return {
       show: {
         type: Boolean,
-        observer: 'onShowChanged_',
         reflectToAttribute: true,
       },
 
       cancelLabel: String,
       selectionLabel: String,
-      hasShown_: Boolean,
       selectionLabel_: String,
     };
   }
@@ -58,17 +53,12 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
   show: boolean;
   cancelLabel: string;
   selectionLabel: string;
-  private hasShown_: boolean;
   private selectionLabel_: string;
   private debouncer_: Debouncer;
 
   override ready() {
     super.ready();
     this.setAttribute('role', 'toolbar');
-  }
-
-  get deleteButton(): CrButtonElement {
-    return this.shadowRoot!.querySelector<CrButtonElement>('#delete')!;
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -91,12 +81,6 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
       IronA11yAnnouncer.requestAvailability();
       this.fire_('iron-announce', {text: this.selectionLabel});
     });
-  }
-
-  private onShowChanged_() {
-    if (this.show) {
-      this.hasShown_ = true;
-    }
   }
 }
 
