@@ -1233,11 +1233,11 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
                                      "password and username field.",
           .fields =
               {
-                  {.role_filling = ElementRole::USERNAME,
+                  {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type =
                                       autofill::USERNAME_AND_EMAIL_ADDRESS}},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::NEW_PASSWORD}},
               },
@@ -1247,9 +1247,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
               "Server prediction for account change password field only.",
           .fields =
               {
-                  {.role_filling = ElementRole::USERNAME,
+                  {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::NEW_PASSWORD}},
               },
@@ -1281,11 +1281,11 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
                                      "password and username field.",
           .fields =
               {
-                  {.role_filling = ElementRole::USERNAME,
+                  {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type =
                                       autofill::USERNAME_AND_EMAIL_ADDRESS}},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
               },
@@ -1295,9 +1295,9 @@ TEST_F(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
               "Server prediction for account creation password field only.",
           .fields =
               {
-                  {.role_filling = ElementRole::USERNAME,
+                  {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
               },
@@ -1381,15 +1381,14 @@ TEST_F(FormParserTest, InferConfirmationPasswordField) {
           .fields =
               {
                   {
-                      .role_filling = ElementRole::NEW_PASSWORD,
-                      .role_saving = ElementRole::CURRENT_PASSWORD,
+                      .role = ElementRole::NEW_PASSWORD,
                       .value = u"pw1",
                       .form_control_type = FormControlType::kInputPassword,
                       .prediction = {.type =
                                          autofill::ACCOUNT_CREATION_PASSWORD},
                   },
                   {
-                      .role_saving = ElementRole::NEW_PASSWORD,
+                      .role_saving = ElementRole::NONE,
                       .value = u"pw2",
                       .form_control_type = FormControlType::kInputPassword,
                   },
@@ -1452,10 +1451,8 @@ TEST_F(FormParserTest, ServerHints) {
                    .prediction = {.type = autofill::USERNAME_AND_EMAIL_ADDRESS,
                                   .may_use_prefilled_placeholder = true}},
                   {.form_control_type = FormControlType::kInputText},
-                  {.role_saving = ElementRole::CURRENT_PASSWORD,
-                   .form_control_type = FormControlType::kInputPassword},
-                  {.role_filling = ElementRole::CURRENT_PASSWORD,
-                   .role_saving = ElementRole::NEW_PASSWORD,
+                  {.form_control_type = FormControlType::kInputPassword},
+                  {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD,
                                   .may_use_prefilled_placeholder = true}},
@@ -1471,15 +1468,14 @@ TEST_F(FormParserTest, ServerHints) {
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
                   {.form_control_type = FormControlType::kInputText},
-                  {.role_saving = ElementRole::CURRENT_PASSWORD,
-                   .form_control_type = FormControlType::kInputPassword},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
+                  {.form_control_type = FormControlType::kInputPassword},
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
-                  {.role_filling = ElementRole::CONFIRMATION_PASSWORD,
+                  {.role = ElementRole::CONFIRMATION_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::CONFIRMATION_PASSWORD}},
-                  {.role_filling = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD}},
               },
@@ -1863,8 +1859,7 @@ TEST_F(FormParserTest, ComplementingResults) {
               {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
-                  {.role_filling = ElementRole::CONFIRMATION_PASSWORD,
-                   .role_saving = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::CONFIRMATION_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::CONFIRMATION_PASSWORD}},
                   {.role = ElementRole::NEW_PASSWORD,
@@ -1993,10 +1988,7 @@ TEST_F(FormParserTest, ServerHintsForCvcFieldsOverrideAutocomplete) {
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD}},
               },
-          // TODO(crbug.com/913965): As server predictions are not used in the
-          // saving mode, it is only for fallback. Ideally, a server hint should
-          // override autocomplete and enable a regular prompt.
-          .fallback_only = true,
+          .fallback_only = false,
       },
   });
 }
@@ -2374,7 +2366,7 @@ TEST_F(FormParserTest, ReadonlyStatus) {
   CheckTestData({
       {
           .description_for_logging =
-              "Server predictions are ignored in saving mode",
+              "Server predictions prevent heuristics from using readonly.",
           .fields =
               {
                   {.role = ElementRole::USERNAME,
@@ -2384,11 +2376,8 @@ TEST_F(FormParserTest, ReadonlyStatus) {
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD}},
               },
-          .readonly_status_for_saving =
-              FormDataParser::ReadonlyPasswordFields::kAllIgnored,
-          .readonly_status_for_filling =
+          .readonly_status =
               FormDataParser::ReadonlyPasswordFields::kNoHeuristics,
-          .fallback_only = true,
       },
       {
           .description_for_logging =
@@ -2422,16 +2411,14 @@ TEST_F(FormParserTest, ReadonlyStatus) {
               {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText},
-                  {.role_filling = ElementRole::CURRENT_PASSWORD,
-                   .role_saving = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::CURRENT_PASSWORD,
                    // While readonly, this field is not ignored because it was
                    // autofilled before.
                    .is_readonly = true,
                    .properties_mask =
                        FieldPropertiesFlags::kAutofilledOnPageLoad,
                    .form_control_type = FormControlType::kInputPassword},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
-                   .role_saving = ElementRole::NEW_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .is_readonly = false,
                    .form_control_type = FormControlType::kInputPassword},
               },
@@ -2572,8 +2559,7 @@ TEST_F(FormParserTest, MultipleUsernames) {
                    .prediction = {.type = autofill::USERNAME}},
                   {.form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
-                   .role_saving = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
               },
@@ -2591,7 +2577,7 @@ TEST_F(FormParserTest, MultipleUsernames) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD}},
-                  {.role_saving = ElementRole::NEW_PASSWORD,
+                  {.role = ElementRole::NONE,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD}},
               },
@@ -2615,10 +2601,11 @@ TEST_F(FormParserTest, MultipleUsernames) {
           .description_for_logging = "Two usernames in sign-in, sign-up order.",
           .fields =
               {
-                  {.role = ElementRole::USERNAME,
+                  {.role_filling = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
-                  {.form_control_type = FormControlType::kInputText,
+                  {.role_saving = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
@@ -2639,13 +2626,12 @@ TEST_F(FormParserTest, MultipleUsernames) {
                   {.role_filling = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
-                   .role_saving = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
                   {.form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
-                  {.role_filling = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::PASSWORD}},
               },
@@ -2655,12 +2641,13 @@ TEST_F(FormParserTest, MultipleUsernames) {
               "Two usernames in sign-in, sign-up order; sign-in is pre-filled.",
           .fields =
               {
-                  {.role = ElementRole::USERNAME,
+                  {.role_filling = ElementRole::USERNAME,
                    .properties_mask =
                        FieldPropertiesFlags::kAutofilledOnPageLoad,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
-                  {.form_control_type = FormControlType::kInputText,
+                  {.role_saving = ElementRole::USERNAME,
+                   .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
@@ -2687,11 +2674,10 @@ TEST_F(FormParserTest, MultipleNewPasswords) {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
-                   .role_saving = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
-                  {.role_saving = ElementRole::NEW_PASSWORD,
+                  {.role = ElementRole::NONE,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
               },
@@ -2704,13 +2690,12 @@ TEST_F(FormParserTest, MultipleNewPasswords) {
                   {.role = ElementRole::USERNAME,
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::USERNAME}},
-                  {.role_filling = ElementRole::NEW_PASSWORD,
-                   .role_saving = ElementRole::CURRENT_PASSWORD,
+                  {.role = ElementRole::NEW_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
                   {.form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::ACCOUNT_CREATION_PASSWORD}},
-                  {.role_filling = ElementRole::CONFIRMATION_PASSWORD,
+                  {.role = ElementRole::CONFIRMATION_PASSWORD,
                    .form_control_type = FormControlType::kInputPassword,
                    .prediction = {.type = autofill::CONFIRMATION_PASSWORD}},
               },
@@ -2950,16 +2935,11 @@ TEST_F(FormParserTest, TypedValues) {
 TEST_F(FormParserTest, ContradictingPasswordPredictionAndAutocomplete) {
   CheckTestData({{
       .description_for_logging =
-          "Server data and autocomplete contradics each other",
-      // On saving, server predictions for passwords are ignored
-      // (crbug.com/913965). So autocomplete attributes define the role. On
-      // filling, both server predictions and autocomplete are considered and
-      // server predictions have higher priority and therefore
-      // define the role. An autofill attributes cannot override it.
+          "Server data and autocomplete contradict each other",
+      // Server predictions have priority over autocomplete.
       .fields =
           {
-              {.role_filling = ElementRole::CURRENT_PASSWORD,
-               .role_saving = ElementRole::NEW_PASSWORD,
+              {.role = ElementRole::CURRENT_PASSWORD,
                .autocomplete_attribute = "new-password",
                .form_control_type = FormControlType::kInputPassword,
                .prediction = {.type = autofill::PASSWORD}},
