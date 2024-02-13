@@ -441,6 +441,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Delete file"/>
 </enum>
 
+<enum name="ClassroomUserAction">
+  <int value="0" label="Assignment list selected"/>
+  <int value="1" label="Header icon pressed"/>
+  <int value="2" label="Student assignment pressed"/>
+</enum>
+
 <enum name="DataFetchEventSource">
   <int value="0" label="PostLoginFullRestore"/>
   <int value="1" label="Overview"/>
@@ -1831,6 +1837,18 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Remained on the home screen"/>
   <int value="1" label="Transitioned to overview"/>
   <int value="2" label="Went back on the home screen"/>
+</enum>
+
+<enum name="TasksUserAction">
+  <int value="0" label="Active task list changed"/>
+  <int value="1" label="Task marked complete"/>
+  <int value="2" label="Task marked incomplete"/>
+  <int value="3" label="Add task started"/>
+  <int value="4" label="Modify task started"/>
+  <int value="5" label="Header button clicked"/>
+  <int value="6" label="Add new task button clicked"/>
+  <int value="7" label="Footer button clicked"/>
+  <int value="8" label="Edit in Google Tasks button clicked"/>
 </enum>
 
 <enum name="TimeManagementGlanceablesFeatureStatus">

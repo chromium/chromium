@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -167,6 +168,7 @@ TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileLoadingTasks) {
 }
 
 TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileAddingTask) {
+  base::HistogramTester histogram_tester;
   tasks_client()->set_paused(true);
 
   // Initially progress bar is hidden.
@@ -184,9 +186,13 @@ TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileAddingTask) {
   // After replying to pending callbacks, the progress bar should become hidden.
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 1u);
   EXPECT_FALSE(GetProgressBar()->GetVisible());
+
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 3, 1);
 }
 
 TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileEditingTask) {
+  base::HistogramTester histogram_tester;
   tasks_client()->set_paused(true);
 
   // Initially progress bar is hidden.
@@ -211,6 +217,9 @@ TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileEditingTask) {
   // After replying to pending callbacks, the progress bar should become hidden.
   EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
   EXPECT_FALSE(GetProgressBar()->GetVisible());
+
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 4, 1);
 }
 
 TEST_F(GlanceablesTasksViewTest, OnlyShowsFooterIfAtLeast100Tasks) {
@@ -235,6 +244,7 @@ TEST_F(GlanceablesTasksViewTest, OnlyShowsFooterIfAtLeast100Tasks) {
 }
 
 TEST_F(GlanceablesTasksViewTest, SupportsEditingRightAfterAdding) {
+  base::HistogramTester histogram_tester;
   tasks_client()->set_paused(true);
 
   // Add a task.
@@ -263,6 +273,13 @@ TEST_F(GlanceablesTasksViewTest, SupportsEditingRightAfterAdding) {
   // Verify executed callbacks number.
   EXPECT_EQ(tasks_client()->RunPendingAddTaskCallbacks(), 0u);
   EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 3, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 4, 1);
 }
 
 TEST_F(GlanceablesTasksViewTest, AllowsPressingAddNewTaskButtonWhileAdding) {
@@ -453,6 +470,7 @@ TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromHeaderView) {
 }
 
 TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromEditInBrowserView) {
+  base::HistogramTester histogram_tester;
   base::UserActionTester user_actions;
   const auto* const title_label = views::AsViewClass<views::Label>(
       GetTaskItemsContainerView()->children()[0]->GetViewByID(
@@ -470,6 +488,12 @@ TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromEditInBrowserView) {
   GestureTapOn(edit_in_browser_button);
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton"));
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 4, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 8, 1);
 
   // Simulate that the widget is hidden safely after opening a browser window.
   view()->GetWidget()->Hide();

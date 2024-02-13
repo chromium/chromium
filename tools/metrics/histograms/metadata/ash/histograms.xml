@@ -3664,6 +3664,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Glanceables.TimeManagement.Classroom.UserAction"
+    enum="ClassroomUserAction" expires_after="2024-12-31">
+  <owner>tbarzic@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    User actions performed in the Time Management Glanceables bubble for Google
+    Classroom
+  </summary>
+</histogram>
+
 <histogram name="Ash.Glanceables.TimeManagement.FeatureStatus"
     enum="TimeManagementGlanceablesFeatureStatus" expires_after="2024-12-31">
   <owner>amitrokhin@google.com</owner>
@@ -3756,6 +3766,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the total number of times the selected tasks list is changed. The
     total count is recorded when the glanceable bubble is closed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Glanceables.TimeManagement.Tasks.UserAction"
+    enum="TasksUserAction" expires_after="2024-12-31">
+  <owner>tbarzic@google.com</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    User actions performed in the Time Management Glanceables bubble for Google
+    Tasks
   </summary>
 </histogram>
 

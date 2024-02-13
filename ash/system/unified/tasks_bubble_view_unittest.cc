@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -131,6 +132,7 @@ class TasksBubbleViewTest : public AshTestBase {
 };
 
 TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
+  base::HistogramTester histogram_tester;
   EXPECT_FALSE(IsMenuRunning());
   EXPECT_TRUE(GetComboBoxView()->GetVisible());
 
@@ -194,10 +196,13 @@ TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
       GetComboBoxView()->MenuItemAtIndex(0)->GetBoundsInScreen()));
   EXPECT_TRUE(GetComboBoxView()->MenuView()->GetBoundsInScreen().Intersects(
       GetComboBoxView()->MenuItemAtIndex(5)->GetBoundsInScreen()));
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 0, 3);
 }
 
 TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {
   base::UserActionTester user_actions;
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 2u);
 
   auto* const task_view = views::AsViewClass<GlanceablesTaskView>(
@@ -231,10 +236,18 @@ TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {
   EXPECT_EQ(0, tasks_client()->completed_task_count());
   tasks_client()->OnGlanceablesBubbleClosed();
   EXPECT_EQ(1, tasks_client()->completed_task_count());
+
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 3);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 1, 2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 2, 1);
 }
 
 TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromFooterView) {
   base::UserActionTester user_actions;
+  base::HistogramTester histogram_tester;
   const auto* const see_all_button =
       views::AsViewClass<views::LabelButton>(GetListFooterView()->GetViewByID(
           base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
@@ -245,10 +258,13 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromFooterView) {
                    "Glanceables_Tasks_LaunchTasksApp_FooterButton"));
   EXPECT_EQ(0, user_actions.GetActionCount(
                    "Glanceables_Tasks_ActiveTaskListChanged"));
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 7, 1);
 }
 
 TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromAddNewButton) {
   base::UserActionTester user_actions;
+  base::HistogramTester histogram_tester;
 
   ASSERT_EQ(GetComboBoxView()->GetTextForRow(2), u"Task List 3 Title (empty)");
   MenuSelectionAt(2);
@@ -265,9 +281,16 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromAddNewButton) {
       1, user_actions.GetActionCount("Glanceables_Tasks_AddTaskButtonShown"));
   EXPECT_EQ(1, user_actions.GetActionCount(
                    "Glanceables_Tasks_ActiveTaskListChanged"));
+  histogram_tester.ExpectTotalCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 6, 1);
 }
 
 TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromHeaderView) {
+  base::HistogramTester histogram_tester;
   base::UserActionTester user_actions;
   const auto* const header_icon_button = GetHeaderIconView();
   GestureTapOn(header_icon_button);
@@ -277,10 +300,13 @@ TEST_F(TasksBubbleViewTest, ShowTasksWebUIFromHeaderView) {
                    "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
   EXPECT_EQ(0, user_actions.GetActionCount(
                    "Glanceables_Tasks_ActiveTaskListChanged"));
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 5, 1);
 }
 
 TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {
   base::UserActionTester user_actions;
+  base::HistogramTester histogram_tester;
 
   // Shows items from the first / default task list.
   EXPECT_TRUE(GetTaskItemsContainerView()->GetVisible());
@@ -297,9 +323,13 @@ TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {
   EXPECT_FALSE(GetListFooterView()->GetVisible());
   EXPECT_EQ(
       1, user_actions.GetActionCount("Glanceables_Tasks_AddTaskButtonShown"));
+
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 0, 1);
 }
 
 TEST_F(TasksBubbleViewTest, ShowsProgressBarWhileLoadingTasks) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(GetProgressBar());
   ASSERT_TRUE(GetComboBoxView());
 
@@ -315,6 +345,8 @@ TEST_F(TasksBubbleViewTest, ShowsProgressBarWhileLoadingTasks) {
   // After replying to pending callbacks, the progress bar should become hidden.
   EXPECT_EQ(tasks_client()->RunPendingGetTasksCallbacks(), 1u);
   EXPECT_FALSE(GetProgressBar()->GetVisible());
+  histogram_tester.ExpectUniqueSample(
+      "Ash.Glanceables.TimeManagement.Tasks.UserAction", 0, 1);
 }
 
 }  // namespace ash
