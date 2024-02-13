@@ -237,7 +237,7 @@ class WaylandDataDragControllerTest : public WaylandDragDropTest {
     ScheduleTestTask(base::BindOnce(
         [](WaylandDataDragControllerTest* self) {
           // DnD handlers expect DragLeave to be sent before DragFinished when
-          // drag sessions end up with no data transfer (cancelled). Otherwise,
+          // drag sessions end up with no data fetching (cancelled). Otherwise,
           // it might lead to issues like https://crbug.com/1109324.
           EXPECT_CALL(*self->drop_handler(), OnDragLeave).Times(1);
           // If DnD was cancelled, or data was dropped where it was not
@@ -1219,7 +1219,7 @@ TEST_P(WaylandDataDragControllerTest,
   EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
   EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
 
-  // 3 mime types are offered, which gives as time to hook partial data transfer
+  // 3 mime types are offered, which gives as time to hook partial data fetching
   // and destroy the entered window while it's still unfinished, see test
   // closure above for more details.
   PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
@@ -1238,10 +1238,10 @@ TEST_P(WaylandDataDragControllerTest,
   });
   ASSERT_EQ(drag_controller(), data_device()->drag_delegate_);
 
-  // Destroy the entered window while the data transfer is ongoing.
+  // Destroy the entered window while the data fetching is ongoing.
   window_.reset();
 
-  // Wait for the full data transfer flow to finish before checking all
+  // Wait for the full data fetching flow to finish before checking all
   // expectations.
   WaitForDragDropTasks();
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
@@ -1293,7 +1293,7 @@ TEST_P(WaylandDataDragControllerTest, LeaveWindowWhileFetchingData) {
     server_device->OnLeave();
   });
 
-  // Wait for the full data transfer flow and requests/events to finish before
+  // Wait for the full data fetching flow and requests/events to finish before
   // checking all expectations.
   WaitForDragDropTasks();
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());

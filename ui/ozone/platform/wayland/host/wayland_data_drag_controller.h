@@ -82,9 +82,9 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                   public PlatformEventDispatcher {
  public:
   enum class State {
-    kIdle,          // Doing nothing special
-    kStarted,       // The outgoing drag is in progress.
-    kTransferring,  // The incoming data is transferred from the source.
+    kIdle,      // Doing nothing special
+    kStarted,   // The outgoing drag is in progress.
+    kFetching,  // The incoming data is fetched from the source.
   };
 
   WaylandDataDragController(WaylandConnection* connection,
@@ -164,15 +164,15 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // Starts the process of fetching data offered by an external client (ie:
   // incoming drag session). The actual I/O is performed in a separate thread
   // using ThreadPool infra. Once data for all supported mime types is fetched,
-  // the OnDataTransferFinished callback is fired.
-  void PostDataTransferTask(const gfx::PointF& location,
+  // the OnDataFetchingFinished callback is fired.
+  void PostDataFetchingTask(const gfx::PointF& location,
                             base::TimeTicks start_time,
                             const scoped_refptr<CancelFlag>& cancel_flag);
 
-  void OnDataTransferFinished(
+  void OnDataFetchingFinished(
       base::TimeTicks start_time,
       std::unique_ptr<ui::OSExchangeData> received_data);
-  void CancelDataTransferIfNeeded();
+  void CancelDataFetchingIfNeeded();
 
   std::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);
