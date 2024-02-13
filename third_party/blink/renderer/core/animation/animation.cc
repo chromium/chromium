@@ -625,7 +625,13 @@ bool Animation::PreCommit(
 
   absl::optional<int> replaced_cc_animation_id;
   if (should_cancel) {
-    if (should_start && GetCompositorAnimation()) {
+    // TODO(https://crbug.com/41496930): This code currently avoids preserving
+    // the id and compositor group of the cc animation on playback rate and
+    // state changes (i.e. "soft changes") due to the linked bug. That's
+    // because these soft changes use a time offset that assumes the start_time
+    // is reset. A more complete fix should account for the fact that the start
+    // time may be preserved when computing the offset.
+    if (should_start && GetCompositorAnimation() && !soft_change) {
       // If the animation is being canceled and restarted, pass the replaced
       // cc::Animation's id along so the compositor can recreate the
       // cc::Animation with the same id, ensuring continuity in the animation.
