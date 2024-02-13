@@ -154,7 +154,9 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
     _separator.backgroundColor =
-        [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
+        [UIColor colorNamed:IsIpadPopoutOmniboxEnabled()
+                                ? kOmniboxPopoutSuggestionRowSeparatorColor
+                                : kOmniboxSuggestionRowSeparatorColor];
 
     self.backgroundColor = UIColor.clearColor;
 

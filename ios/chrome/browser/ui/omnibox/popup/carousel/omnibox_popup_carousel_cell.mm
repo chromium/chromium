@@ -28,14 +28,20 @@ const CGFloat kMinStackSpacing = 8.0f;
 /// carousel.
 const CGFloat kGradientWidth = 20.0f;
 
+UIColor* CarouselBackgroundColor() {
+  if (IsIpadPopoutOmniboxEnabled()) {
+    return [UIColor colorNamed:kPrimaryBackgroundColor];
+  }
+  return [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+}
+
 /// Horizontal UIScrollView used in OmniboxPopupCarouselCell.
 UIScrollView* CarouselScrollView() {
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.showsVerticalScrollIndicator = NO;
   scrollView.showsHorizontalScrollIndicator = NO;
-  scrollView.backgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  scrollView.backgroundColor = CarouselBackgroundColor();
   return scrollView;
 }
 
@@ -47,18 +53,17 @@ UIStackView* CarouselStackView() {
   stackView.alignment = UIStackViewAlignmentTop;
   stackView.distribution = UIStackViewDistributionEqualSpacing;
   stackView.spacing = kMinStackSpacing;
-  stackView.backgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+  stackView.backgroundColor = CarouselBackgroundColor();
   return stackView;
 }
 
 /// CAGradientLayer used in OmniboxPopupCarouselCell on iPad.
 CAGradientLayer* CarouselGradientLayer() {
   CAGradientLayer* maskLayer = [CAGradientLayer layer];
-  UIColor* opaqueColor = [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-      colorWithAlphaComponent:1.0];
-  UIColor* transparentColor = [[UIColor
-      colorNamed:kGroupedSecondaryBackgroundColor] colorWithAlphaComponent:0.0];
+  UIColor* opaqueColor =
+      [CarouselBackgroundColor() colorWithAlphaComponent:1.0];
+  UIColor* transparentColor =
+      [CarouselBackgroundColor() colorWithAlphaComponent:0.0];
   maskLayer.colors = @[
     (id)transparentColor.CGColor, (id)opaqueColor.CGColor,
     (id)opaqueColor.CGColor, (id)transparentColor.CGColor
@@ -108,8 +113,7 @@ CAGradientLayer* CarouselGradientLayer() {
     _gradientLayer = CarouselGradientLayer();
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
-    self.backgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    self.backgroundColor = CarouselBackgroundColor();
     self.accessibilityIdentifier = kOmniboxCarouselCellAccessibilityIdentifier;
   }
   return self;

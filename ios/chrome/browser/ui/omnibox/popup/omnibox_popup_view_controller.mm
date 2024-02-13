@@ -778,7 +778,9 @@ BOOL ShouldDismissKeyboardOnScroll() {
                                2 / tableView.window.screen.scale)];
 
   hairline.backgroundColor =
-      [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
+      [UIColor colorNamed:IsIpadPopoutOmniboxEnabled()
+                              ? kOmniboxPopoutSuggestionRowSeparatorColor
+                              : kOmniboxSuggestionRowSeparatorColor];
   [footer addSubview:hairline];
   hairline.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
@@ -1039,6 +1041,11 @@ BOOL ShouldDismissKeyboardOnScroll() {
 /// Updates the color of the background based on the incognito-ness and the size
 /// class.
 - (void)updateBackgroundColor {
+  if (IsIpadPopoutOmniboxEnabled()) {
+    self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+    return;
+  }
+
   ToolbarConfiguration* configuration = [[ToolbarConfiguration alloc]
       initWithStyle:self.incognito ? ToolbarStyle::kIncognito
                                    : ToolbarStyle::kNormal];

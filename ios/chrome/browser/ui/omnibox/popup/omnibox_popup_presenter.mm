@@ -90,7 +90,12 @@ const CGFloat kFadeAnimationVerticalOffset = 12;
     _popupContainerView.overrideUserInterfaceStyle = userInterfaceStyle;
     viewController.overrideUserInterfaceStyle = userInterfaceStyle;
 
-    _popupContainerView.backgroundColor = [configuration backgroundColor];
+    if (IsIpadPopoutOmniboxEnabled()) {
+      _popupContainerView.backgroundColor =
+          [UIColor colorNamed:kPrimaryBackgroundColor];
+    } else {
+      _popupContainerView.backgroundColor = configuration.backgroundColor;
+    }
 
     _popupContainerView.translatesAutoresizingMaskIntoConstraints = NO;
     viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
