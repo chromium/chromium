@@ -10,7 +10,7 @@ namespace userScripts {
     // Specifies the execution environment of the DOM, which is the execution
     // environment shared with the host page's JavaScript.
     MAIN,
-    // Specifies the execution enviroment that is specific to user scripts and
+    // Specifies the execution environment that is specific to user scripts and
     // is exempt from the page's CSP.
     USER_SCRIPT
   };
