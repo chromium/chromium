@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {type ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {IGNORE_APP_ERRORS, isSinglePartitionFormat, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -13,10 +13,10 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, COMP
  * Checks if the files initially added by the C++ side are displayed, and
  * that files subsequently added are also displayed.
  *
- * @param {string} path Path to be tested, Downloads or Drive.
- * @param {!Array<!TestEntryInfo>} defaultEntries Default file entries.
+ * @param path Path to be tested, Downloads or Drive.
+ * @param defaultEntries Default file entries.
  */
-async function fileDisplay(path, defaultEntries) {
+async function fileDisplay(path: string, defaultEntries: TestEntryInfo[]) {
   // Open Files app on the given |path| with default file entries.
   const appId = await setupAndWaitUntilReady(path);
 
@@ -36,21 +36,16 @@ async function fileDisplay(path, defaultEntries) {
 /**
  * Tests files display in Downloads.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayDownloads' comes from an index
-// signature, so it must be accessed with ['fileDisplayDownloads'].
-testcase.fileDisplayDownloads = () => {
+export async function fileDisplayDownloads() {
   return fileDisplay(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
-};
+}
 
 /**
  * Tests opening the files app navigating to a local folder. Uses
  * platform_util::OpenItem, a call to an API distinct from the one commonly used
  * in other tests for the same operation.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayLaunchOnLocalFolder' comes
-// from an index signature, so it must be accessed with
-// ['fileDisplayLaunchOnLocalFolder'].
-testcase.fileDisplayLaunchOnLocalFolder = async () => {
+export async function fileDisplayLaunchOnLocalFolder() {
   // Add a file to Downloads.
   await addEntries(['local'], [ENTRIES.photos]);
 
@@ -68,17 +63,14 @@ testcase.fileDisplayLaunchOnLocalFolder = async () => {
   // The API used to launch the Files app does not set the IN_TEST flag to true:
   // error when attempting to retrieve Web Store access token.
   return IGNORE_APP_ERRORS;
-};
+}
 
 /**
  * Tests opening the files app navigating to a local folder. Uses
  * platform_util::OpenItem, a call to an API distinct from the one commonly used
  * in other tests for the same operation.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayLaunchOnLocalFile' comes from
-// an index signature, so it must be accessed with
-// ['fileDisplayLaunchOnLocalFile'].
-testcase.fileDisplayLaunchOnLocalFile = async () => {
+export async function fileDisplayLaunchOnLocalFile() {
   // Add a file to Downloads.
   await addEntries(['local'], [ENTRIES.hello, ENTRIES.world]);
 
@@ -100,16 +92,14 @@ testcase.fileDisplayLaunchOnLocalFile = async () => {
   // The API used to launch the Files app does not set the IN_TEST flag to true:
   // error when attempting to retrieve Web Store access token.
   return IGNORE_APP_ERRORS;
-};
+}
 
 /**
  * Tests opening the files app navigating to the My Drive folder. Uses
  * platform_util::OpenItem, a call to an API distinct from the one commonly used
  * in other tests for the same operation.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayLaunchOnDrive' comes from an
-// index signature, so it must be accessed with ['fileDisplayLaunchOnDrive'].
-testcase.fileDisplayLaunchOnDrive = async () => {
+export async function fileDisplayLaunchOnDrive() {
   // Open Files app on the Drive directory.
   await sendTestMessage({name: 'launchAppOnDrive'});
 
@@ -123,23 +113,19 @@ testcase.fileDisplayLaunchOnDrive = async () => {
   // The API used to launch the Files app does not set the IN_TEST flag to true:
   // error when attempting to retrieve Web Store access token.
   return IGNORE_APP_ERRORS;
-};
+}
 
 /**
  * Tests files display in Google Drive.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayDrive' comes from an index
-// signature, so it must be accessed with ['fileDisplayDrive'].
-testcase.fileDisplayDrive = () => {
+export async function fileDisplayDrive() {
   return fileDisplay(RootPath.DRIVE, BASIC_DRIVE_ENTRY_SET);
-};
+}
 
 /**
  * Tests file display rendering in offline Google Drive.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayDriveOffline' comes from an
-// index signature, so it must be accessed with ['fileDisplayDriveOffline'].
-testcase.fileDisplayDriveOffline = async () => {
+export async function fileDisplayDriveOffline() {
   const driveFiles =
       [ENTRIES.hello, ENTRIES.pinned, ENTRIES.photos, ENTRIES.testDocument];
 
@@ -156,10 +142,10 @@ testcase.fileDisplayDriveOffline = async () => {
 
   // Check: the hello.txt file only should be rendered 'offline'.
   chrome.test.assertEq(1, elements.length);
-  chrome.test.assertEq(0, elements[0].text.indexOf('hello.txt'));
+  chrome.test.assertEq(0, elements[0]!.text.indexOf('hello.txt'));
 
   // Check: hello.txt must have 'offline' CSS render style (opacity).
-  chrome.test.assertEq('0.38', elements[0].styles.opacity);
+  chrome.test.assertEq('0.38', elements[0]!.styles.opacity);
 
   // Retrieve file entries that are 'available offline' (not dimmed).
   // Use "first-child" here because opacity for offline only applies on the
@@ -172,11 +158,10 @@ testcase.fileDisplayDriveOffline = async () => {
   // Check: these files should have 'available offline' CSS style.
   chrome.test.assertEq(3, elements.length);
 
-  // @ts-ignore: error TS7006: Parameter 'fileName' implicitly has an 'any'
-  // type.
-  function checkRenderedInAvailableOfflineStyle(element, fileName) {
-    chrome.test.assertEq(0, element.text.indexOf(fileName));
-    chrome.test.assertEq('1', element.styles.opacity);
+  function checkRenderedInAvailableOfflineStyle(
+      element: ElementObject, fileName: string) {
+    chrome.test.assertEq(0, element.text!.indexOf(fileName));
+    chrome.test.assertEq('1', element.styles!['opacity']);
   }
 
   // Directories are shown as 'available offline'.
@@ -187,13 +172,13 @@ testcase.fileDisplayDriveOffline = async () => {
 
   // Pinned files are shown as 'available offline'.
   checkRenderedInAvailableOfflineStyle(elements[2], 'pinned');
-};
+}
 
 /**
  * Tests file display rendering in online Google Drive.
- * @param {string} appId the id for the window to check the file display.
+ * @param appId the id for the window to check the file display.
  */
-async function checkDriveOnlineDisplay(appId) {
+async function checkDriveOnlineDisplay(appId: string) {
   // Retrieve all file list row entries.
   const fileEntry = '#file-list .table-row';
   const elements = await remoteCall.callRemoteTestUtil(
@@ -209,24 +194,19 @@ async function checkDriveOnlineDisplay(appId) {
 /**
  * Tests file display rendering in online Google Drive.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayDriveOnline' comes from an
-// index signature, so it must be accessed with ['fileDisplayDriveOnline'].
-testcase.fileDisplayDriveOnline = async () => {
+export async function fileDisplayDriveOnline() {
   // Open Files app on Drive.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
 
   await checkDriveOnlineDisplay(appId);
-};
+}
 
 /**
  * Tests file display rendering in online Google Drive when opening via OpenItem
  * function.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayDriveOnlineNewWindow' comes
-// from an index signature, so it must be accessed with
-// ['fileDisplayDriveOnlineNewWindow'].
-testcase.fileDisplayDriveOnlineNewWindow = async () => {
+export async function fileDisplayDriveOnlineNewWindow() {
   // Open Files app on the Drive directory.
   await addEntries(['drive'], BASIC_DRIVE_ENTRY_SET);
   await sendTestMessage({name: 'launchAppOnDrive'});
@@ -235,21 +215,17 @@ testcase.fileDisplayDriveOnlineNewWindow = async () => {
   const appId = await remoteCall.waitForWindow();
 
   // Wait for Files app to finish loading.
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   await checkDriveOnlineDisplay(appId);
-};
+}
 
 /**
  * Tests files display in the "Computers" section of Google Drive. Testing that
  * we can navigate to folders inside /Computers also has the side effect of
  * testing that the breadcrumbs are working.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayComputers' comes from an index
-// signature, so it must be accessed with ['fileDisplayComputers'].
-testcase.fileDisplayComputers = async () => {
+export async function fileDisplayComputers() {
   // Open Files app on Drive with Computers registered.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], COMPUTERS_ENTRY_SET);
@@ -263,15 +239,13 @@ testcase.fileDisplayComputers = async () => {
 
   // Navigate to a subdirectory under a Computer Root.
   await directoryTree.navigateToPath('/Computers/Computer A/A');
-};
+}
 
 
 /**
  * Tests files display in an MTP volume.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayMtp' comes from an index
-// signature, so it must be accessed with ['fileDisplayMtp'].
-testcase.fileDisplayMtp = async () => {
+export async function fileDisplayMtp() {
   const MTP_VOLUME_TYPE = 'mtp';
 
   // Open Files app on local downloads.
@@ -286,19 +260,13 @@ testcase.fileDisplayMtp = async () => {
 
   // Verify the MTP file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
-  // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime: true;
-  // }' is not assignable to parameter of type '{ orderCheck: boolean | null |
-  // undefined; ignoreFileSize: boolean | null | undefined;
-  // ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Tests files display in a removable USB volume.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayUsb' comes from an index
-// signature, so it must be accessed with ['fileDisplayUsb'].
-testcase.fileDisplayUsb = async () => {
+export async function fileDisplayUsb() {
   const USB_VOLUME_TYPE = 'removable';
 
   // Open Files app on local downloads.
@@ -313,19 +281,13 @@ testcase.fileDisplayUsb = async () => {
 
   // Verify the USB file list.
   const files = TestEntryInfo.getExpectedRows(BASIC_FAKE_ENTRY_SET);
-  // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime: true;
-  // }' is not assignable to parameter of type '{ orderCheck: boolean | null |
-  // undefined; ignoreFileSize: boolean | null | undefined;
-  // ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Tests files display on a removable USB volume with and without partitions.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayUsbPartition' comes from an
-// index signature, so it must be accessed with ['fileDisplayUsbPartition'].
-testcase.fileDisplayUsbPartition = async () => {
+export async function fileDisplayUsbPartition() {
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -380,17 +342,14 @@ testcase.fileDisplayUsbPartition = async () => {
     const childVolumeType = directoryTree.getItemVolumeType(itemEntries[0]);
     chrome.test.assertTrue('removable' !== childVolumeType);
   }
-};
+}
 
 /**
  * Tests that the file system type is properly displayed in the type
  * column. Checks that the entries can be properly sorted by type.
  * crbug.com/973743
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayUsbPartitionSort' comes from
-// an index signature, so it must be accessed with
-// ['fileDisplayUsbPartitionSort'].
-testcase.fileDisplayUsbPartitionSort = async () => {
+export async function fileDisplayUsbPartitionSort() {
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -408,10 +367,6 @@ testcase.fileDisplayUsbPartitionSort = async () => {
     ['partition-1', '--', 'ntfs'],
   ];
   const options = {orderCheck: true, ignoreLastModifiedTime: true};
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: boolean;
-  // ignoreLastModifiedTime: boolean; }' is not assignable to parameter of type
-  // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean | null |
-  // undefined; ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, expectedRows, options);
 
   // Sort by type in ascending order.
@@ -428,10 +383,6 @@ testcase.fileDisplayUsbPartitionSort = async () => {
     ['partition-1', '--', 'ntfs'],
     ['partition-3', '--', 'vfat'],
   ];
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: boolean;
-  // ignoreLastModifiedTime: boolean; }' is not assignable to parameter of type
-  // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean | null |
-  // undefined; ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, expectedRows, options);
 
   // Sort by type in descending order.
@@ -448,21 +399,14 @@ testcase.fileDisplayUsbPartitionSort = async () => {
     ['partition-1', '--', 'ntfs'],
     ['partition-2', '--', 'ext4'],
   ];
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: boolean;
-  // ignoreLastModifiedTime: boolean; }' is not assignable to parameter of type
-  // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean | null |
-  // undefined; ignoreLastModifiedTime: boolean | null | undefined; }'.
   await remoteCall.waitForFiles(appId, expectedRows, options);
-};
+}
 
 /**
  * Tests display of partitions in file list after mounting a removable USB
  * volume.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayPartitionFileTable' comes from
-// an index signature, so it must be accessed with
-// ['fileDisplayPartitionFileTable'].
-testcase.fileDisplayPartitionFileTable = async () => {
+export async function fileDisplayPartitionFileTable() {
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -482,17 +426,18 @@ testcase.fileDisplayPartitionFileTable = async () => {
   const partitionTwo = await remoteCall.waitForElement(
       appId, '#file-list [file-name="partition-2"] .type');
   chrome.test.assertEq('ext4', partitionTwo.text);
-};
+}
 
 /**
  * Searches for a string in Downloads and checks that the correct results
  * are displayed.
  *
- * @param {string} searchTerm The string to search for.
- * @param {!Array<!TestEntryInfo>} expectedResults The results set.
+ * @param searchTerm The string to search for.
+ * @param expectedResults The results set.
  *
  */
-async function searchDownloads(searchTerm, expectedResults) {
+async function searchDownloads(
+    searchTerm: string, expectedResults: TestEntryInfo[]) {
   // Open Files app on local downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -513,30 +458,24 @@ async function searchDownloads(searchTerm, expectedResults) {
 }
 
 /**
- * Tests case-senstive search for an entry in Downloads.
+ * Tests case-sensitive search for an entry in Downloads.
  */
-// @ts-ignore: error TS4111: Property 'fileSearch' comes from an index
-// signature, so it must be accessed with ['fileSearch'].
-testcase.fileSearch = () => {
+export async function fileSearch() {
   return searchDownloads('hello', [ENTRIES.hello]);
-};
+}
 
 /**
  * Tests case-insenstive search for an entry in Downloads.
  */
-// @ts-ignore: error TS4111: Property 'fileSearchCaseInsensitive' comes from an
-// index signature, so it must be accessed with ['fileSearchCaseInsensitive'].
-testcase.fileSearchCaseInsensitive = () => {
+export async function fileSearchCaseInsensitive() {
   return searchDownloads('HELLO', [ENTRIES.hello]);
-};
+}
 
 /**
  * Tests searching for a string doesn't match anything in Downloads and that
  * there are no displayed items that match the search string.
  */
-// @ts-ignore: error TS4111: Property 'fileSearchNotFound' comes from an index
-// signature, so it must be accessed with ['fileSearchNotFound'].
-testcase.fileSearchNotFound = async () => {
+export async function fileSearchNotFound() {
   const searchTerm = 'blahblah';
 
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
@@ -553,16 +492,13 @@ testcase.fileSearchNotFound = async () => {
       'fakeEvent', appId, ['#search-box cr-input', 'input']);
 
   await remoteCall.waitForFiles(appId, []);
-};
+}
 
 /**
  * Tests Files app opening without errors when there isn't Downloads which is
  * the default volume.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayWithoutDownloadsVolume' comes
-// from an index signature, so it must be accessed with
-// ['fileDisplayWithoutDownloadsVolume'].
-testcase.fileDisplayWithoutDownloadsVolume = async () => {
+export async function fileDisplayWithoutDownloadsVolume() {
   // Ensure no volumes are mounted.
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
@@ -576,17 +512,13 @@ testcase.fileDisplayWithoutDownloadsVolume = async () => {
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
-};
+}
 
 /**
  * Tests Files app opening without errors when there are no volumes at all.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayWithoutVolumes' comes from an
-// index signature, so it must be accessed with ['fileDisplayWithoutVolumes'].
-testcase.fileDisplayWithoutVolumes = async () => {
+export async function fileDisplayWithoutVolumes() {
   // Ensure no volumes are mounted.
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
@@ -595,20 +527,15 @@ testcase.fileDisplayWithoutVolumes = async () => {
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
-};
+}
 
 /**
  * Tests Files app opening without errors when there are no volumes at all and
  * then mounting Downloads volume which should appear and be able to display its
  * files.
  */
-// @ts-ignore: error TS4111: Property
-// 'fileDisplayWithoutVolumesThenMountDownloads' comes from an index signature,
-// so it must be accessed with ['fileDisplayWithoutVolumesThenMountDownloads'].
-testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
+export async function fileDisplayWithoutVolumesThenMountDownloads() {
   // Ensure no volumes are mounted.
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
@@ -617,8 +544,6 @@ testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Mount Downloads.
@@ -634,23 +559,15 @@ testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
       [['Downloads', '--', 'Folder'], ['Linux files', '--', 'Folder']];
   await remoteCall.waitForFiles(
       appId, expectedRows,
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Tests Files app opening without errors when there are no volumes at all and
  * then mounting Drive volume which should appear and be able to display its
  * files.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayWithoutVolumesThenMountDrive'
-// comes from an index signature, so it must be accessed with
-// ['fileDisplayWithoutVolumesThenMountDrive'].
-testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
+export async function fileDisplayWithoutVolumesThenMountDrive() {
   // Ensure no volumes are mounted.
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
@@ -659,8 +576,6 @@ testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // Navigate to the Drive FakeItem.
@@ -678,22 +593,16 @@ testcase.fileDisplayWithoutVolumesThenMountDrive = async () => {
   await remoteCall.waitFor('getVolumesCount', null, (count) => count === 1, []);
 
   // Add an entry to Drive.
-  // @ts-ignore: error TS4111: Property 'newlyAdded' comes from an index
-  // signature, so it must be accessed with ['newlyAdded'].
   await addEntries(['drive'], [ENTRIES.newlyAdded]);
 
   // Wait for "My Drive" files to display in the file list.
-  // @ts-ignore: error TS4111: Property 'newlyAdded' comes from an index
-  // signature, so it must be accessed with ['newlyAdded'].
   await remoteCall.waitForFiles(appId, [ENTRIES.newlyAdded.getExpectedRow()]);
-};
+}
 
 /**
  * Tests Files app opening without Drive mounted.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayWithoutDrive' comes from an
-// index signature, so it must be accessed with ['fileDisplayWithoutDrive'].
-testcase.fileDisplayWithoutDrive = async () => {
+export async function fileDisplayWithoutDrive() {
   // Ensure no volumes are mounted.
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
@@ -705,8 +614,6 @@ testcase.fileDisplayWithoutDrive = async () => {
 
   // Open the files app.
   const appId = await setupAndWaitUntilReady(
-      // @ts-ignore: error TS4111: Property 'newlyAdded' comes from an index
-      // signature, so it must be accessed with ['newlyAdded'].
       RootPath.DOWNLOADS, [ENTRIES.newlyAdded], []);
 
   // Wait for the loading indicator blink to finish.
@@ -723,16 +630,13 @@ testcase.fileDisplayWithoutDrive = async () => {
 
   // Check: the fake Google Drive should be empty.
   await remoteCall.waitForFiles(appId, []);
-};
+}
 
 /**
  * Tests Files app opening without Drive mounted and then disabling and
  * re-enabling Drive.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayWithoutDriveThenDisable' comes
-// from an index signature, so it must be accessed with
-// ['fileDisplayWithoutDriveThenDisable'].
-testcase.fileDisplayWithoutDriveThenDisable = async () => {
+export async function fileDisplayWithoutDriveThenDisable() {
   // Ensure no volumes are mounted.
   chrome.test.assertEq('0', await sendTestMessage({name: 'getVolumesCount'}));
 
@@ -740,8 +644,6 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
   await sendTestMessage({name: 'mountDownloads'});
 
   // Add a file to Downloads.
-  // @ts-ignore: error TS4111: Property 'newlyAdded' comes from an index
-  // signature, so it must be accessed with ['newlyAdded'].
   await addEntries(['local'], [ENTRIES.newlyAdded]);
 
   // Wait until it mounts.
@@ -752,8 +654,6 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
   chrome.test.assertTrue(!!appId, 'failed to open new window');
 
   // Wait for Files app to finish loading.
-  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
-  // parameter of type '(arg0: Object) => boolean | Object'.
   await remoteCall.waitFor('isFileManagerLoaded', appId, true);
 
   // We should navigate to MyFiles.
@@ -762,10 +662,6 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
     ['Linux files', '--', 'Folder'],
   ];
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Navigate to Drive.
@@ -785,10 +681,6 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
 
   // Ensure Downloads has loaded.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Re-enabled Drive.
@@ -796,21 +688,16 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
 
   // Wait for the fake drive to reappear.
   await directoryTree.waitForItemByLabel('Google Drive');
-};
+}
 
 /**
  * Tests that mounting a hidden Volume does not mount the volume in file
  * manager.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayWithHiddenVolume' comes from
-// an index signature, so it must be accessed with
-// ['fileDisplayWithHiddenVolume'].
-testcase.fileDisplayWithHiddenVolume = async () => {
+export async function fileDisplayWithHiddenVolume() {
   const initialVolumeCount = await sendTestMessage({name: 'getVolumesCount'});
 
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Get the directory tree elements.
@@ -828,24 +715,17 @@ testcase.fileDisplayWithHiddenVolume = async () => {
   // The hidden volume should not be counted in the number of volumes.
   chrome.test.assertEq(
       initialVolumeCount, await sendTestMessage({name: 'getVolumesCount'}));
-};
+}
 
 /**
  * Tests Files app resisting the urge to switch to Downloads when mounts change.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayMountWithFakeItemSelected'
-// comes from an index signature, so it must be accessed with
-// ['fileDisplayMountWithFakeItemSelected'].
-testcase.fileDisplayMountWithFakeItemSelected = async () => {
+export async function fileDisplayMountWithFakeItemSelected() {
   // Open Files app on Drive with the given test files.
   const appId = await setupAndWaitUntilReady(
-      // @ts-ignore: error TS4111: Property 'newlyAdded' comes from an index
-      // signature, so it must be accessed with ['newlyAdded'].
       RootPath.DOWNLOADS, [ENTRIES.newlyAdded], []);
 
   // Ensure Downloads has loaded.
-  // @ts-ignore: error TS4111: Property 'newlyAdded' comes from an index
-  // signature, so it must be accessed with ['newlyAdded'].
   await remoteCall.waitForFiles(appId, [ENTRIES.newlyAdded.getExpectedRow()]);
 
   // Navigate to My files.
@@ -863,17 +743,13 @@ testcase.fileDisplayMountWithFakeItemSelected = async () => {
   chrome.test.assertEq(
       '/My files',
       await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []));
-};
+}
 
 /**
  * Tests Files app switching away from Drive virtual folders when Drive is
  * unmounted.
  */
-// @ts-ignore: error TS4111: Property
-// 'fileDisplayUnmountDriveWithSharedWithMeSelected' comes from an index
-// signature, so it must be accessed with
-// ['fileDisplayUnmountDriveWithSharedWithMeSelected'].
-testcase.fileDisplayUnmountDriveWithSharedWithMeSelected = async () => {
+export async function fileDisplayUnmountDriveWithSharedWithMeSelected() {
   // Open Files app on Drive with the given test files.
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [ENTRIES.newlyAdded],
@@ -888,8 +764,6 @@ testcase.fileDisplayUnmountDriveWithSharedWithMeSelected = async () => {
 
   // Check that the file is visible.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS4111: Property 'testSharedDocument' comes from an
-      // index signature, so it must be accessed with ['testSharedDocument'].
       appId, [ENTRIES.testSharedDocument.getExpectedRow()]);
 
   // Unmount drive.
@@ -905,21 +779,17 @@ testcase.fileDisplayUnmountDriveWithSharedWithMeSelected = async () => {
     ['Linux files', '--', 'Folder'],
   ];
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, expectedRows, {ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Navigates to a removable volume, then unmounts it. Check to see whether
  * Files App switches away to the default Downloads directory.
  *
- * @param {string} removableDirectory The removable directory to be inside
+ * @param removableDirectory The removable directory to be inside
  *    before unmounting the USB.
  */
-async function unmountRemovableVolume(removableDirectory) {
+async function unmountRemovableVolume(removableDirectory: string) {
   // Open Files app on Downloads containing ENTRIES.photos.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.photos], []);
@@ -950,10 +820,6 @@ async function unmountRemovableVolume(removableDirectory) {
     await remoteCall.waitUntilCurrentDirectoryIsChanged(
         appId, `/Drive Label/${removableDirectory}`);
     await remoteCall.waitForFiles(
-        // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-        // true; }' is not assignable to parameter of type '{ orderCheck:
-        // boolean | null | undefined; ignoreFileSize: boolean | null |
-        // undefined; ignoreLastModifiedTime: boolean | null | undefined; }'.
         appId, partitionFiles, {ignoreLastModifiedTime: true});
   }
 
@@ -970,10 +836,6 @@ async function unmountRemovableVolume(removableDirectory) {
     ['Linux files', '--', 'Folder'],
   ];
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, expectedRows, {ignoreLastModifiedTime: true});
 }
 
@@ -981,56 +843,40 @@ async function unmountRemovableVolume(removableDirectory) {
  * Tests Files app switches away from a removable device root after the USB is
  * unmounted.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayUnmountRemovableRoot' comes
-// from an index signature, so it must be accessed with
-// ['fileDisplayUnmountRemovableRoot'].
-testcase.fileDisplayUnmountRemovableRoot = () => {
+export async function fileDisplayUnmountRemovableRoot() {
   return unmountRemovableVolume('Drive Label');
-};
+}
 
 /**
  * Tests Files app switches away from a partition inside the USB after the USB
  * is unmounted.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayUnmountFirstPartition' comes
-// from an index signature, so it must be accessed with
-// ['fileDisplayUnmountFirstPartition'].
-testcase.fileDisplayUnmountFirstPartition = () => {
+export async function fileDisplayUnmountFirstPartition() {
   return unmountRemovableVolume('partition-1');
-};
+}
 
 /**
  * Tests Files app switches away from a partition inside the USB after the USB
  * is unmounted. Partition-1 will be ejected first.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayUnmountLastPartition' comes
-// from an index signature, so it must be accessed with
-// ['fileDisplayUnmountLastPartition'].
-testcase.fileDisplayUnmountLastPartition = () => {
+export async function fileDisplayUnmountLastPartition() {
   return unmountRemovableVolume('partition-2');
-};
+}
 
 /**
  * Tests files display in Downloads while the default blocking file I/O task
  * runner is blocked.
  */
-// @ts-ignore: error TS4111: Property
-// 'fileDisplayDownloadsWithBlockedFileTaskRunner' comes from an index
-// signature, so it must be accessed with
-// ['fileDisplayDownloadsWithBlockedFileTaskRunner'].
-testcase.fileDisplayDownloadsWithBlockedFileTaskRunner = async () => {
+export async function fileDisplayDownloadsWithBlockedFileTaskRunner() {
   await sendTestMessage({name: 'blockFileTaskRunner'});
   await fileDisplay(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
   await sendTestMessage({name: 'unblockFileTaskRunner'});
-};
+}
 
 /**
  * Tests to make sure check-select mode enables when selecting one item
  */
-// @ts-ignore: error TS4111: Property
-// 'fileDisplayCheckSelectWithFakeItemSelected' comes from an index signature,
-// so it must be accessed with ['fileDisplayCheckSelectWithFakeItemSelected'].
-testcase.fileDisplayCheckSelectWithFakeItemSelected = async () => {
+export async function fileDisplayCheckSelectWithFakeItemSelected() {
   // Open files app on Downloads containing ENTRIES.hello.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -1045,16 +891,13 @@ testcase.fileDisplayCheckSelectWithFakeItemSelected = async () => {
 
   // Make sure check-select is enabled.
   await remoteCall.waitForElement(appId, 'body.check-select');
-};
+}
 
 /**
  * Tests to make sure read-only indicator is visible when the current directory
  * is read-only.
  */
-// @ts-ignore: error TS4111: Property
-// 'fileDisplayCheckReadOnlyIconOnFakeDirectory' comes from an index signature,
-// so it must be accessed with ['fileDisplayCheckReadOnlyIconOnFakeDirectory'].
-testcase.fileDisplayCheckReadOnlyIconOnFakeDirectory = async () => {
+export async function fileDisplayCheckReadOnlyIconOnFakeDirectory() {
   // Open Files app on Drive with the given test files.
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [ENTRIES.newlyAdded],
@@ -1069,32 +912,26 @@ testcase.fileDisplayCheckReadOnlyIconOnFakeDirectory = async () => {
 
   // Make sure read-only indicator on toolbar is visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator:not([hidden])');
-};
+}
 
 /**
  * Tests to make sure read-only indicator is NOT visible when the current
  * is writable.
  */
-// @ts-ignore: error TS4111: Property
-// 'fileDisplayCheckNoReadOnlyIconOnDownloads' comes from an index signature, so
-// it must be accessed with ['fileDisplayCheckNoReadOnlyIconOnDownloads'].
-testcase.fileDisplayCheckNoReadOnlyIconOnDownloads = async () => {
+export async function fileDisplayCheckNoReadOnlyIconOnDownloads() {
   // Open files app on Downloads containing ENTRIES.hello.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Make sure read-only indicator on toolbar is NOT visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
-};
+}
 
 /**
  * Tests to make sure read-only indicator is NOT visible when the current
  * directory is the "Linux files" fake root.
  */
-// @ts-ignore: error TS4111: Property
-// 'fileDisplayCheckNoReadOnlyIconOnLinuxFiles' comes from an index signature,
-// so it must be accessed with ['fileDisplayCheckNoReadOnlyIconOnLinuxFiles'].
-testcase.fileDisplayCheckNoReadOnlyIconOnLinuxFiles = async () => {
+export async function fileDisplayCheckNoReadOnlyIconOnLinuxFiles() {
   // Block mounts from progressing. This should cause the file manager to always
   // show the loading bar for linux files.
   await sendTestMessage({name: 'blockMounts'});
@@ -1113,16 +950,13 @@ testcase.fileDisplayCheckNoReadOnlyIconOnLinuxFiles = async () => {
 
   // Check: the toolbar read-only indicator should not be visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
-};
+}
 
 /**
  * Tests to make sure read-only indicator is NOT visible when the current
  * directory is a "GuestOs" fake root.
  */
-// @ts-ignore: error TS4111: Property 'fileDisplayCheckNoReadOnlyIconOnGuestOs'
-// comes from an index signature, so it must be accessed with
-// ['fileDisplayCheckNoReadOnlyIconOnGuestOs'].
-testcase.fileDisplayCheckNoReadOnlyIconOnGuestOs = async () => {
+export async function fileDisplayCheckNoReadOnlyIconOnGuestOs() {
   // Create a Bruschetta guest for this test.
   await sendTestMessage({
     name: 'registerMountableGuest',
@@ -1149,4 +983,4 @@ testcase.fileDisplayCheckNoReadOnlyIconOnGuestOs = async () => {
 
   // Check: the toolbar read-only indicator should not be visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator[hidden]');
-};
+}

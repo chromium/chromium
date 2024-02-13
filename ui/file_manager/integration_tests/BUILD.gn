@@ -22,7 +22,6 @@ js_files = [
   "file_manager/dlp_enterprise_connectors.js",
   "file_manager/drive_specific.js",
   "file_manager/file_dialog.js",
-  "file_manager/file_display.js",
   "file_manager/file_transfer_connector.js",
   "file_manager/folder_shortcuts.js",
   "file_manager/gear_menu.js",
@@ -80,7 +79,7 @@ ts_files = [
 
   # "file_manager/file_dialog.ts",
 
-  # "file_manager/file_display.ts",
+  "file_manager/file_display.ts",
 
   "file_manager/file_list.ts",
 

@@ -268,8 +268,8 @@ export class RemoteCall {
    *
    * @param {string} funcName Name of remote test function to be executed.
    * @param {?string} appId App window Id.
-   * @param {function(Object):boolean|boolean|Object} expectedResult An value to
-   *     be checked against the return value of |funcName| or a callback that
+   * @param {(function(Object):boolean)|boolean|Object} expectedResult An value
+   *     to be checked against the return value of |funcName| or a callback that
    *     receives the return value of |funcName| and returns true if the result
    *     is the expected value.
    * @param {?Array<*>=} args Arguments to be provided to |funcName| when
