@@ -580,9 +580,16 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_OnlyCountryInAddresses) {
   EXPECT_FALSE(autofill_client_.ConfirmSaveCardLocallyWasCalled());
   EXPECT_TRUE(credit_card_save_manager_->CreditCardWasUploaded());
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_THAT(
-      payments_network_interface().client_behavior_signals_in_request(),
-      ElementsAre(ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsAndroidBottomSheetAccountEmail)) {
+    EXPECT_THAT(
+        payments_network_interface().client_behavior_signals_in_request(),
+        ElementsAre(ClientBehaviorConstants::kShowAccountEmailInLegalMessage));
+  } else {
+    EXPECT_TRUE(payments_network_interface()
+                    .client_behavior_signals_in_request()
+                    .empty());
+  }
 #else
   EXPECT_TRUE(payments_network_interface()
                   .client_behavior_signals_in_request()
