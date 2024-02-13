@@ -118,6 +118,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
                           Profile* profile,
                           bool show_message) override;
 
+  InputDeviceDuplicateIdFinder& duplicate_id_finder() {
+    CHECK(duplicate_id_finder_);
+    return *duplicate_id_finder_;
+  }
+
  private:
   void Init();
 

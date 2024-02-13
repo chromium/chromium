@@ -4,17 +4,26 @@
 
 #include "ash/system/input_device_settings/input_device_settings_dispatcher.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/ozone/public/input_controller.h"
 
 namespace ash {
+
 namespace {
+
 constexpr int kMouseId = 1;
 constexpr int kPointingStickId = 2;
 constexpr int kTouchpadId = 3;
@@ -160,6 +169,14 @@ class MockInputController : public ui::InputController {
       ui::HapticTouchpadEffectStrength strength) override {}
   bool AreAnyKeysPressed() override { return false; }
 };
+
+const ui::InputDevice CreateInputDevice(int id,
+                                        uint16_t vendor,
+                                        uint16_t product) {
+  return ui::InputDevice(id, ui::INPUT_DEVICE_USB, "kDeviceName", "",
+                         base::FilePath(), vendor, product, 0);
+}
+
 }  // namespace
 
 class InputDeviceSettingsDispatcherTest : public AshTestBase {
@@ -173,7 +190,12 @@ class InputDeviceSettingsDispatcherTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kInputDeviceSettingsSplit,
+                                           features::kPeripheralCustomization},
+                                          {});
+
     AshTestBase::SetUp();
+    Shell::Get()->event_rewriter_controller()->Initialize(nullptr, nullptr);
     controller_ = std::make_unique<MockInputController>();
     dispatcher_ =
         std::make_unique<InputDeviceSettingsDispatcher>(controller_.get());
@@ -190,6 +212,7 @@ class InputDeviceSettingsDispatcherTest : public AshTestBase {
  protected:
   std::unique_ptr<InputDeviceSettingsDispatcher> dispatcher_;
   std::unique_ptr<MockInputController> controller_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(InputDeviceSettingsDispatcherTest, MouseTest) {
@@ -299,6 +322,131 @@ TEST_F(InputDeviceSettingsDispatcherTest, TouchpadTest) {
 
   dispatcher_->OnTouchpadConnected(touchpad);
   dispatcher_->OnTouchpadSettingsUpdated(touchpad);
+}
+
+TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsBlockModifiers) {
+  // Use VID/PID for mouse with modifier blocking issue.
+  auto duplicate_1_1 = CreateInputDevice(0, 0x046d, 0xb019);
+  auto duplicate_1_2 = CreateInputDevice(1, 0x046d, 0xb019);
+  auto duplicate_1_3 = CreateInputDevice(2, 0x046d, 0xb019);
+
+  // Use VID/PID without modifier blocking issue.
+  auto duplicate_2_1 = CreateInputDevice(3, 0x046d, 0xb034);
+  auto duplicate_2_2 = CreateInputDevice(4, 0x046d, 0xb034);
+  auto duplicate_2_3 = CreateInputDevice(5, 0x046d, 0xb034);
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {duplicate_1_1, duplicate_2_1});
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
+      {duplicate_1_2, duplicate_2_2});
+  ui::DeviceDataManagerTestApi().SetUncategorizedDevices({duplicate_1_3});
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {ui::KeyboardDevice(duplicate_2_3)});
+
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+
+  auto* input_device_settings_controller =
+      Shell::Get()->input_device_settings_controller();
+
+  // After starting to observe, all device ids with same vid/pid as
+  // `duplicate_1_1` should be blocked.
+  input_device_settings_controller->StartObservingButtons(duplicate_1_1.id);
+  EXPECT_EQ(
+      (std::vector<int>{duplicate_1_1.id, duplicate_1_2.id, duplicate_1_3.id}),
+      dispatcher_->device_ids_to_block_modifiers());
+
+  // Add mouse button to configure.
+  input_device_settings_controller->OnMouseButtonPressed(
+      duplicate_1_1.id, *mojom::Button::NewVkey(ui::VKEY_TAB));
+
+  input_device_settings_controller->StopObservingButtons();
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+
+  auto mouse_settings =
+      input_device_settings_controller->GetMouseSettings(duplicate_1_1.id)
+          ->Clone();
+  mouse_settings->button_remappings[0]->remapping_action =
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kDisable);
+  input_device_settings_controller->SetMouseSettings(duplicate_1_1.id,
+                                                     std::move(mouse_settings));
+
+  // After configuring the button to an action, block modifiers from the device.
+  EXPECT_EQ(
+      (std::vector<int>{duplicate_1_1.id, duplicate_1_2.id, duplicate_1_3.id}),
+      dispatcher_->device_ids_to_block_modifiers());
+
+  mouse_settings =
+      input_device_settings_controller->GetMouseSettings(duplicate_1_1.id)
+          ->Clone();
+  mouse_settings->button_remappings[0]->remapping_action = nullptr;
+  input_device_settings_controller->SetMouseSettings(duplicate_1_1.id,
+                                                     std::move(mouse_settings));
+
+  // After settings back to no remapping action, modifiers should not be
+  // blocked.
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+}
+
+TEST_F(InputDeviceSettingsDispatcherTest, DuplicateIdsDontBlockModifiers) {
+  // Use VID/PID for mouse with modifier blocking issue.
+  auto duplicate_1_1 = CreateInputDevice(0, 0x046d, 0xb019);
+  auto duplicate_1_2 = CreateInputDevice(1, 0x046d, 0xb019);
+  auto duplicate_1_3 = CreateInputDevice(2, 0x046d, 0xb019);
+
+  // Use VID/PID without modifier blocking issue.
+  auto duplicate_2_1 = CreateInputDevice(3, 0x046d, 0xb034);
+  auto duplicate_2_2 = CreateInputDevice(4, 0x046d, 0xb034);
+  auto duplicate_2_3 = CreateInputDevice(5, 0x046d, 0xb034);
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {duplicate_1_1, duplicate_2_1});
+  ui::DeviceDataManagerTestApi().SetGraphicsTabletDevices(
+      {duplicate_1_2, duplicate_2_2});
+  ui::DeviceDataManagerTestApi().SetUncategorizedDevices({duplicate_1_3});
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {ui::KeyboardDevice(duplicate_2_3)});
+
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+
+  auto* input_device_settings_controller =
+      Shell::Get()->input_device_settings_controller();
+
+  // After starting to observe, nothing should be blocked as `duplicate_2_1`
+  // does not require modifier blocking.
+  input_device_settings_controller->StartObservingButtons(duplicate_2_1.id);
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+
+  // Add mouse button to configure.
+  input_device_settings_controller->OnMouseButtonPressed(
+      duplicate_2_1.id, *mojom::Button::NewVkey(ui::VKEY_TAB));
+
+  input_device_settings_controller->StopObservingButtons();
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+
+  auto mouse_settings =
+      input_device_settings_controller->GetMouseSettings(duplicate_2_1.id)
+          ->Clone();
+  mouse_settings->button_remappings[0]->remapping_action =
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kDisable);
+  input_device_settings_controller->SetMouseSettings(duplicate_2_1.id,
+                                                     std::move(mouse_settings));
+
+  // After configuring the button to an action, no modifiers should be blocked
+  // still.
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
+
+  mouse_settings =
+      input_device_settings_controller->GetMouseSettings(duplicate_2_1.id)
+          ->Clone();
+  mouse_settings->button_remappings[0]->remapping_action = nullptr;
+  input_device_settings_controller->SetMouseSettings(duplicate_2_1.id,
+                                                     std::move(mouse_settings));
+
+  // After settings back to no remapping action, modifiers should not be
+  // blocked.
+  EXPECT_TRUE(dispatcher_->device_ids_to_block_modifiers().empty());
 }
 
 }  // namespace ash
