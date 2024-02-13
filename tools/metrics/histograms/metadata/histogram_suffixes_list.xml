@@ -4525,6 +4525,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="OsUrlHandler" label="OsUrlHandler"/>
   <suffix name="Personalization" label="Personalization"/>
   <suffix name="PrintManagement" label="PrintManagement"/>
+  <suffix name="PrintPreviewCrOS" label="Print Preview CrOS"/>
   <suffix name="Projector" label="Projector"/>
   <suffix name="Sample" label="Sample"/>
   <suffix name="Scanning" label="Scanning"/>
