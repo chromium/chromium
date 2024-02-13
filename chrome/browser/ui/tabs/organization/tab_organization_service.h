@@ -103,6 +103,10 @@ class TabOrganizationService
     observers_.RemoveObserver(observer);
   }
 
+  bool HasObserver(TabOrganizationObserver* observer) {
+    return observers_.HasObserver(observer);
+  }
+
   // TabStripModelObserver.
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
