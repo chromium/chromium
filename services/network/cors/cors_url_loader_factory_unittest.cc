@@ -462,4 +462,52 @@ TEST_F(AfpDisabledCorsURLLoaderFactoryTest, BlockListIsNotUsed) {
   EXPECT_EQ(net::OK, client->completion_status().error_code);
 }
 
+class RequireCrossSiteRequestForCookiesCorsURLLoaderFactoryTest
+    : public CorsURLLoaderFactoryTest {
+  void SetUp() override {
+    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+    factory_params->require_cross_site_request_for_cookies = true;
+    auto context_params = mojom::NetworkContextParams::New();
+    BaseSetup(std::move(factory_params), std::move(context_params));
+  }
+};
+
+TEST_F(RequireCrossSiteRequestForCookiesCorsURLLoaderFactoryTest,
+       NavigationWithSameSiteForCookies) {
+  ResourceRequest request;
+  GURL url = test_server()->GetURL("/echoall");
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.destination = mojom::RequestDestination::kEmpty;
+  request.method = net::HttpRequestHeaders::kPostMethod;
+  request.url = url;
+  request.navigation_redirect_chain.push_back(request.url);
+  request.request_initiator = url::Origin::Create(url);
+  request.site_for_cookies = net::SiteForCookies::FromUrl(url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: all requests in this context must be cross-site",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(RequireCrossSiteRequestForCookiesCorsURLLoaderFactoryTest,
+       NavigationWithCrossSiteForCookies) {
+  ResourceRequest request;
+  GURL url = test_server()->GetURL("/echoall");
+  request.mode = mojom::RequestMode::kNavigate;
+  request.redirect_mode = mojom::RedirectMode::kManual;
+  request.destination = mojom::RequestDestination::kEmpty;
+  request.method = net::HttpRequestHeaders::kPostMethod;
+  request.url = url;
+  request.navigation_redirect_chain.push_back(request.url);
+  request.request_initiator = url::Origin::Create(url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  auto* client = test_cors_loader_clients().back().get();
+  client->RunUntilComplete();
+  EXPECT_TRUE(client->has_received_completion());
+  EXPECT_EQ(net::OK, client->completion_status().error_code);
+}
+
 }  // namespace network::cors

@@ -101,7 +101,8 @@ class URLLoaderFactoryParamsHelper {
           url_loader_network_observer,
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      base::StringPiece debug_tag);
+      base::StringPiece debug_tag,
+      bool require_cross_site_request_for_cookies);
 
   // Creates URLLoaderFactoryParams for Early Hints preload.
   // When a redirect happens, a URLLoaderFactory created from the

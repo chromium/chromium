@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/workers/shared_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -1058,6 +1059,12 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
       fetch_request_data_->ServiceWorkerRaceNetworkRequestToken());
 
   request.SetFetchLaterAPI(IsDeferred());
+
+  if (execution_context_->IsSharedWorkerGlobalScope() &&
+      DynamicTo<SharedWorkerGlobalScope>(*execution_context_)
+          ->DoesRequireCrossSiteRequestForCookies()) {
+    request.SetSiteForCookies(net::SiteForCookies());
+  }
 
   // "3. Append `Host`, ..."
   // FIXME: Implement this when the spec is fixed.

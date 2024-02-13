@@ -110,7 +110,8 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
       mojo::PendingReceiver<blink::mojom::SharedWorker> receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
-      ukm::SourceId ukm_source_id) override;
+      ukm::SourceId ukm_source_id,
+      bool require_cross_site_request_for_cookies) override;
 
   struct CreateParams {
     CreateParams();
@@ -122,6 +123,7 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
     mojo::PendingRemote<blink::mojom::SharedWorkerHost> host;
     mojo::PendingReceiver<blink::mojom::SharedWorker> receiver;
     ukm::SourceId ukm_source_id;
+    bool require_cross_site_request_for_cookies;
   };
 
   mojo::Receiver<blink::mojom::SharedWorkerFactory> receiver_;

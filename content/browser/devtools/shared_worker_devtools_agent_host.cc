@@ -152,7 +152,10 @@ void SharedWorkerDevToolsAgentHost::WorkerDestroyed() {
 DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
 SharedWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
   DCHECK(worker_host_);
-  return {GetStorageKey().origin(), net::SiteForCookies::FromUrl(GetURL()),
+  return {GetStorageKey().origin(),
+          instance_.DoesRequireCrossSiteRequestForCookies()
+              ? net::SiteForCookies()
+              : net::SiteForCookies::FromUrl(GetURL()),
           worker_host_->CreateNetworkFactoryParamsForSubresources()};
 }
 

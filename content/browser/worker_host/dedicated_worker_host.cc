@@ -333,6 +333,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       // TODO(crbug.com/1138622): Propagate dedicated worker ukm::SourceId here.
       ukm::kInvalidSourceId, DedicatedWorkerDevToolsAgentHost::GetFor(this),
       token_.value(),
+      /*require_cross_site_request_for_cookies=*/false,
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));
 }

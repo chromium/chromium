@@ -129,7 +129,8 @@ void MockSharedWorkerFactory::CreateSharedWorker(
     mojo::PendingReceiver<blink::mojom::SharedWorker> receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
-    ukm::SourceId ukm_source_id) {
+    ukm::SourceId ukm_source_id,
+    bool require_cross_site_request_for_cookies) {
   DCHECK(!create_params_);
   create_params_ = std::make_unique<CreateParams>();
   create_params_->info = std::move(info);
@@ -138,6 +139,8 @@ void MockSharedWorkerFactory::CreateSharedWorker(
   create_params_->host = std::move(host);
   create_params_->receiver = std::move(receiver);
   create_params_->ukm_source_id = ukm_source_id;
+  create_params_->require_cross_site_request_for_cookies =
+      require_cross_site_request_for_cookies;
 }
 
 MockSharedWorkerFactory::CreateParams::CreateParams() = default;

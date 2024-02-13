@@ -93,5 +93,12 @@ interface SharedWorkerFactory {
 
       // The UKM SourceId associated with the SharedWorkerHost. This is distinct
       // from the IDs that are associated with the connected clients.
-      int64 ukm_source_id);
+      int64 ukm_source_id,
+
+      // If `require_cross_site_request_for_cookies` is true, then all
+      // requests made will have an empty site_for_cookies to ensure only
+      // SameSite=None cookies can be attached to the request.
+      // For context on usage see:
+      // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
+      bool require_cross_site_request_for_cookies);
 };

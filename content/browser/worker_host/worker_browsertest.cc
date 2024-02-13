@@ -87,6 +87,7 @@ bool SupportsSharedWorker() {
 // 0 => Base
 // 1 => kPlzDedicatedWorker enabled
 // 2 => kPrivateNetworkAccessForWorkers enabled
+// 3 => kStorageAccessAPIBeyondCookies enabled
 class WorkerTest : public ContentBrowserTest,
                    public testing::WithParamInterface<int> {
  public:
@@ -112,6 +113,13 @@ class WorkerTest : public ContentBrowserTest,
             {
                 blink::features::kPlzDedicatedWorker,
                 features::kPrivateNetworkAccessForWorkers,
+            },
+            {});
+        break;
+      case 3:  // StorageAccessAPIBeyondCookies
+        feature_list_.InitWithFeatures(
+            {
+                blink::features::kStorageAccessAPIBeyondCookies,
             },
             {});
         break;
@@ -320,7 +328,7 @@ class WorkerTest : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 3));
+INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 4));
 
 IN_PROC_BROWSER_TEST_P(WorkerTest, SingleWorker) {
   RunTest(GetTestURL("single_worker.html", std::string()));
@@ -340,7 +348,7 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerTestWithAllowFileAccessFromFiles,
-                         testing::Range(0, 3));
+                         testing::Range(0, 4));
 
 IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
@@ -920,7 +928,7 @@ class WorkerFromCredentiallessIframeNikBrowserTest : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerFromCredentiallessIframeNikBrowserTest,
-                         testing::Range(0, 3));
+                         testing::Range(0, 4));
 
 IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
                        SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
@@ -980,6 +988,173 @@ IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
       EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
     }
     EXPECT_EQ(1u, connection_tracker_->GetReadSocketCount());
+  }
+}
+
+// Test that an "a.test" frame starting a worker without any `sameSiteCookies`
+// option sends SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameDefault) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
+  EvalJsResult result =
+      EvalJs(shell(), "new SharedWorker('/workers/worker.js');");
+  ASSERT_TRUE(result.error.empty());
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" frame starting a worker with `sameSiteCookies: 'none'`
+// doesn't send SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameNone) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
+  EvalJsResult result = EvalJs(
+      shell(),
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'none'});");
+  ASSERT_TRUE(result.error.empty());
+  if (base::FeatureList::IsEnabled(
+          blink::features::kStorageAccessAPIBeyondCookies)) {
+    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
+  } else {
+    // If the feature is off we still send SameSite cookies in a first-party
+    // context.
+    EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
+    EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
+    EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
+  }
+}
+
+// Test that an "a.test" frame starting a worker with `sameSiteCookies: 'none'`
+// sends SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerSameAll) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("a.test", "/workers/simple.html")));
+  EvalJsResult result = EvalJs(
+      shell(),
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
+  ASSERT_TRUE(result.error.empty());
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kSameSiteCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" iframe in a "b.test" frame starting a worker without
+// any `sameSiteCookies` option doesn't send SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossDefault) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
+  content::TestNavigationObserver navigation_observer(
+      shell()->web_contents(), /*number_of_navigations*/ 1);
+  const char kSubframeName[] = "foo";
+  EvalJsResult frame_result = EvalJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          "createFrame($1, $2)",
+          ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
+          kSubframeName));
+  ASSERT_TRUE(frame_result.error.empty());
+  navigation_observer.Wait();
+  RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameMatchesName, kSubframeName));
+  ASSERT_TRUE(subframe_rfh);
+  EvalJsResult worker_result =
+      EvalJs(subframe_rfh, "new SharedWorker('/workers/worker.js');");
+  ASSERT_TRUE(worker_result.error.empty());
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" iframe in a "b.test" frame starting a worker with
+// `sameSiteCookies: 'none'` doesn't send SameSite cookies on the request.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossNone) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
+  content::TestNavigationObserver navigation_observer(
+      shell()->web_contents(), /*number_of_navigations*/ 1);
+  const char kSubframeName[] = "foo";
+  EvalJsResult frame_result = EvalJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          "createFrame($1, $2)",
+          ssl_server()->GetURL("a.test", "/workers/simple.html").spec().c_str(),
+          kSubframeName));
+  ASSERT_TRUE(frame_result.error.empty());
+  navigation_observer.Wait();
+  RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameMatchesName, kSubframeName));
+  ASSERT_TRUE(subframe_rfh);
+  EvalJsResult worker_result = EvalJs(
+      subframe_rfh,
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'none'});");
+  ASSERT_TRUE(worker_result.error.empty());
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+  EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
+}
+
+// Test that an "a.test" iframe in a "b.test" frame cannot set
+// `sameSiteCookies: 'all'` option when starting a shared worker.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+  SetSameSiteCookie("a.test");
+  ASSERT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("b.test", "/workers/frame_factory.html")));
+  content::TestNavigationObserver navigation_observer(
+      shell()->web_contents(), /*number_of_navigations*/ 1);
+  const char kSubframeName[] = "foo";
+  EvalJsResult result_frame = EvalJs(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      JsReplace(
+          "createFrame($1, $2)",
+          ssl_server()->GetURL("a.test", "/workers/empty.html").spec().c_str(),
+          kSubframeName));
+  ASSERT_TRUE(result_frame.error.empty());
+  navigation_observer.Wait();
+  RenderFrameHost* subframe_rfh = FrameMatchingPredicate(
+      shell()->web_contents()->GetPrimaryPage(),
+      base::BindRepeating(&FrameMatchesName, kSubframeName));
+  ASSERT_TRUE(subframe_rfh);
+  EvalJsResult worker_result = EvalJs(
+      subframe_rfh,
+      "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
+  if (base::FeatureList::IsEnabled(
+          blink::features::kStorageAccessAPIBeyondCookies)) {
+    ASSERT_FALSE(worker_result.error.empty());
+  } else {
+    // If the feature is off, there is no error but we still don't send
+    // SameSite cookies.
+    ASSERT_TRUE(worker_result.error.empty());
+    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/worker.js"));
+    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.js"));
+    EXPECT_EQ(kNoCookie, GetReceivedCookie("/workers/empty.html"));
   }
 }
 

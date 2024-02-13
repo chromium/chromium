@@ -860,7 +860,8 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
               ->CreateAuthCertObserverForServiceWorker(rph->GetID()),
           NetworkServiceDevToolsObserver::MakeSelfOwned(devtools_worker_token),
           std::move(client_security_state),
-          "EmbeddedWorkerInstance::CreateFactoryBundle");
+          "EmbeddedWorkerInstance::CreateFactoryBundle",
+          /*require_cross_site_request_for_cookies=*/false);
 
   DCHECK(factory_type ==
              ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript ||

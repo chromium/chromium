@@ -84,7 +84,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       scoped_refptr<base::SingleThreadTaskRunner>
           agent_group_scheduler_compositor_task_runner = nullptr,
       const SecurityOrigin* top_level_frame_security_origin = nullptr,
-      bool parent_has_storage_access = false);
+      bool parent_has_storage_access = false,
+      bool require_cross_site_request_for_cookies = false);
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
       delete;
@@ -230,6 +231,13 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // Late initialized on thread creation. This signals whether the world created
   // is the default world for an isolate.
   bool is_default_world_of_isolate = false;
+
+  // If `require_cross_site_request_for_cookies` is specified, then all requests
+  // made must have an empty site_for_cookies to ensure only SameSite=None
+  // cookies can be attached to the request.
+  // For context on usage see:
+  // https://privacycg.github.io/saa-non-cookie-storage/shared-workers.html
+  const bool require_cross_site_request_for_cookies;
 };
 
 }  // namespace blink

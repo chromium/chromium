@@ -229,6 +229,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
           std::move(params->url_loader_network_observer)),
       shared_dictionary_observer_(
           std::move(params->shared_dictionary_observer)),
+      require_cross_site_request_for_cookies_(
+          params->require_cross_site_request_for_cookies),
       origin_access_list_(origin_access_list),
       resource_block_list_(resource_block_list) {
   DCHECK(context_);
@@ -542,6 +544,16 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     mojo::ReportBadMessage(
         "CorsURLLoaderFactory: navigation redirect chain set for a "
         "non-navigation");
+    return false;
+  }
+
+  // Validate that `require_cross_site_request_for_cookies_` is respected by an
+  // empty SiteForCookies (indicating a cross-site request being made).
+  if (require_cross_site_request_for_cookies_ &&
+      !request.site_for_cookies.IsNull()) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: all requests in this context must be "
+        "cross-site");
     return false;
   }
 

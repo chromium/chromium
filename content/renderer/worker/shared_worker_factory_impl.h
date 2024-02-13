@@ -56,7 +56,8 @@ class SharedWorkerFactoryImpl : public blink::mojom::SharedWorkerFactory {
       mojo::PendingReceiver<blink::mojom::SharedWorker> receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
           browser_interface_broker,
-      ukm::SourceId ukm_source_id) override;
+      ukm::SourceId ukm_source_id,
+      bool require_cross_site_request_for_cookies) override;
 };
 
 }  // namespace content

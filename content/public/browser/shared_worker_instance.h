@@ -71,6 +71,11 @@ class CONTENT_EXPORT SharedWorkerInstance {
   blink::mojom::SharedWorkerSameSiteCookies same_site_cookies() const {
     return same_site_cookies_;
   }
+  bool DoesRequireCrossSiteRequestForCookies() const {
+    return storage_key_.IsThirdPartyContext() ||
+           same_site_cookies_ ==
+               blink::mojom::SharedWorkerSameSiteCookies::kNone;
+  }
 
  private:
   const GURL url_;

@@ -225,6 +225,7 @@ void WorkerScriptFetcher::CreateAndStart(
     ukm::SourceId worker_source_id,
     DevToolsAgentHostImpl* devtools_agent_host,
     const base::UnguessableToken& devtools_worker_token,
+    bool require_cross_site_request_for_cookies,
     CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(client_security_state);
@@ -341,7 +342,8 @@ void WorkerScriptFetcher::CreateAndStart(
       std::move(service_worker_context), service_worker_handle,
       std::move(blob_url_loader_factory),
       std::move(url_loader_factory_override), worker_source_id,
-      devtools_agent_host, devtools_worker_token, std::move(callback));
+      devtools_agent_host, devtools_worker_token,
+      require_cross_site_request_for_cookies, std::move(callback));
 }
 
 void WorkerScriptFetcher::CreateScriptLoader(
@@ -364,6 +366,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
     ukm::SourceId worker_source_id,
     DevToolsAgentHostImpl* devtools_agent_host,
     const base::UnguessableToken& devtools_worker_token,
+    bool require_cross_site_request_for_cookies,
     WorkerScriptFetcher::CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(devtools_agent_host);
@@ -418,7 +421,8 @@ void WorkerScriptFetcher::CreateScriptLoader(
             /*coep_reporter=*/mojo::NullRemote(),
             std::move(url_loader_network_observer),
             std::move(devtools_observer), client_security_state.Clone(),
-            /*debug_tag=*/"CreateScriptLoader");
+            /*debug_tag=*/"CreateScriptLoader",
+            require_cross_site_request_for_cookies);
     // We are sure the URLLoaderFactory made with the param is only used within
     // `WorkerScriptFetcher` in the browser process. We can mark this trusted
     // safely.

@@ -83,7 +83,8 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
     network::mojom::TrustTokenOperationPolicyVerdict
         trust_token_redemption_policy,
     net::CookieSettingOverrides cookie_setting_overrides,
-    base::StringPiece debug_tag) {
+    base::StringPiece debug_tag,
+    bool require_cross_site_request_for_cookies) {
   DCHECK(process);
 
   network::mojom::URLLoaderFactoryParamsPtr params =
@@ -140,6 +141,9 @@ network::mojom::URLLoaderFactoryParamsPtr CreateParams(
 
   params->debug_tag = std::string(debug_tag);
 
+  params->require_cross_site_request_for_cookies =
+      require_cross_site_request_for_cookies;
+
   return params;
 }
 
@@ -176,7 +180,8 @@ URLLoaderFactoryParamsHelper::CreateForFrame(
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       trust_token_issuance_policy, trust_token_redemption_policy,
-      cookie_setting_overrides, debug_tag);
+      cookie_setting_overrides, debug_tag,
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 // static
@@ -208,7 +213,8 @@ URLLoaderFactoryParamsHelper::CreateForIsolatedWorld(
       frame->CreateURLLoaderNetworkObserver(),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       trust_token_issuance_policy, trust_token_redemption_policy,
-      cookie_setting_overrides, "ParamHelper::CreateForIsolatedWorld");
+      cookie_setting_overrides, "ParamHelper::CreateForIsolatedWorld",
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 network::mojom::URLLoaderFactoryParamsPtr
@@ -238,7 +244,8 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame->frame_tree_node()),
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
-      cookie_setting_overrides, "ParamHelper::CreateForPrefetch");
+      cookie_setting_overrides, "ParamHelper::CreateForPrefetch",
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 // static
@@ -257,7 +264,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
         url_loader_network_observer,
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    base::StringPiece debug_tag) {
+    base::StringPiece debug_tag,
+    bool require_cross_site_request_for_cookies) {
   return CreateParams(
       process,
       request_initiator,  // origin
@@ -281,7 +289,8 @@ URLLoaderFactoryParamsHelper::CreateForWorker(
       // https://github.com/w3c/webappsec-permissions-policy/issues/207.
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
       network::mojom::TrustTokenOperationPolicyVerdict::kPotentiallyPermit,
-      net::CookieSettingOverrides(), debug_tag);
+      net::CookieSettingOverrides(), debug_tag,
+      require_cross_site_request_for_cookies);
 }
 
 // static
@@ -335,7 +344,8 @@ URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
       /*devtools_observer=*/mojo::NullRemote(),
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
-      net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload");
+      net::CookieSettingOverrides(), "ParamHelper::CreateForEarlyHintsPreload",
+      /*require_cross_site_request_for_cookies=*/false);
 }
 
 }  // namespace content

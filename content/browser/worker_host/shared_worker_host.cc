@@ -367,7 +367,8 @@ void SharedWorkerHost::Start(
       std::move(subresource_loader_factories), std::move(controller),
       policy_container_host->CreatePolicyContainerForBlink(),
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),
-      std::move(browser_interface_broker), ukm_source_id_);
+      std::move(browser_interface_broker), ukm_source_id_,
+      instance_.DoesRequireCrossSiteRequestForCookies());
 
   // |service_worker_remote_object| is an associated interface ptr, so calls
   // can't be made on it until its request endpoint is sent. Now that the
@@ -428,7 +429,8 @@ SharedWorkerHost::CreateNetworkFactoryParamsForSubresources() {
           /*devtools_observer=*/mojo::NullRemote(),
           mojo::Clone(worker_client_security_state_),
           /*debug_tag=*/
-          "SharedWorkerHost::CreateNetworkFactoryForSubresource");
+          "SharedWorkerHost::CreateNetworkFactoryForSubresource",
+          instance_.DoesRequireCrossSiteRequestForCookies());
   return factory_params;
 }
 

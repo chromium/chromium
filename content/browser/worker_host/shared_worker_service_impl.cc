@@ -205,8 +205,6 @@ void SharedWorkerServiceImpl::ConnectToWorker(
                                 info->options->credentials, info->options->name,
                                 storage_key, creation_context_type,
                                 info->same_site_cookies);
-  // TODO(crbug.com/1484966): `info->same_site_cookies` should control which
-  // cookies are available to the shared worker.
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
@@ -383,7 +381,10 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       << " should be the same.";
   WorkerScriptFetcher::CreateAndStart(
       worker_process_host->GetID(), host->token(), host->instance().url(),
-      &creator, &creator, host->instance().storage_key().ToNetSiteForCookies(),
+      &creator, &creator,
+      host->instance().DoesRequireCrossSiteRequestForCookies()
+          ? net::SiteForCookies()
+          : host->instance().storage_key().ToNetSiteForCookies(),
       host->instance().storage_key().origin(), host->instance().storage_key(),
       host->instance().storage_key().ToPartialNetIsolationInfo(),
       creator.BuildClientSecurityStateForWorkers(), credentials_mode,
@@ -393,6 +394,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       std::move(blob_url_loader_factory), url_loader_factory_override_,
       storage_partition_, storage_domain, host->ukm_source_id(),
       SharedWorkerDevToolsAgentHost::GetFor(host), host->GetDevToolsToken(),
+      host->instance().DoesRequireCrossSiteRequestForCookies(),
       base::BindOnce(&SharedWorkerServiceImpl::StartWorker,
                      weak_factory_.GetWeakPtr(), weak_host, message_port,
                      std::move(cloned_outside_fetch_client_settings_object)));

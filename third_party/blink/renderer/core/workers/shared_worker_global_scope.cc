@@ -62,9 +62,15 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
-    const SharedWorkerToken& token)
-    : WorkerGlobalScope(std::move(creation_params), thread, time_origin, false),
-      token_(token) {}
+    const SharedWorkerToken& token,
+    bool require_cross_site_request_for_cookies)
+    : WorkerGlobalScope(std::move(creation_params),
+                        thread,
+                        time_origin,
+                        /*is_service_worker_global_scope=*/false),
+      token_(token),
+      require_cross_site_request_for_cookies_(
+          require_cross_site_request_for_cookies) {}
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;
 

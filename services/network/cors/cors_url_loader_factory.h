@@ -172,6 +172,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       url_loader_network_service_observer_;
   mojo::Remote<mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observer_;
+  const bool require_cross_site_request_for_cookies_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the

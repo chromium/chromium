@@ -47,7 +47,8 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
     mojo::PendingReceiver<blink::mojom::SharedWorker> receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
         browser_interface_broker,
-    ukm::SourceId ukm_source_id) {
+    ukm::SourceId ukm_source_id,
+    bool require_cross_site_request_for_cookies) {
   // Bound to the lifetime of the underlying blink::WebSharedWorker instance.
   new EmbeddedSharedWorkerStub(
       std::move(info), token, constructor_key, is_constructor_secure_context,
@@ -58,6 +59,7 @@ void SharedWorkerFactoryImpl::CreateSharedWorker(
       std::move(subresource_loader_factories), std::move(controller_info),
       std::move(policy_container), std::move(host), std::move(receiver),
       std::move(browser_interface_broker), ukm_source_id,
+      require_cross_site_request_for_cookies,
       RenderThreadImpl::current()->cors_exempt_header_list());
 }
 
