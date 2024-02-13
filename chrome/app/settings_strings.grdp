@@ -3036,7 +3036,7 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_HEADING" desc="A label on a permissions page. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Default behavior
   </message>
-  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ALIGNED_PAGE_DESCRIPTION" desc="Descriptive text on the 'Third-party cookies' settings page explaining that controls on the page are for managing information sites can use for tracking." translateable="false">
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ALIGNED_PAGE_DESCRIPTION" desc="Descriptive text on the 'Third-party cookies' settings page explaining that controls on the page are for managing information sites can use for tracking.">
     Manage the types of information sites can use to track you as you browse.
   </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_DESCRIPTION" desc="A description of what 'Default behavior' means. For example, see the Microphone permission at chrome://settings/content/microphone.">
