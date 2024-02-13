@@ -69,22 +69,22 @@ class MODULES_EXPORT MediaDevices final
   explicit MediaDevices(Navigator&);
   ~MediaDevices() override;
 
-  ScriptPromise enumerateDevices(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<MediaDeviceInfo>> enumerateDevices(
+      ScriptState*,
+      ExceptionState&);
   MediaTrackSupportedConstraints* getSupportedConstraints() const;
-  ScriptPromise getUserMedia(ScriptState*,
-                             const UserMediaStreamConstraints*,
-                             ExceptionState&);
-  ScriptPromise SendUserMediaRequest(
-      UserMediaRequestType,
-      ScriptPromiseResolverWithTracker<UserMediaRequestResult>*,
-      const MediaStreamConstraints*,
+  ScriptPromiseTyped<MediaStream> getUserMedia(
+      ScriptState*,
+      const UserMediaStreamConstraints*,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLSequence<MediaStream>> getAllScreensMedia(
+      ScriptState*,
       ExceptionState&);
 
-  ScriptPromise getAllScreensMedia(ScriptState*, ExceptionState&);
-
-  ScriptPromise getDisplayMedia(ScriptState*,
-                                const DisplayMediaStreamOptions*,
-                                ExceptionState&);
+  ScriptPromiseTyped<MediaStream> getDisplayMedia(
+      ScriptState*,
+      const DisplayMediaStreamOptions*,
+      ExceptionState&);
 
   void setCaptureHandleConfig(ScriptState*,
                               const CaptureHandleConfig*,
@@ -132,6 +132,14 @@ class MODULES_EXPORT MediaDevices final
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaDevicesTest, ObserveDeviceChangeEvent);
 
+  template <typename IDLResolvedType>
+  ScriptPromiseTyped<IDLResolvedType> SendUserMediaRequest(
+      UserMediaRequestType,
+      ScriptPromiseResolverWithTracker<UserMediaRequestResult,
+                                       IDLResolvedType>*,
+      const MediaStreamConstraints*,
+      ExceptionState&);
+
   void ScheduleDispatchEvent(Event*);
   void DispatchScheduledEvents();
   void StartObserving();
@@ -142,11 +150,12 @@ class MODULES_EXPORT MediaDevices final
       Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
           audio_input_capabilities);
   void StopObserving();
-  void DevicesEnumerated(
-      ScriptPromiseResolverWithTracker<EnumerateDevicesResult>* result_tracker,
-      const Vector<Vector<WebMediaDeviceInfo>>&,
-      Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>,
-      Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
+  void DevicesEnumerated(ScriptPromiseResolverWithTracker<
+                             EnumerateDevicesResult,
+                             IDLSequence<MediaDeviceInfo>>* result_tracker,
+                         const Vector<Vector<WebMediaDeviceInfo>>&,
+                         Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>,
+                         Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
   void OnDispatcherHostConnectionError();
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
 
@@ -183,7 +192,9 @@ class MODULES_EXPORT MediaDevices final
   HeapVector<Member<Event>> scheduled_events_;
   HeapMojoRemote<mojom::blink::MediaDevicesDispatcherHost> dispatcher_host_;
   HeapMojoReceiver<mojom::blink::MediaDevicesListener, MediaDevices> receiver_;
-  HeapHashSet<Member<ScriptPromiseResolverWithTracker<EnumerateDevicesResult>>>
+  HeapHashSet<
+      Member<ScriptPromiseResolverWithTracker<EnumerateDevicesResult,
+                                              IDLSequence<MediaDeviceInfo>>>>
       enumerate_device_requests_;
 
 #if !BUILDFLAG(IS_ANDROID)

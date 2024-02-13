@@ -15,10 +15,10 @@ namespace blink {
 
 // Callers should ensure that the ResultEnumType has kOk and kTimedOut as
 // values. This is a sample usage CL: http://crrev.com/c/4053546.
-template <typename ResultEnumType>
+template <typename ResultEnumType, typename IDLResolvedType>
 class CORE_EXPORT ScriptPromiseResolverWithTracker
     : public GarbageCollected<
-          ScriptPromiseResolverWithTracker<ResultEnumType>> {
+          ScriptPromiseResolverWithTracker<ResultEnumType, IDLResolvedType>> {
  public:
   // For a given metric |metric_name_prefix|, this class will record
   // "|metric_name_prefix|.Result" and "|metric_name_prefix|.Latency",
@@ -48,7 +48,9 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
         max_latency_bucket_(max_latency_bucket),
         n_buckets_(n_buckets) {
     DCHECK(!metric_name_prefix_.empty());
-    resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    resolver_ =
+        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLResolvedType>>(
+            script_state);
     if (timeout_interval.is_positive()) {
       ExecutionContext::From(script_state)
           ->GetTaskRunner(TaskType::kInternalDefault)
@@ -134,12 +136,12 @@ class CORE_EXPORT ScriptPromiseResolverWithTracker
 
   ScriptState* GetScriptState() const { return resolver_->GetScriptState(); }
 
-  ScriptPromise Promise() { return resolver_->Promise(); }
+  ScriptPromiseTyped<IDLResolvedType> Promise() { return resolver_->Promise(); }
 
   void Trace(Visitor* visitor) const { visitor->Trace(resolver_); }
 
  private:
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLResolvedType>> resolver_;
   const std::string metric_name_prefix_;
   const base::TimeTicks start_time_;
   const base::TimeDelta min_latency_bucket_;

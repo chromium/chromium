@@ -48,7 +48,8 @@ std::optional<base::Token> IdStringToToken(const String& crop_id) {
 }
 
 void RaiseApplySubCaptureTargetException(
-    ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>* resolver,
+    ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult, IDLUndefined>*
+        resolver,
     DOMExceptionCode exception_code,
     const WTF::String& exception_text,
     ApplySubCaptureTargetResult result) {
@@ -58,7 +59,8 @@ void RaiseApplySubCaptureTargetException(
 }
 
 void ResolveApplySubCaptureTargetPromiseHelper(
-    ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>* resolver,
+    ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult, IDLUndefined>*
+        resolver,
     media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
 
@@ -244,8 +246,8 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   // If the promise is not resolved within the |timeout_interval|, an
   // ApplySubCaptureTargetResult::kTimedOut response will be recorded in the
   // UMA.
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
+      ApplySubCaptureTargetResult, IDLUndefined>>(
       script_state, metric_name_prefix,
       /*timeout_interval=*/base::Seconds(10));
   if (type == SubCaptureTarget::Type::kCropTarget) {
@@ -394,8 +396,9 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
     }
   }
 
-  ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>* const
-      resolver = info->promise_resolver;
+  ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult,
+                                   IDLUndefined>* const resolver =
+      info->promise_resolver;
   pending_promises_.erase(iter);
   ResolveApplySubCaptureTargetPromiseHelper(resolver, result);
 }

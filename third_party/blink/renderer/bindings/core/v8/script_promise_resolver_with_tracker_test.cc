@@ -61,14 +61,14 @@ class ScriptPromiseResolverWithTrackerTest : public testing::Test {
         GetScriptState()->GetIsolate());
   }
 
-  ScriptPromiseResolverWithTracker<TestEnum>* CreateResultTracker(
+  ScriptPromiseResolverWithTracker<TestEnum, IDLString>* CreateResultTracker(
       String& on_fulfilled,
       String& on_rejected,
       base::TimeDelta timeout_delay = base::Minutes(1)) {
     ScriptState::Scope scope(GetScriptState());
-    auto* result_tracker =
-        MakeGarbageCollected<ScriptPromiseResolverWithTracker<TestEnum>>(
-            GetScriptState(), metric_name_prefix_, timeout_delay);
+    auto* result_tracker = MakeGarbageCollected<
+        ScriptPromiseResolverWithTracker<TestEnum, IDLString>>(
+        GetScriptState(), metric_name_prefix_, timeout_delay);
 
     ScriptPromise promise = result_tracker->Promise();
     promise.Then(MakeGarbageCollected<ScriptFunction>(

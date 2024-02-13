@@ -86,13 +86,14 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
 #if !BUILDFLAG(IS_ANDROID)
   struct PromiseInfo : GarbageCollected<PromiseInfo> {
     explicit PromiseInfo(
-        ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>*
-            promise_resolver)
+        ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult,
+                                         IDLUndefined>* promise_resolver)
         : promise_resolver(promise_resolver) {}
 
     void Trace(Visitor* visitor) const { visitor->Trace(promise_resolver); }
 
-    const Member<ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult>>
+    const Member<ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult,
+                                                  IDLUndefined>>
         promise_resolver;
     std::optional<media::mojom::ApplySubCaptureTargetResult> result;
     bool sub_capture_target_version_observed = false;
