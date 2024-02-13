@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_validation_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/page_info/about_this_site_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/passwords/model/well_known_change_password_tab_helper.h"
@@ -88,6 +89,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filter_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
@@ -315,5 +317,9 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   if (IsContextualPanelEnabled()) {
     ContextualPanelTabHelper::CreateForWebState(web_state);
+  }
+
+  if (!is_off_the_record && IsRevampPageInfoIosEnabled()) {
+    AboutThisSiteTabHelper::CreateForWebState(web_state);
   }
 }

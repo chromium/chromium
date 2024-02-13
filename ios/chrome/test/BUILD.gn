@@ -247,6 +247,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/overlays/model/public/infobar_banner:unit_tests",
     "//ios/chrome/browser/overlays/model/public/web_content_area:unit_tests",
     "//ios/chrome/browser/overscroll_actions/model:unit_tests",
+    "//ios/chrome/browser/page_info:unit_tests",
     "//ios/chrome/browser/parcel_tracking:unit_tests",
     "//ios/chrome/browser/passwords/model:unit_tests",
     "//ios/chrome/browser/passwords/model/metrics:unit_tests",
