@@ -28,6 +28,10 @@ struct ClientIdentity {
 
   ~ClientIdentity();
 
+  bool operator==(const ClientIdentity& other) const;
+
+  bool is_valid() const { return private_key && certificate; }
+
   std::string name{};
   scoped_refptr<PrivateKey> private_key{};
   scoped_refptr<net::X509Certificate> certificate{};

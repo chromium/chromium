@@ -191,6 +191,12 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Switch to tab from filtered search tab list"/>
 </enum>
 
+<enum name="TabStateFlatBufferDeserializeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure Unknown Reason"/>
+  <int value="2" label="Failure IndexOutOfBoundsException"/>
+</enum>
+
 <enum name="TabStatus">
   <int value="0" label="Memory resident"/>
   <int value="1" label="Evicted and reloaded"/>

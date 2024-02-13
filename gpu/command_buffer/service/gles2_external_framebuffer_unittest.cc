@@ -86,6 +86,21 @@ class GLES2ExternalFrameBufferTest
     CreateSharedContext(preferences, workarounds, surface_, context_,
                         context_state_, feature_info);
 
+    // On MacOS, the default texture target for native GpuMemoryBuffers is
+    // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
+    // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
+    // it's necessary to use GL_TEXTURE_2D instead.
+    // TODO(crbug.com/1056312): The proper behavior is to check the config
+    // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
+#if BUILDFLAG(IS_MAC)
+    if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+        (gl::GetANGLEImplementation() ==
+             gl::ANGLEImplementation::kSwiftShader ||
+         gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
+      gpu::SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
+    }
+#endif  // BUILDFLAG(IS_MAC)
+
     backing_factory_ = std::make_unique<SharedImageFactory>(
         preferences, workarounds, GpuFeatureInfo(), context_state_.get(),
         shared_image_manager_.get(), context_state_->memory_tracker(),

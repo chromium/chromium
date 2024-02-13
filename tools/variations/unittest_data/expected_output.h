@@ -43,6 +43,10 @@ struct FieldTrialTestingExperiment {
   const char* const forcing_flag;
   const OverrideUIString * override_ui_string;
   const size_t override_ui_string_size;
+  const char* const * hardware_classes;
+  const size_t hardware_classes_size;
+  const char* const * exclude_hardware_classes;
+  const size_t exclude_hardware_classes_size;
 };
 
 struct FieldTrialTestingStudy {

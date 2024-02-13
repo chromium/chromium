@@ -530,26 +530,22 @@ void VdaVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
 
 void VdaVideoDecoder::ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                                             VideoPixelFormat format,
-                                            uint32_t textures_per_buffer,
                                             const gfx::Size& dimensions,
                                             uint32_t texture_target) {
   DVLOG(2) << __func__ << "(" << requested_num_of_buffers << ", " << format
-           << ", " << textures_per_buffer << ", " << dimensions.ToString()
-           << ", " << texture_target << ")";
+           << ", " << dimensions.ToString() << ", " << texture_target << ")";
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   DCHECK(vda_initialized_);
 
   gpu_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VdaVideoDecoder::ProvidePictureBuffersAsync,
-                     gpu_weak_this_, requested_num_of_buffers, format,
-                     textures_per_buffer, dimensions, texture_target));
+      FROM_HERE, base::BindOnce(&VdaVideoDecoder::ProvidePictureBuffersAsync,
+                                gpu_weak_this_, requested_num_of_buffers,
+                                format, dimensions, texture_target));
 }
 
 void VdaVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     uint32_t requested_num_of_buffers,
     VideoPixelFormat format,
-    uint32_t textures_per_buffer,
     const gfx::Size& dimensions,
     const gfx::Rect& visible_rect,
     uint32_t texture_target) {
@@ -558,18 +554,17 @@ void VdaVideoDecoder::ProvidePictureBuffersWithVisibleRect(
     // for buffer allocation with no textures (i.e., |texture_target| is
     // irrelevant). Therefore, the logic in the base version of
     // ProvidePictureBuffersWithVisibleRect() is not applicable.
-    ProvidePictureBuffers(requested_num_of_buffers, format, textures_per_buffer,
-                          dimensions, texture_target);
+    ProvidePictureBuffers(requested_num_of_buffers, format, dimensions,
+                          texture_target);
     return;
   }
   VideoDecodeAccelerator::Client::ProvidePictureBuffersWithVisibleRect(
-      requested_num_of_buffers, format, textures_per_buffer, dimensions,
-      visible_rect, texture_target);
+      requested_num_of_buffers, format, dimensions, visible_rect,
+      texture_target);
 }
 
 void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
                                                  VideoPixelFormat pixel_format,
-                                                 uint32_t planes,
                                                  gfx::Size texture_size,
                                                  GLenum texture_target) {
   DVLOG(2) << __func__;
@@ -585,7 +580,7 @@ void VdaVideoDecoder::ProvidePictureBuffersAsync(uint32_t count,
 
   std::vector<std::pair<PictureBuffer, gfx::GpuMemoryBufferHandle>>
       picture_buffers_and_gmbs = picture_buffer_manager_->CreatePictureBuffers(
-          count, pixel_format, planes, texture_size, texture_target,
+          count, pixel_format, texture_size, texture_target,
           output_mode_ == VideoDecodeAccelerator::Config::OutputMode::kImport
               ? VideoDecodeAccelerator::TextureAllocationMode::
                     kDoNotAllocateGLTextures

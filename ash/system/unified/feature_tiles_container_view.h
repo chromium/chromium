@@ -24,9 +24,9 @@ class UnifiedSystemTrayController;
 class ASH_EXPORT FeatureTilesContainerView : public views::View,
                                              public PaginationModelObserver,
                                              public views::FocusChangeListener {
- public:
-  METADATA_HEADER(FeatureTilesContainerView);
+  METADATA_HEADER(FeatureTilesContainerView, views::View)
 
+ public:
   explicit FeatureTilesContainerView(UnifiedSystemTrayController* controller);
 
   FeatureTilesContainerView(const FeatureTilesContainerView&) = delete;

@@ -972,7 +972,7 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
 
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
     uint32_t keysym,
-    const absl::optional<std::vector<base::StringPiece>>& modifiers) const {
+    const std::optional<std::vector<base::StringPiece>>& modifiers) const {
   // Look up all candidates.
   auto range = std::equal_range(
       xkb_keysym_map_.begin(), xkb_keysym_map_.end(), XkbKeysymMapEntry{keysym},

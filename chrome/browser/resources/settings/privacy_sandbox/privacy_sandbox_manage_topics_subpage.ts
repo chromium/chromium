@@ -14,6 +14,8 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
@@ -104,6 +106,8 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
 
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
   private firstLevelTopicsList_: PrivacySandboxInterest[];
   private topicBeingToggled_?: PrivacySandboxInterest;
   private blockTopicDialogTitle_: string;
@@ -113,9 +117,6 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
   override ready() {
     super.ready();
 
-    this.$.explanationText.querySelectorAll('a').forEach(
-        link =>
-            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
     this.privacySandboxBrowserProxy_.getFirstLevelTopics().then(
         state => this.onFirstLevelTopicsStateChanged_(state));
   }
@@ -133,6 +134,8 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
       // the two pages up to date.
       this.privacySandboxBrowserProxy_.getFirstLevelTopics().then(
           state => this.onFirstLevelTopicsStateChanged_(state));
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Topics.Manage.PageOpened');
     }
   }
 
@@ -149,7 +152,20 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     });
   }
 
+  // When the user clicks anywhere on the toggle row, we click the toggle itself
+  // here to trigger its on-change event.
+  private onToggleRowClick_(e: DomRepeatEvent<PrivacySandboxInterest>) {
+    e.stopPropagation();
+    assert(e.model.item?.topic);
+    const toggleId = `#toggle-${e.model.item.topic.topicId}`;
+    const toggleBeingChanged =
+        this.shadowRoot!.querySelector<CrToggleElement>(toggleId);
+    assert(toggleBeingChanged);
+    toggleBeingChanged!.click();
+  }
+
   private async onToggleChange_(e: DomRepeatEvent<PrivacySandboxInterest>) {
+    e.stopPropagation();
     this.topicBeingToggled_ = e.model.item;
     assert(this.topicBeingToggled_);
     assert(this.topicBeingToggled_.topic);
@@ -157,8 +173,9 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     const toggleBeingChanged =
         this.shadowRoot!.querySelector<CrToggleElement>(toggleId);
     assert(toggleBeingChanged);
-    // If the toggle is checked, then the First Level Topic needs to be
-    // updated to be unblocked.
+    // At this point, the toggle checked state has already changed. If the
+    // toggle is now checked, then the First Level Topic needs to be updated to
+    // be unblocked.
     if (toggleBeingChanged.checked) {
       this.updateTopicState_({blocked: false});
       return;
@@ -194,6 +211,13 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
     this.privacySandboxBrowserProxy_.setTopicAllowed(
         this.topicBeingToggled_.topic, !blockedOptions.blocked);
     this.topicBeingToggled_ = undefined;
+    if (blockedOptions.blocked) {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Topics.Manage.TopicBlocked');
+    } else {
+      this.metricsBrowserProxy_.recordAction(
+          'Settings.PrivacySandbox.Topics.Manage.TopicEnabled');
+    }
   }
 
   private onBlockTopicDialogClose_() {
@@ -212,6 +236,8 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
   }
 
   private onCancelButtonDialogHandler_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled');
     // This causes the list to be fully re-rendered, in order to revert the
     // toggle back to being checked after the user decides to block the topic.
     this.firstLevelTopicsList_ = this.firstLevelTopicsList_.map(topic => {
@@ -222,7 +248,14 @@ export class SettingsPrivacySandboxManageTopicsSubpageElement extends
   }
 
   private onBlockButtonDialogHandler_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed');
     this.updateTopicState_({blocked: true});
+  }
+
+  private onLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked');
   }
 
   // TODO(b/321007722): Add test to make sure there is always a icon based on

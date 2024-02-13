@@ -7,12 +7,14 @@
 namespace ash {
 
 RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
+                             const int32_t call_id,
                              const GURL& origin,
                              const std::string& query,
                              const base::Time& cutoff_time,
                              const base::TimeTicks& end_time,
                              FileType file_type)
     : file_system_context_(file_system_context),
+      call_id_(call_id),
       origin_(origin),
       query_(query),
       cutoff_time_(cutoff_time),
@@ -21,6 +23,7 @@ RecentSource::Params::Params(storage::FileSystemContext* file_system_context,
 
 RecentSource::Params::Params(const Params& params)
     : file_system_context_(params.file_system_context_),
+      call_id_(params.call_id_),
       origin_(params.origin_),
       query_(params.query_),
       cutoff_time_(params.cutoff_time_),

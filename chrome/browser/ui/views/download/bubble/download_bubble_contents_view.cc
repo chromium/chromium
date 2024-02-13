@@ -66,7 +66,8 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
 
   primary_view_ = AddChildView(std::move(primary_view));
   security_view_ = AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-      /*delegate=*/this, navigation_handler, bubble_delegate));
+      /*delegate=*/this, info_->security_view_info(), navigation_handler,
+      bubble_delegate));
 
   // Starts on the primary page.
   ShowPrimaryPage();
@@ -97,6 +98,7 @@ DownloadBubbleRowView* DownloadBubbleContentsView::ShowPrimaryPage(
   CHECK(!id || *id != ContentId());
   security_view_->SetVisible(false);
   security_view_->Reset();
+  info_->ResetSecurityView();
   // Reset fixed width, which could be previously set by the security
   // view.
   bubble_delegate_->set_fixed_width(0);
@@ -126,15 +128,7 @@ DownloadBubbleContentsView::Page DownloadBubbleContentsView::VisiblePage()
 }
 
 void DownloadBubbleContentsView::InitializeSecurityView(const ContentId& id) {
-  CHECK(id != ContentId());
-  if (security_view_->content_id() == id) {
-    return;
-  }
-  if (DownloadUIModel* model = GetDownloadModel(id); model) {
-    security_view_->InitializeForDownload(*model);
-    return;
-  }
-  NOTREACHED();
+  info_->InitializeSecurityView(id);
 }
 
 void DownloadBubbleContentsView::ProcessSecuritySubpageButtonPress(
@@ -250,10 +244,7 @@ bool DownloadBubbleContentsView::HasPreviousIncorrectPassword(
 
 DownloadUIModel* DownloadBubbleContentsView::GetDownloadModel(
     const ContentId& id) {
-  if (DownloadBubbleRowView* row = primary_view_->GetRow(id); row) {
-    return row->model();
-  }
-  return nullptr;
+  return info_->GetDownloadModel(id);
 }
 
 BEGIN_METADATA(DownloadBubbleContentsView)

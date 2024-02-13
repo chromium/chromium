@@ -33,6 +33,8 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/sessions/app_session_service.h"
@@ -183,11 +185,13 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
 void StartupBrowserCreatorImpl::Launch(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
-    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder) {
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
+    bool restore_tabbed_browser) {
   DCHECK(profile);
   profile_ = profile;
 
-  LaunchResult launch_result = DetermineURLsAndLaunch(process_startup);
+  LaunchResult launch_result =
+      DetermineURLsAndLaunch(process_startup, restore_tabbed_browser);
 
   // Check the true process command line for --try-chrome-again=N rather than
   // the one parsed for startup URLs and such.
@@ -241,6 +245,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     profile_ = browser->profile();
 
   if (!browser || !browser->is_type_normal()) {
+    CHECK(profile_);
     // In some conditions a new browser object cannot be created. The most
     // common reason for not being able to create browser is having this call
     // when the browser process is shutting down. This can also fail if the
@@ -267,12 +272,12 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 
     browser = Browser::Create(params);
   }
+  CHECK(profile_);
 
   bool first_tab = true;
   bool process_headless_commands = headless::ShouldProcessHeadlessCommands();
   custom_handlers::ProtocolHandlerRegistry* registry =
-      profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
-               : nullptr;
+      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_);
   for (auto& tab : tabs) {
     // We skip URLs that we'd have to launch an external protocol handler for.
     // This avoids us getting into an infinite loop asking ourselves to open
@@ -298,10 +303,13 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // Headless mode is restricted to only one url in the command line, so
     // just grab the first one assuming it's the target.
     if (first_tab && process_headless_commands) {
+      auto profile_keepalive = std::make_unique<ScopedProfileKeepAlive>(
+          profile_, ProfileKeepAliveOrigin::kHeadlessCommand);
       headless::ProcessHeadlessCommands(
           profile_, tab.url,
           base::BindOnce(
               [](base::WeakPtr<Browser> browser,
+                 std::unique_ptr<ScopedProfileKeepAlive> profile_keepalive,
                  headless::HeadlessCommandHandler::Result result) {
                 if (browser && browser->window()) {
 #if BUILDFLAG(IS_MAC)
@@ -314,7 +322,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
                   browser->window()->Close();
                 }
               },
-              browser->AsWeakPtr()));
+              browser->AsWeakPtr(), std::move(profile_keepalive)));
       continue;
     }
 
@@ -355,7 +363,8 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 
 StartupBrowserCreatorImpl::LaunchResult
 StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
-    chrome::startup::IsProcessStartup process_startup) {
+    chrome::startup::IsProcessStartup process_startup,
+    bool restore_tabbed_browser) {
   if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(*command_line_)) {
     // Checking the flags this late in the launch should be redundant.
     // TODO(https://crbug.com/1300109): Remove by M104.
@@ -447,7 +456,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
       behavior_options);
 
   SessionRestore::BehaviorBitmask restore_options =
-      SessionRestore::RESTORE_BROWSER;
+      restore_tabbed_browser ? SessionRestore::RESTORE_BROWSER : 0;
   if (behavior == BrowserOpenBehavior::SYNCHRONOUS_RESTORE) {
 #if BUILDFLAG(IS_MAC)
     bool was_mac_login_or_resume = base::mac::WasLaunchedAsLoginOrResumeItem();
@@ -458,7 +467,7 @@ StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
         browser_defaults::kAlwaysCreateTabbedBrowserOnSessionRestore,
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kCreateBrowserOnStartupForTests),
-        was_mac_login_or_resume);
+        was_mac_login_or_resume, restore_tabbed_browser);
   }
 
   Browser* browser = RestoreOrCreateBrowser(
@@ -715,9 +724,13 @@ SessionRestore::BehaviorBitmask
 StartupBrowserCreatorImpl::DetermineSynchronousRestoreOptions(
     bool has_create_browser_default,
     bool has_create_browser_switch,
-    bool was_mac_login_or_resume) {
-  SessionRestore::BehaviorBitmask options =
-      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER;
+    bool was_mac_login_or_resume,
+    bool restore_tabbed_browser) {
+  SessionRestore::BehaviorBitmask options = SessionRestore::SYNCHRONOUS;
+
+  if (restore_tabbed_browser) {
+    options |= SessionRestore::RESTORE_BROWSER;
+  }
 
   // Suppress the creation of a new window on Mac when restoring with no windows
   // if launching Chrome via a login item or the resume feature in OS 10.7+.

@@ -6,7 +6,9 @@
 #define DEVICE_GAMEPAD_DUALSHOCK4_CONTROLLER_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/memory/weak_ptr.h"
@@ -14,7 +16,6 @@
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -111,7 +112,7 @@ class DEVICE_GAMEPAD_EXPORT Dualshock4Controller final
   GamepadId gamepad_id_;
   GamepadBusType bus_type_;
   // Used to offset touch ids sent to Gamepad
-  absl::optional<uint32_t> initial_touch_id_;
+  std::optional<uint32_t> initial_touch_id_;
   ContinueCircularIndexPair transform_touch_id_;
   std::unique_ptr<HidWriter> writer_;
   base::WeakPtrFactory<Dualshock4Controller> weak_factory_{this};

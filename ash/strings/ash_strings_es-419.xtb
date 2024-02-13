@@ -26,6 +26,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1087110696012418426">Buenas tardes, <ph name="GIVEN_NAME" />:</translation>
 <translation id="1088231044944504242">Busca <ph name="CATEGORY" />, archivos, apps y más. Utiliza las teclas de flecha para navegar en las apps.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + flecha hacia abajo</translation>
+<translation id="1094756674036064790">¿Quieres desactivar el Bluetooth?</translation>
 <translation id="109942774857561566">Me aburro</translation>
 <translation id="1104084341931202936">Mostrar la configuración de accesibilidad</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan incluso mejor juntos</translation>
@@ -65,7 +66,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1217633719248931900">Ir a la app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app de Play Store</translation>
 <translation id="1225748608451425081">Tu Chromebook está bloqueada debido a un problema conocido. Tiempo restante para volver a acceder: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">escritorio inactivo</translation>
 <translation id="1229194443904279055">Dejar de seleccionar</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="1239161794459865856">Se conectó <ph name="FEATURE_NAME" />.</translation>
@@ -159,7 +159,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="158838227375272121">Sitio web de Google Classroom</translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
-<translation id="1592682369233288537">Siguiente escritorio: <ph name="NEXT_DESK_NAME" />, usa la tecla de búsqueda + barra espaciadora para activarlo.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + flecha hacia abajo</translation>
 <translation id="1604857178818051494">Pausar contenido multimedia</translation>
 <translation id="1607312127821884567">Descartar la configuración de la visualización de las apps de tu teléfono</translation>
@@ -374,7 +373,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2575685495496069081">Se inhabilitó el acceso múltiple</translation>
 <translation id="2579264398927991698">Actualizaciones de firmware</translation>
 <translation id="2582112259361606227">Reiniciar para actualizar</translation>
-<translation id="2586561057878260610">Presiona Ctrl + W para combinar con <ph name="DESK_NAME" />. Presiona Ctrl + Mayúsculas + W para cerrar el escritorio y las pestañas.</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
@@ -511,7 +509,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3154351730702813399">Es posible que el administrador de dispositivos supervise tu actividad de navegación.</translation>
 <translation id="316086887565479535">Hay apps no compatibles en la plantilla</translation>
 <translation id="3160929076476941240">2 h</translation>
-<translation id="3161500364292033097">Cerrar escritorio y ventanas</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> está revirtiendo tu <ph name="DEVICE_TYPE" />. Se restablecerá tu dispositivo y se borrarán todos los datos.</translation>
 <translation id="3170769098533255179">No hay dispositivos conectados. Mientras uses el hotspot, el Wi-Fi permanecerá desactivado.</translation>
 <translation id="3171170659304083361">Configuración de los métodos de entrada</translation>
@@ -660,6 +657,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3660860940251915011">Activar o desactivar la alta visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, usuario administrado</translation>
 <translation id="3666266999138159418">Desliza para ocultar la ventana flotante</translation>
+<translation id="3673898235958558034">Si desactivas el Bluetooth, "<ph name="DEVICE_NAME_1" />" y "<ph name="DEVICE_NAME_2" />" se desconectarán de tu Chromebook.</translation>
 <translation id="367531336287639526">Seleccionar el primer ícono a la izquierda de la barra de direcciones</translation>
 <translation id="3677931086890821290">Esto permite que todas las apps y sitios web con el permiso de ubicación y ChromeOS usen la ubicación del Wi-Fi y las redes móviles.</translation>
 <translation id="3679827876008292680">Ir a la última pestaña en la ventana</translation>
@@ -671,6 +669,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Conectados anteriormente</translation>
+<translation id="3712143870407382523">Elige una ventana para este lado</translation>
 <translation id="371370241367527062">Micrófono delantero</translation>
 <translation id="3713734891607377840">Abrir cuando se complete la descarga</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> y<ph name="UNAVAILABLE_APPS_COUNT" /> más no están disponibles en este dispositivo.</translation>
@@ -847,7 +846,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4389184120735010762">Presionaste la combinación de teclas para activar la lupa con vista acoplada. ¿Quieres activarla?</translation>
 <translation id="439598569299422042">Pausado: <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">No se pudo guardar la presentación en pantalla</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> está conectada y lista para usarse. Puedes personalizar el mouse en Configuración.</translation>
 <translation id="4405151984121254935">El tipo de periférico conectado no es compatible.</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4412944820643904175">La función <ph name="FEATURE_NAME" /> está desactivada.</translation>
@@ -873,7 +871,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4491109536499578614">Imagen</translation>
 <translation id="450584155212756404">Canal para desarrolladores</translation>
 <translation id="4513946894732546136">Comentario</translation>
-<translation id="4516212064498225455">Escritorio actual: <ph name="CURRENT_DESK_NAME" />, usa la tecla de búsqueda + barra espaciadora para abrir todos los menú de escritorio.</translation>
 <translation id="4518404433291145981">Para desbloquear la Chromebook, primero desbloquea el teléfono</translation>
 <translation id="4527045527269911712">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse.</translation>
 <translation id="4533343294786968049">Se está extendiendo la duración de la batería. Terminará de cargarse por completo a las <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -916,6 +913,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4666911709726371538">Más apps</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">Se activó el Ahorro de batería.</translation>
+<translation id="4673427585974421255">Mantener activado</translation>
 <translation id="468293128311738995">Apps de tu teléfono</translation>
 <translation id="4690510401873698237">Biblioteca en la parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea el dispositivo con el código parental</translation>
@@ -1048,13 +1046,11 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718">Se combinó <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una nueva carpeta.</translation>
-<translation id="5203299837691351876">escritorio activo</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
 <translation id="5207949376430453814">Destacar el símbolo de intercalación de texto</translation>
 <translation id="5208059991603368177">Sí</translation>
 <translation id="5216991270656129561">Desactivada hasta las <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Siguiente escritorio: <ph name="NEXT_DESK_NAME" />, usa la tecla de búsqueda + barra espaciadora o la combinación de teclas Mayúsculas + tecla de búsqueda + <ph name="NEXT_DESK_INDEX" /> para activarlo.</translation>
 <translation id="5218064144558110424">Marcar como no completada</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5229343007215035173">Activar o desactivar la pantalla de privacidad</translation>
@@ -1067,7 +1063,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5268819379131021772">Lista de Google Tasks</translation>
-<translation id="5275923704957843041">Vista previa del escritorio</translation>
 <translation id="5277869901083657836">Activar o desactivar las herramientas de la pluma stylus</translation>
 <translation id="5278086053818066789">Activar o desactivar ChromeVox (comentarios por voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiere tu atención.</translation>
@@ -1174,7 +1169,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5669267381087807207">Activando</translation>
 <translation id="5673434351075758678">De "<ph name="FROM_LOCALE" />" a "<ph name="TO_LOCALE" />" después de sincronizar tu configuración</translation>
 <translation id="5675363643668471212">Elemento de la biblioteca</translation>
-<translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677928146339483299">Bloqueadas</translation>
 <translation id="5678564054339031017">Mostrar la próxima semana</translation>
 <translation id="5679050765726761783">Se conectó un adaptador de baja potencia</translation>
 <translation id="5682642926269496722">El Asistente de Google no está disponible para la Cuenta de usuario actual.</translation>
@@ -1216,6 +1211,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5802516411616338943">Abrir la Configuración rápida</translation>
 <translation id="5804651031882187592">Cómo desactivar la configuración "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Hacer clic para activar <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Si desactivas el Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" y otros <ph name="DEVICE_COUNT" /> dispositivos se desconectarán de tu Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks en la Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Detener <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
@@ -1320,7 +1316,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6199775032047436064">Cargar de nuevo la página actual</translation>
 <translation id="6200515304866777730">No es compatible con la app</translation>
 <translation id="6210042900243040400">Conectar <ph name="NAME" /> que guardaste anteriormente en <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personaliza tu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Tomar una captura de pantalla parcial o grabar la pantalla</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti y a tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Abajo</translation>
@@ -1396,6 +1391,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6539852571005954999">Análisis de descargas: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Transmitiendo a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Búsqueda con imágenes por contenido y vistas previas de imágenes</translation>
+<translation id="6547795021703527064">Si desactivas el Bluetooth, "<ph name="DEVICE_NAME" />" se desconectará de tu Chromebook.</translation>
 <translation id="6555373427270923730">Escribe una dirección web en la barra de direcciones y, luego, presiona <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
@@ -1415,6 +1411,7 @@ Nueva instalación</translation>
 <translation id="6613765291890844037">Almacenamiento en uso: <ph name="STORAGE_IN_USE_SIZE" /> | Total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
 <translation id="6622679827379792051">Configurar la visualización de las apps de tu teléfono</translation>
+<translation id="6624493541160101248">Escritorio actual: <ph name="DESK_NAME" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
 <translation id="6625718907317144388">Se ocultan <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> y otras notificaciones porque está activada la protección de visualización</translation>
 <translation id="6627638273713273709">Búsqueda+mayúscula+K</translation>
 <translation id="662830937908749204">Mover el foco al siguiente panel</translation>
@@ -1469,7 +1466,6 @@ Nueva instalación</translation>
 <translation id="6819327813400217281">Se ajustó la cámara a la esquina inferior izquierda</translation>
 <translation id="6820676911989879663">Toma un descanso</translation>
 <translation id="6827049576281411231">Cerrar el panel de eventos</translation>
-<translation id="6831561626108366035">Ve al botón <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Archivo peligroso</translation>
 <translation id="6837621009301897464">Para tomar una captura de pantalla, presiona</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
@@ -1508,6 +1504,7 @@ Nueva instalación</translation>
 <translation id="698231206551913481">Todos los archivos y datos locales asociados a este usuario se borrarán de forma permanente una vez que se quite este usuario.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> no admite el valor de resolución <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Se cambió la resolución a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Para mantener este cambio, haz clic en Confirmar. La configuración anterior se restablecerá dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Realiza un recorrido rápido para obtener más información sobre tu Chromebook. Ponte en marcha en 6 pasos.</translation>
+<translation id="7000027735917578303">Configuración de ventanas y escritorios</translation>
 <translation id="7004910047186208204">Conectarse a una red de datos móviles</translation>
 <translation id="7005239792648594238">Abre una app para comenzar</translation>
 <translation id="7007983414944123363">No se pudo verificar tu PIN o contraseña. Vuelve a intentarlo.</translation>
@@ -1759,6 +1756,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8001755249288974029">Seleccionar texto desde el cursor hasta el principio del renglón</translation>
 <translation id="8004512796067398576">Incremento</translation>
 <translation id="8026334261755873520">Borrar datos de navegación</translation>
+<translation id="802782383769312836">Escritorio anterior: <ph name="DESK_NAME" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
 <translation id="8029247720646289474">No se pudo establecer la conexión con el hotspot</translation>
 <translation id="8029629653277878342">Se requiere el PIN o la contraseña por cuestiones de seguridad</translation>
 <translation id="8030169304546394654">Desconectado</translation>
@@ -1806,6 +1804,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8219451629189078428">Durante ese período, la Chromebook deberá estar encendida y enchufada a una fuente de alimentación. Asegúrate de que el cable del cargador o adaptador esté conectado correctamente tanto a la Chromebook como al enchufe. No apagues la Chromebook.</translation>
 <translation id="8230305195727960608">Modo de inversión de colores</translation>
 <translation id="8236042855478648955">Es hora de descansar</translation>
+<translation id="8237964652943995219">Siguiente escritorio: <ph name="DESK_NAME" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
 <translation id="8239034820133090126">Activar el escritorio de la derecha</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, nivel de batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
@@ -1870,7 +1869,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8517041960877371778">Tu <ph name="DEVICE_TYPE" /> podría no cargarse si el dispositivo está encendido.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla la entrada del micrófono}other{# apps controlan la entrada del micrófono}}</translation>
 <translation id="8535393432370007982">Deshacer el orden por color</translation>
-<translation id="853768060447955562">Escritorio anterior: <ph name="PREVIOUS_DESK_NAME" />, usa la tecla de búsqueda + barra espaciadora o la combinación de teclas Mayúsculas + tecla de búsqueda + <ph name="PREVIOUS_DESK_INDEX" /> para activarlo.</translation>
 <translation id="8541078764854166027">Encuadre</translation>
 <translation id="8542053257095774575">No hay escritorios ni plantillas guardados</translation>
 <translation id="8546059259582788728">Se deshizo el orden correctamente</translation>
@@ -1957,7 +1955,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="888982883502837004">Hay actualizaciones de firmware disponibles para tu dispositivo. Haz clic para revisarlas y aplicarlas.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> se borrará de forma permanente.</translation>
 <translation id="889790758758811533">Queda <ph name="PERCENTAGE" />% de batería (aproximadamente <ph name="TIME_LEFT" />). Conecta tu dispositivo a la corriente.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> está conectada y lista para usarse. Puedes personalizar tu tablet digitalizadora en Configuración.</translation>
 <translation id="88986195241502842">Avanzar página</translation>
 <translation id="8905919797434099235">(Sin título)</translation>
 <translation id="890616557918890486">Cambiar la fuente</translation>
@@ -2034,8 +2031,8 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="92580429198593979">Presionaste la combinación de teclas para realizar la inversión de colores. ¿Quieres activarla?</translation>
 <translation id="925832987464884575">Ocultar vistas previas</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> de inmediato</translation>
+<translation id="938407504481277932">Escritorio actual: <ph name="DESK_NAME" />; <ph name="PROFILE_NAME" /> <ph name="EMAIL" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
 <translation id="938963181863597773">¿Qué eventos tengo en mi calendario?</translation>
-<translation id="943067377221312471">Escritorio anterior: <ph name="PREVIOUS_DESK_NAME" />, usa la tecla de búsqueda + barra espaciadora para activarlo.</translation>
 <translation id="945383118875625837">Arrastrar el vínculo a la barra de favoritos</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="951991426597076286">Rechazar</translation>

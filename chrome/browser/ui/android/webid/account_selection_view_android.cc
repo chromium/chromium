@@ -188,7 +188,8 @@ void AccountSelectionViewAndroid::Show(
       ConvertUTF8ToJavaString(env, identity_provider_data[0].idp_for_display),
       accounts_obj, idp_metadata_obj, client_id_metadata_obj,
       sign_in_mode == Account::SignInMode::kAuto,
-      ConvertRpContextToJavaString(env, identity_provider_data[0].rp_context));
+      ConvertRpContextToJavaString(env, identity_provider_data[0].rp_context),
+      identity_provider_data[0].request_permission);
 }
 
 void AccountSelectionViewAndroid::ShowFailureDialog(
@@ -326,6 +327,10 @@ void AccountSelectionViewAndroid::OnLoginToIdP(
 
 void AccountSelectionViewAndroid::OnMoreDetails(JNIEnv* env) {
   delegate_->OnMoreDetails();
+}
+
+void AccountSelectionViewAndroid::OnAccountsDisplayed(JNIEnv* env) {
+  delegate_->OnAccountsDisplayed();
 }
 
 bool AccountSelectionViewAndroid::MaybeCreateJavaObject() {

@@ -71,9 +71,9 @@ class AudioInputDeviceManager;
 class AudioServiceListener;
 class FakeMediaStreamUIProxy;
 class MediaStreamUIProxy;
+class PermissionControllerImpl;
 class VideoCaptureManager;
 class VideoCaptureProvider;
-class PermissionControllerImpl;
 
 enum TransferState { KEPT_ALIVE, GOT_OPEN_DEVICE };
 
@@ -215,13 +215,12 @@ class CONTENT_EXPORT MediaStreamManager
 
   // GenerateStream opens new media devices according to |controls|. It creates
   // a new request which is identified by a unique string that's returned to the
-  // caller. `render_frame_host_id` is used to determine
-  // where the infobar will appear to the user. |device_stopped_cb| is set to
-  // receive device stopped notifications. |device_changed_cb| is set to receive
-  // device changed notifications. |device_request_state_change_cb| is used to
-  // notify clients about request state changes.
-  // TODO(crbug.com/1288839): Package device-related callbacks into a single
-  // struct.
+  // caller. `render_frame_host_id` is used to determine where the infobar will
+  // appear to the user. |device_stopped_callback| is set to receive device
+  // stopped notifications. |device_changed_callback| is set to receive device
+  // changed notifications.  |device_request_state_change_callback| is used to
+  // notify clients about request state changes.  TODO(crbug.com/1288839):
+  // Package device-related callbacks into a single struct.
   void GenerateStreams(
       GlobalRenderFrameHostId render_frame_host_id,
       int requester_id,
@@ -230,18 +229,18 @@ class CONTENT_EXPORT MediaStreamManager
       MediaDeviceSaltAndOrigin salt_and_origin,
       bool user_gesture,
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-      GenerateStreamsCallback generate_stream_cb,
-      DeviceStoppedCallback device_stopped_cb,
-      DeviceChangedCallback device_changed_cb,
-      DeviceRequestStateChangeCallback device_request_state_change_cb,
+      GenerateStreamsCallback generate_stream_callback,
+      DeviceStoppedCallback device_stopped_callback,
+      DeviceChangedCallback device_changed_callback,
+      DeviceRequestStateChangeCallback device_request_state_change_callback,
       DeviceCaptureConfigurationChangeCallback
-          device_capture_configuration_change_cb,
-      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+          device_capture_configuration_change_callback,
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_callback,
       ZoomLevelChangeCallback zoom_level_change_callback);
 
   // Accesses an existing open device, identified by |device_session_id|,
   // and associates it with a new DeviceRequest. This device is then returned by
-  // invoking |get_open_device_cb| asynchronously.
+  // invoking |get_open_device_callback| asynchronously.
   void GetOpenDevice(
       const base::UnguessableToken& device_session_id,
       const base::UnguessableToken& transfer_id,
@@ -249,13 +248,13 @@ class CONTENT_EXPORT MediaStreamManager
       int requester_id,
       int page_request_id,
       MediaDeviceSaltAndOrigin salt_and_origin,
-      GetOpenDeviceCallback get_open_device_cb,
-      DeviceStoppedCallback device_stopped_cb,
-      DeviceChangedCallback device_changed_cb,
-      DeviceRequestStateChangeCallback device_request_state_change_cb,
+      GetOpenDeviceCallback get_open_device_callback,
+      DeviceStoppedCallback device_stopped_callback,
+      DeviceChangedCallback device_changed_callback,
+      DeviceRequestStateChangeCallback device_request_state_change_callback,
       DeviceCaptureConfigurationChangeCallback
-          device_capture_configuration_change_cb,
-      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
+          device_capture_configuration_change_callback,
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_callback,
       ZoomLevelChangeCallback zoom_level_change_callback);
 
   // Cancel an open request identified by |page_request_id| for the given frame.
@@ -286,16 +285,16 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Open a device identified by |device_id|. |type| must be either
   // MEDIA_DEVICE_AUDIO_CAPTURE or MEDIA_DEVICE_VIDEO_CAPTURE.
-  // |device_stopped_cb| is set to receive device stopped notifications. The
-  // request is identified using string returned to the caller.
+  // |device_stopped_callback| is set to receive device stopped notifications.
+  // The request is identified using string returned to the caller.
   void OpenDevice(GlobalRenderFrameHostId render_frame_host_id,
                   int requester_id,
                   int page_request_id,
                   const std::string& device_id,
                   blink::mojom::MediaStreamType type,
                   MediaDeviceSaltAndOrigin salt_and_origin,
-                  OpenDeviceCallback open_device_cb,
-                  DeviceStoppedCallback device_stopped_cb);
+                  OpenDeviceCallback open_device_callback,
+                  DeviceStoppedCallback device_stopped_callback);
 
   // Find |device_id| in the list of |requests_|, and returns its session id,
   // or an empty base::UnguessableToken if not found. Must be called on the IO
@@ -433,13 +432,6 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
-
-  void GetZoomLevel(
-      GlobalRenderFrameHostId capturer_rfh_id,
-      const base::UnguessableToken& session_id,
-      base::OnceCallback<
-          void(std::optional<int> zoom_level,
-               blink::mojom::CapturedSurfaceControlResult result)> callback);
 
   void SetZoomLevel(
       GlobalRenderFrameHostId capturer_rfh_id,

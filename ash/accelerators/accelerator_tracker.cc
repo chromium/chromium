@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "base/metrics/user_metrics.h"
 #include "ui/events/event.h"
 
@@ -40,8 +39,7 @@ void AcceleratorTracker::OnKeyEvent(ui::KeyEvent* event) {
   const auto it = accelerator_tracker_map_.find(tracker_data);
   if (it != accelerator_tracker_map_.end()) {
     base::RecordComputedAction(std::string(it->second.action_string));
-    if (features::IsCaptureModeEducationEnabled() &&
-        (it->second.type == TrackerType::kCaptureMode)) {
+    if (it->second.type == TrackerType::kCaptureMode) {
       CaptureModeController::Get()
           ->education_controller()
           ->MaybeShowEducation();

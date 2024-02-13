@@ -765,7 +765,8 @@ class LayerTreeHostImplTest : public testing::Test,
         ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
         gfx::RectF(0, 0, 200, 200), gfx::PointF(300, 300));
     SnapAreaData area_data(ScrollSnapAlign(SnapAlignment::kStart),
-                           gfx::RectF(50, 50, 100, 100), false, ElementId(10));
+                           gfx::RectF(50, 50, 100, 100), false, false,
+                           ElementId(10));
     container_data.AddSnapAreaData(area_data);
     GetScrollNode(overflow)->snap_container_data.emplace(container_data);
     DrawFrame();
@@ -3110,9 +3111,9 @@ TEST_F(LayerTreeHostImplTest, NativeFlingInSnapArea) {
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, ElementId(20)));
+      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
   GetScrollNode(overflow)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -7261,7 +7262,7 @@ TEST_F(LayerTreeHostImplBrowserControlsTest,
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
   host_impl_->OuterViewportScrollNode()->snap_container_data.emplace(container);
 
   DrawFrame();
@@ -13916,6 +13917,7 @@ TEST_P(FluentOverlayScrollbarOpacityLayerTreeHostImplTest,
        PaintedOverlayScrollbarTrackOpacityTest) {
   auto* scrollbar = CreateAndRegisterPaintedScrollbarLayer();
 
+  scrollbar->draw_properties().opacity = 1;
   int const step = GetParam();
   float const thickness_scale_step =
       (1 - scrollbar->GetIdleThicknessScale()) / kParamSteps;
@@ -16542,8 +16544,7 @@ TEST_F(LayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   gfx::Size layer_size = gfx::Size(750, 750);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_size);
+  auto recording_source = FakeRecordingSource::Create(layer_size);
   PaintImage checkerable_image =
       PaintImageBuilder::WithCopy(
           CreateDiscardablePaintImage(gfx::Size(500, 500)))
@@ -19046,9 +19047,9 @@ TEST_F(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 4900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, ElementId(10)));
+      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
   container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, ElementId(20)));
+      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
   GetScrollNode(snapping_layer)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -19086,6 +19087,41 @@ TEST_F(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
             initial_offset);
   EXPECT_EQ(handler.snap_strategy_for_testing()->intended_position(),
             target_offset);
+}
+
+namespace {
+
+class FakeLayerImpl : public LayerImpl {
+ public:
+  static std::unique_ptr<FakeLayerImpl> Create(LayerTreeImpl* tree_impl,
+                                               int id) {
+    return base::WrapUnique(new FakeLayerImpl(tree_impl, id));
+  }
+
+  ~FakeLayerImpl() override = default;
+  void SetInInvisibleLayerTree() override {
+    has_been_in_invisible_layer_tree_ = true;
+  }
+  bool has_been_in_invisible_layer_tree() const {
+    return has_been_in_invisible_layer_tree_;
+  }
+
+ protected:
+  FakeLayerImpl(LayerTreeImpl* tree_impl, int id) : LayerImpl(tree_impl, id) {}
+
+  bool has_been_in_invisible_layer_tree_ = false;
+};
+
+}  // namespace
+
+TEST_F(LayerTreeHostImplTest, VisbilityUpdateToLayers) {
+  LayerTreeImpl* active_tree = host_impl_->active_tree();
+
+  auto* layer = AddLayer<FakeLayerImpl>(active_tree);
+  EXPECT_FALSE(layer->has_been_in_invisible_layer_tree());
+
+  host_impl_->SetVisible(false);
+  EXPECT_TRUE(layer->has_been_in_invisible_layer_tree());
 }
 
 }  // namespace cc

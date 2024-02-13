@@ -281,7 +281,7 @@ void BluetoothDetailedViewImpl::ToggleBluetoothState(bool new_state) {
   UpdateBluetoothEnabledState(new_system_state);
 }
 
-BEGIN_METADATA(BluetoothDetailedViewImpl, TrayDetailedView)
+BEGIN_METADATA(BluetoothDetailedViewImpl)
 END_METADATA
 
 }  // namespace ash

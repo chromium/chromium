@@ -65,13 +65,10 @@ void NonPersistentNotificationHandler::OnClick(
               weak_ptr_factory_.GetWeakPtr(), profile, origin, notification_id,
               std::move(completed_closure)));
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kNotificationInteractionHistory)) {
-    auto* service =
-        NotificationsEngagementServiceFactory::GetForProfile(profile);
-    // This service might be missing for incognito profiles and in tests.
-    if (service)
-      service->RecordNotificationInteraction(origin);
+  auto* service = NotificationsEngagementServiceFactory::GetForProfile(profile);
+  // This service might be missing for incognito profiles and in tests.
+  if (service) {
+    service->RecordNotificationInteraction(origin);
   }
 }
 

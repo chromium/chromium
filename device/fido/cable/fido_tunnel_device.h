@@ -34,9 +34,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   // This constructor is used for QR-initiated connections.
   FidoTunnelDevice(
       network::mojom::NetworkContext* network_context,
-      absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+      std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
           pairing_callback,
-      absl::optional<base::RepeatingCallback<void(Event)>> event_callback,
+      std::optional<base::RepeatingCallback<void(Event)>> event_callback,
       base::span<const uint8_t> secret,
       base::span<const uint8_t, kQRSeedSize> local_identity_seed,
       const CableEidArray& decrypted_eid);
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
       network::mojom::NetworkContext* network_context,
       std::unique_ptr<Pairing> pairing,
       base::OnceClosure pairing_is_invalid,
-      absl::optional<base::RepeatingCallback<void(Event)>> event_callback);
+      std::optional<base::RepeatingCallback<void(Event)>> event_callback);
 
   FidoTunnelDevice(const FidoTunnelDevice&) = delete;
   FidoTunnelDevice& operator=(const FidoTunnelDevice&) = delete;
@@ -140,7 +140,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
 
     CableEidArray decrypted_eid;
     std::array<uint8_t, 32> psk;
-    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+    std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback;
     std::array<uint8_t, kQRSeedSize> local_identity_seed;
     tunnelserver::KnownDomainID tunnel_server_domain;
@@ -155,9 +155,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     std::array<uint8_t, kEIDKeySize> eid_encryption_key;
     std::array<uint8_t, kP256X962Length> peer_identity;
     std::vector<uint8_t> secret;
-    absl::optional<CableEidArray> decrypted_eid;
-    absl::optional<std::array<uint8_t, 32>> psk;
-    absl::optional<std::vector<uint8_t>> handshake_message;
+    std::optional<CableEidArray> decrypted_eid;
+    std::optional<std::array<uint8_t, 32>> psk;
+    std::optional<std::vector<uint8_t>> handshake_message;
     base::OnceClosure pairing_is_invalid;
   };
 
@@ -188,7 +188,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     friend class base::RefCounted<EstablishedConnection>;
     ~EstablishedConnection();
 
-    void OnTunnelData(absl::optional<base::span<const uint8_t>> data);
+    void OnTunnelData(std::optional<base::span<const uint8_t>> data);
     void OnRemoteClose();
     void OnTimeout();
     bool ProcessUpdate(base::span<const uint8_t> plaintext);
@@ -202,10 +202,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
     const HandshakeHash handshake_hash_;
 
     // These three fields are either all present or all nullopt.
-    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+    std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback_;
-    absl::optional<std::array<uint8_t, kQRSeedSize>> local_identity_seed_;
-    absl::optional<tunnelserver::KnownDomainID> tunnel_server_domain_;
+    std::optional<std::array<uint8_t, kQRSeedSize>> local_identity_seed_;
+    std::optional<tunnelserver::KnownDomainID> tunnel_server_domain_;
 
     base::OneShotTimer timer_;
     DeviceCallback callback_;
@@ -214,9 +214,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
 
   void OnTunnelReady(
       WebSocketAdapter::Result result,
-      absl::optional<std::array<uint8_t, kRoutingIdSize>> routing_id,
+      std::optional<std::array<uint8_t, kRoutingIdSize>> routing_id,
       WebSocketAdapter::ConnectSignalSupport connect_signal_support);
-  void OnTunnelData(absl::optional<base::span<const uint8_t>> data);
+  void OnTunnelData(std::optional<base::span<const uint8_t>> data);
   void OnError();
   void DeviceTransactReady(std::vector<uint8_t> command,
                            DeviceCallback callback);
@@ -225,11 +225,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTunnelDevice : public FidoDevice {
   State state_ = State::kConnecting;
   absl::variant<QRInfo, PairedInfo> info_;
   const std::array<uint8_t, 8> id_;
-  const absl::optional<base::RepeatingCallback<void(Event)>> event_callback_;
+  const std::optional<base::RepeatingCallback<void(Event)>> event_callback_;
   std::vector<uint8_t> pending_message_;
   DeviceCallback pending_callback_;
-  absl::optional<HandshakeInitiator> handshake_;
-  absl::optional<HandshakeHash> handshake_hash_;
+  std::optional<HandshakeInitiator> handshake_;
+  std::optional<HandshakeHash> handshake_hash_;
   std::vector<uint8_t> getinfo_response_bytes_;
 
   // These fields are |nullptr| when in state |kReady|.

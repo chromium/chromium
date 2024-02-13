@@ -75,6 +75,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::AddAuthFactorReply>;
   using UpdateAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::UpdateAuthFactorReply>;
+  using UpdateAuthFactorMetadataCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::UpdateAuthFactorMetadataReply>;
   using RemoveAuthFactorCallback =
       chromeos::DBusMethodCallback<::user_data_auth::RemoveAuthFactorReply>;
   using ListAuthFactorsCallback =
@@ -264,6 +266,13 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void UpdateAuthFactor(
       const ::user_data_auth::UpdateAuthFactorRequest& request,
       UpdateAuthFactorCallback callback) = 0;
+
+  // This call will be used in the case of a user wanting
+  // to update an AuthFactor's metadata. (E.g. Changing the user specified
+  // name).
+  virtual void UpdateAuthFactorMetadata(
+      const ::user_data_auth::UpdateAuthFactorMetadataRequest& request,
+      UpdateAuthFactorMetadataCallback callback) = 0;
 
   // This is called when a user wants to remove an
   // AuthFactor.

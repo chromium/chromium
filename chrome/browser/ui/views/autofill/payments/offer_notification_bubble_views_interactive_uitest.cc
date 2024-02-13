@@ -204,26 +204,44 @@ INSTANTIATE_TEST_SUITE_P(
     GPayCardLinked,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-        "GPayCardLinked",
-        AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER}));
+        "GPayCardLinked", AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
+        std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
+              {{commerce::kHistoryClustersBehaviorParam, "0"},
+               {commerce::kMerchantWideBehaviorParam, "2"},
+               {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}));
 INSTANTIATE_TEST_SUITE_P(
     FreeListingCoupon,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_default",
-            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER},
+            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+            std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
+                  {{commerce::kHistoryClustersBehaviorParam, "0"},
+                   {commerce::kMerchantWideBehaviorParam, "2"},
+                   {commerce::kNonMerchantWideBehaviorParam, "2"}}}})},
         OfferNotificationBubbleViewsInteractiveUiTestData{
             "FreeListingCoupon_chrome_refresh_style",
             AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
             std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
-                {{::features::kChromeRefresh2023, {}}})}),
+                {{::features::kChromeRefresh2023, {}},
+                 {commerce::kDiscountDialogAutoPopupBehaviorSetting,
+                  {{commerce::kHistoryClustersBehaviorParam, "0"},
+                   {commerce::kMerchantWideBehaviorParam, "2"},
+                   {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}),
     GetTestName);
 INSTANTIATE_TEST_SUITE_P(
     GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
+        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER,
+        std::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+            {{commerce::kDiscountDialogAutoPopupBehaviorSetting,
+              {{commerce::kHistoryClustersBehaviorParam, "0"},
+               {commerce::kMerchantWideBehaviorParam, "2"},
+               {commerce::kNonMerchantWideBehaviorParam, "2"}}}})}));
 
 // TODO(crbug.com/1491942): This fails with the field trial testing config.
 class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
@@ -708,41 +726,6 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
         browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
         GURL(GetDefaultTestDetailsUrlString()));
   }
-}
-
-IN_PROC_BROWSER_TEST_P(
-    OfferNotificationBubbleViewsInteractiveUiTest,
-    RecordPageLoadsWithPromoOfferIconShowingMetricForFreeListingOffer) {
-  // Applies to free listing coupons offers only, as we don't log this metric
-  // for other offers.
-  if (test_offer_type_ !=
-      AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
-    return;
-  }
-
-  base::HistogramTester histogram_tester;
-
-  ShowBubbleForOfferAndVerify();
-  ASSERT_TRUE(GetOfferNotificationBubbleViews());
-  ASSERT_TRUE(IsIconVisible());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 1);
-
-  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime);
-
-  // Navigates to another valid domain will not reshow the bubble.
-  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/second"));
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-  EXPECT_TRUE(IsIconVisible());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
-
-  // Navigates to an invalid domain will dismiss the icon.
-  NavigateToAndWaitForForm(GetUrl("www.about.test", "/"));
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-  EXPECT_FALSE(IsIconVisible());
-  histogram_tester.ExpectBucketCount(
-      "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer", true, 2);
 }
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,

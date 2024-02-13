@@ -3189,8 +3189,19 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
     if (reasons_to_copy->src) {
       not_restored_reasons->src = reasons_to_copy->src.value().c_str();
     }
-    for (const auto& reason : reasons_to_copy->reasons) {
-      not_restored_reasons->reasons.push_back(reason.c_str());
+    for (const auto& reason_to_copy : reasons_to_copy->reasons) {
+      mojom::blink::BFCacheBlockingDetailedReasonPtr reason =
+          mojom::blink::BFCacheBlockingDetailedReason::New();
+      reason->name = WTF::String(reason_to_copy->name);
+      if (reason_to_copy->source) {
+        mojom::blink::BlockingReasonSourceLocationPtr source_location =
+            mojom::blink::BlockingReasonSourceLocation::New();
+        source_location->url = WTF::String(reason_to_copy->source->url);
+        source_location->line_number = reason_to_copy->source->line_number;
+        source_location->column_number = reason_to_copy->source->column_number;
+        reason->source = std::move(source_location);
+      }
+      not_restored_reasons->reasons.push_back(std::move(reason));
     }
     if (reasons_to_copy->same_origin_details) {
       auto details = mojom::blink::SameOriginBfcacheNotRestoredDetails::New();

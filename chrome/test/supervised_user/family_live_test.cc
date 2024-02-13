@@ -21,6 +21,7 @@
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/test/supervised_user/family_member.h"
+#include "chrome/test/supervised_user/test_state_seeded_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -48,7 +49,6 @@ std::string GetFamilyMemberIdentifier(FamilyIdentifier family_identifier,
 
 }  // namespace
 
-FamilyLiveTest::FamilyLiveTest() = default;
 FamilyLiveTest::FamilyLiveTest(FamilyIdentifier family_identifier)
     : family_identifier_(family_identifier) {}
 FamilyLiveTest::FamilyLiveTest(
@@ -133,6 +133,34 @@ GURL FamilyLiveTest::GetRoutedUrl(std::string_view url_spec) const {
   }
   NOTREACHED_NORETURN()
       << "Supplied url_spec is not routed in this test fixture.";
+}
+
+InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
+    FamilyIdentifier family_identifier)
+    : InteractiveBrowserTestT<FamilyLiveTest>(family_identifier) {}
+InteractiveFamilyLiveTest::InteractiveFamilyLiveTest(
+    FamilyIdentifier family_identifier,
+    const std::vector<std::string>& extra_enabled_hosts)
+    : InteractiveBrowserTestT<FamilyLiveTest>(family_identifier,
+                                              extra_enabled_hosts) {}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveFamilyLiveTest::DefineChromeTestState(
+    ui::test::StateIdentifier<ChromeTestStateObserver> id,
+    const std::vector<GURL>& allowed_urls,
+    const std::vector<GURL>& blocked_urls) {
+  return Steps(ObserveState(id, std::make_unique<DefineChromeTestStateObserver>(
+                                    head_of_household(), child(), allowed_urls,
+                                    blocked_urls)),
+               WaitForState(id, ChromeTestStateSeedingResult::kIntendedState));
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveFamilyLiveTest::ResetChromeTestState(
+    ui::test::StateIdentifier<ChromeTestStateObserver> id) {
+  return Steps(ObserveState(id, std::make_unique<ResetChromeTestStateObserver>(
+                                    head_of_household(), child())),
+               WaitForState(id, ChromeTestStateSeedingResult::kIntendedState));
 }
 
 }  // namespace supervised_user

@@ -6,6 +6,7 @@
 #define UI_ACTIONS_ACTIONS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/class_property.h"
@@ -194,16 +194,16 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
         const std::u16string accessible_name) &;
     ActionItemBuilder&& SetAccessibleName(
         const std::u16string accessible_name) &&;
-    ActionItemBuilder& SetActionId(absl::optional<ActionId> action_id) &;
-    ActionItemBuilder&& SetActionId(absl::optional<ActionId> action_id) &&;
+    ActionItemBuilder& SetActionId(std::optional<ActionId> action_id) &;
+    ActionItemBuilder&& SetActionId(std::optional<ActionId> action_id) &&;
     ActionItemBuilder& SetAccelerator(ui::Accelerator accelerator) &;
     ActionItemBuilder&& SetAccelerator(ui::Accelerator accelerator) &&;
     ActionItemBuilder& SetChecked(bool checked) &;
     ActionItemBuilder&& SetChecked(bool checked) &&;
     ActionItemBuilder& SetEnabled(bool enabled) &;
     ActionItemBuilder&& SetEnabled(bool enabled) &&;
-    ActionItemBuilder& SetGroupId(absl::optional<int> group_id) &;
-    ActionItemBuilder&& SetGroupId(absl::optional<int> group_id) &&;
+    ActionItemBuilder& SetGroupId(std::optional<int> group_id) &;
+    ActionItemBuilder&& SetGroupId(std::optional<int> group_id) &&;
     ActionItemBuilder& SetImage(const ui::ImageModel& image) &;
     ActionItemBuilder&& SetImage(const ui::ImageModel& image) &&;
     ActionItemBuilder& SetText(const std::u16string& text) &;
@@ -246,16 +246,16 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   // Configure action states and attributes.
   std::u16string GetAccessibleName() const;
   void SetAccessibleName(const std::u16string accessible_name);
-  absl::optional<ActionId> GetActionId() const;
-  void SetActionId(absl::optional<ActionId> action_id);
+  std::optional<ActionId> GetActionId() const;
+  void SetActionId(std::optional<ActionId> action_id);
   ui::Accelerator GetAccelerator() const;
   void SetAccelerator(ui::Accelerator accelerator);
   bool GetChecked() const;
   void SetChecked(bool checked);
   bool GetEnabled() const;
   void SetEnabled(bool enabled);
-  absl::optional<int> GetGroupId() const;
-  void SetGroupId(absl::optional<int> group_id);
+  std::optional<int> GetGroupId() const;
+  void SetGroupId(std::optional<int> group_id);
   const ui::ImageModel& GetImage() const;
   void SetImage(const ui::ImageModel& image);
   const std::u16string GetText() const;
@@ -282,7 +282,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
 
   // Get action metrics.
   int GetInvokeCount() const;
-  absl::optional<base::TimeTicks> GetLastInvokeTime() const;
+  std::optional<base::TimeTicks> GetLastInvokeTime() const;
 
   base::WeakPtr<ActionItem> GetAsWeakPtr();
 
@@ -302,11 +302,11 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   int updating_ = 0;
   bool updated_ = false;
   std::u16string accessible_name_;
-  absl::optional<ActionId> action_id_;
+  std::optional<ActionId> action_id_;
   ui::Accelerator accelerator_;
   bool checked_ = false;
   bool enabled_ = true;
-  absl::optional<int> group_id_;
+  std::optional<int> group_id_;
   bool visible_ = true;
   std::u16string text_;
   std::u16string tooltip_;
@@ -314,7 +314,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   Synonyms synonyms_;
   InvokeActionCallback callback_;
   int invoke_count_ = 0;
-  absl::optional<base::TimeTicks> last_invoke_time_;
+  std::optional<base::TimeTicks> last_invoke_time_;
   base::WeakPtrFactory<ActionItem> weak_ptr_factory_{this};
 };
 
@@ -391,14 +391,14 @@ class COMPONENT_EXPORT(ACTIONS) ActionIdMap {
 
   // Searches existing maps for the given ActionId and returns the corresponding
   // string if found, otherwise returns an empty string.
-  static absl::optional<std::string> ActionIdToString(const ActionId action_id);
+  static std::optional<std::string> ActionIdToString(const ActionId action_id);
   // Searches existing maps for the given string and returns the corresponding
   // ActionId if found, otherwise returns kActionsEnd.
-  static absl::optional<ActionId> StringToActionId(
+  static std::optional<ActionId> StringToActionId(
       const std::string action_id_string);
-  static std::vector<absl::optional<std::string>> ActionIdsToStrings(
+  static std::vector<std::optional<std::string>> ActionIdsToStrings(
       std::vector<ActionId> action_ids);
-  static std::vector<absl::optional<ActionId>> StringsToActionIds(
+  static std::vector<std::optional<ActionId>> StringsToActionIds(
       std::vector<std::string> action_id_strings);
 
   static void AddActionIdToStringMappings(ActionIdToStringMap map);
@@ -416,8 +416,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionIdMap {
   template <typename T, typename U>
   static void MergeMaps(base::flat_map<T, U>& map1, base::flat_map<T, U>& map2);
 
-  static absl::optional<ActionIdToStringMap>& GetGlobalActionIdToStringMap();
-  static absl::optional<StringToActionIdMap>& GetGlobalStringToActionIdMap();
+  static std::optional<ActionIdToStringMap>& GetGlobalActionIdToStringMap();
+  static std::optional<StringToActionIdMap>& GetGlobalStringToActionIdMap();
   static ActionIdToStringMap& GetActionIdToStringMap();
   static StringToActionIdMap& GetStringToActionIdMap();
 };

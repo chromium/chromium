@@ -1,5 +1,7 @@
-monorail {
+monorail: {
   component: "Mobile>iOSWeb"
 }
-
 team_email: "ios-directory-owners@chromium.org"
+buganizer_public: {
+  component_id: 1456915
+}

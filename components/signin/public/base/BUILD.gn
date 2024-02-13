@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//components/signin/features.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -17,6 +18,15 @@ buildflag_header("signin_buildflags") {
     "ENABLE_MIRROR=$enable_mirror",
     "ENABLE_BOUND_SESSION_CREDENTIALS=$enable_bound_session_credentials",
   ]
+}
+
+if (enable_bound_session_credentials) {
+  proto_library("hybrid_encryption_key_proto") {
+    sources = [
+      "hybrid_encryption_key.proto",
+      "tink_key.proto",
+    ]
+  }
 }
 
 static_library("base") {
@@ -73,6 +83,15 @@ static_library("base") {
   if (is_chromeos_lacros) {
     public_deps += [ "//components/account_manager_core" ]
   }
+
+  if (enable_bound_session_credentials) {
+    sources += [
+      "bound_session_oauth_multilogin_delegate.h",
+      "hybrid_encryption_key.cc",
+      "hybrid_encryption_key.h",
+    ]
+    public_deps += [ ":hybrid_encryption_key_proto" ]
+  }
 }
 
 if (is_android) {
@@ -124,6 +143,10 @@ source_set("unit_tests") {
     "session_binding_utils_unittest.cc",
     "signin_metrics_unittest.cc",
   ]
+
+  if (enable_bound_session_credentials) {
+    sources += [ "hybrid_encryption_key_unittest.cc" ]
+  }
 
   deps = [
     ":base",

@@ -763,7 +763,7 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesLog) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr, absl::nullopt,
+                    ui::MENU_SOURCE_NONE, nullptr, std::nullopt,
                     histogram_name);
 
   base::RunLoop run_loop;
@@ -793,7 +793,7 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesNotLog) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr, absl::nullopt);
+                    ui::MENU_SOURCE_NONE, nullptr, std::nullopt);
 
   base::RunLoop run_loop;
   views::MenuController::GetActiveInstance()

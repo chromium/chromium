@@ -73,6 +73,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                        blink::mojom::RpMode rp_mode,
                        const content::IdentityProviderMetadata& idp_metadata,
                        const std::optional<TokenError>& error) override;
+  void OnAccountsDisplayed() override;
+
   void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
   std::optional<std::string> GetSubtitle() const override;
@@ -252,6 +254,12 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // sign-in flow is complete but the pop-up window is not closed yet e.g. user
   // is asked to verify phone number, change password, etc.
   base::OnceClosure show_accounts_dialog_callback_;
+
+  // Because the tab that shows the accounts dialog may be invisible initially,
+  // e.g. when a user opens a new tab, we'd delay showing the dialog until the
+  // tab becomes visible. This callback notifies the controller when the dialog
+  // is displayed to the user for the first time.
+  base::OnceClosure accounts_displayed_callback_;
 
   // If dialog has NOT been populated with accounts yet as a result of the IDP
   // sign-in flow and the IDP sign-in pop-up window has been closed, we use this

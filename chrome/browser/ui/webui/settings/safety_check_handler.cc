@@ -191,7 +191,7 @@ void SafetyCheckHandler::PerformSafetyCheck() {
       GetStringForSafeBrowsing(safe_browsing_status_));
 
   if (!version_updater_) {
-    version_updater_.reset(VersionUpdater::Create(web_ui()->GetWebContents()));
+    version_updater_ = VersionUpdater::Create(web_ui()->GetWebContents());
   }
   DCHECK(version_updater_);
   if (!update_helper_) {

@@ -455,6 +455,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Metered connection"/>
   <int value="12" label="Empty alternate URL"/>
   <int value="13" label="Local file waiting for upload"/>
+  <int value="14" label="Disable Drive preference set"/>
+  <int value="15" label="Drive disabled for account type"/>
 </enum>
 
 <enum name="OfficeFileHandler">

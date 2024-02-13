@@ -665,7 +665,7 @@ void KeyboardShortcutView::UpdateActiveAndInactiveFrameColor() {
   window->SetProperty(chromeos::kFrameInactiveColorKey, background_color);
 }
 
-BEGIN_METADATA(KeyboardShortcutView, views::WidgetDelegateView)
+BEGIN_METADATA(KeyboardShortcutView)
 END_METADATA
 
 }  // namespace keyboard_shortcut_viewer

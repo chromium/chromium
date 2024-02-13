@@ -8,6 +8,9 @@
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
+#import "ios/web/web_state/web_state_impl.h"
 #import "testing/gtest_mac.h"
 
 namespace web {
@@ -19,9 +22,6 @@ class FullscreenJavaScriptFeatureTest : public WebTestWithWebState {
 
   void SetUp() override {
     WebTestWithWebState::SetUp();
-    OverrideJavaScriptFeatures(
-        {web::java_script_features::GetCommonJavaScriptFeature(),
-         web::FullscreenJavaScriptFeature::GetInstance()});
   }
 };
 
@@ -34,8 +34,9 @@ TEST_F(FullscreenJavaScriptFeatureTest, ViewportFitCoverPropagates) {
   LoadHtml(html);
   ASSERT_TRUE(WaitUntilLoaded());
 
-  // TODO(crbug.com/1394631): Verify that CRWWebControllerContainerView's
-  // `cover` property is true.
+  CRWWebController* web_controller =
+      web::WebStateImpl::FromWebState(web_state())->GetWebController();
+  ASSERT_TRUE(web_controller.isCover);
 }
 
 // Tests that a page with viewport-fit=auto correctly propagates this state
@@ -47,8 +48,9 @@ TEST_F(FullscreenJavaScriptFeatureTest, ViewportFitAutoPropagates) {
   LoadHtml(html);
   ASSERT_TRUE(WaitUntilLoaded());
 
-  // TODO(crbug.com/1394631): Verify that CRWWebControllerContainerView's
-  // `cover` property is false.
+  CRWWebController* web_controller =
+      web::WebStateImpl::FromWebState(web_state())->GetWebController();
+  ASSERT_FALSE(web_controller.isCover);
 }
 
 // Tests that a page with no viewport-fit value correctly propagates this state
@@ -59,8 +61,9 @@ TEST_F(FullscreenJavaScriptFeatureTest, NoViewportFitPropagates) {
   LoadHtml(html);
   ASSERT_TRUE(WaitUntilLoaded());
 
-  // TODO(crbug.com/1394631): Verify that CRWWebControllerContainerView's
-  // `cover` property is false.
+  CRWWebController* web_controller =
+      web::WebStateImpl::FromWebState(web_state())->GetWebController();
+  ASSERT_FALSE(web_controller.isCover);
 }
 
 }  // namespace web

@@ -21,21 +21,19 @@
 
 namespace password_manager {
 
-SyncCredentialsFilter::SyncCredentialsFilter(
-    PasswordManagerClient* client,
-    SyncServiceFactoryFunction sync_service_factory_function)
-    : client_(client),
-      sync_service_factory_function_(std::move(sync_service_factory_function)) {
-}
+SyncCredentialsFilter::SyncCredentialsFilter(PasswordManagerClient* client)
+    : client_(client) {}
 
 SyncCredentialsFilter::~SyncCredentialsFilter() = default;
 
 bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
-  if (client_->IsOffTheRecord())
+  if (client_->IsOffTheRecord()) {
     return false;
+  }
 
-  if (form.form_data.is_gaia_with_skip_save_password_form)
+  if (form.form_data.is_gaia_with_skip_save_password_form) {
     return false;
+  }
 
   if (!sync_util::IsGaiaCredentialPage(form.signon_realm)) {
     return true;
@@ -43,8 +41,7 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
 
   // Note that `sync_service` may be null in advanced cases like --disable-sync
   // being used as per syncer::IsSyncAllowedByFlag().
-  const syncer::SyncService* sync_service =
-      sync_service_factory_function_.Run();
+  const syncer::SyncService* sync_service = client_->GetSyncService();
 
   // The requirement to fulfill is "don't offer to save a Gaia password inside
   // its own account".

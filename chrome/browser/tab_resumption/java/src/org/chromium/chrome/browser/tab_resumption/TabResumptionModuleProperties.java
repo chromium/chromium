@@ -11,16 +11,15 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 interface TabResumptionModuleProperties {
     WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
-    WritableObjectPropertyKey<TabResumptionDataProvider> DATA_PROVIDER =
-            new WritableObjectPropertyKey();
     WritableObjectPropertyKey<UrlImageProvider> URL_IMAGE_PROVIDER =
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<SuggestionClickCallback> CLICK_CALLBACK =
             new WritableObjectPropertyKey();
     WritableObjectPropertyKey<SuggestionBundle> SUGGESTION_BUNDLE = new WritableObjectPropertyKey();
+    WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey();
 
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                IS_VISIBLE, DATA_PROVIDER, URL_IMAGE_PROVIDER, CLICK_CALLBACK, SUGGESTION_BUNDLE
+                IS_VISIBLE, URL_IMAGE_PROVIDER, CLICK_CALLBACK, SUGGESTION_BUNDLE, TITLE,
             };
 }

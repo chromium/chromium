@@ -9,7 +9,6 @@
 #include "base/threading/thread_checker.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_provider.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
 
 namespace content_settings {
 

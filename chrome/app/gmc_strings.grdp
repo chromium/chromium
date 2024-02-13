@@ -34,9 +34,6 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS" desc="Label for the link to the caption settings page.">
    Caption settings
   </message>
-  <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_SUBTITLE" desc="Subtitle for the live translate toggle control.">
-   Automatically translates captions
-  </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_LIVE_TRANSLATE_TARGET_LANGUAGE_ACCNAME" desc="Accessible name for the target language selection combobox.">
    Choose the language to translate the captions to
   </message>

@@ -42,11 +42,17 @@ class AsyncCheckTracker
   // yet committed). Note that a main frame hit may not be pending, eg. 1)
   // client side detection happens after the load is committed, or 2) async Safe
   // Browsing check is enabled.
+  // Caveat: This class only tracks committed navigation ids for a
+  // certain period, so this function may not return the correct result if the
+  // navigation associated with the `resource` is too old.
   static bool IsMainPageLoadPending(
       const security_interstitials::UnsafeResource& resource);
 
   // Returns the timestamp when the navigation associated with `resource` is
   // committed. Returns nullopt if the navigation has not committed.
+  // Caveat: This class only tracks committed navigation ids for a
+  // certain period, so this function may not return the correct result if the
+  // navigation associated with the `resource` is too old.
   static std::optional<base::TimeTicks> GetBlockedPageCommittedTimestamp(
       const security_interstitials::UnsafeResource& resource);
 
@@ -76,6 +82,8 @@ class AsyncCheckTracker
 
   size_t PendingCheckersSizeForTesting();
 
+  void SetNavigationTimestampsSizeThresholdForTesting(size_t threshold);
+
   base::WeakPtr<AsyncCheckTracker> GetWeakPtr();
 
  private:
@@ -94,6 +102,10 @@ class AsyncCheckTracker
   // Deletes all pending checkers in `pending_checkers_` except the checker that
   // is keyed by `excluded_navigation_id`.
   void DeletePendingCheckers(std::optional<int64_t> excluded_navigation_id);
+
+  // Deletes expired timestamps to avoid `committed_navigation_timestamps_`
+  // getting too large.
+  void DeleteExpiredNavigationTimestamps();
 
   // Displays an interstitial if there is unsafe resource associated with
   // `redirect_chain` and `navigation_id`.
@@ -127,6 +139,10 @@ class AsyncCheckTracker
   // navigation has committed. The time when the navigation has committed is
   // used for logging metrics.
   base::flat_map<int64_t, base::TimeTicks> committed_navigation_timestamps_;
+
+  // The threshold that will trigger a cleanup on
+  // `committed_navigation_timestamps_`. Overridden in tests.
+  size_t navigation_timestamps_size_threshold_;
 
   // Callback that is called once all checkers are completed. Used only for
   // tests.

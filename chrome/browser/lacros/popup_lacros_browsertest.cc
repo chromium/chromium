@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
@@ -97,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
   WaitForWindowPositionInScreen(window_id, gfx::Point(0, 0));
 
   // Precondition: The browser is the only open widget.
-  std::set<views::Widget*> initial_widgets =
+  std::set<raw_ptr<views::Widget, SetExperimental>> initial_widgets =
       views::test::WidgetTest::GetAllWidgets();
   ASSERT_EQ(1u, initial_widgets.size());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -115,7 +116,8 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
 
   // Wait for the popup menu to be created and positioned on screen.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    std::set<views::Widget*> widgets = views::test::WidgetTest::GetAllWidgets();
+    std::set<raw_ptr<views::Widget, SetExperimental>> widgets =
+        views::test::WidgetTest::GetAllWidgets();
     widgets.erase(browser_widget);
     if (widgets.size() == 0u) {
       return false;
@@ -130,7 +132,8 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, LongPressOnTabOpensNonEmptyMenu) {
   }));
 
   // Find the popup.
-  std::set<views::Widget*> widgets = views::test::WidgetTest::GetAllWidgets();
+  std::set<raw_ptr<views::Widget, SetExperimental>> widgets =
+      views::test::WidgetTest::GetAllWidgets();
   widgets.erase(browser_widget);
   ASSERT_EQ(1u, widgets.size());
   views::Widget* popup = *widgets.begin();

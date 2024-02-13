@@ -65,6 +65,7 @@ class ChromeSigninClient : public SigninClient {
       bool has_sync_account) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
+  network::mojom::NetworkContext* GetNetworkContext() override;
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;
   void AddContentSettingsObserver(
@@ -81,6 +82,11 @@ class ChromeSigninClient : public SigninClient {
       signin::PrimaryAccountChangeEvent event_details,
       absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
           event_source) override;
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
+  CreateBoundSessionOAuthMultiloginDelegate() const override;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::optional<account_manager::Account> GetInitialPrimaryAccount() override;

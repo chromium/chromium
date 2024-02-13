@@ -17,6 +17,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -26,6 +27,8 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
@@ -138,6 +141,15 @@ bool ShouldOfferVirtualCardEnrollment(
   return true;
 }
 
+bool HasSynthesizedTypes(
+    const base::flat_map<FieldType, std::u16string>& observed_field_values,
+    AddressCountryCode country_code) {
+  return base::ranges::any_of(observed_field_values, [country_code](
+                                                         const auto& entry) {
+    return i18n_model_definition::IsSynthesizedType(entry.first, country_code);
+  });
+}
+
 }  // namespace
 
 FormDataImporter::ExtractedFormData::ExtractedFormData() = default;
@@ -153,12 +165,13 @@ FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
 FormDataImporter::FormDataImporter(AutofillClient* client,
                                    PersonalDataManager* personal_data_manager,
+                                   history::HistoryService* history_service,
                                    const std::string& app_locale)
     : client_(client),
-      credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(
-          client,
-          app_locale,
-          personal_data_manager)),
+      credit_card_save_manager_(
+          std::make_unique<CreditCardSaveManager>(client,
+                                                  app_locale,
+                                                  personal_data_manager)),
       address_profile_save_manager_(
           std::make_unique<AddressProfileSaveManager>(client,
                                                       personal_data_manager)),
@@ -179,8 +192,12 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
               client)),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {
-  if (personal_data_manager_)
+  if (personal_data_manager_) {
     personal_data_manager_->AddObserver(this);
+  }
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
 }
 
 FormDataImporter::~FormDataImporter() {
@@ -608,6 +625,12 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   AutofillProfile candidate_profile = ConstructProfileFromObservedValues(
       observed_field_values, import_log_buffer, import_metadata);
 
+  // After ensuring the correct country is set on the profile, we can search for
+  // any synthesized nodes. If any of these exist, we'll exclude the profile
+  // from the import process
+  bool has_synthesized_types = HasSynthesizedTypes(
+      observed_field_values, candidate_profile.GetAddressCountryCode());
+
   // This is done prior to checking the validity of the profile, because multi-
   // step import profile merging requires the profile to be finalized. Ideally
   // we would return false here if it fails, but that breaks the metrics.
@@ -617,7 +640,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // `ValidateNonEmptyValues()` goes first to collect metrics.
   bool has_invalid_information =
       !ValidateNonEmptyValues(candidate_profile, import_log_buffer) ||
-      has_multiple_distinct_email_addresses || has_invalid_field_types;
+      has_multiple_distinct_email_addresses || has_invalid_field_types ||
+      has_synthesized_types;
 
   // Profiles with valid information qualify for multi-step imports.
   // This requires the profile to be finalized to apply the merging logic.
@@ -646,6 +670,10 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       has_invalid_field_types
           ? AddressImportRequirement::kNoInvalidFieldTypesRequirementViolated
           : AddressImportRequirement::kNoInvalidFieldTypesRequirementFulfilled);
+  autofill_metrics::LogAddressFormImportRequirementMetric(
+      has_synthesized_types
+          ? AddressImportRequirement::kNoSythesizedTypesRequirementViolated
+          : AddressImportRequirement::kNoSythesizedTypesRequirementFulfilled);
   autofill_metrics::LogAddressFormImportRequirementMetric(
       import_metadata.observed_invalid_country
           ? AddressImportRequirement::kCountryValidRequirementViolated
@@ -728,14 +756,15 @@ bool FormDataImporter::ProcessExtractedCreditCard(
     return false;
   }
 
-  // If a flow where there was no interactive authentication was completed, we
-  // might need to initiate the re-auth opt-in flow.
+  // If a flow where there was no interactive authentication was completed,
+  // re-auth opt-in flow might be offered.
   if (auto* mandatory_reauth_manager =
           client_->GetOrCreatePaymentsMandatoryReauthManager();
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
-          card_record_type_if_non_interactive_authentication_flow_completed_)) {
-    card_record_type_if_non_interactive_authentication_flow_completed_.reset();
+          payment_method_type_if_non_interactive_authentication_flow_completed_)) {
+    payment_method_type_if_non_interactive_authentication_flow_completed_
+        .reset();
     mandatory_reauth_manager->StartOptInFlow();
     return true;
   }
@@ -780,6 +809,19 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 }
 
 bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {
+  // If a flow where there was no interactive authentication was completed,
+  // re-auth opt-in flow might be offered.
+  if (auto* mandatory_reauth_manager =
+          client_->GetOrCreatePaymentsMandatoryReauthManager();
+      mandatory_reauth_manager &&
+      mandatory_reauth_manager->ShouldOfferOptin(
+          payment_method_type_if_non_interactive_authentication_flow_completed_)) {
+    payment_method_type_if_non_interactive_authentication_flow_completed_
+        .reset();
+    mandatory_reauth_manager->StartOptInFlow();
+    return true;
+  }
+
   return iban_save_manager_->AttemptToOfferSave(extracted_iban);
 }
 
@@ -1178,24 +1220,24 @@ void FormDataImporter::OnPersonalDataChanged() {
   multistep_importer_.OnPersonalDataChanged(*personal_data_manager_);
 }
 
-void FormDataImporter::OnBrowsingHistoryCleared(
+void FormDataImporter::OnURLsDeleted(
+    history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   multistep_importer_.OnBrowsingHistoryCleared(deletion_info);
   form_associator_.OnBrowsingHistoryCleared(deletion_info);
 }
 
 void FormDataImporter::
-    SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-        std::optional<CreditCard::RecordType>
-            card_record_type_if_non_interactive_authentication_flow_completed) {
-  card_record_type_if_non_interactive_authentication_flow_completed_ =
-      card_record_type_if_non_interactive_authentication_flow_completed;
+    SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+        std::optional<NonInteractivePaymentMethodType>
+            payment_method_type_if_non_interactive_authentication_flow_completed) {
+  payment_method_type_if_non_interactive_authentication_flow_completed_ =
+      payment_method_type_if_non_interactive_authentication_flow_completed;
 }
 
-std::optional<CreditCard::RecordType>
-FormDataImporter::GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
-    const {
-  return card_record_type_if_non_interactive_authentication_flow_completed_;
+std::optional<NonInteractivePaymentMethodType> FormDataImporter::
+    GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted() const {
+  return payment_method_type_if_non_interactive_authentication_flow_completed_;
 }
 
 }  // namespace autofill

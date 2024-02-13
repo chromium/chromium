@@ -160,6 +160,7 @@ uint32_t HandleXdgSurfaceConfigureCallback(
     bool activated,
     const gfx::Vector2d& origin_offset,
     float raster_scale,
+    aura::Window::OcclusionState occlusion_state,
     std::optional<chromeos::WindowStateType> restore_state_type) {
   uint32_t serial =
       serial_tracker->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);

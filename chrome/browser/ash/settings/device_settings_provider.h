@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_SETTINGS_DEVICE_SETTINGS_PROVIDER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/ownership/owner_settings_service.h"
@@ -56,12 +56,12 @@ class DeviceSettingsProvider
   ~DeviceSettingsProvider() override;
 
   // Returns true if |path| is handled by this provider.
-  static bool IsDeviceSetting(base::StringPiece name);
+  static bool IsDeviceSetting(std::string_view name);
 
   // CrosSettingsProvider implementation.
-  const base::Value* Get(base::StringPiece path) const override;
+  const base::Value* Get(std::string_view path) const override;
   TrustedStatus PrepareTrustedValues(base::OnceClosure* callback) override;
-  bool HandlesSetting(base::StringPiece path) const override;
+  bool HandlesSetting(std::string_view path) const override;
 
   // Helper function that decodes policies from provided proto into the pref
   // map.

@@ -2711,6 +2711,7 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
     }
 
     url_result.set_visit_time(visit.visit_time);
+    url_result.set_app_id(visit.app_id);
 
     VisitContentAnnotations content_annotations;
     db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
@@ -2750,6 +2751,7 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
     for (const auto& visit : visits) {
       URLResult url_result(text_match);
       url_result.set_visit_time(visit.visit_time);
+      url_result.set_app_id(visit.app_id);
 
       VisitContentAnnotations content_annotations;
       db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
@@ -3371,22 +3373,24 @@ void HistoryBackend::DeleteURLsUntil(
   Commit();
 }
 
-void HistoryBackend::ExpireHistoryBetween(const std::set<GURL>& restrict_urls,
-                                          Time begin_time,
-                                          Time end_time,
-                                          bool user_initiated) {
+void HistoryBackend::ExpireHistoryBetween(
+    const std::set<GURL>& restrict_urls,
+    absl::optional<std::string> restrict_app_id,
+    Time begin_time,
+    Time end_time,
+    bool user_initiated) {
   if (!db_)
     return;
 
   if (begin_time.is_null() && (end_time.is_null() || end_time.is_max()) &&
-      restrict_urls.empty()) {
+      restrict_urls.empty() && !restrict_app_id) {
     // Special case deleting all history so it can be faster and to reduce the
     // possibility of an information leak.
     DeleteAllHistory();
   } else {
     // Clearing parts of history, have the expirer do the depend
-    expirer_.ExpireHistoryBetween(restrict_urls, begin_time, end_time,
-                                  user_initiated);
+    expirer_.ExpireHistoryBetween(restrict_urls, restrict_app_id, begin_time,
+                                  end_time, user_initiated);
 
     // Force a commit, if the user is deleting something for privacy reasons,
     // we want to get it on disk ASAP.
@@ -3451,8 +3455,8 @@ void HistoryBackend::ExpireHistory(
     bool update_first_recorded_time = false;
 
     for (const auto& expire : expire_list) {
-      expirer_.ExpireHistoryBetween(expire.urls, expire.begin_time,
-                                    expire.end_time, true);
+      expirer_.ExpireHistoryBetween(expire.urls, expire.restrict_app_id,
+                                    expire.begin_time, expire.end_time, true);
 
       if (expire.begin_time < first_recorded_time_)
         update_first_recorded_time = true;

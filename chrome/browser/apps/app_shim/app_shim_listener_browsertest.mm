@@ -87,6 +87,8 @@ class TestShimClient : public chrome::mojom::AppShim {
   void BindNotificationProvider(
       mojo::PendingReceiver<mac_notifications::mojom::MacNotificationProvider>
           provider) override {}
+  void RequestNotificationPermission(
+      RequestNotificationPermissionCallback callback) override {}
 
  private:
   void OnShimConnectedDone(

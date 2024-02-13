@@ -598,8 +598,10 @@ void OneTimeMessageHandler::OnEventFired(const PortId& port_id,
     // Inform the browser that one of the listeners said they would be replying
     // later and leave the channel open.
     ScriptContext* script_context = GetScriptContextFromV8Context(context);
-    messaging_service->GetMessagePortHost(script_context, port_id)
-        ->ResponsePending();
+    if (auto* message_port_host = messaging_service->GetMessagePortHostIfExists(
+            script_context, port_id)) {
+      message_port_host->ResponsePending();
+    }
     return;
   }
 

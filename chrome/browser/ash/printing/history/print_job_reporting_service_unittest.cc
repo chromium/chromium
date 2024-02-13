@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -289,7 +291,7 @@ class PrintJobReportingServiceTest : public ::testing::Test {
             base::ThreadPool::CreateSequencedTaskRunner({})));
     EXPECT_CALL(*report_queue, AddRecord)
         .WillRepeatedly(
-            [this](base::StringPiece record, ::reporting::Priority priority,
+            [this](std::string_view record, ::reporting::Priority priority,
                    ::reporting::ReportQueue::EnqueueCallback callback) {
               em::PrintJobEvent event;
               event.ParseFromString(std::string(record));

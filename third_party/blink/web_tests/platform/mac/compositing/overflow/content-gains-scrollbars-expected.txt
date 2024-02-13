@@ -26,6 +26,12 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [85, 200],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='vertical' class='content tall'",
       "bounds": [10, 200],
       "drawsContent": false,
@@ -48,6 +54,12 @@
       "position": [0, 85],
       "bounds": [100, 15],
       "contentsOpaque": true,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [200, 85],
+      "drawsContent": false,
       "transform": 2
     },
     {
@@ -86,6 +98,12 @@
       "name": "Scroll corner of LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
       "position": [85, 85],
       "bounds": [15, 15],
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned, children-inline) DIV class='container'",
+      "bounds": [200, 200],
+      "drawsContent": false,
       "transform": 3
     },
     {

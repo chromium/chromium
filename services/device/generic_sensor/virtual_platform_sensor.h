@@ -12,17 +12,27 @@
 #include "services/device/public/cpp/generic_sensor/platform_sensor_configuration.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom-shared.h"
+#include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace device {
 
 // OS-agnostic PlatformSensor implementation used in (web) tests. New instances
 // are created by VirtualPlatformSensorProvider via GetSensor() calls.
+//
+// A VirtualPlatformSensor respects two invariants when it comes to readings
+// added in the constructor or with AddReading():
+// 1. Once a reading is set, it will remain set until it is replaced with
+//    another reading.
+// 2. Said reading will be added to the shared buffer (which may choose to
+//    ignore it) and, on success, clients will be notified whenever the sensor
+//    is activated (i.e. StartSensor() is called).
 class VirtualPlatformSensor : public PlatformSensor {
  public:
   VirtualPlatformSensor(mojom::SensorType type,
                         SensorReadingSharedBuffer* reading_buffer,
                         PlatformSensorProvider* provider,
-                        std::optional<SensorReading> pending_reading);
+                        std::optional<SensorReading> pending_reading,
+                        const mojom::VirtualSensorMetadata& metadata);
 
   // Simulates the reporting of a new reading by a platform sensor.
   //
@@ -46,17 +56,6 @@ class VirtualPlatformSensor : public PlatformSensor {
     return optimal_configuration_;
   }
 
-  void set_minimum_supported_frequency(double frequency) {
-    minimum_supported_frequency_ = frequency;
-  }
-  void set_maximum_supported_frequency(double frequency) {
-    maximum_supported_frequency_ = frequency;
-  }
-
-  void set_reporting_mode(mojom::ReportingMode reporting_mode) {
-    reporting_mode_ = reporting_mode;
-  }
-
  protected:
   ~VirtualPlatformSensor() override;
 
@@ -78,7 +77,14 @@ class VirtualPlatformSensor : public PlatformSensor {
   std::optional<PlatformSensorConfiguration> optimal_configuration_;
   std::optional<mojom::ReportingMode> reporting_mode_;
 
-  std::optional<SensorReading> pending_reading_;
+  // The latest reading passed to this sensor by either the constructor or
+  // AddReading().
+  //
+  // It may or may not be stored into the shared buffer by
+  // PlatformSensor depending on e.g. whether the sensor is active,
+  // rounding/threshold checks etc. Nonetheless, it remains saved and will be
+  // added again once StartSensor() is called.
+  std::optional<SensorReading> current_reading_;
 
   base::WeakPtrFactory<VirtualPlatformSensor> weak_ptr_factory_{this};
 };

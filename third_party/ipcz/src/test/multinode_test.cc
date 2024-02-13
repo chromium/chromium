@@ -67,7 +67,7 @@ class InProcessTestNodeController : public TestNode::TestNodeController {
                               TestDriver* test_driver,
                               std::unique_ptr<TestNode> test_node)
       : source_(source),
-        client_thread_(absl::in_place,
+        client_thread_(std::in_place,
                        &RunTestNode,
                        test_driver,
                        std::move(test_node)) {}

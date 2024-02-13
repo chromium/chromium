@@ -72,6 +72,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="MISSING_WEB_CONTENTS"/>
   <int value="1" label="SB_NAVIGATION_MANAGER_NOT_READY"/>
   <int value="2" label="COMPLETE"/>
+  <int value="3" label="MISSING_RENDER_FRAME_HOST"/>
+  <int value="4" label="RENDER_FRAME_HOST_INVALID_URL"/>
 </enum>
 
 <enum name="ApkDownloadTelemetryOutcome">

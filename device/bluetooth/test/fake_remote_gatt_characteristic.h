@@ -49,7 +49,7 @@ class FakeRemoteGattCharacteristic
   // its success callback with |value|. Otherwise it will call its error
   // callback.
   void SetNextReadResponse(uint16_t gatt_code,
-                           const absl::optional<std::vector<uint8_t>>& value);
+                           const std::optional<std::vector<uint8_t>>& value);
 
   // If |gatt_code| is mojom::kGATTSuccess the next write with response request
   // will call its success callback. Otherwise it will call its error callback.
@@ -71,7 +71,7 @@ class FakeRemoteGattCharacteristic
 
   // Returns the last successfully written value to the characteristic. Returns
   // nullopt if no value has been written yet.
-  const absl::optional<std::vector<uint8_t>>& last_written_value() {
+  const std::optional<std::vector<uint8_t>>& last_written_value() {
     return last_written_value_;
   }
 
@@ -142,26 +142,26 @@ class FakeRemoteGattCharacteristic
   std::vector<uint8_t> value_;
 
   // Last successfully written value to the characteristic.
-  absl::optional<std::vector<uint8_t>> last_written_value_;
+  std::optional<std::vector<uint8_t>> last_written_value_;
 
   // Write type of last successfully written value to the characteristic.
   mojom::WriteType last_write_type_ = mojom::WriteType::kNone;
 
   // Used to decide which callback should be called when
   // ReadRemoteCharacteristic is called.
-  absl::optional<FakeReadResponse> next_read_response_;
+  std::optional<FakeReadResponse> next_read_response_;
 
   // Used to decide which callback should be called when
   // WriteRemoteCharacteristic is called.
-  absl::optional<uint16_t> next_write_response_;
+  std::optional<uint16_t> next_write_response_;
 
   // Used to decide which callback should be called when
   // SubscribeToNotifications is called.
-  absl::optional<uint16_t> next_subscribe_to_notifications_response_;
+  std::optional<uint16_t> next_subscribe_to_notifications_response_;
 
   // Used to decide which callback should be called when
   // UnsubscribeFromNotifications is called.
-  absl::optional<uint16_t> next_unsubscribe_from_notifications_response_;
+  std::optional<uint16_t> next_unsubscribe_from_notifications_response_;
 
   size_t last_descriptor_id_;
 

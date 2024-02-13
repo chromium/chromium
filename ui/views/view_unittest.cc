@@ -373,13 +373,13 @@ class A11yTestView : public TestView {
  public:
   // Convenience constructor to test `View::SetAccessibilityProperties`
   explicit A11yTestView(
-      absl::optional<ax::mojom::Role> role = absl::nullopt,
-      absl::optional<std::u16string> name = absl::nullopt,
-      absl::optional<std::u16string> description = absl::nullopt,
-      absl::optional<std::u16string> role_description = absl::nullopt,
-      absl::optional<ax::mojom::NameFrom> name_from = absl::nullopt,
-      absl::optional<ax::mojom::DescriptionFrom> description_from =
-          absl::nullopt) {
+      std::optional<ax::mojom::Role> role = std::nullopt,
+      std::optional<std::u16string> name = std::nullopt,
+      std::optional<std::u16string> description = std::nullopt,
+      std::optional<std::u16string> role_description = std::nullopt,
+      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
+      std::optional<ax::mojom::DescriptionFrom> description_from =
+          std::nullopt) {
     SetAccessibilityProperties(
         std::move(role), std::move(name), std::move(description),
         std::move(role_description), std::move(name_from),
@@ -400,17 +400,17 @@ class A11yTestView : public TestView {
     }
   }
 
-  void SetAccessibleNamePrefix(absl::optional<std::u16string> name_prefix) {
+  void SetAccessibleNamePrefix(std::optional<std::u16string> name_prefix) {
     name_prefix_ = std::move(name_prefix);
   }
 
-  void SetAccessibleNameFrom(absl::optional<ax::mojom::NameFrom> name_from) {
+  void SetAccessibleNameFrom(std::optional<ax::mojom::NameFrom> name_from) {
     name_from_ = std::move(name_from);
   }
 
  private:
-  absl::optional<std::u16string> name_prefix_;
-  absl::optional<ax::mojom::NameFrom> name_from_;
+  std::optional<std::u16string> name_prefix_;
+  std::optional<ax::mojom::NameFrom> name_from_;
 };
 
 BEGIN_METADATA(A11yTestView)
@@ -635,8 +635,8 @@ TEST_F(ViewTest, SetAccessibilityPropertiesRoleRolenameNameDescription) {
 
 TEST_F(ViewTest, SetAccessibilityPropertiesRoleAndRoleDescription) {
   A11yTestView v(ax::mojom::Role::kButton,
-                 /*name*/ absl::nullopt,
-                 /*description*/ absl::nullopt, u"Super Button");
+                 /*name*/ std::nullopt,
+                 /*description*/ std::nullopt, u"Super Button");
   ui::AXNodeData data = ui::AXNodeData();
   v.GetAccessibleNodeData(&data);
   EXPECT_EQ(v.GetAccessibleRole(), ax::mojom::Role::kButton);
@@ -3909,11 +3909,11 @@ class ObserverView : public View {
 
   void ForgetOldDetails();
 
-  absl::optional<ViewHierarchyChangedDetails> add_details() {
+  std::optional<ViewHierarchyChangedDetails> add_details() {
     return add_details_;
   }
 
-  absl::optional<ViewHierarchyChangedDetails> remove_details() {
+  std::optional<ViewHierarchyChangedDetails> remove_details() {
     return remove_details_;
   }
 
@@ -3922,8 +3922,8 @@ class ObserverView : public View {
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
 
-  absl::optional<ViewHierarchyChangedDetails> add_details_;
-  absl::optional<ViewHierarchyChangedDetails> remove_details_;
+  std::optional<ViewHierarchyChangedDetails> add_details_;
+  std::optional<ViewHierarchyChangedDetails> remove_details_;
 };
 
 ObserverView::ObserverView() = default;

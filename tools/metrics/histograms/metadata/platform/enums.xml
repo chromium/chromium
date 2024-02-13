@@ -43,6 +43,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown"/>
 </enum>
 
+<enum name="CertificateFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+</enum>
+
 <enum name="ChapsReinitializingToken">
   <int value="0" label="Failed to unseal"/>
   <int value="1" label="Bad authorization data"/>
@@ -848,6 +853,17 @@ metrics consent we also won't be able to send UMA metrics. -->
   <summary>ChromeOS Stateful Partition Format</summary>
   <int value="0" label="Raw partition"/>
   <int value="1" label="Logical volume"/>
+</enum>
+
+<enum name="ThinpoolMigrationResult">
+  <summary>Result of stateful partition migration to thinpool</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fsck needed"/>
+  <int value="2" label="Insufficient free space"/>
+  <int value="3" label="Failed to resize the filesystem"/>
+  <int value="4" label="Failed to copy partition header"/>
+  <int value="5" label="Failed to persist thinpool metadata"/>
+  <int value="6" label="Failed to persist LVM metadata"/>
 </enum>
 
 <enum name="TokenManagerStatus">

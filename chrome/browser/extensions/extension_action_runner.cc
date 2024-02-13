@@ -339,7 +339,7 @@ void ExtensionActionRunner::RunPendingScriptsForExtension(
 }
 
 void ExtensionActionRunner::OnRequestScriptInjectionPermission(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     mojom::LocalFrameHost::RequestScriptInjectionPermissionCallback callback) {

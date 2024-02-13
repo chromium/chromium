@@ -11,7 +11,7 @@
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -257,7 +257,7 @@ const CGFloat kLabelStackSpacing = 5.0;
 
 // Called when the view has been tapped.
 - (void)tabResumptionItemTapped:(UIGestureRecognizer*)sender {
-  [self.commandHandler openTabResumptionItem];
+  [self.commandHandler openTabResumptionItem:_item];
 }
 
 @end

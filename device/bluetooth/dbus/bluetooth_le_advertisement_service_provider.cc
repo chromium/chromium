@@ -34,11 +34,11 @@ class BluetoothAdvertisementServiceProviderImpl
       const dbus::ObjectPath& object_path,
       Delegate* delegate,
       AdvertisementType type,
-      absl::optional<UUIDList> service_uuids,
-      absl::optional<ManufacturerData> manufacturer_data,
-      absl::optional<UUIDList> solicit_uuids,
-      absl::optional<ServiceData> service_data,
-      absl::optional<ScanResponseData> scan_response_data)
+      std::optional<UUIDList> service_uuids,
+      std::optional<ManufacturerData> manufacturer_data,
+      std::optional<UUIDList> solicit_uuids,
+      std::optional<ServiceData> service_data,
+      std::optional<ScanResponseData> scan_response_data)
       : origin_thread_id_(base::PlatformThread::CurrentId()),
         bus_(bus),
         delegate_(delegate),
@@ -433,11 +433,11 @@ class BluetoothAdvertisementServiceProviderImpl
 
   // Advertisement data that needs to be provided to BlueZ when requested.
   AdvertisementType type_;
-  absl::optional<UUIDList> service_uuids_;
-  absl::optional<ManufacturerData> manufacturer_data_;
-  absl::optional<UUIDList> solicit_uuids_;
-  absl::optional<ServiceData> service_data_;
-  absl::optional<ScanResponseData> scan_response_data_;
+  std::optional<UUIDList> service_uuids_;
+  std::optional<ManufacturerData> manufacturer_data_;
+  std::optional<UUIDList> solicit_uuids_;
+  std::optional<ServiceData> service_data_;
+  std::optional<ScanResponseData> scan_response_data_;
 
   // D-Bus object we are exporting, owned by this object.
   scoped_refptr<dbus::ExportedObject> exported_object_;
@@ -463,11 +463,11 @@ BluetoothLEAdvertisementServiceProvider::Create(
     const dbus::ObjectPath& object_path,
     Delegate* delegate,
     AdvertisementType type,
-    absl::optional<UUIDList> service_uuids,
-    absl::optional<ManufacturerData> manufacturer_data,
-    absl::optional<UUIDList> solicit_uuids,
-    absl::optional<ServiceData> service_data,
-    absl::optional<ScanResponseData> scan_response_data) {
+    std::optional<UUIDList> service_uuids,
+    std::optional<ManufacturerData> manufacturer_data,
+    std::optional<UUIDList> solicit_uuids,
+    std::optional<ServiceData> service_data,
+    std::optional<ScanResponseData> scan_response_data) {
   if (!bluez::BluezDBusManager::Get()->IsUsingFakes()) {
     return std::make_unique<BluetoothAdvertisementServiceProviderImpl>(
         bus, object_path, delegate, type, std::move(service_uuids),

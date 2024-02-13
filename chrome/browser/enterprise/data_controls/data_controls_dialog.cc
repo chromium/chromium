@@ -161,4 +161,8 @@ std::unique_ptr<views::Label> DataControlsDialog::CreateMessage() const {
   return std::make_unique<views::Label>(l10n_util::GetStringUTF16(id));
 }
 
+DataControlsDialog::Type DataControlsDialog::type() const {
+  return type_;
+}
+
 }  // namespace data_controls

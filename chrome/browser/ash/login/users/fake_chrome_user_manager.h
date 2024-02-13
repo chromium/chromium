@@ -100,12 +100,10 @@ class FakeChromeUserManager : public ChromeUserManager {
                              bool force_online_signin) override;
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
-  std::u16string GetUserDisplayName(const AccountId& account_id) const override;
   void SaveUserDisplayEmail(const AccountId& account_id,
                             const std::string& display_email) override;
   void SaveUserType(const user_manager::User* user) override;
   std::optional<std::string> GetOwnerEmail() override;
-  bool IsCurrentUserOwner() const override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool CanCurrentUserLock() const override;
@@ -127,13 +125,13 @@ class FakeChromeUserManager : public ChromeUserManager {
   void AsyncRemoveCryptohome(const AccountId& account_id) const override;
   bool IsDeprecatedSupervisedAccountId(
       const AccountId& account_id) const override;
-  const gfx::ImageSkia& GetResourceImageSkiaNamed(int id) const override;
-  std::u16string GetResourceStringUTF16(int string_id) const override;
   void ScheduleResolveLocale(const std::string& locale,
                              base::OnceClosure on_resolved_callback,
                              std::string* out_resolved_locale) const override;
   bool IsValidDefaultUserImageId(int image_index) const override;
   void Initialize() override;
+  user_manager::MultiUserSignInPolicyController*
+  GetMultiUserSignInPolicyController() override;
 
   // user_manager::UserManagerBase override.
   const std::string& GetApplicationLocale() const override;
@@ -145,11 +143,7 @@ class FakeChromeUserManager : public ChromeUserManager {
   void KioskAppLoggedIn(user_manager::User* user) override;
   void PublicAccountUserLoggedIn(user_manager::User* user) override;
   // Just make it public for tests.
-  void SetOwnerId(const AccountId& account_id) override;
-
-  // UserManagerInterface override.
-  MultiProfileUserController* GetMultiProfileUserController() override;
-  UserImageManager* GetUserImageManager(const AccountId& account_id) override;
+  using UserManagerBase::SetOwnerId;
 
   // ChromeUserManager override.
   void SetUserAffiliation(
@@ -163,9 +157,9 @@ class FakeChromeUserManager : public ChromeUserManager {
     fake_ephemeral_mode_config_ = std::move(ephemeral_mode_config);
   }
 
-  void set_multi_profile_user_controller(
-      MultiProfileUserController* controller) {
-    multi_profile_user_controller_ = controller;
+  void set_multi_user_sign_in_policy_controller(
+      user_manager::MultiUserSignInPolicyController* controller) {
+    multi_user_sign_in_policy_controller_ = controller;
   }
 
   void set_current_user_ephemeral(bool user_ephemeral) {
@@ -192,9 +186,6 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsEphemeralAccountIdByPolicy(const AccountId& account_id) const override;
 
  private:
-  using UserImageManagerMap =
-      std::map<AccountId, std::unique_ptr<UserImageManager>>;
-
   // Returns the active user.
   user_manager::User* GetActiveUserInternal() const;
 
@@ -202,7 +193,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;
 
-  raw_ptr<MultiProfileUserController> multi_profile_user_controller_ = nullptr;
+  raw_ptr<user_manager::MultiUserSignInPolicyController>
+      multi_user_sign_in_policy_controller_ = nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.
@@ -215,9 +207,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   // Whether the current user can lock.
   bool current_user_can_lock_ = false;
-
-  // User avatar managers.
-  UserImageManagerMap user_image_managers_;
 };
 
 }  // namespace ash

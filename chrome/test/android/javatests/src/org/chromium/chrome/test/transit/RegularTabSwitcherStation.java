@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.test.transit;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-
-import static org.hamcrest.CoreMatchers.allOf;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
@@ -43,10 +39,7 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
                         return "No regular tabs exist";
                     }
                 };
-        // TODO(crbug.com/1521184): If the view is declared as owned with declareViewIf(), the empty
-        // state text is still
-        // thought to exist by DoesNotExistCondition, even though it's not actually displayed.
-        elements.declareUnownedViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
+        elements.declareViewIf(EMPTY_STATE_TEXT, noRegularTabsExist);
 
         Condition incognitoTabsExist =
                 new UiThreadCondition() {
@@ -60,17 +53,15 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
                         return "Incognito tabs exist";
                     }
                 };
-        elements.declareUnownedViewIf(INCOGNITO_TOGGLE_TABS, incognitoTabsExist);
-        elements.declareUnownedViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
-        elements.declareUnownedViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
+        elements.declareViewIf(INCOGNITO_TOGGLE_TABS, incognitoTabsExist);
+        elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
+        elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
     }
 
     public IncognitoTabSwitcherStation selectIncognitoTabList() {
         IncognitoTabSwitcherStation tabSwitcher =
                 new IncognitoTabSwitcherStation(mChromeTabbedActivityTestRule);
         return Trip.travelSync(
-                this,
-                tabSwitcher,
-                (t) -> onView(allOf(isDisplayed(), INCOGNITO_TOGGLE_TAB_BUTTON)).perform(click()));
+                this, tabSwitcher, (t) -> INCOGNITO_TOGGLE_TAB_BUTTON.perform(click()));
     }
 }

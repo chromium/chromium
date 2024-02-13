@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -840,7 +841,7 @@ void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,
   const auto app_ids = config_->GetUpdaterPersistedData()->GetAppIds();
   CHECK(base::Contains(
       app_ids, base::ToLowerASCII(kUpdaterAppId),
-      static_cast<std::string (*)(base::StringPiece)>(&base::ToLowerASCII)));
+      static_cast<std::string (*)(std::string_view)>(&base::ToLowerASCII)));
 
   const Priority priority = Priority::kBackground;
   ShouldBlockUpdateForMeteredNetwork(
@@ -889,10 +890,9 @@ void UpdateServiceImpl::Install(const RegistrationRequest& registration,
     // registration is removed later if the app install encounters an error.
     config_->GetUpdaterPersistedData()->RegisterApp(registration);
   } else {
-    // Update brand and ap.
+    // Update ap.
     RegistrationRequest request;
     request.app_id = registration.app_id;
-    request.brand_code = registration.brand_code;
     request.ap = registration.ap;
     config_->GetUpdaterPersistedData()->RegisterApp(request);
   }

@@ -98,7 +98,7 @@ class ZstdSourceStream : public FilterSourceStream {
   void* customMalloc(size_t size) {
     void* address = malloc(size);
     CHECK(address);
-    malloc_sizes_.insert(std::make_pair(address, size));
+    malloc_sizes_.emplace(address, size);
     total_allocated_ += size;
     if (total_allocated_ > max_allocated_) {
       max_allocated_ = total_allocated_;

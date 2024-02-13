@@ -5,10 +5,10 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 #define UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_LABEL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
@@ -33,15 +33,15 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
   void SetDisabledColor(SkColor color);
 
   // Sets/Gets the explicit disable color as above, but using color_id.
-  void SetDisabledColorId(absl::optional<ui::ColorId> color_id);
-  absl::optional<ui::ColorId> GetDisabledColorId() const;
+  void SetDisabledColorId(std::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorId> GetDisabledColorId() const;
 
   // Label:
   void SetEnabledColor(SkColor color) override;
 
   // Sets/Gets the explicit enabled color with color_id.
-  void SetEnabledColorId(absl::optional<ui::ColorId> color_id);
-  absl::optional<ui::ColorId> GetEnabledColorId() const;
+  void SetEnabledColorId(std::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorId> GetEnabledColorId() const;
 
  protected:
   // Label:
@@ -61,8 +61,8 @@ class VIEWS_EXPORT LabelButtonLabel : public Label {
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, LabelButtonLabel, Label)
-VIEW_BUILDER_PROPERTY(absl::optional<ui::ColorId>, EnabledColorId)
-VIEW_BUILDER_PROPERTY(absl::optional<ui::ColorId>, DisabledColorId)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, EnabledColorId)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, DisabledColorId)
 END_VIEW_BUILDER
 
 }  // namespace views::internal

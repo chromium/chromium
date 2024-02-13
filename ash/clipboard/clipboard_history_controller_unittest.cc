@@ -490,10 +490,11 @@ TEST_F(ClipboardHistoryControllerTest, EncodeImage) {
 
 TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
   // Write a bunch of bitmaps to the clipboard.
-  std::vector<const SkBitmap> test_bitmaps;
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(2, 1));
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
+  const std::vector<SkBitmap> test_bitmaps{
+      gfx::test::CreateBitmap(2, 1),
+      gfx::test::CreateBitmap(3, 2),
+      gfx::test::CreateBitmap(4, 3),
+  };
   for (const auto& test_bitmap : test_bitmaps) {
     WriteImageToClipboardAndConfirm(test_bitmap);
   }
@@ -513,9 +514,10 @@ TEST_F(ClipboardHistoryControllerTest, EncodeMultipleImages) {
 
 TEST_F(ClipboardHistoryControllerTest, WriteBitmapWhileEncodingImage) {
   // Write a bitmap to the clipboard.
-  std::vector<const SkBitmap> test_bitmaps;
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(3, 2));
-  test_bitmaps.emplace_back(gfx::test::CreateBitmap(4, 3));
+  const std::vector<SkBitmap> test_bitmaps{
+      gfx::test::CreateBitmap(3, 2),
+      gfx::test::CreateBitmap(4, 3),
+  };
   WriteImageToClipboardAndConfirm(test_bitmaps[0]);
 
   // Write another bitmap to the clipboard while encoding the first bitmap.

@@ -93,7 +93,7 @@ int WebSocketHttp3HandshakeStream::SendRequest(
 
   if (!session_) {
     constexpr int rv = ERR_CONNECTION_CLOSED;
-    OnFailure("Connection closed before sending request.", rv, absl::nullopt);
+    OnFailure("Connection closed before sending request.", rv, std::nullopt);
     return rv;
   }
 
@@ -102,7 +102,7 @@ int WebSocketHttp3HandshakeStream::SendRequest(
   IPEndPoint address;
   int result = session_->GetPeerAddress(&address);
   if (result != OK) {
-    OnFailure("Error getting IP address.", result, absl::nullopt);
+    OnFailure("Error getting IP address.", result, std::nullopt);
     return result;
   }
   http_response_info_->remote_endpoint = address;
@@ -321,7 +321,7 @@ void WebSocketHttp3HandshakeStream::OnClose(int status) {
   }
 
   OnFailure(base::StrCat({"Stream closed with error: ", ErrorToString(status)}),
-            status, absl::nullopt);
+            status, std::nullopt);
 
   if (callback_) {
     std::move(callback_).Run(status);
@@ -380,7 +380,7 @@ int WebSocketHttp3HandshakeStream::ValidateUpgradeResponse(
 
   const int rv = ERR_INVALID_RESPONSE;
   OnFailure("Error during WebSocket handshake: " + failure_message, rv,
-            absl::nullopt);
+            std::nullopt);
   return rv;
 }
 
@@ -388,7 +388,7 @@ int WebSocketHttp3HandshakeStream::ValidateUpgradeResponse(
 void WebSocketHttp3HandshakeStream::OnFailure(
     const std::string& message,
     int net_error,
-    absl::optional<int> response_code) {
+    std::optional<int> response_code) {
   stream_request_->OnFailure(message, net_error, response_code);
 }
 

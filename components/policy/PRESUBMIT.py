@@ -37,7 +37,7 @@ _MESSAGES_PATH = os.path.join(_TEMPLATES_PATH, 'messages.yaml')
 _COMMON_SCHEMAS_PATH = os.path.join(_TEMPLATES_PATH, 'common_schemas.yaml')
 _POLICIES_DEFINITIONS_PATH = os.path.join(_TEMPLATES_PATH, 'policy_definitions')
 _POLICIES_YAML_PATH = os.path.join(_TEMPLATES_PATH, 'policies.yaml')
-_HISTOGRAMS_PATH = os.path.join(
+_ENUMS_PATH = os.path.join(
       'tools', 'metrics', 'histograms', 'metadata', 'enterprise', 'enums.xml')
 _DEVICE_POLICY_PROTO_PATH = os.path.join(
       _COMPONENTS_POLICY_PATH, 'proto', 'chrome_device_policy.proto')
@@ -328,12 +328,12 @@ def CheckPolicyHistograms(input_api, output_api):
   results = []
   if _SkipPresubmitChecks(
       input_api,
-      [_HISTOGRAMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
+      [_ENUMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
     return results
 
   root = input_api.change.RepositoryRoot()
 
-  with open(os.path.join(root, _HISTOGRAMS_PATH), encoding='utf-8') as f:
+  with open(os.path.join(root, _ENUMS_PATH), encoding='utf-8') as f:
     tree = minidom.parseString(f.read())
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
@@ -349,17 +349,13 @@ def CheckPolicyHistograms(input_api, output_api):
   missing_ids = policy_ids - policy_enum_ids
   extra_ids = policy_enum_ids - policy_ids
 
-  error_missing = ("Policy '%s' (id %d) was added to "
-                   "policy_templates.json but not to "
-                   "src/tools/metrics/histograms/enums.xml. Please update "
-                   "both files. To regenerate the policy part of enums.xml, "
-                   "run:\n"
-                   "python tools/metrics/histograms/update_policies.py")
-  error_extra = ("Policy id %d was found in "
-                 "src/tools/metrics/histograms/enums.xml, but no policy with "
-                 "this id exists in policy_templates.json. To regenerate the "
-                 "policy part of enums.xml, run:\n"
-                 "python tools/metrics/histograms/update_policies.py")
+  error_common = ("To regenerate the policy part of enums.xml, run:\n"
+                  "python3 tools/metrics/histograms/update_policies.py")
+  error_missing = (f"Policy '%s' (id %d) was added to policy_templates.json "
+                   f"but not to {_ENUMS_PATH}. Please update both files. "
+                   f"{error_common}")
+  error_extra = (f"Policy id %d was found in {_ENUMS_PATH}, but no policy with "
+                 f"this id exists in policy_templates.json. {error_common}")
   results = []
   for policy_id in missing_ids:
     results.append(
@@ -367,62 +363,6 @@ def CheckPolicyHistograms(input_api, output_api):
                                   (policies[policy_id], policy_id)))
   for policy_id in extra_ids:
     results.append(output_api.PresubmitError(error_extra % policy_id))
-  return results
-
-
-def CheckPolicyAtomicGroupsHistograms(input_api, output_api):
-  '''Verifies that the all policy atomic groups have a histogram entry.
-  This is ran when policies.yaml, tools/metrics/histograms/enums.xml or this
-  PRESUBMIT.py file are modified.
-  '''
-  results = []
-  if _SkipPresubmitChecks(
-      input_api,
-      [_HISTOGRAMS_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
-    return results
-
-  root = input_api.change.RepositoryRoot()
-
-  with open(os.path.join(root, _HISTOGRAMS_PATH), encoding='utf-8') as f:
-    tree = minidom.parseString(f.read())
-  enums = (tree.getElementsByTagName('histogram-configuration')[0]
-               .getElementsByTagName('enums')[0]
-               .getElementsByTagName('enum'))
-  atomic_group_enums = [e for e in enums
-                        if e.getAttribute('name') == 'PolicyAtomicGroups']
-  if not atomic_group_enums:
-    return results
-
-  atomic_group_enum = atomic_group_enums[0]
-  atomic_group_enum_ids = frozenset(int(e.getAttribute('value'))
-                              for e in atomic_group_enum
-                                .getElementsByTagName('int'))
-  policies_yaml = _LoadYamlFile(root, _POLICIES_YAML_PATH)
-  atomic_groups = policies_yaml['atomic_groups']
-  atomic_group_ids = frozenset(
-    [id for id, name in atomic_groups.items() if name])
-
-  missing_ids = atomic_group_ids - atomic_group_enum_ids
-  extra_ids = atomic_group_enum_ids - atomic_group_ids
-
-  error_missing = ("Policy atomic group '%s' (id %d) was added to "
-                   "policy_templates.json but not to "
-                   "src/tools/metrics/histograms/enums.xml. Please update "
-                   "both files. To regenerate the policy part of enums.xml, "
-                   "run:\n"
-                   "python tools/metrics/histograms/update_policies.py")
-  error_extra = ("Policy atomic group id %d was found in "
-                 "src/tools/metrics/histograms/enums.xml, but no policy with "
-                 "this id exists in policy_templates.json. To regenerate the "
-                 "policy part of enums.xml, run:\n"
-                 "python tools/metrics/histograms/update_policies.py")
-  results = []
-  for atomic_group_id in missing_ids:
-    results.append(output_api.PresubmitError(error_missing %
-                              (atomic_groups[atomic_group_id],
-                              atomic_group_id)))
-  for atomic_group_id in extra_ids:
-    results.append(output_api.PresubmitError(error_extra % atomic_group_id))
   return results
 
 

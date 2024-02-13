@@ -67,9 +67,9 @@ constexpr char kGoogleSansFont[] = "Google Sans";
 // than 1 line, it will automatically adjust the padding and the spacing of the
 // button.
 class ToggleEffectsButtonLabel : public views::Label {
- public:
-  METADATA_HEADER(ToggleEffectsButtonLabel);
+  METADATA_HEADER(ToggleEffectsButtonLabel, views::Label)
 
+ public:
   ToggleEffectsButtonLabel(ToggleEffectsButton* button,
                            const std::u16string& label_text,
                            int num_button_per_row)
@@ -159,7 +159,7 @@ class ToggleEffectsButtonLabel : public views::Label {
   int label_max_width_ = 0;
 };
 
-BEGIN_METADATA(ToggleEffectsButtonLabel, views::Label);
+BEGIN_METADATA(ToggleEffectsButtonLabel);
 END_METADATA
 
 }  // namespace
@@ -211,7 +211,7 @@ ToggleEffectsButton::ToggleEffectsButton(
   focus_ring->SetHaloInset(-3);
   // Since the focus ring doesn't set a LayoutManager it won't get drawn
   // unless excluded by the tile's LayoutManager.
-  layout_->SetChildViewIgnoredByLayout(focus_ring, true);
+  focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
   auto icon = std::make_unique<views::ImageView>();
   icon->SetID(video_conference::BubbleViewID::kToggleEffectIcon);
@@ -279,7 +279,7 @@ void ToggleEffectsButton::UpdateColorsAndBackground() {
   label_->SetEnabledColorId(foreground_color_id);
 }
 
-BEGIN_METADATA(ToggleEffectsButton, views::Button);
+BEGIN_METADATA(ToggleEffectsButton);
 END_METADATA
 
 ToggleEffectsView::ToggleEffectsView(
@@ -374,7 +374,7 @@ ToggleEffectsView::ToggleEffectsView(
   }
 }
 
-BEGIN_METADATA(ToggleEffectsView, views::View);
+BEGIN_METADATA(ToggleEffectsView);
 END_METADATA
 
 }  // namespace ash::video_conference

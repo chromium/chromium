@@ -1070,7 +1070,7 @@ bool EcheTray::IsBackgroundConnectionAttemptInProgress() {
   return initializer_webview_ ? true : false;
 }
 
-BEGIN_METADATA(EcheTray, TrayBackgroundView)
+BEGIN_METADATA(EcheTray)
 END_METADATA
 
 }  // namespace ash

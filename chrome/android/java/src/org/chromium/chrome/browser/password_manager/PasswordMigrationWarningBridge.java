@@ -17,6 +17,8 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordManagerHand
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningTriggers;
+import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinator;
+import org.chromium.chrome.browser.pwd_migration.PostPasswordMigrationSheetCoordinatorFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -70,5 +72,14 @@ class PasswordMigrationWarningBridge {
                         referrer,
                         ChromePureJavaExceptionReporter::reportJavaException);
         passwordMigrationWarningCoordinator.showWarning();
+    }
+
+    // TODO(321218513): Use this method to trigger showing the sheet from cpp.
+    static void maybeShowPostMigrationSheet(WindowAndroid windowAndroid) {
+        PostPasswordMigrationSheetCoordinator postMigrationSheet =
+                PostPasswordMigrationSheetCoordinatorFactory
+                        .maybeGetOrCreatePostPasswordMigrationSheetCoordinator(windowAndroid);
+        if (postMigrationSheet == null) return;
+        postMigrationSheet.showSheet();
     }
 }

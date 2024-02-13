@@ -4,7 +4,7 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
-import {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import type {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

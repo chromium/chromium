@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {AsyncUtil} from '/common/async_util.js';
-import {EventGenerator} from '/common/event_generator.js';
 import {EventHandler} from '/common/event_handler.js';
 
 import {FaceLandmarkerResult} from '../third_party/mediapipe/task_vision/vision.js';
@@ -213,23 +212,8 @@ export class MouseController {
     }
   }
 
-  clickLeft(): void {
-    if (!this.mouseLocation_) {
-      return;
-    }
-    EventGenerator.sendMouseClick(this.mouseLocation_.x, this.mouseLocation_.y);
-  }
-
-  clickRight(): void {
-    if (!this.mouseLocation_) {
-      return;
-    }
-    EventGenerator.sendMouseClick(
-        this.mouseLocation_.x, this.mouseLocation_.y, {
-          mouseButton:
-              chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT,
-          delayMs: 0,
-        });
+  mouseLocation(): ScreenPoint|undefined {
+    return this.mouseLocation_;
   }
 
   resetLocation(): void {
@@ -320,7 +304,7 @@ export class MouseController {
 
   /**
    * Calculate a sigmoid function that creates an S curve with
-   * a y intercept around ~.2 for velocity == 0 and
+   * a y intercept around ~.2 for velocity === 0 and
    * approaches 1.2 around velocity of 22. Change is near-linear
    * around velocities 0 to 9, centered at velocity of five.
    */

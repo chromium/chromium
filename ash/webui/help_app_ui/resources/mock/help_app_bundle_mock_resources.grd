@@ -10,7 +10,9 @@
   </outputs>
   <release seq="1">
     <includes>
-      <include name="IDR_HELP_APP_APP_BIN_JS" file="app_bin.js" type="BINDATA" />
+      <include name="IDR_HELP_APP_APP_BIN_JS"
+          file="${root_gen_dir}/ash/webui/help_app_ui/resources/mock/app_bin.js"
+          resource_path="app_bin/js" use_base_dir="false" type="BINDATA" />
     </includes>
   </release>
 </grit>

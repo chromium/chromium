@@ -130,7 +130,7 @@ class SimpleTestDragDropClient : public XDragDropClient,
 
  private:
   // XDragDropClient::Delegate:
-  absl::optional<gfx::AcceleratedWidget> GetDragWidget() override;
+  std::optional<gfx::AcceleratedWidget> GetDragWidget() override;
   int UpdateDrag(const gfx::Point& screen_point) override;
   void UpdateCursor(DragOperation negotiated_operation) override;
   void OnBeginForeignDrag(x11::Window window) override;
@@ -309,9 +309,9 @@ DragOperation SimpleTestDragDropClient::StartDragAndDrop(
   return resulting_operation;
 }
 
-absl::optional<gfx::AcceleratedWidget>
+std::optional<gfx::AcceleratedWidget>
 SimpleTestDragDropClient::GetDragWidget() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int SimpleTestDragDropClient::UpdateDrag(const gfx::Point& screen_point) {

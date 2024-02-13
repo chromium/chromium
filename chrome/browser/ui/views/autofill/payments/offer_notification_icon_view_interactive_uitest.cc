@@ -40,6 +40,12 @@ std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
 class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
+    test_features_.InitAndEnableFeatureWithParameters(
+        commerce::kDiscountDialogAutoPopupBehaviorSetting,
+        {{commerce::kHistoryClustersBehaviorParam, "0"},
+         {commerce::kMerchantWideBehaviorParam, "2"},
+         {commerce::kNonMerchantWideBehaviorParam, "2"}});
+
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveBrowserTest::SetUp();
@@ -112,7 +118,7 @@ class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList test_features_{};
+  base::test::ScopedFeatureList test_features_;
   base::CallbackListSubscription create_services_subscription_;
   base::WeakPtrFactory<OfferNotificationIconViewInteractiveTest>
       weak_ptr_factory_{this};

@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extensions-item-list. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
+import type {ExtensionsItemListElement} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';

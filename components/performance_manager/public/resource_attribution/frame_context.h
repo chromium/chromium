@@ -20,7 +20,7 @@ namespace performance_manager {
 class FrameNode;
 }
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 class FrameContext {
  public:
@@ -51,20 +51,20 @@ class FrameContext {
 
   // Returns the FrameNode for this context, or a null WeakPtr if it no longer
   // exists.
-  base::WeakPtr<FrameNode> GetWeakFrameNode() const;
+  base::WeakPtr<performance_manager::FrameNode> GetWeakFrameNode() const;
 
   // PM sequence methods.
 
   // Returns the FrameContext for `node`. Equivalent to
   // node->GetResourceContext().
-  static FrameContext FromFrameNode(const FrameNode* node);
+  static FrameContext FromFrameNode(const performance_manager::FrameNode* node);
 
   // Returns the FrameContext for `node`, or nullopt if `node` is null.
   static std::optional<FrameContext> FromWeakFrameNode(
-      base::WeakPtr<FrameNode> node);
+      base::WeakPtr<performance_manager::FrameNode> node);
 
   // Returns the FrameNode for this context, or nullptr if it no longer exists.
-  FrameNode* GetFrameNode() const;
+  performance_manager::FrameNode* GetFrameNode() const;
 
   // Returns a string representation of the context for debugging. This matches
   // the interface of base::TokenType and base::UnguessableToken, for
@@ -85,12 +85,12 @@ class FrameContext {
 
  private:
   FrameContext(content::GlobalRenderFrameHostId id,
-               base::WeakPtr<FrameNode> weak_node);
+               base::WeakPtr<performance_manager::FrameNode> weak_node);
 
   content::GlobalRenderFrameHostId id_;
-  base::WeakPtr<FrameNode> weak_node_;
+  base::WeakPtr<performance_manager::FrameNode> weak_node_;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_FRAME_CONTEXT_H_

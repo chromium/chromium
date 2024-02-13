@@ -786,8 +786,9 @@ void ShelfLayoutManager::UpdateAutoHideForMouseEvent(ui::MouseEvent* event,
 }
 
 void ShelfLayoutManager::UpdateContextualNudges() {
-  if (!ash::features::AreContextualNudgesEnabled())
+  if (!features::IsHideShelfControlsInTabletModeEnabled()) {
     return;
+  }
 
   // Do not allow nudges outside of an active session.
   if (Shell::Get()->session_controller()->GetSessionState() !=
@@ -832,8 +833,9 @@ void ShelfLayoutManager::UpdateContextualNudges() {
 }
 
 void ShelfLayoutManager::HideContextualNudges() {
-  if (!ash::features::AreContextualNudgesEnabled())
+  if (!features::IsHideShelfControlsInTabletModeEnabled()) {
     return;
+  }
 
   shelf_widget_->HideDragHandleNudge(
       contextual_tooltip::DismissNudgeReason::kOther);
@@ -1447,10 +1449,7 @@ void ShelfLayoutManager::OnDisplayMetricsChanged(
 }
 
 void ShelfLayoutManager::OnLocaleChanged() {
-  if (features::IsUseLoginShelfWidgetEnabled())
-    shelf_->login_shelf_widget()->HandleLocaleChange();
-  else
-    shelf_->shelf_widget()->HandleLocaleChange();
+  shelf_->login_shelf_widget()->HandleLocaleChange();
   shelf_->status_area_widget()->HandleLocaleChange();
   shelf_->navigation_widget()->HandleLocaleChange();
   if (features::IsDeskButtonEnabled()) {
@@ -1881,10 +1880,7 @@ bool ShelfLayoutManager::SetDimmed(bool dimmed) {
   AnimateOpacity(GetLayer(shelf_->status_area_widget()), target_opacity_,
                  dim_animation_duration, dim_animation_tween);
 
-  if (features::IsUseLoginShelfWidgetEnabled())
-    shelf_->login_shelf_widget()->SetLoginShelfButtonOpacity(target_opacity_);
-  else
-    shelf_widget_->SetLoginShelfButtonOpacity(target_opacity_);
+  shelf_->login_shelf_widget()->SetLoginShelfButtonOpacity(target_opacity_);
 
   return true;
 }
@@ -1919,9 +1915,7 @@ void ShelfLayoutManager::UpdateBoundsAndOpacity(bool animate) {
   if (features::IsDeskButtonEnabled()) {
     shelf_widget_->desk_button_widget()->UpdateLayout(animate);
   }
-  if (features::IsUseLoginShelfWidgetEnabled()) {
-    shelf_->login_shelf_widget()->UpdateLayout(animate);
-  }
+  shelf_->login_shelf_widget()->UpdateLayout(animate);
 
   phase_ = ShelfLayoutPhase::kAtRest;
 }
@@ -1965,8 +1959,7 @@ void ShelfLayoutManager::UpdateTargetBounds(const State& state,
     shelf_->hotseat_widget()->CalculateTargetBounds();
   }
 
-  if (features::IsUseLoginShelfWidgetEnabled())
-    shelf_->login_shelf_widget()->CalculateTargetBounds();
+  shelf_->login_shelf_widget()->CalculateTargetBounds();
 
   target_opacity_ = ComputeTargetOpacity(state);
 
@@ -2063,6 +2056,10 @@ void ShelfLayoutManager::UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
     shelf_->hotseat_widget()->UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
+    if (features::IsDeskButtonEnabled()) {
+      shelf_->desk_button_widget()->UpdateTargetBoundsForGesture(
+          adjusted_shelf_position);
+    }
     shelf_->navigation_widget()->UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
     shelf_->status_area_widget()->UpdateTargetBoundsForGesture(
@@ -2403,13 +2400,10 @@ bool ShelfLayoutManager::IsShelfWindow(aura::Window* window) {
       GetDragHandleNudgeWindow(shelf_widget_);
 
   // Calculate whether `window` is contained by the login shelf widget.
-  bool window_in_login_shelf_widget = false;
-  if (features::IsUseLoginShelfWidgetEnabled()) {
-    const aura::Window* login_shelf_window =
-        shelf_->login_shelf_widget()->GetNativeWindow();
-    window_in_login_shelf_widget =
-        (login_shelf_window && login_shelf_window->Contains(window));
-  }
+  const aura::Window* login_shelf_window =
+      shelf_->login_shelf_widget()->GetNativeWindow();
+  bool window_in_login_shelf_widget =
+      (login_shelf_window && login_shelf_window->Contains(window));
 
   // Calculate whether `window` is contained by the desk button widget.
   bool window_in_desk_button_widget = false;

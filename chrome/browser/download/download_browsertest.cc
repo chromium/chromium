@@ -155,6 +155,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -2212,6 +2213,11 @@ class PdfDownloadTestSplitCacheEnabled : public base::test::WithFeatureOverride,
 
   bool UseOopif() const { return GetParam(); }
 
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() {
+    return factory_.GetTestPdfViewerStreamManager(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
   std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     std::vector<base::test::FeatureRef> enabled =
         DownloadTestSplitCacheEnabled::GetEnabledFeatures();
@@ -2229,6 +2235,9 @@ class PdfDownloadTestSplitCacheEnabled : public base::test::WithFeatureOverride,
     }
     return disabled;
   }
+
+ private:
+  pdf::TestPdfViewerStreamManagerFactory factory_;
 };
 
 IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
@@ -2330,12 +2339,10 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   // `pdf::PDFDocumentHelper`.
   content::RenderFrameHost* document_frame;
   if (UseOopif()) {
-    auto* test_pdf_viewer_stream_manager =
-        pdf::TestPdfViewerStreamManager::CreateForWebContents(web_contents);
-
-    content::BeginNavigateIframeToURL(web_contents,
-                                      /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
+    content::NavigateIframeToURL(web_contents,
+                                 /*iframe_id=*/"test", subframe_url);
+    ASSERT_TRUE(
+        GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
     content::RenderFrameHost* extension_host =
         pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
@@ -2518,12 +2525,10 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
   // viewer, this will be the PDF extension `RenderFrameHost`.
   content::RenderFrameHost* target_frame;
   if (UseOopif()) {
-    auto* test_pdf_viewer_stream_manager =
-        pdf::TestPdfViewerStreamManager::CreateForWebContents(web_contents);
-
-    content::BeginNavigateIframeToURL(web_contents,
-                                      /*iframe_id=*/"test", subframe_url);
-    test_pdf_viewer_stream_manager->WaitUntilPdfLoadedInFirstChild();
+    content::NavigateIframeToURL(web_contents,
+                                 /*iframe_id=*/"test", subframe_url);
+    ASSERT_TRUE(
+        GetTestPdfViewerStreamManager()->WaitUntilPdfLoadedInFirstChild());
 
     target_frame = pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
     ASSERT_TRUE(target_frame);
@@ -4697,6 +4702,12 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SafeSupportedFile) {
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadTest, FeedbackServiceDiscardDownload) {
+#if BUILDFLAG(IS_MAC)
+  // TODO (crbug/1523751): Test fails when ChromeRefresh2023 flags are enabled.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
+#endif
   safe_browsing::FileTypePoliciesTestOverlay scoped_dangerous =
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
 

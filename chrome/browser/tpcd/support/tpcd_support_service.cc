@@ -14,8 +14,6 @@
 #include "components/origin_trials/browser/origin_trials.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
@@ -30,7 +28,6 @@ const char kTrialName[] = "Tpcd";
 TpcdTrialService::TpcdTrialService(content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
   ot_controller_ = browser_context->GetOriginTrialsControllerDelegate();
-
   if (ot_controller_) {
     ot_controller_->AddObserver(this);
   }
@@ -124,6 +121,22 @@ void TpcdTrialService::Update3pcdTrialSettings(
         ContentSettingsType::TPCD_TRIAL, matches_pair);
   }
 
+  SyncTpcdTrialSettingsToNetworkService(settings_map);
+}
+
+void TpcdTrialService::ClearTpcdTrialSettings() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser_context_);
+  CHECK(settings_map);
+
+  settings_map->ClearSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
+  SyncTpcdTrialSettingsToNetworkService(settings_map);
+}
+
+void TpcdTrialService::SyncTpcdTrialSettingsToNetworkService(
+    HostContentSettingsMap* settings_map) {
   ContentSettingsForOneType tpcd_trial_settings =
       settings_map->GetSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
 
@@ -132,15 +145,6 @@ void TpcdTrialService::Update3pcdTrialSettings(
       ->SetContentSettings(ContentSettingsType::TPCD_TRIAL,
                            std::move(tpcd_trial_settings),
                            base::NullCallback());
-}
-
-void TpcdTrialService::ClearTpcdTrialSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser_context_);
-  CHECK(settings_map);
-
-  settings_map->ClearSettingsForOneType(ContentSettingsType::TPCD_TRIAL);
 }
 
 void TpcdTrialService::OnStatusChanged(const url::Origin& origin,

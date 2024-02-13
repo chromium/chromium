@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -13,9 +14,6 @@
 
 namespace ash {
 namespace {
-
-constexpr char kPrivacyAndSecuritySectionPath[] = "osPrivacy";
-constexpr char kPrivacyHubSubpagePath[] = "osPrivacy/privacyHub";
 
 // Base class for privacy hub tests in this file.
 class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
@@ -28,8 +26,9 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
     });
   }
 
-  // Returns a query to pierce through Shadow DOM to find the camera toggle.
-  static DeepQuery GetCameraToggleQuery() {
+  // Returns a query to pierce through Shadow DOM to find the camera settings
+  // toggle button.
+  static DeepQuery GetCameraSettingsToggleButtonQuery() {
     return {"os-settings-ui",
             "os-settings-main",
             "main-page-container",
@@ -38,8 +37,8 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
             "settings-toggle-button#cameraToggle"};
   }
 
-  // Returns a query to find the microphone toggle.
-  static DeepQuery GetMicrophoneToggleQuery() {
+  // Returns a query to find the microphone settings toggle button.
+  static DeepQuery GetMicrophoneSettingsToggleButtonQuery() {
     return {
         "os-settings-ui",
         "os-settings-main",
@@ -85,6 +84,145 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
   }
 };
 
+// Tests for privacy hub app permissions feature.
+class PrivacyHubAppPermissionsInteractiveUiTest
+    : public PrivacyHubInteractiveUiTest {
+ public:
+  PrivacyHubAppPermissionsInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kCrosPrivacyHubV0,
+                              features::kCrosPrivacyHubAppPermissions},
+        /*disabled_features=*/{});
+    CHECK(features::IsCrosPrivacyHubV0Enabled());
+    CHECK(features::IsCrosPrivacyHubAppPermissionsEnabled());
+  }
+
+  // Privacy hub app permissions features replaces the camera settings toggle
+  // button in the Privacy hub subpage with a camera subpage trigger followed by
+  // a toggle button.
+  // Returns a query to find the camera subpage trigger.
+  static DeepQuery GetCameraSubpageTriggerQuery() {
+    return {
+        "os-settings-ui",
+        "os-settings-main",
+        "main-page-container",
+        "os-settings-privacy-page",
+        "settings-privacy-hub-subpage",
+        "cr-link-row#cameraSubpageLink",
+    };
+  }
+
+  // Returns a query to find the camera toggle button.
+  static DeepQuery GetCameraToggleButtonQuery() {
+    return {"os-settings-ui",
+            "os-settings-main",
+            "main-page-container",
+            "os-settings-privacy-page",
+            "settings-privacy-hub-subpage",
+            "cr-toggle#cameraToggle"};
+  }
+
+  // Returns a query to find the microphone subpage trigger.
+  static DeepQuery GetMicrophoneSubpageTriggerQuery() {
+    return {
+        "os-settings-ui",
+        "os-settings-main",
+        "main-page-container",
+        "os-settings-privacy-page",
+        "settings-privacy-hub-subpage",
+        "cr-link-row#microphoneSubpageLink",
+    };
+  }
+
+  // Returns a query to find the microphone toggle button.
+  static DeepQuery GetMicrophoneToggleButtonQuery() {
+    return {"os-settings-ui",
+            "os-settings-main",
+            "main-page-container",
+            "os-settings-privacy-page",
+            "settings-privacy-hub-subpage",
+            "cr-toggle#microphoneToggle"};
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
+                       PrivacyHubSubpage) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
+
+  RunTestSequence(
+      Log("Opening OS settings system web app"),
+      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
+      ShowOSSettingsSubPage(chromeos::settings::mojom::kPrivacyHubSubpagePath),
+      WaitForShow(kOsSettingsWebContentsId),
+
+      Log("Waiting for OS settings privacy hub page to load"),
+      WaitForWebContentsReady(
+          kOsSettingsWebContentsId,
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyHubSubpagePath)),
+
+      Log("Waiting for camera subpage trigger to exist"),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           GetCameraSubpageTriggerQuery()),
+
+      Log("Waiting for camera toggle button to exist"),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           GetCameraToggleButtonQuery()),
+
+      Log("Waiting for microphone subpage trigger to exist"),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           GetMicrophoneSubpageTriggerQuery()),
+
+      Log("Waiting for microphone toggle button to exist"),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           GetMicrophoneToggleButtonQuery()),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
+                       CameraSubpage) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
+
+  RunTestSequence(
+      Log("Opening OS settings system web app"),
+      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
+      ShowOSSettingsSubPage(
+          chromeos::settings::mojom::kPrivacyHubCameraSubpagePath),
+      WaitForShow(kOsSettingsWebContentsId),
+
+      Log("Waiting for OS settings privacy hub camera subpage to load"),
+      WaitForWebContentsReady(
+          kOsSettingsWebContentsId,
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyHubCameraSubpagePath)),
+
+      Log("Test complete"));
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacyHubAppPermissionsInteractiveUiTest,
+                       MicrophoneSubpage) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
+
+  RunTestSequence(
+      Log("Opening OS settings system web app"),
+      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
+      ShowOSSettingsSubPage(
+          chromeos::settings::mojom::kPrivacyHubMicrophoneSubpagePath),
+      WaitForShow(kOsSettingsWebContentsId),
+
+      Log("Waiting for OS settings privacy hub microphone subpage to load"),
+      WaitForWebContentsReady(
+          kOsSettingsWebContentsId,
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyHubMicrophoneSubpagePath)),
+
+      Log("Test complete"));
+}
+
 // Tests for "V1" privacy hub, which has a geolocation toggle.
 class PrivacyHubV1InteractiveUiTest : public PrivacyHubInteractiveUiTest {
  public:
@@ -92,7 +230,7 @@ class PrivacyHubV1InteractiveUiTest : public PrivacyHubInteractiveUiTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kCrosPrivacyHub,
                               features::kCrosPrivacyHubV0},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kCrosPrivacyHubAppPermissions});
     CHECK(features::IsCrosPrivacyHubEnabled());
     CHECK(features::IsCrosPrivacyHubLocationEnabled());
   }
@@ -107,19 +245,22 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, SettingsPage) {
   RunTestSequence(
       Log("Opening OS settings system web app"),
       InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
-      ShowOSSettingsSubPage(kPrivacyHubSubpagePath),
+      ShowOSSettingsSubPage(chromeos::settings::mojom::kPrivacyHubSubpagePath),
       WaitForShow(kOsSettingsWebContentsId),
 
       Log("Waiting for OS settings privacy hub page to load"),
-      WaitForWebContentsReady(kOsSettingsWebContentsId,
-                              chrome::GetOSSettingsUrl(kPrivacyHubSubpagePath)),
+      WaitForWebContentsReady(
+          kOsSettingsWebContentsId,
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyHubSubpagePath)),
 
-      Log("Waiting for camera toggle to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId, GetCameraToggleQuery()),
-
-      Log("Waiting for microphone toggle to exist"),
+      Log("Waiting for camera settings toggle button to exist"),
       WaitForElementExists(kOsSettingsWebContentsId,
-                           GetMicrophoneToggleQuery()),
+                           GetCameraSettingsToggleButtonQuery()),
+
+      Log("Waiting for microphone settings toggle button to exist"),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           GetMicrophoneSettingsToggleButtonQuery()),
 
       Log("Waiting for geolocation toggle to exist"),
       WaitForElementExists(kOsSettingsWebContentsId,
@@ -132,7 +273,9 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubV1InteractiveUiTest, SettingsPage) {
 class PrivacyHubV0InteractiveUiTest : public PrivacyHubInteractiveUiTest {
  public:
   PrivacyHubV0InteractiveUiTest() {
-    feature_list_.InitAndEnableFeature(features::kCrosPrivacyHubV0);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kCrosPrivacyHubV0},
+        /*disabled_features=*/{features::kCrosPrivacyHubAppPermissions});
   }
 
  private:
@@ -145,19 +288,22 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubV0InteractiveUiTest, SettingsPage) {
   RunTestSequence(
       Log("Opening OS settings system web app"),
       InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
-      ShowOSSettingsSubPage(kPrivacyHubSubpagePath),
+      ShowOSSettingsSubPage(chromeos::settings::mojom::kPrivacyHubSubpagePath),
       WaitForShow(kOsSettingsWebContentsId),
 
       Log("Waiting for OS settings privacy hub page to load"),
-      WaitForWebContentsReady(kOsSettingsWebContentsId,
-                              chrome::GetOSSettingsUrl(kPrivacyHubSubpagePath)),
+      WaitForWebContentsReady(
+          kOsSettingsWebContentsId,
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyHubSubpagePath)),
 
-      Log("Waiting for camera toggle to exist"),
-      WaitForElementExists(kOsSettingsWebContentsId, GetCameraToggleQuery()),
-
-      Log("Waiting for microphone toggle to exist"),
+      Log("Waiting for camera settings toggle button to exist"),
       WaitForElementExists(kOsSettingsWebContentsId,
-                           GetMicrophoneToggleQuery()),
+                           GetCameraSettingsToggleButtonQuery()),
+
+      Log("Waiting for microphone settings toggle button to exist"),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           GetMicrophoneSettingsToggleButtonQuery()),
 
       Log("Test complete"));
 }
@@ -184,13 +330,15 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubDisabledInteractiveUiTest, SettingsPage) {
   RunTestSequence(
       Log("Opening OS settings system web app"),
       InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
-      ShowOSSettingsSubPage(kPrivacyAndSecuritySectionPath),
+      ShowOSSettingsSubPage(
+          chromeos::settings::mojom::kPrivacyAndSecuritySectionPath),
       WaitForShow(kOsSettingsWebContentsId),
 
       Log("Waiting for OS settings privacy section to load"),
       WaitForWebContentsReady(
           kOsSettingsWebContentsId,
-          chrome::GetOSSettingsUrl(kPrivacyAndSecuritySectionPath)),
+          chrome::GetOSSettingsUrl(
+              chromeos::settings::mojom::kPrivacyAndSecuritySectionPath)),
 
       Log("Verifying that privacy controls subpage trigger does not exist"),
       WaitForElementDoesNotExist(kOsSettingsWebContentsId,

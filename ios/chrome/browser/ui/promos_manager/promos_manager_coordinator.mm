@@ -39,6 +39,8 @@
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
+#import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
+#import "ios/chrome/browser/ui/default_promo/post_default_abandonment/post_default_abandonment_promo_provider.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/post_restore_default_browser_promo_provider.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_display_handler.h"
@@ -549,38 +551,25 @@
   [self promoWasDismissed];
 }
 
-- (void)registerPromos {
-  // Add StandardPromoDisplayHandler promos here. For example:
+- (void)registerStandardPromoDisplayHandlerPromos {
+  // App Store rating promo handler.
   if (IsAppStoreRatingEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::AppStoreRating] =
         [[AppStoreRatingDisplayHandler alloc] init];
   }
 
-  // Add StandardPromoViewProvider promos here. For example:
-  // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
-
-  // StandardPromoAlertProvider promo(s) below:
-  _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
-      [[PostRestoreSignInProvider alloc] initForBrowser:self.browser];
-  if (GetPostRestoreDefaultBrowserPromoType() ==
-      PostRestoreDefaultBrowserPromoType::kAlert) {
-    _alertProviderPromos
-        [promos_manager::Promo::PostRestoreDefaultBrowserAlert] =
-            [[PostRestoreDefaultBrowserPromoProvider alloc] init];
-  }
-
-  // WhatsNewPromoHandler promo below:
+  // What's New promo handler.
   _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
       [[WhatsNewPromoDisplayHandler alloc]
           initWithPromosManager:PromosManagerFactory::GetForBrowserState(
                                     self.browser->GetBrowserState())];
 
-  // CredentialProvider Promo handler
+  // Credentials provider promo handler.
   _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =
       [[CredentialProviderPromoDisplayHandler alloc]
           initWithHandler:_credentialProviderPromoCommandHandler];
 
-  // Docking Promo handler
+  // Docking promo handler.
   _displayHandlerPromos[promos_manager::Promo::DockingPromo] =
       [[DockingPromoDisplayHandler alloc]
           initWithHandler:_dockingPromoCommandHandler];
@@ -588,7 +577,7 @@
       [[DockingPromoDisplayHandler alloc]
           initWithHandler:_dockingPromoCommandHandler];
 
-  // DefaultBrowser Promo handler
+  // Default browser promo handler.
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =
       [[DefaultBrowserPromoDisplayHandler alloc] init];
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowserRemindMeLater] =
@@ -599,6 +588,41 @@
     _displayHandlerPromos[promos_manager::Promo::OmniboxPosition] =
         [[OmniboxPositionChoiceDisplayHandler alloc] init];
   }
+}
+
+- (void)registerStandardPromoViewProviderPromos {
+  // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
+}
+
+- (void)registerBanneredPromoViewProviderPromos {
+  // None yet.
+}
+
+- (void)registerStandardPromoAlertProviderPromos {
+  // Post-restore sign-in promo handler.
+  _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
+      [[PostRestoreSignInProvider alloc] initForBrowser:self.browser];
+
+  // Post-restore default browser promo handler.
+  if (GetPostRestoreDefaultBrowserPromoType() ==
+      PostRestoreDefaultBrowserPromoType::kAlert) {
+    _alertProviderPromos
+        [promos_manager::Promo::PostRestoreDefaultBrowserAlert] =
+            [[PostRestoreDefaultBrowserPromoProvider alloc] init];
+  }
+
+  // Post-default browser abandonment promo handler.
+  if (IsPostDefaultAbandonmentPromoEnabled()) {
+    _alertProviderPromos[promos_manager::Promo::PostDefaultAbandonment] =
+        [[PostDefaultBrowserAbandonmentPromoProvider alloc] init];
+  }
+}
+
+- (void)registerPromos {
+  [self registerStandardPromoDisplayHandlerPromos];
+  [self registerStandardPromoViewProviderPromos];
+  [self registerBanneredPromoViewProviderPromos];
+  [self registerStandardPromoAlertProviderPromos];
 }
 
 - (PromoConfigsSet)promoImpressionLimits {

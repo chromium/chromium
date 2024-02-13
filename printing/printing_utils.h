@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -17,7 +18,7 @@
 #include "printing/mojom/print.mojom-forward.h"
 
 #if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/strings/string_piece.h"
+
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -53,7 +54,7 @@ std::u16string FormatDocumentTitleWithOwnerAndLength(
 // Returns the paper size (microns) most common in the locale to the nearest
 // millimeter. Defaults to ISO A4 for an empty or invalid locale.
 COMPONENT_EXPORT(PRINTING_BASE)
-gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale);
+gfx::Size GetDefaultPaperSizeFromLocaleMicrons(std::string_view locale);
 
 // Returns true if both dimensions of the sizes have a delta less than or equal
 // to the epsilon value.

@@ -144,7 +144,7 @@ export class SettingsFingerprintListSubpageElement extends
     this.browserProxy_.removeEnrollment(e.model.index, this.authToken)
         .then(success => {
           if (success) {
-            recordSettingChange();
+            recordSettingChange(Setting.kRemoveFingerprintV2);
             this.updateFingerprintsList_();
           }
         });

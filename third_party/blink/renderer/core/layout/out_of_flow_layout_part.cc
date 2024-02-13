@@ -127,68 +127,10 @@ bool CalculateNonOverflowingRangeInOneAxis(
   return true;
 }
 
-const ComputedStyle* CreateFlippedAutoAnchorStyle(
-    const ComputedStyle& base_style,
-    bool flip_block,
-    bool flip_inline) {
-  CHECK(!RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
-  const bool is_horizontal = base_style.IsHorizontalWritingMode();
-  const bool flip_x = is_horizontal ? flip_inline : flip_block;
-  const bool flip_y = is_horizontal ? flip_block : flip_inline;
-  ComputedStyleBuilder builder(base_style);
-  // TODO(crbug.com/1477314): Handle inset-area
-  if (flip_x) {
-    builder.SetLeft(base_style.UsedRight());
-    builder.SetRight(base_style.UsedLeft());
-  }
-  if (flip_y) {
-    builder.SetTop(base_style.UsedBottom());
-    builder.SetBottom(base_style.UsedTop());
-  }
-  return builder.TakeStyle();
-}
-
-const CSSPropertyValueSet* CreateFlippedAutoAnchorDeclarations(
-    const ComputedStyle& base_style,
-    bool flip_block,
-    bool flip_inline) {
-  CHECK(RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled());
-  const bool is_horizontal = base_style.IsHorizontalWritingMode();
-  const bool flip_x = is_horizontal ? flip_inline : flip_block;
-  const bool flip_y = is_horizontal ? flip_block : flip_inline;
-  auto* set =
-      MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-  float zoom = base_style.EffectiveZoom();
-  // TODO(crbug.com/1477314): Handle inset-area
-  set->SetProperty(CSSPropertyID::kLeft,
-                   *CSSValue::Create(base_style.UsedLeft(), zoom));
-  set->SetProperty(CSSPropertyID::kRight,
-                   *CSSValue::Create(base_style.UsedRight(), zoom));
-  set->SetProperty(CSSPropertyID::kTop,
-                   *CSSValue::Create(base_style.UsedTop(), zoom));
-  set->SetProperty(CSSPropertyID::kBottom,
-                   *CSSValue::Create(base_style.UsedBottom(), zoom));
-  if (flip_x) {
-    set->SetProperty(CSSPropertyID::kLeft,
-                     *CSSValue::Create(base_style.UsedRight(), zoom));
-    set->SetProperty(CSSPropertyID::kRight,
-                     *CSSValue::Create(base_style.UsedLeft(), zoom));
-  }
-  if (flip_y) {
-    set->SetProperty(CSSPropertyID::kTop,
-                     *CSSValue::Create(base_style.UsedBottom(), zoom));
-    set->SetProperty(CSSPropertyID::kBottom,
-                     *CSSValue::Create(base_style.UsedTop(), zoom));
-  }
-  return set;
-}
-
 // Helper class to enumerate all the candidate styles to be passed to
 // `TryCalculateOffset()`. The class should iterate through:
 // - The base style, if no `position-fallback` is specified
 // - The `@try` rule styles, if `position-fallback` is specified
-// In addition, if any of the above styles generate auto anchor fallbacks, the
-// class also iterate through those auto anchor fallbacks.
 class OOFCandidateStyleIterator {
   STACK_ALLOCATED();
 
@@ -199,12 +141,10 @@ class OOFCandidateStyleIterator {
   }
 
   bool UsesFallbackStyle() const {
-    return position_fallback_index_ || HasAutoFallbacks();
+    return position_fallback_index_.has_value();
   }
 
-  const ComputedStyle& GetStyle() const {
-    return auto_anchor_style_ ? *auto_anchor_style_ : *style_;
-  }
+  const ComputedStyle& GetStyle() const { return *style_; }
 
   const ComputedStyle& GetBaseStyle() const {
     if (RuntimeEnabledFeatures::CSSAnchorPositioningCascadeFallbackEnabled() &&
@@ -241,58 +181,17 @@ class OOFCandidateStyleIterator {
     return position_fallback_index_;
   }
 
-  bool HasNextStyle() const {
-    return HasNextAutoAnchorFallback() || HasNextPositionFallback();
-  }
+  bool HasNextStyle() const { return HasNextPositionFallback(); }
 
   void MoveToNextStyle() {
     CHECK(style_);
-
-    if (HasNextAutoAnchorFallback()) {
-      if (!auto_anchor_flippable_in_inline_) {
-        CHECK(auto_anchor_flippable_in_block_);
-        CHECK(!auto_anchor_flip_block_);
-        auto_anchor_flip_block_ = true;
-      } else if (!auto_anchor_flippable_in_block_) {
-        CHECK(auto_anchor_flippable_in_inline_);
-        CHECK(!auto_anchor_flip_inline_);
-        auto_anchor_flip_inline_ = true;
-      } else {
-        if (!auto_anchor_flip_block_) {
-          auto_anchor_flip_block_ = true;
-        } else {
-          CHECK(!auto_anchor_flip_inline_);
-          auto_anchor_flip_inline_ = true;
-          auto_anchor_flip_block_ = false;
-        }
-      }
-      if (RuntimeEnabledFeatures::
-              CSSAnchorPositioningCascadeFallbackEnabled()) {
-        auto_anchor_style_ = UpdateStyle(CreateFlippedAutoAnchorDeclarations(
-            *style_, auto_anchor_flip_block_, auto_anchor_flip_inline_));
-      } else {
-        auto_anchor_style_ = CreateFlippedAutoAnchorStyle(
-            *style_, auto_anchor_flip_block_, auto_anchor_flip_inline_);
-      }
-      return;
-    }
-
     CHECK(position_fallback_index_);
     ++*position_fallback_index_;
     style_ = UpdateStyle(*position_fallback_index_);
     CHECK(style_);
-    SetUpAutoAnchorFallbackData();
   }
 
  private:
-  bool HasAutoFallbacks() const {
-    return auto_anchor_flippable_in_block_ || auto_anchor_flippable_in_inline_;
-  }
-  bool HasNextAutoAnchorFallback() const {
-    return auto_anchor_flip_block_ != auto_anchor_flippable_in_block_ ||
-           auto_anchor_flip_inline_ != auto_anchor_flippable_in_inline_;
-  }
-
   bool HasNextPositionFallback() const {
     return position_fallback_index_ && element_ &&
            HasTryRule(*position_fallback_index_ + 1);
@@ -320,7 +219,6 @@ class OOFCandidateStyleIterator {
         style_ = UpdateStyle(/* try_set */ nullptr);
       }
     }
-    SetUpAutoAnchorFallbackData();
   }
 
   const StyleRulePositionFallback* GetPositionFallbackRule(
@@ -330,51 +228,6 @@ class OOFCandidateStyleIterator {
     }
     return element_->GetDocument().GetStyleEngine().GetPositionFallbackRule(
         *scoped_name);
-  }
-
-  void SetUpAutoAnchorFallbackData() {
-    ClearAutoAnchorFallbackData();
-    if (!style_->HasAutoAnchorPositioning()) {
-      return;
-    }
-    // We create a "flipped" fallback in an axis only if one inset uses auto
-    // anchor positioning and the opposite inset is `auto`.
-    // Note that for styles created from a `@try` rule, we create "flipped"
-    // fallback only if the `@try` rule itself uses auto anchor positioning.
-    // Usage in the base style doesn't create fallbacks.
-    // TODO(crbug.com/1477314): Handle inset-area
-    bool flippable_in_x = false;
-    if (!position_fallback_index_ ||
-        style_->HasAutoAnchorPositioningInXAxisFromTryBlock()) {
-      flippable_in_x = (style_->UsedLeft().IsAuto() &&
-                        style_->UsedRight().HasAutoAnchorPositioning()) ||
-                       (style_->UsedRight().IsAuto() &&
-                        style_->UsedLeft().HasAutoAnchorPositioning());
-    }
-    bool flippable_in_y = false;
-    if (!position_fallback_index_ ||
-        style_->HasAutoAnchorPositioningInYAxisFromTryBlock()) {
-      flippable_in_y = (style_->UsedTop().IsAuto() &&
-                        style_->UsedBottom().HasAutoAnchorPositioning()) ||
-                       (style_->UsedBottom().IsAuto() &&
-                        style_->UsedTop().HasAutoAnchorPositioning());
-    }
-    if (!flippable_in_x && !flippable_in_y) {
-      return;
-    }
-    const bool is_horizontal = style_->IsHorizontalWritingMode();
-    auto_anchor_flippable_in_inline_ =
-        is_horizontal ? flippable_in_x : flippable_in_y;
-    auto_anchor_flippable_in_block_ =
-        is_horizontal ? flippable_in_y : flippable_in_x;
-  }
-
-  void ClearAutoAnchorFallbackData() {
-    auto_anchor_style_ = nullptr;
-    auto_anchor_flippable_in_block_ = false;
-    auto_anchor_flippable_in_inline_ = false;
-    auto_anchor_flip_block_ = false;
-    auto_anchor_flip_inline_ = false;
   }
 
   bool HasTryRule(wtf_size_t index) const {
@@ -418,16 +271,6 @@ class OOFCandidateStyleIterator {
   // If the current style is created from an `@try` rule, index of the rule;
   // Otherwise nullopt.
   std::optional<wtf_size_t> position_fallback_index_;
-
-  // Created when the current style is generated by auto anchor positioning
-  // and has any axis flipped compared to the base style.
-  // https://drafts.csswg.org/css-anchor-position-1/#automatic-anchor-fallbacks
-  const ComputedStyle* auto_anchor_style_ = nullptr;
-
-  bool auto_anchor_flippable_in_block_ = false;
-  bool auto_anchor_flippable_in_inline_ = false;
-  bool auto_anchor_flip_block_ = false;
-  bool auto_anchor_flip_inline_ = false;
 };
 
 }  // namespace
@@ -640,23 +483,23 @@ OutOfFlowLayoutPart::ApplyInsetArea(
   // adjustment is already set to 0 above.
   if (inset_area.UsedTop().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kTop, anchor_evaluator);
-    top = inset_area.UsedTop().NonNanCalculatedValue(available_height,
-                                                     anchor_evaluator);
+    top = inset_area.UsedTop().NonNanCalculatedValue(
+        available_height, {.anchor_evaluator = anchor_evaluator});
   }
   if (inset_area.UsedBottom().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kBottom, anchor_evaluator);
-    bottom = inset_area.UsedBottom().NonNanCalculatedValue(available_height,
-                                                           anchor_evaluator);
+    bottom = inset_area.UsedBottom().NonNanCalculatedValue(
+        available_height, {.anchor_evaluator = anchor_evaluator});
   }
   if (inset_area.UsedLeft().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kLeft, anchor_evaluator);
-    left = inset_area.UsedLeft().NonNanCalculatedValue(available_width,
-                                                       anchor_evaluator);
+    left = inset_area.UsedLeft().NonNanCalculatedValue(
+        available_width, {.anchor_evaluator = anchor_evaluator});
   }
   if (inset_area.UsedRight().IsCalculated()) {
     AnchorScope anchor_scope(AnchorScope::Mode::kRight, anchor_evaluator);
-    right = inset_area.UsedRight().NonNanCalculatedValue(available_width,
-                                                         anchor_evaluator);
+    right = inset_area.UsedRight().NonNanCalculatedValue(
+        available_width, {.anchor_evaluator = anchor_evaluator});
   }
 
   ContainingBlockInfo adjusted_container_info(container_info);
@@ -734,8 +577,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           const BoxStrut& borders,
           const LogicalSize& size) -> OutOfFlowLayoutPart::ContainingBlockInfo {
     const auto& grid_style = containing_grid.StyleRef();
-    GridItemData grid_item(candidate.Node(), grid_style,
-                           grid_style.GetFontBaseline());
+    GridItemData grid_item(candidate.Node(), grid_style);
 
     return {grid_style.GetWritingDirection(),
             GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
@@ -1250,7 +1092,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
       }
 
       limited_multicol_container_builder.AddChild(*fragment, offset);
-      multicol_children.emplace_back(MulticolChildInfo(&child));
+      multicol_children.emplace_back(MulticolChildInfo());
     }
 
     // If a column fragment is updated with OOF children, we may need to update
@@ -1370,44 +1212,30 @@ void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
       fragment_idx--;
     } while (true);
 
-    // We have located the right multicol fragment to replace. Re-use its old
-    // constraint space and establish a layout algorithm to regenerate the
-    // fragment.
-    const ConstraintSpace& constraint_space =
-        old_result->GetConstraintSpaceForCaching();
-    FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
-        constraint_space, multicol, /* break_token */ nullptr);
-    LayoutAlgorithmParams params(multicol, fragment_geometry, constraint_space);
-    SimplifiedLayoutAlgorithm algorithm(params, *old_result,
-                                        /* keep_old_size */ true);
-
-    // First copy the fragmentainers (and other child fragments) that we already
-    // had.
-    algorithm.CloneOldChildren();
-
-    WritingModeConverter converter(constraint_space.GetWritingDirection(),
-                                   old_result->GetPhysicalFragment().Size());
+    // We have located the right multicol container fragment to update.
+    const auto& existing_fragment =
+        To<PhysicalBoxFragment>(old_result->GetPhysicalFragment());
+    WritingModeConverter converter(
+        existing_fragment.Style().GetWritingDirection(),
+        existing_fragment.Size());
     LayoutUnit additional_column_block_size;
-    // Then append the new fragmentainers.
+
+    // Append the new fragmentainers to the multicol container fragment.
+    auto fragment_mutator = existing_fragment.GetMutableForOofFragmentation();
     for (wtf_size_t i = old_fragment_count; i < new_fragment_count; i++) {
       const LogicalFragmentLink& child =
           limited_multicol_container_builder.Children()[i];
-      algorithm.AppendNewChildFragment(*child.fragment, child.offset);
+      fragment_mutator.AddChildFragmentainer(
+          *To<PhysicalBoxFragment>(child.get()), child.offset);
       additional_column_block_size +=
           converter.ToLogical(child.fragment->Size()).block_size;
     }
+    fragment_mutator.UpdateOverflow();
 
     // We've already written back to legacy for |multicol|, but if we added
     // new columns to hold any OOF descendants, we need to extend the final
     // size of the legacy flow thread to encompass those new columns.
     multicol.MakeRoomForExtraColumns(additional_column_block_size);
-
-    // Create a new multicol container fragment and replace all references to
-    // the old one with this new one.
-    const LayoutResult* new_result =
-        algorithm.CreateResultAfterManualChildLayout();
-    ReplaceFragment(std::move(new_result), *last_fragment_with_fragmentainer,
-                    fragment_idx);
   }
 
   // Any descendants should have been handled in
@@ -1587,6 +1415,10 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       auto& children = FragmentationContextChildren();
       wtf_size_t num_children = children.size();
 
+      // Even if all OOFs are done creating fragments, we need to create enough
+      // fragmentainers to encompass all monolithic overflow when printing.
+      LayoutUnit monolithic_overflow;
+
       // Set to true if an OOF inside a fragmentainer breaks. This does not
       // include repeated fixed-positioned elements.
       bool last_fragmentainer_has_break_inside = false;
@@ -1622,7 +1454,8 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
           last_fragmentainer_has_break_inside = false;
           LayoutOOFsInFragmentainer(
               pending_descendants, index, fragmentainer_progression,
-              &last_fragmentainer_has_break_inside, &fragmented_descendants);
+              &monolithic_overflow, &last_fragmentainer_has_break_inside,
+              &fragmented_descendants);
 
           // Retrieve the updated or newly added fragmentainer, and add its
           // block contribution to the consumed block size. Skip this if we are
@@ -1640,11 +1473,15 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
 
         // Extend |descendants_to_layout| if an OOF element fragments into a
         // fragmentainer at an index that does not yet exist in
-        // |descendants_to_layout|. At the same time we need to make sure that
-        // repeated fixed-positioned elements don't trigger creation of
-        // additional fragmentainers (since they'd just repeat forever).
+        // |descendants_to_layout|. We also need to do this if there's
+        // monolithic overflow (when printing), so that there are enough
+        // fragmentainers to paint the overflow. At the same time we need to
+        // make sure that repeated fixed-positioned elements don't trigger
+        // creation of additional fragmentainers on their own (since they'd just
+        // repeat forever).
         if (index == descendants_to_layout.size() - 1 &&
             (last_fragmentainer_has_break_inside ||
+             monolithic_overflow > LayoutUnit() ||
              (!fragmented_descendants.empty() &&
               index + 1 < FragmentationContextChildren().size()))) {
           descendants_to_layout.resize(index + 2);
@@ -2424,6 +2261,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       DCHECK_EQ(node.Style().GetPosition(), EPosition::kFixed);
       builder.SetShouldRepeat(true);
       builder.SetIsInsideRepeatableContent(true);
+      builder.DisableMonolithicOverflowPropagation();
       is_repeatable = true;
     } else {
       SetupSpaceBuilderForFragmentation(
@@ -2443,9 +2281,11 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       // finished this OOF there. But we have no (easy) way of telling where
       // that might be. But as long as the OOF doesn't contribute to any
       // additional fragmentainers, we should be (pretty) good.
-      if (is_last_fragmentainer_so_far &&
-          node_info.containing_block.IsFragmentedInsideClippedContainer()) {
-        builder.DisableFurtherFragmentation();
+      if (node_info.containing_block.IsFragmentedInsideClippedContainer()) {
+        if (is_last_fragmentainer_so_far) {
+          builder.DisableFurtherFragmentation();
+        }
+        builder.DisableMonolithicOverflowPropagation();
       }
     }
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
@@ -2465,12 +2305,13 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     HeapVector<NodeToLayout>& pending_descendants,
     wtf_size_t index,
     LogicalOffset fragmentainer_progression,
+    LayoutUnit* monolithic_overflow,
     bool* has_actual_break_inside,
     HeapVector<NodeToLayout>* fragmented_descendants) {
   auto& children = FragmentationContextChildren();
   wtf_size_t num_children = children.size();
   bool is_new_fragment = index >= num_children;
-  bool is_last_fragmentainer_so_far = index + 1 == num_children;
+  bool is_last_fragmentainer_so_far = index + 1 >= num_children;
 
   DCHECK(fragmented_descendants);
   HeapVector<NodeToLayout> descendants_continued;
@@ -2478,13 +2319,15 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
       &descendants_continued);
   std::swap(*fragmented_descendants, descendants_continued);
 
-  // If |index| is greater than the number of current children, and there are
-  // no OOF children to be added, we will still need to add an empty
-  // fragmentainer in its place. Otherwise, return early since there is no work
-  // to do.
+  // If |index| is greater than the number of current children, and there are no
+  // OOF children to be added, we will still need to add an empty fragmentainer
+  // in its place. Otherwise, return early since there is no work to do, unless
+  // there is overflowed monolithic content to take into account (in the case of
+  // pagination).
   if (pending_descendants.empty() && descendants_continued.empty() &&
-      !is_new_fragment)
+      *monolithic_overflow <= LayoutUnit() && !is_new_fragment) {
     return;
+  }
 
   const ConstraintSpace& space = GetFragmentainerConstraintSpace(index);
 
@@ -2517,11 +2360,9 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   LayoutAlgorithmParams params(node, fragment_geometry, space,
                                previous_break_token,
                                /* early_break */ nullptr);
-
-  // |algorithm| corresponds to the "mutable copy" of our original
-  // fragmentainer. As long as this "copy" hasn't been laid out via
-  // SimplifiedOofLayoutAlgorithm::Layout, we can append new items to it.
-  SimplifiedOofLayoutAlgorithm algorithm(params, *fragment, is_new_fragment);
+  // This algorithm will be used to add new OOFs. The existing fragment passed
+  // is the last fragmentainer created so far.
+  SimplifiedOofLayoutAlgorithm algorithm(params, *fragment);
   // Layout any OOF elements that are a continuation of layout first.
   for (auto& descendant : descendants_continued) {
     AddOOFToFragmentainer(descendant, &space, fragmentainer_offset, index,
@@ -2537,10 +2378,36 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
                           &algorithm, fragmented_descendants);
   }
 
-  // Finalize layout on the cloned fragmentainer and replace all existing
-  // references to the old result.
-  ReplaceFragmentainer(index, fragmentainer_offset, is_new_fragment,
-                       &algorithm);
+  // Don't update the builder when performing column balancing.
+  if (column_balancing_info_) {
+    return;
+  }
+
+  const LayoutResult* fragmentainer_result = algorithm.Layout();
+  const auto& new_fragmentainer =
+      To<PhysicalBoxFragment>(fragmentainer_result->GetPhysicalFragment());
+  const PhysicalBoxFragment* updated_fragmentainer = fragment;
+
+  if (is_new_fragment) {
+    // Add the new fragmentainer to the builder.
+    container_builder_->AddChild(new_fragmentainer, fragmentainer_offset);
+    updated_fragmentainer = &new_fragmentainer;
+  } else {
+    // A fragmentainer already exists at the given index. The new one that was
+    // just prepared by the algorithm is treated as a temporatry placeholder
+    // fragmentainer which will be "poured" into the existing one, and then
+    // forgotten about. This will add new OOFs (and whatever relevant info they
+    // propagated).
+    updated_fragmentainer->GetMutableForOofFragmentation().Merge(
+        new_fragmentainer);
+  }
+
+  if (const BlockBreakToken* break_token =
+          updated_fragmentainer->GetBreakToken()) {
+    *monolithic_overflow = break_token->MonolithicOverflow();
+  } else {
+    *monolithic_overflow = LayoutUnit();
+  }
 }
 
 void OutOfFlowLayoutPart::AddOOFToFragmentainer(
@@ -2646,11 +2513,9 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
     return;
   }
 
-  // Propagate new data to the |container_builder_|. |AppendOutOfFlowResult|
-  // will add the |result| to the fragmentainer, and replace the fragmentainer
-  // in the |container_builder_|. |ReplaceChild| can't compute the differences
-  // of the new and the old fragments, so it skips all propagations usually done
-  // in |AddChild|.
+  // Propagate new data to the |container_builder_| manually. Unlike when in
+  // regular layout, MutableForOofFragmentation / SimplifiedOofLayoutAlgorithm
+  // won't do this for us.
   container_builder_->PropagateChildAnchors(
       physical_fragment, oof_offset + relative_offset + offset_adjustment);
   container_builder_->PropagateStickyDescendants(physical_fragment);
@@ -2696,34 +2561,6 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
             container->Style().GetWritingDirection(), container->Size(),
             physical_fragment.Size()),
         *container, /* previous_container_break_token */ nullptr);
-  }
-}
-
-void OutOfFlowLayoutPart::ReplaceFragmentainer(
-    wtf_size_t index,
-    LogicalOffset offset,
-    bool create_new_fragment,
-    SimplifiedOofLayoutAlgorithm* algorithm) {
-  // Don't update the builder when performing column balancing.
-  if (column_balancing_info_)
-    return;
-
-  if (create_new_fragment) {
-    const LayoutResult* new_result = algorithm->Layout();
-    container_builder_->AddChild(new_result->GetPhysicalFragment(), offset);
-  } else {
-    const LayoutResult* new_result = algorithm->Layout();
-    const PhysicalFragment* new_fragment = &new_result->GetPhysicalFragment();
-    container_builder_->ReplaceChild(index, *new_fragment, offset);
-
-    if (multicol_children_ && index < multicol_children_->size()) {
-      // We are in a nested fragmentation context. Replace the column entry
-      // (that already existed) directly in the existing multicol fragment. If
-      // there any new columns, they will be appended as part of regenerating
-      // the multicol fragment.
-      MulticolChildInfo& column_info = (*multicol_children_)[index];
-      column_info.mutable_link->fragment = new_fragment;
-    }
   }
 }
 
@@ -2885,128 +2722,6 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
   *start_index = child_index + additional_fragment_count;
   offset->block_offset = remaining_block_offset -
                          additional_fragment_count * fragmentainer_block_size;
-}
-
-void OutOfFlowLayoutPart::ReplaceFragment(
-    const LayoutResult* new_result,
-    const PhysicalBoxFragment& old_fragment,
-    wtf_size_t index) {
-  // Replace the LayoutBox entry.
-  LayoutBox& box = *old_fragment.MutableOwnerLayoutBox();
-  box.ReplaceLayoutResult(new_result, index);
-
-  // Replace the entry in the parent fragment. Locating the parent fragment
-  // isn't straight-forward if the containing block is a multicol container.
-  LayoutBox* containing_block;
-
-  if (box.IsOutOfFlowPositioned()) {
-    // If the inner multicol is out-of-flow positioned, its fragments will be
-    // found as direct children of fragmentainers in some ancestor fragmentation
-    // context. It may not be the *nearest* fragmentation context, though, since
-    // the OOF inner multicol may be contained by other OOFs, which in turn may
-    // not be contained by the innermost multicol container, and so on. Skip
-    // above all OOFs in the containing block chain, to find the right
-    // fragmentation context root.
-    containing_block = &box;
-    bool is_inside_spanner = false;
-    do {
-      // Keep searching up the tree until we have found a containing block
-      // that's in-flow and the containing block of that containing block is a
-      // fragmentation context root. This fragmentation context root is the one
-      // that contains the fragment.
-      bool is_out_of_flow = containing_block->IsOutOfFlowPositioned();
-      containing_block = containing_block->ContainingNGBox();
-      if (containing_block->IsFragmentationContextRoot() && !is_out_of_flow) {
-        // If the OOF element we are searching for has a CB that is nested
-        // within a spanner, that OOF will *not* be laid out in the nearest
-        // multicol container. Instead, it will propagate up to the context in
-        // which the spanner is laid out. Thus, continue searching past the
-        // nearest multicol container for the OOF in question.
-        if (!is_inside_spanner) {
-          break;
-        }
-      }
-      is_inside_spanner = containing_block->IsColumnSpanAll();
-    } while (containing_block->MightBeInsideFragmentationContext());
-
-    DCHECK(containing_block->IsFragmentationContextRoot());
-  } else {
-    containing_block = box.ContainingNGBox();
-  }
-
-  // Replace the old fragment with the new one, if it's inside |parent|.
-  auto ReplaceChild =
-      [&new_result, &old_fragment](const PhysicalBoxFragment& parent) -> bool {
-    for (PhysicalFragmentLink& child_link :
-         parent.GetMutableChildrenForOutOfFlow().Children()) {
-      if (child_link.fragment != &old_fragment)
-        continue;
-      child_link.fragment = &new_result->GetPhysicalFragment();
-      return true;
-    }
-    return false;
-  };
-
-  // Replace the old fragment with the new one, if |multicol_child| is a
-  // fragmentainer and has the old fragment as a child.
-  auto ReplaceFragmentainerChild =
-      [ReplaceChild](const PhysicalFragment& multicol_child) -> bool {
-    // We're going to replace a child of a fragmentainer. First check if it's a
-    // fragmentainer at all.
-    if (!multicol_child.IsFragmentainerBox())
-      return false;
-    const auto& fragmentainer = To<PhysicalBoxFragment>(multicol_child);
-    // Then search and replace inside the fragmentainer.
-    return ReplaceChild(fragmentainer);
-  };
-
-  if (!containing_block->IsFragmentationContextRoot()) {
-    DCHECK_NE(containing_block, container_builder_->GetLayoutObject());
-    DCHECK(!box.IsColumnSpanAll());
-    for (const auto& parent_fragment : containing_block->PhysicalFragments()) {
-      if (parent_fragment.HasItems()) {
-        // Look inside the inline formatting context to find and replace the
-        // fragment generated for the nested multicol container. This happens
-        // when we have a floated "inline-level" nested multicol container with
-        // an OOF inside.
-        if (FragmentItems::ReplaceBoxFragment(
-                old_fragment,
-                To<PhysicalBoxFragment>(new_result->GetPhysicalFragment()),
-                parent_fragment)) {
-          return;
-        }
-      }
-      // Search inside child fragments of the containing block.
-      if (ReplaceChild(parent_fragment))
-        return;
-    }
-  } else if (containing_block == container_builder_->GetLayoutObject()) {
-    DCHECK(!box.IsColumnSpanAll());
-    // We're currently laying out |containing_block|, and it's a multicol
-    // container. Search inside fragmentainer children in the builder.
-    auto& children = FragmentationContextChildren();
-    for (const LogicalFragmentLink& child : children) {
-      if (ReplaceFragmentainerChild(*child.fragment))
-        return;
-    }
-  } else {
-    // |containing_block| has already been laid out, and it's a multicol
-    // container. Search inside fragmentainer children of the fragments
-    // generated for the containing block.
-    for (const auto& multicol : containing_block->PhysicalFragments()) {
-      if (box.IsColumnSpanAll()) {
-        // Column spanners are found as direct children of the multicol.
-        if (ReplaceChild(multicol))
-          return;
-      } else {
-        for (const auto& child : multicol.Children()) {
-          if (ReplaceFragmentainerChild(*child.fragment))
-            return;
-        }
-      }
-    }
-  }
-  NOTREACHED();
 }
 
 void OutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(

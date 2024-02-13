@@ -4,7 +4,8 @@
 
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {LensInternalsBrowserProxy, LensInternalsBrowserProxyImpl} from './lens_internals_browser_proxy.js';
+import type {LensInternalsBrowserProxy} from './lens_internals_browser_proxy.js';
+import {LensInternalsBrowserProxyImpl} from './lens_internals_browser_proxy.js';
 
 /** @param showEnableButton Whether to show the "start" button. */
 function toggleDebugModeButton(showEnableButton: boolean) {

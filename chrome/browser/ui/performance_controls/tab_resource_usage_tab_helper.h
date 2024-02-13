@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_RESOURCE_USAGE_TAB_HELPER_H_
 
+#include "components/performance_manager/public/features.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -18,15 +19,16 @@ class TabResourceUsage : public base::RefCounted<TabResourceUsage> {
 
   uint64_t memory_usage_in_bytes() const { return memory_usage_bytes_; }
 
-  void set_memory_usage_in_bytes(uint64_t memory_usage_bytes) {
-    memory_usage_bytes_ = memory_usage_bytes;
-  }
+  void SetMemoryUsageInBytes(uint64_t memory_usage_bytes);
+
+  bool is_high_memory_usage() const { return is_high_memory_usage_; }
 
  private:
   friend class base::RefCounted<TabResourceUsage>;
   ~TabResourceUsage() = default;
 
   uint64_t memory_usage_bytes_ = 0;
+  bool is_high_memory_usage_ = false;
 };
 
 // Per-tab class to keep track of current memory usage for each tab.

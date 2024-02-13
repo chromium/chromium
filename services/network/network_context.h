@@ -59,6 +59,7 @@
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/network_context_client.mojom.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
@@ -436,7 +437,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void PreconnectSockets(
       uint32_t num_streams,
       const GURL& url,
-      bool allow_credentials,
+      mojom::CredentialsMode credentials_mode,
       const net::NetworkAnonymizationKey& network_anonymization_key) override;
 #if BUILDFLAG(IS_P2P_ENABLED)
   void CreateP2PSocketManager(

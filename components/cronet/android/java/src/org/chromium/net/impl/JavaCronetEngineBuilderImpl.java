@@ -9,8 +9,12 @@ import android.content.Context;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /** Implementation of {@link ICronetEngineBuilder} that builds Java-based Cronet engine. */
 public class JavaCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
+    private static final AtomicLong sLogCronetInitializationRef = new AtomicLong(0);
+
     /**
      * Builder for Platform Cronet Engine.
      *
@@ -18,6 +22,12 @@ public class JavaCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
      */
     public JavaCronetEngineBuilderImpl(Context context) {
         super(context);
+    }
+
+    @Override
+    protected long getLogCronetInitializationRef() {
+        sLogCronetInitializationRef.compareAndSet(0, mLogger.generateId());
+        return sLogCronetInitializationRef.get();
     }
 
     @Override

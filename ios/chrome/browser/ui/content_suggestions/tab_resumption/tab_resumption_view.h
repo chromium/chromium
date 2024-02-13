@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class TabResumptionItem;
-@protocol ContentSuggestionsCommands;
+@protocol TabResumptionCommands;
 
 // A view that displays a tab resumption item in the Magic Stack.
 @interface TabResumptionView : UIView
@@ -17,7 +17,7 @@
 - (instancetype)initWithItem:(TabResumptionItem*)item;
 
 // The handler that receives TabResumptionView's events.
-@property(nonatomic, weak) id<ContentSuggestionsCommands> commandHandler;
+@property(nonatomic, weak) id<TabResumptionCommands> commandHandler;
 
 @end
 

@@ -46,7 +46,8 @@ public class DefaultBrowserPromoManager {
                 (resultCode, data) -> {
                     DefaultBrowserPromoMetrics.recordOutcome(
                             mCurrentState,
-                            DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState());
+                            DefaultBrowserPromoDeps.getInstance().getCurrentDefaultBrowserState(),
+                            DefaultBrowserPromoDeps.getInstance().getPromoCount());
                 },
                 null);
     }

@@ -14,7 +14,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
-  // TODO(b/321956932): Add testcases for resumable upload requests.
 class ConnectorDataPipeGetterTest : public testing::Test {
  public:
   std::optional<base::File> CreateFile(const std::string& content) {
@@ -92,23 +91,30 @@ class ConnectorDataPipeGetterTest : public testing::Test {
 };
 
 TEST_F(ConnectorDataPipeGetterTest, InvalidFile) {
-  ASSERT_EQ(nullptr, ConnectorDataPipeGetter::Create("boundary", "metadata",
-                                                     base::File()));
+  ASSERT_EQ(nullptr, ConnectorDataPipeGetter::CreateMultipartPipeGetter(
+                         "boundary", "metadata", base::File()));
+  ASSERT_EQ(nullptr,
+            ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File()));
 }
 
 TEST_F(ConnectorDataPipeGetterTest, InvalidPage) {
   ASSERT_EQ(nullptr,
-            ConnectorDataPipeGetter::Create(
+            ConnectorDataPipeGetter::CreateMultipartPipeGetter(
                 "boundary", "metadata", base::ReadOnlySharedMemoryRegion()));
+  ASSERT_EQ(nullptr, ConnectorDataPipeGetter::CreateResumablePipeGetter(
+                         base::ReadOnlySharedMemoryRegion()));
 }
 
-// Parametrization to share tests between the file and page implementations.
+// Parametrization to share tests between:
+// 1. the file and page implementations.
+// 2. multipart and resumable upload.
 class ConnectorDataPipeGetterParametrizedTest
     : public ConnectorDataPipeGetterTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  bool is_file_data_pipe() { return GetParam(); }
-  bool is_page_data_pipe() { return !GetParam(); }
+  bool is_file_data_pipe() { return std::get<0>(GetParam()); }
+  bool is_page_data_pipe() { return !std::get<0>(GetParam()); }
+  bool is_resumable_upload() { return std::get<1>(GetParam()); }
 
   // Helper to create a data pipe with its content either in memory or in a
   // files. If there is no space left on the device, return nullptr so the test
@@ -120,15 +126,21 @@ class ConnectorDataPipeGetterParametrizedTest
       if (!file)
         return nullptr;
 
-      return ConnectorDataPipeGetter::Create("boundary", metadata_,
-                                             std::move(*file));
+      return is_resumable_upload()
+                 ? ConnectorDataPipeGetter::CreateResumablePipeGetter(
+                       std::move(*file))
+                 : ConnectorDataPipeGetter::CreateMultipartPipeGetter(
+                       "boundary", metadata_, std::move(*file));
     } else {
       base::ReadOnlySharedMemoryRegion page = CreatePage(content);
       if (!page.IsValid())
         return nullptr;
 
-      return ConnectorDataPipeGetter::Create("boundary", metadata_,
-                                             std::move(page));
+      return is_resumable_upload()
+                 ? ConnectorDataPipeGetter::CreateResumablePipeGetter(
+                       std::move(page))
+                 : ConnectorDataPipeGetter::CreateMultipartPipeGetter(
+                       "boundary", metadata_, std::move(page));
     }
   }
 
@@ -140,9 +152,10 @@ class ConnectorDataPipeGetterParametrizedTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          ConnectorDataPipeGetterParametrizedTest,
-                         testing::Bool());
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, SmallFile) {
+  std::string small_file_content = "small file content";
   std::string expected_body =
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
@@ -150,18 +163,24 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, SmallFile) {
       "metadata\r\n"
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
+      "\r\n" +
+      small_file_content +
       "\r\n"
-      "small file content\r\n"
       "--boundary--\r\n";
 
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
-      CreateDataPipeGetter("small file content");
+      CreateDataPipeGetter(small_file_content);
   EXPECT_TRUE(data_pipe_getter);
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
-  ASSERT_EQ(expected_body,
-            GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+  if (is_resumable_upload()) {
+    ASSERT_EQ(small_file_content, GetBodyFromPipe(data_pipe_getter.get(),
+                                                  small_file_content.size()));
+  } else {
+    ASSERT_EQ(expected_body,
+              GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+  }
 }
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFile) {
@@ -180,19 +199,29 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFile) {
 
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter(large_file_content);
-  // It's possible the large file couldn't be created due to a lack of space on
-  // the device, in this case stop the test early.
+  // It's possible the large file couldn't be created due to a lack of space
+  // on the device, in this case stop the test early.
   if (!data_pipe_getter)
     return;
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
-  ASSERT_EQ(expected_body,
-            GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+  if (is_resumable_upload()) {
+    ASSERT_EQ(large_file_content, GetBodyFromPipe(data_pipe_getter.get(),
+                                                  large_file_content.size()));
+  } else {
+    ASSERT_EQ(expected_body,
+              GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+  }
 }
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
+  if (is_resumable_upload()) {
+    // Terminates early since this testcase is the same as the LargeFile one for
+    // resumable upload.
+    return;
+  }
   std::string large_data = std::string(100 * 1024 * 1024, 'a');
   std::string expected_body =
       "--boundary\r\n"
@@ -210,8 +239,8 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
   set_metadata(large_data);
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter(large_data);
-  // It's possible the large file couldn't be created due to a lack of space on
-  // the device, in this case stop the test early.
+  // It's possible the large file couldn't be created due to a lack of space
+  // on the device, in this case stop the test early.
   if (!data_pipe_getter)
     return;
 
@@ -223,6 +252,7 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
 }
 
 TEST_P(ConnectorDataPipeGetterParametrizedTest, MultipleReads) {
+  std::string small_file_content = "small file content";
   std::string expected_body =
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
@@ -230,19 +260,25 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, MultipleReads) {
       "metadata\r\n"
       "--boundary\r\n"
       "Content-Type: application/octet-stream\r\n"
+      "\r\n" +
+      small_file_content +
       "\r\n"
-      "small file content\r\n"
       "--boundary--\r\n";
 
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
-      CreateDataPipeGetter("small file content");
+      CreateDataPipeGetter(small_file_content);
   EXPECT_TRUE(data_pipe_getter);
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
   for (int i = 0; i < 4; ++i) {
-    ASSERT_EQ(expected_body,
-              GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+    if (is_resumable_upload()) {
+      ASSERT_EQ(small_file_content, GetBodyFromPipe(data_pipe_getter.get(),
+                                                    small_file_content.size()));
+    } else {
+      ASSERT_EQ(expected_body,
+                GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+    }
   }
 }
 
@@ -272,17 +308,29 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, ResetsCorrectly) {
 
   // Reads part of the body, which validates that the next read is able to read
   // the entire body correctly after a reset.
-  std::string partial_body = expected_body.substr(0, 5 * 1024);
-  ASSERT_EQ(partial_body,
-            GetBodyFromPipe(data_pipe_getter.get(), expected_body.size(),
-                            /*max_chunks*/ 5));
+  if (is_resumable_upload()) {
+    std::string partial_content = large_file_content.substr(0, 5 * 1024);
+    ASSERT_EQ(partial_content,
+              GetBodyFromPipe(data_pipe_getter.get(), large_file_content.size(),
+                              /*max_chunks*/ 5));
+  } else {
+    std::string partial_body = expected_body.substr(0, 5 * 1024);
+    ASSERT_EQ(partial_body,
+              GetBodyFromPipe(data_pipe_getter.get(), expected_body.size(),
+                              /*max_chunks*/ 5));
+  }
 
   data_pipe_getter->Reset();
 
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
-  ASSERT_EQ(expected_body,
-            GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+  if (is_resumable_upload()) {
+    ASSERT_EQ(large_file_content, GetBodyFromPipe(data_pipe_getter.get(),
+                                                  large_file_content.size()));
+  } else {
+    ASSERT_EQ(expected_body,
+              GetBodyFromPipe(data_pipe_getter.get(), expected_body.size()));
+  }
 }
 
 }  // namespace safe_browsing

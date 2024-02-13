@@ -149,8 +149,8 @@ bool IsPluginLoadingAccessibleResourceInWebView(
   }
 
   const std::string extension_id = resource.host();
-  const extensions::Extension* extension = extension_registry->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::ENABLED);
+  const extensions::Extension* extension =
+      extension_registry->enabled_extensions().GetByID(extension_id);
   if (!extension || !extensions::WebviewInfo::IsResourceWebviewAccessible(
                         extension, partition_id, resource.path())) {
     return false;

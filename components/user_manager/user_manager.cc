@@ -10,8 +10,6 @@
 
 namespace user_manager {
 
-const char kRegularUsersPref[] = "LoggedInUsers";
-
 UserManager* UserManager::instance = nullptr;
 
 UserManager::Observer::~Observer() = default;

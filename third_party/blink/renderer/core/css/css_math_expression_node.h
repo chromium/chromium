@@ -34,6 +34,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -61,7 +63,8 @@ enum CalculationResultCategory {
   kCalcPercent,
   // TODO(crbug.com/1309178): We are now using this for all calculated lengths
   // that can't be resolved at style time, including not only calc(px + %) but
-  // also anchor queries. Rename this category accordingly.
+  // also anchor queries and intrinsic size keywords in calc-size(). Rename
+  // this category accordingly.
   kCalcPercentLength,
   kCalcAngle,
   kCalcTime,
@@ -78,11 +81,21 @@ class CORE_EXPORT CSSMathExpressionNode
   static CSSMathExpressionNode* Create(PixelsAndPercent pixels_and_percent);
   static CSSMathExpressionNode* Create(const CalculationExpressionNode& node);
 
+  enum class Flag : uint8_t {
+    AllowPercent,
+    AllowCalcSize,
+
+    MinValue = AllowPercent,
+    MaxValue = AllowCalcSize,
+  };
+
+  using Flags = base::EnumSet<Flag, Flag::MinValue, Flag::MaxValue>;
+
   static CSSMathExpressionNode* ParseMathFunction(
       CSSValueID function_id,
       CSSParserTokenRange tokens,
       const CSSParserContext&,
-      const bool is_percentage_allowed,
+      const Flags parsing_flags,
       CSSAnchorQueryTypes allowed_anchor_queries,
       // Variable substitutions for relative color syntax.
       // https://www.w3.org/TR/css-color-5/#relative-colors
@@ -94,6 +107,7 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool IsOperation() const { return false; }
   virtual bool IsAnchorQuery() const { return false; }
   virtual bool IsIdentifierLiteral() const { return false; }
+  virtual bool IsSizingKeywordLiteral() const { return false; }
 
   virtual bool IsMathFunction() const { return false; }
 
@@ -344,6 +358,87 @@ struct DowncastTraits<CSSMathExpressionIdentifierLiteral> {
   }
 };
 
+// Used for size keyword and intrinsic size keywords in calc-size().
+class CORE_EXPORT CSSMathExpressionSizingKeywordLiteral final
+    : public CSSMathExpressionNode {
+ public:
+  static CSSMathExpressionSizingKeywordLiteral* Create(CSSValueID keyword) {
+    return MakeGarbageCollected<CSSMathExpressionSizingKeywordLiteral>(keyword);
+  }
+
+  explicit CSSMathExpressionSizingKeywordLiteral(CSSValueID keyword);
+
+  CSSMathExpressionNode* Copy() const final { return Create(keyword_); }
+
+  CSSValueID GetValue() const { return keyword_; }
+
+  bool IsSizingKeywordLiteral() const final { return true; }
+
+  const CSSMathExpressionNode& PopulateWithTreeScope(
+      const TreeScope* tree_scope) const final {
+    NOTREACHED();
+    return *this;
+  }
+
+  bool IsZero() const final { return false; }
+  String CustomCSSText() const final { return getValueName(keyword_); }
+  scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
+      const CSSLengthResolver&) const final;
+  std::optional<PixelsAndPercent> ToPixelsAndPercent(
+      const CSSLengthResolver&) const final {
+    return std::nullopt;
+  }
+  double DoubleValue() const final {
+    NOTREACHED();
+    return 0;
+  }
+  std::optional<double> ComputeValueInCanonicalUnit() const final {
+    return std::nullopt;
+  }
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+    return 0;
+  }
+  bool AccumulateLengthArray(CSSLengthArray& length_array,
+                             double multiplier) const final {
+    return false;
+  }
+  void AccumulateLengthUnitTypes(
+      CSSPrimitiveValue::LengthTypeFlags& types) const final {}
+  bool IsComputationallyIndependent() const final { return true; }
+  bool operator==(const CSSMathExpressionNode& other) const final {
+    return other.IsSizingKeywordLiteral() &&
+           DynamicTo<CSSMathExpressionSizingKeywordLiteral>(other)
+                   ->GetValue() == GetValue();
+  }
+  CSSPrimitiveValue::UnitType ResolvedUnitType() const final {
+    return CSSPrimitiveValue::UnitType::kIdent;
+  }
+  void Trace(Visitor* visitor) const final {
+    CSSMathExpressionNode::Trace(visitor);
+  }
+
+#if DCHECK_IS_ON()
+  bool InvolvesPercentageComparisons() const final { return false; }
+#endif
+
+ protected:
+  double ComputeDouble(const CSSLengthResolver& length_resolver) const final {
+    NOTREACHED();
+    return 0;
+  }
+
+ private:
+  CSSValueID keyword_;
+};
+
+template <>
+struct DowncastTraits<CSSMathExpressionSizingKeywordLiteral> {
+  static bool AllowFrom(const CSSMathExpressionNode& node) {
+    return node.IsSizingKeywordLiteral();
+  }
+};
+
 class CORE_EXPORT CSSMathExpressionOperation final
     : public CSSMathExpressionNode {
  public:
@@ -379,6 +474,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
   static CSSMathExpressionNode* CreateSignRelatedFunction(
       Operands&& operands,
       CSSValueID function_id);
+
+  static CSSMathExpressionNode* CreateCalcSizeOperation(
+      const CSSMathExpressionNode* left_side,
+      const CSSMathExpressionNode* right_side);
 
   CSSMathExpressionOperation(const CSSMathExpressionNode* left_side,
                              const CSSMathExpressionNode* right_side,
@@ -431,11 +530,12 @@ class CORE_EXPORT CSSMathExpressionOperation final
     return operator_ == CSSMathOperator::kAbs ||
            operator_ == CSSMathOperator::kSign;
   }
+  bool IsCalcSize() const { return operator_ == CSSMathOperator::kCalcSize; }
 
   // TODO(crbug.com/1284199): Check other math functions too.
   bool IsMathFunction() const final {
     return IsMinOrMax() || IsClamp() || IsSteppedValueFunction() ||
-           IsTrigonometricFunction() || IsSignRelatedFunction();
+           IsTrigonometricFunction() || IsSignRelatedFunction() || IsCalcSize();
   }
 
   bool InvolvesPercentage() const final;

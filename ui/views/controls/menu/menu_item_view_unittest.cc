@@ -455,19 +455,19 @@ TEST_F(MenuItemViewPaintUnitTest, CustomColorAssertionCoverage) {
   ui::ColorId background_color = ui::kColorComboboxBackground;
   ui::ColorId foreground_color = ui::kColorDropdownForeground;
   ui::ColorId selected_color = ui::kColorMenuItemForegroundHighlighted;
-  AddItem(u"No custom colors", absl::nullopt, absl::nullopt, absl::nullopt);
+  AddItem(u"No custom colors", std::nullopt, std::nullopt, std::nullopt);
   AddItem(u"No selected color", background_color, foreground_color,
-          absl::nullopt);
-  AddItem(u"No foreground color", background_color, absl::nullopt,
+          std::nullopt);
+  AddItem(u"No foreground color", background_color, std::nullopt,
           selected_color);
-  AddItem(u"No background color", absl::nullopt, foreground_color,
+  AddItem(u"No background color", std::nullopt, foreground_color,
           selected_color);
-  AddItem(u"No background or foreground", absl::nullopt, absl::nullopt,
+  AddItem(u"No background or foreground", std::nullopt, std::nullopt,
           selected_color);
-  AddItem(u"No background or selected", absl::nullopt, foreground_color,
-          absl::nullopt);
-  AddItem(u"No foreground or selected", background_color, absl::nullopt,
-          absl::nullopt);
+  AddItem(u"No background or selected", std::nullopt, foreground_color,
+          std::nullopt);
+  AddItem(u"No foreground or selected", background_color, std::nullopt,
+          std::nullopt);
   AddItem(u"All colors", background_color, foreground_color, selected_color);
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
@@ -634,9 +634,9 @@ class MenuItemViewAccessTest : public MenuItemViewPaintUnitTest {
  private:
   class DisallowMenuDelegate : public test::TestMenuDelegate {
    public:
-    absl::optional<SkColor> GetLabelColor(int command_id) const override {
+    std::optional<SkColor> GetLabelColor(int command_id) const override {
       EXPECT_NE(1, command_id);
-      return absl::nullopt;
+      return std::nullopt;
     }
   };
 };

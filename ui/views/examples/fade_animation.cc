@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"

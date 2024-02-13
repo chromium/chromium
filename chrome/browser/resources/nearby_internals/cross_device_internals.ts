@@ -2,28 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './shared_style.css.js';
 import './np_list_object.js';
 import './logging_tab.js';
 import './log_object.js';
 import './log_types.js';
-import '//resources/cr_elements/md_select.css.js';
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import '//resources/ash/common/cr_elements/md_select.css.js';
+import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyLogsBrowserProxy} from './cross_device_logs_browser_proxy.js';
-import {LogTypesElement} from './log_types.js';
+import type {LogTypesElement} from './log_types.js';
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
-import {ActionValues, FeatureValues, LogMessage, LogProvider, PresenceDevice, SelectOption, Severity} from './types.js';
+import type {LogMessage, LogProvider, PresenceDevice, SelectOption} from './types.js';
+import {ActionValues, FeatureValues, Severity} from './types.js';
 
 /**
  * Converts log message to string format for saved download file.

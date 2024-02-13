@@ -72,7 +72,6 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   base::OnceClosure DeferBeginFrame() override;
   void UpdateTopControlsVisibleHeight(float height) override;
   void SetNeedsAnimate() override;
-  void SetNeedsRedraw() override;
   void MaybeCompositeNow() override;
   const scoped_refptr<Layer>& root() const override;
   void SetRoot(scoped_refptr<Layer> root) override;
@@ -81,6 +80,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   std::unique_ptr<ScopedKeepSurfaceAlive> CreateScopedKeepSurfaceAlive(
       const viz::SurfaceId& surface_id) override;
   const SurfaceRangesAndCounts& GetSurfaceRangesForTesting() const override;
+  void SetNeedsRedrawForTesting() override;
 
   // FrameSinkImplClient.
   bool BeginFrame(const viz::BeginFrameArgs& args,
@@ -195,8 +195,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   // task lower in the stack frame. This is to prevent unnecessary back and
   // forth flips.
   bool update_needs_begin_frame_pending_ = false;
-  // Set when client requests a begin frame viz `SetNeedsAnimate` or
-  // `SetNeedsRedraw`.
+  // Set when client requests a begin frame viz `SetNeedsAnimate`.
   bool client_needs_one_begin_frame_ = false;
   // Set to indicate there are layer or tree changes that's not yet submitted
   // in a CompositorFrame.

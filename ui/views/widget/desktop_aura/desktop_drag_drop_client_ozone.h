@@ -29,7 +29,7 @@ class DragDropDelegate;
 
 namespace ui {
 class DropTargetEvent;
-}
+}  // namespace ui
 
 namespace views {
 class Widget;
@@ -74,7 +74,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
     // call to UpdateDragWidget() is scheduled at any time; this optional is set
     // means that the task is scheduled.
     // This is used on a platform where chrome manages a drag image (e.g. x11).
-    absl::optional<gfx::Point> last_screen_location_px;
+    std::optional<gfx::Point> last_screen_location_px;
 #endif
   };
 
@@ -96,12 +96,12 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   void RemoveObserver(aura::client::DragDropClientObserver* observer) override;
 
   // ui::WmDropHandler
-  void OnDragEnter(const gfx::PointF& point,
-                   int operation,
+  void OnDragEnter(const gfx::PointF& location,
+                   int operations,
                    int modifiers) override;
   void OnDragDataAvailable(std::unique_ptr<ui::OSExchangeData> data) override;
-  int OnDragMotion(const gfx::PointF& point,
-                   int operation,
+  int OnDragMotion(const gfx::PointF& location,
+                   int operations,
                    int modifiers) override;
   void OnDragDrop(int modifiers) override;
   void OnDragLeave() override;
@@ -125,10 +125,9 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   // Updates |drag_drop_delegate_| along with |window|.
   void UpdateDragDropDelegate(aura::Window* window);
 
-  // Resets |drag_drop_delegate_|.
-  // |send_exit| controls whether to call delegate's OnDragExited() before
-  // resetting.
-  void ResetDragDropTarget(bool send_exit);
+  // Resets |drag_drop_delegate_|. |send_exit| controls whether to call
+  // delegate's OnDragExited() before resetting.
+  void ResetDragDropTarget(bool send_exit = true);
 
   DragContext* drag_context() { return drag_context_.get(); }
 
@@ -139,28 +138,34 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
 
   const raw_ptr<ui::WmDragHandler> drag_handler_;
 
-  aura::client::DragUpdateInfo current_drag_info_;
+  // Most recent OnDragUpdated() call result.
+  aura::client::DragUpdateInfo current_drag_update_info_;
 
-  // Last window under the mouse.
-  raw_ptr<aura::Window> current_window_ = nullptr;
+  // Current window under the mouse.
+  raw_ptr<aura::Window> entered_window_ = nullptr;
+
   // The delegate corresponding to the window located at the mouse position.
-  raw_ptr<aura::client::DragDropDelegate> drag_drop_delegate_ = nullptr;
+  raw_ptr<aura::client::DragDropDelegate> delegate_ = nullptr;
 
   // The data to be delivered through the drag and drop.
   std::unique_ptr<ui::OSExchangeData> data_to_drop_;
 
   // The most recent native coordinates of an incoming drag. Updated while
   // the mouse is moved, and used at dropping.
-  gfx::PointF last_drag_point_;
-  // The most recent drop operation. Updated while the mouse is moved, and
+  gfx::PointF drag_location_;
+  // The most recent operations bitmask. Updated while the mouse is moved, and
   // used at dropping.
-  int last_drop_operation_ = 0;
-  // The most recent modifiers bitmask received from platform layer.
-  int last_modifiers_ = 0;
+  int available_operations_ = 0;
+  // The most recent modifiers bitmask received from platform layer. Keeps
+  // unset if unsupported at platform level.
+  int modifiers_ = 0;
 
-  // The selected operation on drop.
-  ui::mojom::DragOperation drag_operation_ = ui::mojom::DragOperation::kNone;
+  // In outcoming drag sessions, holds the selected operation on drop if it
+  // succeeds, or kNone otherwise.
+  ui::mojom::DragOperation selected_operation_ =
+      ui::mojom::DragOperation::kNone;
 
+  // Holds data about the ongoing outcoming drag session, if any.
   std::unique_ptr<DragContext> drag_context_;
 
   base::WeakPtrFactory<DesktopDragDropClientOzone> weak_factory_{this};

@@ -80,7 +80,8 @@ int64_t IntersectionObservation::ComputeIntersection(
       honor_margins ? observer_->RootMargin() : empty_margin,
       observer_->thresholds(),
       honor_margins ? observer_->TargetMargin() : empty_margin,
-      observer_->ScrollMargin(), geometry_flags, root_geometry, &cached_rects_);
+      honor_margins ? observer_->ScrollMargin() : empty_margin, geometry_flags,
+      root_geometry, &cached_rects_);
 
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   if (cached_rects_backup) {
@@ -129,49 +130,6 @@ void IntersectionObservation::Disconnect() {
   }
   entries_.clear();
   observer_.Clear();
-}
-
-void IntersectionObservation::InvalidateCachedRectsIfPaintPropertiesChanged() {
-  DCHECK(RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  if (cached_rects_.valid && PaintPropertiesChanged()) {
-    InvalidateCachedRects();
-  }
-}
-
-bool IntersectionObservation::PaintPropertiesChanged() const {
-  DCHECK(cached_rects_.valid);
-  if (observer_->trackVisibility()) {
-    return true;
-  }
-  const LayoutObject* target_object =
-      IntersectionGeometry::GetTargetLayoutObject(*target_);
-  if (!target_object ||
-      !IntersectionGeometry::CanUseGeometryMapper(*target_object)) {
-    return true;
-  }
-  const LayoutObject* root_object = nullptr;
-  PropertyTreeStateOrAlias root_state = PropertyTreeState::Root();
-  if (!observer_->RootIsImplicit()) {
-    root_object =
-        IntersectionGeometry::GetExplicitRootLayoutObject(*observer_->root());
-    if (!root_object || root_object == target_object) {
-      return true;
-    }
-    const auto* root_property_container =
-        root_object->GetPropertyContainer(nullptr);
-    if (!root_property_container) {
-      return true;
-    }
-    root_state = root_property_container->FirstFragment().ContentsProperties();
-  }
-  PropertyTreeStateOrAlias target_state = PropertyTreeState::Uninitialized();
-  LayoutObject::AncestorSkipInfo skip_info(root_object);
-  if (!target_object->GetPropertyContainer(&skip_info, &target_state)) {
-    return true;
-  }
-  return target_state.ChangedExceptScrollAndEffect(
-      PaintPropertyChangeType::kChangedOnlyCompositedValues,
-      root_state.Unalias());
 }
 
 void IntersectionObservation::Trace(Visitor* visitor) const {

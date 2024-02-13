@@ -211,6 +211,9 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::SMART_CARD_GUARD, nullptr},
     {ContentSettingsType::SMART_CARD_DATA, nullptr},
     {ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, nullptr},
+    // TODO(crbug.com/1501130): Add WebUI for Automatic Fullscreen.
+    {ContentSettingsType::AUTOMATIC_FULLSCREEN, nullptr},
+    {ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

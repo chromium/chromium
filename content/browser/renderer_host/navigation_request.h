@@ -1428,7 +1428,7 @@ class CONTENT_EXPORT NavigationRequest
       GlobalRequestID request_id,
       bool is_download,
       net::NetworkAnonymizationKey network_anonymization_key,
-      std::optional<SubresourceLoaderParams> subresource_loader_params,
+      SubresourceLoaderParams subresource_loader_params,
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
@@ -1446,7 +1446,7 @@ class CONTENT_EXPORT NavigationRequest
   void SelectFrameHostForOnResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       bool is_download,
-      std::optional<SubresourceLoaderParams> subresource_loader_params);
+      SubresourceLoaderParams subresource_loader_params);
   void SelectFrameHostForOnRequestFailedInternal(
       bool exists_in_cache,
       bool skip_throttles,
@@ -2197,7 +2197,7 @@ class CONTENT_EXPORT NavigationRequest
   // Used in the network service world to pass the subressource loader params
   // to the renderer. Used by ServiceWorker and
   // SignedExchangeSubresourcePrefetch.
-  std::optional<SubresourceLoaderParams> subresource_loader_params_;
+  SubresourceLoaderParams subresource_loader_params_;
 
   // DocumentToken to use for the newly-committed document in a cross-document
   // navigation. Currently set immediately before sending CommitNavigation to

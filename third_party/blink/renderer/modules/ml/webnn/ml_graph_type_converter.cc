@@ -1143,6 +1143,9 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     case MLOperator::OperatorKind::kAveragePool2d:
       return CreatePool2dOperation(operand_to_id_map, op,
                                    blink_mojom::Pool2d::Kind::kAveragePool2d);
+    case MLOperator::OperatorKind::kL2Pool2d:
+      return CreatePool2dOperation(operand_to_id_map, op,
+                                   blink_mojom::Pool2d::Kind::kL2Pool2d);
     case MLOperator::OperatorKind::kMaxPool2d:
       return CreatePool2dOperation(operand_to_id_map, op,
                                    blink_mojom::Pool2d::Kind::kMaxPool2d);
@@ -1203,6 +1206,8 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
       return CreateTransposeOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kWhere:
       return CreateWhereOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kLstm:
+      break;
   }
   return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                           " is not implemented.");

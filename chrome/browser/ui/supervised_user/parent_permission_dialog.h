@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -48,6 +49,8 @@ class Extension;
 // API for the Dialog.
 class ParentPermissionDialog {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDialogViewIdForTesting);
+
   enum class Result {
     // The parent has given their permission for the action.
     kParentPermissionReceived,

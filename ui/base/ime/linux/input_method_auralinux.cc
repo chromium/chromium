@@ -136,7 +136,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     suppress_non_key_input_until_ = base::TimeTicks::UnixEpoch();
     composition_changed_ = false;
     last_commit_result_.reset();
-    result_text_ = absl::nullopt;
+    result_text_ = std::nullopt;
     base::AutoReset<bool> flipper(&is_sync_mode_, true);
     filtered = context_->DispatchKeyEvent(*event);
   }
@@ -288,7 +288,7 @@ InputMethodAuraLinux::CommitResult InputMethodAuraLinux::MaybeCommitResult(
 
   // Take the ownership of |result_text_|.
   std::u16string result_text = std::move(*result_text_);
-  result_text_ = absl::nullopt;
+  result_text_ = std::nullopt;
 
   if (filtered && NeedInsertChar(result_text)) {
     for (const auto ch : result_text) {
@@ -404,8 +404,8 @@ void InputMethodAuraLinux::OnCaretBoundsChanged(const TextInputClient* client) {
   if (client->GetTextRange(&text_range) &&
       client->GetTextFromRange(text_range, &text) &&
       client->GetEditableSelectionRange(&selection_range)) {
-    absl::optional<GrammarFragment> fragment;
-    absl::optional<AutocorrectInfo> autocorrect;
+    std::optional<GrammarFragment> fragment;
+    std::optional<AutocorrectInfo> autocorrect;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     fragment = client->GetGrammarFragmentAtCursor();
     autocorrect = AutocorrectInfo{
@@ -447,7 +447,7 @@ void InputMethodAuraLinux::ResetContext() {
   context_->Reset();
 
   composition_ = CompositionText();
-  result_text_ = absl::nullopt;
+  result_text_ = std::nullopt;
   is_sync_mode_ = false;
   composition_changed_ = false;
 }
@@ -643,7 +643,7 @@ bool InputMethodAuraLinux::HasInputMethodResult() {
 }
 
 bool InputMethodAuraLinux::NeedInsertChar(
-    const absl::optional<std::u16string>& result_text) const {
+    const std::optional<std::u16string>& result_text) const {
   return IsTextInputTypeNone() ||
          (!composition_changed_ && composition_.text.empty() && result_text &&
           result_text->length() == 1);

@@ -248,28 +248,28 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // The container of `nudge_label_` or `quick_app_button_`. This is also
   // responsible for painting the background of the contents. This container can
   // expand visually by animation.
-  raw_ptr<views::View, DanglingUntriaged> expandable_container_ = nullptr;
+  raw_ptr<views::View> expandable_container_ = nullptr;
 
   // The app button which is shown next to the home button. Only shown when
   // set by SetQuickApp().
-  raw_ptr<views::ImageButton, DanglingUntriaged> quick_app_button_ = nullptr;
+  raw_ptr<views::ImageButton> quick_app_button_ = nullptr;
 
   // The controller used to determine the button's behavior.
   HomeButtonController controller_;
+
+  // The delegate used by |nudge_ripple_layer_|. Only exists during the
+  // nudge animation.
+  std::unique_ptr<views::CircleLayerDelegate> ripple_layer_delegate_;
 
   // The ripple layer in the launcher nudge animation. Only exists during the
   // nudge animation.
   ui::LayerOwner nudge_ripple_layer_;
 
   // The label view and for launcher nudge animation.
-  raw_ptr<views::Label, DanglingUntriaged> nudge_label_ = nullptr;
+  raw_ptr<views::Label> nudge_label_ = nullptr;
 
   // The timer that counts down to hide the nudge_label_ from showing state.
   base::OneShotTimer label_nudge_timer_;
-
-  // The delegate used by |nudge_ripple_layer_|. Only exists during the
-  // nudge animation.
-  std::unique_ptr<views::CircleLayerDelegate> ripple_layer_delegate_;
 
   std::unique_ptr<ScopedNoClipRect> scoped_no_clip_rect_;
 

@@ -13,15 +13,16 @@
 #include "base/process/port_provider_mac.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "content/common/child_process.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace content {
 
-// The ChildProcessTaskPortProvider keeps an association between a PID and the
-// process's task port. This association is needed for the browser to manipulate
-// certain aspects of its child processes.
+// The ChildProcessTaskPortProvider keeps an association between the handle and
+// the task port of a process. This association is needed for the browser to
+// manipulate certain aspects of its child processes.
 class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
  public:
   // Returns the singleton instance.
@@ -31,19 +32,18 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
   ChildProcessTaskPortProvider& operator=(const ChildProcessTaskPortProvider&) =
       delete;
 
-  // Called by BrowserChildProcessHostImpl and RenderProcessHostImpl when
-  // a new child has been created. This will invoke the GetTaskPort() method
-  // on |child_control| and will store the returned port as being associated to
-  // |pid|.
+  // Called by BrowserChildProcessHostImpl and RenderProcessHostImpl when a new
+  // child is launched. Invokes `GetTaskPort()` on `child_process` and stores
+  // the returned port as being associated to `process_handle`.
   //
   // When the kernel sends a notification that the port has become a dead name,
   // indicating that the child process has died, the association will be
   // removed.
-  void OnChildProcessLaunched(base::ProcessHandle pid,
+  void OnChildProcessLaunched(base::ProcessHandle process_handle,
                               mojom::ChildProcess* child_process);
 
   // base::PortProvider:
-  mach_port_t TaskForPid(base::ProcessHandle process) const override;
+  mach_port_t TaskForHandle(base::ProcessHandle process_handle) const override;
 
  private:
   friend class ChildProcessTaskPortProviderTest;
@@ -61,7 +61,7 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
   bool ShouldRequestTaskPorts() const;
 
   // Callback for mojom::ChildProcess::GetTaskPort reply.
-  void OnTaskPortReceived(base::ProcessHandle pid,
+  void OnTaskPortReceived(base::ProcessHandle process_handle,
                           mojo::PlatformHandle task_port);
 
   // Event handler for |notification_source_|, invoked for
@@ -71,14 +71,14 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
   // Lock that protects the map below.
   mutable base::Lock lock_;
 
-  // Maps a PID to the corresponding task port.
-  using PidToTaskPortMap =
+  // Maps a process handle to the corresponding task port.
+  using HandleToTaskPortMap =
       std::map<base::ProcessHandle, base::apple::ScopedMachSendRight>;
-  PidToTaskPortMap pid_to_task_port_;
+  HandleToTaskPortMap handle_to_task_port_ GUARDED_BY(lock_);
 
-  // A Mach port that is used to register for dead name notifications from
-  // the kernel. All the ports in |pid_to_task_port_| have a notification set
-  // up to send to this port.
+  // A Mach port that is used to register for dead name notifications from the
+  // kernel. All the ports in `handle_to_task_port_` have a notification set up
+  // to send to this port.
   base::apple::ScopedMachReceiveRight notification_port_;
 
   // Dispatch source for |notification_port_|.

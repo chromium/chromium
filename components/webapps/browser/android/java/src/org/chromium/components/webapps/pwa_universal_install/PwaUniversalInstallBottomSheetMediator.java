@@ -17,9 +17,10 @@ class PwaUniversalInstallBottomSheetMediator {
     // The underlying property model for the bottom sheeet.
     private final PropertyModel mModel;
 
-    PwaUniversalInstallBottomSheetMediator(Activity activity) {
+    PwaUniversalInstallBottomSheetMediator(
+            Activity activity, Runnable installCallback, Runnable addShortcutCallback) {
         mActivity = activity;
-        mModel = PwaUniversalInstallProperties.createModel();
+        mModel = PwaUniversalInstallProperties.createModel(installCallback, addShortcutCallback);
 
         setPeekingState();
     }

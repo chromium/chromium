@@ -12,6 +12,7 @@
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -39,7 +40,9 @@ void SetUpOpenH264Params(VideoCodecProfile profile,
                          const VideoColorSpace& itu_cs,
                          SEncParamExt* params) {
   int threads = GetNumberOfThreadsForSoftwareEncoding(options.frame_size);
-  params->bEnableFrameSkip = false;
+  params->bEnableFrameSkip =
+      base::FeatureList::IsEnabled(kWebCodecsVideoEncoderFrameDrop) &&
+      options.latency_mode == VideoEncoder::LatencyMode::Realtime;
   params->iPaddingFlag = 0;
   params->iComplexityMode = MEDIUM_COMPLEXITY;
   params->iUsageType = options.content_hint == VideoEncoder::ContentHint::Screen
@@ -267,12 +270,17 @@ EncoderStatus OpenH264VideoEncoder::DrainOutputs(const SFrameBSInfo& frame_info,
                                                  base::TimeDelta timestamp,
                                                  gfx::ColorSpace color_space) {
   VideoEncoderOutput result;
-  result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
   result.timestamp = timestamp;
-  result.color_space = color_space;
 
-  DCHECK_GT(frame_info.iFrameSizeInBytes, 0);
-  size_t total_chunk_size = frame_info.iFrameSizeInBytes;
+  const size_t total_chunk_size = frame_info.iFrameSizeInBytes;
+  if (total_chunk_size == 0) {
+    // Drop frame.
+    output_cb_.Run(std::move(result), {});
+    return EncoderStatus::Codes::kOk;
+  }
+
+  result.key_frame = (frame_info.eFrameType == videoFrameTypeIDR);
+  result.color_space = color_space;
   result.data = std::make_unique<uint8_t[]>(total_chunk_size);
   auto* gather_buffer = result.data.get();
 

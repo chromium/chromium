@@ -325,11 +325,6 @@ void TransferredMediaStreamTrack::SendWheel(
   NOTREACHED_NORETURN();
 }
 
-void TransferredMediaStreamTrack::GetZoomLevel(
-    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
-  NOTREACHED_NORETURN();
-}
-
 void TransferredMediaStreamTrack::SetZoomLevel(
     int zoom_level,
     base::OnceCallback<void(DOMException*)> callback) {

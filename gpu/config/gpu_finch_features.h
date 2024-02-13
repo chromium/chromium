@@ -66,8 +66,6 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kAdjustGpuProcessPriority);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kSharedImageManager);
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiJpegImageDecodeAcceleration);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kVaapiWebPImageDecodeAcceleration);
@@ -84,8 +82,6 @@ GPU_EXPORT extern const base::FeatureParam<bool> kSkiaGraphiteDawnShareDevice;
 #if BUILDFLAG(IS_WIN)
 GPU_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteDawnUseD3D12);
 #endif
-
-GPU_EXPORT BASE_DECLARE_FEATURE(kEnableGrShaderCacheForVulkan);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit);
 

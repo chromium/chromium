@@ -13,7 +13,7 @@
 #include "ios/chrome/browser/sync/model/sync_setup_service.h"
 #include "ui/gfx/image/image.h"
 
-@protocol ApplicationSettingsCommands;
+@protocol SettingsCommands;
 class ChromeBrowserState;
 @class UIViewController;
 
@@ -29,7 +29,7 @@ class InfoBarManager;
 class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   SigninNotificationInfoBarDelegate(ChromeBrowserState* browser_state,
-                                    id<ApplicationSettingsCommands> dispatcher,
+                                    id<SettingsCommands> dispatcher,
                                     UIViewController* view_controller);
 
   SigninNotificationInfoBarDelegate(const SigninNotificationInfoBarDelegate&) =
@@ -42,7 +42,7 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Creates a sign-in notification infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
                      ChromeBrowserState* browser_state,
-                     id<ApplicationSettingsCommands> dispatcher,
+                     id<SettingsCommands> dispatcher,
                      UIViewController* view_controller);
 
   // InfoBarDelegate implementation.
@@ -65,7 +65,7 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string button_text_;
 
   // Dispatcher.
-  __weak id<ApplicationSettingsCommands> dispatcher_ = nil;
+  __weak id<SettingsCommands> dispatcher_ = nil;
   __weak UIViewController* base_view_controller_ = nil;
 };
 

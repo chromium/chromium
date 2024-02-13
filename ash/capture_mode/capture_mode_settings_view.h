@@ -48,9 +48,9 @@ class ASH_EXPORT CaptureModeSettingsView
     : public views::ScrollView,
       public CaptureModeMenuGroup::Delegate,
       public CaptureModeCameraController::Observer {
- public:
-  METADATA_HEADER(CaptureModeSettingsView);
+  METADATA_HEADER(CaptureModeSettingsView, views::ScrollView)
 
+ public:
   CaptureModeSettingsView(CaptureModeSession* session,
                           CaptureModeBehavior* active_behavior);
   CaptureModeSettingsView(const CaptureModeSettingsView&) = delete;

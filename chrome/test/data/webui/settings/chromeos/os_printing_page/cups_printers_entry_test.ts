@@ -207,8 +207,7 @@ suite('<settings-cups-printers-entry>', () => {
   // Verify clicking the setup or save button is recorded to metrics.
   test('recordUserActionMetric', () => {
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate =
-        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = fakeMetricsPrivate;
 
     // Enable the save printer buttons.
     printerEntryTestElement.savingPrinter = false;

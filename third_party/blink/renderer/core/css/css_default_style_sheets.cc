@@ -217,6 +217,17 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
   return default_view_source_style_.Get();
 }
 
+RuleSet* CSSDefaultStyleSheets::DefaultJSONDocumentStyle() {
+  CHECK(RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled());
+  if (!default_json_document_style_) {
+    StyleSheetContents* stylesheet = ParseUASheet(
+        UncompressResourceAsASCIIString(IDR_UASTYLE_JSON_DOCUMENT_CSS));
+    default_json_document_style_ = MakeGarbageCollected<RuleSet>();
+    default_json_document_style_->AddRulesFromSheet(stylesheet, ScreenEval());
+  }
+  return default_json_document_style_.Get();
+}
+
 static void AddTextTrackCSSProperties(StringBuilder* builder,
                                       CSSPropertyID propertyId,
                                       String value) {
@@ -478,6 +489,10 @@ void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
   if (document.IsViewSource() && DefaultViewSourceStyle()) {
     features.Merge(DefaultViewSourceStyle()->Features());
   }
+  if (RuntimeEnabledFeatures::PrettyPrintJSONDocumentEnabled() &&
+      document.IsJSONDocument() && DefaultJSONDocumentStyle()) {
+    features.Merge(DefaultJSONDocumentStyle()->Features());
+  }
 }
 
 void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
@@ -504,6 +519,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_text_sheet_);
+  visitor->Trace(default_json_document_style_);
 }
 
 }  // namespace blink

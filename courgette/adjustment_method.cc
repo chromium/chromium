@@ -206,7 +206,8 @@ struct OrderNodeByWeightDecreasing {
   }
 };
 
-typedef std::set<Node*, OrderNodeByWeightDecreasing> NodeQueue;
+typedef std::set<raw_ptr<Node, SetExperimental>, OrderNodeByWeightDecreasing>
+    NodeQueue;
 
 class AssignmentProblem {
  public:

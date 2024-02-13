@@ -654,6 +654,9 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, NewTabFromSyncOpensInLocalGroup) {
       2u, tabstrip->group_model()->GetTabGroup(group_id)->ListTabs().length());
 }
 
+// Verifies that changes from sync will navigate the corresponding tab unless it
+// was a fragment change happening on the same domain (Ex:
+// https://www.example.com and https:://www.example.com#this_is_a_fragment).
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
        NavigateTabFromSyncNavigatesLocalTab) {
   Browser* const browser = AddBrowser();
@@ -679,6 +682,21 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   service()->model()->MergeTab(*specific);
 
   // The local tab should have navigated too.
+  EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url);
+
+  // URL fragments from sync should not navigate the tab. This is because this
+  // can cause destructive behavior across devices which includes things like
+  // data loss (forms being reset), and users losing their place while reading
+  // or editing a document.
+  const GURL url_2 = GURL("https://www.example.com#section_1");
+  navigated_tab = *saved_group->GetTab(saved_tab_id);
+  navigated_tab.SetURL(url_2);
+  navigated_tab.SetTitle(u"Example Page - Section 1");
+  specific = navigated_tab.ToSpecifics();
+  service()->model()->MergeTab(*specific);
+
+  // The local tab should not have changed.
+  EXPECT_NE(tabstrip->GetWebContentsAt(0)->GetURL(), url_2);
   EXPECT_EQ(tabstrip->GetWebContentsAt(0)->GetURL(), url);
 }
 

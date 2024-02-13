@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/containers/flat_set.h"
@@ -285,9 +286,9 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
     return false;
   }
 
-  absl::optional<bssl::SignatureAlgorithm> cert_algorithm =
+  std::optional<bssl::SignatureAlgorithm> cert_algorithm =
       bssl::ParseSignatureAlgorithm(bssl::der::Input(cert_algorithm_sequence));
-  absl::optional<bssl::SignatureAlgorithm> tbs_algorithm =
+  std::optional<bssl::SignatureAlgorithm> tbs_algorithm =
       bssl::ParseSignatureAlgorithm(bssl::der::Input(tbs_algorithm_sequence));
   if (!cert_algorithm || !tbs_algorithm || *cert_algorithm != *tbs_algorithm) {
     return false;
@@ -459,7 +460,8 @@ int CertVerifyProc::Verify(X509Certificate* cert,
                            const std::string& sct_list,
                            int flags,
                            CertVerifyResult* verify_result,
-                           const NetLogWithSource& net_log) {
+                           const NetLogWithSource& net_log,
+                           std::optional<base::Time> time_now) {
   CHECK(cert);
   CHECK(verify_result);
 
@@ -480,7 +482,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   verify_result->verified_cert = cert;
 
   int rv = VerifyInternal(cert, hostname, ocsp_response, sct_list, flags,
-                          verify_result, net_log);
+                          verify_result, net_log, time_now);
 
   CHECK(verify_result->verified_cert);
 

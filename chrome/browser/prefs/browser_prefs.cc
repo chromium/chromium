@@ -4,6 +4,7 @@
 
 #include "chrome/browser/prefs/browser_prefs.h"
 
+#include <array>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -281,6 +282,7 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos_service.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes_service.h"
 #include "chrome/browser/new_tab_page/modules/safe_browsing/safe_browsing_handler.h"
+#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -398,7 +400,6 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_prefs.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_sync_observer.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/net/ash_proxy_monitor.h"
 #include "chrome/browser/ash/net/network_throttling_observer.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
@@ -550,38 +551,6 @@ namespace {
 
 // Please keep the list of deprecated prefs in chronological order. i.e. Add to
 // the bottom of the list, not here at the top.
-
-// Deprecated 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kArcTermsShownInOobe[] = "arc.terms.shown_in_oobe";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 02/2023.
-const char kSyncInvalidationVersions[] = "sync.invalidation_versions";
-const char kSyncInvalidationVersions2[] = "sync.invalidation_versions2";
-
-// Deprecated 02/2023.
-const char kClearPluginLSODataEnabled[] = "browser.clear_lso_data_enabled";
-const char kContentSettingsPluginAllowlist[] =
-    "profile.content_settings.plugin_whitelist";
-const char kPepperFlashSettingsEnabled[] =
-    "browser.pepper_flash_settings_enabled";
-const char kPluginsAllowOutdated[] = "plugins.allow_outdated";
-const char kPluginsLastInternalDirectory[] = "plugins.last_internal_directory";
-const char kPluginsPluginsList[] = "plugins.plugins_list";
-const char kPluginsShowDetails[] = "plugins.show_details";
-
-// Deprecated 02/2023.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-const char kWebAppsUrlHandlerInfo[] = "web_apps.url_handler_info";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-// Deprecated 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kHasSeenSmartLockSignInRemovedNotification[] =
-    "easy_unlock.has_seen_smart_lock_sign_in_removed_notification";
-const char kEasyUnlockLocalStateTpmKeys[] = "easy_unlock.public_tpm_keys";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 03/2023.
 const char kGoogleSearchDomainMixingMetricsEmitterLastMetricsTime[] =
@@ -997,19 +966,36 @@ constexpr char kUpdateNotificationLastShownMilestone[] =
     "update_notification_last_shown_milestone";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 02/2024.
+#if BUILDFLAG(IS_ANDROID)
+constexpr char kSavePasswordsSuspendedByError[] =
+    "profile.save_passwords_suspended_by_error";
+#endif
+constexpr char kSafeBrowsingDeepScanPromptSeen[] =
+    "safebrowsing.deep_scan_prompt_seen";
+constexpr char kSafeBrowsingEsbEnabledTimestamp[] =
+    "safebrowsing.esb_enabled_timestamp";
+
+#if BUILDFLAG(IS_MAC)
+constexpr char kScreenTimeEnabled[] = "policy.screen_time";
+#endif
+
+// Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr std::array<const char*, 6u>
+    kWelcomeTourTimeBucketsOfFirstInteractions = {
+        "ash.welcome_tour.interaction_time.ExploreApp.first_time_bucket",
+        "ash.welcome_tour.interaction_time.FilesApp.first_time_bucket",
+        "ash.welcome_tour.interaction_time.Launcher.first_time_bucket",
+        "ash.welcome_tour.interaction_time.QuickSettings.first_time_bucket",
+        "ash.welcome_tour.interaction_time.Search.first_time_bucket",
+        "ash.welcome_tour.interaction_time.SettingsApp.first_time_bucket",
+};
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
-// Deprecated 02/2023.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  registry->RegisterDictionaryPref(kWebAppsUrlHandlerInfo);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-// Deprecated 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterDictionaryPref(kEasyUnlockLocalStateTpmKeys);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 // Deprecated 03/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterTimeDeltaPref(kGlanceablesSignoutScreenshotDuration,
@@ -1115,37 +1101,17 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kExtendedFkeysModifier, 0);
 #endif
+
+  // Deprecated 02/2024
+#if BUILDFLAG(IS_MAC)
+  registry->RegisterBooleanPref(kScreenTimeEnabled, true);
+#endif
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
 void RegisterProfilePrefsForMigration(
     user_prefs::PrefRegistrySyncable* registry) {
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-// Deprecated 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kArcTermsShownInOobe, false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Deprecated 02/2023.
-  registry->RegisterDictionaryPref(kSyncInvalidationVersions);
-  registry->RegisterDictionaryPref(kSyncInvalidationVersions2);
-
-  // Deprecated 02/2023.
-  registry->RegisterBooleanPref(kClearPluginLSODataEnabled, false);
-  registry->RegisterDictionaryPref(kContentSettingsPluginAllowlist);
-  registry->RegisterBooleanPref(kPepperFlashSettingsEnabled, false);
-  registry->RegisterBooleanPref(kPluginsAllowOutdated, false);
-  registry->RegisterFilePathPref(kPluginsLastInternalDirectory,
-                                 base::FilePath());
-  registry->RegisterListPref(kPluginsPluginsList);
-  registry->RegisterBooleanPref(kPluginsShowDetails, false);
-
-// Deprecated 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterBooleanPref(kHasSeenSmartLockSignInRemovedNotification,
-                                false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Deprecated 03/2023.
   registry->RegisterTimePref(
@@ -1415,6 +1381,20 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterIntegerPref(kUpdateNotificationLastShownMilestone, -10);
 #endif
+
+  // Deprecated 02/2024.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kSavePasswordsSuspendedByError, false);
+#endif
+  registry->RegisterBooleanPref(kSafeBrowsingDeepScanPromptSeen, false);
+  registry->RegisterTimePref(kSafeBrowsingEsbEnabledTimestamp, base::Time());
+
+// Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
+    registry->RegisterIntegerPref(pref, -1);
+  }
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -1591,7 +1571,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::login::SecurityTokenSessionController::RegisterLocalStatePrefs(registry);
   ash::reporting::LoginLogoutReporter::RegisterPrefs(registry);
   ash::reporting::RegisterLocalStatePrefs(registry);
-  ash::MultiProfileUserController::RegisterPrefs(registry);
   ash::NetworkMetadataStore::RegisterPrefs(registry);
   ash::NetworkThrottlingObserver::RegisterPrefs(registry);
   ash::PowerMetricsReporter::RegisterLocalStatePrefs(registry);
@@ -1699,6 +1678,10 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   registry->RegisterBooleanPref(prefs::kOopPrintDriversAllowedByPolicy, true);
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  registry->RegisterBooleanPref(prefs::kChromeForTestingAllowed, true);
 #endif
 
   // This is intentionally last.
@@ -1904,6 +1887,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   send_tab_to_self::RegisterProfilePrefs(registry);
   signin::RegisterProfilePrefs(registry);
   StartupBrowserCreator::RegisterProfilePrefs(registry);
+  TabResumptionPageHandler::RegisterProfilePrefs(registry);
   tab_organization_prefs::RegisterProfilePrefs(registry);
   tab_search_prefs::RegisterProfilePrefs(registry);
   ThemeColorPickerHandler::RegisterProfilePrefs(registry);
@@ -1964,6 +1948,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::bluetooth_config::BluetoothPowerControllerImpl::RegisterProfilePrefs(
       registry);
   ash::HatsBluetoothRevampTriggerImpl::RegisterProfilePrefs(registry);
+  ash::ChromeUserManagerImpl::RegisterProfilePrefs(registry);
   ash::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   ash::CupsPrintersManager::RegisterProfilePrefs(registry);
   ash::device_sync::RegisterProfilePrefs(registry);
@@ -1977,7 +1962,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::KerberosCredentialsManager::RegisterProfilePrefs(registry);
   ash::multidevice_setup::MultiDeviceSetupService::RegisterProfilePrefs(
       registry);
-  ash::MultiProfileUserController::RegisterProfilePrefs(registry);
   ash::NetworkMetadataStore::RegisterPrefs(registry);
   ash::ReleaseNotesStorage::RegisterProfilePrefs(registry);
   ash::HelpAppNotificationController::RegisterProfilePrefs(registry);
@@ -2086,10 +2070,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
   registry->RegisterBooleanPref(prefs::kPrivacyGuideViewed, false);
 
-#if BUILDFLAG(IS_MAC)
-  registry->RegisterBooleanPref(policy::policy_prefs::kScreenTimeEnabled, true);
-#endif
-
   RegisterProfilePrefsForMigration(registry);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2173,16 +2153,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
-
-// Added 02/2023.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  local_state->ClearPref(kWebAppsUrlHandlerInfo);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-// Added 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  local_state->ClearPref(kEasyUnlockLocalStateTpmKeys);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Added 03/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2287,6 +2257,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kExtendedFkeysModifier);
 #endif
 
+// Added 02/2024
+#if BUILDFLAG(IS_MAC)
+  local_state->ClearPref(kScreenTimeEnabled);
+#endif
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2335,29 +2309,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
                                account_id);
     }
   }
-
-// Added 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kArcTermsShownInOobe);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  // Added 02/2023.
-  profile_prefs->ClearPref(kSyncInvalidationVersions);
-  profile_prefs->ClearPref(kSyncInvalidationVersions2);
-
-  // Added 02/2023.
-  profile_prefs->ClearPref(kClearPluginLSODataEnabled);
-  profile_prefs->ClearPref(kContentSettingsPluginAllowlist);
-  profile_prefs->ClearPref(kPepperFlashSettingsEnabled);
-  profile_prefs->ClearPref(kPluginsAllowOutdated);
-  profile_prefs->ClearPref(kPluginsLastInternalDirectory);
-  profile_prefs->ClearPref(kPluginsPluginsList);
-  profile_prefs->ClearPref(kPluginsShowDetails);
-
-// Added 02/2023.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_prefs->ClearPref(kHasSeenSmartLockSignInRemovedNotification);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Added 03/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2679,6 +2630,22 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Deprecated 01/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kUpdateNotificationLastShownMilestone);
+#endif
+
+  // Deprecated 01/2024.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kSavePasswordsSuspendedByError);
+#endif
+
+  // Deprecated 02/2024
+  profile_prefs->ClearPref(kSafeBrowsingDeepScanPromptSeen);
+  profile_prefs->ClearPref(kSafeBrowsingEsbEnabledTimestamp);
+
+  // Deprecated 02/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  for (const char* pref : kWelcomeTourTimeBucketsOfFirstInteractions) {
+    profile_prefs->ClearPref(pref);
+  }
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

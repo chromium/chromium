@@ -36,10 +36,9 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
-      "position": [0, 16],
-      "bounds": [185, 334],
+      "bounds": [185, 350],
       "invalidations": [
-        [0, 0, 185, 334]
+        [0, 0, 185, 350]
       ],
       "transform": 1
     }

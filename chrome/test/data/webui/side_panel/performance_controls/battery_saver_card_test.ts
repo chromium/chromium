@@ -4,7 +4,7 @@
 
 import 'chrome://performance-side-panel.top-chrome/battery_saver_card.js';
 
-import {BatterySaverCardElement} from 'chrome://performance-side-panel.top-chrome/battery_saver_card.js';
+import type {BatterySaverCardElement} from 'chrome://performance-side-panel.top-chrome/battery_saver_card.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('Battery saver card', () => {

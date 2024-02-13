@@ -26,6 +26,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -253,10 +254,13 @@ TEST_F(SecureChannelClientImplTest, TestInitiateConnectionToDevice) {
 
   auto fake_channel = std::make_unique<FakeChannel>();
   mojo::PendingRemote<mojom::MessageReceiver> message_receiver_remote;
+  mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote;
 
   fake_secure_channel_->delegate_from_last_initiate_call()->OnConnection(
       fake_channel->GenerateRemote(),
-      message_receiver_remote.InitWithNewPipeAndPassReceiver());
+      message_receiver_remote.InitWithNewPipeAndPassReceiver(),
+      nearby_connection_state_listener_remote.InitWithNewPipeAndPassReceiver());
 
   run_loop.Run();
 
@@ -299,10 +303,13 @@ TEST_F(SecureChannelClientImplTest, TestListenForConnectionFromDevice) {
 
   auto fake_channel = std::make_unique<FakeChannel>();
   mojo::PendingRemote<mojom::MessageReceiver> message_receiver_remote;
+  mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote;
 
   fake_secure_channel_->delegate_from_last_listen_call()->OnConnection(
       fake_channel->GenerateRemote(),
-      message_receiver_remote.InitWithNewPipeAndPassReceiver());
+      message_receiver_remote.InitWithNewPipeAndPassReceiver(),
+      nearby_connection_state_listener_remote.InitWithNewPipeAndPassReceiver());
 
   run_loop.Run();
 
@@ -343,9 +350,13 @@ TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
       run_loop_1.QuitClosure());
   auto fake_channel_1 = std::make_unique<FakeChannel>();
   mojo::PendingRemote<mojom::MessageReceiver> message_receiver_remote_1;
+  mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote_1;
   fake_secure_channel_->delegate_from_last_initiate_call()->OnConnection(
       fake_channel_1->GenerateRemote(),
-      message_receiver_remote_1.InitWithNewPipeAndPassReceiver());
+      message_receiver_remote_1.InitWithNewPipeAndPassReceiver(),
+      nearby_connection_state_listener_remote_1
+          .InitWithNewPipeAndPassReceiver());
   run_loop_1.Run();
 
   ClientChannel* client_channel_1 =
@@ -362,9 +373,13 @@ TEST_F(SecureChannelClientImplTest, TestMultipleConnections) {
       run_loop_2.QuitClosure());
   auto fake_channel_2 = std::make_unique<FakeChannel>();
   mojo::PendingRemote<mojom::MessageReceiver> message_receiver_remote_2;
+  mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote_2;
   fake_secure_channel_->delegate_from_last_listen_call()->OnConnection(
       fake_channel_2->GenerateRemote(),
-      message_receiver_remote_2.InitWithNewPipeAndPassReceiver());
+      message_receiver_remote_2.InitWithNewPipeAndPassReceiver(),
+      nearby_connection_state_listener_remote_2
+          .InitWithNewPipeAndPassReceiver());
   run_loop_2.Run();
 
   ClientChannel* client_channel_2 =

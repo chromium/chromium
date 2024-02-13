@@ -6,6 +6,7 @@
 #define DEVICE_UDEV_LINUX_UDEV_WATCHER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/udev_linux/scoped_udev.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -45,8 +45,8 @@ class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevWatcher {
     const char* subsystem() const;
 
    private:
-    absl::optional<std::string> subsystem_;
-    absl::optional<std::string> devtype_;
+    std::optional<std::string> subsystem_;
+    std::optional<std::string> devtype_;
   };
 
   static std::unique_ptr<UdevWatcher> StartWatching(

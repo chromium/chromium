@@ -71,7 +71,7 @@ gfx::Rect Switch::GetThumbBounds() const {
   return bounds;
 }
 
-BEGIN_METADATA(Switch, views::ToggleButton)
+BEGIN_METADATA(Switch)
 END_METADATA
 
 }  // namespace ash

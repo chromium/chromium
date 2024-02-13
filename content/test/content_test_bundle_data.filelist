@@ -841,6 +841,8 @@ data/accessibility/aria/aria-heading-expected-mac.txt
 data/accessibility/aria/aria-heading-expected-win.txt
 data/accessibility/aria/aria-heading.html
 data/accessibility/aria/aria-hidden-changed-expected-blink.txt
+data/accessibility/aria/aria-hidden-changed-on-buttons-expected-blink.txt
+data/accessibility/aria/aria-hidden-changed-on-buttons.html
 data/accessibility/aria/aria-hidden-changed.html
 data/accessibility/aria/aria-hidden-descendant-tabindex-change-expected-blink.txt
 data/accessibility/aria/aria-hidden-descendant-tabindex-change.html
@@ -889,6 +891,8 @@ data/accessibility/aria/aria-hidden-labelled-by-expected-blink.txt
 data/accessibility/aria/aria-hidden-labelled-by-expected-uia-win.txt
 data/accessibility/aria/aria-hidden-labelled-by-expected-win.txt
 data/accessibility/aria/aria-hidden-labelled-by.html
+data/accessibility/aria/aria-hidden-line-breaking-objects-expected-blink.txt
+data/accessibility/aria/aria-hidden-line-breaking-objects.html
 data/accessibility/aria/aria-hidden-single-descendant-display-none-expected-blink.txt
 data/accessibility/aria/aria-hidden-single-descendant-display-none.html
 data/accessibility/aria/aria-hidden-single-descendant-expected-blink.txt
@@ -3190,6 +3194,8 @@ data/accessibility/html/disabled-expected-android-assist-data.txt
 data/accessibility/html/disabled-expected-android-external.txt
 data/accessibility/html/disabled-expected-android.txt
 data/accessibility/html/disabled-expected-blink.txt
+data/accessibility/html/disabled-with-subtree-expected-blink.txt
+data/accessibility/html/disabled-with-subtree.html
 data/accessibility/html/disabled.html
 data/accessibility/html/div-expected-android-assist-data.txt
 data/accessibility/html/div-expected-android-external.txt
@@ -6517,12 +6523,6 @@ data/indexeddb/key_path_test.js
 data/indexeddb/key_types_test.html
 data/indexeddb/key_types_test.js
 data/indexeddb/migration_database_generator.html
-data/indexeddb/migration_from_0/file__0.indexeddb.leveldb/000003.log
-data/indexeddb/migration_from_0/file__0.indexeddb.leveldb/CURRENT
-data/indexeddb/migration_from_0/file__0.indexeddb.leveldb/LOCK
-data/indexeddb/migration_from_0/file__0.indexeddb.leveldb/MANIFEST-000002
-data/indexeddb/migration_test.html
-data/indexeddb/migration_test.js
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/000008.sst
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/000009.log
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/CURRENT
@@ -6564,9 +6564,6 @@ data/indexeddb/transaction_run_forever.html
 data/indexeddb/transaction_run_forever.js
 data/indexeddb/transaction_test.html
 data/indexeddb/transaction_test.js
-data/indexeddb/v2schemacorrupt_reopen.html
-data/indexeddb/v2schemacorrupt_setup.html
-data/indexeddb/v2schemacorrupt_verify.html
 data/indexeddb/v3_migration_test.html
 data/indexeddb/v3_migration_test/file__0.indexeddb.blob/1/00/2
 data/indexeddb/v3_migration_test/file__0.indexeddb.blob/1/00/3
@@ -7245,6 +7242,10 @@ data/shared_dictionary/path/compressed.data
 data/shared_dictionary/path/compressed.data.mock-http-headers
 data/shared_dictionary/test.dict
 data/shared_dictionary/test.dict.mock-http-headers
+data/shared_dictionary/test.empty_dest.dict
+data/shared_dictionary/test.empty_dest.dict.mock-http-headers
+data/shared_dictionary/test.script_dest.dict
+data/shared_dictionary/test.script_dest.dict.mock-http-headers
 data/shared_dictionary/test_dict.html
 data/shared_dictionary/test_dict.html.mock-http-headers
 data/shared_dictionary/test_no_acao.dict

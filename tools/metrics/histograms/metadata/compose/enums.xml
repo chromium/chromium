@@ -59,6 +59,13 @@ chromium-metrics-reviews@google.com.
              suggestion"/>
 </enum>
 
+<enum name="ComposeRequestFeedback">
+  <int value="0" label="No feedback given"/>
+  <int value="1" label="Postivie feedback given"/>
+  <int value="2" label="Negative feedback given"/>
+  <int value="3" label="Request error"/>
+</enum>
+
 <enum name="ComposeRequestReason">
   <int value="0" label="Create button"/>
   <int value="1" label="Retry button"/>
@@ -69,7 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Formal modifier"/>
 </enum>
 
-<enum name="ComposeResponseStatus">
+<enum name="ComposeRequestStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Generic client error, not specified"/>
   <int value="2" label="DEPRECATED: Request was unable to be processed"/>
@@ -128,6 +135,8 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Thumbs Up Clicked"/>
   <int value="17" label="Insert Clicked"/>
   <int value="18" label="Close Clicked"/>
+  <int value="19" label="Edit Clicked"/>
+  <int value="20" label="Cancel Edit Clicked"/>
 </enum>
 
 <enum name="ComposeShowStatus">

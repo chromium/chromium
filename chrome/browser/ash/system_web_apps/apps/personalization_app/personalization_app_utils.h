@@ -41,6 +41,9 @@ AccountId GetAccountId(const Profile* profile);
 // profiles can, but kiosk and guest cannot.
 bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile);
 
+// Controls whether the profile can see and open SeaPen UI.
+bool IsEligibleForSeaPen(Profile* profile);
+
 // Return a base64 encoded data url version of `encoded_jpg_data`. The result
 // can be displayed directly in a ChromeOS WebUI via img src attribute.
 // `encoded_jpg_data` must not be overly large (e.g. bigger than 1k x 1k

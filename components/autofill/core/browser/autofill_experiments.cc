@@ -125,7 +125,7 @@ bool IsCreditCardUploadEnabled(
   // Before address sync is available in transport mode, server card save is
   // offered in transport mode regardless of the setting. (The sync API exposes
   // the kAutofill type as disabled in this case.)
-  // TODO(crbug.com/1462552): Simplify once IsSyncFeatureActive() is deleted
+  // TODO(crbug.com/40066949): Simplify once IsSyncFeatureActive() is deleted
   // from the codebase.
   bool syncing_or_addresses_in_transport_mode =
       sync_service->IsSyncFeatureActive() ||

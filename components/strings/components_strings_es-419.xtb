@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">No seguro</translation>
 <translation id="1075079914415273530">Agricultura y silvicultura</translation>
 <translation id="1075364221219156102">Usa una llave de acceso</translation>
-<translation id="1078033282564106222">Se seleccionó la opción de número de edificio</translation>
 <translation id="1080116354587839789">Ajustar al ancho</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Desplazar y acercar el contenido de la pestaña compartida</translation>
@@ -247,6 +246,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1428729058023778569">Se muestra esta advertencia porque este sitio no admite HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Película autoadhesiva</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1431021750861456539">Pantalla completa automática</translation>
 <translation id="1432187715652018471">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="1432581352905426595">Administrar motores de búsqueda</translation>
 <translation id="1433225466058025572">Intenta volver a mover tus archivos</translation>
@@ -507,7 +507,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1919526244108283799">400 × 600 mm</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Ninguno}=1{1 sitio}other{# sitios}}</translation>
 <translation id="192095259937375524">Botón Compartir esta pestaña: actívalo para compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>
-<translation id="1924727005275031552">Nuevas</translation>
+<translation id="1924727005275031552">Nueva</translation>
 <translation id="1935995810530254458">Copiar de todos modos</translation>
 <translation id="1939059826036755332">Modo de pantalla en pantalla automático</translation>
 <translation id="1939175642807587452">Puede solicitar permiso para enviar notificaciones</translation>
@@ -586,6 +586,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2075497153347571252">Tu administrador bloqueó <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2080021694978766903">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
+<translation id="2081482239432306393">Se seleccionó la opción de número de casa</translation>
 <translation id="20817612488360358">Se ha establecido la configuración de proxy del sistema, pero también se ha especificado una configuración explícita de proxy.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permitir en cada visita</translation>
@@ -613,7 +614,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2126374524350484896">Generador de PDF:</translation>
 <translation id="2130448033692577677">Debido a que no se estableció la política DnsOverHttpsMode, es posible que no se apliquen las plantillas que especificaste.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Descargando el paquete del idioma <ph name="LANGUAGE" />…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Ropa masculina</translation>
 <translation id="2137891579555018930">Esperando el permiso…</translation>
 <translation id="213826338245044447">Favoritos del celular</translation>
@@ -757,7 +757,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2399868464369312507">Google Chrome está intentando editar formas de pago.</translation>
 <translation id="2400600116338235695">Puede solicitar permiso para conectarse a puertos en serie</translation>
 <translation id="2404884497378469141">Intenta volver a copiar tus archivos</translation>
-<translation id="2413155254802890957">Antiguas</translation>
+<translation id="2413155254802890957">Antigua</translation>
 <translation id="2413528052993050574">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" /> y se podría revocar el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2414886740292270097">Oscuro</translation>
 <translation id="2429716554270894715">Tela (impermeable)</translation>
@@ -1105,7 +1105,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">Es posible que la red Wi-Fi que estás usando requiera que visites la página de acceso.</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Descubre</translation>
 <translation id="3171703252520926121">Servicios inmobiliarios</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3176929007561373547">Comprueba la configuración del proxy o comunícate con tu
@@ -1388,7 +1388,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3681007416295224113">Información sobre el certificado</translation>
 <translation id="3681421644246505351">Chrome registra temas de interés basados en tu historial de navegación reciente.</translation>
 <translation id="3682094733650754138">Se seleccionó la opción para completar la dirección</translation>
-<translation id="3689867156802445220">Número de edificio</translation>
 <translation id="3693327506115126094">Elige cómo verificar tu identidad</translation>
 <translation id="3698629142018988477">Botón Crear sitio: actívalo para crear un sitio nuevo en Google Sites rápidamente</translation>
 <translation id="3701325639446035885">Ventas de entradas para eventos</translation>
@@ -1413,6 +1412,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3723663469265383848">Durante la actualización, no podrás usar el dispositivo por 10 minutos como máximo.</translation>
 <translation id="372429172604983730">Las apps que pueden causar este error incluyen antivirus, firewall, filtros web o software proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una presentación de Google nueva en Presentaciones rápidamente</translation>
+<translation id="3727309136762649052">Espacio de nombres</translation>
 <translation id="3727850735097852673">Para usar el Administrador de contraseñas de Google con el llavero de macOS, reinicia Chrome y permite el acceso al llavero. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
 <translation id="3733139489341305600">Vehículos autónomos</translation>
 <translation id="3736520371357197498">Si comprendes los riesgos para tu seguridad, puedes <ph name="BEGIN_LINK" />visitar este sitio no seguro<ph name="END_LINK" /> antes de que se hayan eliminado los programas peligrosos.</translation>
@@ -1577,6 +1577,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4089152113577680600">Bandeja 14</translation>
 <translation id="4092349052316400070">Elige una dirección</translation>
 <translation id="4096237801206588987">27.9 × 38.1 cm (11 × 15 in)</translation>
+<translation id="4098306082496067348">Presiona los detalles de la tarjeta virtual para agregarlos a la confirmación de la compra.</translation>
 <translation id="4098354747657067197">Sitio engañoso</translation>
 <translation id="4099048595830172239">La política del administrador no recomienda compartir la pantalla con <ph name="APPLICATION_TITLE" /> cuando hay contenido confidencial visible:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar el tamaño de las fuentes y los tipos de letra en Chrome</translation>
@@ -1690,7 +1691,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4277028893293644418">Restablecer contraseña</translation>
 <translation id="4277529130885813215">Usar otro dispositivo</translation>
 <translation id="4277937682389409325">Dirección local</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitidas</translation>
 <translation id="4281998142035485137">{0,plural, =1{¿Quieres abrir un archivo confidencial?}other{¿Quieres abrir archivos confidenciales?}}</translation>
 <translation id="4282346679996504092">Se desactivaron las alertas para este producto y se quitó el favorito</translation>
 <translation id="4285498937028063278">Dejar de fijar</translation>
@@ -1900,6 +1901,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4729147136006144950">Caridad y filantropía</translation>
 <translation id="4730977633786878901">Opiniones</translation>
 <translation id="4731638775147756694">El administrador bloqueó esta aplicación</translation>
+<translation id="4732860731866514038">Descargando el paquete del idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> desea usar la ubicación de tu dispositivo</translation>
 <translation id="4736491186715342415">Vehículos motorizados</translation>
 <translation id="4736825316280949806">Reinicia Chromium.</translation>
@@ -1921,7 +1923,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4757022425116568383">Llave de acceso de tu perfil de Chrome</translation>
 <translation id="4757993714154412917">Ingresaste tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chromium te recomienda revisar las contraseñas que tengas guardadas.</translation>
 <translation id="4758311279753947758">Agregar información de contacto</translation>
-<translation id="4761104368405085019">Usar tu micrófono</translation>
 <translation id="4761326898079498987">Revisa las acciones para obtener más detalles</translation>
 <translation id="4761869838909035636">Ejecutar la Verificación de seguridad de Chrome</translation>
 <translation id="4763196677855776703">Términos y condiciones proporcionados por <ph name="URL" /></translation>
@@ -2259,7 +2260,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
             <ph name="LIST_ITEM" />Las cookies y datos de sitios
             <ph name="LIST_ITEM" />La información que ingreses en formularios
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> quiere controlar y reprogramar tus dispositivos MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Orden inverso hacia arriba</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use la información que guardó sobre ti</translation>
 <translation id="5447765697759493033">Este sitio no se traducirá</translation>
@@ -2286,6 +2286,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
     <ph name="LINE_BREAK" />
     Intenta contactar al administrador de tu sistema.</translation>
 <translation id="549333378215107354">Tamaño 3</translation>
+<translation id="5501712702042287009">pantalla completa automática</translation>
 <translation id="550365051221576010">Completar todo</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoritos administrados</translation>
@@ -2380,7 +2381,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5666606186680807225">Islas y playas</translation>
 <translation id="5667827081946850877">Audiolibros</translation>
 <translation id="5675650730144413517">Esta página no funciona</translation>
-<translation id="5677928146339483299">Bloqueado</translation>
+<translation id="5677928146339483299">Bloqueadas</translation>
 <translation id="5678007133659493065">Lámina</translation>
 <translation id="568292603005599551">Posición en el eje X de la imagen</translation>
 <translation id="5684277895745049190">Lista</translation>
@@ -2472,7 +2473,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5877831137320480913">Belleza y salud</translation>
 <translation id="5879989559903563723">No se permite en el Modo de invitado</translation>
 <translation id="5880050725127890683">Ir a la verificación de seguridad de Chrome</translation>
-<translation id="5883861433316751031">¿Quieres controlar y reprogramar los dispositivos MIDI?</translation>
 <translation id="5884465125445718607">Sobre chino n.º 6</translation>
 <translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5887687176710214216">Última visita: ayer</translation>
@@ -2823,7 +2823,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6556866813142980365">Rehacer</translation>
 <translation id="6557715786897013164">35.6 × 43.2 cm (14 × 17 in)</translation>
 <translation id="6560786330438719938">Apps instaladas o desinstaladas y su frecuencia de uso</translation>
-<translation id="6567084950885568327">control y reprogramación de dispositivos MIDI</translation>
 <translation id="6568793038316600992">Botón Administrar las formas de pago: actívalo para administrar la información de tus pagos y tarjetas de crédito en la configuración de Chrome</translation>
 <translation id="6569060085658103619">Estás viendo la página de una extensión</translation>
 <translation id="6569366777234823130">Películas de drama</translation>
@@ -3206,6 +3205,7 @@ Detalles adicionales:
 <translation id="733354035281974745">Se anuló la cuenta local del dispositivo</translation>
 <translation id="7334320624316649418">&amp;Rehacer Reorganizar</translation>
 <translation id="7335157162773372339">Puede solicitar permiso para usar la cámara</translation>
+<translation id="7336636595549675416">Número de la casa</translation>
 <translation id="7337248890521463931">Mostrar más líneas</translation>
 <translation id="7337706099755338005">No está disponible para tu plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se divulgó mediante el Certificado de transparencia.</translation>
@@ -3913,7 +3913,6 @@ Detalles adicionales:
 <translation id="8671519637524426245">El valor <ph name="SECURE_DNS_SALT" /> no cumple con los requisitos de tamaño.</translation>
 <translation id="867224526087042813">Firma</translation>
 <translation id="8672264262457010862">Empresas e industrias</translation>
-<translation id="8673776281896298303">Controlar y reprogramar tus dispositivos MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Sin demora</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, respuesta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">La página web de <ph name="PAGE" /> no se pudo cargar porque:</translation>
@@ -4057,7 +4056,7 @@ Detalles adicionales:
 <translation id="8968766641738584599">Guardar la tarjeta</translation>
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8971063699422889582">El certificado del servidor ha caducado.</translation>
-<translation id="8975012916872825179">Incluye información, como números de teléfono, direcciones de correo electrónico y direcciones de envío</translation>
+<translation id="8975012916872825179">Incluye información como números de teléfono, direcciones de correo electrónico y direcciones de envío</translation>
 <translation id="8975263830901772334">Nombres de los archivos que imprimes</translation>
 <translation id="8978053250194585037">Recientemente, la navegación segura de Google <ph name="BEGIN_LINK" />detectó un intento de phishing<ph name="END_LINK" /> en <ph name="SITE" />. Los sitios de suplantación de identidad imitan a otros sitios web para engañarte.</translation>
 <translation id="8982884016487650216">Se terminó de cargar el PDF</translation>
@@ -4154,7 +4153,6 @@ Detalles adicionales:
 <translation id="9148507642005240123">&amp;Deshacer Editar</translation>
 <translation id="9148599396704355100">El precio es bajo</translation>
 <translation id="9150025764986957246">Puedes ingresar algo como lo siguiente:</translation>
-<translation id="9150045010208374699">Usar tu cámara</translation>
 <translation id="9150685862434908345">Tu administrador puede cambiar la configuración de tu navegador de forma remota. Es posible que la actividad en este dispositivo también se administre fuera de Chrome. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Actualizado</translation>
 <translation id="9155211586651734179">Periféricos de audio conectados</translation>

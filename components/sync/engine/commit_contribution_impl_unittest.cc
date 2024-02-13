@@ -266,8 +266,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       std::move(on_commit_response_callback),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
-      PassphraseType::kCustomPassphrase,
-      /*only_commit_specifics=*/false);
+      PassphraseType::kCustomPassphrase);
 
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);
@@ -306,8 +305,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFullCommitFailure) {
   CommitContributionImpl contribution(
       BOOKMARKS, sync_pb::DataTypeContext(), CommitRequestDataList(),
       /*on_commit_response_callback=*/base::NullCallback(),
-      on_commit_failure_callback.Get(), PassphraseType::kKeystorePassphrase,
-      /*only_commit_specifics=*/false);
+      on_commit_failure_callback.Get(), PassphraseType::kKeystorePassphrase);
 
   contribution.ProcessCommitFailure(SyncCommitError::kNetworkError);
 }
@@ -319,6 +317,7 @@ TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
   data->specifics.mutable_sharing_message()->set_message_id("message_id");
   auto request_data = std::make_unique<CommitRequestData>();
   request_data->entity = std::move(data);
+  request_data->base_version = kUncommittedVersion;
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
 
@@ -326,8 +325,7 @@ TEST(CommitContributionImplTest, ShouldPopulateIdStringForCommitOnlyTypes) {
       SHARING_MESSAGE, sync_pb::DataTypeContext(), std::move(requests_data),
       /*on_commit_response_callback=*/base::NullCallback(),
       /*on_full_commit_failure_callback=*/base::NullCallback(),
-      PassphraseType::kKeystorePassphrase,
-      /*only_commit_specifics=*/true);
+      PassphraseType::kKeystorePassphrase);
   sync_pb::ClientToServerMessage msg;
   contribution.AddToCommitMessage(&msg);
 

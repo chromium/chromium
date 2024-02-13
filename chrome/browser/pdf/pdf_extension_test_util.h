@@ -29,6 +29,11 @@ class Point;
 
 namespace pdf_extension_test_util {
 
+// Gets the PDF extension host that is the child of `embedder_host`. The
+// embedder host should only have one child, otherwise returns nullptr.
+content::RenderFrameHost* GetPdfExtensionHostFromEmbedder(
+    content::RenderFrameHost* embedder_host);
+
 // Gets the PDF extension host for a given `WebContents`. There should only be
 // one extension host in `contents`, otherwise returns nullptr.
 content::RenderFrameHost* GetOnlyPdfExtensionHost(
@@ -53,6 +58,9 @@ size_t CountPdfPluginProcesses(Browser* browser);
 // loading or prompted a password. The result indicates success if the PDF loads
 // successfully, otherwise it indicates failure. If it doesn't finish loading,
 // the test will hang.
+//
+// In order to ensure an OOPIF PDF has loaded, `frame` must be an embedder host,
+// and the extension host must have already been created.
 //
 // Tests that attempt to send mouse/pointer events should pass `true` for
 // `wait_for_hit_test_data`, otherwise the necessary hit test data may not be

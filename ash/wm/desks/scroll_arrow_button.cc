@@ -79,7 +79,7 @@ void ScrollArrowButton::OnStateChanged() {
   }
 }
 
-BEGIN_METADATA(ScrollArrowButton, views::Button)
+BEGIN_METADATA(ScrollArrowButton)
 END_METADATA
 
 }  // namespace ash

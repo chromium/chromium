@@ -126,7 +126,7 @@ void MicView::UpdateState(bool animate) {
   logo_view_->SetState(mic_state, animate);
 }
 
-BEGIN_METADATA(MicView, AssistantButton)
+BEGIN_METADATA(MicView)
 END_METADATA
 
 }  // namespace ash

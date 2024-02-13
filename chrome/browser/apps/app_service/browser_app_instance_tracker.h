@@ -189,7 +189,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 
   // A set of observed browsers: browsers where at least one tab has been added.
   // Events for all other browsers are filtered out.
-  std::set<Browser*> tracked_browsers_;
+  std::set<raw_ptr<Browser, SetExperimental>> tracked_browsers_;
 
   // A set of observed activation clients for all browser's windows.
   base::ScopedMultiSourceObservation<wm::ActivationClient,
@@ -201,7 +201,7 @@ class BrowserAppInstanceTracker : public TabStripModelObserver,
 #if DCHECK_IS_ON()
   // Tabs that are removed from one browser and are getting reinserted into
   // another.
-  std::set<content::WebContents*> tabs_in_transit_;
+  std::set<raw_ptr<content::WebContents, SetExperimental>> tabs_in_transit_;
 #endif
   // App instances running in tabs.
   BrowserAppInstanceMap<content::WebContents*, BrowserAppInstance>

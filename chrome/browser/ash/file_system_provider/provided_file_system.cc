@@ -201,8 +201,8 @@ ProvidedFileSystem::ProvidedFileSystem(
 
 ProvidedFileSystem::~ProvidedFileSystem() {
   const std::vector<int> request_ids = request_manager_->GetActiveRequestIds();
-  for (size_t i = 0; i < request_ids.size(); ++i) {
-    Abort(request_ids[i]);
+  for (int request_id : request_ids) {
+    Abort(request_id);
   }
 }
 

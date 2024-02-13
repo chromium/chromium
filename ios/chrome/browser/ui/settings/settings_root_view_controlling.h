@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol ApplicationCommands;
-@protocol ApplicationSettingsCommands;
+@protocol SettingsCommands;
 @protocol BrowserCommands;
 @protocol BrowsingDataCommands;
 @protocol SnackbarCommands;
@@ -24,10 +24,10 @@
 // BrowsingDataCommands handler.
 @property(nonatomic, weak) id<BrowsingDataCommands> browsingDataHandler;
 
-// ApplicationSettingsCommands handler.
-@property(nonatomic, weak) id<ApplicationSettingsCommands> settingsHandler;
+// SettingsCommands handler.
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
-// ApplicationSettingsCommands handler.
+// SettingsCommands handler.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 @end

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation_traits.h"
 #include "components/user_manager/include_exclude_account_id_filter.h"
@@ -19,13 +20,11 @@ class PrefService;
 
 namespace user_manager {
 
+class MultiUserSignInPolicyController;
+
 namespace internal {
 class ScopedUserManagerImpl;
 }  // namespace internal
-
-// A list pref of the the regular users known on this device, arranged in LRU
-// order, stored in local state.
-USER_MANAGER_EXPORT extern const char kRegularUsersPref[];
 
 enum class UserRemovalReason : int32_t {
   UNKNOWN = 0,
@@ -271,6 +270,16 @@ class USER_MANAGER_EXPORT UserManager {
   // better solution.
   virtual void RemoveUserFromListForRecreation(const AccountId& account_id) = 0;
 
+  // Removes the user from the device in case when user's cryptohome is lost
+  // for some reason to ensure that user is correctly re-created.
+  // Does not trigger user removal notification.
+  // This method is similar to `RemoveUserFromListForRecreation`, but is
+  // triggered at different stage of login process, and when absence of user
+  // directory is not anticipated by the flow. This removes the user from the
+  // list synchronously, so the following function calls should have updated
+  // users.
+  virtual void CleanStaleUserInformationFor(const AccountId& account_id) = 0;
+
   // Returns true if a user with the given account id is found in the persistent
   // list or currently logged in as ephemeral.
   virtual bool IsKnownUser(const AccountId& account_id) const = 0;
@@ -312,12 +321,6 @@ class USER_MANAGER_EXPORT UserManager {
   // Updates data upon User Account download.
   virtual void UpdateUserAccountData(const AccountId& account_id,
                                      const UserAccountData& account_data) = 0;
-
-  // Returns the display name for user |account_id| if it is known (was
-  // previously set by a |SaveUserDisplayName| call).
-  // Otherwise, returns an empty string.
-  virtual std::u16string GetUserDisplayName(
-      const AccountId& account_id) const = 0;
 
   // Saves user's displayed (non-canonical) email in local state preferences.
   // Ignored If there is no such user.
@@ -470,15 +473,15 @@ class USER_MANAGER_EXPORT UserManager {
   virtual bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const = 0;
 
+  // Sets affiliation status for the user identified with `account_id`
+  // judging by `user_affiliation_ids` and device affiliation IDs.
+  virtual void SetUserAffiliation(
+      const AccountId& account_id,
+      const base::flat_set<std::string>& user_affiliation_ids) = 0;
+
   // Returns true when the browser has crashed and restarted during the current
   // user's session.
   virtual bool HasBrowserRestarted() const = 0;
-
-  // Returns image from resources bundle.
-  virtual const gfx::ImageSkia& GetResourceImageSkiaNamed(int id) const = 0;
-
-  // Returns string from resources bundle.
-  virtual std::u16string GetResourceStringUTF16(int string_id) const = 0;
 
   // Schedules CheckAndResolveLocale using given task runner and
   // |on_resolved_callback| as reply callback.
@@ -489,6 +492,10 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Returns true if |image_index| is a valid default user image index.
   virtual bool IsValidDefaultUserImageId(int image_index) const = 0;
+
+  // Returns the instance of multi user sign-in policy controller.
+  virtual MultiUserSignInPolicyController*
+  GetMultiUserSignInPolicyController() = 0;
 
   UserType CalculateUserType(const AccountId& account_id,
                              const User* user,

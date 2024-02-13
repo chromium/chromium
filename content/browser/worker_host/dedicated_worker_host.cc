@@ -294,16 +294,15 @@ void DedicatedWorkerHost::StartScriptLoad(
 
   // For blob URL workers, inherit the controller from the worker's parent.
   // See https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
-  if (script_url.SchemeIsBlob()) {
-    if (creator_render_frame_host) {
-      // The creator of this worker is a frame.
-      service_worker_handle_->set_parent_container_host(
-          creator_render_frame_host->GetLastCommittedServiceWorkerHost());
-    } else {
-      base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
-          creator_worker->service_worker_handle()->container_host();
-      service_worker_handle_->set_parent_container_host(creator_container_host);
-    }
+  // Also, we need the worker's parent to set FetchEvent::client_id.
+  if (creator_render_frame_host) {
+    // The creator of this worker is a frame.
+    service_worker_handle_->set_parent_container_host(
+        creator_render_frame_host->GetLastCommittedServiceWorkerHost());
+  } else {
+    base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
+        creator_worker->service_worker_handle()->container_host();
+    service_worker_handle_->set_parent_container_host(creator_container_host);
   }
 
   network::mojom::ClientSecurityStatePtr client_security_state;

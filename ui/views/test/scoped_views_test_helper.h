@@ -6,8 +6,8 @@
 #define UI_VIEWS_TEST_SCOPED_VIEWS_TEST_HELPER_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/views_test_helper.h"
@@ -26,8 +26,7 @@ class ScopedViewsTestHelper {
   // Initialize with the given TestViewsDelegate instance.
   explicit ScopedViewsTestHelper(
       std::unique_ptr<TestViewsDelegate> test_views_delegate = nullptr,
-      absl::optional<ViewsDelegate::NativeWidgetFactory> factory =
-          absl::nullopt);
+      std::optional<ViewsDelegate::NativeWidgetFactory> factory = std::nullopt);
   ScopedViewsTestHelper(const ScopedViewsTestHelper&) = delete;
   ScopedViewsTestHelper& operator=(const ScopedViewsTestHelper&) = delete;
   ~ScopedViewsTestHelper();

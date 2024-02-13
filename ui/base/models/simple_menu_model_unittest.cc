@@ -63,7 +63,7 @@ class DelegateBase : public SimpleMenuModel::Delegate {
   }
 
  private:
-  absl::optional<int> item_with_icon_;
+  std::optional<int> item_with_icon_;
 };
 
 class MockDelegate : public DelegateBase {

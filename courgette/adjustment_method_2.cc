@@ -842,7 +842,8 @@ class AssignmentProblem {
  private:
   typedef std::set<Shingle*, Shingle::PointerLess> ShingleSet;
 
-  typedef std::set<const ShinglePattern*, ShinglePatternPointerLess>
+  typedef std::set<raw_ptr<const ShinglePattern, SetExperimental>,
+                   ShinglePatternPointerLess>
       ShinglePatternSet;
 
   // Patterns are partitioned into the following sets:
@@ -854,8 +855,8 @@ class AssignmentProblem {
   // * Single-use patterns - single_use_pattern_queue_.
   // * Other patterns - active_non_single_use_patterns_ / variable_queue_.
 
-  typedef std::set<const ShinglePattern*,
-                   OrderShinglePatternByScoreDescending<&SingleUseScore> >
+  typedef std::set<raw_ptr<const ShinglePattern, SetExperimental>,
+                   OrderShinglePatternByScoreDescending<&SingleUseScore>>
       SingleUsePatternQueue;
 
   void PrintPatternsHeader() const {

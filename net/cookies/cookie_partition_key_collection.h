@@ -41,7 +41,7 @@ class NET_EXPORT CookiePartitionKeyCollection {
   }
 
   static CookiePartitionKeyCollection FromOptional(
-      const absl::optional<CookiePartitionKey>& opt_key) {
+      const std::optional<CookiePartitionKey>& opt_key) {
     return opt_key ? CookiePartitionKeyCollection(opt_key.value())
                    : CookiePartitionKeyCollection();
   }

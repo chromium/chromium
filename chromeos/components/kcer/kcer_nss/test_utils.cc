@@ -4,6 +4,8 @@
 
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -12,6 +14,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/signature_verifier.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 using SignatureAlgorithm = crypto::SignatureVerifier::SignatureAlgorithm;
 
@@ -131,6 +134,20 @@ std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash) {
                 kDigestInfoSha256DerData.end());
   result.insert(result.end(), hash.begin(), hash.end());
   return result;
+}
+
+std::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
+    const base::FilePath& path) {
+  std::string pem_data;
+  if (!base::ReadFileToString(path, &pem_data)) {
+    return std::nullopt;
+  }
+
+  bssl::PEMTokenizer tokenizer(pem_data, {"CERTIFICATE", "PRIVATE KEY"});
+  if (!tokenizer.GetNext()) {
+    return std::nullopt;
+  }
+  return std::vector<uint8_t>(tokenizer.data().begin(), tokenizer.data().end());
 }
 
 }  // namespace kcer

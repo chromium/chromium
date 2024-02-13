@@ -16,6 +16,7 @@ include_rules = [
   "+components/live_caption",
   "+components/media_message_center",
   "+components/metrics/structured/structured_events.h",
+  "+components/metrics/structured/structured_metrics_client.h",
   "+components/pref_registry",
   "+components/prefs",
   "+components/quirks",

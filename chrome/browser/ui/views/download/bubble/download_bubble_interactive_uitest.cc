@@ -272,11 +272,7 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
             ->controller())
         .SetupForTest();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    return [&]() {
-      FullscreenNotificationObserver waiter(browser());
-      chrome::ToggleFullscreenMode(browser());
-      waiter.Wait();
-    };
+    return [&]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); };
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)

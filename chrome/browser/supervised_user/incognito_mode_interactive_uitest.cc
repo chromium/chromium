@@ -26,6 +26,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 
 class IncognitoModeInSupervisedContextUiTest
     : public InteractiveBrowserTestT<FamilyLiveTest> {
+ public:
+  IncognitoModeInSupervisedContextUiTest()
+      : InteractiveBrowserTestT<FamilyLiveTest>(FamilyIdentifier("FAMILY")) {}
+
  protected:
   auto CheckCountOfIncognitoBrowsers(size_t expected_count) {
     return Check(base::BindLambdaForTesting([expected_count]() {

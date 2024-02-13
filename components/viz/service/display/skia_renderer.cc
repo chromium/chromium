@@ -22,6 +22,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
@@ -460,7 +461,71 @@ SkYUVAInfo::Subsampling SubsamplingFromTextureSizes(gfx::Size ya_size,
   return SkYUVAInfo::Subsampling::kUnknown;
 }
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+constexpr size_t kMaxProtectedContentWidth = 3840;
+constexpr size_t kMaxProtectedContentHeight = 2160;
+#endif
+
 }  // namespace
+
+// A helper class to emit Viz debugger messages that has access to SkiaRenderer
+// internals.
+class SkiaRenderer::VizDebuggerLog {
+ public:
+  static void DebugLogDumpRenderPassBackings(
+      const base::flat_map<AggregatedRenderPassId, RenderPassBacking>&
+          render_pass_backings) {
+    bool enabled;
+    DBG_CONNECTED_OR_TRACING(enabled);
+    if (enabled) {
+      DBG_LOG("renderer.skia.render_pass_backings",
+              "render_pass_backings_ = [");
+      for (auto& kv : render_pass_backings) {
+        base::trace_event::TracedValueJSON value;
+        base::trace_event::TracedValue::Dictionary(
+            {
+                {"size", kv.second.size.ToString()},
+                {"generate_mipmap", kv.second.generate_mipmap},
+                {"color_space", kv.second.color_space.ToString()},
+                {"format", kv.second.format.ToString()},
+                {"mailbox", kv.second.mailbox.ToDebugString()},
+                {"is_root", kv.second.is_root},
+                {"is_scanout", kv.second.is_scanout},
+                {"scanout_dcomp_surface", kv.second.scanout_dcomp_surface},
+            })
+            .WriteToValue(&value);
+        DBG_LOG("renderer.skia.render_pass_backings", "%" PRIu64 ": %s",
+                kv.first.value(), value.ToFormattedJSON().c_str());
+      }
+      DBG_LOG("renderer.skia.render_pass_backings", "]");
+    }
+  }
+
+  static void DebugLogNewRenderPassBacking(
+      const AggregatedRenderPassId& render_pass_id,
+      const RenderPassRequirements& requirements) {
+    bool enabled;
+    DBG_CONNECTED_OR_TRACING(enabled);
+    if (enabled) {
+      base::trace_event::TracedValueJSON value;
+      base::trace_event::TracedValue::Dictionary(
+          {
+              {"size", requirements.size.ToString()},
+              {"generate_mipmap", requirements.generate_mipmap},
+              {"format", requirements.format.ToString()},
+              {"color_space", requirements.color_space.ToString()},
+              {"alpha_type", static_cast<int>(requirements.alpha_type)},
+              {"is_scanout", requirements.is_scanout},
+              {"scanout_dcomp_surface", requirements.scanout_dcomp_surface},
+          })
+          .WriteToValue(&value);
+      DBG_LOG("renderer.skia.render_pass_backings",
+              "allocate backing for render_pass %" PRIu64 ", %s",
+              render_pass_id.value(), value.ToFormattedJSON().c_str());
+    }
+  }
+};
 
 // chrome style prevents this from going in skia_renderer.h, but since it
 // uses std::optional, the style also requires it to have a declared ctor
@@ -1032,6 +1097,12 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
         number_of_buffers);
   }
 #endif
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  protected_buffer_queue_ = std::make_unique<BufferQueue>(
+      skia_output_surface_, skia_output_surface_->GetSurfaceHandle(), 3);
+#endif
 }
 
 SkiaRenderer::~SkiaRenderer() = default;
@@ -1052,6 +1123,8 @@ void SkiaRenderer::FinishDrawingFrame() {
   current_canvas_ = nullptr;
 
   swap_buffer_rect_ = current_frame()->root_damage_rect;
+
+  VizDebuggerLog::DebugLogDumpRenderPassBackings(render_pass_backings_);
 
 #if BUILDFLAG(IS_OZONE)
   MaybeScheduleBackgroundImage(current_frame()->overlay_list);
@@ -1120,6 +1193,30 @@ void SkiaRenderer::FinishDrawingFrame() {
   debug_tint_modulate_count_++;
 }
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_VULKAN) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+// Simple scheme for de-allocating protected buffers: if we go one SwapBuffer
+// cycle without needing a protected shared image, we can delete the protected
+// buffer queue.
+gpu::Mailbox SkiaRenderer::GetProtectedSharedImage() {
+  is_protected_pool_idle_ = false;
+
+  protected_buffer_queue_->Reshape(
+      gfx::Size(kMaxProtectedContentWidth, kMaxProtectedContentHeight),
+      gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::RGBA_8888);
+
+  return protected_buffer_queue_->GetCurrentBuffer();
+}
+
+void SkiaRenderer::MaybeFreeProtectedPool() {
+  if (is_protected_pool_idle_ && protected_buffer_queue_) {
+    protected_buffer_queue_->DestroyBuffers();
+  } else {
+    is_protected_pool_idle_ = true;
+  }
+}
+#endif
+
 void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
   DCHECK(visible_);
   DCHECK(output_surface_->capabilities().supports_viewporter ||
@@ -1178,6 +1275,19 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     return false;
   });
 #endif  // BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  if (protected_buffer_queue_) {
+    // Note that we still call BufferQueue::SwapBuffers() even when we suspect
+    // our buffer queue is idle because there might still be in-flight frames
+    // that need to be managed.
+    protected_buffer_queue_->SwapBuffers(
+        gfx::Rect(kMaxProtectedContentWidth, kMaxProtectedContentHeight));
+  }
+
+  MaybeFreeProtectedPool();
+#endif
 }
 
 void SkiaRenderer::SwapBuffersSkipped() {
@@ -1213,6 +1323,14 @@ void SkiaRenderer::SwapBuffersComplete(
     }
     buffer_queue_->SwapBuffersComplete();
   }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  if (protected_buffer_queue_) {
+    protected_buffer_queue_->SwapBuffersComplete();
+  }
+#endif
+
   if (!release_fence.is_null()) {
     // Set release fences to return overlay resources for last frame.
     for (auto& lock : committed_overlay_locks_) {
@@ -2632,6 +2750,8 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
     params->opacity = 1.f;
   }
 
+  // Auto-restore canvas state after applying clipShader and draw.
+  SkAutoCanvasRestore acr(current_canvas_, /*do_save=*/true);
   if (vertex_alpha) {
     // If they are all the same value, combine it with the overall opacity,
     // otherwise use a mask filter to emulate vertex opacity interpolation
@@ -2674,10 +2794,13 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       float a2 = quad->vertex_opacity[2] * quad_alpha;
       SkColor4f gradient_colors[2] = {SkColor4f({a1, a1, a1, a1}),
                                       SkColor4f({a2, a2, a2, a2})};
+      SkMatrix matrix =
+          gfx::TransformToFlattenedSkMatrix(params->content_device_transform);
       sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
-          gradient_pts, gradient_colors, nullptr /*sk_sp<SkColorSpace>*/,
-          nullptr, 2, SkTileMode::kClamp);
-      paint.setMaskFilter(SkShaderMaskFilter::Make(std::move(gradient)));
+          gradient_pts, gradient_colors, /*colorSpace=*/nullptr,
+          /*pos=*/nullptr, /*count=*/2, SkTileMode::kClamp, /*flags=*/0,
+          /*localMatrix=*/&matrix);
+      current_canvas_->clipShader(std::move(gradient));
       // shared quad opacity was folded into the gradient, so this will shorten
       // any color filter chain needed for background blending
       quad_alpha = 1.f;
@@ -2891,6 +3014,35 @@ void SkiaRenderer::ScheduleOverlays() {
     if (overlay.is_root_render_pass) {
       continue;
     }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+    if (overlay.needs_detiling) {
+      if (!absl::holds_alternative<gfx::OverlayTransform>(overlay.transform)) {
+        LOG(ERROR) << "Unsupported transform on tiled protected content.";
+        continue;
+      }
+
+      locks.emplace_back(resource_provider(), overlay.resource_id);
+      auto& lock = locks.back();
+
+      gpu::Mailbox detiled_image = GetProtectedSharedImage();
+      skia_output_surface_->DetileOverlay(
+          overlay.mailbox, overlay.resource_size_in_pixels, lock.sync_token(),
+          detiled_image, overlay.display_rect, overlay.uv_rect,
+          absl::get<gfx::OverlayTransform>(overlay.transform));
+      overlay.uv_rect = gfx::RectF(
+          static_cast<float>(overlay.display_rect.width()) /
+              static_cast<float>(kMaxProtectedContentWidth),
+          static_cast<float>(overlay.display_rect.height() /
+                             static_cast<float>(kMaxProtectedContentHeight)));
+      overlay.mailbox = detiled_image;
+      overlay.format = gfx::BufferFormat::RGBA_8888;
+      overlay.transform = gfx::OVERLAY_TRANSFORM_NONE;
+
+      continue;
+    }
+#endif
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
     if (overlay.rpdq) {
@@ -3366,6 +3518,9 @@ void SkiaRenderer::UpdateRenderPassTextures(
     auto render_pass_it = render_passes_in_frame.find(backing_id);
     if (render_pass_it == render_passes_in_frame.end()) {
       passes_to_delete.push_back(backing_id);
+      DBG_LOG("renderer.skia.render_pass_backings",
+              "render_pass %" PRIu64 " is no longer in frame",
+              backing_id.value());
       continue;
     }
 
@@ -3391,6 +3546,15 @@ void SkiaRenderer::UpdateRenderPassTextures(
         !no_change_in_alpha_type || !no_change_in_color_space ||
         !scanout_appropriate) {
       passes_to_delete.push_back(backing_id);
+      DBG_LOG("renderer.skia.render_pass_backings",
+              "render_pass %" PRIu64
+              " allocation part not appropriate:%s%s%s%s%s%s",
+              backing_id.value(), !size_appropriate ? " size" : "",
+              !mipmap_appropriate ? " mipmap" : "",
+              !no_change_in_format ? " format" : "",
+              !no_change_in_alpha_type ? " alpha_type" : "",
+              !no_change_in_color_space ? " color_space" : "",
+              !scanout_appropriate ? " scanout" : "");
     }
   }
 
@@ -3481,6 +3645,9 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
       requirements.format, requirements.size, requirements.color_space,
       requirements.alpha_type, usage, "RenderPassBacking",
       gpu::kNullSurfaceHandle);
+
+  VizDebuggerLog::DebugLogNewRenderPassBacking(render_pass_id, requirements);
+
   render_pass_backings_.emplace(
       render_pass_id,
       RenderPassBacking({requirements.size, requirements.generate_mipmap,
@@ -4145,8 +4312,7 @@ SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
   it->ref_count++;
 }
 
-SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
-    ~ScopedInFlightRenderPassOverlayBackingRef() {
+void SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::Reset() {
   if (!renderer_ && mailbox_.IsZero()) {
     return;
   }
@@ -4170,27 +4336,30 @@ SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
 }
 
 SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
+    ~ScopedInFlightRenderPassOverlayBackingRef() {
+  Reset();
+}
+
+SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
     ScopedInFlightRenderPassOverlayBackingRef(
         SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&& other) {
-  // This is an RAII type so we depend on the move operators to clear the
-  // |other| binding so we don't to unintentional work in the dtor. We need to
-  // manually implement the move operators since neither |raw_ptr| nor
-  // |gpu::Mailbox| guarantees a move operation that default initializes the
-  // original binding.
-  renderer_ = other.renderer_;
-  other.renderer_ = nullptr;
-  mailbox_ = other.mailbox_;
-  other.mailbox_ = gpu::Mailbox();
+  *this = std::move(other);
 }
 
 SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&
 SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef::
     ScopedInFlightRenderPassOverlayBackingRef::operator=(
         SkiaRenderer::ScopedInFlightRenderPassOverlayBackingRef&& other) {
-  // Manually implemented, see move ctor.
+  Reset();
+
+  // This is an RAII type so we depend on the move operators to clear the
+  // |other| binding so we don't to unintentional work in the dtor. We need to
+  // manually implement the move operators since neither |raw_ptr| nor
+  // |gpu::Mailbox| guarantees a move operation that default initializes the
+  // original binding.
   renderer_ = other.renderer_;
-  other.renderer_ = nullptr;
   mailbox_ = other.mailbox_;
+  other.renderer_ = nullptr;
   other.mailbox_ = gpu::Mailbox();
   return *this;
 }

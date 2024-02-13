@@ -138,7 +138,7 @@ class TracingSamplerProfilerDataSource
     bool should_enable_filtering =
         data_source_config.chrome_config().privacy_filtering_enabled();
 
-    for (auto* profiler : profilers_) {
+    for (TracingSamplerProfiler* profiler : profilers_) {
       profiler->StartTracing(CreateTraceWriter(), should_enable_filtering);
     }
   }
@@ -150,7 +150,7 @@ class TracingSamplerProfilerDataSource
     is_startup_tracing_ = false;
     producer_ = nullptr;
 
-    for (auto* profiler : profilers_) {
+    for (TracingSamplerProfiler* profiler : profilers_) {
       profiler->StopTracing();
     }
 
@@ -174,7 +174,7 @@ class TracingSamplerProfilerDataSource
       return;
     }
     is_startup_tracing_ = true;
-    for (auto* profiler : profilers_) {
+    for (TracingSamplerProfiler* profiler : profilers_) {
       // Enable filtering for startup tracing always to be safe.
       profiler->StartTracing(
           nullptr,
@@ -187,7 +187,7 @@ class TracingSamplerProfilerDataSource
     if (!is_startup_tracing_) {
       return;
     }
-    for (auto* profiler : profilers_) {
+    for (TracingSamplerProfiler* profiler : profilers_) {
       // Enable filtering for startup tracing always to be safe.
       profiler->StartTracing(
           nullptr,
@@ -247,7 +247,7 @@ class TracingSamplerProfilerDataSource
   // TODO(eseckler): Use GUARDED_BY annotations for all members below.
   base::Lock lock_;  // Protects subsequent members.
   raw_ptr<tracing::PerfettoProducer> producer_ GUARDED_BY(lock_) = nullptr;
-  std::set<TracingSamplerProfiler*> profilers_;
+  std::set<raw_ptr<TracingSamplerProfiler, SetExperimental>> profilers_;
   bool is_startup_tracing_ = false;
   bool is_started_ = false;
   perfetto::DataSourceConfig data_source_config_;

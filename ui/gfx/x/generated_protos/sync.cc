@@ -881,12 +881,12 @@ Future<void> Sync::CreateAlarm(const Sync::CreateAlarmRequest& request) {
 }
 
 Future<void> Sync::CreateAlarm(const Alarm& id,
-                               const absl::optional<Counter>& counter,
-                               const absl::optional<Valuetype>& valueType,
-                               const absl::optional<Int64>& value,
-                               const absl::optional<Testtype>& testType,
-                               const absl::optional<Int64>& delta,
-                               const absl::optional<uint32_t>& events) {
+                               const std::optional<Counter>& counter,
+                               const std::optional<Valuetype>& valueType,
+                               const std::optional<Int64>& value,
+                               const std::optional<Testtype>& testType,
+                               const std::optional<Int64>& delta,
+                               const std::optional<uint32_t>& events) {
   return Sync::CreateAlarm(Sync::CreateAlarmRequest{
       id, counter, valueType, value, testType, delta, events});
 }
@@ -1000,12 +1000,12 @@ Future<void> Sync::ChangeAlarm(const Sync::ChangeAlarmRequest& request) {
 }
 
 Future<void> Sync::ChangeAlarm(const Alarm& id,
-                               const absl::optional<Counter>& counter,
-                               const absl::optional<Valuetype>& valueType,
-                               const absl::optional<Int64>& value,
-                               const absl::optional<Testtype>& testType,
-                               const absl::optional<Int64>& delta,
-                               const absl::optional<uint32_t>& events) {
+                               const std::optional<Counter>& counter,
+                               const std::optional<Valuetype>& valueType,
+                               const std::optional<Int64>& value,
+                               const std::optional<Testtype>& testType,
+                               const std::optional<Int64>& delta,
+                               const std::optional<uint32_t>& events) {
   return Sync::ChangeAlarm(Sync::ChangeAlarmRequest{
       id, counter, valueType, value, testType, delta, events});
 }

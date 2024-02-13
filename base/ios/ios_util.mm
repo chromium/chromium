@@ -91,12 +91,14 @@ FilePath FilePathOfEmbeddedICU() {
   return FilePath();
 }
 
+#if !BUILDFLAG(IS_IOS_APP_EXTENSION)
 bool IsMultipleScenesSupported() {
   if (@available(iOS 13, *)) {
     return UIApplication.sharedApplication.supportsMultipleScenes;
   }
   return false;
 }
+#endif
 
 bool IsApplicationPreWarmed() {
   return [NSProcessInfo.processInfo.environment objectForKey:@"ActivePrewarm"];

@@ -8,3 +8,8 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 export const isAppV2Enabled = (): boolean => {
   return loadTimeData.getBoolean('isFirmwareUpdateUIV2Enabled');
 };
+
+// Return whether trusted reports firmware is enabled (fwupd scaling project)
+export const isTrustedReportsFirmwareEnabled = (): boolean => {
+  return loadTimeData.getBoolean('isUpstreamTrustedReportsFirmwareEnabled');
+};

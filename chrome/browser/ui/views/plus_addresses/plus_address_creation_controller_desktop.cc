@@ -144,22 +144,21 @@ PlusAddressCreationControllerDesktop::GetWeakPtr() {
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (dialog_delegate_) {
-    dialog_delegate_->ShowReserveResult(maybe_plus_profile);
-  }
   if (maybe_plus_profile.has_value()) {
     plus_profile_ = maybe_plus_profile.value();
   } else {
     modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::
         kReservePlusAddressError;
   }
+  // Display result on UI only after setting `plus_profile_` to prevent
+  // premature confirm without `plus_profile_` value.
+  if (dialog_delegate_) {
+    dialog_delegate_->ShowReserveResult(maybe_plus_profile);
+  }
 }
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (dialog_delegate_) {
-    dialog_delegate_->ShowConfirmResult(maybe_plus_profile);
-  }
   if (maybe_plus_profile.has_value()) {
     std::move(callback_).Run(maybe_plus_profile->plus_address);
     // PlusAddress successfully confirmed, closing the modal.
@@ -168,6 +167,12 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   } else {
     modal_error_status_ = PlusAddressMetrics::PlusAddressModalCompletionStatus::
         kConfirmPlusAddressError;
+  }
+
+  // Display result on UI after setting `modal_error_status_` to ensure correct
+  // metric is recorded.
+  if (dialog_delegate_) {
+    dialog_delegate_->ShowConfirmResult(maybe_plus_profile);
   }
 }
 

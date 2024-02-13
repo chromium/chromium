@@ -209,7 +209,9 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                     R.string.settings_fledge_page_block_site_snackbar,
                     null,
                     Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE);
+                    Snackbar.UMA_PRIVACY_SANDBOX_REMOVE_SITE,
+                    /* actionStringResId= */ 0,
+                    /* multiLine= */ true);
             RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteRemoved");
             return true;
         }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -22,7 +23,6 @@
 
 #include <cmath>
 
-#include "base/strings/string_piece.h"
 #include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 #endif
@@ -93,7 +93,7 @@ std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
 }
 
 #if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
-gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale) {
+gfx::Size GetDefaultPaperSizeFromLocaleMicrons(std::string_view locale) {
   if (locale.empty())
     return kIsoA4Microns;
 

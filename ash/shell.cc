@@ -229,6 +229,7 @@
 #include "ash/wm/window_animations.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_properties.h"
+#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_shadow_controller_delegate.h"
@@ -974,6 +975,7 @@ Shell::~Shell() {
   backlights_forced_off_setter_.reset();
 
   float_controller_.reset();
+  pine_controller_.reset();
   pip_controller_.reset();
   screen_pinning_controller_.reset();
 
@@ -1746,6 +1748,9 @@ void Shell::Init(
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 
   float_controller_ = std::make_unique<FloatController>();
+  if (features::IsForestFeatureEnabled()) {
+    pine_controller_ = std::make_unique<PineController>();
+  }
   pip_controller_ = std::make_unique<PipController>();
 
   multitask_menu_nudge_delegate_ =

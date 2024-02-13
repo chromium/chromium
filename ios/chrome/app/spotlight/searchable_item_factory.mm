@@ -8,6 +8,7 @@
 
 #import <string>
 
+#import "base/containers/span.h"
 #import "base/functional/bind.h"
 #import "base/hash/md5.h"
 #import "base/memory/raw_ptr.h"
@@ -290,10 +291,9 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
   NSString* key = [NSString
       stringWithFormat:@"%@ %@", base::SysUTF8ToNSString(URL.spec()), title];
   const std::string clipboard = base::SysNSStringToUTF8(key);
-  const char* c_string = clipboard.c_str();
 
   base::MD5Digest hash;
-  base::MD5Sum(c_string, strlen(c_string), &hash);
+  base::MD5Sum(base::as_byte_span(clipboard), &hash);
   uint64_t md5 = *(reinterpret_cast<uint64_t*>(hash.a));
   return md5;
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
-import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {createForUrl, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
@@ -635,7 +635,7 @@ export class QuickViewController {
   private async loadThumbnailFromDrive_(url: string, modificationTime?: Date):
       Promise<LoadImageResponse> {
     const client = ImageLoaderClient.getInstance();
-    const request = LoadImageRequest.createForUrl(url);
+    const request = createForUrl(url);
     request.cache = true;
     request.timestamp =
         modificationTime ? modificationTime.valueOf() : undefined;
@@ -652,7 +652,7 @@ export class QuickViewController {
       Promise<LoadImageResponse> {
     return new Promise((resolve, reject) => {
       entry.file((file) => {
-        const request = LoadImageRequest.createForUrl(entry.toURL());
+        const request = createForUrl(entry.toURL());
         request.maxWidth = THUMBNAIL_MAX_WIDTH;
         request.maxHeight = THUMBNAIL_MAX_HEIGHT;
         request.timestamp = file.lastModified;

@@ -325,7 +325,7 @@ void HoverHighlightView::OnEnabledChanged() {
   }
 }
 
-BEGIN_METADATA(HoverHighlightView, views::Button)
+BEGIN_METADATA(HoverHighlightView)
 END_METADATA
 
 }  // namespace ash

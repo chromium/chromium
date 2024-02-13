@@ -2117,6 +2117,13 @@ public class ToolbarManager
     }
 
     /**
+     * @return The {@link StatusBarColorController} instance maintained by this class.
+     */
+    public StatusBarColorController getStatusBarColorController() {
+        return mStatusBarColorController;
+    }
+
+    /**
      * Updates the primary color used by the model to the given color.
      * @param color The primary color for the current tab.
      * @param shouldAnimate Whether the change of color should be animated.

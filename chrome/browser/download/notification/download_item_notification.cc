@@ -724,7 +724,7 @@ DownloadItemNotification::GetExtraActions() const {
       // opened already.
       if (!in_review_) {
         if (enterprise_connectors::ShouldPromptReviewForDownload(
-                profile(), item_->GetDangerType())) {
+                profile(), item_->GetDownloadItem())) {
           actions->push_back(DownloadCommands::REVIEW);
         } else {
           actions->push_back(DownloadCommands::KEEP);

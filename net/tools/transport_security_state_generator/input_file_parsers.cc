@@ -339,13 +339,13 @@ bool ParseJSON(base::StringPiece hsts_json,
       "test",        "public-suffix", "google",      "custom",
       "bulk-legacy", "bulk-18-weeks", "bulk-1-year", "public-suffix-requested"};
 
-  absl::optional<base::Value> hsts_value = base::JSONReader::Read(hsts_json);
+  std::optional<base::Value> hsts_value = base::JSONReader::Read(hsts_json);
   if (!hsts_value.has_value() || !hsts_value->is_dict()) {
     LOG(ERROR) << "Could not parse the input HSTS JSON file";
     return false;
   }
 
-  absl::optional<base::Value> pins_value = base::JSONReader::Read(pins_json);
+  std::optional<base::Value> pins_value = base::JSONReader::Read(pins_json);
   if (!pins_value.has_value()) {
     LOG(ERROR) << "Could not parse the input pins JSON file";
     return false;
@@ -404,9 +404,9 @@ bool ParseJSON(base::StringPiece hsts_json,
       return false;
     }
 
-    pins_map[*maybe_hostname] = std::make_pair(
-        *maybe_pinset,
-        parsed->FindBool(kIncludeSubdomainsJSONKey).value_or(false));
+    pins_map[*maybe_hostname] =
+        std::pair(*maybe_pinset,
+                  parsed->FindBool(kIncludeSubdomainsJSONKey).value_or(false));
   }
 
   const base::Value::List* preload_entries_list =

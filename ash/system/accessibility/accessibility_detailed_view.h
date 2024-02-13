@@ -36,8 +36,9 @@ enum class SodaFeature {
 class ASH_EXPORT AccessibilityDetailedView
     : public TrayDetailedView,
       public speech::SodaInstaller::Observer {
+  METADATA_HEADER(AccessibilityDetailedView, TrayDetailedView)
+
  public:
-  METADATA_HEADER(AccessibilityDetailedView);
   explicit AccessibilityDetailedView(DetailedViewDelegate* delegate);
 
   AccessibilityDetailedView(const AccessibilityDetailedView&) = delete;

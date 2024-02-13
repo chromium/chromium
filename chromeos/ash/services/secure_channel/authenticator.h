@@ -8,10 +8,20 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/observer_list.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 
 namespace ash::secure_channel {
 
 class SecureContext;
+
+class AuthenticatorObserver {
+ public:
+  virtual ~AuthenticatorObserver() {}
+
+  virtual void OnAuthenticationStateChanged(
+      mojom::SecureChannelState secure_channel_state) = 0;
+};
 
 // Interface for authenticating the remote connection. The two devices
 // authenticate each other, and if the protocol succeeds, establishes a
@@ -31,7 +41,8 @@ class Authenticator {
   // handshake.
   static const char kAuthenticationFeature[];
 
-  virtual ~Authenticator() {}
+  Authenticator();
+  virtual ~Authenticator();
 
   // Initiates the authentication attempt, invoking |callback| with the result.
   // If the authentication protocol succeeds, then |secure_context| will be
@@ -41,6 +52,17 @@ class Authenticator {
       void(Result result, std::unique_ptr<SecureContext> secure_context)>
       AuthenticationCallback;
   virtual void Authenticate(AuthenticationCallback callback) = 0;
+
+  void AddObserver(AuthenticatorObserver* observer);
+  void RemoveObserver(AuthenticatorObserver* observer);
+
+ protected:
+  void NotifyAuthenticationStateChanged(
+      mojom::SecureChannelState secure_channel_state);
+
+ private:
+  base::ObserverList<AuthenticatorObserver>::Unchecked
+      authentication_state_observers_;
 };
 
 }  // namespace ash::secure_channel

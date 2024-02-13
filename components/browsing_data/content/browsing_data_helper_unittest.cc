@@ -5,7 +5,6 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 
 #include "components/browsing_data/content/browsing_data_model.h"
-#include "components/browsing_data/content/database_helper.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -64,8 +63,8 @@ TEST_F(BrowsingDataHelperTest, SchemesThatCantStoreDataDontMatchAnything) {
 TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
   auto local_shared_objects_container =
       browsing_data::LocalSharedObjectsContainer(
-          browser_context_.GetDefaultStoragePartition(), false, {},
-          base::NullCallback());
+          browser_context_.GetDefaultStoragePartition(),
+          /*ignore_empty_localstorage=*/false, base::NullCallback());
 
   std::unique_ptr<BrowsingDataModel> browsing_data_model =
       BrowsingDataModel::BuildEmpty(
@@ -115,8 +114,6 @@ TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
   // 5.
   auto example_url = GURL("http://example.com");
   auto example_origin = url::Origin::Create(example_url);
-  local_shared_objects_container.databases()->Add(example_origin);
-
   // Should be counted once in the unique hosts.
   browsing_data_model->AddBrowsingData(
       example_origin, BrowsingDataModel::StorageType::kTrustTokens,
@@ -135,21 +132,21 @@ TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
   // other than google URLs (out of 6 entries should be 4).
   int unique_site_count = GetUniqueThirdPartyCookiesHostCount(
       google_url, local_shared_objects_container, *browsing_data_model);
-  EXPECT_EQ(4, unique_site_count);
+  EXPECT_EQ(3, unique_site_count);
 
   // When `google_subdomain_url` is the top frame unique third-party count
   // should sites other than google URLs (out of 6 entries should be 4).
   unique_site_count = GetUniqueThirdPartyCookiesHostCount(
       google_subdomain_url, local_shared_objects_container,
       *browsing_data_model);
-  EXPECT_EQ(4, unique_site_count);
+  EXPECT_EQ(3, unique_site_count);
 
   // When `ip_url` is the top frame this tests empty top frame domain with other
   // sites. Subdomains are counted separately because they're different hosts
   // (out of 6 entries should be 5).
   unique_site_count = GetUniqueThirdPartyCookiesHostCount(
       ip_url, local_shared_objects_container, *browsing_data_model);
-  EXPECT_EQ(5, unique_site_count);
+  EXPECT_EQ(4, unique_site_count);
 }
 
 }  // namespace

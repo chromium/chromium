@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OnDeviceInternalsPage, OnDeviceInternalsPageRemote} from './on_device_internals_page.mojom-webui.js';
+import type {OnDeviceInternalsPageRemote} from './on_device_internals_page.mojom-webui.js';
+import {OnDeviceInternalsPage} from './on_device_internals_page.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
 

@@ -284,7 +284,7 @@ bool AutocompleteProviderClientImpl::IsAuthenticated() const {
 bool AutocompleteProviderClientImpl::IsSyncActive() const {
   syncer::SyncService* sync =
       SyncServiceFactory::GetForBrowserState(browser_state_);
-  // TODO(crbug.com/1462552): Remove usage of IsSyncFeatureActive() after kSync
+  // TODO(crbug.com/40066949): Remove usage of IsSyncFeatureActive() after kSync
   // users are migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
   return sync && sync->IsSyncFeatureActive();

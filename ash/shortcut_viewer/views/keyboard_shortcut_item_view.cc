@@ -339,7 +339,7 @@ void KeyboardShortcutItemView::CalculateLayout(int width) const {
   calculated_size_ = gfx::Size(width, content_height + insets.height());
 }
 
-BEGIN_METADATA(KeyboardShortcutItemView, views::View)
+BEGIN_METADATA(KeyboardShortcutItemView)
 END_METADATA
 
 }  // namespace keyboard_shortcut_viewer

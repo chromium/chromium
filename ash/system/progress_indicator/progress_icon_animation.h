@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_ICON_ANIMATION_H_
 #define ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_ICON_ANIMATION_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "ash/system/progress_indicator/progress_indicator_animation.h"
 
@@ -13,10 +15,12 @@ namespace ash {
 // An animation for a `ProgressIndicator`'s icon.
 class ASH_EXPORT ProgressIconAnimation : public ProgressIndicatorAnimation {
  public:
-  ProgressIconAnimation();
   ProgressIconAnimation(const ProgressIconAnimation&) = delete;
   ProgressIconAnimation& operator=(const ProgressIconAnimation&) = delete;
   ~ProgressIconAnimation() override;
+
+  // Returns an initialized progress icon animation.
+  static std::unique_ptr<ProgressIconAnimation> Create();
 
   // Animatable properties.
   float inner_icon_translate_y_scale_factor() const {
@@ -28,6 +32,8 @@ class ASH_EXPORT ProgressIconAnimation : public ProgressIndicatorAnimation {
   float opacity() const { return opacity_; }
 
  private:
+  ProgressIconAnimation();
+
   // ProgressIndicatorAnimation:
   void UpdateAnimatableProperties(double fraction) override;
 

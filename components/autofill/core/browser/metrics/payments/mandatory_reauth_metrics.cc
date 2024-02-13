@@ -25,6 +25,10 @@ std::string_view GetSourceForOptInOrOptOutEvent(
       return "CheckoutFullServerCard";
     case MandatoryReauthOptInOrOutSource::kCheckoutMaskedServerCard:
       return "CheckoutMaskedServerCard";
+    case MandatoryReauthOptInOrOutSource::kCheckoutLocalIban:
+      return "CheckoutLocalIban";
+    case MandatoryReauthOptInOrOutSource::kCheckoutServerIban:
+      return "CheckoutServerIban";
     case MandatoryReauthOptInOrOutSource::kUnknown:
       return "Unknown";
   }

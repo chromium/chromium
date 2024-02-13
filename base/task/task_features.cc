@@ -75,10 +75,6 @@ BASE_FEATURE(kMaxDelayedStarvationTasks,
 const base::FeatureParam<int> kMaxDelayedStarvationTasksParam{
     &kMaxDelayedStarvationTasks, "count", 3};
 
-BASE_FEATURE(kUseNewJobImplementation,
-             "UseNewJobImplementation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kThreadGroupSemaphore,
              "ThreadGroupSemaphore",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -131,6 +131,7 @@
 //third_party/catapult/telemetry/telemetry/core/local_server.py
 //third_party/catapult/telemetry/telemetry/core/memory_cache_http_server.py
 //third_party/catapult/telemetry/telemetry/core/network_controller.py
+//third_party/catapult/telemetry/telemetry/core/optparse_argparse_migration.py
 //third_party/catapult/telemetry/telemetry/core/os_version.py
 //third_party/catapult/telemetry/telemetry/core/platform.py
 //third_party/catapult/telemetry/telemetry/core/tracing_controller.py

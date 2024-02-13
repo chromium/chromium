@@ -235,35 +235,6 @@ NotificationViewBase::~NotificationViewBase() {
   RemovePreTargetHandler(click_activator_.get());
 }
 
-void NotificationViewBase::Layout(PassKey) {
-  LayoutSuperclass<MessageView>(this);
-
-  // We need to call IsExpandable() after doing superclass layout, since whether
-  // we should show expand button or not depends on the current view layout.
-  // (e.g. Show expand button when |message_label_| exceeds one line.)
-  SetExpandButtonVisibility(IsExpandable());
-  header_row_->DeprecatedLayoutImmediately();
-
-  // The notification background is rounded in MessageView layout, but we also
-  // have to round the actions row background here.
-  if (actions_row_->GetVisible()) {
-    constexpr SkScalar kCornerRadius = SkIntToScalar(kNotificationCornerRadius);
-
-    // Use vertically larger clip path, so that actions row's top corners will
-    // not be rounded.
-    SkPath path;
-    gfx::Rect bounds = actions_row_->GetLocalBounds();
-    bounds.set_y(bounds.y() - bounds.height());
-    bounds.set_height(bounds.height() * 2);
-    path.addRoundRect(gfx::RectToSkRect(bounds), kCornerRadius, kCornerRadius);
-
-    action_buttons_row_->SetClipPath(path);
-
-    if (inline_reply_)
-      inline_reply_->SetClipPath(path);
-  }
-}
-
 void NotificationViewBase::OnFocus() {
   MessageView::OnFocus();
   ScrollRectToVisible(GetLocalBounds());
@@ -508,7 +479,7 @@ void NotificationViewBase::CreateOrUpdateProgressBarView(
   if (!progress_bar_view_) {
     auto progress_bar_view = std::make_unique<views::ProgressBar>();
     progress_bar_view->SetPreferredHeight(kProgressBarHeight);
-    progress_bar_view->SetPreferredCornerRadii(absl::nullopt);
+    progress_bar_view->SetPreferredCornerRadii(std::nullopt);
     progress_bar_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(kProgressBarTopPadding, 0, 0, 0)));
     progress_bar_view_ = AddViewToLeftContent(std::move(progress_bar_view));
@@ -733,7 +704,7 @@ void NotificationViewBase::ReorderViewInLeftContent(views::View* view) {
 
 void NotificationViewBase::ActionButtonPressed(size_t index,
                                                const ui::Event& event) {
-  const absl::optional<std::u16string>& placeholder =
+  const std::optional<std::u16string>& placeholder =
       action_button_to_placeholder_map_[action_buttons_[index]];
   if (placeholder && inline_reply_) {
     inline_reply_->SetTextfieldIndex(static_cast<int>(index));

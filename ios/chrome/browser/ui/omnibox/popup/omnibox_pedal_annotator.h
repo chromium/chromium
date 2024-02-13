@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol ApplicationCommands;
-@protocol ApplicationSettingsCommands;
+@protocol SettingsCommands;
 struct AutocompleteMatch;
 @protocol OmniboxCommands;
 @class OmniboxPedalData;
@@ -20,7 +20,7 @@ struct AutocompleteMatch;
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
 /// The endpoint that handles Actions and Pedals settings commands.
-@property(nonatomic, weak) id<ApplicationSettingsCommands> settingsHandler;
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 
 /// The endpoint that handles Omnibox commands.
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;

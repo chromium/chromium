@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -125,20 +126,12 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
                                              scene_state_);
 
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
-    // as well.
-    id mockApplicationCommandHandler =
+    // Set up ApplicationCommands mock.
+    id mock_application_handler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+    [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
 
     AddAgentsToBrowser(browser_.get());
 
@@ -147,9 +140,9 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         scene_state_);
     AddAgentsToBrowser(incognito_browser_.get());
 
-    IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
+    IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
-    [scene_state_ addAgent:reauthAgent];
+    [scene_state_ addAgent:reauth_agent];
 
     UIWindow* window = GetAnyKeyWindow();
 

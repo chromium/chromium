@@ -852,6 +852,7 @@ dictionary Preferences {
   double officeFileMovedGoogleDrive;
   boolean driveFsBulkPinningAvailable;
   boolean driveFsBulkPinningEnabled;
+  boolean localUserFilesEnabled;
 };
 
 dictionary PreferencesChange {
@@ -1520,8 +1521,8 @@ interface Functions {
   // Gets the MIME type of an entry.
   // |entry| The entry to be checked.
   // |callback|
-  [nocompile, doesNotSupportPromises]
-  static void getMimeType([instanceOf=Entry] object entry,
+  [supportsPromises]
+  static void getMimeType(DOMString url,
                           GetMimeTypeCallback callback);
 
   // Gets the content sniffed MIME type of a file.

@@ -10,10 +10,6 @@
 
 namespace metrics::structured {
 
-void LogInternalError(StructuredMetricsError error) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError2", error);
-}
-
 void LogEventRecordingState(EventRecordingState state) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.EventRecordingState2",
                             state);
@@ -22,10 +18,6 @@ void LogEventRecordingState(EventRecordingState state) {
 void LogNumEventsInUpload(const int num_events) {
   UMA_HISTOGRAM_COUNTS_1000("UMA.StructuredMetrics.NumEventsInUpload",
                             num_events);
-}
-
-void LogKeyValidation(KeyValidationState state) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.KeyValidationState", state);
 }
 
 void LogNumEventsRecordedBeforeInit(int num_events) {

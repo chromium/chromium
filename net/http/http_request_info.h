@@ -5,6 +5,7 @@
 #ifndef NET_HTTP_HTTP_REQUEST_INFO_H__
 #define NET_HTTP_HTTP_REQUEST_INFO_H__
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/socket/socket_tag.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -97,11 +97,11 @@ struct NET_EXPORT HttpRequestInfo {
   // TODO(https://crbug.com/1136054): Investigate migrating the one consumer of
   // this to NetworkIsolationKey::TopFrameSite().  That gives more consistent
   /// behavior, and may still provide useful metrics.
-  absl::optional<url::Origin> possibly_top_frame_origin;
+  std::optional<url::Origin> possibly_top_frame_origin;
 
   // The frame origin associated with a request. This is used to isolate shared
   // dictionaries between different frame origins.
-  absl::optional<url::Origin> frame_origin;
+  std::optional<url::Origin> frame_origin;
 
   // Idempotency of the request, which determines that if it is safe to enable
   // 0-RTT for the request. By default, 0-RTT is only enabled for safe
@@ -115,11 +115,11 @@ struct NET_EXPORT HttpRequestInfo {
   // If not null, the value is used to evaluate whether the cache entry should
   // be bypassed; if is null, that means the request site does not match the
   // filter.
-  absl::optional<int64_t> fps_cache_filter;
+  std::optional<int64_t> fps_cache_filter;
 
   // Use as ID to mark the cache entry when persisting. Should be a positive
   // number once set.
-  absl::optional<int64_t> browser_run_id;
+  std::optional<int64_t> browser_run_id;
 };
 
 }  // namespace net

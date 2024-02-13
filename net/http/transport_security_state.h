@@ -9,6 +9,7 @@
 
 #include <array>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -28,7 +29,6 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/transport_security_state_source.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -522,7 +522,7 @@ class NET_EXPORT TransportSecurityState {
 
   // The values in host_pins_ maps are references to PinSet objects in the
   // pinsets_ vector.
-  absl::optional<
+  std::optional<
       std::map<std::string, std::pair<const PinSet*, bool>, std::less<>>>
       host_pins_;
   base::Time key_pins_list_last_update_time_;

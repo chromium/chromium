@@ -233,9 +233,7 @@ void PrerenderManager::DidFinishNavigation(
 }
 
 base::WeakPtr<content::PrerenderHandle>
-PrerenderManager::StartPrerenderBookmark(
-    const GURL& prerendering_url,
-    content::PreloadingPredictor predictor) {
+PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents());
@@ -246,8 +244,8 @@ PrerenderManager::StartPrerenderBookmark(
   // this prerendering attempt for Prerender.
   content::PreloadingAttempt* preloading_attempt =
       preloading_data->AddPreloadingAttempt(
-          predictor, content::PreloadingType::kPrerender,
-          std::move(same_url_matcher),
+          chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
+          content::PreloadingType::kPrerender, std::move(same_url_matcher),
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // BookmarkBar only allow https protocol.

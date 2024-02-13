@@ -5,13 +5,13 @@
 #ifndef DEVICE_FIDO_FILTER_H_
 #define DEVICE_FIDO_FILTER_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace fido_filter {
@@ -102,11 +102,10 @@ enum class Action {
 // Evaluate consults any configured filters and returns the result of evaluating
 // them. See above about the format of filters.
 COMPONENT_EXPORT(DEVICE_FIDO)
-Action Evaluate(
-    Operation op,
-    std::string_view rp_id,
-    absl::optional<std::string_view> device,
-    absl::optional<std::pair<IDType, base::span<const uint8_t>>> id);
+Action Evaluate(Operation op,
+                std::string_view rp_id,
+                std::optional<std::string_view> device,
+                std::optional<std::pair<IDType, base::span<const uint8_t>>> id);
 
 // ScopedFilterForTesting sets the current filter JSON for the duration of its
 // lifetime. It is a fatal error if |json| is ill-formed.
@@ -121,7 +120,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedFilterForTesting {
   ~ScopedFilterForTesting();
 
  private:
-  const absl::optional<std::string> previous_json_;
+  const std::optional<std::string> previous_json_;
 };
 
 // ParseForTesting returns true iff |json| is a well-formed filter.

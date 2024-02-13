@@ -14,12 +14,14 @@ source_set("coordinator") {
     "//components/plus_addresses",
     "//ios/chrome/browser/autofill/model/bottom_sheet:bottom_sheet",
     "//ios/chrome/browser/plus_addresses/model",
-    "//ios/chrome/browser/plus_addresses/ui",
+    "//ios/chrome/browser/plus_addresses/ui:constants",
+    "//ios/chrome/browser/plus_addresses/ui:ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/common/ui/confirmation_alert",
   ]
 }
@@ -29,9 +31,15 @@ source_set("unit_tests") {
   sources = [ "plus_address_bottom_sheet_mediator_unittest.mm" ]
   deps = [
     ":coordinator",
+    "//base/test:test_support",
     "//components/plus_addresses",
     "//ios/chrome/browser/plus_addresses/model",
-    "//ios/chrome/browser/plus_addresses/ui",
+    "//ios/chrome/browser/plus_addresses/ui:constants",
+    "//ios/chrome/browser/plus_addresses/ui:ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

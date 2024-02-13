@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.dragdrop.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -28,11 +28,15 @@ import android.widget.FrameLayout;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -42,6 +46,7 @@ import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator.D
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.dragdrop.DropDataAndroid;
@@ -51,9 +56,14 @@ import org.chromium.url.JUnitTestGURLs;
 /** Basic test for creating, using drag and drop to omnibox with {@link ToolbarDragDropCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ToolbarDragDropCoordinatorUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private AutocompleteDelegate mAutocompleteDelegate;
     @Mock private OmniboxStub mOmniboxStub;
     @Mock private TemplateUrlService mTemplateUrlService;
+
+    @Captor private ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
+
     private Activity mActivity;
 
     private ToolbarDragDropCoordinator mToolbarDragDropCoordinator;
@@ -235,12 +245,13 @@ public class ToolbarDragDropCoordinatorUnitTest {
         assertTrue(
                 "DragEvent eventDragMultipleMimeTypes should be consumed by target view",
                 resultDragMultipleMimeTypes);
-        verify(mAutocompleteDelegate)
-                .loadUrl(
-                        eq(JUnitTestGURLs.EXAMPLE_URL.getSpec()),
-                        eq(PageTransition.TYPED),
-                        ArgumentMatchers.anyLong(),
-                        eq(false));
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(
+                mOmniboxLoadUrlParamsCaptor.getValue().url, JUnitTestGURLs.EXAMPLE_URL.getSpec());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().transitionType, PageTransition.TYPED);
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
+
         histogramExpectation.assertExpected();
     }
 
@@ -257,13 +268,11 @@ public class ToolbarDragDropCoordinatorUnitTest {
         doReturn(dropDataAndroid).when(eventDragImage).getLocalState();
         boolean resultDragImage = mTargetViewDragListener.onDrag(mTargetView, eventDragImage);
         assertTrue("DragEvent eventDragImage should be consumed by target view", resultDragImage);
-        verify(mAutocompleteDelegate)
-                .loadUrlWithPostData(
-                        eq(mMockPostData[0]),
-                        ArgumentMatchers.anyInt(),
-                        ArgumentMatchers.anyLong(),
-                        eq(mMockPostData[1]),
-                        ArgumentMatchers.notNull());
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, mMockPostData[0]);
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().postDataType, mMockPostData[1]);
+        assertNotNull(mOmniboxLoadUrlParamsCaptor.getValue().postData);
         histogramExpectation.assertExpected();
     }
 

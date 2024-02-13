@@ -4,9 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/metrics/throughput_metric_logger.h"
 
+#include <utility>
+
 #include "chrome/browser/nearby_sharing/metrics/metric_common.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-shared.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace nearby::share::metrics {
 
@@ -75,16 +78,16 @@ void ThroughputMetricLogger::OnTransferUpdated(const ShareTarget& share_target,
   long transferred_bytes = (percentage_complete / 100) * transfer_size;
   long update_bytes = (percentage_delta / 100) * transfer_size;
 
-  ::metrics::structured::events::v2::nearby_share::Throughput()
-      .SetIsReceiving(share_target.is_incoming)
-      .SetPlatform(static_cast<int>(platform))
-      .SetDeviceRelationship(static_cast<int>(relationship))
-      .SetMedium(static_cast<int>(medium))
-      .SetTotalTransferBytes(transfer_size)
-      .SetTransferredBytes(transferred_bytes)
-      .SetUpdateBytes(update_bytes)
-      .SetUpdateMillis(update_delta.InMilliseconds())
-      .Record();
+  ::metrics::structured::StructuredMetricsClient::Record(
+      std::move(::metrics::structured::events::v2::nearby_share::Throughput()
+                    .SetIsReceiving(share_target.is_incoming)
+                    .SetPlatform(static_cast<int>(platform))
+                    .SetDeviceRelationship(static_cast<int>(relationship))
+                    .SetMedium(static_cast<int>(medium))
+                    .SetTotalTransferBytes(transfer_size)
+                    .SetTransferredBytes(transferred_bytes)
+                    .SetUpdateBytes(update_bytes)
+                    .SetUpdateMillis(update_delta.InMilliseconds())));
 }
 
 void ThroughputMetricLogger::OnTransferCompleted(

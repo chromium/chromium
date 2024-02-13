@@ -3,10 +3,11 @@
 # found in the LICENSE file.
 """Definitions of builders used by Tricium for Chromium."""
 
-load("//lib/builders.star", "os", "reclient", "xcode")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "SOURCELESS_BUILDER_CACHES", "try_")
+load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
     executable = try_.DEFAULT_EXECUTABLE,

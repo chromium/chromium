@@ -4,7 +4,8 @@
 
 import 'chrome://history/history.js';
 
-import {BrowserServiceImpl, ensureLazyLoaded, HistoryAppElement, HistorySideBarElement} from 'chrome://history/history.js';
+import type {HistoryAppElement, HistorySideBarElement} from 'chrome://history/history.js';
+import {BrowserServiceImpl, ensureLazyLoaded} from 'chrome://history/history.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

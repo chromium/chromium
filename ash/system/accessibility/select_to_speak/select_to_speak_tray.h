@@ -25,9 +25,9 @@ class Shelf;
 class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
                                      public AccessibilityObserver,
                                      public SessionObserver {
- public:
-  METADATA_HEADER(SelectToSpeakTray);
+  METADATA_HEADER(SelectToSpeakTray, TrayBackgroundView)
 
+ public:
   SelectToSpeakTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
   SelectToSpeakTray(const SelectToSpeakTray&) = delete;
   SelectToSpeakTray& operator=(const SelectToSpeakTray&) = delete;

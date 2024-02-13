@@ -25,7 +25,6 @@ struct OverflowMenuView: View {
         OverflowMenuDestinationList(
           destinations: $model.destinations,
           width: geometry.size.width,
-          extraTopMargin: OverflowMenuListStyle.destinationListGrabberHeight,
           metricsHandler: metricsHandler,
           uiConfiguration: uiConfiguration, namespace: namespace
         )

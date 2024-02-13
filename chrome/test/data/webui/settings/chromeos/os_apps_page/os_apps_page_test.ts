@@ -300,20 +300,37 @@ suite('AppsPageTests', () => {
       flush();
     });
 
+    function queryAppNotificationsRow(): CrLinkRowElement|null {
+      return appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
+          '#appNotificationsRow');
+    }
+
     if (isRevampWayfindingEnabled) {
       test('App notification row displays helpful description', async () => {
-        const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#appNotificationsRow');
+        const rowLink = queryAppNotificationsRow();
         assertTrue(!!rowLink);
         assertTrue(isVisible(rowLink));
         assertEquals(
-            'Manage app notifications, Do not disturb, and app badging',
+            'Manage app notifications, Do Not Disturb, and app badging',
             rowLink.subLabel);
       });
+
+      test(
+          'App notification row has same sublabel when Do Not Disturb is on',
+          async () => {
+            appsPage.set('isDndEnabled_', true);
+            await flushTasks();
+
+            const rowLink = queryAppNotificationsRow();
+            assertTrue(!!rowLink);
+            assertTrue(isVisible(rowLink));
+            assertEquals(
+                'Manage app notifications, Do Not Disturb, and app badging',
+                rowLink.subLabel);
+          });
     } else {
       test('App notification row displays number of apps', async () => {
-        const rowLink = appsPage.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#appNotificationsRow');
+        const rowLink = queryAppNotificationsRow();
         assertTrue(!!rowLink);
         assertTrue(isVisible(rowLink));
         // Test default is to have 0 apps.
@@ -340,6 +357,16 @@ suite('AppsPageTests', () => {
         simulateNotificationAppChanged(app3);
         await flushTasks();
         assertEquals('1 apps', rowLink.subLabel);
+      });
+
+      test('App notification row shows when Do Not Disturb is on', async () => {
+        appsPage.set('isDndEnabled_', true);
+        await flushTasks();
+
+        const rowLink = queryAppNotificationsRow();
+        assertTrue(!!rowLink);
+        assertTrue(isVisible(rowLink));
+        assertEquals('Do Not Disturb enabled', rowLink.subLabel);
       });
     }
 

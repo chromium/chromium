@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_linear_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
@@ -136,7 +137,7 @@ MLOperand* BuildPad(V8TestingScope& scope,
                     const Vector<uint32_t>& endingPadding,
                     const MLPadOptions* options = MLPadOptions::Create());
 
-enum class Pool2dKind { kAverage, kMax };
+enum class Pool2dKind { kAverage, kL2, kMax };
 
 MLOperand* BuildPool2d(
     V8TestingScope& scope,

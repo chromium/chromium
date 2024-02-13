@@ -4,5 +4,3 @@ UNKNOWN focusable has_input_focus
 ++++++BUTTON focusable label='Choose File: No file chosen' actions='{DEFAULT}' value='No file chosen'
 ++++++++BUTTON hidden focusable label='Choose File' actions='{DEFAULT}'
 ++++++++++STATIC_TEXT hidden label='Choose File'
-++++++++UNKNOWN hidden
-++++++++++STATIC_TEXT hidden label='No file chosen'

@@ -26,8 +26,8 @@ test((t) => {
 test((t) => {
   t.add_cleanup(clearUseCounter);
   button.style = `appearance: slider-vertical`;
-  assert_true(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
-}, 'Having an element with to be deprecated appearance value "slider-vertical" should activate the use counter.');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated appearance value "slider-vertical" should not activate the use counter.');
 
 test((t) => {
   t.add_cleanup(clearUseCounter);
@@ -38,8 +38,8 @@ test((t) => {
 test((t) => {
   t.add_cleanup(clearUseCounter);
   button.style = `-webkit-appearance: slider-vertical`;
-  assert_true(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
-}, 'Having an element with to be deprecated -webkit-appearance value "slider-vertical" should activate the use counter.');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated -webkit-appearance value "slider-vertical" should not activate the use counter.');
 
 test((t) => {
   t.add_cleanup(clearUseCounter);
@@ -50,8 +50,8 @@ test((t) => {
 test((t) => {
   t.add_cleanup(clearUseCounter);
   button.style.setProperty('appearance', 'slider-vertical');
-  assert_true(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
-}, 'Having an element with to be deprecated appearance value "slider-vertical" should activate the use counter (set using SetProperty).');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated appearance value "slider-vertical" should not activate the use counter (set using SetProperty).');
 
 test((t) => {
   t.add_cleanup(clearUseCounter);
@@ -62,6 +62,6 @@ test((t) => {
 test((t) => {
   t.add_cleanup(clearUseCounter);
   button.style.setProperty('-webkit-appearance', 'slider-vertical');
-  assert_true(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
-}, 'Having an element with to be deprecated -webkit-appearance value "slider-vertical" should activate the use counter (set using SetProperty).');
+  assert_false(internals.isUseCounted(document, CSSValueAppearanceSliderVertical));
+}, 'Having an element with deprecated -webkit-appearance value "slider-vertical" should not activate the use counter (set using SetProperty).');
 </script>

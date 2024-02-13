@@ -34,6 +34,10 @@ void ToggleOverview(
 void WaitForOverviewEnterAnimation();
 void WaitForOverviewExitAnimation();
 
+// Like `WaitForOverviewEnterAnimation()` but waits even if using zero duration.
+// Used to wait for async pine image read operation.
+void WaitForOverviewEntered();
+
 OverviewGrid* GetOverviewGridForRoot(aura::Window* root);
 
 const std::vector<std::unique_ptr<OverviewItemBase>>& GetOverviewItemsForRoot(

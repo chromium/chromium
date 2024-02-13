@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Aborted.Reason"
-    enum="WelcomeTourAbortedReason" expires_after="2024-06-01">
+    enum="WelcomeTourAbortedReason" expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>
@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Prevented.Reason"
-    enum="WelcomeTourPreventedReason" expires_after="2024-06-01">
+    enum="WelcomeTourPreventedReason" expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>
@@ -157,14 +157,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Aborted" enum="WelcomeTourStep"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>Records that the Welcome Tour was aborted on a given step.</summary>
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Duration.{Step}" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>
@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>
@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.{Completion}.Duration" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>
@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.{Completion}.Interaction.Count"
-    enum="WelcomeTourInteraction" expires_after="2024-06-01">
+    enum="WelcomeTourInteraction" expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.WelcomeTour.{Completion}.Interaction.FirstTime.{Interaction}"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-08-04">
   <owner>angusmclean@google.com</owner>
   <owner>dmblack@google.com</owner>
   <summary>

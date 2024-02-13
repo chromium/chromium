@@ -22,6 +22,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -124,26 +125,12 @@ PeripheralBatteryNotifier::~PeripheralBatteryNotifier() {
 
 void PeripheralBatteryNotifier::OnUpdatedBatteryLevel(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
-  if ((battery_info.type == PeripheralBatteryListener::BatteryInfo::
-                                PeripheralType::kStylusViaCharger ||
-       battery_info.type == PeripheralBatteryListener::BatteryInfo::
-                                PeripheralType::kStylusViaScreen) &&
-      !ash::features::IsStylusBatteryStatusEnabled()) {
-    VLOG(1)
-        << "PeripheralBatteryNotifier: Notification not shown, PeripheralType: "
-        << static_cast<int>(battery_info.type);
-    return;
-  }
-
   // TODO(b/187703348): it is worth listening to charger events if they
   // might remove the notification: we want to clear it as soon as
   // we believe the battery to have been charged, or at least starting
   // charging.
   if (battery_info.type == PeripheralBatteryListener::BatteryInfo::
                                PeripheralType::kStylusViaCharger) {
-    VLOG(1)
-        << "PeripheralBatteryNotifier: Notification not shown, PeripheralType: "
-        << static_cast<int>(battery_info.type);
     return;
   }
   UpdateBattery(battery_info);
@@ -157,14 +144,13 @@ void PeripheralBatteryNotifier::OnRemovingBattery(
   const std::string& map_key = battery_info.key;
   CancelNotification(battery_info);
   battery_notifications_.erase(map_key);
+  BLUETOOTH_LOG(EVENT)
+      << "Battery has been removed, erasing notification, battery key: "
+      << map_key;
 }
 
 void PeripheralBatteryNotifier::UpdateBattery(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
-  VLOG(1) << "PeripheralBatteryNotifier::UpdateBattery, battery key: "
-          << battery_info.key
-          << " battery type: " << static_cast<int>(battery_info.type);
-
   if (!battery_info.level || !battery_info.battery_report_eligible) {
     CancelNotification(battery_info);
     return;
@@ -175,8 +161,6 @@ void PeripheralBatteryNotifier::UpdateBattery(
   auto it = battery_notifications_.find(map_key);
 
   if (it == battery_notifications_.end()) {
-    VLOG(1)
-        << "PeripheralBatteryNotifier::UpdateBattery, new notification created";
     NotificationInfo new_notification_info;
     new_notification_info.level = battery_info.level;
     new_notification_info.last_notification_timestamp =
@@ -184,12 +168,21 @@ void PeripheralBatteryNotifier::UpdateBattery(
     new_notification_info.ever_notified = false;
     battery_notifications_[map_key] = new_notification_info;
   } else {
-    VLOG(1) << "PeripheralBatteryNotifier::UpdateBattery, existing "
-               "notification found";
     NotificationInfo& existing_notification_info = it->second;
     std::optional<uint8_t> old_level = existing_notification_info.level;
     was_old_battery_level_low = old_level && *old_level <= kLowBatteryLevel;
     existing_notification_info.level = battery_info.level;
+
+    BLUETOOTH_LOG(EVENT)
+        << "Battery level updated, battery key: " << map_key
+        << " new battery level: "
+        << (battery_info.level.has_value()
+                ? base::NumberToString(battery_info.level.value())
+                : "empty value")
+        << " old battery level: "
+        << (old_level.has_value() ? base::NumberToString(old_level.value())
+                                  : "empty value")
+        << " battery type: " << static_cast<int>(battery_info.type);
   }
 
   if (*battery_info.level > kLowBatteryLevel) {
@@ -228,9 +221,6 @@ void PeripheralBatteryNotifier::ShowNotification(
   if (!notification_info.ever_notified ||
       (now - notification_info.last_notification_timestamp >=
        kNotificationInterval)) {
-    VLOG(1) << "PeripheralBatteryNotifier::ShowNotification, new notification "
-               "shown, battery key: "
-            << map_key;
     ShowOrUpdateNotification(battery_info);
     notification_info.last_notification_timestamp = base::TimeTicks::Now();
     notification_info.ever_notified = true;
@@ -241,9 +231,14 @@ void PeripheralBatteryNotifier::ShowOrUpdateNotification(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
   const std::string& map_key = battery_info.key;
 
-  VLOG(1)
-      << "PeripheralBatteryNotifier::ShowOrUpdateNotification, battery key: "
-      << map_key;
+  BLUETOOTH_LOG(EVENT)
+      << "Battery notification shown or updated, battery key: " << map_key
+      << " battery level: "
+      << (battery_info.level.has_value()
+              ? base::NumberToString(battery_info.level.value())
+              : "empty value")
+      << " battery type: " << static_cast<int>(battery_info.type);
+
   // Stylus battery notifications differ slightly.
   NotificationParams params =
       (battery_info.type ==
@@ -280,24 +275,30 @@ void PeripheralBatteryNotifier::CancelNotification(
   const std::string& map_key = battery_info.key;
   const auto it = battery_notifications_.find(map_key);
 
-  VLOG(1) << "PeripheralBatteryNotifier: canceling notification, key: "
-          << battery_info.key
-          << " battery type: " << static_cast<int>(battery_info.type);
-
-  if (it != battery_notifications_.end()) {
-    std::string notification_map_key =
-        (battery_info.type == PeripheralBatteryListener::BatteryInfo::
-                                  PeripheralType::kStylusViaScreen)
-            ? kStylusNotificationId
-            : (kPeripheralDeviceIdPrefix + map_key);
-
-    message_center::MessageCenter::Get()->RemoveNotification(
-        notification_map_key, /*by_user=*/false);
-
-    // Resetting this value allows a new low battery level to post a
-    // notification if the old one was also under the threshold.
-    it->second.level.reset();
+  if (it == battery_notifications_.end()) {
+    return;
   }
+
+  BLUETOOTH_LOG(EVENT)
+      << "Battery notification canceled, battery key: " << map_key
+      << " battery level: "
+      << (battery_info.level.has_value()
+              ? base::NumberToString(battery_info.level.value())
+              : "empty value")
+      << " battery type: " << static_cast<int>(battery_info.type);
+
+  std::string notification_map_key =
+      (battery_info.type ==
+       PeripheralBatteryListener::BatteryInfo::PeripheralType::kStylusViaScreen)
+          ? kStylusNotificationId
+          : (kPeripheralDeviceIdPrefix + map_key);
+
+  message_center::MessageCenter::Get()->RemoveNotification(notification_map_key,
+                                                           /*by_user=*/false);
+
+  // Resetting this value allows a new low battery level to post a
+  // notification if the old one was also under the threshold.
+  it->second.level.reset();
 }
 
 }  // namespace ash

@@ -222,8 +222,7 @@ class AccountSelectionViewBinder {
             } else {
                 consentTextId = R.string.account_selection_data_sharing_consent;
             }
-            String consentText =
-                    String.format(context.getString(consentTextId), properties.mIdpForDisplay);
+            String consentText = context.getString(consentTextId, properties.mIdpForDisplay);
 
             List<SpanApplier.SpanInfo> spans = new ArrayList<>();
             if (privacyPolicySpan != null) {
@@ -258,9 +257,7 @@ class AccountSelectionViewBinder {
         Context context = view.getContext();
         TextView textView = view.findViewById(R.id.idp_signin);
         textView.setText(
-                String.format(
-                        context.getString(
-                                R.string.idp_signin_status_mismatch_dialog_body, idpForDisplay)));
+                context.getString(R.string.idp_signin_status_mismatch_dialog_body, idpForDisplay));
         textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
@@ -302,63 +299,42 @@ class AccountSelectionViewBinder {
         String description;
 
         if (SERVER_ERROR.equals(code)) {
-            summary = String.format(context.getString(R.string.signin_server_error_dialog_summary));
+            summary = context.getString(R.string.signin_server_error_dialog_summary);
             description =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_server_error_dialog_description,
-                                    topFrameForDisplay));
+                    context.getString(
+                            R.string.signin_server_error_dialog_description, topFrameForDisplay);
             // Server errors do not need extra description to be displayed.
             return new ErrorText(summary, description);
         } else if (INVALID_REQUEST.equals(code)) {
             summary =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_invalid_request_error_dialog_summary,
-                                    topFrameForDisplay,
-                                    idpForDisplay));
+                    context.getString(
+                            R.string.signin_invalid_request_error_dialog_summary,
+                            topFrameForDisplay,
+                            idpForDisplay);
             description =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_invalid_request_error_dialog_description));
+                    context.getString(R.string.signin_invalid_request_error_dialog_description);
         } else if (UNAUTHORIZED_CLIENT.equals(code)) {
             summary =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_unauthorized_client_error_dialog_summary,
-                                    topFrameForDisplay,
-                                    idpForDisplay));
+                    context.getString(
+                            R.string.signin_unauthorized_client_error_dialog_summary,
+                            topFrameForDisplay,
+                            idpForDisplay);
             description =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_unauthorized_client_error_dialog_description));
+                    context.getString(R.string.signin_unauthorized_client_error_dialog_description);
         } else if (ACCESS_DENIED.equals(code)) {
-            summary =
-                    String.format(
-                            context.getString(R.string.signin_access_denied_error_dialog_summary));
-            description =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_access_denied_error_dialog_description));
+            summary = context.getString(R.string.signin_access_denied_error_dialog_summary);
+            description = context.getString(R.string.signin_access_denied_error_dialog_description);
         } else if (TEMPORARILY_UNAVAILABLE.equals(code)) {
             summary =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_temporarily_unavailable_error_dialog_summary));
+                    context.getString(R.string.signin_temporarily_unavailable_error_dialog_summary);
             description =
-                    String.format(
-                            context.getString(
-                                    R.string
-                                            .signin_temporarily_unavailable_error_dialog_description,
-                                    idpForDisplay));
+                    context.getString(
+                            R.string.signin_temporarily_unavailable_error_dialog_description,
+                            idpForDisplay);
         } else {
             summary =
-                    String.format(
-                            context.getString(
-                                    R.string.signin_generic_error_dialog_summary, idpForDisplay));
-            description =
-                    String.format(
-                            context.getString(R.string.signin_generic_error_dialog_description));
+                    context.getString(R.string.signin_generic_error_dialog_summary, idpForDisplay);
+            description = context.getString(R.string.signin_generic_error_dialog_description);
 
             if (url.isEmpty()) {
                 return new ErrorText(summary, description);
@@ -366,9 +342,7 @@ class AccountSelectionViewBinder {
 
             description += ". ";
             description +=
-                    String.format(
-                            context.getString(
-                                    R.string.signin_generic_error_dialog_more_details_prompt));
+                    context.getString(R.string.signin_generic_error_dialog_more_details_prompt);
             return new ErrorText(
                     summary, description, context, properties.mMoreDetailsClickRunnable);
         }
@@ -376,24 +350,21 @@ class AccountSelectionViewBinder {
         if (url.isEmpty()) {
             description += " ";
             description +=
-                    String.format(
-                            context.getString(
-                                    TEMPORARILY_UNAVAILABLE.equals(code)
-                                            ? R.string
-                                                    .signin_error_dialog_try_other_ways_retry_prompt
-                                            : R.string.signin_error_dialog_try_other_ways_prompt,
-                                    topFrameForDisplay));
+                    context.getString(
+                            TEMPORARILY_UNAVAILABLE.equals(code)
+                                    ? R.string.signin_error_dialog_try_other_ways_retry_prompt
+                                    : R.string.signin_error_dialog_try_other_ways_prompt,
+                            topFrameForDisplay);
             return new ErrorText(summary, description);
         }
 
         description += " ";
         description +=
-                String.format(
-                        context.getString(
-                                TEMPORARILY_UNAVAILABLE.equals(code)
-                                        ? R.string.signin_error_dialog_more_details_retry_prompt
-                                        : R.string.signin_error_dialog_more_details_prompt,
-                                idpForDisplay));
+                context.getString(
+                        TEMPORARILY_UNAVAILABLE.equals(code)
+                                ? R.string.signin_error_dialog_more_details_retry_prompt
+                                : R.string.signin_error_dialog_more_details_prompt,
+                        idpForDisplay);
         return new ErrorText(summary, description, context, properties.mMoreDetailsClickRunnable);
     }
 
@@ -464,16 +435,11 @@ class AccountSelectionViewBinder {
             String btnText;
             HeaderProperties.HeaderType headerType = properties.mHeaderType;
             if (headerType == HeaderProperties.HeaderType.SIGN_IN_TO_IDP_STATIC) {
-                btnText =
-                        String.format(
-                                context.getString(
-                                        R.string.idp_signin_status_mismatch_dialog_continue));
+                btnText = context.getString(R.string.idp_signin_status_mismatch_dialog_continue);
             } else if (headerType == HeaderProperties.HeaderType.SIGN_IN_ERROR) {
-                btnText =
-                        String.format(
-                                context.getString(R.string.signin_error_dialog_got_it_button));
+                btnText = context.getString(R.string.signin_error_dialog_got_it_button);
             } else if (headerType == HeaderProperties.HeaderType.SIGN_IN && account == null) {
-                btnText = String.format(context.getString(R.string.account_selection_add_account));
+                btnText = context.getString(R.string.account_selection_add_account);
             } else {
                 // Prefers to use given name if it is provided otherwise falls back to using the
                 // name.
@@ -506,7 +472,7 @@ class AccountSelectionViewBinder {
             PropertyModel model, View view, PropertyKey key, ButtonCompat button, int textId) {
         Context context = view.getContext();
         if (key == ErrorButtonProperties.IDP_METADATA) {
-            String buttonText = String.format(context.getString(textId));
+            String buttonText = context.getString(textId);
             button.setText(buttonText);
             if (!ColorUtils.inNightMode(context)) {
                 IdentityProviderMetadata idpMetadata =

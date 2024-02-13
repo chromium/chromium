@@ -45,9 +45,9 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
                                   public views::MouseWatcherListener,
                                   public display::DisplayObserver,
                                   public message_center::MessageCenterObserver {
- public:
-  METADATA_HEADER(TrayBubbleView);
+  METADATA_HEADER(TrayBubbleView, views::BubbleDialogDelegateView)
 
+ public:
   // All the types of tray bubbles. This is defined in the init params when
   // constructing the bubble.
   enum class TrayBubbleType {

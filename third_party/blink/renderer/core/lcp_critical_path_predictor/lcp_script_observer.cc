@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_script_observer.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 
 namespace blink {
@@ -67,7 +68,7 @@ String LCPScriptObserver::GetScriptUrlFromCallFunctionProbe(
 
 LCPScriptObserver::LCPScriptObserver(LocalFrame* local_root)
     : local_root_(local_root) {
-  CHECK(base::FeatureList::IsEnabled(features::kLCPScriptObserver));
+  CHECK(blink::LcppScriptObserverEnabled());
   local_root_->GetProbeSink()->AddLCPScriptObserver(this);
 }
 

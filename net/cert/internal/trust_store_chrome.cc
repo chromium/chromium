@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "net/cert/internal/trust_store_chrome.h"
+
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
@@ -32,7 +34,7 @@ ChromeRootStoreData& ChromeRootStoreData::operator=(
 ChromeRootStoreData& ChromeRootStoreData::operator=(
     ChromeRootStoreData&& other) = default;
 
-absl::optional<ChromeRootStoreData>
+std::optional<ChromeRootStoreData>
 ChromeRootStoreData::CreateChromeRootStoreData(
     const chrome_root_store::RootStore& proto) {
   ChromeRootStoreData root_store_data;
@@ -40,7 +42,7 @@ ChromeRootStoreData::CreateChromeRootStoreData(
   for (auto& anchor : proto.trust_anchors()) {
     if (anchor.der().empty()) {
       LOG(ERROR) << "Error anchor with empty DER in update";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     auto parsed = bssl::ParsedCertificate::Create(
@@ -48,7 +50,7 @@ ChromeRootStoreData::CreateChromeRootStoreData(
         net::x509_util::DefaultParseCertificateOptions(), nullptr);
     if (!parsed) {
       LOG(ERROR) << "Error parsing cert for update";
-      return absl::nullopt;
+      return std::nullopt;
     }
     root_store_data.anchors_.push_back(std::move(parsed));
   }

@@ -5,7 +5,6 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='Hello, world'
 ++++++++++inlineTextBox name='Hello, world'
-++++++genericContainer ignored invisible
 ++++++splitter horizontal name='Inside custom element'
 ++++++group
 ++++++++button name='something'

@@ -5,7 +5,7 @@ include_rules = [
   # everywhere.
   "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/lacros/lacros_service.h",
-  "+chromeos/lacros/lacros_test_helper.h",
+  "+chromeos/startup/browser_params_proxy.h",
   "+chromeos/startup/startup_switches.h",
 
   # Tests can use all content/public headers.

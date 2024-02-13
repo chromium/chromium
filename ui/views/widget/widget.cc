@@ -1981,10 +1981,11 @@ bool Widget::ShouldDescendIntoChildForEventHandling(
 }
 
 void Widget::LayoutRootViewIfNecessary() {
-  TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
-               GetName());
-  if (root_view_ && root_view_->needs_layout())
+  if (root_view_ && root_view_->needs_layout()) {
+    TRACE_EVENT1("ui", "Widget::LayoutRootViewIfNecessary", "widget name",
+                 GetName());
     root_view_->LayoutImmediately();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2021,7 +2022,7 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void Widget::SetColorModeOverride(
-    absl::optional<ui::ColorProviderKey::ColorMode> color_mode) {
+    std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
   color_mode_override_ = color_mode;
 }
 

@@ -288,11 +288,13 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
   }
 
   mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer;
+  mojo::PendingReceiver<blink::mojom::WebPrintJobController> controller;
   auto job_info = blink::mojom::WebPrintJobInfo::New();
   job_info->job_name = base::UTF16ToUTF8(settings->title());
   // Total number of pages in all copies.
   job_info->job_pages = flatten_pdf_result->page_count * settings->copies();
   job_info->observer = observer.InitWithNewPipeAndPassReceiver();
+  job_info->controller = controller.InitWithNewPipeAndPassRemote();
 
   print_job_controller_->CreatePrintJob(
       std::move(flatten_pdf_result->flattened_pdf), std::move(settings),
@@ -300,7 +302,8 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
       /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
       /*source_id=*/app_id_,
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintJobCreated,
-                     weak_factory_.GetWeakPtr(), std::move(observer)));
+                     weak_factory_.GetWeakPtr(), std::move(observer),
+                     std::move(controller)));
 
   std::move(callback).Run(
       blink::mojom::WebPrintResult::NewPrintJobInfo(std::move(job_info)));
@@ -308,6 +311,7 @@ void WebPrintingServiceChromeOS::OnPdfReadAndFlattened(
 
 void WebPrintingServiceChromeOS::OnPrintJobCreated(
     mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,
+    mojo::PendingReceiver<blink::mojom::WebPrintJobController> controller,
     std::optional<PrintJobCreatedInfo> creation_info) {
   if (!creation_info) {
     // Dispatches a notification and deletes itself.
@@ -321,7 +325,8 @@ void WebPrintingServiceChromeOS::OnPrintJobCreated(
   std::string printer_id =
       base::UTF16ToUTF8(creation_info->document->settings().device_name());
   in_progress_jobs_storage_.PrintJobAcknowledgedByThePrintSystem(
-      printer_id, creation_info->job_id, std::move(observer));
+      printer_id, creation_info->job_id, std::move(observer),
+      std::move(controller));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   NotifyAshJobCreated(

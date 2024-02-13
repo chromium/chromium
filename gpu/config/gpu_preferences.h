@@ -62,11 +62,14 @@ enum class WebGPUPowerPreference : uint32_t {
 };
 
 enum class GrContextType : uint32_t {
+  kNone,
   kGL,      // Ganesh
   kVulkan,  // Ganesh
   kGraphiteDawn,
   kGraphiteMetal,
 };
+
+GPU_EXPORT std::string GrContextTypeToString(GrContextType type);
 
 enum class DawnBackendValidationLevel : uint32_t {
   kDisabled = 0,

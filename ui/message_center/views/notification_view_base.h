@@ -6,13 +6,13 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/notification_list.h"
@@ -99,7 +99,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void Activate();
 
   // MessageView:
-  void Layout(PassKey) override;
   void OnFocus() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -392,7 +391,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
 
   // A map from views::LabelButton's in `action_buttons_` to their associated
   // placeholder strings.
-  std::map<views::LabelButton*, absl::optional<std::u16string>>
+  std::map<views::LabelButton*, std::optional<std::u16string>>
       action_button_to_placeholder_map_;
 
   // Counter for view layouting, which is used during the CreateOrUpdate*

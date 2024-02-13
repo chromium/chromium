@@ -186,8 +186,20 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   return [_setUpList allItemsComplete];
 }
 
-- (void)disableSetUpList {
+- (void)disableModule {
   set_up_list_prefs::DisableSetUpList(_localState);
+}
+
+- (BOOL)shouldShowSetUpList {
+  if (!set_up_list_utils::IsSetUpListActive(_localState)) {
+    return NO;
+  }
+
+  if ([self setUpListItems].count == 0) {
+    return NO;
+  }
+
+  return YES;
 }
 
 - (void)showSetUpList {

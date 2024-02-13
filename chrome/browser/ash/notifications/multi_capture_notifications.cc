@@ -33,12 +33,17 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/text_constants.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "url/origin.h"
 
 namespace ash {
 
 namespace {
+
+constexpr size_t kAppMaxNameLength = 18;
 
 constexpr char kMultiCaptureId[] = "multi_capture";
 constexpr char kNotifierMultiCapture[] = "ash.multi_capture";
@@ -152,27 +157,16 @@ MultiCaptureNotifications::~MultiCaptureNotifications() = default;
 void MultiCaptureNotifications::MultiCaptureStarted(const std::string& label,
                                                     const url::Origin& origin) {
   const std::string host = origin.host();
-  const std::string notification_id =
-      base::StrCat({kMultiCaptureId, ":", host});
-  notifications_metadata_.emplace(
-      label, NotificationMetadata(notification_id, base::TimeTicks::Now()));
+  MultiCaptureStartedInternal(label, base::StrCat({kMultiCaptureId, ":", host}),
+                              host);
+}
 
-  std::u16string converted_host;
-  if (!base::UTF8ToUTF16(host.c_str(), host.size(), &converted_host)) {
-    NOTREACHED();
-    return;
-  }
-  // TODO(crbug.com/1356102): Make sure the notification does not disappear
-  // automatically after some time.
-  CreateAndShowNotification(
-      kNotifierMultiCapture, notification_id,
-      NotificationCatalogName::kMultiCapture,
-      /*notification_title=*/
-      l10n_util::GetStringFUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_TITLE,
-                                 converted_host),
-      /*notification_message=*/
-      l10n_util::GetStringFUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE,
-                                 converted_host));
+void MultiCaptureNotifications::MultiCaptureStartedFromApp(
+    const std::string& label,
+    const std::string& app_id,
+    const std::string& app_short_name) {
+  MultiCaptureStartedInternal(
+      label, base::StrCat({kMultiCaptureId, ":", label}), app_short_name);
 }
 
 void MultiCaptureNotifications::MultiCaptureStopped(const std::string& label) {
@@ -220,6 +214,30 @@ void MultiCaptureNotifications::LoggedInStateChanged() {
         base::BindOnce(&IsMultiCaptureAllowed)
             .Then(base::BindOnce(&MaybeShowLoginNotification)));
   }
+}
+
+void MultiCaptureNotifications::MultiCaptureStartedInternal(
+    const std::string& label,
+    const std::string& notification_id,
+    const std::string& app_name) {
+  notifications_metadata_.emplace(
+      label, NotificationMetadata(notification_id, base::TimeTicks::Now()));
+
+  const std::u16string converted_app_name =
+      gfx::TruncateString(base::UTF8ToUTF16(app_name), kAppMaxNameLength,
+                          gfx::BreakType::WORD_BREAK);
+
+  // TODO(crbug.com/1356102): Make sure the notification does not disappear
+  // automatically after some time.
+  CreateAndShowNotification(
+      kNotifierMultiCapture, notification_id,
+      NotificationCatalogName::kMultiCapture,
+      /*notification_title=*/
+      l10n_util::GetStringFUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_TITLE,
+                                 converted_app_name),
+      /*notification_message=*/
+      l10n_util::GetStringFUTF16(IDS_MULTI_CAPTURE_NOTIFICATION_MESSAGE,
+                                 converted_app_name));
 }
 
 void SetIsMultiCaptureAllowedForTesting(bool is_multi_capture_allowed) {

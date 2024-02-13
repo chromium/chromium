@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/version_info_updater.h"
 
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -163,7 +164,7 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
   std::string device_ids_text;
 
   // Get the attested device ID and add the ZTE indication and the ID if needed.
-  const std::optional<base::StringPiece> attested_device_id =
+  const std::optional<std::string_view> attested_device_id =
       system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           system::kAttestedDeviceIdKey);
   // Start with the ZTE indication and the attested device ID if it exists.
@@ -176,7 +177,7 @@ std::string VersionInfoUpdater::GetDeviceIdsLabel() {
   }
 
   // Get the serial number and add it.
-  const std::optional<base::StringPiece> serial_number =
+  const std::optional<std::string_view> serial_number =
       system::StatisticsProvider::GetInstance()->GetMachineID();
   if (serial_number && !serial_number->empty()) {
     if (!device_ids_text.empty())

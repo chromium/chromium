@@ -20,19 +20,19 @@ import org.chromium.url.Origin;
 public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
     private final RenderFrameHost mRenderFrameHost;
     private final CreateConfirmationUiDelegate.Factory mConfirmationFactory;
-    private final @WebauthnMode int mMode;
 
     public AuthenticatorFactory(
             RenderFrameHost renderFrameHost,
-            CreateConfirmationUiDelegate.Factory confirmationFactory,
-            @WebauthnMode int mode) {
+            CreateConfirmationUiDelegate.Factory confirmationFactory) {
         mRenderFrameHost = renderFrameHost;
         mConfirmationFactory = confirmationFactory;
-        mMode = mode;
     }
 
     @Override
     public Authenticator createImpl() {
+        if (WebauthnModeProvider.getInstance().getWebauthnMode() == WebauthnMode.NONE) {
+            return null;
+        }
         if (mRenderFrameHost == null) {
             return null;
         }
@@ -59,7 +59,6 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
                 new AuthenticatorImpl.WindowIntentSender(window),
                 createConfirmationUiDelegate,
                 mRenderFrameHost,
-                topOrigin,
-                mMode);
+                topOrigin);
     }
 }

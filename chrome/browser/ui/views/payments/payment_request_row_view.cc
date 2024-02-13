@@ -162,11 +162,9 @@ void PaymentRequestRowView::OnFocus() {
   if (GetClickable())
     SetHighlighted(true);
   View::OnFocus();
-  views::FocusRing* focus_ring = views::FocusRing::Get(this);
-  views::TableLayout* layout =
-      static_cast<views::TableLayout*>(GetLayoutManager());
-  if (focus_ring && layout)
-    layout->SetChildViewIgnoredByLayout(focus_ring, true);
+  if (views::FocusRing* focus_ring = views::FocusRing::Get(this)) {
+    focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  }
 }
 
 void PaymentRequestRowView::OnBlur() {

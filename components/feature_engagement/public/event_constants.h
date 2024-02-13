@@ -229,10 +229,6 @@ extern const char kIOSSwipeBackForwardUsed[];
 // inline and blue-dot promos eligible to be displayed.
 extern const char kEnhancedSafeBrowsingPromoCriterionMet[];
 
-// The user has tapped on the 'X' button to remove the Enhanced Safe Browsing
-// inline promo from the settings menu.
-extern const char kEnhancedSafeBrowsingInlinePromoClosed[];
-
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

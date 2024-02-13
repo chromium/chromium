@@ -27,7 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.List;
 
 /** Delegate that manages the observer for the modal dialog on new tab group creation. */
-public class TabGroupCreationDialogDelegate {
+public class TabGroupCreationDialogDelegate implements TabGroupCreationDialog {
     private final Activity mActivity;
     private final ModalDialogManager mModalDialogManager;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -44,21 +44,9 @@ public class TabGroupCreationDialogDelegate {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
+    @Override
     public void destroy() {
-        TabModelFilterProvider tabModelFilterProvider =
-                mTabModelSelectorSupplier.get().getTabModelFilterProvider();
-
-        if (mRegularObserver != null) {
-            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(false))
-                    .removeTabGroupObserver(mRegularObserver);
-            mRegularObserver = null;
-        }
-
-        if (mIncognitoObserver != null) {
-            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
-                    .removeTabGroupObserver(mIncognitoObserver);
-            mIncognitoObserver = null;
-        }
+        detachObservers();
 
         if (mTabModelSelectorSupplier != null) {
             mTabModelSelectorSupplier = null;
@@ -68,6 +56,7 @@ public class TabGroupCreationDialogDelegate {
     // TODO(crbug.com/1517346): Make this private and initialize it only when TabModelSelector's tab
     // state has been initialized.
     /** Add an TabGroupModelFilterObserver to notify when a new tab group is being created. */
+    @Override
     public void addObservers() {
         TabModelFilterProvider tabModelFilterProvider =
                 mTabModelSelectorSupplier.get().getTabModelFilterProvider();
@@ -89,7 +78,9 @@ public class TabGroupCreationDialogDelegate {
                     public void didCreateNewGroup(int newRootId) {
                         // TODO(crbug.com/1517346): Consider removing the cancel button for
                         // longpress add as the undo flow does not exist there.
-                        showDialog(filter.getRelatedTabCountForRootId(newRootId));
+                        showDialog(
+                                filter.getRelatedTabCountForRootId(newRootId),
+                                filter.isIncognito());
                     }
 
                     // Handles the drag and dropping of two single tabs to create a group.
@@ -102,14 +93,37 @@ public class TabGroupCreationDialogDelegate {
                             return;
                         }
                         // Pass in the tab count of the two tab items to be merged.
-                        showDialog(newRootIdTabCount + 1);
+                        showDialog(newRootIdTabCount + 1, filter.isIncognito());
                     }
                 };
         filter.addTabGroupObserver(observer);
         return observer;
     }
 
-    protected void showDialog(int tabCount) {
+    /** Remove observers monitoring tab group creation that display a custom dialog. */
+    @Override
+    public void removeObservers() {
+        detachObservers();
+    }
+
+    private void detachObservers() {
+        TabModelFilterProvider tabModelFilterProvider =
+                mTabModelSelectorSupplier.get().getTabModelFilterProvider();
+
+        if (mRegularObserver != null) {
+            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(false))
+                    .removeTabGroupObserver(mRegularObserver);
+            mRegularObserver = null;
+        }
+
+        if (mIncognitoObserver != null) {
+            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
+                    .removeTabGroupObserver(mIncognitoObserver);
+            mIncognitoObserver = null;
+        }
+    }
+
+    protected void showDialog(int tabCount, boolean isIncognito) {
         View customView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_group_creation_dialog, null);
         ((AppCompatEditText) customView.findViewById(R.id.title_input_text))
@@ -122,16 +136,13 @@ public class TabGroupCreationDialogDelegate {
                                         tabCount));
 
         List<Integer> colors = ColorPickerUtils.getTabGroupColorIdList();
-        ColorPickerCoordinator.Delegate delegate =
-                new ColorPickerCoordinator.Delegate() {
-                    @Override
-                    public int getColorPickerUIComponent() {
-                        return R.layout.tab_group_color_picker_container;
-                    }
-                };
-
         ColorPickerCoordinator colorPickerCoordinator =
-                new ColorPickerCoordinator(mActivity, colors, delegate);
+                new ColorPickerCoordinator(
+                        mActivity,
+                        colors,
+                        R.layout.tab_group_color_picker_container,
+                        ColorPickerType.TAB_GROUP,
+                        isIncognito);
         colorPickerCoordinator.setSelectedColorItem(colors.get(1));
 
         TabGroupCreationTextInputLayout groupTitle = customView.findViewById(R.id.tab_group_title);

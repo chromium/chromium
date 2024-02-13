@@ -796,3 +796,7 @@ void AutocompleteInput::WriteIntoTrace(perfetto::TracedValue context) const {
 bool AutocompleteInput::IsZeroSuggest() const {
   return focus_type_ != metrics::OmniboxFocusType::INTERACTION_DEFAULT;
 }
+
+bool AutocompleteInput::InKeywordMode() const {
+  return keyword_mode_entry_method_ != metrics::OmniboxEventProto::INVALID;
+}

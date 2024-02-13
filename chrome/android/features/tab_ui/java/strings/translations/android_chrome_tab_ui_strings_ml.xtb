@@ -3,10 +3,13 @@
 <translationbundle lang="ml">
 <translation id="1075622780330595106">നിങ്ങളുടെ ടാബുകളിൽ <ph name="NUMBER_OF_TABS" /> എണ്ണം അടുത്തിടെ ഉപയോഗിച്ചിട്ടില്ല. അവ അടയ്‌ക്കണോ?</translation>
 <translation id="1155815720264022949">പഴയ ടാബുകൾ അടയ്ക്കണമെന്നുണ്ടോ?</translation>
+<translation id="1197088940767939838">ഓറഞ്ച്</translation>
 <translation id="1215127405478249895">ടാബുകൾ അവലോകനം ചെയ്യുക</translation>
 <translation id="125153950246128346">മറ്റൊരു ടാബ് കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1326271443836399892">ആവശ്യമില്ലാത്തവ ഒഴിവാക്കാനുള്ള നിലവിലെ ക്രമീകരണം അവലോകനം ചെയ്യുക.</translation>
 <translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
+<translation id="1555130319947370107">നീല</translation>
+<translation id="161042844686301425">സിയാൻ</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ബുക്ക്‌മാർക്ക് ചെയ്യുക}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ടാബ് ഗ്രൂപ്പ് ചെയ്യുക}other{ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യുക}}</translation>
 <translation id="3996880007329611795">അറിയിപ്പ് നേടുക</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
+<translation id="4159784952369912983">പര്‍പ്പിള്‍</translation>
 <translation id="4212246570487010370">ബ്രൗസിംഗ് തുടരുക</translation>
 <translation id="427987768447457592">പുതിയ ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="4648718555153979859">നിങ്ങളുടെ ടാബുകൾ ഇവിടെ ഒന്നിച്ച് ഗ്രൂപ്പ് ചെയ്യപ്പെടും</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{നിങ്ങൾ സമീപകാലത്ത് ഉപയോഗിക്കാത്ത <ph name="TABS_COUNT_ONE" /> ടാബുണ്ട്}other{നിങ്ങൾ സമീപകാലത്ത് ഉപയോഗിക്കാത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകളുണ്ട്}}</translation>
 <translation id="5339733443032484186">നിങ്ങളുടെ അവസാന ടാബ്</translation>
+<translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="5490235265819901748">ടാബ് ഗ്രൂപ്പ് വികസിപ്പിച്ചു</translation>
 <translation id="5494920125229734069">എല്ലാം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5545379293264651575">അവലോകനം ചെയ്യാതെ അടയ്ക്കുക</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">വിലയിടിവിന് മുന്നറിയിപ്പുകൾ നേടണോ?</translation>
 <translation id="58326064309361797">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ അവ വലിച്ചിടുക</translation>
 <translation id="5846292395804797011"><ph name="NUMBER_OF_TABS" /> ടാബുകളുള്ള <ph name="TITLE_OF_GROUP" /> ഗ്രൂപ്പ് അടയ്ക്കുക</translation>
+<translation id="5901630391730855834">മഞ്ഞ</translation>
 <translation id="5972844218283131174">തിരഞ്ഞെടുത്തത് എല്ലാം മാറ്റുക</translation>
+<translation id="6017514345406065928">പച്ച</translation>
 <translation id="6054741997831917303">ഈ ഇനത്തിന്റെ വില അടുത്തിടെ <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="NEW_PRICE" /> ആയി കുറഞ്ഞു</translation>
 <translation id="6193448654517602979">തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് ഗ്രൂപ്പ് ചെയ്യുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യുക}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ}}</translation>
 <translation id="7885132941432959125">ടാബ് വലത്തേക്ക് നീക്കുക</translation>
+<translation id="7942349550061667556">ചുവപ്പ്</translation>
 <translation id="7966321538264951561">നിർദ്ദേശങ്ങൾ ഡിസ്‌മിസ് ചെയ്യുക.</translation>
 <translation id="8029301326595421733">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങളുടെ മുഴുവൻ ഉയരത്തിൽ തുറന്ന ലിസ്റ്റ്</translation>
 <translation id="8205266828577616993">ടാബ് മുകളിലേക്ക് നീക്കുക</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">ഗ്രൂപ്പിലേക്ക് പുതിയ ടാബ് ചേർക്കുക</translation>
 <translation id="955558140275419384">ഈ എഡിറ്റർ ഉപയോഗിച്ച്, ആർക്കൈവ് ചെയ്ത എല്ലാ ടാബുകളിൽ നിന്നും ആവശ്യമില്ലാത്തവ ഒഴിവാക്കാൻ അവലോകനം ചെയ്യുക.</translation>
 <translation id="959682366969460160">ഓർഗനൈസ് ചെയ്‌ത നിലയിൽ തുടരുക</translation>
+<translation id="992256792861109788">പിങ്ക്</translation>
 </translationbundle>

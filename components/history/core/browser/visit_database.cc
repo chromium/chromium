@@ -593,22 +593,36 @@ bool VisitDatabase::GetVisitsForTimes(const std::vector<base::Time>& times,
 
 bool VisitDatabase::GetAllVisitsInRange(base::Time begin_time,
                                         base::Time end_time,
+                                        absl::optional<std::string> app_id,
                                         int max_results,
                                         VisitVector* visits) {
   visits->clear();
 
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
-                     "WHERE visit_time >= ? AND visit_time < ?"
-                     "ORDER BY visit_time LIMIT ?"));
+  sql::Statement statement;
+  if (app_id) {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE visit_time >= ? AND visit_time < ? AND app_id=? "
+                       "ORDER BY visit_time LIMIT ?"));
+  } else {
+    statement.Assign(GetDB().GetCachedStatement(
+        SQL_FROM_HERE, "SELECT" HISTORY_VISIT_ROW_FIELDS "FROM visits "
+                       "WHERE visit_time >= ? AND visit_time < ? "
+                       "ORDER BY visit_time LIMIT ?"));
+  }
 
   // See GetVisibleVisitsInRange for more info on how these times are bound.
   int64_t end = end_time.ToInternalValue();
   statement.BindTime(0, begin_time);
   statement.BindInt64(1, end ? end : std::numeric_limits<int64_t>::max());
-  statement.BindInt64(
-      2, max_results ? max_results : std::numeric_limits<int64_t>::max());
-
+  if (app_id) {
+    statement.BindString(2, *app_id);
+    statement.BindInt64(
+        3, max_results ? max_results : std::numeric_limits<int64_t>::max());
+  } else {
+    statement.BindInt64(
+        2, max_results ? max_results : std::numeric_limits<int64_t>::max());
+  }
   return FillVisitVector(statement, visits);
 }
 

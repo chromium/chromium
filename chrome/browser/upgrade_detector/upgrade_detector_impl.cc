@@ -12,8 +12,6 @@
 #include "base/build_time.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -262,12 +260,8 @@ void UpgradeDetectorImpl::DetectOutdatedInstall() {
   CHECK(!build_date_.is_null());
 
   if (!simulating_outdated_ && is_network_time && build_date_ > current_time) {
-    base::Time build_date = build_date_;
-    base::debug::Alias(&current_time);
-    base::debug::Alias(&build_date);
-    // TODO(crbug.com/1407664): Once this is shown to no longer be hitting,
-    // change this to a NOTREACHED_NORETURN().
-    base::debug::DumpWithoutCrashing();
+    // Sometimes unexpected things happen with clocks; ignore these edge cases.
+    // See https://crbug.com/40062693 for related discussions.
     return;
   }
 

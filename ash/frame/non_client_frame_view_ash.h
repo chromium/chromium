@@ -41,9 +41,9 @@ class ASH_EXPORT NonClientFrameViewAsh
     : public chromeos::NonClientFrameViewBase,
       public FrameContextMenuController::Delegate,
       public aura::WindowObserver {
- public:
-  METADATA_HEADER(NonClientFrameViewAsh);
+  METADATA_HEADER(NonClientFrameViewAsh, chromeos::NonClientFrameViewBase)
 
+ public:
   // |control_immersive| controls whether ImmersiveFullscreenController is
   // created for the NonClientFrameViewAsh; if true and a WindowStateDelegate
   // has not been set on the WindowState associated with |frame|, then an

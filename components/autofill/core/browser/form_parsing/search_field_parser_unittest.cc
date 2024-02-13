@@ -34,13 +34,13 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(SearchFieldParserTest, ParseSearchTerm) {
   AddTextFormFieldData("search", "Search", SEARCH_TERM);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(SearchFieldParserTest, ParseNonSearchTerm) {
   AddTextFormFieldData("address", "Address", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 }  // namespace autofill

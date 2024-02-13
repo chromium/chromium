@@ -192,10 +192,12 @@ namespace scripting {
   };
 
   interface Functions {
-    // Injects a script into a target context. The script will be run at
-    // <code>document_idle</code>. If the script evaluates to a promise,
-    // the browser will wait for the promise to settle and return the
-    // resulting value.
+    // Injects a script into a target context. By default, the script will be run
+    // at <code>document_idle</code>, or immediately if the page has already
+    // loaded. If the <code>injectImmediately</code> property is set, the script
+    // will inject without waiting, even if the page has not finished loading. If
+    // the script evaluates to a promise, the browser will wait for the promise to
+    // settle and return the resulting value.
     // |injection|: The details of the script which to inject.
     // |callback|: Invoked upon completion of the injection. The resulting
     // array contains the result of execution for each frame where the

@@ -1,7 +1,7 @@
 [
   {
     "namespace": "callbacks",
-    "description": "The callbacks API.",
+    "description": "The callbacks API. Tests asynchronous returns",
     "types": [
       {
         "id": "Enumeration",
@@ -14,61 +14,56 @@
         "name": "returnsNothing",
         "type": "function",
         "description": "Takes nothing. Returns nothing.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": []
+        }
       },
       {
         "name": "returnsObject",
         "description": "Returns an object.",
         "type": "function",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "someObject",
-                "type": "object",
-                "properties": {
-                  "state": {
-                    "$ref": "Enumeration"
-                  }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "someObject",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "Enumeration"
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       },
       {
         "name": "returnsMultiple",
-        "description": "Returns an object.",
+        "description": "Returns an integer and an object.",
         "type": "function",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "someInteger",
-                "type": "integer"
-              },
-              {
-                "name": "someObject",
-                "type": "object",
-                "properties": {
-                  "state": {
-                    "$ref": "Enumeration"
-                  }
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "does_not_support_promises": "Multi-parameter callback for test",
+          "parameters": [
+            {
+              "name": "someInteger",
+              "type": "integer"
+            },
+            {
+              "name": "someObject",
+              "type": "object",
+              "properties": {
+                "state": {
+                  "$ref": "Enumeration"
                 }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
       }
     ]
   }

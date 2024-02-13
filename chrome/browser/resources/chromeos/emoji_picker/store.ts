@@ -4,9 +4,10 @@
 
 import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
 
+import {EMOJI_PER_ROW} from './constants.js';
 import {CategoryEnum, Emoji, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
 
-const MAX_RECENTS = 10;
+const MAX_RECENTS = EMOJI_PER_ROW * 2;
 
 class Store<T> {
   data: T;
@@ -74,7 +75,7 @@ export class RecentlyUsedStore {
    *    otherwise.
    */
   savePreferredVariant(variant: string, baseEmoji?: string) {
-    // If `baseEmoji == undefined`, then variant itself is a base emoji.
+    // If `baseEmoji === undefined`, then variant itself is a base emoji.
     if (!baseEmoji) {
       baseEmoji = variant;
     }
@@ -172,7 +173,7 @@ export class RecentlyUsedStore {
     const matchingEmojis =
         this.store.data.history.filter(emoji => emoji.base.name === ' ' + name);
 
-    if (matchingEmojis.length == 0) {
+    if (matchingEmojis.length === 0) {
       return;
     }
 

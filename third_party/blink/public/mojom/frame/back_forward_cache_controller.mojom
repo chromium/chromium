@@ -17,9 +17,10 @@ struct BlockingDetails {
   // TODO(crbug.com/1522767): Use enum instead of uint32 or have validation to
   // really avoid unintended messages.
   uint32? feature;
-  // The URL of the JavaScript file where the feature is used or where JavaScript executed.
-  // This will be empty when when a flag is disabled to send this information, and will be
-  // null when a feature is used from C++ in tests.
+  // The absolute URL of the JavaScript file where the feature is used or where JavaScript
+  // executed. This will be empty when when a flag is disabled to send this information, and
+  // will be null when a feature is used from C++ in tests.
+  // TODO(crbug.com/324031239): Use the struct url.mojom.Url instead of string.
   string? url;
   // The function in the JavaScript file where the feature is used or where JavaScript executed.
   // This will be empty when a flag is disabled to send this information, and will be null when
@@ -28,6 +29,8 @@ struct BlockingDetails {
   // The line number in JavaScript file where the feature is used or where JavaScript executed.
   // This will be zero when a flag is disabled to send this information, and when a feature is
   // used from C++ in tests.
+  // TODO(crbug.com/1523193): Make `line_number` and `column_number` nullable, so the types here
+  // will correspond to blink::mojom::BFCacheBlockingDetailedReason.
   uint64 line_number;
   // The column number in JavaScript file where the feature is used or where JavaScript executed.
   // This will be zero when a flag is disabled to send this information, and when a feature is

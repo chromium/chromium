@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 78 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] averagePool2d float32 4D constant tensor all positive default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] averagePool2d float32 4D tensor all positive default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] averagePool2d float32 4D tensor all negative default options / sync
@@ -40,6 +42,8 @@ Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] averagePool2d float32 4D tensor options.dilations with options.strides / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] maxPool2d float32 4D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] maxPool2d float32 4D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] maxPool2d float32 4D tensor options.windowDimensions / sync
@@ -74,6 +78,8 @@ Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] maxPool2d float32 4D tensor options.dilations with options.strides / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] averagePool2d float32 4D constant tensor all positive default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor all negative default options / async
@@ -113,6 +119,8 @@ Found 74 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] averagePool2d float32 4D tensor options.dilations with options.strides / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] maxPool2d float32 4D constant tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] maxPool2d float32 4D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

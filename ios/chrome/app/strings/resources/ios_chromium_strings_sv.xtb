@@ -100,6 +100,7 @@ Du hittar fler inställningar som använder data för att förbättra Chromium-u
 <translation id="3833326979834193417">Chromium kör automatiskt en säkerhetskontroll varje dag för att skydda dig från dataintrång, osäkra webbplatser med mera. Du hittar mer information om säkerhetskontrollen i inställningarna.</translation>
 <translation id="3855938650519180865">Nyheter i Chromium</translation>
 <translation id="3886689467633467988">Logga in på den här webbplatsen och i Chromium om du vill få dina bokmärken med mera på alla dina enheter.</translation>
+<translation id="3904484643286601695">Du kan uppdatera dina val när som helst i inställningarna för Chromium.</translation>
 <translation id="394413318816989199">Betalningsmetoder och adresser omfattas inte av lösenfraskryptering.
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chromium-datan i kontot<ph name="END_LINK" />.</translation>
@@ -204,6 +205,7 @@ Tänk på detta:
 
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
+<translation id="6433172051771630690">Tips om hur du får ut mesta möjliga av Chromium.</translation>
 <translation id="6502321914804101924">Chromium är utloggad</translation>
 <translation id="6563921047760808519">Läs mer om <ph name="BEGIN_LINK" />hur Chromium skyddar din data<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium har nu stöd för användarpolicyer för dina hanterade konton</translation>
@@ -256,6 +258,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="7990085102929105708">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chromium synkroniseras inte.
 
 Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chromium-data<ph name="END_LINK" />.</translation>
+<translation id="7994322153108931467">Om du vill få användbara tips om Chromium kan du aktivera aviseringar i iOS-inställningarna.</translation>
 <translation id="7995166854192397899">Förslagen baseras på din webbaktivitet på dina andra enheter. Logga in i Chromium på alla dina enheter om du vill få förslag.</translation>
 <translation id="800195749539500647">Få ut mesta möjliga av Chromium</translation>
 <translation id="8013573822802650211">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>

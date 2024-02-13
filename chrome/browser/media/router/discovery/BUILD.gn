@@ -103,7 +103,46 @@ static_library("discovery") {
   }
 
   if (is_win) {
-    sources += [ "discovery_network_list_win.cc" ]
+    sources += [
+      "discovery_network_list_win.cc",
+      "discovery_network_list_win.h",
+    ]
     libs = [ "iphlpapi.lib" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  cflags = []
+
+  sources = []
+
+  if (is_win) {
+    # Disable warnings about deprecated declarations in Windows SDK headers.
+    # FakeConnectionProfile implements the WinRT interface IConnectionProfile,
+    # which contains a few deprecated functions that are not used by Chromium.
+    cflags += [ "-Wno-deprecated-declarations" ]
+
+    sources += [
+      "test_support/win/fake_connection_profile.cc",
+      "test_support/win/fake_connection_profile.h",
+      "test_support/win/fake_ip_adapter_addresses.cc",
+      "test_support/win/fake_ip_adapter_addresses.h",
+      "test_support/win/fake_ip_helper.cc",
+      "test_support/win/fake_ip_helper.h",
+      "test_support/win/fake_mib_table.cc",
+      "test_support/win/fake_mib_table.h",
+      "test_support/win/fake_network_adapter.cc",
+      "test_support/win/fake_network_adapter.h",
+      "test_support/win/fake_network_information_statics.cc",
+      "test_support/win/fake_network_information_statics.h",
+      "test_support/win/fake_vector_view.h",
+      "test_support/win/fake_winrt_network_environment.cc",
+      "test_support/win/fake_winrt_network_environment.h",
+      "test_support/win/fake_wlan_connection_profile_details.cc",
+      "test_support/win/fake_wlan_connection_profile_details.h",
+    ]
+  }
+  deps = [ "//base" ]
 }

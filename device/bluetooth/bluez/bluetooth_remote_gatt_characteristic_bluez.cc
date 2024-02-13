@@ -411,7 +411,7 @@ void BluetoothRemoteGattCharacteristicBlueZ::OnReadError(
   --num_of_characteristic_value_read_in_progress_;
   DCHECK_GE(num_of_characteristic_value_read_in_progress_, 0);
   std::move(callback).Run(
-      absl::make_optional(
+      std::make_optional(
           BluetoothGattServiceBlueZ::DBusErrorToServiceError(error_name)),
       /*value=*/std::vector<uint8_t>());
 }

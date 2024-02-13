@@ -10,7 +10,40 @@
       {
         "id": "TransitionType",
         "type": "string",
-        "enum": ["link", "typed", "auto_bookmark", "auto_subframe", "manual_subframe", "generated", "auto_toplevel", "form_submit", "reload", "keyword", "keyword_generated"],
+        "enum": [{
+          "name": "link",
+          "description": "The user arrived at this page by clicking a link on another page."
+        }, {
+          "name": "typed",
+          "description": "The user arrived at this page by typing the URL in the address bar. This is also used for other explicit navigation actions."
+        }, {
+          "name": "auto_bookmark",
+          "description": "The user arrived at this page through a suggestion in the UI, for example, through a menu item."
+        }, {
+          "name": "auto_subframe",
+          "description": "The user arrived at this page through subframe navigation that they didn't request, such as through an ad loading in a frame on the previous page. These don't always generate new navigation entries in the back and forward menus."
+        }, {
+          "name": "manual_subframe",
+          "description": "The user arrived at this page by selecting something in a subframe."
+        }, {
+          "name": "generated",
+          "description": "The user arrived at this page by typing in the address bar and selecting an entry that didn't look like a URL, such as a Google Search suggestion. For example, a match might have the URL of a Google Search result page, but it might appear to the user as \"Search Google for ...\". These are different from typed navigations because the user didn't type or see the destination URL. They're also related to keyword navigations."
+        }, {
+          "name": "auto_toplevel",
+          "description": "The page was specified in the command line or is the start page."
+        }, {
+          "name": "form_submit",
+          "description": "The user arrived at this page by filling out values in a form and submitting the form. Not all form submissions use this transition type."
+        }, {
+          "name": "reload",
+          "description": "The user reloaded the page, either by clicking the reload button or by pressing Enter in the address bar. Session restore and Reopen closed tab also use this transition type."
+        }, {
+          "name": "keyword",
+          "description": "The URL for this page was generated from a replaceable keyword other than the default search provider."
+        }, {
+          "name": "keyword_generated",
+          "description": "Corresponds to a visit generated for a keyword."
+        }],
         "description": "The <a href='#transition_types'>transition type</a> for this visit from its referrer."
       },
       {

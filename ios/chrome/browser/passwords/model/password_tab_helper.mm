@@ -11,8 +11,8 @@
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "ios/chrome/browser/passwords/model/password_controller.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "net/base/apple/url_conversions.h"
 
 PasswordTabHelper::~PasswordTabHelper() = default;
@@ -69,8 +69,8 @@ void PasswordTabHelper::ShouldAllowRequest(
       ui::PageTransitionCoreTypeIs(request_info.transition_type,
                                    ui::PAGE_TRANSITION_LINK) &&
       request_url == GURL(password_manager::kManageMyPasswordsURL)) {
-    id<ApplicationSettingsCommands> settings_command_handler =
-        HandlerForProtocol(controller_.dispatcher, ApplicationSettingsCommands);
+    id<SettingsCommands> settings_command_handler =
+        HandlerForProtocol(controller_.dispatcher, SettingsCommands);
 
     [settings_command_handler showSavedPasswordsSettingsFromViewController:nil
                                                           showCancelButton:NO];

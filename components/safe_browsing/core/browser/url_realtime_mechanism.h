@@ -27,12 +27,10 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   UrlRealTimeMechanism(
       const GURL& url,
       const SBThreatTypeSet& threat_types,
-      network::mojom::RequestDestination request_destination,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       bool can_check_db,
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
-      const GURL& last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
@@ -57,8 +55,6 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   static void StartLookupOnUIThread(
       base::WeakPtr<UrlRealTimeMechanism> weak_ptr_on_io,
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
@@ -67,8 +63,6 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   static void MaybeSendSampleRequest(
       base::WeakPtr<UrlRealTimeMechanism> weak_ptr_on_io,
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
@@ -100,10 +94,6 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // This is used only for logging purposes, primarily (but not exclusively) to
-  // distinguish between mainframe and non-mainframe resources.
-  const network::mojom::RequestDestination request_destination_;
-
   // Whether safe browsing database can be checked. It is set to false when
   // enterprise real time URL lookup is enabled and safe browsing is disabled
   // for this profile.
@@ -115,11 +105,6 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
 
   // URL Lookup service suffix for logging metrics.
   std::string url_lookup_service_metric_suffix_;
-
-  // The last committed URL when the checker is constructed. It is used to
-  // obtain page load token when the URL being checked is not a mainframe
-  // URL.
-  GURL last_committed_url_;
 
   // The task runner for the UI thread.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;

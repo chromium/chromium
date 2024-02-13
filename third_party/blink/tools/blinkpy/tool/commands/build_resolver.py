@@ -192,10 +192,12 @@ class BuildResolver:
             UnresolvedBuildException: If the CL issue number is not set or no
                 try jobs are available but try jobs cannot be triggered.
         """
-        if not self._git_cl.get_issue_number().isdigit():
+        issue_number = self._git_cl.get_issue_number()
+        if not issue_number.isdigit():
             raise UnresolvedBuildException(
                 'No issue number for current branch.')
-        build_statuses = self._git_cl.latest_try_jobs(builder_names=builders,
+        build_statuses = self._git_cl.latest_try_jobs(issue_number,
+                                                      builder_names=builders,
                                                       patchset=patchset)
         if not build_statuses and not self._can_trigger_jobs:
             raise UnresolvedBuildException(

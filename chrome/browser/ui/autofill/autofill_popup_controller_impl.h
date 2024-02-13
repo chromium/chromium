@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
 #include "chrome/browser/ui/autofill/next_idle_time_ticks.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
@@ -76,9 +77,6 @@ class ExpandablePopupParentControllerImpl {
 class AutofillPopupControllerImpl
     : public AutofillPopupController,
       public content::WebContentsObserver,
-#if !BUILDFLAG(IS_ANDROID)
-      public zoom::ZoomObserver,
-#endif  // !BUILDFLAG(IS_ANDROID)
       public AutofillManager::Observer,
       public PictureInPictureWindowManager::Observer,
       public ExpandablePopupParentControllerImpl {
@@ -185,6 +183,10 @@ class AutofillPopupControllerImpl
       std::optional<base::WeakPtr<ExpandablePopupParentControllerImpl>> parent);
   ~AutofillPopupControllerImpl() override;
 
+  void CreatePopupHideHelper(
+      content::WebContents* web_contents,
+      AutofillPopupHideHelper::HidingCallback hiding_callback);
+
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
@@ -214,21 +216,9 @@ class AutofillPopupControllerImpl
 
  private:
   // content::WebContentsObserver:
-  void WebContentsDestroyed() override;
-  void OnWebContentsLostFocus(
-      content::RenderWidgetHost* render_widget_host) override;
-  void PrimaryMainFrameWasResized(bool width_changed) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // ZoomObserver:
-  void OnZoomControllerDestroyed(zoom::ZoomController* source) override;
-  void OnZoomChanged(
-      const zoom::ZoomController::ZoomChangedEventData& data) override;
-#endif
 
   // AutofillManager::Observer:
   void OnBeforeTextFieldDidChange(AutofillManager& manager,
@@ -298,11 +288,6 @@ class AutofillPopupControllerImpl
   // the machine that would normally cause the popup to be hidden.
   bool keep_popup_open_for_testing_ = false;
 
-#if !BUILDFLAG(IS_ANDROID)
-  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
-      zoom_observation_{this};
-#endif
-
   // Observer needed to check autofill popup overlap with picture-in-picture
   // window. It is guaranteed that there can only be one
   // PictureInPictureWindowManager per Chrome instance, therefore, it is also
@@ -332,6 +317,9 @@ class AutofillPopupControllerImpl
 
   // The open sub-popup controller if any, `nullptr` otherwise.
   base::WeakPtr<AutofillPopupControllerImpl> sub_popup_controller_;
+
+  // This is a helper which detects events that should hide the popup.
+  std::unique_ptr<AutofillPopupHideHelper> popup_hide_helper_;
 
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously.

@@ -33,7 +33,7 @@ struct PasswordGenerationElementData {
   autofill::FieldRendererId generation_element_id;
 
   // Maximum length of the generated password.
-  uint32_t max_password_length;
+  uint32_t max_password_length = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_GENERATION_ELEMENT_DATA_H_

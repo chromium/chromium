@@ -10,7 +10,7 @@ import './cr_toast.js';
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrToastElement} from './cr_toast.js';
+import type {CrToastElement} from './cr_toast.js';
 import {getTemplate} from './cr_toast_manager.html.js';
 
 let toastManagerInstance: CrToastManagerElement|null = null;

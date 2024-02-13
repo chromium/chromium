@@ -306,8 +306,8 @@ void PrefetchDocumentManager::PrefetchUrl(
 
   // Create a new |PrefetchContainer| and take ownership of it
   auto container = std::make_unique<PrefetchContainer>(
-      render_frame_host().GetGlobalId(), document_token_, url, prefetch_type,
-      referrer, std::move(no_vary_search_expected),
+      static_cast<RenderFrameHostImpl&>(render_frame_host()), document_token_,
+      url, prefetch_type, referrer, std::move(no_vary_search_expected),
       weak_method_factory_.GetWeakPtr(),
       PreloadingDataImpl::GetPrefetchServiceMatcher(
           prefetch_service, PrefetchContainer::Key(document_token_, url)));

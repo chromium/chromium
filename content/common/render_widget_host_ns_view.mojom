@@ -5,16 +5,36 @@
 module remote_cocoa.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/webshare/share_error.mojom";
-import "ui/base/mojom/attributed_string.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
+import "ui/base/mojom/attributed_string.mojom";
 import "ui/display/mojom/screen_infos.mojom";
 import "ui/events/mojom/event.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 import "ui/gfx/range/mojom/range.mojom";
+
+// Interface that lets the browser process hide/close a popup menu in a
+// remote cocoa process, for menus displayed by DisplayPopupMenu().
+interface PopupMenuRunner {
+  // Hide the associated popup menu.
+  Hide();
+};
+
+// Struct to encapsulate all the parameters to a DisplayPopupMenu() call.
+// Passed from the browser process to remote cocoa processes, but most of
+// the fields are passed unmodified from a renderer process.
+struct PopupMenu {
+  array<blink.mojom.MenuItem> items;
+  gfx.mojom.Rect bounds;
+  double item_font_size;
+  bool right_aligned;
+  uint32 selected_item;
+  pending_receiver<PopupMenuRunner> receiver;
+};
 
 // The interface through which code in the browser process, in
 // RenderWidgetHostViewMac, sends messages to the app shim process, targeting
@@ -113,6 +133,11 @@ interface RenderWidgetHostNSView {
 
   // Ack overscroll message from the renderer.
   DidOverscroll(blink.mojom.DidOverscrollParams params);
+
+  // Shows a HTML select popup menu. The callback is called with the index of
+  // the selected item, or nullopt if the menu closed without selecting any
+  // items.
+  DisplayPopupMenu(PopupMenu menu) => (uint32? selected_item);
 };
 
 // The interface through which the RenderWidgetHostViewCocoa NSView in the app

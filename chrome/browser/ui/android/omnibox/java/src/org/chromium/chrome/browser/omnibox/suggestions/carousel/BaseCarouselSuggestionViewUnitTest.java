@@ -148,14 +148,14 @@ public class BaseCarouselSuggestionViewUnitTest {
     @Test
     public void setSelected_resetsCarouselSelectionWhenSelected() {
         mView.setSelected(true);
-        verify(mController, times(1)).setSelectedItem(0, /* force= */ true);
+        verify(mController, times(1)).setSelectedItem(0);
         verifyNoMoreInteractions(mController);
     }
 
     @Test
     public void setSelected_resetsCarouselSelectionWhenDeselected() {
         mView.setSelected(false);
-        verify(mController, times(1)).setSelectedItem(RecyclerView.NO_POSITION, /* force= */ false);
+        verify(mController, times(1)).setSelectedItem(RecyclerView.NO_POSITION);
         verifyNoMoreInteractions(mController);
     }
 

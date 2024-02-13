@@ -17,6 +17,15 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
+namespace {
+
+// The time, in seconds, which the label is shown, before animating out again.
+// This number was chosen to be long enough for target users, who are slower
+// readers, to read the label.
+constexpr auto kLabelShownDuration = base::Seconds(3);
+
+}  // namespace
+
 ReadAnythingIconView::ReadAnythingIconView(
     CommandUpdater* command_updater,
     Browser* browser,
@@ -28,11 +37,13 @@ ReadAnythingIconView::ReadAnythingIconView(
                          page_action_icon_delegate,
                          "ReadAnythingIcon",
                          true),
+      label_shown_count_(browser->profile()->GetPrefs()->GetInteger(
+          prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount)),
       browser_(browser) {
   DCHECK(browser_);
 
   SetActive(false);
-  SetLabel(l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE));
+  SetUpForInOutAnimation(kLabelShownDuration);
 
   coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_);
   if (coordinator_) {
@@ -56,21 +67,28 @@ const gfx::VectorIcon& ReadAnythingIconView::GetVectorIcon() const {
   return kMenuBookChromeRefreshIcon;
 }
 
-bool ReadAnythingIconView::ShouldShowLabel() const {
-  // Only show the label a maximum of kReadAnythingOmniboxIconLabelShownCountMax
-  // times.
-  PrefService* prefs = browser_->profile()->GetPrefs();
-  int label_shown_count = prefs->GetInteger(
-      prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount);
-  if (label_shown_count < kReadAnythingOmniboxIconLabelShownCountMax) {
-    return true;
+void ReadAnythingIconView::UpdateImpl() {
+  if (GetVisible() != should_be_visible_) {
+    SetVisible(should_be_visible_);
+    base::UmaHistogramBoolean("Accessibility.ReadAnything.OmniboxIconShown",
+                              should_be_visible_);
   }
-  return false;
+  if (!should_be_visible_ || is_animating_label() ||
+      (label_shown_count_ >= kReadAnythingOmniboxIconLabelShownCountMax)) {
+    return;
+  }
+  ResetSlideAnimation(false);
+  AnimateIn(IDS_READING_MODE_TITLE);
+  ++label_shown_count_;
+  browser_->profile()->GetPrefs()->SetInteger(
+      prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount,
+      label_shown_count_);
 }
 
 void ReadAnythingIconView::Activate(bool active) {
   if (active) {
-    SetVisible(false);
+    should_be_visible_ = false;
+    Update();
     base::UmaHistogramBoolean("Accessibility.ReadAnything.OmniboxIconShown",
                               false);
   }
@@ -84,23 +102,8 @@ void ReadAnythingIconView::OnActivePageDistillable(bool distillable) {
   if (IsReadAnythingEntryShowing(browser_)) {
     return;
   }
-  SetVisible(distillable);
-  base::UmaHistogramBoolean("Accessibility.ReadAnything.OmniboxIconShown",
-                            distillable);
-
-  // Increase `prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount` up
-  // to its max to denote that the icon was shown.
-  if (!distillable) {
-    return;
-  }
-  PrefService* prefs = browser_->profile()->GetPrefs();
-  int label_shown_count = prefs->GetInteger(
-      prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount);
-  if (label_shown_count < kReadAnythingOmniboxIconLabelShownCountMax) {
-    prefs->SetInteger(
-        prefs::kAccessibilityReadAnythingOmniboxIconLabelShownCount,
-        label_shown_count + 1);
-  }
+  should_be_visible_ = distillable;
+  Update();
 }
 
 BEGIN_METADATA(ReadAnythingIconView)

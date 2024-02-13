@@ -50,10 +50,9 @@ class AllWebStateObservationForwarderTest : public PlatformTest {
   web::FakeWebState* AddWebStateToList(bool activate) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* web_state_ptr = web_state.get();
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   activate ? WebStateList::INSERT_ACTIVATE
-                                            : WebStateList::INSERT_NO_FLAGS,
-                                   WebStateOpener());
+    web_state_list_.InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate(activate));
     return web_state_ptr;
   }
 

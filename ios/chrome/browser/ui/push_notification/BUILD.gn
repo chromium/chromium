@@ -33,10 +33,24 @@ source_set("notifications_opt_in") {
     "notifications_opt_in_coordinator.h",
     "notifications_opt_in_coordinator.mm",
     "notifications_opt_in_coordinator_delegate.h",
+    "notifications_opt_in_mediator.h",
+    "notifications_opt_in_mediator.mm",
   ]
   deps = [
     ":notifications_opt_in_ui",
+    ":opt_in_alert_coordinator",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/sync/base:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]
@@ -44,6 +58,9 @@ source_set("notifications_opt_in") {
 
 source_set("notifications_opt_in_ui") {
   sources = [
+    "notifications_opt_in_consumer.h",
+    "notifications_opt_in_item_identifier.h",
+    "notifications_opt_in_presenter.h",
     "notifications_opt_in_view_controller.h",
     "notifications_opt_in_view_controller.mm",
   ]
@@ -51,6 +68,7 @@ source_set("notifications_opt_in_ui") {
     "resources:notifications_opt_in_banner",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/common/ui/colors",

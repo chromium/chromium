@@ -423,6 +423,32 @@ mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
 }
 
+mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
+  sources =
+      [ "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.cc" ]
+
+  proto_source =
+      "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.proto"
+  testcase_proto_kind = "content.fuzzing.ad_auction_service.proto.Testcase"
+
+  deps = [
+    ":mojolpm_fuzzer_support",
+    "//content/browser:browser",
+    "//content/browser:for_content_tests",
+    "//content/public/browser:browser_sources",
+    "//content/services/auction_worklet:auction_worklet",
+    "//services/data_decoder/public/cpp:test_support",
+  ]
+
+  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+
+  seed_corpus_sources = [
+    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_auction.textproto",
+    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_join.textproto",
+    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_update.textproto",
+  ]
+}
+
 if (enable_mojom_fuzzer) {
   static_library("controller_presentation_service_delegate_for_fuzzing") {
     # Should only be used in the fuzzer this was made for

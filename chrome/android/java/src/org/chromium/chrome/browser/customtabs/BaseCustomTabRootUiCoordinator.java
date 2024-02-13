@@ -82,6 +82,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -98,6 +99,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
     private final Supplier<CustomTabActivityTabController> mTabController;
     private final Supplier<CustomTabMinimizeDelegate> mMinimizeDelegateSupplier;
+    private final Supplier<CustomTabFeatureOverridesManager> mFeatureOverridesManagerSupplier;
 
     private CustomTabHeightStrategy mCustomTabHeightStrategy;
 
@@ -146,6 +148,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * @param tabController Activity tab controller.
      * @param minimizeDelegateSupplier Supplies the {@link CustomTabMinimizeDelegate} used to
      *     minimize the tab.
+     * @param featureOverridesManagerSupplier Supplies the {@link CustomTabFeatureOverridesManager}.
      */
     public BaseCustomTabRootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -184,7 +187,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @NonNull BackPressManager backPressManager,
             @NonNull Supplier<CustomTabActivityTabController> tabController,
-            @NonNull Supplier<CustomTabMinimizeDelegate> minimizeDelegateSupplier) {
+            @NonNull Supplier<CustomTabMinimizeDelegate> minimizeDelegateSupplier,
+            @NonNull Supplier<CustomTabFeatureOverridesManager> featureOverridesManagerSupplier) {
         super(
                 activity,
                 null,
@@ -246,6 +250,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         }
         mTabController = tabController;
         mMinimizeDelegateSupplier = minimizeDelegateSupplier;
+        mFeatureOverridesManagerSupplier = featureOverridesManagerSupplier;
         // TODO(https://crbug.com/1509163): move this RootUiCoordinator once this flag is removed.
         if (ChromeFeatureList.sCctTabModalDialog.isEnabled()) {
             getAppBrowserControlsVisibilityDelegate()
@@ -261,6 +266,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mNavigationController.get().onToolbarInitialized(mToolbarManager);
 
         CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
+        if (ChromeFeatureList.sCctIntentFeatureOverrides.isEnabled()) {
+            toolbar.setFeatureOverridesManager(mFeatureOverridesManagerSupplier.get());
+        }
         View coordinator = mActivity.findViewById(R.id.coordinator);
         mCustomTabHeightStrategy.onToolbarInitialized(
                 coordinator, toolbar, mIntentDataProvider.get().getPartialTabToolbarCornerRadius());
@@ -398,10 +406,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 .getPageInsightsIntentParams(mIntentDataProvider.get());
     }
 
-    private PageInsightsConfig getPageInsightsConfig(NavigationHandle navigationHandle) {
+    private PageInsightsConfig getPageInsightsConfig(
+            @Nullable NavigationHandle navigationHandle,
+            @Nullable NavigationEntry navigationEntry) {
         return CustomTabsConnection.getInstance()
                 .getPageInsightsConfig(
-                        mIntentDataProvider.get(), navigationHandle, mProfileSupplier);
+                        mIntentDataProvider.get(),
+                        navigationHandle,
+                        navigationEntry,
+                        mProfileSupplier);
     }
 
     public @Nullable PageInsightsCoordinator getPageInsightsCoordinator() {

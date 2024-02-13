@@ -107,8 +107,8 @@ class NotificationTestDelegate : public NotificationDelegate {
   NotificationTestDelegate(const NotificationTestDelegate&) = delete;
   NotificationTestDelegate& operator=(const NotificationTestDelegate&) = delete;
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (!button_index && !reply && !expecting_click_)
       ADD_FAILURE() << "Click should not be invoked with a button index.";
     if (button_index && !reply && !expecting_button_click_)
@@ -627,7 +627,7 @@ TEST_F(NotificationViewBaseTest, TestInlineReplyRemovedByUpdate) {
   EXPECT_TRUE(notification_view()->inline_reply_->GetVisible());
   EXPECT_FALSE(notification_view()->action_buttons_row_->GetVisible());
 
-  buttons[1].placeholder = absl::nullopt;
+  buttons[1].placeholder = std::nullopt;
   notification->set_buttons(buttons);
   UpdateNotificationViews(*notification);
 
@@ -1123,7 +1123,7 @@ TEST_F(NotificationViewBaseTest, AppNameWebAppNotification) {
   const GURL web_app_url("http://example.com");
 
   NotifierId notifier_id(web_app_url, /*title=*/u"web app title",
-                         /*web_app_id=*/absl::nullopt);
+                         /*web_app_id=*/std::nullopt);
 
   SkBitmap small_bitmap = gfx::test::CreateBitmap(/*size=*/16, SK_ColorYELLOW);
   // Makes the center area transparent.

@@ -49,10 +49,12 @@ class OrderController {
   int DetermineInsertionIndex(InsertionParams params) const;
 
   // Determines where to shift the active index after a WebState is closed.
-  // The returned index will either be WebStateList::kInvalidIndex or in be
-  // in range for the WebStateList once the element has been removed (i.e.
-  // this function accounts for the fact that the element at `removing_index`
-  // will be removed from the WebStateList).
+  //
+  // The index returned does not take into consideration the elements to be
+  // closed. If the calling code needs the index after closing the elements,
+  // it should use RemovingIndexes::IndexAfterRemoval(...) on the returned
+  // value.
+  //
   // Logic diagram: crbug.com/1395319
   int DetermineNewActiveIndex(int active_index,
                               const RemovingIndexes& removing_indexes) const;

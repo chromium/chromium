@@ -102,6 +102,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                            surface_origin, alpha_type, usage,
                                            debug_label)),
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
       holder_);
 }
 
@@ -129,7 +131,11 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
     return nullptr;
   }
 
-  return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox), holder_);
+  return base::MakeRefCounted<ClientSharedImage>(
+      AddMailbox(mailbox),
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
+      holder_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
@@ -155,6 +161,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   CHECK(!buffer_handle.is_null());
   return base::MakeRefCounted<ClientSharedImage>(
       AddMailbox(mailbox),
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
       GpuMemoryBufferHandleInfo(std::move(buffer_handle), format, size,
                                 buffer_usage),
       holder_);
@@ -179,6 +187,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
 
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox,
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle), format, size,
                                 buffer_usage),
       holder_);
@@ -203,6 +213,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       AddMailbox(proxy_->CreateSharedImage(
           format, size, color_space, surface_origin, alpha_type, usage,
           debug_label, std::move(buffer_handle))),
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
       holder_);
 }
 
@@ -255,6 +267,8 @@ ClientSharedImageInterface::CreateSharedImage(
       AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                            surface_origin, alpha_type, usage,
                                            debug_label, std::move(handle))),
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
       holder_);
   return shared_image_mapping;
 }
@@ -276,6 +290,10 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
           buffer_format, plane, gpu_memory_buffer->GetSize(), color_space,
           surface_origin, alpha_type, usage, debug_label,
           gpu_memory_buffer->CloneHandle())),
+      ClientSharedImage::Metadata(
+          viz::GetSinglePlaneSharedImageFormat(buffer_format),
+          gpu_memory_buffer->GetSize(), color_space, surface_origin, alpha_type,
+          usage),
       holder_);
 }
 
@@ -307,8 +325,16 @@ ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
   AddMailbox(mailboxes.front_buffer);
   AddMailbox(mailboxes.back_buffer);
   return ClientSharedImageInterface::SwapChainSharedImages(
-      base::MakeRefCounted<ClientSharedImage>(mailboxes.front_buffer, holder_),
-      base::MakeRefCounted<ClientSharedImage>(mailboxes.back_buffer, holder_));
+      base::MakeRefCounted<ClientSharedImage>(
+          mailboxes.front_buffer,
+          ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                      alpha_type, usage),
+          holder_),
+      base::MakeRefCounted<ClientSharedImage>(
+          mailboxes.back_buffer,
+          ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                      alpha_type, usage),
+          holder_));
 }
 
 void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
@@ -335,11 +361,21 @@ scoped_refptr<ClientSharedImage>
 ClientSharedImageInterface::AddReferenceToSharedImage(
     const SyncToken& sync_token,
     const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
     uint32_t usage) {
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, usage);
-  return base::MakeRefCounted<ClientSharedImage>(mailbox, holder_);
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox,
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
+      holder_);
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
@@ -348,10 +384,20 @@ uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(
     const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
     uint32_t usage) {
   AddMailbox(mailbox);
   proxy_->NotifyMailboxAdded(mailbox, usage);
-  return base::MakeRefCounted<ClientSharedImage>(mailbox, holder_);
+
+  return base::MakeRefCounted<ClientSharedImage>(
+      mailbox,
+      ClientSharedImage::Metadata(format, size, color_space, surface_origin,
+                                  alpha_type, usage),
+      holder_);
 }
 
 Mailbox ClientSharedImageInterface::AddMailbox(const gpu::Mailbox& mailbox) {

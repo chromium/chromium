@@ -1,0 +1,7 @@
+specific_include_rules = {
+  "url_pattern_util\.h": [
+    # Using absl::StatusOr at the boundaries of //third_party/liburlpattern.
+    # See: https://groups.google.com/a/chromium.org/g/cxx/c/ojzYDkjkuzA
+    "+third_party/abseil-cpp/absl/status/statusor.h",
+  ],
+}

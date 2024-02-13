@@ -23,7 +23,7 @@ namespace performance_manager {
 class ProcessNode;
 }
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 class ProcessContext {
  public:
@@ -71,7 +71,7 @@ class ProcessContext {
   // If this context refers to a renderer process, returns the
   // RenderProcessHostId that was assigned to it, otherwise returns a null
   // RenderProcessHostId.
-  RenderProcessHostId GetRenderProcessHostId() const;
+  performance_manager::RenderProcessHostId GetRenderProcessHostId() const;
 
   // If this context refers to a non-renderer child process, returns its
   // BrowserChildProcessHost. Returns nullptr if it is not a non-renderer child
@@ -81,25 +81,27 @@ class ProcessContext {
   // If this context refers to a non-renderer child process, returns
   // the BrowserChildProcessHostId that was assigned to it, otherwise returns a
   // null BrowserChildProcessHostId.
-  BrowserChildProcessHostId GetBrowserChildProcessHostId() const;
+  performance_manager::BrowserChildProcessHostId GetBrowserChildProcessHostId()
+      const;
 
   // Returns the ProcessNode for this context, or a null WeakPtr if it no longer
   // exists.
-  base::WeakPtr<ProcessNode> GetWeakProcessNode() const;
+  base::WeakPtr<performance_manager::ProcessNode> GetWeakProcessNode() const;
 
   // PM sequence methods.
 
   // Returns the ProcessContext for `node`. Equivalent to
   // node->GetResourceContext().
-  static ProcessContext FromProcessNode(const ProcessNode* node);
+  static ProcessContext FromProcessNode(
+      const performance_manager::ProcessNode* node);
 
   // Returns the ProcessContext for `node`, or nullopt if `node` is null.
   static std::optional<ProcessContext> FromWeakProcessNode(
-      base::WeakPtr<ProcessNode> node);
+      base::WeakPtr<performance_manager::ProcessNode> node);
 
   // Returns the ProcessNode for this context, or nullptr if it no longer
   // exists.
-  ProcessNode* GetProcessNode() const;
+  performance_manager::ProcessNode* GetProcessNode() const;
 
   // Returns a string representation of the context for debugging. This matches
   // the interface of base::TokenType and base::UnguessableToken, for
@@ -136,16 +138,18 @@ class ProcessContext {
   static_assert(BrowserProcessTag{} == BrowserProcessTag{},
                 "empty structs should always compare equal");
 
-  using AnyProcessHostId = absl::variant<BrowserProcessTag,
-                                         RenderProcessHostId,
-                                         BrowserChildProcessHostId>;
+  using AnyProcessHostId =
+      absl::variant<BrowserProcessTag,
+                    performance_manager::RenderProcessHostId,
+                    performance_manager::BrowserChildProcessHostId>;
 
-  ProcessContext(AnyProcessHostId id, base::WeakPtr<ProcessNode> weak_node);
+  ProcessContext(AnyProcessHostId id,
+                 base::WeakPtr<performance_manager::ProcessNode> weak_node);
 
   AnyProcessHostId id_;
-  base::WeakPtr<ProcessNode> weak_node_;
+  base::WeakPtr<performance_manager::ProcessNode> weak_node_;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_PROCESS_CONTEXT_H_

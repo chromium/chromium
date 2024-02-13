@@ -22,7 +22,7 @@ namespace x11 {
 class COMPONENT_EXPORT(X11) GeometryCache final : public EventObserver {
  public:
   using BoundsChangedCallback =
-      base::RepeatingCallback<void(const absl::optional<gfx::Rect>&,
+      base::RepeatingCallback<void(const std::optional<gfx::Rect>&,
                                    const gfx::Rect&)>;
 
   GeometryCache(Connection* connection,
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(X11) GeometryCache final : public EventObserver {
   bool Ready() const;
 
   void OnParentGeometryChanged(
-      const absl::optional<gfx::Rect>& old_parent_bounds,
+      const std::optional<gfx::Rect>& old_parent_bounds,
       const gfx::Rect& new_parent_bounds);
 
   void NotifyGeometryChanged();
@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(X11) GeometryCache final : public EventObserver {
   bool have_geometry_ = false;
   std::unique_ptr<GeometryCache> parent_;
   gfx::Rect geometry_;
-  absl::optional<gfx::Rect> last_notified_geometry_ = absl::nullopt;
+  std::optional<gfx::Rect> last_notified_geometry_ = std::nullopt;
 
   ScopedEventSelector window_events_;
 

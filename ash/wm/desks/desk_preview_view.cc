@@ -350,7 +350,6 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetPaintToLayer(ui::LAYER_TEXTURED);
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_PREVIEW));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetMasksToBounds(false);
 
@@ -378,6 +377,8 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   highlight_overlay_layer->SetIsFastRoundedCorner(true);
 
   RecreateDeskContentsMirrorLayers();
+
+  UpdateAccessibleName();
 }
 
 DeskPreviewView::~DeskPreviewView() = default;
@@ -487,40 +488,26 @@ void DeskPreviewView::Swap(bool right) {
   desks_controller->UpdateDesksDefaultNames();
 }
 
+void DeskPreviewView::UpdateAccessibleName() {
+  if (Desk* desk = mini_view_->desk()) {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        desk->is_active() ? IDS_ASH_DESKS_DESK_PREVIEW_ACTIVE
+                          : IDS_ASH_DESKS_DESK_PREVIEW_INACTIVE,
+        desk->name()));
+  }
+}
+
 void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Avoid failing accessibility checks if we don't have a name.
   views::Button::GetAccessibleNodeData(node_data);
-  if (GetAccessibleName().empty())
+
+  // Avoid failing accessibility checks if we don't have a name.
+  if (GetAccessibleName().empty()) {
     node_data->SetNameExplicitlyEmpty();
-
-  // Note that the desk may have already been destroyed.
-  Desk* desk = mini_view_->desk();
-  if (desk) {
-    // Announce desk name.
-    node_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kRoleDescription,
-        l10n_util::GetStringFUTF8(
-            IDS_ASH_DESKS_DESK_PREVIEW_A11Y_NAME,
-            l10n_util::GetStringUTF16(
-                desk->is_active()
-                    ? IDS_ASH_DESKS_ACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP
-                    : IDS_ASH_DESKS_INACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP),
-            desk->name()));
   }
 
-  // If the desk can be combined or closed, add a tip to let the user know they
-  // can use an accelerator.
-  if (!DesksController::Get()->CanRemoveDesks()) {
-    return;
-  }
-
-  const std::u16string target_desk_name =
-      DesksController::Get()->GetCombineDesksTargetName(desk);
-  const std::string extra_tip = l10n_util::GetStringFUTF8(
-      IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP, target_desk_name);
-
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                extra_tip);
+  node_data->AddStringAttribute(
+      ax::mojom::StringAttribute::kRoleDescription,
+      l10n_util::GetStringUTF8(IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION));
 }
 
 void DeskPreviewView::Layout(PassKey) {
@@ -662,7 +649,7 @@ void DeskPreviewView::OnFocusableViewBlurred() {
   mini_view_->UpdateFocusColor();
 }
 
-BEGIN_METADATA(DeskPreviewView, views::Button)
+BEGIN_METADATA(DeskPreviewView)
 END_METADATA
 
 }  // namespace ash

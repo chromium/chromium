@@ -4,7 +4,8 @@
 
 /** @fileoverview Suite of tests for extensions-detail-view. */
 
-import {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement, navigation, Page} from 'chrome://extensions/extensions.js';
+import type {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

@@ -275,12 +275,9 @@ bool HTMLFormElement::ValidateInteractively() {
           "An invalid form control with name='%name' is not focusable.");
       message.Replace("%name", unhandled->GetName());
 
-      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+      unhandled->ToHTMLElement().AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kError, message);
-      console_message->SetNodes(GetDocument().GetFrame(),
-                                {unhandled->ToHTMLElement().GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
     }
   }
   return false;

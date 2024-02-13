@@ -162,7 +162,7 @@
               </eol-offer-section>
             </template>
             <localized-link
-                id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]"
+                id="endOfLifeMessage" hidden="[[!hasEndOfLife_]]"
                 localized-string="$i18n{endOfLifeMessage}">
             </localized-link>
             <div class="secondary" hidden="[[!hasDeferredUpdate_]]">
@@ -172,12 +172,12 @@
           </div>
           <div class="separator" hidden="[[!showButtonContainer_]]"></div>
           <span id="buttonContainer" hidden="[[!showButtonContainer_]]">
-            <cr-button id="relaunch" hidden$="[[!showRelaunch_]]"
+            <cr-button id="relaunchButton" hidden$="[[!showRelaunch_]]"
                       on-click="onRelaunchClick_">
                 [[getRelaunchButtonText_(
                                 currentUpdateStatusEvent_)]]
             </cr-button>
-            <cr-button id="checkForUpdates" hidden="[[!showCheckUpdates_]]"
+            <cr-button id="checkForUpdatesButton" hidden="[[!showCheckUpdates_]]"
                 on-click="onCheckUpdatesClick_"
                 deep-link-focus-id$="[[Setting.kCheckForOsUpdate]]">
               $i18n{aboutCheckForUpdates}
@@ -324,8 +324,8 @@
             </div>
           </if>
         </div>
-        <div class="settings-box padded block" id="regulatoryInfo"
-          hidden$="[[!shouldShowRegulatoryOrSafetyInfo_(regulatoryInfo_)]]">
+        <div id="regulatoryInfo" class="settings-box padded block"
+            hidden$="[[!shouldShowRegulatoryOrSafetyInfo_(regulatoryInfo_)]]">
           <if expr="_google_chrome">
             <div class="secondary" hidden$="[[!shouldShowSafetyInfo_()]]">
               <a target="_blank" href="$i18n{aboutProductSafetyURL}">

@@ -446,16 +446,26 @@ template("generate_jar_jni") {
 # In order to depend on the JNI registration, use
 # <native-target-name>__jni_registration.
 template("native_with_jni") {
+  _enable_underlying_native =
+      !defined(invoker.enable_target) || invoker.enable_target
   _needs_native_dep =
-      (defined(invoker.manual_jni_registration) &&
-       invoker.manual_jni_registration) || allow_jni_multiplexing
+      _enable_underlying_native &&
+      ((defined(invoker.manual_jni_registration) &&
+        invoker.manual_jni_registration) || allow_jni_multiplexing) &&
+      !(defined(invoker.collect_inputs_only) && invoker.collect_inputs_only)
   if (_needs_native_dep || current_toolchain == default_toolchain) {
     _jni_registration_target_name = "${target_name}__jni_registration"
   }
 
   if (current_toolchain == default_toolchain) {
+    if (defined(invoker.visibility)) {
+      _target_name_for_visibility = target_name
+    }
     generate_jni_registration(_jni_registration_target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      if (defined(visibility)) {
+        visibility += [ ":$_target_name_for_visibility" ]
+      }
       native_deps = invoker.deps
 
       if (allow_jni_multiplexing) {
@@ -488,7 +498,7 @@ template("native_with_jni") {
                ])
   }
 
-  if (!defined(invoker.enable_target) || invoker.enable_target) {
+  if (_enable_underlying_native) {
     if (defined(invoker.target_type_import)) {
       import(invoker.target_type_import)
     }

@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 
@@ -63,7 +64,7 @@ ExtensionTestNotificationObserver::NotificationSet::~NotificationSet() =
     default;
 
 void ExtensionTestNotificationObserver::NotificationSet::
-    OnExtensionFrameUnregistered(const std::string& extension_id,
+    OnExtensionFrameUnregistered(const ExtensionId& extension_id,
                                  content::RenderFrameHost* render_frame_host) {
   closure_list_.Notify();
 }

@@ -786,7 +786,7 @@ void PolicyBase::AddDelegateData(base::span<const uint8_t> data) {
   // Can only set this once - as there is only one region sent to the child.
   CHECK(!delegate_data_);
   delegate_data_ =
-      std::make_unique<std::vector<const uint8_t>>(data.begin(), data.end());
+      std::make_unique<std::vector<uint8_t>>(data.begin(), data.end());
 }
 
 }  // namespace sandbox

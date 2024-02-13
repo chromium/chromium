@@ -51,9 +51,17 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
     return false;
   }
 
-  std::string EncodeBookmarkSyncMetadata() override { return ""; }
+  std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override {
+    return "";
+  }
 
-  void DecodeBookmarkSyncMetadata(
+  std::string EncodeAccountBookmarkSyncMetadata() override { return ""; }
+
+  void DecodeLocalOrSyncableBookmarkSyncMetadata(
+      const std::string& metadata_str,
+      const base::RepeatingClosure& schedule_save_closure) override {}
+
+  void DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override {}
 

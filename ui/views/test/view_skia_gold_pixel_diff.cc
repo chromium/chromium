@@ -37,7 +37,7 @@ void SnapshotCallback(base::RunLoop* run_loop,
 
 ViewSkiaGoldPixelDiff::ViewSkiaGoldPixelDiff(
     const std::string& screenshot_prefix,
-    const absl::optional<std::string>& corpus)
+    const std::optional<std::string>& corpus)
     : screenshot_prefix_(screenshot_prefix),
       pixel_diff_(ui::test::SkiaGoldPixelDiff::GetSession(corpus)) {
   CHECK(pixel_diff_);

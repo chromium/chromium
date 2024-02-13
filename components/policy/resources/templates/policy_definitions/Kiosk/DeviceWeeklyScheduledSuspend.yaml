@@ -1,8 +1,8 @@
 caption: Schedule weekly suspend intervals
 desc: |-
-  This policy establishes a series of weekly intervals for scheduling automated suspend. When an interval starts, the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device will enter suspend mode, and wake up when the interval ends.
+  This policy establishes a series of weekly intervals for scheduling automated suspension. When an interval starts, the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device will enter suspend mode, and wake up when the interval ends.
 
-  Schedules with overlaping intervals are not supported. This policy will not have any effect if it contains any two overlapping intervals.
+  Schedules with overlapping intervals are not supported. This policy will not have any effect if it contains any two overlapping intervals.
 
   <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices will use the system timezone to apply these intervals.
 

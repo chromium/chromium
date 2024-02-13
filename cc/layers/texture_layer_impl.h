@@ -62,6 +62,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
+  bool NeedSetTransferableResource() const;
 
   // These methods notify the display compositor, through the
   // CompositorFrameSink, of the existence of a SharedBitmapId and its
@@ -76,6 +77,7 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
   void RegisterSharedBitmapId(viz::SharedBitmapId id,
                               scoped_refptr<CrossThreadSharedBitmap> bitmap);
   void UnregisterSharedBitmapId(viz::SharedBitmapId id);
+  void SetInInvisibleLayerTree() override;
 
  private:
   TextureLayerImpl(LayerTreeImpl* tree_impl, int id);

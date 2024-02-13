@@ -6,12 +6,14 @@
 #define CHROME_TEST_BASE_BROWSER_WITH_TEST_WINDOW_TEST_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -28,6 +30,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -82,7 +85,7 @@ class TestingProfileManager;
 //
 // Subclasses must invoke BrowserWithTestWindowTest::SetUp as it is responsible
 // for creating the various objects of this class.
-class BrowserWithTestWindowTest : public testing::Test {
+class BrowserWithTestWindowTest : public testing::Test, public ProfileObserver {
  public:
   // Trait which requests construction of a hosted app.
   struct HostedApp {};
@@ -149,7 +152,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
-  user_manager::FakeUserManager* user_manager() { return user_manager_; }
+  user_manager::FakeUserManager* user_manager() { return user_manager_.Get(); }
 #endif
 
   // The context to help determine desktop type when creating new Widgets.
@@ -227,6 +230,16 @@ class BrowserWithTestWindowTest : public testing::Test {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Handles the post-process for the newly created Profile.
+  // Expected to be called on customizing CreateProfile for ash.
+  virtual void OnUserProfileCreated(const std::string& email, Profile* profile);
+
+  // Switches the active user to the one specified by the email.
+  virtual void SwitchActiveUser(const std::string& email);
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   ash::ScopedCrosSettingsTestHelper* GetCrosSettingsHelper();
   ash::StubInstallAttributes* GetInstallAttributes();
 #endif
@@ -249,8 +262,11 @@ class BrowserWithTestWindowTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  raw_ptr<user_manager::FakeUserManager> user_manager_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
+      user_manager_;
+  std::vector<
+      std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
+      profile_observations_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
 #endif

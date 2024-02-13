@@ -14,14 +14,11 @@
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/display/screen_base.h"
+#include "ui/display/test/virtual_display_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
 #include "ui/display/test/display_manager_test_api.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "ui/display/mac/test/virtual_display_mac_util.h"
 #endif
 
 namespace web_app {
@@ -47,13 +44,15 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
       .UpdateDisplay("801x802,802x803");
-#elif BUILDFLAG(IS_MAC)
-  if (!display::test::VirtualDisplayMacUtil::IsAPIAvailable()) {
-    GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
+#else
+  std::unique_ptr<display::test::VirtualDisplayUtil> virtual_display_util;
+  if ((virtual_display_util = display::test::VirtualDisplayUtil::TryCreate(
+           display::Screen::GetScreen()))) {
+    virtual_display_util->AddDisplay(
+        1, display::test::VirtualDisplayUtil::k1920x1080);
+  } else {
+    GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
   }
-  display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-  virtual_display_mac_util.AddDisplay(
-      1, display::test::VirtualDisplayMacUtil::k1920x1080);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Install test app.

@@ -40,8 +40,21 @@ export enum Presets {
   PRESET_CLOUD_ACCOUNT,
 }
 
+export type PolicyType =
+    'boolean'|'integer'|'number'|'string'|'list'|'dictionary';
+
+export interface PolicyNamespace {
+  [policyName: string]: PolicyType;
+}
+
+export interface PolicySchema {
+  chrome: PolicyNamespace;
+  [extensionId: string]: PolicyNamespace;
+}
+
 // Object mapping policy information types to their values.
 export interface PolicyInfo {
+  namespace: string;
   name: string;
   source: PolicySource;
   scope: PolicyScope;
@@ -85,6 +98,10 @@ export class PolicyTestBrowserProxy {
   applyTestPolicies(policies: string, profileSeparationResponse: string) {
     return sendWithPromise(
         'setLocalTestPolicies', policies, profileSeparationResponse);
+  }
+
+  listenPoliciesUpdates() {
+    return sendWithPromise('listenPoliciesUpdates');
   }
 
   revertTestPolicies() {

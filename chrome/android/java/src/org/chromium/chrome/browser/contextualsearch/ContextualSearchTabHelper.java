@@ -305,13 +305,13 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             return false;
         }
 
+        Profile profile = Profile.fromWebContents(webContents);
         boolean isDseGoogle =
-                TemplateUrlServiceFactory.getForProfile(Profile.fromWebContents(webContents))
-                        .isDefaultSearchEngineGoogle();
+                TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle();
         boolean isActive =
                 !webContents.isIncognito()
                         && FirstRunStatus.getFirstRunFlowComplete()
-                        && !ContextualSearchPolicy.isContextualSearchDisabled()
+                        && !ContextualSearchPolicy.isContextualSearchDisabled(profile)
                         && isDseGoogle
                         && !LocaleManager.getInstance().needToCheckForSearchEnginePromo()
                         // Svelte and Accessibility devices are incompatible with the first-run flow
@@ -330,7 +330,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                             + " getFirstRunFlowComplete: "
                             + FirstRunStatus.getFirstRunFlowComplete()
                             + " !isContextualSearchDisabled: "
-                            + !ContextualSearchManager.isContextualSearchDisabled()
+                            + !ContextualSearchManager.isContextualSearchDisabled(profile)
                             + " isDefaultSearchEngineGoogle: "
                             + isDseGoogle
                             + " !needToCheckForSearchEnginePromo: "

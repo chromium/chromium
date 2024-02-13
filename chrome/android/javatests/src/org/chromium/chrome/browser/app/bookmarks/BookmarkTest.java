@@ -8,6 +8,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -34,6 +36,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -117,6 +120,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -140,7 +144,8 @@ import java.util.concurrent.ExecutionException;
 // TODO(1406059): Disabling the shopping CPA should not be a requirement for these tests.
 @DisableFeatures({
     ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS
+    ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+    SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
 })
 // TODO(crbug.com/1426138): Investigate batching.
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
@@ -438,6 +443,25 @@ public class BookmarkTest {
         BookmarkTestUtil.openReadingList(mItemsContainer, mDelegate, mBookmarkModel);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         onView(withText("You'll find your reading list here"));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    public void testOpenFromReadingListAndNavigateBack() throws Exception {
+        openBookmarkManager();
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        runOnUiThreadBlocking(
+                () ->
+                        mBookmarkModel.addToReadingList(
+                                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                                "test",
+                                new GURL("https://test.com")));
+
+        BookmarkTestUtil.openReadingList(mItemsContainer, mDelegate, mBookmarkModel);
+        onView(withText("test")).perform(click());
+        Espresso.pressBack();
+        onView(withText("test")).check(matches(isDisplayed()));
     }
 
     // TODO(twellington): Write a folder navigation test for tablets that waits for the Tab hosting

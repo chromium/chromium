@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/notification_center/ash_notification_drag_controller.h"
+#include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_style.h"
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/metrics_utils.h"
@@ -412,11 +413,13 @@ class AshNotificationViewTestBase : public AshTestBase,
   views::Label* GetTitleView(AshNotificationView* view) {
     return view->title_row_->title_view_;
   }
-  views::LabelButton* GetTurnOffNotificationsButton(AshNotificationView* view) {
-    return view->turn_off_notifications_button_;
+  views::Button* GetTurnOffNotificationsButton(AshNotificationView* view) {
+    return static_cast<views::Button*>(
+        view->GetViewByID(kNotificationTurnOffNotificationsButton));
   }
-  views::LabelButton* GetInlineSettingsCancelButton(AshNotificationView* view) {
-    return view->inline_settings_cancel_button_;
+  views::Button* GetInlineSettingsCancelButton(AshNotificationView* view) {
+    return static_cast<views::Button*>(
+        view->GetViewByID(kNotificationInlineSettingsCancelButton));
   }
   IconButton* GetSnoozeButton(AshNotificationView* view) {
     return view->snooze_button_;

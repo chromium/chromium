@@ -100,10 +100,10 @@ std::unique_ptr<KeyedService> BuildEventRouter(
   return std::make_unique<EventRouter>(profile, ExtensionPrefs::Get(profile));
 }
 
-bool HasPrefsPermission(bool (*has_pref)(const std::string&,
+bool HasPrefsPermission(bool (*has_pref)(const ExtensionId&,
                                          content::BrowserContext*),
                         content::BrowserContext* context,
-                        const std::string& id) {
+                        const ExtensionId& id) {
   return has_pref(id, context);
 }
 
@@ -229,7 +229,7 @@ void GetMatchingExtensionsForSite(
 }
 
 auto MatchMatchingExtensionInfo(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const api::developer_private::HostAccess& host_access,
     bool can_request_all_sites) {
   return testing::AllOf(
@@ -244,7 +244,7 @@ auto MatchMatchingExtensionInfo(
 }
 
 api::developer_private::ExtensionSiteAccessUpdate CreateSiteAccessUpdate(
-    const std::string& id,
+    const ExtensionId& id,
     api::developer_private::HostAccess access) {
   api::developer_private::ExtensionSiteAccessUpdate update;
   update.id = id;
@@ -311,7 +311,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   // Tests modifying the extension's configuration.
   void TestExtensionPrefSetting(const base::RepeatingCallback<bool()>& has_pref,
                                 const std::string& key,
-                                const std::string& extension_id,
+                                const ExtensionId& extension_id,
                                 bool expected_default_value);
 
   testing::AssertionResult TestPackExtensionFunction(
@@ -391,7 +391,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadUnpackedExtension() {
 const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
   const char kName[] = "extension name";
   const char kVersion[] = "1.0.0.1";
-  std::string id = crx_file::id_util::GenerateId(kName);
+  ExtensionId id = crx_file::id_util::GenerateId(kName);
   auto manifest = base::Value::Dict()
                       .Set("name", kName)
                       .Set("version", kVersion)
@@ -410,7 +410,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
 void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
     const base::RepeatingCallback<bool()>& has_pref,
     const std::string& key,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool expected_default_value) {
   EXPECT_EQ(expected_default_value, has_pref.Run()) << key;
 
@@ -576,7 +576,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   // Sadly, we need a "real" directory here, because toggling prefs causes
   // a reload (which needs a path).
   const Extension* extension = LoadUnpackedExtension();
-  const std::string& id = extension->id();
+  const ExtensionId& id = extension->id();
 
   ScriptingPermissionsModifier(profile(), base::WrapRefCounted(extension))
       .SetWithholdHostPermissions(true);
@@ -624,7 +624,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 // Test developerPrivate.reload.
 TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateReload) {
   const Extension* extension = LoadUnpackedExtension();
-  std::string extension_id = extension->id();
+  ExtensionId extension_id = extension->id();
   auto function = base::MakeRefCounted<api::DeveloperPrivateReloadFunction>();
   base::Value::List reload_args;
   reload_args.Append(extension_id);
@@ -1336,7 +1336,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RepairNotBrokenExtension) {
 // extension.
 // Regression test for https://crbug.com/577959.
 TEST_F(DeveloperPrivateApiUnitTest, RepairPolicyExtension) {
-  std::string extension_id(kGoodCrx);
+  ExtensionId extension_id(kGoodCrx);
 
   // Set up a mock provider with a policy extension.
   std::unique_ptr<MockExternalProvider> mock_provider =
@@ -2528,7 +2528,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
 TEST_F(
     DeveloperPrivateApiUnitTest,
     DeveloperPrivateGetUserAndExtensionSitesByEtld_PolicyControlledExtensions) {
-  std::string extension_id(kGoogleOnlyCrx);
+  ExtensionId extension_id(kGoogleOnlyCrx);
 
   // Set up a mock provider with a policy extension.
   std::unique_ptr<MockExternalProvider> mock_provider =

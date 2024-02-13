@@ -5,7 +5,8 @@
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {QueryTilesInternalsBrowserProxy, QueryTilesInternalsBrowserProxyImpl, ServiceStatus, TileData} from './query_tiles_internals_browser_proxy.js';
+import type {QueryTilesInternalsBrowserProxy, ServiceStatus, TileData} from './query_tiles_internals_browser_proxy.js';
+import {QueryTilesInternalsBrowserProxyImpl} from './query_tiles_internals_browser_proxy.js';
 
 /**
  * @param serviceStatus The current status of the tile service.

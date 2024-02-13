@@ -162,12 +162,15 @@ class AccountSelectionViewBase {
     // dialog.
     virtual void OnMoreDetails(const ui::Event& event) = 0;
 
+    // Called when the accounts UI is displayed.
+    virtual void OnAccountsDisplayed() = 0;
+
     // Called when IdentityProvider.close() is called from the renderer.
     virtual void CloseModalDialog() = 0;
   };
 
   AccountSelectionViewBase(
-      Browser* browser,
+      content::WebContents* web_contents,
       AccountSelectionViewBase::Observer* observer,
       views::WidgetObserver* widget_observer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -254,8 +257,8 @@ class AccountSelectionViewBase {
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
-  // Browser which the dialog is rendered on.
-  raw_ptr<Browser> browser_;
+  // Web contents which the dialog is rendered on.
+  raw_ptr<content::WebContents> web_contents_;
 
   // Widget to control the dialog i.e. hide, show, add observer etc.
   base::WeakPtr<views::Widget> dialog_widget_;

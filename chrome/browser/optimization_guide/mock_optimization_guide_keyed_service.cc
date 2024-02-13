@@ -5,12 +5,12 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 
 #include "base/path_service.h"
+#include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/prediction_model_store.h"
 #include "components/prefs/testing_pref_service.h"
 
 // static
@@ -28,8 +28,8 @@ void MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState() {
   base::PathService::Get(chrome::DIR_USER_DATA, &model_downloads_dir);
   model_downloads_dir = model_downloads_dir.Append(
       optimization_guide::kOptimizationGuideModelStoreDirPrefix);
-  optimization_guide::PredictionModelStore::GetInstance()->Initialize(
-      TestingBrowserProcess::GetGlobal()->local_state(), model_downloads_dir);
+  optimization_guide::ChromePredictionModelStore::GetInstance()->Initialize(
+      model_downloads_dir);
 }
 
 // static
@@ -42,7 +42,8 @@ void MockOptimizationGuideKeyedService::TearDown() {
 void MockOptimizationGuideKeyedService::ResetForTesting() {
   // Reinitialize the store, so that tests do not use state from the
   // previous test.
-  optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
+  optimization_guide::ChromePredictionModelStore::GetInstance()
+      ->ResetForTesting();
 }
 
 MockOptimizationGuideKeyedService::MockOptimizationGuideKeyedService()

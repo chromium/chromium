@@ -73,6 +73,9 @@ namespace {
 const char kEffectiveSize[] = "effective_size";
 const char kSize[] = "size";
 const char kAllocatedObjectsSize[] = "allocated_objects_size";
+#if BUILDFLAG(IS_CHROMEOS)
+const char kNonExoSize[] = "non_exo_size";
+#endif
 
 constexpr int kKiB = 1024;
 constexpr int kMiB = 1024 * 1024;
@@ -237,6 +240,10 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/shared_images", "SharedImages.Purgeable", MetricSize::kLarge,
      "purgeable_size", EmitTo::kSizeInUmaOnly, nullptr},
+#if BUILDFLAG(IS_CHROMEOS)
+    {"gpu/shared_images", "SharedImages.NonExo", MetricSize::kLarge,
+     kNonExoSize, EmitTo::kSizeInUmaOnly, nullptr},
+#endif  // BUILDFLAG(IS_CHROMEOS)
     {"gpu/transfer_cache", "ServiceTransferCache", MetricSize::kCustom, kSize,
      EmitTo::kSizeInUmaOnly, nullptr, ImageSizeMetricRange},
     {"gpu/transfer_cache", "ServiceTransferCache.AvgImageSize",
@@ -979,6 +986,26 @@ void EmitSummedGpuMemory(const GlobalMemoryDump::ProcessDump& pmd,
     EmitProcessUma(HistogramProcessType::kGpu, synthetic_metric, total);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void EmitGpuMemoryNonExo(const GlobalMemoryDump::ProcessDump& pmd,
+                         bool record_uma) {
+  if (!record_uma) {
+    return;
+  }
+  Metric synthetic_metric = {
+      nullptr, "GpuMemoryNonExo",      MetricSize::kLarge,
+      kSize,   EmitTo::kSizeInUmaOnly, nullptr};
+
+  // Combine several categories together to sum up Chrome-reported gpu memory.
+  uint64_t total = 0;
+  total += pmd.GetMetric("gpu/shared_images", kNonExoSize).value_or(0);
+  total += pmd.GetMetric("skia/gpu_resources", kSize).value_or(0);
+
+  // We only report this metric for the GPU process, so we always use kGpu.
+  EmitProcessUma(HistogramProcessType::kGpu, synthetic_metric, total);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void EmitBrowserMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
                               ukm::SourceId ukm_source_id,
                               ukm::UkmRecorder* ukm_recorder,
@@ -1038,6 +1065,9 @@ void EmitGpuMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
   EmitProcessUmaAndUkm(pmd, HistogramProcessType::kGpu, uptime, record_uma,
                        &builder);
   EmitSummedGpuMemory(pmd, &builder, record_uma);
+#if BUILDFLAG(IS_CHROMEOS)
+  EmitGpuMemoryNonExo(pmd, record_uma);
+#endif
   builder.Record(ukm_recorder);
 }
 

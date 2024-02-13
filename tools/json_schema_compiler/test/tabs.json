@@ -32,33 +32,30 @@
             "type": "integer",
             "name": "tabId",
             "minimum": 0
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"name": "tab", "$ref": "Tab"}
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"name": "tab", "$ref": "Tab"}
+          ]
+        }
       },
       {
         "name": "getCurrent",
         "type": "function",
         "description": "Gets the tab that this script call is being made from. May be undefined if called from a non-tab context (for example: a background page or popup view).",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "optional": true
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "optional": true
+            }
+          ]
+        }
       },
       {
         "name": "connect",
@@ -99,20 +96,19 @@
           {
             "type": "any",
             "name": "request"
-          },
-          {
-            "type": "function",
-            "name": "responseCallback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "response",
-                "type": "any",
-                "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the specified tab, the callback will be called with no arguments and <a href='extension.html#property-lastError'>chrome.runtime.lastError</a> will be set to the error message."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "responseCallback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "response",
+              "type": "any",
+              "description": "The JSON response object sent by the handler of the request. If an error occurs while connecting to the specified tab, the callback will be called with no arguments and <a href='extension.html#property-lastError'>chrome.runtime.lastError</a> will be set to the error message."
+            }
+          ]
+        }
       },
       {
         "name": "getSelected",
@@ -126,15 +122,14 @@
             "minimum": 0,
             "optional": true,
             "description": "Defaults to the <a href='windows.html#current-window'>current window</a>."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"name": "tab", "$ref": "Tab"}
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"name": "tab", "$ref": "Tab"}
+          ]
+        }
       },
       {
         "name": "getAllInWindow",
@@ -148,15 +143,14 @@
             "minimum": 0,
             "optional": true,
             "description": "Defaults to the <a href='windows.html#current-window'>current window</a>."
-            },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"name": "tabs", "type": "array", "items": { "$ref": "Tab" } }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"name": "tabs", "type": "array", "items": { "$ref": "Tab" } }
+          ]
+        }
       },
       {
         "name": "create",
@@ -201,20 +195,19 @@
                 "description": "Whether the tab should be pinned. Defaults to <var>false</var>"
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "description": "Details about the created tab. Will contain the ID of the new tab."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "description": "Details about the created tab. Will contain the ID of the new tab."
+            }
+          ]
+        }
       },
       {
         "name": "query",
@@ -269,21 +262,20 @@
                 "description": "The type of window the tabs are in."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "array",
-                "items": {
-                  "$ref": "Tab"
-                }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "array",
+              "items": {
+                "$ref": "Tab"
+              }
+            }
+          ]
+        }
       },
       {
         "name": "highlight",
@@ -306,19 +298,18 @@
                  ]
                }
              }
-           },
-           {
-             "type": "function",
-             "name": "callback",
-             "parameters": [
-               {
-                 "name": "window",
-                 "$ref": "Window",
-                 "description": "Contains details about the window whose tabs were highlighted."
-               }
-             ]
            }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "window",
+              "$ref": "Window",
+              "description": "Contains details about the window whose tabs were highlighted."
+            }
+          ]
+        }
       },
       {
         "name": "update",
@@ -363,21 +354,20 @@
                 "description": "Whether the tab should be pinned."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "optional": true,
-                "description": "Details about the updated tab, or <code>null</code> if the 'tabs' permission has not been requested."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "optional": true,
+              "description": "Details about the updated tab, or <code>null</code> if the 'tabs' permission has not been requested."
+            }
+          ]
+        }
       },
       {
         "name": "move",
@@ -408,23 +398,22 @@
                 "description": "The position to move the window to. The provided value will be clamped to between zero and the number of tabs in the window."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tabs",
-                "description": "Details about the moved tabs.",
-                "choices": [
-                  {"$ref": "Tab"},
-                  {"type": "array", "items": {"$ref": "Tab"}}
-                ]
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tabs",
+              "description": "Details about the moved tabs.",
+              "choices": [
+                {"$ref": "Tab"},
+                {"type": "array", "items": {"$ref": "Tab"}}
+              ]
+            }
+          ]
+        }
       },
       {
         "name": "reload",
@@ -443,9 +432,13 @@
                 "description": "Whether using any local cache. Default is false."
               }
             }
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "remove",
@@ -459,9 +452,13 @@
               {"type": "integer", "minimum": 0},
               {"type": "array", "items": {"type": "integer", "minimum": 0}}
             ]
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "detectLanguage",
@@ -474,19 +471,18 @@
             "minimum": 0,
             "optional": true,
             "description": "Defaults to the active tab of the <a href='windows.html#current-window'>current window</a>."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "type": "string",
-                "name": "language",
-                "description": "An ISO language code such as <code>en</code> or <code>fr</code>. For a complete list of languages supported by this method, see <a href='http://src.chromium.org/viewvc/chrome/trunk/src/third_party/cld/languages/internal/languages.cc'>kLanguageInfoTable</a>. The 2nd to 4th columns will be checked and the first non-NULL value will be returned except for Simplified Chinese for which zh-CN will be returned. For an unknown language, <code>und</code> will be returned."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "string",
+              "name": "language",
+              "description": "An ISO language code such as <code>en</code> or <code>fr</code>. For a complete list of languages supported by this method, see <a href='http://src.chromium.org/viewvc/chrome/trunk/src/third_party/cld/languages/internal/languages.cc'>kLanguageInfoTable</a>. The 2nd to 4th columns will be checked and the first non-NULL value will be returned except for Simplified Chinese for which zh-CN will be returned. For an unknown language, <code>und</code> will be returned."
+            }
+          ]
+        }
       },
       {
         "name": "captureVisibleTab",
@@ -521,13 +517,14 @@
                 "description": "When format is 'jpeg', controls the quality of the resulting image.  This value is ignored for PNG images.  As quality is decreased, the resulting image will have more visual artifacts, and the number of bytes needed to store it will decrease."
               }
             }
-          },
-          {
-            "type": "function", "name": "callback", "parameters": [
-              {"type": "string", "name": "dataUrl", "description": "A data URL which encodes an image of the visible area of the captured tab. May be assigned to the 'src' property of an HTML Image element for display."}
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"type": "string", "name": "dataUrl", "description": "A data URL which encodes an image of the visible area of the captured tab. May be assigned to the 'src' property of an HTML Image element for display."}
+          ]
+        }
       },
       {
         "name": "executeScript",
@@ -544,15 +541,14 @@
               "file": {"type": "string", "optional": true, "description": "JavaScript file to execute."},
               "allFrames": {"type": "boolean", "optional": true, "description": "If allFrames is true, this function injects script into all frames of current page. By default, it's false and script is injected only into the top main frame."}
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called after all the JavaScript has been executed.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called after all the JavaScript has been executed.",
+          "parameters": []
+        }
       },
       {
         "name": "insertCSS",
@@ -569,15 +565,14 @@
               "file": {"type": "string", "optional": true, "description": "CSS file to be injected."},
               "allFrames": {"type": "boolean", "optional": true, "description": "If allFrames is true, this function injects CSS text into all frames of current page. By default, it's false and CSS is injected only into the top main frame."}
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when all the CSS has been inserted.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when all the CSS has been inserted.",
+          "parameters": []
+        }
       }
     ],
     "events": [

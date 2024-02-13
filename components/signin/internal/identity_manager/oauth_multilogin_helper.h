@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
@@ -27,6 +28,10 @@ class ProfileOAuth2TokenService;
 namespace signin {
 
 enum class SetAccountsInCookieResult;
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+class BoundSessionOAuthMultiLoginDelegate;
+#endif
 
 // This is a helper class that drives the OAuth multilogin process.
 // The main steps are:
@@ -80,6 +85,10 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<AccountsCookieMutator::PartitionDelegate> partition_delegate_;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  std::unique_ptr<BoundSessionOAuthMultiLoginDelegate> bound_session_delegate_;
+#endif
 
   int fetcher_retries_ = 0;
 

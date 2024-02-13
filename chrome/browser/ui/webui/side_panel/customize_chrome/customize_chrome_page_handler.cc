@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -298,13 +299,59 @@ void CustomizeChromePageHandler::OpenChromeWebStore() {
 void CustomizeChromePageHandler::OpenThirdPartyThemePage(
     const std::string& theme_id) {
   NavigateParams navigate_params(
-      profile_, GURL("https://chrome.google.com/webstore/detail/" + theme_id),
+      profile_,
+      GURL("https://chrome.google.com/webstore/detail/" +
+           base::EscapePath(theme_id)),
       ui::PAGE_TRANSITION_LINK);
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);
   UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen",
                             NtpChromeWebStoreOpen::kCollections);
+}
+
+void CustomizeChromePageHandler::OpenChromeWebStoreCategoryPage(
+    side_panel::mojom::ChromeWebStoreCategory category) {
+  std::string path;
+  NtpChromeWebStoreOpen page;
+  switch (category) {
+    case side_panel::mojom::ChromeWebStoreCategory::kWorkflowPlanning:
+      path = "extensions/productivity/workflow";
+      page = NtpChromeWebStoreOpen::kWorkflowPlanningCategoryPage;
+      break;
+    case side_panel::mojom::ChromeWebStoreCategory::kShopping:
+      path = "extensions/lifestyle/shopping";
+      page = NtpChromeWebStoreOpen::kShoppingCategoryPage;
+      break;
+  }
+
+  NavigateParams navigate_params(
+      profile_, GURL("https://chromewebstore.google.com/category/" + path),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen", page);
+}
+
+void CustomizeChromePageHandler::OpenChromeWebStoreCollectionPage(
+    side_panel::mojom::ChromeWebStoreCollection collection) {
+  std::string path;
+  NtpChromeWebStoreOpen page;
+  switch (collection) {
+    case side_panel::mojom::ChromeWebStoreCollection::kWrittingEssentials:
+      path = "writing_essentials";
+      page = NtpChromeWebStoreOpen::kWritingEssentialsCollectionPage;
+      break;
+  }
+
+  NavigateParams navigate_params(
+      profile_, GURL("https://chromewebstore.google.com/collection/" + path),
+      ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
+  UMA_HISTOGRAM_ENUMERATION("NewTabPage.ChromeWebStoreOpen", page);
 }
 
 void CustomizeChromePageHandler::SetMostVisitedSettings(

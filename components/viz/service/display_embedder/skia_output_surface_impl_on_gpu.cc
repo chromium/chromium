@@ -262,7 +262,6 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
     ScheduleGpuTaskCallback schedule_gpu_task,
-    GpuVSyncCallback gpu_vsync_callback,
     AddChildWindowToBrowserCallback add_child_window_to_browser_callback,
     SkiaOutputDevice::ReleaseOverlaysCallback release_overlays_callback) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::Create");
@@ -287,7 +286,7 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
       context_state->feature_info(), renderer_settings, sequence_id,
       shared_gpu_deps, std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(schedule_gpu_task), std::move(gpu_vsync_callback),
+      std::move(schedule_gpu_task),
       std::move(add_child_window_to_browser_callback),
       std::move(release_overlays_callback));
   if (!impl_on_gpu->Initialize()) {
@@ -308,7 +307,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
     BufferPresentedCallback buffer_presented_callback,
     ContextLostCallback context_lost_callback,
     ScheduleGpuTaskCallback schedule_gpu_task,
-    GpuVSyncCallback gpu_vsync_callback,
     AddChildWindowToBrowserCallback add_child_window_to_browser_callback,
     SkiaOutputDevice::ReleaseOverlaysCallback release_overlays_callback)
     : dependency_(std::move(deps)),
@@ -332,7 +330,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
           std::move(did_swap_buffer_complete_callback)),
       context_lost_callback_(std::move(context_lost_callback)),
       schedule_gpu_task_(std::move(schedule_gpu_task)),
-      gpu_vsync_callback_(std::move(gpu_vsync_callback)),
       add_child_window_to_browser_callback_(
           std::move(add_child_window_to_browser_callback)),
       release_overlays_callback_(release_overlays_callback),
@@ -1896,10 +1893,6 @@ void SkiaOutputSurfaceImplOnGpu::SetEnableDCLayers(bool enable) {
   output_device_->SetEnableDCLayers(enable);
 }
 
-void SkiaOutputSurfaceImplOnGpu::SetGpuVSyncEnabled(bool enabled) {
-  output_device_->SetGpuVSyncEnabled(enabled);
-}
-
 void SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID(int64_t display_id) {
   output_device_->SetVSyncDisplayID(display_id);
 }
@@ -2002,10 +1995,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     }
 
 #if BUILDFLAG(IS_MAC)
-    if (base::FeatureList::IsEnabled(
-            features::kCVDisplayLinkBeginFrameSource)) {
       presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
-    }
 #endif
 
     if (MakeCurrent(/*need_framebuffer=*/true)) {
@@ -2482,10 +2472,6 @@ const gpu::GpuPreferences& SkiaOutputSurfaceImplOnGpu::GetGpuPreferences()
   return gpu_preferences_;
 }
 
-GpuVSyncCallback SkiaOutputSurfaceImplOnGpu::GetGpuVSyncCallback() {
-  return gpu_vsync_callback_;
-}
-
 void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     gpu::SwapBuffersCompleteParams params,
     const gfx::Size& pixel_size,
@@ -2803,5 +2789,50 @@ void SkiaOutputSurfaceImplOnGpu::CheckAsyncWorkCompletion() {
     gr_context()->checkAsyncWorkCompletion();
   }
 }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+void SkiaOutputSurfaceImplOnGpu::DetileOverlay(
+    gpu::Mailbox input,
+    const gfx::Size& input_visible_size,
+    gpu::Mailbox output,
+    const gfx::RectF& display_rect,
+    const gfx::RectF& crop_rect,
+    gfx::OverlayTransform transform) {
+  // Note that we don't want to get the device queue from the
+  // VulkanContextProvider because we actually need a special protected device
+  // queue.
+  auto input_representation =
+      shared_image_representation_factory_->ProduceVulkan(
+          input, vulkan_image_processor_->GetVulkanDeviceQueue(),
+          vulkan_image_processor_->GetVulkanImplementation());
+  auto output_representation =
+      shared_image_representation_factory_->ProduceVulkan(
+          output, vulkan_image_processor_->GetVulkanDeviceQueue(),
+          vulkan_image_processor_->GetVulkanImplementation());
+
+  if (!input_representation || !output_representation) {
+    LOG(ERROR) << "Error creating Vulkan representations for detiling.";
+    return;
+  }
+
+  {
+    std::vector<VkSemaphore> begin_semaphores;
+    std::vector<VkSemaphore> end_semaphores;
+    auto input_access = input_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kRead, begin_semaphores, end_semaphores);
+    auto output_access = output_representation->BeginScopedAccess(
+        gpu::RepresentationAccessMode::kWrite, begin_semaphores,
+        end_semaphores);
+
+    vulkan_image_processor_->Process(
+        input_access->GetVulkanImage(), input_visible_size,
+        output_access->GetVulkanImage(), display_rect, crop_rect, transform,
+        begin_semaphores, end_semaphores);
+  }
+
+  output_representation->SetCleared();
+}
+#endif
 
 }  // namespace viz

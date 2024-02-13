@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
@@ -170,8 +169,6 @@ void ChromeBrowserMainExtraPartsViews::PostBrowserStart() {
   relaunch_notification_controller_ =
       std::make_unique<RelaunchNotificationController>(
           UpgradeDetector::GetInstance());
-  if (commander::IsEnabled())
-    commander::Commander::Get()->Initialize();
 }
 
 void ChromeBrowserMainExtraPartsViews::PostMainMessageLoopRun() {

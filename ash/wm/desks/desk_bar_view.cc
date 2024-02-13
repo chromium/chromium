@@ -148,7 +148,7 @@ void DeskBarView::UpdateBarBounds() {
   GetWidget()->SetBounds(new_bounds);
 }
 
-BEGIN_METADATA(DeskBarView, DeskBarViewBase)
+BEGIN_METADATA(DeskBarView)
 END_METADATA
 
 }  // namespace ash

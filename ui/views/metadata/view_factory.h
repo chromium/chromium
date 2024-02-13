@@ -8,13 +8,13 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/macros/concat.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/views/metadata/view_factory_internal.h"
@@ -95,7 +95,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 
   template <typename Child>
   Builder& AddChild(Child&& child) & {
-    children_.emplace_back(std::make_pair(child.Release(), absl::nullopt));
+    children_.emplace_back(std::make_pair(child.Release(), std::nullopt));
     return *static_cast<Builder*>(this);
   }
 
@@ -213,7 +213,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
   Builder& AddChildrenImpl(Args*... args) & {
     std::vector<internal::ViewBuilderCore*> children = {args...};
     for (auto* child : children)
-      children_.emplace_back(std::make_pair(child->Release(), absl::nullopt));
+      children_.emplace_back(std::make_pair(child->Release(), std::nullopt));
     return *static_cast<Builder*>(this);
   }
 

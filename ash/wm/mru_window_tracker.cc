@@ -112,7 +112,7 @@ bool CanIncludeWindowInCycleWithPipList(aura::Window* window) {
           window->GetProperty(ash::kPipOriginalWindowKey));
 }
 
-// Returns a list of windows ordered by their stacking order such that the most
+// Returns a list of windows ordered by their usage recency such that the most
 // recently used window is at the front of the list.
 // If |mru_windows| is passed, these windows are moved to the front of the list.
 // If |desks_mru_type| is `kAllDesks`, then all active and inactive desk

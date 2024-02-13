@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +38,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
@@ -72,8 +75,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -108,6 +113,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlStateProvider;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ToolbarManager mToolbarManager;
+    @Mock private StatusBarColorController mStatusBarColorController;
 
     private StripLayoutHelperManager mStripLayoutHelperManager;
     private Context mContext;
@@ -130,6 +136,8 @@ public class StripLayoutHelperManagerTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         when(mToolbarContainerView.getContext()).thenReturn(mContext);
+        when(mToolbarManager.getStatusBarColorController()).thenReturn(mStatusBarColorController);
+
         TabStripSceneLayer.setTestFlag(true);
         ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(true);
 
@@ -193,7 +201,7 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Model selector button x-position is not as expected",
                 760.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getX(),
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawX(),
                 0.0);
     }
 
@@ -209,7 +217,7 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Model selector button x-position is not as expected",
                 BUTTON_END_PADDING,
-                mStripLayoutHelperManager.getModelSelectorButton().getX(),
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawX(),
                 0.0);
     }
 
@@ -223,7 +231,7 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Model selector button y-position is not as expected",
                 3.f,
-                mStripLayoutHelperManager.getModelSelectorButton().getY(),
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawY(),
                 0.0);
     }
 
@@ -304,7 +312,7 @@ public class StripLayoutHelperManagerTest {
     public void testModelSelectorButtonHoverEnter() {
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
-        int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getX();
+        int x = (int) mStripLayoutHelperManager.getModelSelectorButton().getDrawX();
         mStripLayoutHelperManager
                 .getActiveStripLayoutHelper()
                 .onHoverEnter(
@@ -333,7 +341,7 @@ public class StripLayoutHelperManagerTest {
         // Verify model selector button is in pressed state, not hover state, when click is from
         // mouse.
         mStripLayoutHelperManager.simulateOnDownForTesting(
-                mStripLayoutHelperManager.getModelSelectorButton().getX() + 1, 0, true, 1);
+                mStripLayoutHelperManager.getModelSelectorButton().getDrawX() + 1, 0, true, 1);
         assertFalse(
                 "Model selector button should not be hovered",
                 mStripLayoutHelperManager.getModelSelectorButton().isHovered());
@@ -608,6 +616,16 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         eq(mToolbarPrimaryColor),
                         /* scrimOpacity= */ eq(0f));
+
+        // Verify StatusBarColorController method invocations.
+        InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
+        // Invocation during the transition.
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(mToolbarPrimaryColor, expectedOpacity);
+        // Invocation after the transition finished.
+        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
     }
 
     @Test
@@ -656,15 +674,56 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.setIsTabStripHidden(true);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertTrue("Views are empty when tab strip hidden.", views.isEmpty());
+        verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
 
         mStripLayoutHelperManager.setIsTabStripHidden(false);
         mStripLayoutHelperManager.onHeightChanged(40);
         mStripLayoutHelperManager.getVirtualViews(views);
         assertTrue("Views are empty during tab strip transition.", views.isEmpty());
+        // Invoked once by #setIsTabStripHidden(), once by #onHeightChanged().
+        verify(mStatusBarColorController, times(2)).setTabStripHiddenOnTablet(false);
 
         mStripLayoutHelperManager.onTransitionFinished();
         mStripLayoutHelperManager.getVirtualViews(views);
         assertFalse("Views are not empty after tab strip transition.", views.isEmpty());
+    }
+
+    @Test
+    public void testCalculateScrimOpacityDuringTransition_Show() {
+        // Test hide->show transition with simulated values.
+        mStripLayoutHelperManager.onHeightChanged(TAB_STRIP_HEIGHT_PX);
+        float actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(20f);
+        float expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.5f);
+        assertEquals(expected, actual, 0f);
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(30f);
+        expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.25f);
+        assertEquals(expected, actual, 0f);
+        // If an unexpected source happened to update the compositor frame during strip transition
+        // when the yOffset=0, ignore this update.
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(0f);
+        assertEquals(expected, actual, 0f);
+        mStripLayoutHelperManager.onTransitionFinished();
+    }
+
+    @Test
+    public void testCalculateScrimOpacityDuringTransition_Hide() {
+        // Test show->hide transition with simulated values.
+        mStripLayoutHelperManager.onHeightChanged(0);
+        float actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(30f);
+        float expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.25f);
+        assertEquals(expected, actual, 0f);
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(20f);
+        expected =
+                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(0.5f);
+        assertEquals(expected, actual, 0f);
+        // If an unexpected source happened to update the compositor frame during strip transition
+        // when the yOffset=-10, ignore this update.
+        actual = mStripLayoutHelperManager.calculateScrimOpacityDuringTransition(30f);
+        assertEquals(expected, actual, 0f);
+        mStripLayoutHelperManager.onTransitionFinished();
     }
 
     private void doTestTabStripTransition_Show(int scrimColor) {
@@ -728,5 +787,19 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         eq(scrimColor),
                         /* scrimOpacity= */ eq(0f));
+
+        // Verify StatusBarColorController method invocations.
+        InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
+        // Invocations before the transition started.
+        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
+        // Invocations during the transition.
+        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(false);
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(scrimColor, expectedOpacity);
+        // Invocation after the transition finished.
+        inOrder.verify(mStatusBarColorController)
+                .setTabStripColorOverlay(ScrimProperties.INVALID_COLOR, 0f);
     }
 }

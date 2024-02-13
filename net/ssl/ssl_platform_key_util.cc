@@ -88,19 +88,19 @@ bool GetClientCertInfo(const X509Certificate* certificate,
   return true;
 }
 
-absl::optional<std::vector<uint8_t>> AddPSSPadding(
+std::optional<std::vector<uint8_t>> AddPSSPadding(
     EVP_PKEY* pubkey,
     const EVP_MD* md,
     base::span<const uint8_t> digest) {
   RSA* rsa = EVP_PKEY_get0_RSA(pubkey);
   if (!rsa) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::vector<uint8_t> ret(RSA_size(rsa));
   if (digest.size() != EVP_MD_size(md) ||
       !RSA_padding_add_PKCS1_PSS_mgf1(rsa, ret.data(), digest.data(), md, md,
                                       -1 /* salt length is digest length */)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return ret;
 }

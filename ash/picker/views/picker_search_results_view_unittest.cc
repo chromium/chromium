@@ -30,11 +30,13 @@ using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::SizeIs;
 
+constexpr int kPickerWidth = 320;
+
 using PickerSearchResultsViewTest = AshTestBase;
 
 auto MatchesResultSection(const PickerSearchResults::Section& section) {
   return AllOf(
-      Property(&PickerSectionView::title_for_testing,
+      Property(&PickerSectionView::title_label_for_testing,
                Property(&views::Label::GetText, Eq(section.heading()))),
       Property(&PickerSectionView::item_views_for_testing,
                SizeIs(section.results().size())));
@@ -42,7 +44,7 @@ auto MatchesResultSection(const PickerSearchResults::Section& section) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kSearchResults({{
       PickerSearchResults::Section(u"Section 1",
                                    {{PickerSearchResult::Text(u"Result A")}}),
@@ -61,9 +63,11 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
 
 TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kSearchResults({{PickerSearchResults::Section(
-      u"Gif Section", {{PickerSearchResult::Gif(GURL(), gfx::Size())}})}});
+      u"Gif Section",
+      {{PickerSearchResult::Gif(GURL(), gfx::Size(),
+                                /*content_description=*/u"")}})}});
   view.SetSearchResults(kSearchResults);
 
   EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
@@ -74,7 +78,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSectionWithGif) {
 
 TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSearchResultsView view(base::DoNothing(), &asset_fetcher);
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
   const PickerSearchResults kInitialSearchResults({{
       PickerSearchResults::Section(u"Section",
                                    {{PickerSearchResult::Text(u"Result")}}),
@@ -110,7 +114,7 @@ TEST_P(PickerSearchResultsViewResultSelectionTest, LeftClickSelectsResult) {
   MockPickerAssetFetcher asset_fetcher;
   auto* view =
       widget->SetContentsView(std::make_unique<PickerSearchResultsView>(
-          future.GetCallback(), &asset_fetcher));
+          kPickerWidth, future.GetCallback(), &asset_fetcher));
   view->SetSearchResults(PickerSearchResults({{
       PickerSearchResults::Section(u"section", {{test_case.result}}),
   }}));
@@ -134,7 +138,8 @@ INSTANTIATE_TEST_SUITE_P(
          {"Emoji", PickerSearchResult::Emoji(u"😊")},
          {"Symbol", PickerSearchResult::Symbol(u"♬")},
          {"Emoticon", PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")},
-         {"Gif", PickerSearchResult::Gif(GURL(), gfx::Size(10, 10))}}),
+         {"Gif",
+          PickerSearchResult::Gif(GURL(), gfx::Size(10, 10), u"cat gif")}}),
     [](const testing::TestParamInfo<
         PickerSearchResultsViewResultSelectionTest::ParamType>& info) {
       return info.param.test_name;

@@ -72,12 +72,4 @@ public final class HttpFlagsLoaderTest {
         mCronetTestFramework.setHttpFlags(flags);
         assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext())).isEqualTo(flags);
     }
-
-    @Test
-    @SmallTest
-    public void testLoad_returnsNullIfDisabledInManifest() {
-        setShouldReadHttpFlagsInManifest(false);
-        mCronetTestFramework.setHttpFlags(Flags.newBuilder().build());
-        assertThat(HttpFlagsLoader.load(mCronetTestFramework.getContext())).isNull();
-    }
 }

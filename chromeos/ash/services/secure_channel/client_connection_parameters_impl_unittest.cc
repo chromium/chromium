@@ -12,6 +12,7 @@
 #include "chromeos/ash/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_structured_metrics_logger.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::secure_channel {
@@ -66,12 +67,15 @@ class SecureChannelClientConnectionParametersImplTest : public testing::Test {
 
   void CallOnConnection(
       mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
+      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+      mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener_receiver) {
     base::RunLoop run_loop;
     fake_connection_delegate_->set_closure_for_next_delegate_callback(
         run_loop.QuitClosure());
     client_connection_parameters_->SetConnectionSucceeded(
-        std::move(channel), std::move(message_receiver_receiver));
+        std::move(channel), std::move(message_receiver_receiver),
+        std::move(nearby_connection_state_listener_receiver));
     run_loop.Run();
   }
 
@@ -119,14 +123,20 @@ TEST_F(SecureChannelClientConnectionParametersImplTest,
 TEST_F(SecureChannelClientConnectionParametersImplTest, OnConnection) {
   auto fake_channel = std::make_unique<FakeChannel>();
   mojo::PendingRemote<mojom::MessageReceiver> message_receiver_remote;
+  mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote;
 
-  CallOnConnection(fake_channel->GenerateRemote(),
-                   message_receiver_remote.InitWithNewPipeAndPassReceiver());
+  CallOnConnection(
+      fake_channel->GenerateRemote(),
+      message_receiver_remote.InitWithNewPipeAndPassReceiver(),
+      nearby_connection_state_listener_remote.InitWithNewPipeAndPassReceiver());
   VerifyStatus(false /* expected_to_be_waiting_for_response */,
                false /* expected_to_be_canceled */);
 
   EXPECT_TRUE(fake_connection_delegate()->channel());
   EXPECT_TRUE(fake_connection_delegate()->message_receiver_receiver());
+  EXPECT_TRUE(
+      fake_connection_delegate()->nearby_connection_state_listener_receiver());
 }
 
 TEST_F(SecureChannelClientConnectionParametersImplTest, OnConnectionFailed) {

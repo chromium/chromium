@@ -841,7 +841,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
     DnsQueryType query_type,
     MdnsListenerUpdateType update_type,
     const IPEndPoint& address_result) {
-  for (auto* listener : listeners_) {
+  for (MdnsListenerImpl* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
       listener->TriggerAddressResult(update_type, address_result);
   }
@@ -852,7 +852,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
     DnsQueryType query_type,
     MdnsListenerUpdateType update_type,
     const std::vector<std::string>& text_result) {
-  for (auto* listener : listeners_) {
+  for (MdnsListenerImpl* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
       listener->TriggerTextResult(update_type, text_result);
   }
@@ -863,7 +863,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
     DnsQueryType query_type,
     MdnsListenerUpdateType update_type,
     const HostPortPair& host_result) {
-  for (auto* listener : listeners_) {
+  for (MdnsListenerImpl* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
       listener->TriggerHostnameResult(update_type, host_result);
   }
@@ -873,7 +873,7 @@ void MockHostResolverBase::TriggerMdnsListeners(
     const HostPortPair& host,
     DnsQueryType query_type,
     MdnsListenerUpdateType update_type) {
-  for (auto* listener : listeners_) {
+  for (MdnsListenerImpl* listener : listeners_) {
     if (listener->host() == host && listener->query_type() == query_type)
       listener->TriggerUnhandledResult(update_type);
   }

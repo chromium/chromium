@@ -79,8 +79,8 @@ class TaskManagerImplTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle current_default_handle_;
 
-  raw_ptr<MockTaskScheduler, DanglingUntriaged> task_scheduler_;
   std::unique_ptr<TaskManagerImpl> task_manager_;
+  raw_ptr<MockTaskScheduler> task_scheduler_;
 };
 
 }  // namespace

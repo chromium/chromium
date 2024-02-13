@@ -177,7 +177,7 @@ void SetCurrentTaskAsCallbackParent(
   ScriptState* script_state = callback->CallbackRelevantScriptState();
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (tracker && script_state->World().IsMainWorld()) {
-    callback->SetParentTask(tracker->RunningTask(script_state));
+    callback->SetParentTask(tracker->RunningTask(script_state->GetIsolate()));
   }
 }
 
@@ -907,9 +907,8 @@ void LocalDOMWindow::DispatchPagehideEvent(
 void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
                                             const String& new_url) {
   DCHECK(GetFrame());
-  if (GetFrame()->IsMainFrame()) {
-    SoftNavigationHeuristics* heuristics =
-        SoftNavigationHeuristics::From(*this);
+  if (SoftNavigationHeuristics* heuristics =
+          SoftNavigationHeuristics::From(*this)) {
     heuristics->SameDocumentNavigationStarted();
   }
   // https://html.spec.whatwg.org/C/#history-traversal

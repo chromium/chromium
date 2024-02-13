@@ -406,8 +406,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     const int lid = 0;
 
     manager->OnPeerConnectionAdded(frame_id, lid, pid, /*url=*/std::string(),
-                                   /*rtc_configuration=*/std::string(),
-                                   /*constraints=*/std::string());
+                                   /*rtc_configuration=*/std::string());
 
     if (!session_id.empty()) {
       manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id);

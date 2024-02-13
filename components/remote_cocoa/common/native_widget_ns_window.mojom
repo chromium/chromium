@@ -5,6 +5,7 @@
 module remote_cocoa.mojom;
 
 import "components/remote_cocoa/common/select_file_dialog.mojom";
+import "components/remote_cocoa/common/menu.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "ui/base/cursor/mojom/cursor.mojom";
@@ -313,4 +314,9 @@ interface NativeWidgetNSWindow {
 
   // Set whether can go forward to the following page.
   SetCanGoForward(bool can_go_forward);
+
+  // Displayed a context menu, anchored to this window.
+  DisplayContextMenu(ContextMenu menu,
+                     pending_remote<MenuHost> host,
+                     pending_receiver<Menu> receiver);
 };

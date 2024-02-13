@@ -202,6 +202,7 @@ static_library("performance_manager") {
     "resource_attribution/memory_measurement_provider.cc",
     "resource_attribution/memory_measurement_provider.h",
     "resource_attribution/page_context.cc",
+    "resource_attribution/performance_manager_aliases.h",
     "resource_attribution/process_context.cc",
     "resource_attribution/queries.cc",
     "resource_attribution/query_params.cc",

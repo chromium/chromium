@@ -13,18 +13,14 @@ export interface Column<T> {
 export abstract class TableModel<T> {
   readonly rowsChangedListeners: Set<() => void> = new Set();
 
-  constructor(
-      public readonly cols: Array<Column<T>>,
-      public sortIdx: number,
-      public readonly emptyRowText: string,
-  ) {}
+  constructor(public readonly cols: Array<Column<T>>, public sortIdx: number) {}
 
   styleRow(_tr: Element, _data: T): void {}
 
   abstract getRows(): T[];
 
-  empty(): boolean {
-    return this.getRows().length === 0;
+  rowCount(): number {
+    return this.getRows().length;
   }
 
   notifyRowsChanged(): void {
@@ -38,9 +34,8 @@ export class ArrayTableModel<T> extends TableModel<T> {
   constructor(
       cols: Array<Column<T>>,
       sortIdx: number,
-      emptyRowText: string,
   ) {
-    super(cols, sortIdx, emptyRowText);
+    super(cols, sortIdx);
   }
 
   override getRows(): T[] {

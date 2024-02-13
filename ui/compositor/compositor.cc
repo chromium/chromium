@@ -589,7 +589,7 @@ void Compositor::AddVSyncParameterObserver(
 }
 
 void Compositor::SetMaxVrrInterval(
-    const absl::optional<base::TimeDelta>& max_vrr_interval) {
+    const std::optional<base::TimeDelta>& max_vrr_interval) {
   max_vrr_interval_ = max_vrr_interval;
 
   if (display_private_) {

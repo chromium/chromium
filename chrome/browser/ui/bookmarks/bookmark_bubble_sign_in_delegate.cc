@@ -21,7 +21,7 @@ BookmarkBubbleSignInDelegate::BookmarkBubbleSignInDelegate(Profile* profile)
 
 BookmarkBubbleSignInDelegate::~BookmarkBubbleSignInDelegate() = default;
 
-void BookmarkBubbleSignInDelegate::OnEnableSync(const AccountInfo& account) {
+void BookmarkBubbleSignInDelegate::OnSignIn(const AccountInfo& account) {
   signin_ui_util::EnableSyncFromSingleAccountPromo(
       profile_, account,
       signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE);

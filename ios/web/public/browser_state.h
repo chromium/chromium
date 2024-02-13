@@ -70,6 +70,9 @@ class BrowserState : public base::SupportsUserData {
   // Returns a CookieManager that is backed by GetRequestContext.
   network::mojom::CookieManager* GetCookieManager();
 
+  // Returns a NetworkContext that is backed by GetRequestContext.
+  network::mojom::NetworkContext* GetNetworkContext();
+
   // Returns an provider to create ProtoDatabase tied to the profile directory.
   leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider();
 

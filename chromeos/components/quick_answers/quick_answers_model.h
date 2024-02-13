@@ -293,8 +293,9 @@ class ConversionRule {
 
   double ConvertAmountToSi(double unit_amount) const;
   double ConvertAmountFromSi(double si_amount) const;
+  bool IsSingleVariableLinearConversion() const;
 
-  double linear_term() const { return term_a_; }
+  double term_a() const { return term_a_; }
   const std::string& category() const { return category_; }
   const std::string& unit_name() const { return unit_name_; }
 

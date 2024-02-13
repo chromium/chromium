@@ -6,8 +6,8 @@
 
 namespace ui {
 
-absl::optional<IdleState>& IdleStateForTesting() {
-  static absl::optional<IdleState> idle_state;
+std::optional<IdleState>& IdleStateForTesting() {
+  static std::optional<IdleState> idle_state;
   return idle_state;
 }
 

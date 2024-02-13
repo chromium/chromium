@@ -53,6 +53,7 @@
 #include "net/quic/quic_crypto_client_stream_factory.h"
 #include "net/quic/quic_server_info.h"
 #include "net/quic/quic_session_key.h"
+#include "net/quic/quic_session_pool_direct_job.h"
 #include "net/quic/quic_session_pool_job.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/next_proto.h"
@@ -66,6 +67,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/aead.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -166,6 +168,7 @@ int QuicSessionRequest::Request(
     url::SchemeHostPort destination,
     quic::ParsedQuicVersion quic_version,
     const ProxyChain& proxy_chain,
+    const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
     SessionUsage session_usage,
     PrivacyMode privacy_mode,
     RequestPriority priority,
@@ -196,8 +199,9 @@ int QuicSessionRequest::Request(
   bool use_dns_aliases = session_usage == SessionUsage::kProxy ? false : true;
 
   int rv = pool_->RequestSession(session_key_, std::move(destination),
-                                 quic_version, priority, use_dns_aliases,
-                                 cert_verify_flags, url, net_log, this);
+                                 quic_version, std::move(proxy_annotation_tag),
+                                 priority, use_dns_aliases, cert_verify_flags,
+                                 url, net_log, this);
   if (rv == ERR_IO_PENDING) {
     net_log_ = net_log;
     callback_ = std::move(callback);
@@ -496,15 +500,17 @@ bool QuicSessionPool::CanUseExistingSession(
   return false;
 }
 
-int QuicSessionPool::RequestSession(const QuicSessionKey& session_key,
-                                    url::SchemeHostPort destination,
-                                    quic::ParsedQuicVersion quic_version,
-                                    RequestPriority priority,
-                                    bool use_dns_aliases,
-                                    int cert_verify_flags,
-                                    const GURL& url,
-                                    const NetLogWithSource& net_log,
-                                    QuicSessionRequest* request) {
+int QuicSessionPool::RequestSession(
+    const QuicSessionKey& session_key,
+    url::SchemeHostPort destination,
+    quic::ParsedQuicVersion quic_version,
+    const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+    RequestPriority priority,
+    bool use_dns_aliases,
+    int cert_verify_flags,
+    const GURL& url,
+    const NetLogWithSource& net_log,
+    QuicSessionRequest* request) {
   if (clock_skew_detector_.ClockSkewDetected(base::TimeTicks::Now(),
                                              base::Time::Now())) {
     MarkAllActiveSessionsGoingAway(kClockSkewDetected);
@@ -557,8 +563,13 @@ int QuicSessionPool::RequestSession(const QuicSessionKey& session_key,
     tick_clock_ = base::DefaultTickClock::GetInstance();
   }
 
+  // If a proxy is in use, then a traffic annotation is required.
+  if (!session_key.proxy_chain().is_direct()) {
+    DCHECK(proxy_annotation_tag);
+  }
+
   QuicSessionAliasKey key(destination, session_key);
-  std::unique_ptr<Job> job = std::make_unique<Job>(
+  std::unique_ptr<Job> job = std::make_unique<DirectJob>(
       this, quic_version, host_resolver_, key,
       CreateCryptoConfigHandle(session_key.network_anonymization_key()),
       WasQuicRecentlyBroken(session_key),
@@ -757,7 +768,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
   }
 
   if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
-    rv = socket->SetRecvEcn();
+    rv = socket->SetRecvTos();
     if (rv != OK) {
       OnFinishConnectAndConfigureSocketError(
           std::move(callback), CREATION_ERROR_SETTING_RECEIVE_ECN, rv);
@@ -850,7 +861,7 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
   }
 
   if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
-    rv = socket->SetRecvEcn();
+    rv = socket->SetRecvTos();
     if (rv != OK) {
       HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_ECN);
       return rv;
@@ -1142,13 +1153,13 @@ void QuicSessionPool::OnJobComplete(Job* job, int rv) {
     auto session_it = active_sessions_.find(job->key().session_key());
     CHECK(session_it != active_sessions_.end());
     QuicChromiumClientSession* session = session_it->second;
-    for (auto* request : iter->second->stream_requests()) {
+    for (QuicSessionRequest* request : iter->second->requests()) {
       // Do not notify |request| yet.
       request->SetSession(session->CreateHandle(job->key().destination()));
     }
   }
 
-  for (auto* request : iter->second->stream_requests()) {
+  for (QuicSessionRequest* request : iter->second->requests()) {
     // Even though we're invoking callbacks here, we don't need to worry
     // about |this| being deleted, because the pool is owned by the
     // profile which can not be deleted via callbacks.
@@ -1690,8 +1701,8 @@ QuicSessionPool::CreateCryptoConfigHandle(
     DCHECK_EQ(mru_iterator->second->num_refs(), 0);
 
     map_iterator = active_crypto_config_map_
-                       .emplace(std::make_pair(actual_network_anonymization_key,
-                                               std::move(mru_iterator->second)))
+                       .emplace(actual_network_anonymization_key,
+                                std::move(mru_iterator->second))
                        .first;
     recent_crypto_config_map_.Erase(mru_iterator);
     return std::make_unique<CryptoClientConfigHandle>(map_iterator);
@@ -1725,8 +1736,8 @@ QuicSessionPool::CreateCryptoConfigHandle(
   }
 
   map_iterator = active_crypto_config_map_
-                     .emplace(std::make_pair(actual_network_anonymization_key,
-                                             std::move(crypto_config_owner)))
+                     .emplace(actual_network_anonymization_key,
+                              std::move(crypto_config_owner))
                      .first;
   return std::make_unique<CryptoClientConfigHandle>(map_iterator);
 }

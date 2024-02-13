@@ -29,6 +29,9 @@ enum class RunningSafetyCheckState;
             safeBrowsingState:(SafeBrowsingSafetyCheckState)safeBrowsingState
                  runningState:(RunningSafetyCheckState)runningState;
 
+// Returns the number of check issues found.
+- (NSUInteger)numberOfIssues;
+
 // The current state of the Update Chrome check.
 @property(nonatomic, readwrite) UpdateChromeSafetyCheckState updateChromeState;
 

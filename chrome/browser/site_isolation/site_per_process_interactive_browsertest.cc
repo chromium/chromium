@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +21,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -1113,10 +1114,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   AddResizeListener(child, GetScreenSize());
   {
     content::DOMMessageQueue queue(web_contents);
-    FullscreenNotificationObserver observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
     EXPECT_TRUE(ExecJs(child, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
-    observer.Wait();
+    waiter.Wait();
   }
 
   // Verify that the browser has entered fullscreen for the current tab.
@@ -1145,10 +1146,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   AddResizeListener(child, original_child_size);
   {
     content::DOMMessageQueue queue(web_contents);
-    FullscreenNotificationObserver observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
     EXPECT_TRUE(ExecJs(child, "exitFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
-    observer.Wait();
+    waiter.Wait();
   }
 
   EXPECT_FALSE(browser()->window()->IsFullscreen());
@@ -1208,10 +1210,10 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
   std::set<std::string> expected_events = {"main_frame", "child", "grandchild"};
   {
     content::DOMMessageQueue queue(web_contents);
-    FullscreenNotificationObserver fullscreen_observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
     EXPECT_TRUE(ExecJs(grandchild, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
-    fullscreen_observer.Wait();
+    waiter.Wait();
   }
 
   // Verify that the browser has entered fullscreen for the current tab.
@@ -1235,7 +1237,8 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
   AddResizeListener(grandchild, original_grandchild_size);
   {
     content::DOMMessageQueue queue(web_contents);
-    FullscreenNotificationObserver fullscreen_observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
     switch (exit_method) {
       case FullscreenExitMethod::JS_CALL:
         EXPECT_TRUE(ExecJs(grandchild, "exitFullscreen()"));
@@ -1248,7 +1251,7 @@ void SitePerProcessInteractiveBrowserTest::FullscreenElementInABA(
         NOTREACHED();
     }
     WaitForMultipleFullscreenEvents(expected_events, queue);
-    fullscreen_observer.Wait();
+    waiter.Wait();
   }
 
   EXPECT_FALSE(browser()->window()->IsFullscreen());
@@ -1365,10 +1368,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // browser finishes the fullscreen transition.
   {
     content::DOMMessageQueue queue(web_contents);
-    FullscreenNotificationObserver fullscreen_observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
     EXPECT_TRUE(ExecJs(c_middle, "activateFullscreen()"));
     WaitForMultipleFullscreenEvents(expected_events, queue);
-    fullscreen_observer.Wait();
+    waiter.Wait();
   }
 
   // Verify that the browser has entered fullscreen for the current tab.
@@ -1402,11 +1405,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   AddResizeListener(c_middle, c_middle_original_size);
   {
     content::DOMMessageQueue queue(web_contents);
-    FullscreenNotificationObserver fullscreen_observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(),
+                                           {.tab_fullscreen = false});
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE,
                                                 false, false, false, false));
     WaitForMultipleFullscreenEvents(expected_events, queue);
-    fullscreen_observer.Wait();
+    waiter.Wait();
   }
 
   EXPECT_FALSE(browser()->window()->IsFullscreen());
@@ -1478,17 +1482,20 @@ class SitePerProcessInteractivePDFTest
   void SetUpOnMainThread() override {
     SitePerProcessInteractiveBrowserTest::SetUpOnMainThread();
     if (UseOopif()) {
-      manager_ = pdf::TestPdfViewerStreamManager::CreateForWebContents(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      factory_ = std::make_unique<pdf::TestPdfViewerStreamManagerFactory>();
     } else {
-      manager_ = factory_.GetOrCreateTestGuestViewManager(
+      auto factory =
+          std::make_unique<guest_view::TestGuestViewManagerFactory>();
+      test_guest_view_manager_ = factory->GetOrCreateTestGuestViewManager(
           browser()->profile(), extensions::ExtensionsAPIClient::Get()
                                     ->CreateGuestViewManagerDelegate());
+      factory_ = std::move(factory);
     }
   }
 
   void TearDownOnMainThread() override {
-    manager_ = absl::monostate();
+    test_guest_view_manager_ = nullptr;
+    factory_ = absl::monostate();
     SitePerProcessInteractiveBrowserTest::TearDownOnMainThread();
   }
 
@@ -1496,16 +1503,26 @@ class SitePerProcessInteractivePDFTest
 
  protected:
   guest_view::TestGuestViewManager* GetTestGuestViewManager() const {
-    return absl::get<raw_ptr<guest_view::TestGuestViewManager>>(manager_);
+    return test_guest_view_manager_;
   }
 
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager() const {
-    return absl::get<raw_ptr<pdf::TestPdfViewerStreamManager>>(manager_);
+    return absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(
+               factory_)
+        ->GetTestPdfViewerStreamManager(
+            browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  void CreateTestPdfViewerStreamManager() const {
+    absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
+        ->CreatePdfViewerStreamManager(
+            browser()->tab_strip_model()->GetActiveWebContents());
   }
 
   void WaitUntilPdfLoaded(content::RenderFrameHost* embedder_host) {
     if (UseOopif()) {
-      GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host);
+      ASSERT_TRUE(
+          GetTestPdfViewerStreamManager()->WaitUntilPdfLoaded(embedder_host));
     } else {
       auto* guest_view =
           GetTestGuestViewManager()->WaitForSingleGuestViewCreated();
@@ -1521,11 +1538,11 @@ class SitePerProcessInteractivePDFTest
   }
 
  private:
-  guest_view::TestGuestViewManagerFactory factory_;
   absl::variant<absl::monostate,
-                raw_ptr<guest_view::TestGuestViewManager>,
-                raw_ptr<pdf::TestPdfViewerStreamManager>>
-      manager_;
+                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
+                std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+      factory_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
 // This test loads a PDF inside an OOPIF and then verifies that context menu
@@ -1656,6 +1673,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInteractivePDFTest,
                << ", iframe_pdf = " << iframe_pdf;
   }
   ASSERT_TRUE(starts_focused);
+
+  if (UseOopif()) {
+    // Create the manager first, since the following script doesn't block until
+    // navigation is complete.
+    CreateTestPdfViewerStreamManager();
+  }
 
   GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(content::ExecJs(

@@ -56,7 +56,7 @@ CtapMakeCredentialRequest CreateRegisterRequest(
 
 using TestRegisterCallback = ::device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    absl::optional<AuthenticatorMakeCredentialResponse>>;
+    std::optional<AuthenticatorMakeCredentialResponse>>;
 
 }  // namespace
 

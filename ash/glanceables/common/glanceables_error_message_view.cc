@@ -60,7 +60,7 @@ class DismissErrorLabelButton : public views::LabelButton {
   ~DismissErrorLabelButton() override = default;
 };
 
-BEGIN_METADATA(DismissErrorLabelButton, views::LabelButton)
+BEGIN_METADATA(DismissErrorLabelButton)
 END_METADATA
 
 GlanceablesErrorMessageView::GlanceablesErrorMessageView(
@@ -110,7 +110,7 @@ void GlanceablesErrorMessageView::UpdateBoundsToContainer(
   SetBoundsRect(preferred_bounds);
 }
 
-BEGIN_METADATA(GlanceablesErrorMessageView, views::View)
+BEGIN_METADATA(GlanceablesErrorMessageView)
 END_METADATA
 
 }  // namespace ash

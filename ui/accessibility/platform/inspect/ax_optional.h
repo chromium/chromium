@@ -21,7 +21,7 @@ inline constexpr bool is_variant_v = is_variant<T>::value;
 
 namespace ui {
 
-// Implements stateful value_s. Similar to absl::optional, but multi-state
+// Implements stateful value_s. Similar to std::optional, but multi-state
 // allowing nullable value_s.
 template <typename ValueType>
 class COMPONENT_EXPORT(AX_PLATFORM) AXOptional final {

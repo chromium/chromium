@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">सुरक्षित छैन</translation>
 <translation id="1075079914415273530">कृषि तथा वन विज्ञान</translation>
 <translation id="1075364221219156102">कुनै पासकी प्रयोग गर्नुहोस्</translation>
-<translation id="1078033282564106222">बिल्डिङ नम्बरको विकल्प चयन गरिएको छ</translation>
 <translation id="1080116354587839789">चौडाइमा फिट गर्नुहोस्</translation>
 <translation id="1081061862829655580">ट्रे १९</translation>
 <translation id="1082026381988252344">स्क्रोल गर्नुहोस् र सेयर गरिएको आफ्नो ट्याबका सामग्री जुम गर्नुहोस्</translation>
@@ -247,6 +246,7 @@
 <translation id="1428729058023778569">यो साइटमा HTTPS नचल्ने भएकाले तपाईंलाई यो चेतावनी देखाइएको हो। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">सेल्फ-एधेसिभ फिल्म</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
+<translation id="1431021750861456539">स्वतः फुल स्क्रिन हुने मोड</translation>
 <translation id="1432187715652018471">यो पेजले सर्भिस ह्यान्ड्लर इन्स्टल गर्ने अनुमति माग्दै छ।</translation>
 <translation id="1432581352905426595">खोज इन्जिनहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1433225466058025572">आफ्ना फाइलहरू फेरि सारी हेर्नुहोस्</translation>
@@ -586,6 +586,7 @@
 <translation id="2075497153347571252">तपाईंका एड्मिनले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुभएको छैन</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2080021694978766903">यो नीतिमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी इन्ट्री समावेश हुनु हुँदैन।</translation>
+<translation id="2081482239432306393">घर नम्बरको विकल्प चयन गरिएको छ</translation>
 <translation id="20817612488360358">प्रणाली प्रोक्सी सेटिङहरू प्रयोगका लागि सेट छन् तर एउटा स्पष्ट प्रोक्सी कन्फिगरेसन पनि निर्दिष्ट गरिएको छ।</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
 <translation id="2083256696566019397">हरेक पटक अनुमति दिनुहोस्</translation>
@@ -613,7 +614,6 @@
 <translation id="2126374524350484896">PDF निर्माता:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode नीति निर्धारण नगरिएकाले तपाईंले तोक्नुभएका टेम्प्लेटहरू लागू नहुन सक्छन्।</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> ल्याङ्ग्वेज प्याक डाउनलोड गरिँदै छ...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">पुरुषको पोसाक</translation>
 <translation id="2137891579555018930">अनुमति प्राप्त गर्न बाँकी छ…</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्कहरू</translation>
@@ -1384,7 +1384,6 @@
 <translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
 <translation id="3681421644246505351">Chrome ले तपाईंको हालसालैको ब्राउजिङ हिस्ट्रीका आधारमा तपाईंका रुचिका विषयहरू थाहा पाउँछ।</translation>
 <translation id="3682094733650754138">ठेगाना भर्ने विकल्प छनौट गरिएको थियो</translation>
-<translation id="3689867156802445220">बिल्डिङ नम्बर</translation>
 <translation id="3693327506115126094">यो कार्य गर्न खोज्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्ने तरिका छनौट गर्नुहोस्</translation>
 <translation id="3698629142018988477">साइट बनाउने बटन, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन यो बटन थिच्नुहोस्</translation>
 <translation id="3701325639446035885">कार्यक्रमका टिकटहरूको बिक्री</translation>
@@ -1409,6 +1408,7 @@
 <translation id="3723663469265383848">तपाईं डिभाइस अपडेट भइरहेका बेला १० मिनेटसम्म उक्त डिभाइस प्रयोग गर्न सक्नुहुन्न।</translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="3727309136762649052">namespace</translation>
 <translation id="3727850735097852673">macOS Keychain का सहायताले Google पासवर्ड म्यानेजर प्रयोग गर्न Chrome रिलन्च गर्नुहोस् र Keychain प्रयोग गर्ने अनुमति दिनुहोस्। रिलन्च गरेपछि तपाईंका ट्याबहरू फेरि खुल्ने छन्।</translation>
 <translation id="3733139489341305600">चालकविहीन सवारी साधनहरू</translation>
 <translation id="3736520371357197498">यदि तपाईं आफ्नो सुरक्षामा भएका जोखिमहरूलाई बुझ्नुहुन्छ भने, तपाईं खतरनाक कार्यक्रमहरू हटाइनु भन्दा पहिले तपाईं <ph name="BEGIN_LINK" />यो असुरक्षित साइट भ्रमण<ph name="END_LINK" /> गर्न सक्नुहुन्छ।</translation>
@@ -1574,6 +1574,7 @@
 <translation id="4089152113577680600">ट्रे १४</translation>
 <translation id="4092349052316400070">ठेगाना भर्नुहोस्</translation>
 <translation id="4096237801206588987">११ x १५ इन्च</translation>
+<translation id="4098306082496067348">भर्चुअल कार्डमार्फत चेकआउट गर्न भर्चुअल कार्डको विवरणमा ट्याप गर्नुहोस्।</translation>
 <translation id="4098354747657067197">अगाडि धोकेबाज साइट</translation>
 <translation id="4099048595830172239">तपाईंका एड्मिनले तोकेको नीतिबमोजिम गोप्य सामग्री देखिएका बेला <ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्न सिफारिस गरिँदैन:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा फन्टका आकार तथा टाइपफेसहरू कस्टमाइज गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
@@ -1897,6 +1898,7 @@
 <translation id="4729147136006144950">च्यारिटी तथा फिलानथ्रोपी</translation>
 <translation id="4730977633786878901">समीक्षाहरू</translation>
 <translation id="4731638775147756694">तपाईंका एड्मिनले यो एपलाई रोक लगाउनुभएको छ</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> ल्याङ्ग्वेज प्याक डाउनलोड गरिँदै छ.. .<ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> तपाईंको डिभाइसको स्थान प्रयोग गर्न चाहन्छ</translation>
 <translation id="4736491186715342415">सवारी साधनहरू</translation>
 <translation id="4736825316280949806">Chromium लाई पुनः सुरु गर्नुहोस्</translation>
@@ -1918,7 +1920,6 @@
 <translation id="4757022425116568383">तपाईंको Chrome प्रोफाइलमा भएको पासकी</translation>
 <translation id="4757993714154412917">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chromium तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
-<translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4761326898079498987">थप विवरणका लागी समीक्षा गर्नुहोस्</translation>
 <translation id="4761869838909035636">Chrome को सुरक्षा जाँच गर्नुहोस्</translation>
 <translation id="4763196677855776703"><ph name="URL" /> ले उपलब्ध गराएका सर्तहरू</translation>
@@ -2256,7 +2257,6 @@
             <ph name="LIST_ITEM" />कुकी तथा साइट डेटा
             <ph name="LIST_ITEM" />फारमहरूमा भरिएको जानकारी
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> ले तपाईंका MIDI डिभाइसहरू (SysEx) नियन्त्रण गर्ने र रिप्रोग्राम गर्ने अनुमति माग्दै छ</translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> लाई उक्त साइटले तपाईंका बारेमा सेभ गरेको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
@@ -2283,6 +2283,7 @@
     <ph name="LINE_BREAK" />
     आफ्नो प्रणाली प्रशासकलाई सम्पर्क गर्ने प्रयास गर्नुहोस्।</translation>
 <translation id="549333378215107354">आकार ३</translation>
+<translation id="5501712702042287009">स्वतः फुल स्क्रिन हुने मोड</translation>
 <translation id="550365051221576010">सबै कुरा भर्नुहोस्</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">व्यवस्थित बुकमार्कहरू</translation>
@@ -2469,7 +2470,6 @@
 <translation id="5877831137320480913">सौन्दर्य तथा तन्दुरुस्ती</translation>
 <translation id="5879989559903563723">गेस्ट मोडमा अनुमति दिइएको छैन</translation>
 <translation id="5880050725127890683">Chrome को सुरक्षा जाँचमा जानुहोस्</translation>
-<translation id="5883861433316751031">MIDI डिभाइसहरू नियन्त्रण र रिप्रोग्राम गर्ने हो?</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">कार्ड सेभ गरियो</translation>
 <translation id="5887687176710214216">पछिल्लो पटक हिजो खोलिएको</translation>
@@ -2820,7 +2820,6 @@
 <translation id="6556866813142980365">फेरि गर्नुहोस्</translation>
 <translation id="6557715786897013164">१४ x १७ इन्च</translation>
 <translation id="6560786330438719938">इन्स्टल वा अनइन्स्टल गरिएका एप र ती एप कत्तिको प्रयोग गरिन्छन् भन्ने कुराका बारेमा जानकारी</translation>
-<translation id="6567084950885568327">MIDI डिभाइस कन्ट्रोल र रिप्रोग्रामिङ</translation>
 <translation id="6568793038316600992">भुक्तानी विधिहरू व्यवस्थापन गर्ने बटन, Chrome का सेटिङमा गई आफ्ना भुक्तानीसम्बन्धी जानकारी तथा क्रेडिट कार्डसम्बन्धी जानकारी व्यवस्थापन गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="6569060085658103619">तपाईं एउटा विस्तार सम्बन्धी पृष्ठ हेर्दै हुनुहुन्छ</translation>
 <translation id="6569366777234823130">नाट्य चलचित्रहरू</translation>
@@ -3203,6 +3202,7 @@
 <translation id="733354035281974745">डिभाइसका स्थानीय खाताको ओभरराइड</translation>
 <translation id="7334320624316649418">क्रम परिवर्तन &amp;पुन: गर्नुहोस्</translation>
 <translation id="7335157162773372339">तपाईंको क्यामेरा प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
+<translation id="7336636595549675416">घर नम्बर</translation>
 <translation id="7337248890521463931">थप हरफ देखाउनुहोस्</translation>
 <translation id="7337706099755338005">तपाईंको प्लेटफर्ममा उपलब्ध छैन।</translation>
 <translation id="733923710415886693">प्रमाणपत्रको पारदर्शिता नीति मार्फत सर्भरको प्रमाणपत्रको खुलासा भएन।</translation>
@@ -3909,7 +3909,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> को मान आकारसम्बन्धी मापदण्डबमोजिम छैन।</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8672264262457010862">व्यापार तथा उद्योगधन्दा</translation>
-<translation id="8673776281896298303">आफ्ना MIDI डिभाइसहरू (SysEx) नियन्त्रण र रिप्रोग्राम गर्नुहोस्</translation>
 <translation id="8676424191133491403">विलम्बरहित</translation>
 <translation id="8680536109547170164"><ph name="QUERY" /> , उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> मा भएको वेबपृष्ठ लोड गर्न सकिएन किनभने:</translation>
@@ -4149,7 +4148,6 @@
 <translation id="9148507642005240123">सम्पादन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="9148599396704355100">सस्तो मूल्य</translation>
 <translation id="9150025764986957246">तपाईं निम्नलगायतका कुराहरू हाल्न सक्नुहुन्छ:</translation>
-<translation id="9150045010208374699">तपाइँको क्यामेरा प्रयोग गर्नुहोस्</translation>
 <translation id="9150685862434908345">तपाईंका प्रशासक टाढैबाट तपाईंको ब्राउजरको सेटअप बदल्न सक्नुहुन्छ। यो डिभाइसका क्रियाकलाप Chrome बाहिरबाट पनि व्यवस्थापन गर्न सकिन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">अपडेट भयो</translation>
 <translation id="9155211586651734179">एट्याच गरिएका अडियोसम्बन्धी सहायक डिभाइसहरू</translation>

@@ -516,6 +516,11 @@ void Scrollbar::MouseExited() {
     scrollable_area_->MouseExitedScrollbar(*this);
   SetHoveredPart(kNoPart);
   if (theme_.UsesFluentOverlayScrollbars() && scrollable_area_) {
+    // If the mouse was hovering over the track and leaves the scrollbar, the
+    // call to `SetHoveredPart(kNoPart)` will only invalidate the paint for the
+    // track. Overlay Fluent scrollbars always need to invalidate the thumb to
+    // change between solid/transparent colors.
+    SetNeedsPaintInvalidation(kThumbPart);
     scrollable_area_->GetLayoutBox()
         ->GetFrameView()
         ->SetPaintArtifactCompositorNeedsUpdate();

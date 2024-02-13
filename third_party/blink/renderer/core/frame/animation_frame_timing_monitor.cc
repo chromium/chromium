@@ -377,9 +377,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
   std::swap(script_info, pending_script_info_);
 
   if (!enabled_ || !context || !context->IsWindow() ||
-      !client_.ShouldReportLongAnimationFrameTiming() ||
-      !ShouldAllowScriptURL(script_info->source_location.url) ||
-      state_ == State::kIdle) {
+      !client_.ShouldReportLongAnimationFrameTiming()) {
     return nullptr;
   }
 
@@ -390,6 +388,11 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
   }
 
   if ((end_time - script_info->start_time) < kLongScriptDuration) {
+    return nullptr;
+  }
+
+  if (!ShouldAllowScriptURL(script_info->source_location.url) ||
+      state_ == State::kIdle) {
     return nullptr;
   }
 
@@ -464,7 +467,7 @@ void AnimationFrameTimingMonitor::Will(
                           ? ScriptTimingInfo::InvokerType::kModuleScript
                           : ScriptTimingInfo::InvokerType::kClassicScript,
       .start_time = probe_data.CaptureStartTime(),
-      .source_location = {.url = url}};
+      .source_location = {.url = url, .char_position = 0}};
   if (probe_data.sanitize) {
     pending_script_info_->execution_start_time =
         pending_script_info_->start_time;
@@ -526,7 +529,7 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
       .url = ToCoreStringWithUndefinedOrNullCheck(isolate, source_location),
       .function_name =
           ToCoreStringWithUndefinedOrNullCheck(isolate, function->GetName()),
-      .start_position = function->GetScriptStartPosition()};
+      .char_position = function->GetScriptStartPosition()};
 }
 
 }  // namespace

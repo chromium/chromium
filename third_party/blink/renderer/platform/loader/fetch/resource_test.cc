@@ -127,6 +127,7 @@ TEST_F(ResourceTest, RevalidationFailed) {
   resource->ResponseReceived(revalidating_response);
 
   EXPECT_FALSE(resource->IsCacheValidator());
+  EXPECT_FALSE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_FALSE(resource->ResourceBuffer());
   EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
@@ -168,6 +169,7 @@ TEST_F(ResourceTest, RevalidationSucceeded) {
   resource->ResponseReceived(revalidating_response);
 
   EXPECT_FALSE(resource->IsCacheValidator());
+  EXPECT_TRUE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_EQ(4u, resource->ResourceBuffer()->size());
   EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
@@ -201,6 +203,7 @@ TEST_F(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   revalidating_response.SetHttpStatusCode(304);
   resource->ResponseReceived(revalidating_response);
   EXPECT_FALSE(resource->IsCacheValidator());
+  EXPECT_TRUE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_FALSE(resource->ResourceBuffer());
   EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));
@@ -277,6 +280,7 @@ TEST_F(ResourceTest, RevalidationSucceededUpdateHeaders) {
   revalidating_response.AddHttpHeaderField(AtomicString("x-custom"),
                                            AtomicString("updated"));
   resource->ResponseReceived(revalidating_response);
+  EXPECT_TRUE(resource->HasSuccessfulRevalidation());
 
   // Validate the original response.
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
@@ -320,12 +324,14 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   MemoryCache::Get()->Add(resource);
 
   EXPECT_FALSE(resource->IsCacheValidator());
+  EXPECT_FALSE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
   EXPECT_EQ(url, resource->LastResourceRequest().Url());
 
   // Simulate a revalidation.
   resource->SetRevalidatingRequest(ResourceRequest(url));
   EXPECT_TRUE(resource->IsCacheValidator());
+  EXPECT_FALSE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
   EXPECT_EQ(url, resource->LastResourceRequest().Url());
 
@@ -342,6 +348,7 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   resource->WillFollowRedirect(redirected_revalidating_request,
                                redirect_response);
   EXPECT_FALSE(resource->IsCacheValidator());
+  EXPECT_FALSE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
   EXPECT_EQ(redirect_target_url, resource->LastResourceRequest().Url());
 
@@ -354,9 +361,9 @@ TEST_F(ResourceTest, RedirectDuringRevalidation) {
   resource->AppendData(kData2, 3);
   resource->FinishForTest();
   EXPECT_FALSE(resource->IsCacheValidator());
+  EXPECT_FALSE(resource->HasSuccessfulRevalidation());
   EXPECT_EQ(url, resource->GetResourceRequest().Url());
   EXPECT_EQ(redirect_target_url, resource->LastResourceRequest().Url());
-  EXPECT_FALSE(resource->IsCacheValidator());
   EXPECT_EQ(200, resource->GetResponse().HttpStatusCode());
   EXPECT_EQ(3u, resource->ResourceBuffer()->size());
   EXPECT_EQ(resource, MemoryCache::Get()->ResourceForURL(url));

@@ -204,7 +204,7 @@ class HardwareDisplayController {
                                const DrmOverlayPlaneList& modeset_planes,
                                bool use_current_crtc_mode,
                                const drmModeModeInfo& mode,
-                               absl::optional<bool> enable_vrr);
+                               std::optional<bool> enable_vrr);
   void OnModesetComplete(const DrmOverlayPlaneList& modeset_planes);
   PageFlipResult ScheduleOrTestPageFlip(
       const DrmOverlayPlaneList& plane_list,

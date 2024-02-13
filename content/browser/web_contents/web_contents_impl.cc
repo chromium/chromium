@@ -3405,10 +3405,6 @@ std::unique_ptr<WebContents> WebContentsImpl::Clone() {
   return tc;
 }
 
-WebContents* WebContentsImpl::DeprecatedGetWebContents() {
-  return this;
-}
-
 void WebContentsImpl::Init(const WebContents::CreateParams& params,
                            blink::FramePolicy primary_main_frame_policy) {
   TRACE_EVENT0("content", "WebContentsImpl::Init");
@@ -3855,6 +3851,16 @@ void WebContentsImpl::EnterFullscreenMode(
   DCHECK(CanEnterFullscreenMode(requesting_frame, options));
   DCHECK(requesting_frame->IsActive());
   DCHECK(ContainsOrIsFocusedWebContents());
+  if (base::FeatureList::IsEnabled(
+          features::kAutomaticFullscreenContentSetting)) {
+    // Ensure the window is made active to take input focus. The user may have
+    // activated another window between making a gesture and the site handling
+    // that gesture to request fullscreen. The experimental automatic fullscreen
+    // feature also enables allowlisted sites to request fullscreen without any
+    // gesture, even if the window was inactive. Note: requests from inactive
+    // tabs of multi-tab windows should be rejected before reaching this code.
+    Activate();
+  }
 
   // When WebView is the `delegate_` we can end up with VisualProperties changes
   // synchronously. Notify the view ahead so it can handle the transition.
@@ -9929,7 +9935,9 @@ bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
     return false;
   }
 
-  return true;
+  return GetContentClient()
+      ->browser()
+      ->IsTransientActivationRequiredForHtmlFullscreen(host);
 }
 
 bool WebContentsImpl::IsBackForwardCacheSupported() {

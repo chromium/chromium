@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-
-import {ModuleMetricsProxy} from 'chrome://welcome/shared/module_metrics_proxy.js';
+import type {ModuleMetricsProxy} from 'chrome://welcome/shared/module_metrics_proxy.js';
 
 export class TestMetricsProxy extends TestBrowserProxy implements
     ModuleMetricsProxy {

@@ -45,9 +45,9 @@ class ArcNotificationContentView
       public ArcNotificationItem::Observer,
       public ArcNotificationSurfaceManager::Observer,
       public views::WidgetObserver {
- public:
-  METADATA_HEADER(ArcNotificationContentView);
+  METADATA_HEADER(ArcNotificationContentView, views::NativeViewHost)
 
+ public:
   static int GetNotificationContentViewWidth();
 
   ArcNotificationContentView(ArcNotificationItem* item,
@@ -65,6 +65,8 @@ class ArcNotificationContentView
   void OnContainerAnimationStarted();
   void OnContainerAnimationEnded();
   void ActivateWidget(bool activate);
+  void EnsureSurfaceAttached();
+  void EnsureSurfaceDetached();
 
   bool slide_in_progress() const { return slide_in_progress_; }
 

@@ -182,30 +182,11 @@ std::unique_ptr<ui::LinuxInputMethodContext> QtUi::CreateInputMethodContext(
              : nullptr;
 }
 
-gfx::FontRenderParams QtUi::GetDefaultFontRenderParams() const {
-  return font_params_;
-}
-
-void QtUi::GetDefaultFontDescription(std::string* family_out,
-                                     int* size_pixels_out,
-                                     int* style_out,
-                                     int* weight_out,
-                                     gfx::FontRenderParams* params_out) const {
-  if (family_out) {
-    *family_out = font_family_;
+gfx::FontRenderParams QtUi::GetDefaultFontRenderParams() {
+  if (!font_params_.has_value()) {
+    InitializeFontSettings();
   }
-  if (size_pixels_out) {
-    *size_pixels_out = font_size_pixels_;
-  }
-  if (style_out) {
-    *style_out = font_style_;
-  }
-  if (weight_out) {
-    *weight_out = font_weight_;
-  }
-  if (params_out) {
-    *params_out = font_params_;
-  }
+  return *font_params_;
 }
 
 ui::SelectFileDialog* QtUi::CreateSelectFileDialog(
@@ -271,10 +252,48 @@ bool QtUi::Initialize() {
   native_theme_ = std::make_unique<QtNativeTheme>(shim_.get());
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
-  FontChanged();
   ScaleFactorMaybeChangedImpl();
 
   return true;
+}
+
+DISABLE_CFI_VCALL
+void QtUi::InitializeFontSettings() {
+  auto params = shim_->GetFontRenderParams();
+  auto desc = shim_->GetFontDescription();
+
+  gfx::FontRenderParamsQuery query;
+  query.families = {desc.family.c_str()};
+  // Points are defined at 72 DPI and pixels are 96 DPI by default.
+  constexpr double kPointToPixelRatio = 96.0 / 72.0;
+  if (desc.size_pixels > 0) {
+    query.pixel_size = desc.size_pixels;
+    query.point_size = std::round(query.pixel_size / kPointToPixelRatio);
+  } else {
+    query.point_size = desc.size_points;
+    query.pixel_size = std::round(query.point_size * kPointToPixelRatio);
+  }
+  query.style = desc.is_italic ? gfx::Font::ITALIC : gfx::Font::NORMAL;
+  int weight =
+      qt_version_ == 5 ? Qt5WeightToCssWeight(desc.weight) : desc.weight;
+  query.weight = static_cast<gfx::Font::Weight>(weight);
+
+  gfx::FontRenderParams fc_params;
+  gfx::QueryFontconfig(query, &fc_params, nullptr);
+  font_params_ = gfx::FontRenderParams{
+      .antialiasing = params.antialiasing,
+      .use_bitmaps = params.use_bitmaps,
+      .hinting = QtHintingToGfxHinting(params.hinting, fc_params.hinting),
+      // QT doesn't expose a subpixel rendering setting, so fall back to
+      // fontconfig for it.
+      .subpixel_rendering = fc_params.subpixel_rendering,
+  };
+  set_default_font_settings(FontSettings{
+      .family = std::move(query.families[0]),
+      .size_pixels = query.pixel_size,
+      .style = query.style,
+      .weight = static_cast<int>(query.weight),
+  });
 }
 
 ui::NativeTheme* QtUi::GetNativeTheme() const {
@@ -445,42 +464,9 @@ gfx::Size QtUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 }
 #endif
 
-DISABLE_CFI_VCALL
 void QtUi::FontChanged() {
-  auto params = shim_->GetFontRenderParams();
-  auto desc = shim_->GetFontDescription();
-
-  font_family_ = desc.family.c_str();
-  // Points are defined at 72 DPI and pixels are 96 DPI by default.
-  constexpr double kPointToPixelRatio = 96.0 / 72.0;
-  if (desc.size_pixels > 0) {
-    font_size_pixels_ = desc.size_pixels;
-    font_size_points_ = std::round(font_size_pixels_ / kPointToPixelRatio);
-  } else {
-    font_size_points_ = desc.size_points;
-    font_size_pixels_ = std::round(font_size_points_ * kPointToPixelRatio);
-  }
-  font_style_ = desc.is_italic ? gfx::Font::ITALIC : gfx::Font::NORMAL;
-  font_weight_ =
-      qt_version_ == 5 ? Qt5WeightToCssWeight(desc.weight) : desc.weight;
-
-  gfx::FontRenderParamsQuery query;
-  query.families = {font_family_};
-  query.pixel_size = font_size_pixels_;
-  query.point_size = font_size_points_;
-  query.style = font_style_;
-  query.weight = static_cast<gfx::Font::Weight>(font_weight_);
-
-  gfx::FontRenderParams fc_params;
-  gfx::QueryFontconfig(query, &fc_params, nullptr);
-  font_params_ = gfx::FontRenderParams{
-      .antialiasing = params.antialiasing,
-      .use_bitmaps = params.use_bitmaps,
-      .hinting = QtHintingToGfxHinting(params.hinting, fc_params.hinting),
-      // QT doesn't expose a subpixel rendering setting, so fall back to
-      // fontconfig for it.
-      .subpixel_rendering = fc_params.subpixel_rendering,
-  };
+  set_default_font_settings(std::nullopt);
+  font_params_ = std::nullopt;
 }
 
 void QtUi::ThemeChanged() {
@@ -488,7 +474,7 @@ void QtUi::ThemeChanged() {
 }
 
 void QtUi::ScaleFactorMaybeChanged() {
-  // This gets called whenever the monitor configuration changes.  Handle the
+  // This gets called whenever the monitor configuration changes. Handle the
   // scale change asynchronously to allow the change to propagate to QT's scale
   // factor. This also coalesces scale change events together.
   if (!scale_factor_task_active_) {
@@ -573,7 +559,7 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
 }
 
 DISABLE_CFI_VCALL
-absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
+std::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
   switch (id) {
     case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
       return shim_->GetColor(ColorType::kEntryFg, ColorState::kNormal);
@@ -634,7 +620,7 @@ absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
                  SK_ColorBLACK, 2.0)
           .color;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

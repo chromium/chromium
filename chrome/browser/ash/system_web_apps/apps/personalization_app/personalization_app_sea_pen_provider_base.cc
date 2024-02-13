@@ -47,66 +47,6 @@ namespace {
 
 constexpr int kSeaPenImageThumbnailSizeDip = 512;
 
-/**
- * Serializes a sea pen query information `query` into json
- * string format based on the query type. Such as {creation_time:<number>,
- * freeform_query:<string>} or {creation_time:<number>,
- * user_visible_query_text:<string>, user_visible_query_template:<string>,
- * template_id:<number>, options:{<chip_number>:<option_number>, ...}}. For
- * example:
- * {"creation_time":"13349580387513653", "freeform_query":"test freeform query"}
- * {"creation_time":"13349580387513653", "user_visible_query_text": "test
- * template query", "user_visible_query_template": "test template",
- * "template_id":"2","options":{"4":"34","5":"40"}}
- *
- * @param query  pointer to the sea pen query
- * @return query information in string format
- */
-std::string SeaPenQueryToJsonString(const mojom::SeaPenQueryPtr& query) {
-  base::Value::Dict query_dict = base::Value::Dict();
-  query_dict.Set(wallpaper_constants::kSeaPenCreationTimeKey,
-                 base::TimeToValue(base::Time::Now()));
-
-  switch (query->which()) {
-    case mojom::SeaPenQuery::Tag::kTextQuery:
-      query_dict.Set(wallpaper_constants::kSeaPenFreeformQueryKey,
-                     query->get_text_query());
-      break;
-    case mojom::SeaPenQuery::Tag::kTemplateQuery:
-      query_dict.Set(wallpaper_constants::kSeaPenTemplateIdKey,
-                     base::NumberToString(static_cast<int32_t>(
-                         query->get_template_query()->id)));
-      base::Value::Dict options_dict = base::Value::Dict();
-      for (const auto& [chip, option] : query->get_template_query()->options) {
-        options_dict.Set(base::NumberToString(static_cast<int32_t>(chip)),
-                         base::NumberToString(static_cast<int32_t>(option)));
-      }
-      query_dict.Set(wallpaper_constants::kSeaPenTemplateOptionsKey,
-                     std::move(options_dict));
-      query_dict.Set(wallpaper_constants::kSeaPenUserVisibleQueryTextKey,
-                     query->get_template_query()->user_visible_query->text);
-      query_dict.Set(
-          wallpaper_constants::kSeaPenUserVisibleQueryTemplateKey,
-          query->get_template_query()->user_visible_query->template_title);
-      break;
-  }
-
-  return base::WriteJson(query_dict).value_or("");
-}
-
-// Constructs the xmp metadata string from the string query information.
-std::string QueryInfoToXmpString(const std::string& query_info) {
-  static constexpr char kXmpData[] = R"(
-            <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
-               <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                  <rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
-                     <dc:description>%s</dc:description>
-                  </rdf:Description>
-               </rdf:RDF>
-            </x:xmpmeta>)";
-  return base::StringPrintf(kXmpData, query_info.c_str());
-}
-
 }  // namespace
 
 PersonalizationAppSeaPenProviderBase::PersonalizationAppSeaPenProviderBase(
@@ -129,6 +69,10 @@ void PersonalizationAppSeaPenProviderBase::BindInterface(
         ::ash::features::IsVcBackgroundReplaceEnabled());
   sea_pen_receiver_.reset();
   sea_pen_receiver_.Bind(std::move(receiver));
+}
+
+bool PersonalizationAppSeaPenProviderBase::IsEligibleForSeaPen() {
+  return ::ash::personalization_app::IsEligibleForSeaPen(profile_);
 }
 
 void PersonalizationAppSeaPenProviderBase::SearchWallpaper(
@@ -256,10 +200,7 @@ void PersonalizationAppSeaPenProviderBase::OnFetchWallpaperDone(
   }
 
   CHECK(last_query_);
-  const std::string query_info =
-      QueryInfoToXmpString(SeaPenQueryToJsonString(last_query_));
-
-  OnFetchWallpaperDoneInternal(*image, query_info, std::move(callback));
+  OnFetchWallpaperDoneInternal(*image, last_query_, std::move(callback));
 }
 
 void PersonalizationAppSeaPenProviderBase::OnRecentSeaPenImageSelected(

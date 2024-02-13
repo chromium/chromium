@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
@@ -48,7 +48,7 @@ class VIEWS_EXPORT AXAuraObjWrapper {
   const AXAuraObjCache* cache() const { return aura_obj_cache_; }
 
  protected:
-  absl::optional<std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>>
+  std::optional<std::vector<raw_ptr<AXAuraObjWrapper, VectorExperimental>>>
       cached_children_;
 
   // The cache associated with this wrapper. Subclasses should initialize this

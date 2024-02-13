@@ -253,6 +253,11 @@ export class SettingsPrivacyHubGeolocationSubpage extends
   }
 
   private geolocationAllowedForSystem_(): boolean {
+    if (!this.prefs) {
+      // Won't show blocked services and apps in case that the geolocation pref
+      // is not yet loaded.
+      return true;
+    }
     return this.getPref<GeolocationAccessLevel>(
                    'ash.user.geolocation_access_level')
                .value !== GeolocationAccessLevel.DISALLOWED;

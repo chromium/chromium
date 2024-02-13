@@ -86,6 +86,9 @@ class UserActivityBrowserAgent
   void OverloadContinueUserActivityURL(BOOL open_existing_tab,
                                        NSURL* webpage_url);
 
+  // Clears startup parameters.
+  void ClearStartupParameters();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The browser associated with this agent.

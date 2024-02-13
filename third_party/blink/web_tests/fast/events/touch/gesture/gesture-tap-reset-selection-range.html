@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <script src="../../../../resources/testharness.js"></script>
 <script src="../../../../resources/testharnessreport.js"></script>
-<div id="dragme">Make Selection Here</div>
+<script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../..//resources/testdriver-vendor.js"></script>
+<div><span id="dragme">Make Selection Here<span></div>
 <div id="log"></div>
 <script>
-var dragme = document.getElementById('dragme');
-test(function() {
-    if (!window.eventSender)
-        return;
-
-    var x = dragme.offsetLeft + dragme.offsetWidth / 2;
-    var y = dragme.offsetTop + dragme.offsetHeight / 2;
-
-    // Longpress to create selection
-    eventSender.gestureLongPress(x, y);
-
-    eventSender.gestureTapDown(x, y);
-    eventSender.gestureShowPress(x, y);
-    eventSender.gestureTap(x, y);
-
-    assert_true(window.getSelection().isCollapsed);
-}, "This tests if the selection is reset after tapping of gesture.");
+promise_test(async t => {
+  const target = document.getElementById('dragme');
+  preventContextMenu(t);
+  await touchLongPressElement(target, { duration: 1200 });
+  assert_equals(window.getSelection().toString(), 'Selection');
+  const pos = elementCenter(target);
+  await touchTap(pos.x, pos.y);
+  assert_true(window.getSelection().isCollapsed);
+}, 'Selection is reset after tap gesture.');
 </script>

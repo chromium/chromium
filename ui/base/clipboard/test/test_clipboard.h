@@ -41,7 +41,7 @@ class TestClipboard : public Clipboard {
 
   // Clipboard overrides.
   void OnPreShutdown() override;
-  absl::optional<DataTransferEndpoint> GetSource(
+  std::optional<DataTransferEndpoint> GetSource(
       ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
@@ -101,7 +101,7 @@ class TestClipboard : public Clipboard {
       std::unique_ptr<DataTransferEndpoint> data_src) override;
   void WriteText(base::StringPiece text) override;
   void WriteHTML(base::StringPiece markup,
-                 absl::optional<base::StringPiece> source_url) override;
+                 std::optional<base::StringPiece> source_url) override;
   void WriteSvg(base::StringPiece markup) override;
   void WriteRTF(base::StringPiece rtf) override;
   void WriteFilenames(std::vector<ui::FileInfo> filenames) override;
@@ -118,15 +118,15 @@ class TestClipboard : public Clipboard {
     DataStore& operator=(const DataStore& other);
     ~DataStore();
     void Clear();
-    void SetDataSource(absl::optional<DataTransferEndpoint> new_data_src);
-    absl::optional<DataTransferEndpoint> GetDataSource() const;
+    void SetDataSource(std::optional<DataTransferEndpoint> new_data_src);
+    std::optional<DataTransferEndpoint> GetDataSource() const;
     ClipboardSequenceNumberToken sequence_number;
     base::flat_map<ClipboardFormatType, std::string> data;
     std::string url_title;
     std::string html_src_url;
     std::vector<uint8_t> png;
     std::vector<ui::FileInfo> filenames;
-    absl::optional<DataTransferEndpoint> data_src;
+    std::optional<DataTransferEndpoint> data_src;
   };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

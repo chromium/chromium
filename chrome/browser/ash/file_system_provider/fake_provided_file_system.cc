@@ -504,7 +504,25 @@ AbortCallback FakeProvidedFileSystem::AddWatcher(
     bool persistent,
     storage::AsyncFileUtil::StatusCallback callback,
     storage::WatcherManager::NotificationCallback notification_callback) {
-  // TODO(b/251698485): Implement it once needed.
+  // Check if watcher already exists.
+  const WatcherKey key(entry_watcher, recursive);
+  const Watchers::iterator it = watchers_.find(key);
+  if (it != watchers_.end()) {
+    std::move(callback).Run(base::File::FILE_OK);
+    return PostAbortableTask(
+        base::BindOnce(std::move(callback), base::File::FILE_OK));
+  }
+
+  // Add watcher.
+  Watcher* const watcher = &watchers_[key];
+  watcher->entry_path = entry_watcher;
+  watcher->recursive = recursive;
+
+  // Notify observers.
+  for (auto& observer : observers_) {
+    observer.OnWatcherListChanged(file_system_info_, watchers_);
+  }
+
   return PostAbortableTask(
       base::BindOnce(std::move(callback), base::File::FILE_OK));
 }
@@ -514,7 +532,18 @@ void FakeProvidedFileSystem::RemoveWatcher(
     const base::FilePath& entry_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
-  // TODO(b/251698485): Implement it once needed.
+  // Remove watcher.
+  const WatcherKey key(entry_path, recursive);
+  const auto it = watchers_.find(key);
+  if (it != watchers_.end()) {
+    watchers_.erase(it);
+  }
+
+  // Notify observers.
+  for (auto& observer : observers_) {
+    observer.OnWatcherListChanged(file_system_info_, watchers_);
+  }
+
   std::move(callback).Run(base::File::FILE_OK);
 }
 
@@ -588,8 +617,8 @@ void FakeProvidedFileSystem::Abort(int task_id) {
 }
 
 void FakeProvidedFileSystem::AbortMany(const std::vector<int>& task_ids) {
-  for (size_t i = 0; i < task_ids.size(); ++i) {
-    tracker_.TryCancel(task_ids[i]);
+  for (int task_id : task_ids) {
+    tracker_.TryCancel(task_id);
   }
 }
 

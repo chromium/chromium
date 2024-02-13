@@ -81,6 +81,7 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
     DeepQuery(const DeepQuery& other);
     DeepQuery& operator=(const DeepQuery& other);
     DeepQuery& operator=(std::initializer_list<std::string> segments);
+    DeepQuery operator+(const std::string& segment) const;
     ~DeepQuery();
 
     using const_iterator = std::vector<std::string>::const_iterator;

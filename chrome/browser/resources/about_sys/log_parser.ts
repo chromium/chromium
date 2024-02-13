@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SystemLog} from './browser_proxy.js';
+import type {SystemLog} from './browser_proxy.js';
 
 // Contents of lines that act as delimiters for multi-line values.
 const DELIM_START = '---------- START ----------';

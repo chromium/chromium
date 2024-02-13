@@ -22,11 +22,11 @@ constexpr int kDeskCloseButtonSize = 24;
 
 }  // namespace
 
-DeskActionView::DeskActionView(
-    const std::u16string& initial_combine_desks_target_name,
-    base::RepeatingClosure combine_desks_callback,
-    base::RepeatingClosure close_all_callback,
-    base::RepeatingClosure focus_change_callback)
+DeskActionView::DeskActionView(const std::u16string& combine_desks_target_name,
+                               const std::u16string& close_all_target_name,
+                               base::RepeatingClosure combine_desks_callback,
+                               base::RepeatingClosure close_all_callback,
+                               base::RepeatingClosure focus_change_callback)
     : combine_desks_button_(AddChildView(
           std::make_unique<CloseButton>(std::move(combine_desks_callback),
                                         CloseButton::Type::kMediumFloating,
@@ -42,9 +42,9 @@ DeskActionView::DeskActionView(
   combine_desks_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   close_all_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
-  close_all_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION));
-  UpdateCombineDesksTooltip(initial_combine_desks_target_name);
+  close_all_button_->SetTooltipText(l10n_util::GetStringFUTF16(
+      IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION, close_all_target_name));
+  UpdateCombineDesksTooltip(combine_desks_target_name);
 
   combine_desks_button_->SetPreferredSize(
       gfx::Size(kDeskCloseButtonSize, kDeskCloseButtonSize));
@@ -87,7 +87,7 @@ void DeskActionView::OnViewBlurred(views::View* observed) {
   focus_change_callback_.Run();
 }
 
-BEGIN_METADATA(DeskActionView, views::BoxLayoutView)
+BEGIN_METADATA(DeskActionView)
 END_METADATA
 
 }  // namespace ash

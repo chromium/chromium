@@ -211,7 +211,7 @@ void WaylandKeyboard::OnUnhandledKeyEvent(const KeyEvent& key_event) {
 // TODO(https://crbug.com/1338554): Revisit once this scenario changes.
 std::unique_ptr<PlatformKeyboardHook> WaylandKeyboard::CreateKeyboardHook(
     WaylandWindow* window,
-    absl::optional<base::flat_set<DomCode>> dom_codes,
+    std::optional<base::flat_set<DomCode>> dom_codes,
     PlatformKeyboardHook::KeyEventCallback callback) {
   DCHECK(window);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -385,7 +385,7 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
                                   int flags) {
   // Key repeat is only triggered by wl_keyboard::key event, but not by
   // extended_keyboard::peek_key.
-  DispatchKey(key, scan_code, down, repeat, absl::nullopt, timestamp, device_id,
+  DispatchKey(key, scan_code, down, repeat, std::nullopt, timestamp, device_id,
               flags, KeyEventKind::kKey);
 }
 
@@ -417,7 +417,7 @@ void WaylandKeyboard::ProcessKey(uint32_t serial,
   }
 
   DispatchKey(
-      key, 0 /*scan_code*/, down, false /*repeat*/, absl::make_optional(serial),
+      key, 0 /*scan_code*/, down, false /*repeat*/, std::make_optional(serial),
       wl::EventMillisecondsToTimeTicks(time), device_id(), EF_NONE, kind);
 }
 
@@ -425,7 +425,7 @@ void WaylandKeyboard::DispatchKey(unsigned int key,
                                   unsigned int scan_code,
                                   bool down,
                                   bool repeat,
-                                  absl::optional<uint32_t> serial,
+                                  std::optional<uint32_t> serial,
                                   base::TimeTicks timestamp,
                                   int device_id,
                                   int flags,

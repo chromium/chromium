@@ -204,6 +204,7 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="Third-party cookies block in incognito radio"/>
   <int value="22" label="Third-party cookies block all radio"/>
   <int value="23" label="Block all third-party cookies toggle"/>
+  <int value="24" label="IP protection toggle"/>
 </enum>
 
 <enum name="SettingsPrivacyGuideInteractions">

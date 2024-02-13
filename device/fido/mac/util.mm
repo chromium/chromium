@@ -18,9 +18,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/cbor/writer.h"
+#include "crypto/apple_keychain_v2.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/mac/keychain.h"
 #include "device/fido/p256_public_key.h"
 #include "device/fido/public_key.h"
 
@@ -71,16 +71,16 @@ std::array<uint8_t, 4> MakeSignatureCounter(
 }  // namespace
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
+std::optional<AttestedCredentialData> MakeAttestedCredentialData(
     std::vector<uint8_t> credential_id,
     std::unique_ptr<PublicKey> public_key) {
   if (credential_id.empty() || credential_id.size() > 255) {
     LOG(ERROR) << "invalid credential id: " << base::HexEncode(credential_id);
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (!public_key) {
     LOG(ERROR) << "no public key";
-    return absl::nullopt;
+    return std::nullopt;
   }
   std::array<uint8_t, 2> encoded_credential_id_length = {
       0, static_cast<uint8_t>(credential_id.size())};
@@ -92,7 +92,7 @@ absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
 AuthenticatorData MakeAuthenticatorData(
     CredentialMetadata::SignCounter counter_type,
     const std::string& rp_id,
-    absl::optional<AttestedCredentialData> attested_credential_data,
+    std::optional<AttestedCredentialData> attested_credential_data,
     bool has_uv) {
   uint8_t flags =
       static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence);
@@ -108,7 +108,7 @@ AuthenticatorData MakeAuthenticatorData(
                            std::move(attested_credential_data));
 }
 
-absl::optional<std::vector<uint8_t>> GenerateSignature(
+std::optional<std::vector<uint8_t>> GenerateSignature(
     const AuthenticatorData& authenticator_data,
     base::span<const uint8_t, kClientDataHashLength> client_data_hash,
     SecKeyRef private_key) {
@@ -124,12 +124,12 @@ absl::optional<std::vector<uint8_t>> GenerateSignature(
                     client_data_hash.size());
   ScopedCFTypeRef<CFErrorRef> err;
   ScopedCFTypeRef<CFDataRef> sig_data(
-      Keychain::GetInstance().KeyCreateSignature(
+      crypto::AppleKeychainV2::GetInstance().KeyCreateSignature(
           private_key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256,
           sig_input.get(), err.InitializeInto()));
   if (!sig_data) {
     LOG(ERROR) << "SecKeyCreateSignature failed: " << err.get();
-    return absl::nullopt;
+    return std::nullopt;
   }
   return std::vector<uint8_t>(
       CFDataGetBytePtr(sig_data.get()),

@@ -95,7 +95,7 @@ class ImageRepPNG final : public ImageRep {
   std::vector<ImagePNGRep> image_png_reps_;
 
   // Cached to avoid having to parse the raw data multiple times.
-  mutable absl::optional<gfx::Size> size_cache_;
+  mutable std::optional<gfx::Size> size_cache_;
 };
 
 class ImageRepSkia final : public ImageRep {

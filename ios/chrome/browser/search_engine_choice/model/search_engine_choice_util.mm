@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 
 #import "base/check_deref.h"
+#import "base/command_line.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
@@ -21,7 +23,8 @@ namespace {
 // disabled for tests or for non-branded builds. This method eliminates those
 // cases, unless it is force-enabled by flag.
 bool IsChoiceEnabled(search_engines::ChoicePromo promo) {
-  if (IsSearchEngineForceEnabled()) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceSearchEngineChoiceScreen)) {
     return true;
   }
   if (tests_hook::DisableDefaultSearchEngineChoice()) {
@@ -42,17 +45,19 @@ bool ShouldDisplaySearchEngineChoiceScreen(ChromeBrowserState& browser_state,
     // This build is not eligible for the choice screen.
     return false;
   }
-
+  ChromeBrowserState* original_browser_state =
+      browser_state.GetOriginalChromeBrowserState();
   // Getting data needed to check condition.
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(&browser_state);
+      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(
+          original_browser_state);
   BrowserStatePolicyConnector* policy_connector =
-      browser_state.GetPolicyConnector();
+      original_browser_state->GetPolicyConnector();
   const policy::PolicyService& policy_service =
       *policy_connector->GetPolicyService();
   TemplateURLService* template_url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(&browser_state);
-  search_engine_choice_service->PreprocessPrefsForReprompt();
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          original_browser_state);
 
   // Checking whether the user is eligible for the screen.
   auto condition =

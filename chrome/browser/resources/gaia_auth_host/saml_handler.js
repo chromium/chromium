@@ -56,6 +56,9 @@ import {WebviewEventManager} from './webview_event_manager.js';
   /** @const */
   const SAML_API_Error = 'ChromeOS.SAML.APIError';
 
+  /** @const */
+  const SAML_INCORRECT_ATTESTATION = 'ChromeOS.SAML.IncorrectAttestation';
+
   /**
    * The script to inject into webview and its sub frames.
    * @type {string}
@@ -171,6 +174,25 @@ import {WebviewEventManager} from './webview_event_manager.js';
         PASSWORD_NOT_CONFIRMED: 5,
         // Enum Max value.
         MAX: 6,
+      };
+
+      /**
+       * This enum is tied directly to a UMA enum defined in
+       * //tools/metrics/histograms/metadata/chromeos/enums.xml, and should
+       * always reflect it (do not change one without changing the other). These
+       * values are persisted to logs. Entries should not be renumbered and
+       * numeric values should never be reused.
+       * @enum {number}
+       */
+      SamlHandler.IncorrectAttestationStage = {
+        // onBeforeRequest_(details) method.
+        ON_BEFORE_REQUEST: 0,
+        // onBeforeSendHeaders_(details) method.
+        ON_BEFORE_SEND_HEADERS: 1,
+        // continueDelayedRedirect_(url, challengeResponse) method.
+        CONTINUE_DELAYED_REDIRECT: 2,
+        // Enum Max value.
+        MAX: 3,
       };
 
       /**
@@ -658,8 +680,10 @@ import {WebviewEventManager} from './webview_event_manager.js';
     continueDelayedRedirect_(url, challengeResponse) {
       if (this.deviceAttestationStage_ !==
           SamlHandler.DeviceAttestationStage.ORIGINAL_REDIRECT_CANCELED) {
-        console.error(
+        console.warn(
             'SamlHandler.continueDelayedRedirect_: incorrect attestation stage');
+        this.recordInIncorrectAttestationHistogram_(
+            SamlHandler.IncorrectAttestationStage.CONTINUE_DELAYED_REDIRECT);
         return;
       }
 
@@ -718,8 +742,9 @@ import {WebviewEventManager} from './webview_event_manager.js';
 
       // Reset state in case of unexpected requests during device attestation.
       this.deviceAttestationStage_ = SamlHandler.DeviceAttestationStage.NONE;
-      console.error(
-          'SamlHandler.onBeforeRequest_: incorrect attestation stage');
+      console.warn('SamlHandler.onBeforeRequest_: incorrect attestation stage');
+      this.recordInIncorrectAttestationHistogram_(
+          SamlHandler.IncorrectAttestationStage.ON_BEFORE_REQUEST);
       return {};
     }
 
@@ -778,8 +803,10 @@ import {WebviewEventManager} from './webview_event_manager.js';
 
       // Reset state in case of unexpected navigation during device attestation.
       this.deviceAttestationStage_ = SamlHandler.DeviceAttestationStage.NONE;
-      console.error(
+      console.warn(
           'SamlHandler.onBeforeSendHeaders_: incorrect attestation stage');
+      this.recordInIncorrectAttestationHistogram_(
+          SamlHandler.IncorrectAttestationStage.ON_BEFORE_SEND_HEADERS);
       return {};
     }
 
@@ -874,6 +901,18 @@ import {WebviewEventManager} from './webview_event_manager.js';
       chrome.send(
           'metricsHandler:recordInHistogram',
           [SAML_API_Error, value, SamlHandler.ApiErrorType.MAX]);
+    }
+
+    /**
+     * Invoked to record value in ChromeOS.SAML.IncorrectAttestation metric.
+     * @private
+     */
+    recordInIncorrectAttestationHistogram_(value) {
+      chrome.send('metricsHandler:recordInHistogram', [
+        SAML_INCORRECT_ATTESTATION,
+        value,
+        SamlHandler.IncorrectAttestationStage.MAX,
+      ]);
     }
 
     /**

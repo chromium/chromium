@@ -13,7 +13,7 @@
 class Status;
 
 struct Command {
-  Command() {}
+  Command() = default;
   Command(const std::string& method, const base::Value::Dict& params)
       : method(method) {
     this->params = params.Clone();
@@ -26,7 +26,7 @@ struct Command {
     params = command.params.Clone();
     return *this;
   }
-  ~Command() {}
+  ~Command() = default;
 
   std::string method;
   base::Value::Dict params;

@@ -16,6 +16,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -251,6 +252,7 @@ public class TabStateFlatBufferTest {
         TabState state = new TabState();
         state.parentId = 4;
         state.rootId = 5;
+        state.tabGroupId = new Token(1L, 2L);
         state.themeColor = TabState.UNSPECIFIED_THEME_COLOR;
         state.tabLaunchTypeAtCreation = TabLaunchType.FROM_CHROME_UI;
         state.userAgent = UserAgentType.DESKTOP;
@@ -290,6 +292,7 @@ public class TabStateFlatBufferTest {
         Assert.assertNotNull(expected);
         Assert.assertEquals(expected.parentId, actual.parentId);
         Assert.assertEquals(expected.rootId, actual.rootId);
+        Assert.assertEquals(expected.tabGroupId, actual.tabGroupId);
         Assert.assertEquals(expected.openerAppId, actual.openerAppId);
         Assert.assertEquals(expected.tabLaunchTypeAtCreation, actual.tabLaunchTypeAtCreation);
         Assert.assertEquals(

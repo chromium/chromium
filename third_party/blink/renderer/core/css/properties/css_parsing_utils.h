@@ -60,6 +60,7 @@ enum class TrackListType {
   kGridTemplateSubgrid
 };
 enum class UnitlessQuirk { kAllow, kForbid };
+enum class AllowCalcSize { kAllow, kForbid };
 enum class AllowedColorKeywords { kAllowSystemColor, kNoSystemColor };
 enum class EmptyPathStringHandling { kFailure, kTreatAsNone };
 
@@ -123,7 +124,8 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     const CSSParserContext&,
     CSSPrimitiveValue::ValueRange,
     UnitlessQuirk = UnitlessQuirk::kForbid,
-    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone);
+    CSSAnchorQueryTypes = kCSSAnchorQueryTypesNone,
+    AllowCalcSize = AllowCalcSize::kForbid);
 CSSPrimitiveValue* ConsumeSVGGeometryPropertyLength(
     CSSParserTokenRange&,
     const CSSParserContext&,
@@ -494,6 +496,8 @@ bool ConsumeFromPageBreakBetween(CSSParserTokenRange&, CSSValueID&);
 bool ConsumeFromColumnBreakBetween(CSSParserTokenRange&, CSSValueID&);
 bool ConsumeFromColumnOrPageBreakInside(CSSParserTokenRange&, CSSValueID&);
 
+bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context);
+
 CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange&,
                                   const CSSParserContext&,
                                   UnitlessQuirk = UnitlessQuirk::kForbid);
@@ -690,6 +694,9 @@ bool ConsumeIfDelimiter(T& range_or_stream, UChar c) {
   range_or_stream.ConsumeIncludingWhitespace();
   return true;
 }
+
+CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
+                                         const CSSParserContext& context);
 
 }  // namespace css_parsing_utils
 }  // namespace blink

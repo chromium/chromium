@@ -1162,6 +1162,10 @@ class StoragePartitionImpl::ServiceWorkerSharedDictionaryAccessObserver
   raw_ptr<StoragePartitionImpl> storage_partition_;
 };
 
+struct StoragePartitionImpl::NetworkContextOwner {
+  mojo::Remote<network::mojom::NetworkContext> network_context;
+};
+
 StoragePartitionImpl::StoragePartitionImpl(
     BrowserContext* browser_context,
     const StoragePartitionConfig& config,
@@ -1173,6 +1177,7 @@ StoragePartitionImpl::StoragePartitionImpl(
       config_(config),
       relative_partition_path_(relative_partition_path),
       special_storage_policy_(special_storage_policy),
+      network_context_owner_(std::make_unique<NetworkContextOwner>()),
       deletion_helpers_running_(0) {}
 
 StoragePartitionImpl::~StoragePartitionImpl() {
@@ -1573,10 +1578,10 @@ const std::string& StoragePartitionImpl::GetPartitionDomain() const {
 
 network::mojom::NetworkContext* StoragePartitionImpl::GetNetworkContext() {
   DCHECK(initialized_);
-  if (!network_context_.is_bound()) {
+  if (!network_context_owner_->network_context.is_bound()) {
     InitNetworkContext();
   }
-  return network_context_.get();
+  return network_context_owner_->network_context.get();
 }
 
 cert_verifier::mojom::CertVerifierServiceUpdater*
@@ -3080,8 +3085,8 @@ void StoragePartitionImpl::RemoveObserver(DataRemovalObserver* observer) {
 
 void StoragePartitionImpl::FlushNetworkInterfaceForTesting() {
   DCHECK(initialized_);
-  DCHECK(network_context_);
-  network_context_.FlushForTesting();
+  DCHECK(network_context_owner_->network_context);
+  network_context_owner_->network_context.FlushForTesting();
   if (url_loader_factory_for_browser_process_) {
     url_loader_factory_for_browser_process_.FlushForTesting();
   }
@@ -3132,8 +3137,9 @@ void StoragePartitionImpl::WaitForCodeCacheShutdownForTesting() {
 void StoragePartitionImpl::SetNetworkContextForTesting(
     mojo::PendingRemote<network::mojom::NetworkContext>
         network_context_remote) {
-  network_context_.reset();
-  network_context_.Bind(std::move(network_context_remote));
+  network_context_owner_->network_context.reset();
+  network_context_owner_->network_context.Bind(
+      std::move(network_context_remote));
 }
 
 base::WeakPtr<StoragePartitionImpl> StoragePartitionImpl::GetWeakPtr() {
@@ -3332,21 +3338,22 @@ void StoragePartitionImpl::InitNetworkContext() {
         cookie_deprecation_label_manager_->GetValue().value_or("");
   }
 
-  network_context_.reset();
+  network_context_owner_->network_context.reset();
   CreateNetworkContextInNetworkService(
-      network_context_.BindNewPipeAndPassReceiver(), std::move(context_params));
-  DCHECK(network_context_);
+      network_context_owner_->network_context.BindNewPipeAndPassReceiver(),
+      std::move(context_params));
+  DCHECK(network_context_owner_->network_context);
 
   network_context_client_receiver_.reset();
-  network_context_->SetClient(
+  network_context_owner_->network_context->SetClient(
       network_context_client_receiver_.BindNewPipeAndPassRemote());
-  network_context_.set_disconnect_handler(base::BindOnce(
+  network_context_owner_->network_context.set_disconnect_handler(base::BindOnce(
       &StoragePartitionImpl::InitNetworkContext, weak_factory_.GetWeakPtr()));
 
   if (base::FeatureList::IsEnabled(features::kPreloadCookies)) {
     mojo::Remote<::network::mojom::CookieManager> cookie_manager;
     mojo::PendingRemote<::network::mojom::CookieManager> cookie_manager_remote;
-    network_context_->GetCookieManager(
+    network_context_owner_->network_context->GetCookieManager(
         cookie_manager_remote.InitWithNewPipeAndPassReceiver());
     cookie_manager.Bind(std::move(cookie_manager_remote));
     cookie_manager->GetAllCookies(base::NullCallback());

@@ -19,7 +19,7 @@
 
 namespace base {
 namespace internal {
-template <typename, typename>
+template <typename, typename, typename>
 struct Invoker;
 
 template <typename T, typename UnretainedTrait, RawPtrTraits PtrTraits>
@@ -55,7 +55,7 @@ class BASE_EXPORT RawPtrAsanBoundArgTracker {
   static uintptr_t GetProtectedArgPtr(uintptr_t ptr);
 
  private:
-  template <typename, typename>
+  template <typename, typename, typename>
   friend struct internal::Invoker;
 
   void Add(uintptr_t pointer);

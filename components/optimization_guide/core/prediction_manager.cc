@@ -149,7 +149,11 @@ bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
          model_metadata.type_url() ==
              "type.googleapis.com/"
              "google.internal.chrome.optimizationguide.v1."
-             "OnDeviceBaseModelMetadata";
+             "OnDeviceBaseModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.internal.chrome.optimizationguide.v1."
+             "HistoryClustersModuleRankingModelMetadata";
 }
 
 void RecordModelAvailableAtRegistration(
@@ -183,7 +187,6 @@ PredictionManager::PredictionManager(
       prediction_model_store_(prediction_model_store),
       url_loader_factory_(url_loader_factory),
       optimization_guide_logger_(optimization_guide_logger),
-      pref_service_(pref_service),
       component_updates_enabled_provider_(component_updates_enabled_provider),
       prediction_model_fetch_timer_(
           pref_service,

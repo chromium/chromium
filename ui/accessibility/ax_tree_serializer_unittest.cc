@@ -231,7 +231,7 @@ TEST_F(AXTreeSerializerTest, ReparentingWithDirtySubtreeUpdates) {
 
   CreateTreeSerializer();
   AXTreeUpdate update;
-  serializer_->MarkSubtreeDirty(tree1_->GetFromId(1));
+  serializer_->MarkSubtreeDirty(1);
   ASSERT_TRUE(serializer_->SerializeChanges(tree1_->GetFromId(4), &update));
 
   // The update should unserialize without errors.

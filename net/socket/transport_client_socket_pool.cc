@@ -81,7 +81,7 @@ TransportClientSocketPool::Request::Request(
     RespectLimits respect_limits,
     Flags flags,
     scoped_refptr<SocketParams> socket_params,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const NetLogWithSource& net_log)
     : handle_(handle),
       callback_(std::move(callback)),
@@ -244,7 +244,7 @@ void TransportClientSocketPool::RemoveHigherLayeredPool(
 int TransportClientSocketPool::RequestSocket(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority priority,
     const SocketTag& socket_tag,
     RespectLimits respect_limits,
@@ -298,7 +298,7 @@ int TransportClientSocketPool::RequestSocket(
 int TransportClientSocketPool::RequestSockets(
     const GroupId& group_id,
     scoped_refptr<SocketParams> params,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     int num_sockets,
     CompletionOnceCallback callback,
     const NetLogWithSource& net_log) {
@@ -911,7 +911,7 @@ bool TransportClientSocketPool::CloseOneIdleConnectionInHigherLayeredPool() {
   // This pool doesn't have any idle sockets. It's possible that a pool at a
   // higher layer is holding one of this sockets active, but it's actually idle.
   // Query the higher layers.
-  for (auto* higher_pool : higher_pools_) {
+  for (HigherLayeredPool* higher_pool : higher_pools_) {
     if (higher_pool->CloseOneIdleConnection())
       return true;
   }
@@ -1309,7 +1309,7 @@ void TransportClientSocketPool::OnConnectJobComplete(Group* group,
 
   // Check if the ConnectJob is already bound to a Request. If so, result is
   // returned to that specific request.
-  absl::optional<Group::BoundRequest> bound_request =
+  std::optional<Group::BoundRequest> bound_request =
       group->FindAndRemoveBoundRequestForConnectJob(job);
   Request* request = nullptr;
   std::unique_ptr<Request> owned_request;
@@ -1834,7 +1834,7 @@ TransportClientSocketPool::Group::BindRequestToConnectJob(
   return request;
 }
 
-absl::optional<TransportClientSocketPool::Group::BoundRequest>
+std::optional<TransportClientSocketPool::Group::BoundRequest>
 TransportClientSocketPool::Group::FindAndRemoveBoundRequestForConnectJob(
     ConnectJob* connect_job) {
   for (auto bound_pair = bound_requests_.begin();
@@ -1845,7 +1845,7 @@ TransportClientSocketPool::Group::FindAndRemoveBoundRequestForConnectJob(
     bound_requests_.erase(bound_pair);
     return std::move(ret);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::unique_ptr<TransportClientSocketPool::Request>

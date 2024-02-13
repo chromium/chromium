@@ -9,10 +9,6 @@
 
 namespace enterprise_connectors {
 
-// Controls whether the local content analysis feature can be used for any
-// service provider and/or policy configuration.
-BASE_DECLARE_FEATURE(kLocalContentAnalysisEnabled);
-
 // Controls whether the custom message per rule feature is enabled or not. Does
 // not affect interstitials custom message per rule feature.
 BASE_DECLARE_FEATURE(kDialogCustomRuleMessageEnabled);

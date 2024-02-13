@@ -64,8 +64,6 @@ class IntersectionObserverController
     return tracked_implicit_root_observations_.size();
   }
 
-  void InvalidateCachedRectsIfPaintPropertiesChanged();
-
  private:
   void PostTaskToDeliverNotifications();
 

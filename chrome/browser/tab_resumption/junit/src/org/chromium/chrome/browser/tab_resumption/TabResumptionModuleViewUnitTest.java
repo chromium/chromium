@@ -89,6 +89,22 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
     @Test
     @SmallTest
+    public void testSetTitle() {
+        String testTitle1 = "This is a test title";
+        String testTitle2 = "Here is another test title";
+        TextView titleTextView =
+                ((TextView) mModuleView.findViewById(R.id.tab_resumption_title_description));
+
+        mModuleView.setTitle(testTitle1);
+        Assert.assertEquals(testTitle1, titleTextView.getText());
+        mModuleView.setTitle(testTitle2);
+        Assert.assertEquals(testTitle2, titleTextView.getText());
+        mModuleView.setTitle(null);
+        Assert.assertEquals("", titleTextView.getText());
+    }
+
+    @Test
+    @SmallTest
     public void testRenderSingle() {
         SuggestionEntry entry1 =
                 new SuggestionEntry(
@@ -101,12 +117,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
 
-        mModuleView.setSuggestionBundleThenRender(mSuggestionBundle);
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
         Assert.assertEquals(1, mTileContainerView.getChildCount());
-        Assert.assertEquals(
-                "Continue with this tab",
-                ((TextView) mModuleView.findViewById(R.id.tab_resumption_title_description))
-                        .getText());
 
         // Capture call to fetch image.
         verify(mUrlImageProvider, atLeastOnce())
@@ -137,6 +149,13 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 (BitmapDrawable) ((ImageView) tile1.findViewById(R.id.tile_icon)).getDrawable();
         Assert.assertNotNull(drawable1);
         Assert.assertEquals(bitmap1, drawable1.getBitmap());
+
+        // Simulate click.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertEquals(null, mLastClickUrl);
+        tile1.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.GOOGLE_URL_DOG, mLastClickUrl);
     }
 
     @Test
@@ -161,12 +180,8 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
 
         Assert.assertEquals(0, mTileContainerView.getChildCount());
 
-        mModuleView.setSuggestionBundleThenRender(mSuggestionBundle);
+        mModuleView.setSuggestionBundle(mSuggestionBundle);
         Assert.assertEquals(3, mTileContainerView.getChildCount()); // 2 tiles, 1 divider.
-        Assert.assertEquals(
-                "Continue with these tabs",
-                ((TextView) mModuleView.findViewById(R.id.tab_resumption_title_description))
-                        .getText());
 
         // Capture call to fetch image.
         verify(mUrlImageProvider, atLeastOnce())
@@ -215,5 +230,12 @@ public class TabResumptionModuleViewUnitTest extends TestSupport {
                 (BitmapDrawable) ((ImageView) tile2.findViewById(R.id.tile_icon)).getDrawable();
         Assert.assertNotNull(drawable2);
         Assert.assertEquals(bitmap2, drawable2.getBitmap());
+
+        // Simulate click.
+        Assert.assertEquals(0, mClickCount);
+        Assert.assertEquals(null, mLastClickUrl);
+        tile1.performClick();
+        Assert.assertEquals(1, mClickCount);
+        Assert.assertEquals(JUnitTestGURLs.BLUE_3, mLastClickUrl);
     }
 }

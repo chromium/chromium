@@ -45,6 +45,8 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
       return "tabbed";
     case blink::mojom::DisplayMode::kBorderless:
       return "borderless";
+    case blink::mojom::DisplayMode::kPictureInPicture:
+      return "picture-in-picture";
   }
   return "";
 }
@@ -64,6 +66,9 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kTabbed;
   if (base::EqualsCaseInsensitiveASCII(display, "borderless"))
     return blink::mojom::DisplayMode::kBorderless;
+  if (base::EqualsCaseInsensitiveASCII(display, "picture-in-picture")) {
+    return blink::mojom::DisplayMode::kPictureInPicture;
+  }
   return blink::mojom::DisplayMode::kUndefined;
 }
 

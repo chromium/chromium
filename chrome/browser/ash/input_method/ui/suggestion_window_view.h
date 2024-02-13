@@ -11,8 +11,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/input_method/ui/announcement_label.h"
 #include "chrome/browser/ash/input_method/ui/indexed_suggestion_candidate_button.h"
-#include "chrome/browser/ash/input_method/ui/suggestion_accessibility_label.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"

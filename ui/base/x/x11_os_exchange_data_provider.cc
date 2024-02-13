@@ -101,12 +101,12 @@ bool XOSExchangeDataProvider::IsRendererTainted() const {
   return format_map_.find(x11::GetAtom(kRendererTaint)) != format_map_.end();
 }
 
-absl::optional<url::Origin> XOSExchangeDataProvider::GetRendererTaintedOrigin()
+std::optional<url::Origin> XOSExchangeDataProvider::GetRendererTaintedOrigin()
     const {
   auto it = format_map_.find(x11::GetAtom(kRendererTaint));
 
   if (it == format_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   ui::SelectionData data(it->first, it->second);

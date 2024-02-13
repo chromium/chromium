@@ -4,12 +4,12 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {CustomizeDialogElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {CustomizeDialogElement} from 'chrome://new-tab-page/lazy_load.js';
 import {CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {createBackgroundImage, createTheme, installMock} from './test_support.js';
 

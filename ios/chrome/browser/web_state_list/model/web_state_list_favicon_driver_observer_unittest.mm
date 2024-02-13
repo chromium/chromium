@@ -81,9 +81,8 @@ WebStateListFaviconDriverObserverTest::CreateAndInsertWebState() {
   favicon::FaviconDriver* favicon_driver =
       favicon::WebFaviconDriver::FromWebState(web_state.get());
 
-  web_state_list_.InsertWebState(0, std::move(web_state),
-                                 WebStateList::INSERT_FORCE_INDEX,
-                                 WebStateOpener());
+  web_state_list_.InsertWebState(std::move(web_state),
+                                 WebStateList::InsertionParams::AtIndex(0));
 
   return favicon_driver;
 }

@@ -3,10 +3,13 @@
 <translationbundle lang="et">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> teie vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
 <translation id="1155815720264022949">Kas soovite vanad vahelehed sulgeda?</translation>
+<translation id="1197088940767939838">Oranž</translation>
 <translation id="1215127405478249895">Vahelehtede ülevaatamine</translation>
 <translation id="125153950246128346">Puudutage muu vahelehe vaatamiseks</translation>
 <translation id="1326271443836399892">Vaadake üle praegused puhastamise seaded.</translation>
 <translation id="1499635324672558517">Kas sulgeda kõik inkognito vahelehed?</translation>
+<translation id="1555130319947370107">Sinine</translation>
+<translation id="161042844686301425">Tsüaan</translation>
 <translation id="1657719826150349398">Teisalda vaheleht alla</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> vaheleht}other{<ph name="TABS_COUNT_MANY" /> vahelehte}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> valitud vahelehe järjehoidjatesse lisamine}other{<ph name="TABS_COUNT_MANY" /> valitud vahelehe järjehoidjatesse lisamine}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Grupeeri vaheleht}other{Grupeeri vahelehed}}</translation>
 <translation id="3996880007329611795">Hankige märguandeid</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> vahelehte näivad olevat seotud. Kas soovite need grupeerida?</translation>
+<translation id="4159784952369912983">Lilla</translation>
 <translation id="4212246570487010370">Jätka sirvimist</translation>
 <translation id="427987768447457592">Uus vahelehegrupp</translation>
 <translation id="4648718555153979859">Teie vahelehed on siin grupeeritud</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Pealkiri on kohustuslik</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Teil on <ph name="TABS_COUNT_ONE" /> vaheleht, mida te pole hiljuti kasutanud}other{Teil on <ph name="TABS_COUNT_MANY" /> vahelehte, mida te pole hiljuti kasutanud}}</translation>
 <translation id="5339733443032484186">Viimane vaheleht</translation>
+<translation id="5400836586163650660">Hall</translation>
 <translation id="5490235265819901748">Vahelehegruppi laiendati</translation>
 <translation id="5494920125229734069">Valige kõik</translation>
 <translation id="5545379293264651575">Sule ilma üle vaatamata</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Kas soovite hinnalanguste puhul märguandeid saada?</translation>
 <translation id="58326064309361797">Lohistage vahelehti, et neid grupeerida</translation>
 <translation id="5846292395804797011">Sule <ph name="NUMBER_OF_TABS" /> vahelehega grupp <ph name="TITLE_OF_GROUP" /></translation>
+<translation id="5901630391730855834">Kollane</translation>
 <translation id="5972844218283131174">Tühista kõik valikud</translation>
+<translation id="6017514345406065928">Roheline</translation>
 <translation id="6054741997831917303">Selle üksuse hind <ph name="PREVIOUS_PRICE" /> langes hiljuti ja uus hind on <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Grupeeri <ph name="TABS_COUNT_ONE" /> valitud vaheleht}other{Grupeeri <ph name="TABS_COUNT_MANY" /> valitud vahelehte}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_ONE" /> arvustus}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang, <ph name="REVIEWS_COUNT_MANY" /> arvustust}}</translation>
 <translation id="7885132941432959125">Teisalda vaheleht paremale</translation>
+<translation id="7942349550061667556">Punane</translation>
 <translation id="7966321538264951561">Loobuge soovitustest.</translation>
 <translation id="8029301326595421733">Selle poe teave on avatud täiskõrgusel</translation>
 <translation id="8205266828577616993">Teisalda vaheleht üles</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Lisa gruppi uus vaheleht</translation>
 <translation id="955558140275419384">Avage see redaktor, et vaadata puhastamise eesmärgil üle kõik arhiivitud vahekaardid.</translation>
 <translation id="959682366969460160">Lööge kord majja</translation>
+<translation id="992256792861109788">Roosa</translation>
 </translationbundle>

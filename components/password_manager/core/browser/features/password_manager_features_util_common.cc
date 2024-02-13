@@ -9,6 +9,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
@@ -23,8 +24,6 @@ bool CanAccountStorageBeEnabled(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service) {
   CHECK(pref_service);
 
-  // TODO(crbug.com/1509058): Also, on Android the predicate should return true
-  // for syncing and false for signed-in non-syncing users.
   if (!CanCreateAccountStore(pref_service)) {
     return false;
   }
@@ -59,10 +58,21 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
     return false;
   }
 
-  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
+  // Eligibility for account storage is controlled by separate flags for syncing
+  // and non-syncing users. Enabling the flag is a necessary condition but not
+  // sufficient, other checks follow below.
   if (sync_service->IsSyncFeatureEnabled()) {
-    return false;
+    if (!base::FeatureList::IsEnabled(
+            syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
+      return false;
+    }
+  } else {
+    if (!base::FeatureList::IsEnabled(
+            syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)) {
+      return false;
+    }
   }
 
   switch (sync_service->GetTransportState()) {
@@ -165,7 +175,7 @@ PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
     return PasswordAccountStorageUserState::kSignedOutUser;
   }
 
-  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
   if (sync_service->IsSyncFeatureEnabled()) {
     return PasswordAccountStorageUserState::kSyncUser;

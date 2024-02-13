@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] transpose float32 1D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] transpose float32 1D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] transpose float32 2D tensor default options / sync
@@ -19,6 +21,8 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] transpose float32 5D tensor options.permutation / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] transpose float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] transpose float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] transpose float32 2D tensor default options / async

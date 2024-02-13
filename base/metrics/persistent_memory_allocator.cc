@@ -400,8 +400,14 @@ PersistentMemoryAllocator::PersistentMemoryAllocator(Memory memory,
     shared_meta()->page_size = mem_page_;
     shared_meta()->version = kGlobalVersion;
     shared_meta()->id = id;
-    shared_meta()->freeptr.store(sizeof(SharedMetadata),
-                                 std::memory_order_release);
+    // Don't overwrite `freeptr` if it is set since we could have raced with
+    // another allocator. In such a case, `freeptr` would get "rewinded", and
+    // new objects would be allocated on top of already allocated objects.
+    uint32_t empty_freeptr = 0;
+    shared_meta()->freeptr.compare_exchange_strong(
+        /*expected=*/empty_freeptr, /*desired=*/sizeof(SharedMetadata),
+        /*success=*/std::memory_order_release,
+        /*failure=*/std::memory_order_relaxed);
 
     // Set up the queue of iterable allocations.
     shared_meta()->queue.size = sizeof(BlockHeader);
@@ -1298,6 +1304,17 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
                           allocator_->IsFull());
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "corrupted",
                           allocator_->IsCorrupt());
+    SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "freeptr",
+                            allocator_->freeptr());
+    // The allocator's cookie should always be `kGlobalCookie`. Add it to crash
+    // keys to see if the file was corrupted externally, e.g. by a file
+    // shredder. Cast to volatile to avoid compiler optimizations and ensure
+    // that the actual value is read.
+    SCOPED_CRASH_KEY_NUMBER(
+        "PersistentMemoryAllocator", "cookie",
+        static_cast<volatile PersistentMemoryAllocator::SharedMetadata*>(
+            allocator_->shared_meta())
+            ->cookie);
     SCOPED_CRASH_KEY_NUMBER("PersistentMemoryAllocator", "ref", ref);
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "ref_found", ref_found);
     SCOPED_CRASH_KEY_BOOL("PersistentMemoryAllocator", "raced", raced);

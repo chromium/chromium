@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -866,6 +867,17 @@ AutofillWebDataBackendImpl::GetAutofillVirtualCardUsageData(WebDatabase* db) {
   return std::make_unique<
       WDResult<std::vector<std::unique_ptr<VirtualCardUsageData>>>>(
       AUTOFILL_VIRTUAL_CARD_USAGE_DATA, std::move(virtual_card_usage_data));
+}
+
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetCreditCardBenefits(WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<std::unique_ptr<CreditCardBenefit>> credit_card_benefits;
+  PaymentsAutofillTable::FromWebDatabase(db)->GetAllCreditCardBenefits(
+      &credit_card_benefits);
+  return std::make_unique<
+      WDResult<std::vector<std::unique_ptr<CreditCardBenefit>>>>(
+      CREDIT_CARD_BENEFIT_RESULT, std::move(credit_card_benefits));
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(

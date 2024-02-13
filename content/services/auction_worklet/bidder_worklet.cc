@@ -28,7 +28,9 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
+#include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
 #include "content/services/auction_worklet/for_debugging_only_bindings.h"
 #include "content/services/auction_worklet/private_aggregation_bindings.h"
@@ -135,17 +137,6 @@ bool SetDictMember(v8::Isolate* isolate,
   return !result.IsNothing() && result.FromJust();
 }
 
-bool SetRenderUrl(v8::Isolate* isolate,
-                  v8::Local<v8::Object> object,
-                  const std::string& val) {
-  v8::Local<v8::Value> v8_value;
-  if (!gin::TryConvertToV8(isolate, val, &v8_value)) {
-    return false;
-  }
-  return SetDictMember(isolate, object, "renderURL", v8_value) &&
-         SetDictMember(isolate, object, "renderUrl", v8_value);
-}
-
 bool CanSetRequestedAdSize(
     const std::optional<blink::AdSize>& requested_ad_size) {
   return requested_ad_size.has_value() &&
@@ -183,35 +174,6 @@ bool SetRequestedAdSize(v8::Isolate* isolate,
   return SetDictMember(isolate, size_object, "width", v8_width) &&
          SetDictMember(isolate, size_object, "height", v8_height) &&
          SetDictMember(isolate, top_level_object, "requestedSize", size_object);
-}
-
-// Converts a vector of blink::InterestGroup::Ads into a v8 object.
-bool CreateAdVector(
-    AuctionV8Helper* v8_helper,
-    v8::Local<v8::Context> context,
-    base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
-    const std::vector<blink::InterestGroup::Ad>& ads,
-    v8::Local<v8::Value>& out_value) {
-  v8::Isolate* isolate = v8_helper->isolate();
-
-  v8::LocalVector<v8::Value> ads_vector(isolate);
-  for (const auto& ad : ads) {
-    if (is_ad_excluded.Run(ad.render_url())) {
-      continue;
-    }
-    v8::Local<v8::Object> ad_object = v8::Object::New(isolate);
-    gin::Dictionary ad_dict(isolate, ad_object);
-    if (
-        // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
-        !SetRenderUrl(isolate, ad_object, ad.render_url()) ||
-        (ad.metadata && !v8_helper->InsertJsonValue(context, "metadata",
-                                                    *ad.metadata, ad_object))) {
-      return false;
-    }
-    ads_vector.emplace_back(std::move(ad_object));
-  }
-  out_value = v8::Array::New(isolate, ads_vector.data(), ads_vector.size());
-  return true;
 }
 
 bool HasKAnonFailureComponent(
@@ -707,6 +669,7 @@ void BidderWorklet::V8State::ReportWin(
 
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
+  AuctionV8Logger v8_logger(v8_helper_.get(), context);
 
   v8::LocalVector<v8::Value> args(isolate);
   if (!AppendJsonValueOrNull(v8_helper_.get(), context,
@@ -762,15 +725,21 @@ void BidderWorklet::V8State::ReportWin(
       break;
   }
 
+  DeprecatedUrlLazyFiller deprecated_render_url(
+      v8_helper_.get(), &v8_logger, &browser_signal_render_url,
+      "browserSignals.renderUrl is deprecated."
+      " Please use browserSignals.renderURL instead.");
   if (!browser_signals_dict.Set("topWindowHostname",
                                 top_window_origin_.host()) ||
       !browser_signals_dict.Set(
           "interestGroupOwner",
           url::Origin::Create(script_source_url_).Serialize()) ||
       !browser_signals_dict.Set(reporting_id_field_name, reporting_id) ||
+      !browser_signals_dict.Set("renderURL",
+                                browser_signal_render_url.spec()) ||
       // TODO(crbug.com/1441988): Remove deprecated `renderUrl` alias.
-      !SetRenderUrl(isolate, browser_signals,
-                    browser_signal_render_url.spec()) ||
+      !deprecated_render_url.AddDeprecatedUrlGetter(browser_signals,
+                                                    "renderUrl") ||
       !browser_signals_dict.Set("bid", browser_signal_bid) ||
       !browser_signals_dict.Set(
           "bidCurrency",
@@ -1233,26 +1202,9 @@ BidderWorklet::V8State::GenerateSingleBid(
           : nullptr,
       &bidder_worklet_non_shared_params);
   if (!context_recycler->interest_group_lazy_filler()->FillInObject(
-          interest_group_object)) {
+          interest_group_object, should_exclude_ad_due_to_kanon,
+          should_exclude_component_ad_due_to_kanon)) {
     return std::nullopt;
-  }
-
-  v8::Local<v8::Value> ads;
-  if (!CreateAdVector(v8_helper_.get(), context, should_exclude_ad_due_to_kanon,
-                      *bidder_worklet_non_shared_params.ads, ads) ||
-      !v8_helper_->InsertValue("ads", std::move(ads), interest_group_object)) {
-    return std::nullopt;
-  }
-
-  if (bidder_worklet_non_shared_params.ad_components) {
-    v8::Local<v8::Value> ad_components;
-    if (!CreateAdVector(
-            v8_helper_.get(), context, should_exclude_component_ad_due_to_kanon,
-            *bidder_worklet_non_shared_params.ad_components, ad_components) ||
-        !v8_helper_->InsertValue("adComponents", std::move(ad_components),
-                                 interest_group_object)) {
-      return std::nullopt;
-    }
   }
 
   args.push_back(std::move(interest_group_object));

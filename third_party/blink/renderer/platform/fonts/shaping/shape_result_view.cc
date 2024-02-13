@@ -17,19 +17,22 @@
 
 namespace blink {
 
-ShapeResultView::RunInfoPart::RunInfoPart(
-    scoped_refptr<const ShapeResult::RunInfo> run,
-    GlyphDataRange range,
-    unsigned start_index,
-    unsigned offset,
-    unsigned num_characters,
-    float width)
+ShapeResultView::RunInfoPart::RunInfoPart(const ShapeResult::RunInfo* run,
+                                          GlyphDataRange range,
+                                          unsigned start_index,
+                                          unsigned offset,
+                                          unsigned num_characters,
+                                          float width)
     : run_(run),
       range_(range),
       start_index_(start_index),
       offset_(offset),
       num_characters_(num_characters),
       width_(width) {}
+
+void ShapeResultView::RunInfoPart::Trace(Visitor* visitor) const {
+  visitor->Trace(run_);
+}
 
 unsigned ShapeResultView::RunInfoPart::PreviousSafeToBreakOffset(
     unsigned offset) const {
@@ -159,7 +162,7 @@ struct ShapeResultView::InitData {
                                     const Segment& segment) {
     return static_cast<unsigned>(base::ranges::count_if(
         result.RunsOrParts(), [&result, &segment](const auto& run_or_part) {
-          return !!RunInfoPart::ComputeStartEnd(*run_or_part.get(), result,
+          return !!RunInfoPart::ComputeStartEnd(*run_or_part.Get(), result,
                                                 segment);
         }));
   }
@@ -171,21 +174,15 @@ ShapeResultView::ShapeResultView(const InitData& data)
       num_glyphs_(0),
       direction_(static_cast<unsigned>(data.direction)),
       has_vertical_offsets_(data.has_vertical_offsets),
-      char_index_offset_(data.char_index_offset),
-      num_parts_(data.num_parts) {}
-
-ShapeResultView::~ShapeResultView() {
-  for (auto& part : Parts())
-    part.~RunInfoPart();
-}
+      char_index_offset_(data.char_index_offset) {}
 
 ShapeResult* ShapeResultView::CreateShapeResult() const {
   ShapeResult* new_result = MakeGarbageCollected<ShapeResult>(
       primary_font_, start_index_ + char_index_offset_, num_characters_,
       Direction());
-  new_result->runs_.reserve(num_parts_);
+  new_result->runs_.ReserveInitialCapacity(parts_.size());
   for (const auto& part : RunsOrParts()) {
-    auto new_run = ShapeResult::RunInfo::Create(
+    auto* new_run = MakeGarbageCollected<ShapeResult::RunInfo>(
         part.run_->font_data_.get(), part.run_->direction_,
         part.run_->canvas_rotation_, part.run_->script_, part.start_index_,
         part.NumGlyphs(), part.num_characters_);
@@ -200,7 +197,7 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
     new_run->width_ = part.width_;
     new_run->num_characters_ = part.num_characters_;
     new_run->CheckConsistency();
-    new_result->runs_.push_back(std::move(new_run));
+    new_result->runs_.push_back(new_run);
   }
 
   new_result->num_glyphs_ = num_glyphs_;
@@ -211,12 +208,8 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
 }
 
 template <class ShapeResultType>
-ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
-    const ShapeResultType& other,
-    const Segment& segment,
-    RunInfoPart* part) {
-  DCHECK_GE(part, Parts().data());
-
+void ShapeResultView::PopulateRunInfoParts(const ShapeResultType& other,
+                                           const Segment& segment) {
   // Compute the diff of index and the number of characters from the source
   // ShapeResult and given offsets, because computing them from runs/parts can
   // be inaccurate when all characters in a run/part are missing.
@@ -228,7 +221,7 @@ ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
                      std::max(segment.start_index, other.StartIndex());
 
   for (const auto& run_or_part : other.RunsOrParts()) {
-    const auto* const run = run_or_part.get();
+    const auto* const run = run_or_part.Get();
     const auto part_start_end =
         RunInfoPart::ComputeStartEnd(*run, other, segment);
     if (!part_start_end)
@@ -266,46 +259,24 @@ ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
     // Adjust start_index for runs to be continuous.
     const unsigned part_start_index = run_start + range_start + index_diff;
     const unsigned part_offset = range_start;
-    SECURITY_DCHECK(part + 1 <= Parts().data() + num_parts_);
-    new (part) RunInfoPart(run->GetRunInfo(), range, part_start_index,
-                           part_offset, part_characters, part_width);
-    ++part;
+    parts_.emplace_back(run->GetRunInfo(), range, part_start_index, part_offset,
+                        part_characters, part_width);
 
     num_glyphs_ += range.end - range.begin;
     width_ += part_width;
   }
-  return part;
 }
 
-ShapeResultView::RunInfoPart* ShapeResultView::PopulateRunInfoParts(
-    const Segment& segment,
-    RunInfoPart* part) {
+void ShapeResultView::PopulateRunInfoParts(const Segment& segment) {
   if (segment.result) {
     DCHECK(!segment.view);
-    return PopulateRunInfoParts(*segment.result, segment, part);
-  }
-  if (segment.view) {
+    PopulateRunInfoParts(*segment.result, segment);
+  } else if (segment.view) {
     DCHECK(!segment.result);
-    return PopulateRunInfoParts(*segment.view, segment, part);
+    PopulateRunInfoParts(*segment.view, segment);
+  } else {
+    NOTREACHED();
   }
-  NOTREACHED();
-  return nullptr;
-}
-
-base::span<ShapeResultView::RunInfoPart> ShapeResultView::Parts() {
-  return {reinterpret_cast<ShapeResultView::RunInfoPart*>(parts_), num_parts_};
-}
-
-base::span<const ShapeResultView::RunInfoPart> ShapeResultView::Parts() const {
-  return {reinterpret_cast<const ShapeResultView::RunInfoPart*>(parts_),
-          num_parts_};
-}
-
-// static
-constexpr size_t ShapeResultView::AdditionalByteSize(wtf_size_t num_parts) {
-  static_assert(sizeof(ShapeResultView) % alignof(RunInfoPart) == 0,
-                "We have RunInfoPart as flexible array in ShapeResultView");
-  return sizeof(RunInfoPart) * num_parts;
 }
 
 ShapeResultView* ShapeResultView::Create(base::span<const Segment> segments) {
@@ -313,24 +284,22 @@ ShapeResultView* ShapeResultView::Create(base::span<const Segment> segments) {
   InitData data;
   data.Populate(segments);
 
-  ShapeResultView* out = MakeGarbageCollected<ShapeResultView>(
-      AdditionalBytes(AdditionalByteSize(data.num_parts)), data);
+  ShapeResultView* out = MakeGarbageCollected<ShapeResultView>(data);
   DCHECK_EQ(out->num_characters_, 0u);
   DCHECK_EQ(out->num_glyphs_, 0u);
   DCHECK_EQ(out->width_, 0);
+  out->parts_.ReserveInitialCapacity(data.num_parts);
 
   // Segments are in logical order, runs and parts are in visual order.
   // Iterate over segments back-to-front for RTL.
-  RunInfoPart* part = out->Parts().data();
   if (out->IsLtr()) {
     for (auto& segment : segments)
-      part = out->PopulateRunInfoParts(segment, part);
+      out->PopulateRunInfoParts(segment);
   } else {
     for (auto& segment : base::Reversed(segments))
-      part = out->PopulateRunInfoParts(segment, part);
+      out->PopulateRunInfoParts(segment);
   }
-  CHECK_EQ(part, out->Parts().data() + out->num_parts_);
-
+  DCHECK_EQ(data.num_parts, out->parts_.size());
   return out;
 }
 
@@ -354,16 +323,15 @@ ShapeResultView* ShapeResultView::Create(const ShapeResult* result) {
   InitData data;
   data.Populate(*result);
 
-  ShapeResultView* out = MakeGarbageCollected<ShapeResultView>(
-      AdditionalBytes(AdditionalByteSize(data.num_parts)), data);
+  ShapeResultView* out = MakeGarbageCollected<ShapeResultView>(data);
   DCHECK_EQ(out->num_characters_, 0u);
   DCHECK_EQ(out->num_glyphs_, 0u);
   DCHECK_EQ(out->width_, 0);
+  out->parts_.ReserveInitialCapacity(data.num_parts);
 
   const Segment segment = {result, 0, std::numeric_limits<unsigned>::max()};
-  RunInfoPart* const part =
-      out->PopulateRunInfoParts(segment, out->Parts().data());
-  CHECK_EQ(part, out->Parts().data() + out->num_parts_);
+  out->PopulateRunInfoParts(segment);
+  DCHECK_EQ(data.num_parts, out->parts_.size());
   return out;
 }
 
@@ -506,7 +474,7 @@ float ShapeResultView::ForEachGlyph(float initial_advance,
                                     void* context) const {
   auto total_advance = initial_advance;
 
-  for (const auto& part : Parts()) {
+  for (const auto& part : parts_) {
     if (part.HasGlyphOffsets()) {
       total_advance = ForEachGlyphImpl<true>(
           total_advance, from, to, index_offset, glyph_callback, context, part);
@@ -650,7 +618,7 @@ gfx::RectF ShapeResultView::ComputeInkBounds() const {
   gfx::RectF ink_bounds;
 
   float run_advance = 0.0f;
-  for (const auto& part : Parts()) {
+  for (const auto& part : parts_) {
     if (part.HasGlyphOffsets()) {
       if (part.run_->IsHorizontal()) {
         ComputePartInkBounds<true, true>(part, run_advance, &ink_bounds);
@@ -672,7 +640,7 @@ gfx::RectF ShapeResultView::ComputeInkBounds() const {
 
 void ShapeResultView::ExpandRangeToIncludePartialGlyphs(unsigned* from,
                                                         unsigned* to) const {
-  for (const auto& part : Parts()) {
+  for (const auto& part : parts_) {
     unsigned part_offset =
         char_index_offset_ + part.start_index_ - part.offset_;
     part.run_->ExpandRangeToIncludePartialGlyphs(

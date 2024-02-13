@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
@@ -37,10 +37,11 @@ class AutofillProgressDialogControllerImpl
   // view implementation. The `autofill_progress_dialog_type` determines the
   // type of the progress dialog and `cancel_callback` is the function to invoke
   // when the cancel button is clicked.
-  void ShowDialog(AutofillProgressDialogType autofill_progress_dialog_type,
-                  base::OnceCallback<AutofillProgressDialogView*()>
-                      create_and_show_view_callback,
-                  base::OnceClosure cancel_callback);
+  void ShowDialog(
+      AutofillProgressDialogType autofill_progress_dialog_type,
+      base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>
+          create_and_show_view_callback,
+      base::OnceClosure cancel_callback);
 
   // Dismisses the progress dialog after the underlying authorization processes
   // have completed. If `show_confirmation_before_closing` is true, the UI
@@ -64,14 +65,15 @@ class AutofillProgressDialogControllerImpl
   std::u16string GetCancelButtonLabel() const override;
   std::u16string GetLoadingMessage() const override;
   std::u16string GetConfirmationMessage() const override;
+  base::WeakPtr<AutofillProgressDialogController> GetWeakPtr() override;
 
-  AutofillProgressDialogView* autofill_progress_dialog_view() {
+  base::WeakPtr<AutofillProgressDialogView> autofill_progress_dialog_view() {
     return autofill_progress_dialog_view_;
   }
 
  private:
   // View that displays the error dialog.
-  raw_ptr<AutofillProgressDialogView> autofill_progress_dialog_view_ = nullptr;
+  base::WeakPtr<AutofillProgressDialogView> autofill_progress_dialog_view_;
 
   // Callback function invoked when the cancel button is clicked.
   base::OnceClosure cancel_callback_;
@@ -81,6 +83,9 @@ class AutofillProgressDialogControllerImpl
       AutofillProgressDialogType::kUnspecified;
 
   base::OnceClosure no_interactive_authentication_callback_;
+
+  base::WeakPtrFactory<AutofillProgressDialogControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

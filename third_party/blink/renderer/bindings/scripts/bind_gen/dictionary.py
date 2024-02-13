@@ -534,7 +534,7 @@ def make_accessor_functions(cg_context):
 
     def make_api_set_non_nullable(member):
         # setMember(InnerType) in addition to
-        # setMember(absl::optional<InnerType>) for convenience.
+        # setMember(std::optional<InnerType>) for convenience.
         if not (member.idl_type.does_include_nullable_type
                 and not member.type_info.has_null_value):
             return None, None
@@ -542,7 +542,7 @@ def make_accessor_functions(cg_context):
 
     def make_api_set_copy_and_move_non_nullable(member):
         # setMember(InnerType) in addition to
-        # setMember(absl::optional<InnerType>) for convenience.
+        # setMember(std::optional<InnerType>) for convenience.
         if not (member.idl_type.does_include_nullable_type
                 and not member.type_info.has_null_value):
             return None, None
@@ -657,7 +657,7 @@ def make_backward_compatible_accessors(cg_context):
         if (not member.idl_type.unwrap(nullable=False).is_nullable
                 or member.type_info.has_null_value):
             continue
-        # The Blink type is absl::optional<T>.
+        # The Blink type is std::optional<T>.
         decls.append(make_api_has_non_null(member))
         decls.append(make_api_get_non_null(member))
 
@@ -1143,11 +1143,18 @@ def generate_dictionary(dictionary_identifier):
         "third_party/blink/renderer/platform/bindings/exception_state.h",
         "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h",
     ])
-    (header_forward_decls, header_include_headers, source_forward_decls,
-     source_include_headers) = collect_forward_decls_and_include_headers(
-         list(map(lambda member: member.idl_type, dictionary.own_members)))
+    (
+        header_forward_decls,
+        header_include_headers,
+        header_stdcpp_include_headers,
+        source_forward_decls,
+        source_include_headers,
+    ) = collect_forward_decls_and_include_headers(
+        list(map(lambda member: member.idl_type, dictionary.own_members)))
     header_node.accumulator.add_class_decls(header_forward_decls)
     header_node.accumulator.add_include_headers(header_include_headers)
+    header_node.accumulator.add_stdcpp_include_headers(
+        header_stdcpp_include_headers)
     source_node.accumulator.add_class_decls(source_forward_decls)
     source_node.accumulator.add_include_headers(source_include_headers)
 

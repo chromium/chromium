@@ -321,6 +321,7 @@
     "serializable",
     "shadowroot",
     "shadowrootmode",
+    "shadowrootclonable",
     "shadowrootdelegatesfocus",
     "shape",
     "sharedstoragewritable",
@@ -358,5 +359,6 @@
     "webkitdirectory",
     "width",
     "wrap",
+    "writingsuggestions",
   ],
 }

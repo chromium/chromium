@@ -174,21 +174,21 @@ void ProgressBar::SetForegroundColor(SkColor color) {
   }
 
   foreground_color_ = color;
-  foreground_color_id_ = absl::nullopt;
+  foreground_color_id_ = std::nullopt;
   OnPropertyChanged(&foreground_color_, kPropertyEffectsPaint);
 }
 
-absl::optional<ui::ColorId> ProgressBar::GetForegroundColorId() const {
+std::optional<ui::ColorId> ProgressBar::GetForegroundColorId() const {
   return foreground_color_id_;
 }
 
-void ProgressBar::SetForegroundColorId(absl::optional<ui::ColorId> color_id) {
+void ProgressBar::SetForegroundColorId(std::optional<ui::ColorId> color_id) {
   if (foreground_color_id_ == color_id) {
     return;
   }
 
   foreground_color_id_ = color_id;
-  foreground_color_ = absl::nullopt;
+  foreground_color_ = std::nullopt;
   OnPropertyChanged(&foreground_color_id_, kPropertyEffectsPaint);
 }
 
@@ -207,21 +207,21 @@ void ProgressBar::SetBackgroundColor(SkColor color) {
   }
 
   background_color_ = color;
-  background_color_id_ = absl::nullopt;
+  background_color_id_ = std::nullopt;
   OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
 }
 
-absl::optional<ui::ColorId> ProgressBar::GetBackgroundColorId() const {
+std::optional<ui::ColorId> ProgressBar::GetBackgroundColorId() const {
   return background_color_id_;
 }
 
-void ProgressBar::SetBackgroundColorId(absl::optional<ui::ColorId> color_id) {
+void ProgressBar::SetBackgroundColorId(std::optional<ui::ColorId> color_id) {
   if (background_color_id_ == color_id) {
     return;
   }
 
   background_color_id_ = color_id;
-  background_color_ = absl::nullopt;
+  background_color_ = std::nullopt;
   OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
 
@@ -252,7 +252,7 @@ gfx::RoundedCornersF ProgressBar::GetPreferredCornerRadii() const {
 }
 
 void ProgressBar::SetPreferredCornerRadii(
-    const absl::optional<gfx::RoundedCornersF> preferred_corner_radii) {
+    const std::optional<gfx::RoundedCornersF> preferred_corner_radii) {
   if (preferred_corner_radii_ == preferred_corner_radii) {
     return;
   }
@@ -351,12 +351,11 @@ void ProgressBar::MaybeNotifyAccessibilityValueChanged() {
 
 BEGIN_METADATA(ProgressBar)
 ADD_PROPERTY_METADATA(int, PreferredHeight)
-ADD_PROPERTY_METADATA(absl::optional<gfx::RoundedCornersF>,
-                      PreferredCornerRadii)
+ADD_PROPERTY_METADATA(std::optional<gfx::RoundedCornersF>, PreferredCornerRadii)
 ADD_PROPERTY_METADATA(SkColor, ForegroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, ForegroundColorId);
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, BackgroundColorId);
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, ForegroundColorId);
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, BackgroundColorId);
 ADD_PROPERTY_METADATA(bool, Paused)
 END_METADATA
 

@@ -78,7 +78,7 @@ net::SSLContextConfig SSLConfigServiceMojo::GetSSLContextConfig() {
 }
 
 bool SSLConfigServiceMojo::CanShareConnectionWithClientCerts(
-    const std::string& hostname) const {
+    std::string_view hostname) const {
   // Hostnames (and the patterns configured for this class) must be
   // canonicalized before comparison, or the comparison will fail.
   for (const std::string& pattern : client_cert_pooling_policy_) {

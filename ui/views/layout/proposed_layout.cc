@@ -9,9 +9,7 @@
 #include <string>
 
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/views/view.h"
 
 namespace views {
 
@@ -56,10 +54,10 @@ const ChildLayout* ProposedLayout::GetLayoutFor(const View* child_view) const {
 }
 
 std::string ChildLayout::ToString() const {
-  return base::StrCat({"{", child_view->GetClassName(),
-                       (visible ? " visible " : " not visible "),
-                       bounds.ToString(), " / ", available_size.ToString(),
-                       "}"});
+  std::ostringstream oss;
+  oss << "{" << child_view << (visible ? " visible " : " not visible ")
+      << bounds.ToString() << " / " << available_size.ToString() << "}";
+  return oss.str();
 }
 
 ProposedLayout::ProposedLayout() = default;

@@ -9,4 +9,7 @@ noparent = True
 
 include_rules = [
     "+base",
+    "+crypto",
+    "+third_party/protobuf",
+    "+testing/gtest",
 ]

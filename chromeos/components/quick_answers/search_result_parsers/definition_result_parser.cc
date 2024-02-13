@@ -159,13 +159,11 @@ std::unique_ptr<Sense> ParseSense(const base::Value::Dict& sense_result) {
   }
 
   std::unique_ptr<Sense> sense = std::make_unique<Sense>();
-  sense->definition = *definition_text;
+  sense->definition = ResultParser::RemoveKnownHtmlTags(*definition_text);
 
   const std::string sample_sentence = GetSampleSentence(sense_result);
   if (!sample_sentence.empty()) {
-    const std::string cleaned_sample_sentence =
-        ResultParser::RemoveKnownHtmlTags(sample_sentence);
-    sense->sample_sentence = cleaned_sample_sentence;
+    sense->sample_sentence = ResultParser::RemoveKnownHtmlTags(sample_sentence);
   }
 
   const std::vector<std::string> synonyms_list = GetSynonymsList(sense_result);

@@ -285,17 +285,17 @@ TEST_F(OrderControllerTest, DetermineNewActiveIndex) {
                 WebStateList::kInvalidIndex, {}));
 
   // Verify that if closing an item that is not active, the active item is
-  // not changed, but the index is updated if the item is after the closed
-  // one.
+  // not changed. The returned index is the index before closing the other
+  // items, so it should not change.
   EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(4, {5}));
-  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(6, {5}));
+  EXPECT_EQ(6, order_controller.DetermineNewActiveIndex(6, {5}));
   EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(4, {5, 7}));
-  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(6, {5, 7}));
-  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(7, {5, 6}));
+  EXPECT_EQ(6, order_controller.DetermineNewActiveIndex(6, {5, 7}));
+  EXPECT_EQ(7, order_controller.DetermineNewActiveIndex(7, {5, 6}));
 
   // Verify that if closing an item with siblings, the next sibling is
   // selected, even if it is before the active one.
-  EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(4, {4}));
+  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(4, {4}));
   EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(5, {5}));
 
   // Verify that if closing an item with opener but no sibling, then the
@@ -304,12 +304,16 @@ TEST_F(OrderControllerTest, DetermineNewActiveIndex) {
 
   // Verify that if closing an item with children, the first child is
   // selected, even if it is before the active item.
-  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(1, {1}));
+  EXPECT_EQ(6, order_controller.DetermineNewActiveIndex(1, {1}));
   EXPECT_EQ(2, order_controller.DetermineNewActiveIndex(7, {7}));
+
+  // Veriffy that closing an item with multiple children, the first
+  // one is selected.
+  EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(0, {0}));
 
   // Verify that if closing an item with no child, the next item is
   // selected, or the previous one if the last item was closed.
-  EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(3, {3}));
+  EXPECT_EQ(4, order_controller.DetermineNewActiveIndex(3, {3}));
   EXPECT_EQ(7, order_controller.DetermineNewActiveIndex(8, {8}));
 
   // Verify that if closing an item and its siblings, the opener is
@@ -318,11 +322,11 @@ TEST_F(OrderControllerTest, DetermineNewActiveIndex) {
 
   // Verify that if closing an item with children, the first non closed
   // child is selected.
-  EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(0, {0, 4}));
+  EXPECT_EQ(5, order_controller.DetermineNewActiveIndex(0, {0, 4}));
 
   // Verify that if closing an item with children and all its children,
   // the tab after it is selected.
-  EXPECT_EQ(0, order_controller.DetermineNewActiveIndex(0, {0, 4, 5}));
+  EXPECT_EQ(1, order_controller.DetermineNewActiveIndex(0, {0, 4, 5}));
 
   // Verify that if closing an item, all its children and all the item
   // after it, then the tab before it is selected.

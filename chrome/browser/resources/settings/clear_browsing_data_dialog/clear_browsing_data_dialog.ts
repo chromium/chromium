@@ -61,6 +61,7 @@ function closeDialog(dialog: CrDialogElement, isLast: boolean) {
 export interface SettingsClearBrowsingDataDialogElement {
   $: {
     clearBrowsingDataConfirm: HTMLElement,
+    cookiesCheckbox: SettingsCheckboxElement,
     cookiesCheckboxBasic: SettingsCheckboxElement,
     clearBrowsingDataDialog: CrDialogElement,
     tabs: IronPagesElement,
@@ -294,6 +295,8 @@ export class SettingsClearBrowsingDataDialogElement extends
             'computeHasOtherError_(syncStatus, isSyncPaused_, hasPassphraseError_)',
       },
 
+      selectedTabIndex_: Number,
+
       tabsNames_: {
         type: Array,
         value: () =>
@@ -322,6 +325,8 @@ export class SettingsClearBrowsingDataDialogElement extends
           prefs.browser.clear_data.time_period.value)`,
       `onTimePeriodBasicPrefUpdated_(
           prefs.browser.clear_data.time_period_basic.value)`,
+      `onSelectedTabIndexPrefUpdated_(
+          prefs.browser.last_clear_browsing_data_tab.value)`,
     ];
   }
 
@@ -345,6 +350,7 @@ export class SettingsClearBrowsingDataDialogElement extends
   private isSyncPaused_: boolean;
   private hasPassphraseError_: boolean;
   private hasOtherSyncError_: boolean;
+  private selectedTabIndex_: number;
   private tabsNames_: string[];
   private googleSearchHistoryString_: TrustedHTML;
   private isNonGoogleDse_: boolean;
@@ -544,10 +550,18 @@ export class SettingsClearBrowsingDataDialogElement extends
       chrome.metricsPrivate.recordUserAction('ClearBrowsingData_AdvancedTab');
     }
 
+    this.setPrefValue(
+        'browser.last_clear_browsing_data_tab', this.selectedTabIndex_);
+    // Dropdown menu and checkbox selections of both tabs should be persisted
+    // independently from the tab on which the user confirmed the deletion.
     this.shadowRoot!
         .querySelectorAll<SettingsCheckboxElement>(
             'settings-checkbox[no-set-pref]')
         .forEach(checkbox => checkbox.sendPrefChange());
+    this.shadowRoot!
+        .querySelectorAll<SettingsDropdownMenuElement>(
+            'settings-dropdown-menu[no-set-pref]')
+        .forEach(dropdown => dropdown.sendPrefChange());
 
     const {showHistoryNotice, showPasswordsNotice} =
         await this.browserProxy_.clearBrowsingData(dataTypes, timePeriod);
@@ -592,6 +606,10 @@ export class SettingsClearBrowsingDataDialogElement extends
    */
   private onPasswordsDeletionDialogClose_() {
     this.showPasswordsDeletionDialog_ = false;
+  }
+
+  private onSelectedTabIndexPrefUpdated_(selectedTabIndex: number) {
+    this.selectedTabIndex_ = selectedTabIndex;
   }
 
   /**

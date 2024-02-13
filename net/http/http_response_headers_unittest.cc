@@ -2342,7 +2342,7 @@ TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeOverflow) {
 
 struct MaxAgeTestData {
   const char* max_age_string;
-  const absl::optional<int64_t> expected_seconds;
+  const std::optional<int64_t> expected_seconds;
 };
 
 class MaxAgeEdgeCasesTest
@@ -2366,15 +2366,15 @@ TEST_P(MaxAgeEdgeCasesTest, MaxAgeEdgeCases) {
 
 const MaxAgeTestData max_age_tests[] = {
     {" 1 ", 1},  // Spaces are ignored.
-    {"-1", absl::nullopt},
-    {"--1", absl::nullopt},
-    {"2s", absl::nullopt},
-    {"3 days", absl::nullopt},
-    {"'4'", absl::nullopt},
-    {"\"5\"", absl::nullopt},
-    {"0x6", absl::nullopt},  // Hex not parsed as hex.
-    {"7F", absl::nullopt},   // Hex without 0x still not parsed as hex.
-    {"010", 10},             // Octal not parsed as octal.
+    {"-1", std::nullopt},
+    {"--1", std::nullopt},
+    {"2s", std::nullopt},
+    {"3 days", std::nullopt},
+    {"'4'", std::nullopt},
+    {"\"5\"", std::nullopt},
+    {"0x6", std::nullopt},  // Hex not parsed as hex.
+    {"7F", std::nullopt},   // Hex without 0x still not parsed as hex.
+    {"010", 10},            // Octal not parsed as octal.
     {"9223372036853", 9223372036853},
     {"9223372036854", 9223372036854},
     {"9223372036855", 9223372036854},

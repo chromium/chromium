@@ -70,6 +70,7 @@ std::vector<base::StringPiece> AnyOfConditions(const base::Value::Dict& value) {
   for (const char* anyof_condition :
        {kKeySources, kKeyDestinations, AttributesCondition::kKeyUrls,
         AttributesCondition::kKeyIncognito,
+        AttributesCondition::kKeyOtherProfile,
 #if BUILDFLAG(IS_CHROMEOS)
         AttributesCondition::kKeyComponents
 #endif  // BUILDFLAG(IS_CHROMEOS)

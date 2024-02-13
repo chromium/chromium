@@ -106,6 +106,7 @@ export class EmojiPickerApp extends PolymerElement {
       nextGifPos: {type: Object, value: () => ({})},
       status: {type: Status, value: null},
       errorMessage: {type: String, value: constants.NO_INTERNET_VIEW_ERROR_MSG},
+      useMojoSearch: {type: Boolean, value: false},
     };
   }
   private category: CategoryEnum;
@@ -136,6 +137,7 @@ export class EmojiPickerApp extends PolymerElement {
   private status: Status|null;
   private previousGifValidation: Date;
   private fetchAndProcessDataPromise: Promise<void>|null;
+  private useMojoSearch = false;
 
   constructor() {
     super();
@@ -464,6 +466,7 @@ export class EmojiPickerApp extends PolymerElement {
     this.searchExtensionEnabled =
         featureList.includes(Feature.EMOJI_PICKER_SEARCH_EXTENSION);
     this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
+    this.useMojoSearch = featureList.includes(Feature.EMOJI_PICKER_MOJO_SEARCH);
     this.sealSupport = featureList.includes(Feature.EMOJI_PICKER_SEAL_SUPPORT);
     this.variantGroupingSupport =
         featureList.includes(Feature.EMOJI_PICKER_VARIANT_GROUPING_SUPPORT);

@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
 #include "net/base/network_handle.h"
 #include "net/quic/quic_chromium_client_session.h"
@@ -93,9 +94,11 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   // handles::kInvalidNetworkHandle.
   handles::NetworkHandle default_network_;
   // Sessions that are currently degrading on the |default_network_|.
-  std::set<QuicChromiumClientSession*> degrading_sessions_;
+  std::set<raw_ptr<QuicChromiumClientSession, SetExperimental>>
+      degrading_sessions_;
   // Sessions that are currently active on the |default_network_|.
-  std::set<QuicChromiumClientSession*> active_sessions_;
+  std::set<raw_ptr<QuicChromiumClientSession, SetExperimental>>
+      active_sessions_;
 
   // Number of sessions that have been active or created during the period of
   // a speculative connectivity failure.
@@ -104,7 +107,7 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   //   related packet write error,
   // - ends immediately by the detection of path recovery or a network change.
   // Use clamped math to cap number of sessions at INT_MAX.
-  absl::optional<base::ClampedNumeric<int>>
+  std::optional<base::ClampedNumeric<int>>
       num_sessions_active_during_current_speculative_connectivity_failure_;
   // Total number of sessions that has been degraded before any recovery,
   // including no longer active sessions.

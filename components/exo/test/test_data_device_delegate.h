@@ -12,6 +12,7 @@
 
 namespace exo::test {
 
+class TestDataOfferDelegate;
 enum class DataEvent {
   kOffer,
   kEnter,
@@ -53,6 +54,7 @@ class TestDataDeviceDelegate : public DataDeviceDelegate {
 
  private:
   std::vector<DataEvent> events_;
+  std::unique_ptr<TestDataOfferDelegate> data_offer_delegate_;
   std::unique_ptr<DataOffer> data_offer_;
   raw_ptr<Surface, DanglingUntriaged> entered_surface_ = nullptr;
   bool can_accept_data_events_for_surface_ = true;

@@ -37,9 +37,9 @@ class MEDIA_GPU_EXPORT GLImageProcessorBackend : public ImageProcessorBackend {
       ErrorCB error_cb);
 
   // ImageProcessorBackend implementation.
-  void Process(scoped_refptr<VideoFrame> input_frame,
-               scoped_refptr<VideoFrame> output_frame,
-               FrameReadyCB cb) override;
+  void ProcessFrame(scoped_refptr<FrameResource> input_frame,
+                    scoped_refptr<FrameResource> output_frame,
+                    FrameResourceReadyCB cb) override;
 
   static bool IsSupported(const PortConfig& input_config,
                           const PortConfig& output_config);

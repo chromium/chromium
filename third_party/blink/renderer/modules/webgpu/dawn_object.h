@@ -68,6 +68,31 @@ DAWN_OBJECTS
 
 class GPUDevice;
 
+// RAII tracker for known memory allocations outside of V8, informing V8 using
+// AdjustAmountOfExternalAllocatedMemory. This causes V8 to collect garbage
+// more often when it knows the footprint of V8-managed objects is large.
+//
+// - It is OK for the tracked size to be an estimate.
+// - It is OK to update the tracked size dynamically/asynchronously.
+// - It is OK to use this for CPU memory allocated in another process.
+// - It is NOT OK to use this for VRAM allocations. This may cause GC to
+//   trigger too often: GC is trying to manage CPU memory pressure, but freeing
+//   VRAM allocations may or may not reduce CPU memory pressure.
+class ExternalMemoryTracker final {
+ public:
+  // Non-copyable/non-movable
+  ExternalMemoryTracker(const ExternalMemoryTracker&) = delete;
+  ExternalMemoryTracker& operator=(const ExternalMemoryTracker&) = delete;
+
+  ExternalMemoryTracker() = default;
+  ~ExternalMemoryTracker();
+
+  void SetCurrentSize(size_t newSize);
+
+ private:
+  int64_t size_ = 0;
+};
+
 // This class allows objects to hold onto a DawnControlClientHolder.
 // The DawnControlClientHolder is used to hold the WebGPUInterface and keep
 // track of whether or not the client has been destroyed. If the client is

@@ -132,7 +132,7 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
       const std::string& id) const {
     const message_center::NotificationList::Notifications& notifications =
         message_center::MessageCenter::Get()->GetVisibleNotifications();
-    for (const auto* notification : notifications) {
+    for (const message_center::Notification* notification : notifications) {
       if (notification->id() == id) {
         return notification;
       }

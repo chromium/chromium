@@ -142,6 +142,8 @@ class FetchEventTestHelper {
         std::make_unique<ServiceWorkerFetchDispatcher>(
             std::move(request), network::mojom::RequestDestination::kDocument,
             base::Uuid::GenerateRandomV4().AsLowercaseString() /* client_id */,
+            base::Uuid::GenerateRandomV4()
+                .AsLowercaseString() /* resulting_client_id */,
             std::move(version), base::DoNothing() /* prepare callback */,
             std::move(fetch_callback),
             fetch_event_dispatch->param_and_expected_result.param

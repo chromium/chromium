@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/animation/css_font_size_adjust_interpolation_type.h"
 
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 
 namespace blink {
@@ -68,6 +71,23 @@ InterpolationValue CreateFontSizeAdjustValue(FontSizeAdjust font_size_adjust) {
           font_size_adjust.GetMetric()));
 }
 
+InterpolationValue CreateFontSizeAdjustValue(
+    const CSSPrimitiveValue& primitive_value,
+    FontSizeAdjust::Metric metric) {
+  DCHECK(primitive_value.IsNumber());
+  if (auto* numeric_value =
+          DynamicTo<CSSNumericLiteralValue>(primitive_value)) {
+    return CreateFontSizeAdjustValue(
+        FontSizeAdjust(numeric_value->ComputeNumber(), metric));
+  }
+  CHECK(primitive_value.IsMathFunctionValue());
+  auto& function_value = To<CSSMathFunctionValue>(primitive_value);
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableNumber>(
+          *function_value.ExpressionNode()),
+      CSSFontSizeAdjustNonInterpolableValue::Create(metric));
+}
+
 }  // namespace
 
 InterpolationValue CSSFontSizeAdjustInterpolationType::MaybeConvertNeutral(
@@ -102,8 +122,42 @@ InterpolationValue CSSFontSizeAdjustInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
+    return CreateFontSizeAdjustValue(FontBuilder::InitialSizeAdjust());
+  }
+
+  if (value.IsPendingSystemFontValue()) {
+    return CreateFontSizeAdjustValue(FontBuilder::InitialSizeAdjust());
+  }
+
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kFromFont) {
+    return CreateFontSizeAdjustValue(
+        FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone,
+                       FontSizeAdjust::ValueType::kFromFont));
+  }
+
+  if (const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
+    return CreateFontSizeAdjustValue(*primitive_value,
+                                     FontSizeAdjust::Metric::kExHeight);
+  }
+
+  DCHECK(value.IsValuePair());
+  const auto& pair = To<CSSValuePair>(value);
+  auto metric =
+      To<CSSIdentifierValue>(pair.First()).ConvertTo<FontSizeAdjust::Metric>();
+
+  if (const auto* primitive_value =
+          DynamicTo<CSSPrimitiveValue>(pair.Second())) {
+    return CreateFontSizeAdjustValue(*primitive_value, metric);
+  }
+
+  DCHECK(To<CSSIdentifierValue>(pair.Second()).GetValueID() ==
+         CSSValueID::kFromFont);
   return CreateFontSizeAdjustValue(
-      StyleBuilderConverterBase::ConvertFontSizeAdjust(*state, value));
+      FontSizeAdjust(FontSizeAdjust::kFontSizeAdjustNone, metric,
+                     FontSizeAdjust::ValueType::kFromFont));
 }
 
 PairwiseInterpolationValue
@@ -158,7 +212,9 @@ void CSSFontSizeAdjustInterpolationType::ApplyStandardPropertyValue(
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
   state.GetFontBuilder().SetSizeAdjust(FontSizeAdjust(
-      ClampTo<float>(To<InterpolableNumber>(interpolable_value).Value(), 0),
+      ClampTo<float>(To<InterpolableNumber>(interpolable_value)
+                         .Value(state.CssToLengthConversionData()),
+                     0),
       To<CSSFontSizeAdjustNonInterpolableValue>(*non_interpolable_value)
           .Metric()));
 }

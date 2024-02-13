@@ -14,6 +14,7 @@ static_library("common") {
     "allocation_info.h",
     "allocator_state.cc",
     "allocator_state.h",
+    "extreme_lightweight_detector_util.h",
     "lightweight_detector_state.cc",
     "lightweight_detector_state.h",
     "pack_stack_trace.cc",

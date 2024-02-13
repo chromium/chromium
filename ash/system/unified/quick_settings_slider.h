@@ -29,9 +29,9 @@ namespace ash {
 // input/output device in `AudioDetailedView`. `kRadioInactive` slider will be
 // used for the inactive device in `AudioDetailedView`.
 class ASH_EXPORT QuickSettingsSlider : public views::Slider {
- public:
-  METADATA_HEADER(QuickSettingsSlider);
+  METADATA_HEADER(QuickSettingsSlider, views::Slider)
 
+ public:
   // Represents the style of the slider.
   enum class Style {
     // Represents the slider where the full part is a rounded corner rectangle
@@ -89,9 +89,9 @@ class ASH_EXPORT QuickSettingsSlider : public views::Slider {
 // A slider that ignores inputs. This will be used in the
 // `UnifiedKeyboardBrightnessView` and `UnifiedKeyboardBacklightToggleView`.
 class ASH_EXPORT ReadOnlySlider : public QuickSettingsSlider {
- public:
-  METADATA_HEADER(ReadOnlySlider);
+  METADATA_HEADER(ReadOnlySlider, QuickSettingsSlider)
 
+ public:
   explicit ReadOnlySlider(Style slider_style);
   ReadOnlySlider(const ReadOnlySlider&) = delete;
   ReadOnlySlider& operator=(const ReadOnlySlider&) = delete;

@@ -426,6 +426,10 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   return _touchTrackingRecognizer;
 }
 
+- (BOOL)isCover {
+  return _containerView.cover;
+}
+
 #pragma mark Navigation and Session Information
 
 - (NavigationManagerImpl*)navigationManagerImpl {
@@ -880,6 +884,11 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
 - (NSData*)sessionStateData {
   return self.webView.interactionState;
+}
+
+- (void)handleViewportFit:(BOOL)isCover {
+  _containerView.cover = isCover;
+  [_containerView layoutSubviews];
 }
 
 - (void)handleNavigationHashChange {

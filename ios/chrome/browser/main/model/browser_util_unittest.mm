@@ -82,8 +82,8 @@ class BrowserUtilTest : public PlatformTest {
     web::FakeWebState* inserted_web_state = fake_web_state.get();
     SnapshotTabHelper::CreateForWebState(inserted_web_state);
     browser->GetWebStateList()->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(fake_web_state),
-        WebStateList::INSERT_ACTIVATE, WebStateOpener());
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     return inserted_web_state;
   }
 

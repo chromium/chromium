@@ -34,10 +34,10 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
     : public AnimatedContainerView,
       public AssistantSuggestionsModelObserver,
       public AssistantUiModelObserver {
+  METADATA_HEADER(SuggestionContainerView, AnimatedContainerView)
+
  public:
   using AssistantSuggestion = assistant::AssistantSuggestion;
-
-  METADATA_HEADER(SuggestionContainerView);
 
   explicit SuggestionContainerView(AssistantViewDelegate* delegate);
   SuggestionContainerView(const SuggestionContainerView&) = delete;

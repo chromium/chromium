@@ -46,32 +46,30 @@ std::string UnescapePathComponent(const std::string& escaped);
 // mounted.
 // Appropriate escaping is done to embed |authority| and |root_document_id| in
 // a file path.
-base::FilePath GetDocumentsProviderMountPath(
-    const std::string& authority,
-    const std::string& root_document_id);
+base::FilePath GetDocumentsProviderMountPath(const std::string& authority,
+                                             const std::string& root_id);
 
-// Returns the "escaped_authority/escaped_root_document_id" suffix of the
-// "/foo/bar/baz/escaped_authority/escaped_root_document_id" that is returned
+// Returns the "escaped_authority/escaped_root_id" suffix of the
+// "/foo/bar/baz/escaped_authority/escaped_root_id" that is returned
 // by GetDocumentsProviderMountPath.
-base::FilePath GetDocumentsProviderMountPathSuffix(
-    const std::string& authority,
-    const std::string& root_document_id);
+base::FilePath GetDocumentsProviderMountPathSuffix(const std::string& authority,
+                                                   const std::string& root_id);
 
 // Parses an absolute file |path| from the ARC documents provider file system.
-// Appropriate unescaping is done to extract |authority| and |root_document_id|
+// Appropriate unescaping is done to extract |authority| and |root_id|
 // from |path|.
 // On success, true is returned. All arguments must not be nullptr.
 bool ParseDocumentsProviderPath(const base::FilePath& path,
                                 std::string* authority,
-                                std::string* root_document_id);
+                                std::string* root_id);
 
 // Parses a FileSystem URL pointing to ARC documents provider file system.
-// Appropriate unescaping is done to extract |authority| and |root_document_id|
+// Appropriate unescaping is done to extract |authority| and |root_id|
 // from |url|.  The absolute file |path| is returned with appropriate escaping.
 // On success, true is returned. All arguments must not be nullptr.
 bool ParseDocumentsProviderUrl(const storage::FileSystemURL& url,
                                std::string* authority,
-                               std::string* root_document_id,
+                               std::string* root_id,
                                base::FilePath* path);
 
 // C++ implementation of DocumentsContract.buildDocumentUri() in Android.

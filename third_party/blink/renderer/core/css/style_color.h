@@ -40,6 +40,10 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace ui {
+class ColorProvider;
+}
+
 namespace blink {
 
 class CORE_EXPORT StyleColor {
@@ -173,23 +177,32 @@ class CORE_EXPORT StyleColor {
 
   Color Resolve(const Color& current_color,
                 mojom::blink::ColorScheme color_scheme,
-                bool* is_current_color = nullptr,
-                bool is_forced_color = false) const;
+                bool* is_current_color = nullptr) const;
 
   // Resolve and override the resolved color's alpha channel as specified by
   // |alpha|.
   Color ResolveWithAlpha(Color current_color,
                          mojom::blink::ColorScheme color_scheme,
                          int alpha,
-                         bool* is_current_color = nullptr,
-                         bool is_forced_color = false) const;
+                         bool* is_current_color = nullptr) const;
+
+  // Re-resolve the current system color keyword. This is needed in cases such
+  // as forced colors mode because initial values for some internal forced
+  // colors properties are system colors so we need to re-resolve them to ensure
+  // they pick up the correct color on theme change.
+  StyleColor ResolveSystemColor(mojom::blink::ColorScheme color_scheme,
+                                const ui::ColorProvider* color_provider) const;
 
   bool IsNumeric() const {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;
   }
 
-  static Color ColorFromKeyword(CSSValueID,
-                                mojom::blink::ColorScheme color_scheme);
+  // TODO(samomekarajr): Take out the default value for color_provider once all
+  // call sites are touched in subsequent change.
+  static Color ColorFromKeyword(
+      CSSValueID,
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider = nullptr);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColorIncludingDeprecated(CSSValueID);
   static bool IsSystemColor(CSSValueID);

@@ -45,6 +45,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/background/background_contents_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/chrome_app_sorting.h"
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
@@ -80,6 +81,7 @@
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/global_error/global_error.h"
@@ -98,6 +100,7 @@
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -4009,6 +4012,8 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockTerminatedExtension) {
 // Tests blocking then unblocking policy-forced extensions after the service has
 // been initialized.
 TEST_F(ExtensionServiceTest, BlockAndUnblockPolicyExtension) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   {
@@ -4255,6 +4260,8 @@ TEST_F(ExtensionServiceTest, ComponentExtensionAllowlistedPermission) {
 
 // Tests that policy-installed extensions are not blocklisted by policy.
 TEST_F(ExtensionServiceTest, PolicyInstalledExtensionsAllowlisted) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   {
@@ -4289,6 +4296,63 @@ TEST_F(ExtensionServiceTest, PolicyInstalledExtensionsAllowlisted) {
   ASSERT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
 }
+
+// Tests that non-CWS extensions are disabled when force-installed in non
+// domain-join environment. See https://b/283274398.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+TEST_F(ExtensionServiceTest, NonCWSForceInstalledDisabledOnNonDomainJoin) {
+  // Mark as non enterprise managed.
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForPlatform(),
+      policy::EnterpriseManagementAuthority::NONE);
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  {
+    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    // Mark good.crx for force-installation.
+    pref.SetIndividualExtensionAutoInstalled(
+        good_crx, "http://example.com/update_url", true);
+  }
+
+  // Have policy force-install an extension.
+  MockExternalProvider* provider =
+      AddMockExternalProvider(ManifestLocation::kExternalPolicyDownload);
+  provider->UpdateOrAddExtension(good_crx, "1.0.0.0",
+                                 data_dir().AppendASCII("good.crx"));
+
+  WaitForInstallationAttemptToComplete(good_crx);
+
+  // Extension should be disabled.
+  EXPECT_EQ(1u, registry()->disabled_extensions().size());
+  EXPECT_TRUE(registry()->disabled_extensions().GetByID(good_crx));
+  EXPECT_EQ(0u, registry()->enabled_extensions().size());
+}
+
+TEST_F(ExtensionServiceTest, NonCWSForceInstalledEnabledOnDomainJoin) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  {
+    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    // Mark good.crx for force-installation.
+    pref.SetIndividualExtensionAutoInstalled(
+        good_crx, "http://example.com/update_url", true);
+  }
+
+  // Have policy force-install an extension.
+  MockExternalProvider* provider =
+      AddMockExternalProvider(ManifestLocation::kExternalPolicyDownload);
+  provider->UpdateOrAddExtension(good_crx, "1.0.0.0",
+                                 data_dir().AppendASCII("good.crx"));
+
+  WaitForExternalExtensionInstalled(good_crx);
+
+  // Extension is enabled.
+  EXPECT_EQ(1u, registry()->enabled_extensions().size());
+  EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
+}
+#endif
 
 // Tests that extensions cannot be installed if the policy provider prohibits
 // it. This functionality is implemented in CrxInstaller::ConfirmInstall().
@@ -8293,6 +8357,8 @@ TEST_F(ExtensionServiceTest, UserInstalledExtensionThenRequiredByPolicy) {
 // force installed extension.
 TEST_F(ExtensionServiceTest,
        UserInstalledExtensionThenRequiredByPolicyOnRestart) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   InitializeEmptyExtensionServiceWithTestingPrefs();
 
   // Install an extension as if the user did it.

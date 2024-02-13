@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace ui {
@@ -32,7 +32,7 @@ constexpr int kAndroidTransparent = 0;
 }  // namespace
 
 TEST(ColorHelpersTest, Null) {
-  EXPECT_EQ(kAndroidInvalidColor, OptionalSkColorToJavaColor(absl::nullopt));
+  EXPECT_EQ(kAndroidInvalidColor, OptionalSkColorToJavaColor(std::nullopt));
   EXPECT_FALSE(JavaColorToOptionalSkColor(kAndroidInvalidColor).has_value());
 }
 

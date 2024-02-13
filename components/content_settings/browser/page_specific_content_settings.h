@@ -159,11 +159,6 @@ class PageSpecificContentSettings
         content::RenderFrameHost* rfh,
         RendererContentSettingRules* rules) = 0;
 
-    // Gets any additional file system types which should be used when
-    // constructing a browsing_data::FileSystemHelper.
-    virtual std::vector<storage::FileSystemType>
-    GetAdditionalFileSystemTypes() = 0;
-
     virtual browsing_data::CookieHelper::IsDeletionDisabledCallback
     GetIsDeletionDisabledCallback() = 0;
 
@@ -371,21 +366,6 @@ class PageSpecificContentSettings
   void OnTwoSitePermissionChanged(ContentSettingsType type,
                                   net::SchemefulSite requesting_site,
                                   ContentSetting content_setting);
-
-  // |originating_page| is non-null when it differs from page(), which happens
-  // when an embedding page's PSCS is notified of an access that happens in an
-  // embedded page (through |MaybeUpdateParent|).
-  void OnStorageAccessed(
-      mojom::ContentSettingsManager::StorageType storage_type,
-      const blink::StorageKey& storage_key,
-      bool blocked_by_policy,
-      content::Page* originating_page = nullptr);
-  void OnSharedWorkerAccessed(
-      const GURL& worker_url,
-      const std::string& name,
-      const blink::StorageKey& storage_key,
-      const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
-      bool blocked_by_policy);
   void OnInterestGroupJoined(const url::Origin& api_origin,
                              bool blocked_by_policy);
   void OnTopicAccessed(const url::Origin& api_origin,
@@ -408,7 +388,9 @@ class PageSpecificContentSettings
       const GURL& request_origin,
       MicrophoneCameraState new_microphone_camera_state);
 
-  // See |OnStorageAccessed| documentation for more info on |originating_page|.
+  // |originating_page| is non-null when it differs from page(), which happens
+  // when an embedding page's PSCS is notified of an access that happens in an
+  // embedded page (through |MaybeUpdateParent|).
   void OnCookiesAccessed(const content::CookieAccessDetails& details,
                          content::Page* originating_page = nullptr);
   void OnServiceWorkerAccessed(const GURL& scope,

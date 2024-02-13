@@ -496,7 +496,7 @@ a stacked title and subtitle flanked on by views on both sides.
 [Current code][4] uses [`FlexLayout`][] to achieve the desired result, resulting
 in clearer code.
 
-[4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/hover_button.cc;l=106;drc=888af74006ea1c4ee9907d18c8df2a7ca424eab9
+[4]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/controls/hover_button.cc;l=129;drc=0139ceffb2f8e1f64b7c30834e57d5793e529ed7
 
 |||---|||
 
@@ -597,12 +597,16 @@ HoverButton::HoverButton(
     std::unique_ptr<views::View> secondary_view,
     ...) {
   ...
+  // Set the layout manager to ignore the
+  // ink_drop_container to ensure the ink drop tracks
+  // the bounds of its parent.
+  ink_drop_container()->SetProperty(
+      views::kViewIgnoredByLayoutKey, true);
+
   SetLayoutManager(
       std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(
-          views::LayoutAlignment::kCenter)
-      .SetChildViewIgnoredByLayout(
-          ink_drop_container(), true);
+          views::LayoutAlignment::kCenter);
   ...
   icon_view_ =
     AddChildView(std::make_unique<IconWrapper>(

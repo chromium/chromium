@@ -91,7 +91,7 @@ void ArcKioskAppLauncher::StopObserving() {
     // position. See b/281992317 for reference.
     exo::WMHelper::GetInstance()->RemoveExoWindowObserver(this);
   }
-  for (auto* window : windows_) {
+  for (aura::Window* window : windows_) {
     window->RemoveObserver(this);
   }
   windows_.clear();

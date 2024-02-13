@@ -15,7 +15,9 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
+#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 
 namespace network {
 namespace {
@@ -27,6 +29,17 @@ std::optional<base::UnguessableToken> DeserializeToUnguessableToken(
     return std::nullopt;
   }
   return base::UnguessableToken::Deserialize(token->high(), token->low());
+}
+
+std::string ToCommaSeparatedString(
+    const std::set<mojom::RequestDestination>& match_dest) {
+  std::vector<std::string_view> destinations;
+  for (auto dest : match_dest) {
+    std::string_view result = RequestDestinationToString(
+        dest, EmptyRequestDestinationOption::kUseFiveCharEmptyString);
+    destinations.push_back(result);
+  }
+  return base::JoinString(destinations, ",");
 }
 
 }  // namespace
@@ -535,7 +548,9 @@ void SharedDictionaryManagerOnDisk::GetSharedDictionaryInfo(
               return;
             }
             for (auto& info : result.value()) {
-              dictionaries.push_back(ToMojoSharedDictionaryInfo(info));
+              dictionaries.push_back(ToMojoSharedDictionaryInfo(
+                  SharedDictionaryStorageOnDisk::WrappedDictionaryInfo(
+                      info, /*matcher=*/nullptr)));
             }
             std::move(callback).Run(std::move(dictionaries));
           },
@@ -565,6 +580,8 @@ SharedDictionaryManagerOnDisk::CreateWriter(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
+    const std::set<mojom::RequestDestination>& match_dest,
+    const std::string& id,
     base::OnceCallback<void(net::SharedDictionaryInfo)> callback) {
   const base::UnguessableToken disk_cache_key_token =
       base::UnguessableToken::Create();
@@ -574,7 +591,8 @@ SharedDictionaryManagerOnDisk::CreateWriter(
       base::BindOnce(
           &SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache,
           weak_factory_.GetWeakPtr(), isolation_key, url, response_time,
-          expiration, match, disk_cache_key_token, std::move(callback)),
+          expiration, match, match_dest, id, disk_cache_key_token,
+          std::move(callback)),
       disk_cache_.GetWeakPtr());
   writer->Initialize();
   return writer;
@@ -586,6 +604,8 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
+    const std::set<mojom::RequestDestination>& match_dest,
+    const std::string& id,
     const base::UnguessableToken& disk_cache_key_token,
     base::OnceCallback<void(net::SharedDictionaryInfo)> callback,
     SharedDictionaryWriterOnDisk::Result result,
@@ -601,10 +621,10 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
     return;
   }
   base::Time last_used_time = base::Time::Now();
-  net::SharedDictionaryInfo info(url, response_time, expiration, match,
-                                 last_used_time, size, hash,
-                                 disk_cache_key_token,
-                                 /*primary_key_in_database=*/std::nullopt);
+  net::SharedDictionaryInfo info(
+      url, response_time, expiration, match, ToCommaSeparatedString(match_dest),
+      id, last_used_time, size, hash, disk_cache_key_token,
+      /*primary_key_in_database=*/std::nullopt);
   metadata_store_.RegisterDictionary(
       isolation_key, info,
       /*max_size_per_site*/ cache_max_size_ / 2,

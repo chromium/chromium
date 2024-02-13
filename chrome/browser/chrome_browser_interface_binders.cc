@@ -316,6 +316,7 @@
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader.mojom.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_search_proxy.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal.mojom.h"
@@ -357,6 +358,7 @@
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom.h"
+#include "chromeos/ash/components/emoji/emoji_search.mojom.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
@@ -445,10 +447,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/compose_enabling.h"
-#include "chrome/browser/ui/webui/compose/compose_ui.h"
+#include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #include "chrome/common/compose/compose.mojom.h"
-#include "components/compose/core/browser/compose_features.h"  // nogncheck crbug.com/1125897
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1170,9 +1170,6 @@ void PopulateChromeWebUIFrameBinders(
       ash::multidevice_setup::MultiDeviceSetupDialogUI, ash::ParentAccessUI,
       ash::EmojiUI, ash::RemoteMaintenanceCurtainUI,
 #endif
-#if BUILDFLAG(ENABLE_COMPOSE)
-      ComposeUI,
-#endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI,
       InternalsUI, ReadingListUI, TabSearchUI, WebuiGalleryUI,
       HistoryClustersSidePanelUI, PerformanceSidePanelUI,
@@ -1580,6 +1577,12 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       emoji_picker::mojom::PageHandlerFactory, ash::EmojiUI>(map);
 
+  if (base::FeatureList::IsEnabled(
+          ash::features::kImeSystemEmojiPickerMojoSearch)) {
+    RegisterWebUIControllerInterfaceBinder<emoji_search::mojom::EmojiSearch,
+                                           ash::EmojiUI>(map);
+  }
+
   RegisterWebUIControllerInterfaceBinder<sensor::mojom::PageHandlerFactory,
                                          ash::SensorInfoUI>(map);
   RegisterWebUIControllerInterfaceBinder<
@@ -1744,14 +1747,6 @@ void PopulateChromeWebUIFrameBinders(
   }
 #endif
 
-#if BUILDFLAG(ENABLE_COMPOSE)
-  if (ComposeEnabling::IsEnabledForProfile(Profile::FromBrowserContext(
-          render_frame_host->GetBrowserContext()))) {
-    RegisterWebUIControllerInterfaceBinder<
-        compose::mojom::ComposeSessionPageHandlerFactory, ComposeUI>(map);
-  }
-#endif  // BUILDFLAG(ENABLE_COMPOSE)
-
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxInternalsDevUI)) {
     RegisterWebUIControllerInterfaceBinder<
@@ -1832,6 +1827,11 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   registry.ForWebUI<feed::FeedUI>()
       .Add<feed::mojom::FeedSidePanelHandlerFactory>();
 #endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_COMPOSE)
+  registry.ForWebUI<ComposeUntrustedUI>()
+      .Add<color_change_listener::mojom::PageHandler>()
+      .Add<compose::mojom::ComposeSessionPageHandlerFactory>();
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 #if !BUILDFLAG(IS_ANDROID)
   if (companion::IsCompanionFeatureEnabled()) {
     registry.ForWebUI<CompanionSidePanelUntrustedUI>()

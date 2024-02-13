@@ -666,6 +666,74 @@ ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileLabels(
   return base::android::ToJavaArrayOfStrings(env, labels);
 }
 
+ScopedJavaLocalRef<jobject>
+PersonalDataManagerAndroid::CreateJavaIbanFromNative(JNIEnv* env,
+                                                     const Iban& iban) {
+  // TODO(b/324635902): Add support for server IBAN.
+  return Java_Iban_create(
+      env, ConvertUTF8ToJavaString(env, iban.guid()),
+      ConvertUTF16ToJavaString(env, iban.nickname()),
+      static_cast<jint>(iban.record_type()),
+      ConvertUTF16ToJavaString(env, iban.GetRawInfo(IBAN_VALUE)));
+}
+
+void PersonalDataManagerAndroid::PopulateNativeIbanFromJava(
+    const JavaRef<jobject>& jiban,
+    JNIEnv* env,
+    Iban* iban) {
+  iban->set_nickname(
+      ConvertJavaStringToUTF16(Java_Iban_getNickname(env, jiban)));
+  iban->SetRawInfo(IBAN_VALUE,
+                   ConvertJavaStringToUTF16(Java_Iban_getValue(env, jiban)));
+  // Only set the GUID if it is an existing local IBAN (java GUID not empty).
+  // Otherwise, keep the generated GUID that gets assigned when an IBAN is saved
+  // locally.
+  std::string guid = ConvertJavaStringToUTF8(Java_Iban_getGuid(env, jiban));
+  Iban::RecordType record_type =
+      static_cast<Iban::RecordType>(Java_Iban_getRecordType(env, jiban));
+  if (guid.empty()) {
+    // A new IBAN is assigned the record type `Unknown`.
+    CHECK(record_type == Iban::RecordType::kUnknown);
+  } else if (record_type == Iban::RecordType::kLocalIban) {
+    iban->set_identifier(Iban::Guid(guid));
+    iban->set_record_type(Iban::RecordType::kLocalIban);
+  } else {
+    // Support for server IBANs isn't available yet on Android.
+    NOTREACHED_NORETURN();
+  }
+}
+
+ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetIbanByGuid(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& unused_obj,
+    const JavaParamRef<jstring>& jguid) {
+  const Iban* iban = personal_data_manager_->GetIbanByGUID(
+      ConvertJavaStringToUTF8(env, jguid));
+  if (!iban) {
+    return ScopedJavaLocalRef<jobject>();
+  }
+
+  return PersonalDataManagerAndroid::CreateJavaIbanFromNative(env, *iban);
+}
+
+ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& unused_obj,
+    const JavaParamRef<jobject>& jiban) {
+  std::string guid =
+      ConvertJavaStringToUTF8(env, Java_Iban_getGuid(env, jiban).obj());
+
+  Iban iban;
+  PopulateNativeIbanFromJava(jiban, env, &iban);
+
+  if (guid.empty()) {
+    guid = personal_data_manager_->AddAsLocalIban(std::move(iban));
+  } else {
+    guid = personal_data_manager_->UpdateIban(iban);
+  }
+  return ConvertUTF8ToJavaString(env, guid);
+}
+
 // Returns whether the Autofill feature is managed.
 static jboolean JNI_PersonalDataManager_IsAutofillManaged(JNIEnv* env) {
   return prefs::IsAutofillManaged(GetPrefs());

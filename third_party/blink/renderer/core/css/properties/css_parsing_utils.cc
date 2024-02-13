@@ -938,11 +938,14 @@ class MathFunctionParser {
   STACK_ALLOCATED();
 
  public:
+  using Flag = CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
   MathFunctionParser(
       CSSParserTokenRange& range,
       const CSSParserContext& context,
       CSSPrimitiveValue::ValueRange value_range,
-      const bool is_percentage_allowed = true,
+      const Flags parsing_flags = Flags({Flag::AllowPercent}),
       CSSAnchorQueryTypes allowed_anchor_queries = kCSSAnchorQueryTypesNone,
       HashMap<CSSValueID, double> color_channel_keyword_values = {})
       : source_range_(range), range_(range) {
@@ -951,7 +954,7 @@ class MathFunctionParser {
       calc_value_ = CSSMathFunctionValue::Create(
           CSSMathExpressionNode::ParseMathFunction(
               token.FunctionId(), ConsumeFunction(range_), context,
-              is_percentage_allowed, allowed_anchor_queries),
+              parsing_flags, allowed_anchor_queries),
           value_range);
     }
   }
@@ -1008,8 +1011,15 @@ CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
     value_range = CSSPrimitiveValue::ValueRange::kPositiveInteger;
   }
 
-  MathFunctionParser math_parser(range, context, value_range,
-                                 is_percentage_allowed);
+  using enum CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
+  Flags parsing_flags;
+  if (is_percentage_allowed) {
+    parsing_flags.Put(AllowPercent);
+  }
+
+  MathFunctionParser math_parser(range, context, value_range, parsing_flags);
   if (const CSSMathFunctionValue* math_value = math_parser.Value()) {
     if (math_value->Category() != kCalcNumber) {
       return nullptr;
@@ -1272,7 +1282,11 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
     const CSSParserContext& context,
     CSSPrimitiveValue::ValueRange value_range,
     UnitlessQuirk unitless,
-    CSSAnchorQueryTypes allowed_anchor_queries) {
+    CSSAnchorQueryTypes allowed_anchor_queries,
+    AllowCalcSize allow_calc_size) {
+  using enum CSSMathExpressionNode::Flag;
+  using Flags = CSSMathExpressionNode::Flags;
+
   const CSSParserToken& token = range.Peek();
   if (token.GetType() == kDimensionToken || token.GetType() == kNumberToken) {
     return ConsumeLength(range, context, value_range, unitless);
@@ -1280,8 +1294,11 @@ CSSPrimitiveValue* ConsumeLengthOrPercent(
   if (token.GetType() == kPercentageToken) {
     return ConsumePercent(range, context, value_range);
   }
-  MathFunctionParser math_parser(range, context, value_range,
-                                 true /* is_percentage_allowed */,
+  Flags parsing_flags({AllowPercent});
+  if (allow_calc_size == AllowCalcSize::kAllow) {
+    parsing_flags.Put(AllowCalcSize);
+  }
+  MathFunctionParser math_parser(range, context, value_range, parsing_flags,
                                  allowed_anchor_queries);
   if (const CSSMathFunctionValue* calculation = math_parser.Value()) {
     if (CanConsumeCalcValue(calculation->Category(), context.Mode())) {
@@ -3333,8 +3350,8 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
               mojom::blink::ConsoleMessageLevel::kWarning,
               "The keyword 'slider-vertical' specified to an 'appearance' "
               "property is not standardized. It will be removed in the future. "
-              "Use <input type=range style=\"writing-mode: vertical-lr\"> "
-              "instead."));
+              "Use <input type=range style=\"writing-mode: vertical-lr; "
+              "direction: rtl\"> instead."));
           Deprecation::CountDeprecation(
               document->GetExecutionContext(),
               WebFeature::kCSSValueAppearanceSliderVertical);
@@ -6164,6 +6181,9 @@ bool ConsumeFromColumnOrPageBreakInside(CSSParserTokenRange& range,
 }
 
 bool ValidWidthOrHeightKeyword(CSSValueID id, const CSSParserContext& context) {
+  // The keywords supported here should be kept in sync with
+  // CalculationExpressionSizingKeywordNode::Keyword and the things that use
+  // it.
   if (id == CSSValueID::kWebkitMinContent ||
       id == CSSValueID::kWebkitMaxContent ||
       id == CSSValueID::kWebkitFillAvailable ||
@@ -6329,7 +6349,8 @@ CSSValue* ConsumeMaxWidthOrHeight(CSSParserTokenRange& range,
   }
   return ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize),
+      AllowCalcSize::kAllow);
 }
 
 CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
@@ -6341,7 +6362,8 @@ CSSValue* ConsumeWidthOrHeight(CSSParserTokenRange& range,
   }
   return ConsumeLengthOrPercent(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative, unitless,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize),
+      AllowCalcSize::kAllow);
 }
 
 CSSValue* ConsumeMarginOrOffset(CSSParserTokenRange& range,
@@ -7117,6 +7139,50 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
 
   return MakeGarbageCollected<CSSValuePair>(font_metric, value,
                                             CSSValuePair::kKeepIdenticalValues);
+}
+
+CSSValue* ConsumeSinglePositionTryOption(CSSParserTokenRange& range,
+                                         const CSSParserContext& context) {
+  if (CSSValue* dashed_ident = ConsumeDashedIdent(range, context)) {
+    return dashed_ident;
+  }
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  bool flip_block = false;
+  bool flip_inline = false;
+  bool flip_start = false;
+  while (!range.AtEnd()) {
+    CSSIdentifierValue* tactic =
+        ConsumeIdent<CSSValueID::kFlipBlock, CSSValueID::kFlipInline,
+                     CSSValueID::kFlipStart>(range);
+    if (!tactic) {
+      break;
+    }
+    switch (tactic->GetValueID()) {
+      case CSSValueID::kFlipBlock:
+        if (flip_block) {
+          return nullptr;
+        }
+        flip_block = true;
+        break;
+      case CSSValueID::kFlipInline:
+        if (flip_inline) {
+          return nullptr;
+        }
+        flip_inline = true;
+        break;
+      case CSSValueID::kFlipStart:
+        if (flip_start) {
+          return nullptr;
+        }
+        flip_start = true;
+        break;
+      default:
+        NOTREACHED();
+        return nullptr;
+    }
+    list->Append(*tactic);
+  }
+  return list->length() ? list : nullptr;
 }
 
 }  // namespace css_parsing_utils

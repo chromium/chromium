@@ -6,10 +6,11 @@
 load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations", "xcode")
+load("//lib/builders.star", "builders", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/xcode.star", "xcode")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -805,7 +806,7 @@ ci.builder(
     ),
     contact_team_email = "chrome-deet-core@google.com",
     execution_timeout = 6 * time.hour,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
@@ -1143,6 +1144,6 @@ ci.builder(
     contact_team_email = "chrome-deet-core@google.com",
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 8 * time.hour,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
 )

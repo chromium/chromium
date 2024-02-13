@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/common/compose/compose.mojom.h"
@@ -86,6 +87,9 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       mojo::PendingRemote<compose::mojom::ComposeDialog> dialog);
 
   // ComposeSessionPageHandler
+  // Tracks that there was a user action to cancel an input edit in the current
+  // session in `session_events`.
+  void LogCancelEdit() override;
 
   // Requests a compose response for `input`. The result will be sent through
   // the ComposeDialog interface rather than through a callback, as it might
@@ -96,6 +100,10 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   // should be changed. An empty `style` without a tone or length requests a
   // rewrite without changes to the tone or length.
   void Rewrite(compose::mojom::StyleModifiersPtr style) override;
+
+  // Tracks that there was a user action to edit the input in the current
+  // session in `session_events`.
+  void LogEditInput() override;
 
   // Retrieves and returns (through `callback`) state information for the last
   // field the user selected compose on.
@@ -179,6 +187,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
   void SetMSBBCloseReason(compose::ComposeMSBBSessionCloseReason close_reason);
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
+
+  void SetAllowFeedbackForTesting(bool allowed);
 
  private:
   void ProcessError(compose::EvalLocation eval_location,
@@ -309,6 +319,8 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       model_quality_logs_uploader_;
 
   base::Token session_id_;
+
+  bool allow_feedback_for_testing_ = false;
 
   base::WeakPtrFactory<ComposeSession> weak_ptr_factory_;
 };

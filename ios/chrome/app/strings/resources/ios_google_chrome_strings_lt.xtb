@@ -75,7 +75,9 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="2689064829982324496">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">„Chrome“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
 <translation id="2702250627063295552">Pridėti skaitymo sąrašo elementą prie „Chrome“</translation>
+<translation id="2703746758996815929">Jei norite gauti naudingų „Chrome“ patarimų, įjunkite pranešimus „iOS“ nustatymuose.</translation>
 <translation id="2736805085127235148">„Chrome“ pranešimai šiuo metu išjungti įrenginio nustatymuose.</translation>
+<translation id="2750626042242931740">Pasirinkimus galite bet kada atnaujinti „Chrome“ nustatymuose.</translation>
 <translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
 <translation id="2789947168960170215">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Išvalyti naršymo duomenis naršyklėje „Chrome“</translation>
@@ -229,6 +231,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7261678641327190792">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>
 <translation id="7272930098487145294">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chrome“ pridėti jūsų nuotraukas</translation>
 <translation id="7275945473750112644">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chrome“ duomenys bus išvalyti iš šio įrenginio</translation>
+<translation id="7304491752269485262">„Chrome“ automatinio pildymo išplėstinis rodinys</translation>
 <translation id="7349129508108954623">Leiskite „Chrome“ naudoti „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos apie aptiktus adresus.</translation>
 <translation id="7394108421562933108">Žemėlapiai naršyklėje „Chrome“</translation>
 <translation id="7400722733683201933">Apie „Google Chrome“</translation>
@@ -297,6 +300,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="8865415417596392024">„Chrome“ duomenys jūsų paskyroje</translation>
+<translation id="8874688701962049679">Patarimai, kaip išnaudoti visas „Chrome“ galimybes.</translation>
 <translation id="8891935667620843985">Galite automatiškai atidaryti nuorodas naršyklėje „Chrome“, nustatę ją kaip numatytąją naršyklės programą.</translation>
 <translation id="8897749957032330183">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkyklėje šiame įrenginyje.</translation>
 <translation id="8949681853939555434">„Chrome“ nustatymas kaip numatytosios naršyklės</translation>

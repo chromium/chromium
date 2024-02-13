@@ -4,8 +4,6 @@ rootWebArea
 ++++++staticText name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
 ++++++++inlineTextBox name='Test that elements respawn in the accessibility tree after a modal dialog closes.'
 ++++++section
-++++++++dialog ignored invisible
-++++++++++staticText ignored invisible name='This dialog is closed and should not be in the tree'
 ++++++++comboBoxSelect collapsed value='This should be in the tree.' haspopup=menu
 ++++++++++menuListPopup invisible
 ++++++++++++menuListOption name='This should be in the tree.' selected=true

@@ -81,8 +81,8 @@ export class SettingsBluetoothPageElement extends
         OsBluetoothDevicesSubpageBrowserProxyImpl.getInstance();
   }
 
-  override ready(): void {
-    super.ready();
+  override connectedCallback(): void {
+    super.connectedCallback();
     getBluetoothConfig().observeSystemProperties(
         this.systemPropertiesObserverReceiver_.$.bindNewPipeAndPassRemote());
   }

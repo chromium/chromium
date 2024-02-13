@@ -64,6 +64,12 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   base::WeakPtr<CupsPrintJob> print_job_;
   raw_ptr<Profile> profile_;
 
+  // Whether this print job has been submitted via the Web Printing API.
+  // This field is separate from `print_job_` since the WeakPtr might expire
+  // while the notification is still being shown, which could affect the logic
+  // of handling clicks.
+  const bool is_web_printing_api_initiated_;
+
   // If the notification has been closed in the middle of printing or not. If it
   // is true, then prevent the following print job progress update after close,
   // and only show the print job done or failed notification.

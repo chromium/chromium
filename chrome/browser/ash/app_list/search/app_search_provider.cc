@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/search/app_search_provider.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -24,7 +25,7 @@ namespace app_list {
 namespace {
 
 // Checks if current locale is non Latin locales.
-bool IsNonLatinLocale(base::StringPiece locale) {
+bool IsNonLatinLocale(std::string_view locale) {
   // A set of of non Latin locales. This set is used to select appropriate
   // algorithm for app search.
   static constexpr char kNonLatinLocales[][6] = {

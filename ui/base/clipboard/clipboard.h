@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -129,7 +129,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void OnPreShutdown() = 0;
 
   // Gets the source of the current clipboard buffer contents.
-  virtual absl::optional<DataTransferEndpoint> GetSource(
+  virtual std::optional<DataTransferEndpoint> GetSource(
       ClipboardBuffer buffer) const = 0;
 
   // Returns a token which uniquely identifies clipboard state.
@@ -314,7 +314,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
     HtmlData& operator=(HtmlData&&);
 
     std::string markup;
-    absl::optional<std::string> source_url;
+    std::optional<std::string> source_url;
   };
   struct RtfData {
     std::string data;
@@ -444,7 +444,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WriteText(base::StringPiece text) = 0;
 
   virtual void WriteHTML(base::StringPiece markup,
-                         absl::optional<base::StringPiece> source_url) = 0;
+                         std::optional<base::StringPiece> source_url) = 0;
 
   virtual void WriteSvg(base::StringPiece markup) = 0;
 

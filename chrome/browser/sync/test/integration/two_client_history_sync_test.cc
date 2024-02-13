@@ -261,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientHistorySyncTest, SyncsTimeRangeDeletion) {
       WebHistoryServiceFactory::GetForProfile(GetProfile(0));
   base::CancelableTaskTracker task_tracker;
   history_service->DeleteLocalAndRemoteHistoryBetween(
-      web_history_service, begin, end, base::DoNothing(), &task_tracker);
+      web_history_service, begin, end, history::kNoAppIdFilter,
+      base::DoNothing(), &task_tracker);
 
   // Wait for the deletion to apply to the second client: The second URL should
   // be gone, but the first and third should remain.

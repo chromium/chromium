@@ -154,7 +154,6 @@ SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
       CHECK_DEREF(
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               &profile));
-  search_engine_choice_service.PreprocessPrefsForReprompt();
 
   if (!IsProfileEligibleForChoiceScreen(profile)) {
     DVLOG(1) << "Profile not eligible, removing tag for profile "

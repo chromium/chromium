@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/download/download_bubble_info.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
+#include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 
 // Info class for DownloadBubbleContentsView
 class DownloadBubbleContentsViewInfo
@@ -20,8 +21,20 @@ class DownloadBubbleContentsViewInfo
     return row_list_view_info_;
   }
 
+  const DownloadBubbleSecurityViewInfo& security_view_info() const {
+    return security_view_info_;
+  }
+
+  // Get the `DownloadUIModel` for any `id` among those listed within
+  // the row list view.
+  DownloadUIModel* GetDownloadModel(const ContentId& id) const;
+
+  void InitializeSecurityView(const ContentId& id);
+  void ResetSecurityView();
+
  private:
   DownloadBubbleRowListViewInfo row_list_view_info_;
+  DownloadBubbleSecurityViewInfo security_view_info_;
 };
 
 #endif  // CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_BUBBLE_CONTENTS_VIEW_INFO_H_

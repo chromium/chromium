@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -35,6 +36,10 @@ using EmbeddedTestServer = test_server::EmbeddedTestServer;
 class HttpResponseHeaders;
 }  // namespace net
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace web_app {
 
 // A builder for a subset of the Web Manifest spec.
@@ -59,7 +64,8 @@ class ManifestBuilder {
   const std::vector<std::string>& icon_paths() const;
 
   std::string ToJson() const;
-  blink::mojom::ManifestPtr ToBlinkManifest() const;
+  blink::mojom::ManifestPtr ToBlinkManifest(
+      const url::Origin& app_origin) const;
 
  private:
   std::string name_;
@@ -73,36 +79,54 @@ class ScopedBundledIsolatedWebApp {
  public:
   ScopedBundledIsolatedWebApp(
       const web_package::SignedWebBundleId& web_bundle_id,
-      base::ScopedTempFile&& bundle_file);
+      const std::vector<uint8_t> serialized_bundle,
+      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
 
   ~ScopedBundledIsolatedWebApp();
 
-  const base::FilePath& path() { return bundle_file_.path(); }
+  const base::FilePath& path() const { return bundle_file_.path(); }
+
+  const web_package::SignedWebBundleId& web_bundle_id() const {
+    return web_bundle_id_;
+  }
 
   // Saves this app's signing key in Chrome's list of trusted keys, which will
   // allow the app to be installed with dev mode disabled.
   void TrustSigningKey();
+
+  void FakeInstallPageState(Profile* profile);
 
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
 
  private:
   web_package::SignedWebBundleId web_bundle_id_;
   base::ScopedTempFile bundle_file_;
+  std::optional<ManifestBuilder> manifest_builder_;
 };
 
 class ScopedProxyIsolatedWebApp {
  public:
-  explicit ScopedProxyIsolatedWebApp(
-      std::unique_ptr<net::EmbeddedTestServer> proxy_server);
+  ScopedProxyIsolatedWebApp(
+      std::unique_ptr<net::EmbeddedTestServer> proxy_server,
+      std::optional<ManifestBuilder> manifest_builder = std::nullopt);
 
   ~ScopedProxyIsolatedWebApp();
 
   net::EmbeddedTestServer& proxy_server() { return *proxy_server_; }
 
+  void FakeInstallPageState(
+      Profile* profile,
+      const web_package::SignedWebBundleId& web_bundle_id);
+
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
+
+  base::expected<IsolatedWebAppUrlInfo, std::string> Install(
+      Profile* profile,
+      const web_package::SignedWebBundleId& web_bundle_id);
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> proxy_server_;
+  std::optional<ManifestBuilder> manifest_builder_;
 };
 
 // A builder for Isolated Web Apps that supports adding resources from disk
@@ -129,7 +153,7 @@ class IsolatedWebAppBuilder {
   //   * /
   //   * /manifest.webmanifest
   //   * /icon.png
-  explicit IsolatedWebAppBuilder(const ManifestBuilder& manifest);
+  explicit IsolatedWebAppBuilder(const ManifestBuilder& manifest_builder);
   IsolatedWebAppBuilder(const IsolatedWebAppBuilder&);
 
   ~IsolatedWebAppBuilder();
@@ -195,13 +219,11 @@ class IsolatedWebAppBuilder {
   std::unique_ptr<ScopedBundledIsolatedWebApp> BuildBundle(
       const web_package::WebBundleSigner::KeyPair& key_pair);
 
-  // Creates and signs a .swbn file and saves it at the given path. The caller
-  // must ensure the bundle is deleted when the test ends.
+  // Creates and signs a .swbn file and returns its serialized contents.
   //
   // Prefer the BuildBundle overloads that return a ScopedBundledIsolatedWebApp.
-  web_package::SignedWebBundleId BuildBundle(
-      const web_package::WebBundleSigner::KeyPair& key_pair,
-      const base::FilePath& bundle_path);
+  std::vector<uint8_t> BuildInMemoryBundle(
+      const web_package::WebBundleSigner::KeyPair& key_pair);
 
  private:
   using ResourceBody = absl::variant<base::FilePath, std::string>;
@@ -221,13 +243,13 @@ class IsolatedWebAppBuilder {
   };
 
   static std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-      const ManifestBuilder& manifest,
+      const ManifestBuilder& manifest_builder,
       const std::map<std::string, Resource>& resources,
       const net::test_server::HttpRequest& request);
 
   void Validate();
 
-  ManifestBuilder manifest_;
+  ManifestBuilder manifest_builder_;
   // Maps relative path to resource body.
   std::map<std::string, Resource> resources_;
 };

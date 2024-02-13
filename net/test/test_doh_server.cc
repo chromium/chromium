@@ -89,8 +89,7 @@ void TestDohServer::AddAddressRecord(std::string_view name,
 
 void TestDohServer::AddRecord(const DnsResourceRecord& record) {
   base::AutoLock lock(lock_);
-  records_.insert(
-      std::make_pair(std::make_pair(record.name, record.type), record));
+  records_.emplace(std::pair(record.name, record.type), record);
 }
 
 bool TestDohServer::Start() {
@@ -191,7 +190,7 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
     return MakeHttpErrorResponse(HTTP_BAD_REQUEST, "invalid DNS query");
   }
 
-  absl::optional<std::string> name = dns_names_util::NetworkToDottedName(
+  std::optional<std::string> name = dns_names_util::NetworkToDottedName(
       dns_query.qname(), /*require_complete=*/true);
   if (!name) {
     DnsResponse response(dns_query.id(), /*is_authoritative=*/false,
@@ -202,7 +201,7 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
   }
   query_qnames_.push_back(*name);
 
-  auto range = records_.equal_range(std::make_pair(*name, dns_query.qtype()));
+  auto range = records_.equal_range(std::pair(*name, dns_query.qtype()));
   std::vector<DnsResourceRecord> answers;
   for (auto i = range.first; i != range.second; ++i) {
     answers.push_back(i->second);

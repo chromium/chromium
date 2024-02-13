@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -36,8 +37,9 @@ class PidState;
 
 class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
  public:
-  explicit Mp2tStreamParser(base::span<const std::string> allowed_codecs,
-                            bool sbr_in_mimetype);
+  explicit Mp2tStreamParser(
+      std::optional<base::span<const std::string>> allowed_codecs,
+      bool sbr_in_mimetype);
 
   Mp2tStreamParser(const Mp2tStreamParser&) = delete;
   Mp2tStreamParser& operator=(const Mp2tStreamParser&) = delete;
@@ -150,8 +152,10 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   EndMediaSegmentCB end_of_segment_cb_;
   raw_ptr<MediaLog> media_log_;
 
-  // List of allowed stream types for this parser.
-  std::set<int> allowed_stream_types_;
+  // List of allowed stream types for this parser. If this set is `nullopt`,
+  // allowed stream type checking is disabled. An empty set implies no codecs
+  // are allowed.
+  std::optional<base::flat_set<int>> allowed_stream_types_;
 
   // True when AAC SBR extension is signalled in the mimetype
   // (mp4a.40.5 in the codecs parameter).

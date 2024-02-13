@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Disable favicon fetching. -->
+<link rel="icon" href="data:;base64,=">
+<title>create a shared worker</title>
+<script>
+    const params = new URLSearchParams(location.search);
+    const worker = new SharedWorker(params.get('worker_url'));
+    worker.port.addEventListener("message", (event) => {
+        document.title = event.data;
+    });
+    worker.port.start();
+</script>

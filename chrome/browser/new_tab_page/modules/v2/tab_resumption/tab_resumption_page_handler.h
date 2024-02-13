@@ -12,10 +12,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -46,6 +48,8 @@ class TabResumptionPageHandler
   // tab_resumption::mojom::PageHandler:
   void GetTabs(GetTabsCallback callback) override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
   std::vector<history::mojom::TabPtr> GetForeignTabs();
@@ -62,7 +66,13 @@ class TabResumptionPageHandler
       GetTabsCallback callback,
       const std::vector<history::AnnotatedVisit> annotated_visits);
 
+  void DismissModule(const std::vector<GURL>& urls) override;
+  void RestoreModule() override;
+
  private:
+  // Method to determine if a url is in the list of previously dismissed urls.
+  bool IsNewURL(GURL url);
+
   // The task tracker for the HistoryService callbacks.
   base::CancelableTaskTracker task_tracker_;
 
@@ -72,6 +82,13 @@ class TabResumptionPageHandler
   mojo::Receiver<ntp::tab_resumption::mojom::PageHandler> page_handler_;
 
   const float visibility_threshold_;
+
+  // The category IDs that a tab must not contain for it to be included.
+  // If `categories_blocklist`is empty, the returned tabs will not be filtered.
+  base::flat_set<std::string> categories_blocklist_;
+
+  // Amount of hours in the past that tabs are able to be shown.
+  const int time_limit_;
 
   base::WeakPtrFactory<TabResumptionPageHandler> weak_ptr_factory_{this};
 };

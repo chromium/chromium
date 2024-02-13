@@ -185,14 +185,14 @@ bool AXVirtualView::Contains(const AXVirtualView* view) const {
   return false;
 }
 
-absl::optional<size_t> AXVirtualView::GetIndexOf(
+std::optional<size_t> AXVirtualView::GetIndexOf(
     const AXVirtualView* view) const {
   DCHECK(view);
   const auto iter =
       base::ranges::find(children_, view, &std::unique_ptr<AXVirtualView>::get);
-  return iter != children_.end() ? absl::make_optional(static_cast<size_t>(
-                                       iter - children_.begin()))
-                                 : absl::nullopt;
+  return iter != children_.end()
+             ? std::make_optional(static_cast<size_t>(iter - children_.begin()))
+             : std::nullopt;
 }
 
 const char* AXVirtualView::GetViewClassName() const {
@@ -455,8 +455,8 @@ std::vector<int32_t> AXVirtualView::GetColHeaderNodeIds(int col_index) const {
   return GetDelegate()->GetColHeaderNodeIds(col_index);
 }
 
-absl::optional<int32_t> AXVirtualView::GetCellId(int row_index,
-                                                 int col_index) const {
+std::optional<int32_t> AXVirtualView::GetCellId(int row_index,
+                                                int col_index) const {
   return GetDelegate()->GetCellId(row_index, col_index);
 }
 

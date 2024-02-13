@@ -58,10 +58,13 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void PreconnectSockets(
       uint32_t num_streams,
       const GURL& url,
-      bool allow_credentials,
+      network::mojom::CredentialsMode credentials_mode,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    preconnect_requests_.emplace_back(url, allow_credentials,
-                                      network_anonymization_key);
+    preconnect_requests_.emplace_back(
+        url,
+        credentials_mode == network::mojom::CredentialsMode::kInclude ? true
+                                                                      : false,
+        network_anonymization_key);
   }
 
   std::vector<PreconnectRequest>& preconnect_requests() {

@@ -363,7 +363,7 @@ void NotificationHeaderView::SetExpanded(bool expanded) {
   }
 }
 
-void NotificationHeaderView::SetColor(absl::optional<SkColor> color) {
+void NotificationHeaderView::SetColor(std::optional<SkColor> color) {
   color_ = std::move(color);
   UpdateColors();
 }

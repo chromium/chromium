@@ -10,22 +10,21 @@ import androidx.annotation.RequiresOptIn;
 /**
  * A class configuring Cronet's connection migration functionality.
  *
- * <p>Connection migration stops open connections to servers from being destroyed when the
- * client device switches its L4 connectivity (typically the IP address as a result of using
- * a different network). This is particularly common with mobile devices losing
- * wifi connectivity and switching to cellular data, or vice versa (a.k.a. the parking lot
- * problem). QUIC uses connection identifiers which are independent of the underlying
- * transport layer to make this possible. If the client connects to a new network and wants
- * to preserve the existing connection, they can do so by using a connection identifier the server
- * knows to be a continuation of the existing connection.
+ * <p>Connection migration stops open connections to servers from being destroyed when the client
+ * device switches its L4 connectivity (typically the IP address as a result of using a different
+ * network). This is particularly common with mobile devices losing wifi connectivity and switching
+ * to cellular data, or vice versa (a.k.a. the parking lot problem). QUIC uses connection
+ * identifiers which are independent of the underlying transport layer to make this possible. If the
+ * client connects to a new network and wants to preserve the existing connection, they can do so by
+ * using a connection identifier the server knows to be a continuation of the existing connection.
  *
  * <p>The features are only available for QUIC connections and the server needs to support
  * connection migration.
  *
- * @see <a href="https://www.rfc-editor.org/rfc/rfc9000.html#section-9">Connection
- *     Migration specification</a>
+ * @see <a href="https://www.rfc-editor.org/rfc/rfc9000.html#section-9">Connection Migration
+ *     specification</a>
  */
-public class ConnectionMigrationOptions {
+public final class ConnectionMigrationOptions {
     @Nullable private final Boolean mEnableDefaultNetworkMigration;
     @Nullable private final Boolean mEnablePathDegradationMigration;
     @Nullable private final Boolean mAllowServerMigration;
@@ -87,7 +86,7 @@ public class ConnectionMigrationOptions {
         return mMaxPathDegradingEagerMigrationsCount;
     }
 
-    public ConnectionMigrationOptions(Builder builder) {
+    private ConnectionMigrationOptions(Builder builder) {
         this.mEnableDefaultNetworkMigration = builder.mEnableDefaultNetworkConnectionMigration;
         this.mEnablePathDegradationMigration = builder.mEnablePathDegradationMigration;
         this.mAllowServerMigration = builder.mAllowServerMigration;
@@ -114,7 +113,7 @@ public class ConnectionMigrationOptions {
         @Nullable private Integer mMaxWriteErrorEagerMigrationsCount;
         @Nullable private Integer mMaxPathDegradingEagerMigrationsCount;
 
-        Builder() {}
+        private Builder() {}
 
         /**
          * Enables the possibility of migrating connections on default network change. If enabled,

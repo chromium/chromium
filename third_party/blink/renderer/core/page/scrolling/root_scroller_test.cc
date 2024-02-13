@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
+#include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/dom_visual_viewport.h"
@@ -34,7 +35,9 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -173,6 +176,7 @@ class RootScrollerTest : public testing::Test,
     view->UpdateAllLifecyclePhasesForTest();
   }
 
+  test::TaskEnvironment task_environment_;
   String base_url_;
   frame_test_helpers::CreateTestWebFrameWidgetCallback create_widget_callback_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> helper_;
@@ -858,7 +862,12 @@ TEST_F(RootScrollerTest, ImmediateUpdateOfLayoutViewport) {
 class ImplicitRootScrollerSimTest : public SimTest {
  public:
   ImplicitRootScrollerSimTest() : implicit_root_scroller_for_test_(true) {}
-
+  ~ImplicitRootScrollerSimTest() override {
+    // TODO(crbug.com/1315595): Consider moving this to MainThreadIsolate.
+    MemoryCache::Get()->EvictResources();
+    // Clear lazily loaded style sheets.
+    CSSDefaultStyleSheets::Instance().PrepareForLeakDetection();
+  }
   void SetUp() override {
     SimTest::SetUp();
     WebView().GetPage()->GetSettings().SetViewportEnabled(true);

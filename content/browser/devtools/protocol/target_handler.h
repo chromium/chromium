@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
@@ -206,7 +207,7 @@ class TargetHandler : public DevToolsDomainHandler,
   std::unique_ptr<TargetFilter> discover_target_filter_;
   bool observing_agent_hosts_ = false;
   std::map<std::string, std::unique_ptr<Session>> attached_sessions_;
-  std::set<DevToolsAgentHost*> reported_hosts_;
+  std::set<raw_ptr<DevToolsAgentHost, SetExperimental>> reported_hosts_;
   base::flat_set<std::string> dispose_on_detach_context_ids_;
   base::flat_map<std::string, net::ProxyConfig> contexts_with_overridden_proxy_;
   base::flat_set<Throttle*> throttles_;

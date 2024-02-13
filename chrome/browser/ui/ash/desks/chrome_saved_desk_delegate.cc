@@ -112,7 +112,8 @@ void GetUnavailableBrowserAppNames(
       std::string app_id = app_restore::GetAppIdFromAppName(
           restore_data->browser_extra_info.app_name.value());
       if (!IsAppAvailable(app_id, app_service_proxy)) {
-        out_app_names.push_back(restore_data->title.value_or(u""));
+        out_app_names.push_back(
+            restore_data->window_info.app_title.value_or(u""));
       }
     }
   }
@@ -149,7 +150,8 @@ std::vector<std::u16string> GetUnavailableAppNames(
       // need the title of the first window.
       auto it = launch_list.begin();
       app_restore::AppRestoreData* app_restore_data = it->second.get();
-      app_names.push_back(app_restore_data->title.value_or(u""));
+      app_names.push_back(
+          app_restore_data->window_info.app_title.value_or(u""));
     }
   }
   return app_names;

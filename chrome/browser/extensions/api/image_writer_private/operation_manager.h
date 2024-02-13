@@ -105,7 +105,7 @@ class OperationManager : public BrowserContextKeyedAPI,
   void OnShutdown(ExtensionRegistry* registry) override;
 
   // ProcessManagerObserver:
-  void OnBackgroundHostClose(const std::string& extension_id) override;
+  void OnBackgroundHostClose(const ExtensionId& extension_id) override;
   void OnProcessManagerShutdown(ProcessManager* manager) override;
   void OnExtensionProcessTerminated(const Extension* extension) override;
 

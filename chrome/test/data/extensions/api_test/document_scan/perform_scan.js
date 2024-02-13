@@ -17,6 +17,7 @@ chrome.test.runTests([
       chrome.test.assertEq('scanneridabc123', response.scanners[0].scannerId);
       chrome.test.assertEq('GoogleTest', response.scanners[0].manufacturer);
       chrome.test.assertEq('Scanner', response.scanners[0].model);
+      chrome.test.assertEq('Mopria', response.scanners[0].protocolType);
 
       // Second call should get the same scanner with the same id because it's
       // the same extension within the same session.
@@ -26,6 +27,7 @@ chrome.test.runTests([
         chrome.test.assertEq('scanneridabc123', response.scanners[0].scannerId);
         chrome.test.assertEq('GoogleTest', response.scanners[0].manufacturer);
         chrome.test.assertEq('Scanner', response.scanners[0].model);
+        chrome.test.assertEq('Mopria', response.scanners[0].protocolType);
         chrome.test.succeed();
       });
     });

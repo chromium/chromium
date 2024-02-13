@@ -41,15 +41,15 @@ const INITIAL_FOCUS_DELAY_MS: number = 50;
 
 /** Returns true if the URL references an HTTP request to localhost. */
 export function isLocalHostForTesting(url: URL): boolean {
-  return url.protocol == 'http:' && url.hostname == '127.0.0.1';
+  return url.protocol === 'http:' && url.hostname === '127.0.0.1';
 }
 
 /** Returns true if the URL references one of the allowed hosts. */
 function isAllowedHost(url: URL): boolean {
-  return url.protocol == 'https:' &&
+  return url.protocol === 'https:' &&
       ALLOWED_HOSTS.some(
           (allowedHost) =>
-              url.host == allowedHost || url.host.endsWith('.' + allowedHost));
+              url.host === allowedHost || url.host.endsWith('.' + allowedHost));
 }
 
 /** Returns true if the request should be allowed. */

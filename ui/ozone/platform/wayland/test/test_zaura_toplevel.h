@@ -7,8 +7,9 @@
 
 #include <aura-shell-server-protocol.h>
 
+#include <optional>
+
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_region.h"
 
@@ -29,8 +30,8 @@ class TestZAuraToplevel : public ServerObject {
   // TODO(tluk): `shape_` should really not have a public setter method, the
   // member should instead only be set by the handler that responds to
   // aura_toplevel.set_shape events from the server.
-  const absl::optional<TestRegion>& shape() const { return shape_; }
-  void set_shape(const absl::optional<TestRegion>& shape) { shape_ = shape; }
+  const std::optional<TestRegion>& shape() const { return shape_; }
+  void set_shape(const std::optional<TestRegion>& shape) { shape_ = shape; }
 
   int top_inset() const { return top_inset_; }
   void set_top_inset(int top_inset) { top_inset_ = top_inset; }
@@ -62,7 +63,7 @@ class TestZAuraToplevel : public ServerObject {
   }
 
  private:
-  absl::optional<TestRegion> shape_;
+  std::optional<TestRegion> shape_;
   int top_inset_;
   AckRotateFocusCallback ack_rotate_focus_callback_;
   bool can_maximize_ = false;

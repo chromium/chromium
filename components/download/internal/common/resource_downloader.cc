@@ -8,16 +8,26 @@
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/download/public/common/download_features.h"
+#include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/stream_handle_input_stream.h"
 #include "components/download/public/common/url_download_handler.h"
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_content_disposition.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace download {
+
+namespace {
+#if BUILDFLAG(IS_ANDROID)
+// PDF MIME type.
+constexpr char kPdfMimeType[] = "application/pdf";
+#endif  // BUILDFLAG(IS_ANDROID)
+}  // namespace
 
 // This object monitors the URLLoaderCompletionStatus change when
 // ResourceDownloader is asking |delegate_| whether download can proceed.
@@ -209,12 +219,29 @@ void ResourceDownloader::InterceptResponse(
   // Set the URLLoader.
   url_loader_.Bind(std::move(endpoints->url_loader));
 
+  bool is_transient = false;
+#if BUILDFLAG(IS_ANDROID)
+  std::string disposition;
+  response_head->headers->GetNormalizedHeader("content-disposition",
+                                              &disposition);
+  if (disposition.empty() ||
+      !net::HttpContentDisposition(disposition, std::string())
+           .is_attachment()) {
+    is_must_download_ = false;
+  }
+  if (!is_must_download_ &&
+      base::FeatureList::IsEnabled(features::kTransientPdfLinkDownload) &&
+      base::EqualsCaseInsensitiveASCII(response_head->mime_type,
+                                       kPdfMimeType)) {
+    is_transient = true;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Create the new URLLoaderClient that will intercept the navigation.
   url_loader_client_ = std::make_unique<DownloadResponseHandler>(
       resource_request_.get(), this, std::make_unique<DownloadSaveInfo>(),
-      false, /* is_parallel_request */
-      false, /* is_transient */
-      false, /* fetch_error_body */
+      false,               /* is_parallel_request */
+      is_transient, false, /* fetch_error_body */
       network::mojom::RedirectMode::kFollow,
       download::DownloadUrlParameters::RequestHeadersType(),
       std::string(),                              /* request_origin */
@@ -247,6 +274,9 @@ void ResourceDownloader::OnResponseStarted(
   download_create_info->is_content_initiated = is_content_initiated_;
   download_create_info->transition_type =
       ui::PageTransitionFromInt(resource_request_->transition_type);
+#if BUILDFLAG(IS_ANDROID)
+  download_create_info->is_must_download = is_must_download_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   delegate_task_runner_->PostTask(
       FROM_HERE,

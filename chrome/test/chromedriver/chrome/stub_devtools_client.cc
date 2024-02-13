@@ -131,14 +131,56 @@ WebViewImpl* StubDevToolsClient::GetOwner() const {
   return owner_;
 }
 
-DevToolsClient* StubDevToolsClient::GetRootClient() {
-  return this;
-}
-
 DevToolsClient* StubDevToolsClient::GetParentClient() const {
   return nullptr;
 }
 
 bool StubDevToolsClient::IsMainPage() const {
   return true;
+}
+
+Status StubDevToolsClient::SendRaw(const std::string& message) {
+  return Status{kOk};
+}
+
+bool StubDevToolsClient::HasMessageForAnySession() const {
+  return false;
+}
+
+Status StubDevToolsClient::AttachTo(DevToolsClient* parent) {
+  return Status{kOk};
+}
+
+void StubDevToolsClient::RegisterSessionHandler(const std::string& session_id,
+                                                DevToolsClient* client) {}
+
+void StubDevToolsClient::UnregisterSessionHandler(
+    const std::string& session_id) {}
+
+Status StubDevToolsClient::OnConnected() {
+  return Status{kOk};
+}
+
+Status StubDevToolsClient::ProcessEvent(const InspectorEvent& event) {
+  return Status{kOk};
+}
+
+Status StubDevToolsClient::ProcessCommandResponse(
+    const InspectorCommandResponse& response) {
+  return Status{kOk};
+}
+
+int StubDevToolsClient::NextMessageId() const {
+  return 0;
+}
+
+int StubDevToolsClient::AdvanceNextMessageId() {
+  return 0;
+}
+
+Status StubDevToolsClient::ProcessNextMessage(int expected_id,
+                                              bool log_timeout,
+                                              const Timeout& timeout,
+                                              DevToolsClient* caller) {
+  return Status{kOk};
 }

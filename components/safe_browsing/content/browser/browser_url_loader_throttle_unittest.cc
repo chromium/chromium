@@ -114,7 +114,7 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
 
   // RealTimeUrlLookupServiceBase:
   bool CanPerformFullURLLookup() const override { return true; }
-  bool CanCheckSubresourceURL() const override { return false; }
+  bool CanIncludeSubframeUrlInReferrerChain() const override { return false; }
   bool CanCheckSafeBrowsingDb() const override { return true; }
   bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override {
     return true;
@@ -123,14 +123,10 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   std::string GetMetricSuffix() const override { return ".Mock"; }
   void StartLookup(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
   void SendSampledRequest(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
 
  private:
@@ -143,8 +139,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanSendPageLoadToken() const override { return false; }
   void GetAccessToken(
       const GURL& url,
-      const GURL& last_committed_url,
-      bool is_mainframe,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {}
   std::optional<std::string> GetDMTokenString() const override {
@@ -180,11 +174,9 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       UnsafeResource::FrameTreeNodeId frame_tree_node_id,
       std::optional<int64_t> navigation_id,
       bool url_real_time_lookup_enabled,
-      bool can_urt_check_subresource_url,
       bool can_check_db,
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
-      GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
@@ -202,11 +194,9 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    frame_tree_node_id,
                                    navigation_id,
                                    url_real_time_lookup_enabled,
-                                   can_urt_check_subresource_url,
                                    can_check_db,
                                    can_check_high_confidence_allowlist,
                                    url_lookup_service_metric_suffix,
-                                   last_committed_url,
                                    ui_task_runner,
                                    url_lookup_service_on_ui,
                                    hash_realtime_service_on_ui,
@@ -337,10 +327,9 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
             /*render_frame_token=*/std::nullopt,
             UnsafeResource::kNoFrameTreeNodeId, navigation_id,
             url_real_time_lookup_enabled,
-            /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
+            /*can_check_db=*/true,
             /*can_check_high_confidence_allowlist=*/true,
             /*url_lookup_service_metric_suffix=*/"",
-            /*last_committed_url=*/GURL(),
             /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
             /*url_lookup_service_on_ui=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
@@ -362,10 +351,9 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
               /*render_frame_token=*/std::nullopt,
               UnsafeResource::kNoFrameTreeNodeId,
               /*navigation_id=*/0, url_real_time_lookup_enabled,
-              /*can_urt_check_subresource_url=*/false, /*can_check_db=*/true,
+              /*can_check_db=*/true,
               /*can_check_high_confidence_allowlist=*/true,
               /*url_lookup_service_metric_suffix=*/"",
-              /*last_committed_url=*/GURL(),
               /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
               /*url_lookup_service_on_ui=*/nullptr,
               /*hash_realtime_service_on_ui=*/nullptr,

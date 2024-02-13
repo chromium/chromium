@@ -285,7 +285,7 @@ void AnchoredNudge::SetDefaultAnchorRect() {
                 gfx::Size(0, 0)));
 }
 
-BEGIN_METADATA(AnchoredNudge, views::BubbleDialogDelegateView)
+BEGIN_METADATA(AnchoredNudge)
 END_METADATA
 
 }  // namespace ash

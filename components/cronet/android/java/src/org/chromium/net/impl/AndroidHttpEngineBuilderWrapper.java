@@ -11,11 +11,15 @@ import android.net.http.HttpEngine;
 import android.util.Log;
 
 import androidx.annotation.RequiresExtension;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.telemetry.ExperimentalOptions;
+import org.chromium.net.telemetry.OptionalBoolean;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.Set;
 
@@ -80,13 +84,6 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
-    public ICronetEngineBuilder setExperimentalOptions(String options) {
-        // TODO(danstahr): Hidden API. This should ideally extract values we know how to handle as a
-        // main API
-        return this;
-    }
-
-    @Override
     public ICronetEngineBuilder enableHttpCache(int cacheMode, long maxSize) {
         mBackend.setEnableHttpCache(cacheMode, maxSize);
         return this;
@@ -115,6 +112,16 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
         return this;
     }
 
+    @Override
+    public ICronetEngineBuilder setExperimentalOptions(String stringOptions) {
+        // This only translates known experimental options
+        ExperimentalOptions options = new ExperimentalOptions(stringOptions);
+        mBackend.setConnectionMigrationOptions(parseConnectionMigrationOptions(options));
+        mBackend.setDnsOptions(parseDnsOptions(options));
+        mBackend.setQuicOptions(parseQuicOptions(options));
+        return this;
+    }
+
     /**
      * Build a {@link CronetEngine} using this builder's configuration.
      *
@@ -123,5 +130,120 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     @Override
     public ExperimentalCronetEngine build() {
         return new AndroidHttpEngineWrapper(mBackend.build());
+    }
+
+    @VisibleForTesting
+    public static android.net.http.ConnectionMigrationOptions parseConnectionMigrationOptions(
+            ExperimentalOptions options) {
+        android.net.http.ConnectionMigrationOptions.Builder cmOptionsBuilder =
+                new android.net.http.ConnectionMigrationOptions.Builder();
+
+        cmOptionsBuilder.setDefaultNetworkMigration(
+                optionalBooleanToMigrationOptionState(
+                        options.getMigrateSessionsOnNetworkChangeV2Option()));
+        cmOptionsBuilder.setPathDegradationMigration(
+                optionalBooleanToMigrationOptionState(options.getAllowPortMigration()));
+
+        OptionalBoolean migrateSessionsEarly = options.getMigrateSessionsEarlyV2();
+        cmOptionsBuilder.setAllowNonDefaultNetworkUsage(
+                optionalBooleanToMigrationOptionState(migrateSessionsEarly));
+        if (migrateSessionsEarly == OptionalBoolean.TRUE) {
+            cmOptionsBuilder.setPathDegradationMigration(
+                    optionalBooleanToMigrationOptionState(OptionalBoolean.TRUE));
+        }
+
+        return cmOptionsBuilder.build();
+    }
+
+    @VisibleForTesting
+    public static android.net.http.DnsOptions parseDnsOptions(ExperimentalOptions options) {
+        android.net.http.DnsOptions.StaleDnsOptions.Builder staleDnsOptionBuilder =
+                new android.net.http.DnsOptions.StaleDnsOptions.Builder();
+        int staleDnsDelay = options.getStaleDnsDelayMillisOption();
+        if (staleDnsDelay != ExperimentalOptions.UNSET_INT_VALUE) {
+            staleDnsOptionBuilder.setFreshLookupTimeout(Duration.ofMillis(staleDnsDelay));
+        }
+
+        int expiredDelay = options.getStaleDnsMaxExpiredTimeMillisOption();
+        if (expiredDelay != ExperimentalOptions.UNSET_INT_VALUE) {
+            staleDnsOptionBuilder.setMaxExpiredDelay(Duration.ofMillis(expiredDelay));
+        }
+
+        staleDnsOptionBuilder
+                .setAllowCrossNetworkUsage(
+                        optionalBooleanToMigrationOptionState(
+                                options.getStaleDnsAllowOtherNetworkOption()))
+                .setUseStaleOnNameNotResolved(
+                        optionalBooleanToMigrationOptionState(
+                                options.getStaleDnsUseStaleOnNameNotResolvedOption()));
+
+        android.net.http.DnsOptions.Builder dnsOptionsBuilder =
+                new android.net.http.DnsOptions.Builder();
+        dnsOptionsBuilder
+                .setUseHttpStackDnsResolver(
+                        optionalBooleanToMigrationOptionState(options.getAsyncDnsEnableOption()))
+                .setStaleDns(
+                        optionalBooleanToMigrationOptionState(options.getStaleDnsEnableOption()))
+                .setStaleDnsOptions(staleDnsOptionBuilder.build())
+                .setPreestablishConnectionsToStaleDnsResults(
+                        optionalBooleanToMigrationOptionState(
+                                options.getRaceStaleDnsOnConnection()))
+                .setPersistHostCache(
+                        optionalBooleanToMigrationOptionState(
+                                options.getStaleDnsPersistToDiskOption()));
+        int persistHostCachePeriod = options.getStaleDnsPersistDelayMillisOption();
+        if (persistHostCachePeriod != ExperimentalOptions.UNSET_INT_VALUE) {
+            dnsOptionsBuilder.setPersistHostCachePeriod(Duration.ofMillis(persistHostCachePeriod));
+        }
+
+        return dnsOptionsBuilder.build();
+    }
+
+    @VisibleForTesting
+    public static android.net.http.QuicOptions parseQuicOptions(ExperimentalOptions options) {
+        android.net.http.QuicOptions.Builder quicOptionsBuilder =
+                new android.net.http.QuicOptions.Builder();
+
+        if (options.getHostWhitelist() != null) {
+            for (String host : options.getHostWhitelist().split(",")) {
+                quicOptionsBuilder.addAllowedQuicHost(host);
+            }
+        }
+
+        int inMemoryServerConfigsCacheSize = options.getMaxServerConfigsStoredInPropertiesOption();
+        if (inMemoryServerConfigsCacheSize != ExperimentalOptions.UNSET_INT_VALUE) {
+            quicOptionsBuilder.setInMemoryServerConfigsCacheSize(inMemoryServerConfigsCacheSize);
+        }
+
+        String handshakeUserAgent = options.getUserAgentId();
+        if (handshakeUserAgent != null) {
+            quicOptionsBuilder.setHandshakeUserAgent(handshakeUserAgent);
+        }
+
+        int idleConnectionTimeoutSeconds = options.getIdleConnectionTimeoutSecondsOption();
+        if (idleConnectionTimeoutSeconds != ExperimentalOptions.UNSET_INT_VALUE) {
+            quicOptionsBuilder.setIdleConnectionTimeout(
+                    Duration.ofSeconds(idleConnectionTimeoutSeconds));
+        }
+
+        return quicOptionsBuilder.build();
+    }
+
+    /**
+     * HttpEngine XOptions exposes X_OPTION_* IntDefs that map to the same integer values. To
+     * simplify the code, we are reusing ConnectionMigrationOptions.MIGRATION_OPTION_* for
+     * DnsOptions and QuicOptions.
+     */
+    private static int optionalBooleanToMigrationOptionState(OptionalBoolean value) {
+        switch (value) {
+            case TRUE:
+                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_ENABLED;
+            case FALSE:
+                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_DISABLED;
+            case UNSET:
+                return android.net.http.ConnectionMigrationOptions.MIGRATION_OPTION_UNSPECIFIED;
+        }
+
+        throw new AssertionError("Invalid OptionalBoolean value: " + value);
     }
 }

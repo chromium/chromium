@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/arc/arc_support_host.h"
 #include "chrome/browser/ash/arc/extensions/fake_arc_support.h"
 #include "chrome/browser/ash/arc/optin/arc_optin_preference_handler.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
@@ -44,7 +43,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -164,7 +162,6 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     fake_arc_support_.reset();
     support_host_->SetErrorDelegate(nullptr);
     support_host_.reset();
-    fake_user_manager_.Reset();
     owner_key_util_->Clear();
 
     test_metrics_service_.reset();
@@ -189,10 +186,6 @@ class ArcTermsOfServiceDefaultNegotiatorTest
   ArcTermsOfServiceNegotiator* negotiator() { return negotiator_.get(); }
   TestUserMetricsServiceClient* metrics_service_client() {
     return test_metrics_service_client_.get();
-  }
-
-  ash::FakeChromeUserManager* user_manager() {
-    return fake_user_manager_.Get();
   }
 
   consent_auditor::FakeConsentAuditor* consent_auditor() {
@@ -230,8 +223,6 @@ class ArcTermsOfServiceDefaultNegotiatorTest
       test_enabled_state_provider_;
   std::unique_ptr<metrics::MetricsService> test_metrics_service_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<FakeArcSupport> fake_arc_support_;
   std::unique_ptr<ArcTermsOfServiceDefaultNegotiator> negotiator_;
@@ -252,14 +243,6 @@ class ArcTermsOfServiceDefaultNegotiatorForNonOwnerTest
     session_manager_client_.set_device_policy(device_policy_.GetBlob());
 
     ArcTermsOfServiceDefaultNegotiatorTest::SetUp();
-  }
-
-  // BrowserWithTestWindowTest:
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindow.
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUser(account_id);
-    user_manager()->LoginUser(account_id);
   }
 };
 

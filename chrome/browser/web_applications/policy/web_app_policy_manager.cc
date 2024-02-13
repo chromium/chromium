@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/barrier_callback.h"
-#include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -20,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -158,6 +157,10 @@ void WebAppPolicyManager::Start(
                  base::BindOnce(
                      &WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy,
                      weak_ptr_factory_.GetWeakPtr(), enable_pwa_support));
+}
+
+void WebAppPolicyManager::Shutdown() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(
@@ -453,25 +456,25 @@ void WebAppPolicyManager::ApplyPolicySettings() {
   // login and force unregistration, it is still safe, since both functions
   // invoke commands, so the Run on OS login will always be scheduled before the
   // force unregistration, and execution will be synchronous.
-  auto policy_settings_applied_callback = base::BarrierClosure(
-      /*num_closures=*/2,
-      base::BindOnce(&WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-  ApplyRunOnOsLoginPolicySettings(policy_settings_applied_callback);
-  ApplyForceOSUnregistrationPolicySettings(policy_settings_applied_callback);
+  base::ConcurrentClosures concurrent;
+  ApplyRunOnOsLoginPolicySettings(concurrent.CreateClosure());
+  ApplyForceOSUnregistrationPolicySettings(concurrent.CreateClosure());
+  std::move(concurrent)
+      .Done(base::BindOnce(
+          &WebAppPolicyManager::OnSyncPolicySettingsCommandsComplete,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppPolicyManager::ApplyRunOnOsLoginPolicySettings(
     base::OnceClosure policy_settings_applied_callback) {
-  std::vector<webapps::AppId> app_ids_to_sync =
-      provider_->registrar_unsafe().GetAppIds();
-  auto callback_for_sync_commands = base::BarrierClosure(
-      app_ids_to_sync.size(), std::move(policy_settings_applied_callback));
+  base::ConcurrentClosures concurrent;
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
-  for (const webapps::AppId& app_id : app_ids_to_sync) {
+  for (const webapps::AppId& app_id :
+       provider_->registrar_unsafe().GetAppIds()) {
     provider->scheduler().SyncRunOnOsLoginMode(app_id,
-                                               callback_for_sync_commands);
+                                               concurrent.CreateClosure());
   }
+  std::move(concurrent).Done(std::move(policy_settings_applied_callback));
 }
 
 void WebAppPolicyManager::ApplyForceOSUnregistrationPolicySettings(
@@ -481,7 +484,9 @@ void WebAppPolicyManager::ApplyForceOSUnregistrationPolicySettings(
     return;
   }
 
-  base::flat_set<webapps::AppId> app_ids_for_force_unregistration;
+  base::ConcurrentClosures concurrent;
+  SynchronizeOsOptions options;
+  options.force_unregister_os_integration = true;
   for (const auto& [manifest_string, setting] : settings_by_url_) {
     const GURL manifest_id = GURL(manifest_string);
     if (!manifest_id.is_valid()) {
@@ -495,24 +500,12 @@ void WebAppPolicyManager::ApplyForceOSUnregistrationPolicySettings(
     }
 
     if (setting.force_unregister_os_integration) {
-      app_ids_for_force_unregistration.insert(app_id);
+      provider_->scheduler().SynchronizeOsIntegration(
+          app_id, concurrent.CreateClosure(), options);
     }
   }
 
-  if (app_ids_for_force_unregistration.empty()) {
-    std::move(policy_settings_applied_callback).Run();
-    return;
-  }
-
-  SynchronizeOsOptions options;
-  options.force_unregister_os_integration = true;
-  auto callback_for_synchronize_complete =
-      base::BarrierClosure(app_ids_for_force_unregistration.size(),
-                           std::move(policy_settings_applied_callback));
-  for (const auto& app_id : app_ids_for_force_unregistration) {
-    provider_->scheduler().SynchronizeOsIntegration(
-        app_id, callback_for_synchronize_complete, options);
-  }
+  std::move(concurrent).Done(std::move(policy_settings_applied_callback));
 }
 
 ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(

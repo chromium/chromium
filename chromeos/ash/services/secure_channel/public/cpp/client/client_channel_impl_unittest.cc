@@ -28,6 +28,8 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_client_channel_observer.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/secure_channel_impl.h"
@@ -51,7 +53,8 @@ class SecureChannelClientChannelImplTest : public testing::Test {
 
     client_channel_ = ClientChannelImpl::Factory::Create(
         fake_channel_->GenerateRemote(),
-        message_receiver_remote_.BindNewPipeAndPassReceiver());
+        message_receiver_remote_.BindNewPipeAndPassReceiver(),
+        nearby_connection_state_listener_remote_.BindNewPipeAndPassReceiver());
 
     fake_observer_ = std::make_unique<FakeClientChannelObserver>();
     client_channel_->AddObserver(fake_observer_.get());
@@ -131,6 +134,8 @@ class SecureChannelClientChannelImplTest : public testing::Test {
 
   std::unique_ptr<FakeChannel> fake_channel_;
   mojo::Remote<mojom::MessageReceiver> message_receiver_remote_;
+  mojo::Remote<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_remote_;
   std::unique_ptr<FakeClientChannelObserver> fake_observer_;
 
   mojom::ConnectionMetadataPtr connection_metadata_;
@@ -201,6 +206,18 @@ TEST_F(SecureChannelClientChannelImplTest, TestDisconnectRemotely) {
   SendPendingMojoMessages();
 
   VerifyChannelDisconnected();
+}
+
+TEST_F(SecureChannelClientChannelImplTest, TestNearbyConnectionStateChanged) {
+  nearby_connection_state_listener_remote_->OnNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kRequestingConnectionStarted,
+      mojom::NearbyConnectionStepResult::kSuccess);
+  nearby_connection_state_listener_remote_.FlushForTesting();
+
+  EXPECT_EQ(mojom::NearbyConnectionStep::kRequestingConnectionStarted,
+            fake_observer_->nearby_connection_step());
+  EXPECT_EQ(mojom::NearbyConnectionStepResult::kSuccess,
+            fake_observer_->nearby_connection_step_result());
 }
 
 TEST_F(SecureChannelClientChannelImplTest, ReceiveMultipleFileTransferUpdates) {

@@ -51,6 +51,8 @@ source_set("common") {
     "user_education_class_properties.h",
     "user_education_features.cc",
     "user_education_features.h",
+    "user_education_metadata.cc",
+    "user_education_metadata.h",
   ]
 
   deps = [

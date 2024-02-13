@@ -100,7 +100,7 @@ class WaylandZcrColorSpace : public base::RefCounted<WaylandZcrColorSpace> {
   // Information events should store color space info at their enum index in
   // this array. Cleared on the OnDone event. Choosing the highest priority
   // InformationType available is simple with forward iteration.
-  std::array<absl::optional<gfx::ColorSpace>,
+  std::array<std::optional<gfx::ColorSpace>,
              static_cast<uint8_t>(InformationType::kMaxValue) + 1>
       gathered_information;
   wl::Object<zcr_color_space_v1> zcr_color_space_;

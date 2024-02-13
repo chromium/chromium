@@ -56,4 +56,11 @@ void FakeAuthenticatedChannelObserver::OnMessageReceived(
   received_messages_.push_back(std::make_pair(feature, payload));
 }
 
+void FakeAuthenticatedChannelObserver::OnNearbyConnectionStateChanged(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  nearby_connection_step_ = step;
+  nearby_connection_step_result_ = result;
+}
+
 }  // namespace ash::secure_channel

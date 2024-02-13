@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/animation/list_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/side_index.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -332,8 +334,18 @@ InterpolationValue CSSBorderImageLengthBoxInterpolationType::MaybeConvertValue(
 
         auto* side_primitive_value = DynamicTo<CSSPrimitiveValue>(side);
         if (side_primitive_value && side_primitive_value->IsNumber()) {
-          return ConvertBorderImageNumberSide(
-              side_primitive_value->GetDoubleValue());
+          if (auto* side_numeric_value =
+                  DynamicTo<CSSNumericLiteralValue>(side)) {
+            return ConvertBorderImageNumberSide(
+                side_numeric_value->GetDoubleValue());
+          }
+          CHECK(side_primitive_value->IsMathFunctionValue());
+          return InterpolationValue(
+              MakeGarbageCollected<InterpolableNumber>(
+                  *To<CSSMathFunctionValue>(side_primitive_value)
+                       ->ExpressionNode()),
+              CSSBorderImageLengthBoxSideNonInterpolableValue::Create(
+                  SideType::kNumber));
         }
 
         auto* side_identifier_value = DynamicTo<CSSIdentifierValue>(side);
@@ -391,7 +403,8 @@ void CSSBorderImageLengthBoxInterpolationType::ApplyStandardPropertyValue(
                               &state](wtf_size_t index) -> BorderImageLength {
     switch (GetSideType(non_interpolable_list.Get(index))) {
       case SideType::kNumber:
-        return ClampTo<double>(To<InterpolableNumber>(list.Get(index))->Value(),
+        return ClampTo<double>(To<InterpolableNumber>(list.Get(index))
+                                   ->Value(state.CssToLengthConversionData()),
                                0);
       case SideType::kAuto:
         return Length::Auto();

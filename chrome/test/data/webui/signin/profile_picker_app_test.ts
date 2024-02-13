@@ -5,18 +5,20 @@
 import 'chrome://profile-picker/profile_picker.js';
 // <if expr="chromeos_lacros">
 import 'chrome://profile-picker/lazy_load.js';
+
 // </if>
 
-// <if expr="chromeos_lacros">
-import {AvailableAccount} from 'chrome://profile-picker/profile_picker.js';
-// </if>
-
-import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, ProfilePickerAppElement, Routes} from 'chrome://profile-picker/profile_picker.js';
+import type {
+  // <if expr="chromeos_lacros">
+  AvailableAccount,
+  // </if>
+  ProfilePickerAppElement} from 'chrome://profile-picker/profile_picker.js';
+import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} from 'chrome://profile-picker/profile_picker.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {whenCheck} from 'chrome://webui-test/test_util.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {whenCheck} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
 

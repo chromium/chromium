@@ -65,6 +65,22 @@ size_t GetDefaultGpuDiskCacheSize() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+std::string GrContextTypeToString(GrContextType type) {
+  switch (type) {
+    case GrContextType::kNone:
+      return "None";
+    case GrContextType::kGL:
+      return "GaneshGL";
+    case GrContextType::kVulkan:
+      return "GaneshVulkan";
+    case GrContextType::kGraphiteDawn:
+      return "GraphiteDawn";
+    case GrContextType::kGraphiteMetal:
+      return "GraphiteMetal";
+  }
+  NOTREACHED_NORETURN();
+}
+
 GpuPreferences::GpuPreferences() = default;
 
 GpuPreferences::GpuPreferences(const GpuPreferences& other) = default;

@@ -5,12 +5,9 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
 #import "components/autofill/core/browser/autofill_test_utils.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/prefs/pref_service.h"
-#import "components/sync/test/test_sync_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
@@ -32,48 +29,32 @@ const char kTestGuid[] = "00000000-0000-0000-0000-000000000001";
 class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PaymentsSuggestionBottomSheetMediatorTest()
-      : test_web_state_(std::make_unique<web::FakeWebState>()),
-        personal_data_manager_(
-            std::make_unique<autofill::PersonalDataManager>("en",
-                                                            std::string())) {
+      : test_web_state_(std::make_unique<web::FakeWebState>()) {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
-
-    TestChromeBrowserState::Builder builder;
-    chrome_browser_state_ = builder.Build();
 
     consumer_ =
         OCMProtocolMock(@protocol(PaymentsSuggestionBottomSheetConsumer));
   }
 
-  ~PaymentsSuggestionBottomSheetMediatorTest() override {
-    if (personal_data_manager_) {
-      personal_data_manager_->Shutdown();
-    }
-    personal_data_manager_.reset();
-  }
-
   void SetUp() override {
-    PrefService* pref_service = chrome_browser_state_->GetPrefs();
-    autofill::prefs::SetAutofillProfileEnabled(pref_service, true);
-    autofill::prefs::SetAutofillPaymentMethodsEnabled(pref_service, true);
-    personal_data_manager_->SetPrefService(pref_service);
-    personal_data_manager_->SetSyncServiceForTest(&sync_service_);
+    personal_data_manager_.SetAutofillProfileEnabled(true);
+    personal_data_manager_.SetAutofillPaymentMethodsEnabled(true);
   }
 
   void TearDown() override { [mediator_ disconnect]; }
 
   // Create a mediator.
   void CreateMediator() {
-    web_state_list_->InsertWebState(0, std::move(test_web_state_),
-                                    WebStateList::INSERT_ACTIVATE,
-                                    WebStateOpener());
+    web_state_list_->InsertWebState(
+        std::move(test_web_state_),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     mediator_ = [[PaymentsSuggestionBottomSheetMediator alloc]
         initWithWebStateList:web_state_list_.get()
                       params:autofill::FormActivityParams()
-         personalDataManager:personal_data_manager_.get()];
+         personalDataManager:&personal_data_manager_];
   }
 
   // Add credit card to personal data manager.
@@ -83,20 +64,14 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
       int64_t instrument_id = 0,
       autofill::CreditCard::RecordType record_type =
           autofill::CreditCard::RecordType::kMaskedServerCard) {
-    autofill::CreditCard card = autofill::CreditCard();
+    autofill::CreditCard card;
     autofill::test::SetCreditCardInfo(&card, "Jane Doe", number.c_str(),
                                       autofill::test::NextMonth().c_str(),
                                       autofill::test::NextYear().c_str(), "1");
     card.set_guid(guid);
     card.set_instrument_id(instrument_id);
     card.set_record_type(record_type);
-
-    std::unique_ptr<autofill::CreditCard> server_credit_card =
-        std::make_unique<autofill::CreditCard>(card);
-    personal_data_manager_->server_credit_cards_.push_back(
-        std::move(server_credit_card));
-    personal_data_manager_->NotifyPersonalDataObserver();
-
+    personal_data_manager_.AddServerCreditCard(card);
     return card;
   }
 
@@ -105,7 +80,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   void CreateMediatorWithSuggestions() {
     CreateMediator();
     CreateCreditCard(kTestGuid);
-    personal_data_manager_->SetSyncingForTest(true);
+    personal_data_manager_.SetSyncingForTest(true);
   }
 
   // Create a mediator and make sure the personal data manager contains at least
@@ -114,17 +89,15 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
     CreateMediator();
     CreateCreditCard(kTestGuid, kTestNumber, 0,
                      autofill::CreditCard::RecordType::kLocalCard);
-    personal_data_manager_->SetSyncingForTest(true);
+    personal_data_manager_.SetSyncingForTest(true);
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  syncer::TestSyncService sync_service_;
   id consumer_;
-  std::unique_ptr<autofill::PersonalDataManager> personal_data_manager_;
+  autofill::TestPersonalDataManager personal_data_manager_;
   PaymentsSuggestionBottomSheetMediator* mediator_;
 };
 

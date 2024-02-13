@@ -54,7 +54,7 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
   const Length& GetFallback() const { return fallback_; }
 
   // Implement |CalculationExpressionNode|:
-  float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;
+  float Evaluate(float max_value, const Length::EvaluationInput&) const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   scoped_refptr<const CalculationExpressionNode> Zoom(
       double factor) const final;
@@ -84,9 +84,6 @@ class CORE_EXPORT CalculationExpressionAnchorQueryNode final
         side_percentage_(side_percentage),
         fallback_(fallback) {
     has_anchor_queries_ = true;
-    has_auto_anchor_positioning_ = type == CSSAnchorQueryType::kAnchor &&
-                                   (AnchorSide() == CSSAnchorValue::kAuto ||
-                                    AnchorSide() == CSSAnchorValue::kAutoSame);
   }
 
  private:

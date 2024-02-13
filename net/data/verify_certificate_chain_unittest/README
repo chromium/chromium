@@ -72,14 +72,6 @@ Additionally, it is possible to add python-style comments by starting a line
 with "#".
 
 ===============================
-pkits_errors/*.txt
-===============================
-
-These files contain the expected errors for PKITS tests
-(third_party/nist-pkits). The file name correspond so the PKITS tests number.
-They are baselined specifically for VerifyCertificateChain().
-
-===============================
 generate-all.sh
 ===============================
 

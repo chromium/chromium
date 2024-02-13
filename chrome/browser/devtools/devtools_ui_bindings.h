@@ -190,6 +190,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                                   double duration) override;
   void RecordUserMetricsAction(const std::string& name) override;
   void RecordImpression(const ImpressionEvent& event) override;
+  void RecordResize(const ResizeEvent& event) override;
   void RecordClick(const ClickEvent& event) override;
   void RecordHover(const HoverEvent& event) override;
   void RecordDrag(const DragEvent& event) override;

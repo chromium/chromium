@@ -24,6 +24,8 @@ enum Feature {
   // Extends the emoji picker with global variant grouping by syncing skin tone
   // and gender preferences between emojis.
   EMOJI_PICKER_VARIANT_GROUPING_SUPPORT = 5,
+  // Use Mojo for search
+  EMOJI_PICKER_MOJO_SEARCH = 6,
 };
 
 // The below structs are used to represent the Response format from the Tenor

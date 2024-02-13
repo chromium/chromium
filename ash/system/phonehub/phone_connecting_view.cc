@@ -45,7 +45,7 @@ phone_hub_metrics::Screen PhoneConnectingView::GetScreenForMetrics() const {
   return Screen::kPhoneConnecting;
 }
 
-BEGIN_METADATA(PhoneConnectingView, views::View)
+BEGIN_METADATA(PhoneConnectingView)
 END_METADATA
 
 }  // namespace ash

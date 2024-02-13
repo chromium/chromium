@@ -71,6 +71,8 @@ std::optional<AtomicString> PreferenceObject::override(
         return std::make_optional(AtomicString("more"));
       case mojom::PreferredContrast::kLess:
         return std::make_optional(AtomicString("less"));
+      case mojom::PreferredContrast::kNoPreference:
+        return std::make_optional(AtomicString("no-preference"));
       default:
         NOTREACHED();
         return std::nullopt;
@@ -81,7 +83,7 @@ std::optional<AtomicString> PreferenceObject::override(
       return std::nullopt;
     }
 
-    return std::make_optional(AtomicString("reduce"));
+    return std::make_optional(AtomicString(reduced_motion.value() ? "reduce" : "no-preference"));
   } else if (name_ == "reducedTransparency") {
     std::optional<bool> reduced_transparency =
         overrides->GetPrefersReducedTransparency();
@@ -89,14 +91,14 @@ std::optional<AtomicString> PreferenceObject::override(
       return std::nullopt;
     }
 
-    return std::make_optional(AtomicString("reduce"));
+    return std::make_optional(AtomicString(reduced_transparency.value() ? "reduce" : "no-preference"));
   } else if (name_ == "reducedData") {
     std::optional<bool> reduced_data = overrides->GetPrefersReducedData();
     if (!reduced_data.has_value()) {
       return std::nullopt;
     }
 
-    return std::make_optional(AtomicString("reduce"));
+    return std::make_optional(AtomicString(reduced_data.value() ? "reduce" : "no-preference"));
   } else {
     NOTREACHED();
     return std::nullopt;
@@ -213,24 +215,32 @@ ScriptPromise PreferenceObject::requestOverride(
       newValue = "more";
     } else if (value == "less") {
       newValue = "less";
+    } else if (value == "no-preference") {
+      newValue = "no-preference";
     }
   } else if (name_ == "reducedMotion") {
     featureName = AtomicString("prefers-reduced-motion");
 
     if (value == "reduce") {
       newValue = "reduce";
+    } else if (value == "no-preference") {
+      newValue = "no-preference";
     }
   } else if (name_ == "reducedTransparency") {
     featureName = AtomicString("prefers-reduced-transparency");
 
     if (value == "reduce") {
       newValue = "reduce";
+    } else if (value == "no-preference") {
+      newValue = "no-preference";
     }
   } else if (name_ == "reducedData") {
     featureName = AtomicString("prefers-reduced-data");
 
     if (value == "reduce") {
       newValue = "reduce";
+    } else if (value == "no-preference") {
+      newValue = "no-preference";
     }
   } else {
     NOTREACHED();
@@ -261,12 +271,16 @@ const FrozenArray<IDLString>& PreferenceObject::validValues() {
   } else if (name_ == "contrast") {
     valid_values.push_back("more");
     valid_values.push_back("less");
+    valid_values.push_back("no-preference");
   } else if (name_ == "reducedMotion") {
     valid_values.push_back("reduce");
+    valid_values.push_back("no-preference");
   } else if (name_ == "reducedTransparency") {
     valid_values.push_back("reduce");
+    valid_values.push_back("no-preference");
   } else if (name_ == "reducedData") {
     valid_values.push_back("reduce");
+    valid_values.push_back("no-preference");
   } else {
     NOTREACHED();
   }

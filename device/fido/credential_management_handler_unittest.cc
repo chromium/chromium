@@ -62,8 +62,8 @@ class CredentialManagementHandlerTest : public ::testing::Test {
   test::TestCallbackReceiver<> ready_callback_;
   test::StatusAndValuesCallbackReceiver<
       CtapDeviceResponseCode,
-      absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>,
-      absl::optional<size_t>>
+      std::optional<std::vector<AggregatedEnumerateCredentialsResponse>>,
+      std::optional<size_t>>
       get_credentials_callback_;
   test::ValueCallbackReceiver<CtapDeviceResponseCode> delete_callback_;
   test::ValueCallbackReceiver<CtapDeviceResponseCode>

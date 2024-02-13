@@ -13,12 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -66,11 +66,7 @@ public class EdgeToEdgeControllerFactory {
         return isEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
                 && !BuildInfo.getInstance().isAutomotive
-                && WindowInsetsCompat.toWindowInsetsCompat(
-                                        activity.getWindow().getDecorView().getRootWindowInsets())
-                                .getInsets(WindowInsetsCompat.Type.tappableElement())
-                                .bottom
-                        == 0
+                && UiUtils.isGestureNavigationMode(activity.getWindow())
                 && !sHas3ButtonNavBarForTesting;
     }
 

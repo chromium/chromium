@@ -18,11 +18,16 @@ const char kGoogleOfficialPrefix2[] = "com.google.android";
 
 bool CanLaunchGhostWindowByRestoreData(
     const app_restore::AppRestoreData& restore_data) {
+  const app_restore::WindowInfo& window_info = restore_data.window_info;
   const bool not_need_bounds =
-      restore_data.window_state_type == chromeos::WindowStateType::kMaximized ||
-      restore_data.window_state_type == chromeos::WindowStateType::kFullscreen;
-  return not_need_bounds || restore_data.bounds_in_root.has_value() ||
-         restore_data.current_bounds.has_value();
+      window_info.window_state_type == chromeos::WindowStateType::kMaximized ||
+      window_info.window_state_type == chromeos::WindowStateType::kFullscreen;
+  if (not_need_bounds || window_info.current_bounds.has_value()) {
+    return true;
+  }
+
+  return window_info.arc_extra_info &&
+         window_info.arc_extra_info->bounds_in_root.has_value();
 }
 
 bool IsGoogleSeriesPackage(const std::string& package_name) {

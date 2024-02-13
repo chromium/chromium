@@ -523,6 +523,11 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kMagicStackName[];
 extern const char kMagicStackDescription[];
 
+// Title and Description for the flag that controls the view mode for (history)
+// sync screen.
+extern const char kMinorModeRestrictionsForHistorySyncOptInName[];
+extern const char kMinorModeRestrictionsForHistorySyncOptInDescription[];
+
 // Title and description for the flag that controls sending metrickit non-crash
 // reports.
 extern const char kMetrickitNonCrashReportName[];
@@ -641,6 +646,10 @@ extern const char kOmniboxPopulateShortcutsDatabaseDescription[];
 // Title and description for using content configuration in omnibox popup row.
 extern const char kOmniboxPopupRowContentConfigurationName[];
 extern const char kOmniboxPopupRowContentConfigurationDescription[];
+
+// Title and description for omnibox rich inline autocompletion.
+extern const char kOmniboxRichAutocompletionName[];
+extern const char kOmniboxRichAutocompletionDescription[];
 
 // Title and description for improved RTL layout of suggestions.
 extern const char kOmniboxSuggestionsRTLImprovementsName[];

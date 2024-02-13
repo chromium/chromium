@@ -140,10 +140,10 @@ found in the LICENSE file.
         class="arrow-button" on-click="movePrev"></cr-icon-button>
     <div id="dotsContainer" role="radiogroup">
       <template is="dom-repeat" items="[[dots]]">
-        <span class="slider-dot" tabindex="0" on-keypress="onKeypress_"
-            on-click="onClick_" active$="[[isActive_(index, slideIndex)]]"
-            aria-label="[[getDotLabel_(index, slideIndex)]]" aria-live="off"
-            aria-checked="[[isActive_(index, slideIndex)]]"
+        <span class="slider-dot" tabindex="0" on-keypress="onKeypress"
+            on-click="onClick" active$="[[isActive(index, slideIndex)]]"
+            aria-label="[[getDotLabel(index, slideIndex)]]" aria-live="off"
+            aria-checked="[[isActive(index, slideIndex)]]"
             role="radio"></span>
       </template>
     </div>

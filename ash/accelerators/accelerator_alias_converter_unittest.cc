@@ -54,6 +54,17 @@ struct TopRowAcceleratorAliasConverterTestData {
   std::vector<ui::Accelerator> expected_accelerators_;
 };
 
+struct ActionKeyAliasConverterTestData {
+  // All currently connected keyboards' connection type, e.g.
+  // INPUT_DEVICE_INTERNAL.
+  std::vector<ui::InputDeviceType> keyboard_connection_type_;
+  // All currently connected keyboards' layout types.
+  std::vector<std::string> keyboard_layout_types_;
+  std::vector<bool> top_row_are_fkeys_;
+  ui::Accelerator accelerator_;
+  std::vector<ui::Accelerator> expected_accelerators_;
+};
+
 class FakeDeviceManager {
  public:
   FakeDeviceManager() = default;
@@ -383,9 +394,10 @@ TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
                                             ui::EF_NONE};
   std::vector<ui::Accelerator> accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(refresh_accelerator);
-  ASSERT_EQ(1u, accelerator_aliases.size());
+  ASSERT_EQ(2u, accelerator_aliases.size());
   EXPECT_EQ(ui::Accelerator(ui::VKEY_F3, ui::EF_COMMAND_DOWN),
             accelerator_aliases[0]);
+  EXPECT_EQ(refresh_accelerator, accelerator_aliases[1]);
 
   settings.suppress_meta_fkey_rewrites = true;
   Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
@@ -393,7 +405,8 @@ TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
 
   accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(refresh_accelerator);
-  ASSERT_EQ(0u, accelerator_aliases.size());
+  ASSERT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(refresh_accelerator, accelerator_aliases[0]);
 
   ui::KeyboardDevice fake_internal_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
@@ -410,9 +423,10 @@ TEST_F(AcceleratorAliasConverterTest, MetaFKeyRewritesSuppressed) {
 
   accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(refresh_accelerator);
-  ASSERT_EQ(1u, accelerator_aliases.size());
+  ASSERT_EQ(2u, accelerator_aliases.size());
+  EXPECT_EQ(refresh_accelerator, accelerator_aliases[0]);
   EXPECT_EQ(ui::Accelerator(ui::VKEY_BROWSER_REFRESH, ui::EF_COMMAND_DOWN),
-            accelerator_aliases[0]);
+            accelerator_aliases[1]);
 }
 
 class TopRowAliasTest : public AcceleratorAliasConverterTest,
@@ -465,7 +479,8 @@ INSTANTIATE_TEST_SUITE_P(
         {{ui::InputDeviceType::INPUT_DEVICE_USB},
          {kKbdTopRowLayoutUnspecified},
          ui::Accelerator{ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN},
-         {ui::Accelerator{ui::VKEY_F1, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+         {ui::Accelerator{ui::VKEY_F1, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          ui::Accelerator{ui::VKEY_BROWSER_BACK, ui::EF_ALT_DOWN}}},
 
         // For internal keyboard only, we shows icon + meta.
         {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
@@ -536,13 +551,15 @@ INSTANTIATE_TEST_SUITE_P(
         {{ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH},
          {kKbdTopRowLayoutUnspecified},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN},
-         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_ALT_DOWN}}},
 
         // For TopRowLayout1: [Alt] + [Zoom] -> [Alt] + [Search] + [F4].
         {{ui::InputDeviceType::INPUT_DEVICE_USB},
          {kKbdTopRowLayoutUnspecified},
          ui::Accelerator{ui::VKEY_ZOOM, ui::EF_ALT_DOWN},
-         {ui::Accelerator{ui::VKEY_F4, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+         {ui::Accelerator{ui::VKEY_F4, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN},
+          {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_ALT_DOWN}}}},
 
         // For TopRowLayout2: [Alt] + [Shift] + [Back] -> [Alt] + [Shift] +
         // [Search] + [Back].
@@ -611,7 +628,8 @@ INSTANTIATE_TEST_SUITE_P(
          {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE},
          {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN},
-          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_COMMAND_DOWN}}},
+          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_COMMAND_DOWN},
+          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE}}},
 
         // Since the external keyboard uses Layout1 by default, it should map to
         // F2, even if the most recently connected keyboard (which is internal)
@@ -620,7 +638,8 @@ INSTANTIATE_TEST_SUITE_P(
           ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
          {kKbdTopRowLayoutUnspecified, kKbdTopRowLayout2Tag},
          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE},
-         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN}}},
+         {ui::Accelerator{ui::VKEY_F2, ui::EF_COMMAND_DOWN},
+          ui::Accelerator{ui::VKEY_BROWSER_FORWARD, ui::EF_NONE}}},
     }));
 
 TEST_P(TopRowAliasTest, CheckTopRowAlias) {
@@ -1395,6 +1414,113 @@ TEST_F(ExtendedFKeysAliasTest, ExtendedFKeysAliasInternalAndExternalKb) {
   EXPECT_EQ(2u, accelerator_alias.size());
   EXPECT_EQ(accelerator, accelerator_alias[0]);
   EXPECT_EQ(expected_accelerator, accelerator_alias[1]);
+}
+
+class ActionKeyboardVariantsTest
+    : public AcceleratorAliasConverterTest,
+      public testing::WithParamInterface<ActionKeyAliasConverterTestData> {
+ public:
+  void SetUp() override {
+    AcceleratorAliasConverterTest::SetUp();
+    ActionKeyAliasConverterTestData test_data = GetParam();
+    keyboard_connection_type_ = test_data.keyboard_connection_type_;
+    keyboard_layout_types_ = test_data.keyboard_layout_types_;
+    top_row_are_fkeys_ = test_data.top_row_are_fkeys_;
+    accelerator_ = test_data.accelerator_;
+    expected_accelerators_ = test_data.expected_accelerators_;
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
+  }
+
+ protected:
+  std::vector<ui::InputDeviceType> keyboard_connection_type_;
+  std::vector<std::string> keyboard_layout_types_;
+  std::vector<bool> top_row_are_fkeys_;
+  ui::Accelerator accelerator_;
+  std::vector<ui::Accelerator> expected_accelerators_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    // Empty to simplify gtest output
+    ,
+    ActionKeyboardVariantsTest,
+    testing::ValuesIn(std::vector<ActionKeyAliasConverterTestData>{
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
+         {kKbdTopRowLayout1Tag},
+         {/*treat_top_row_as_fkeys=*/false},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE}}},
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL},
+         {kKbdTopRowLayout1Tag},
+         {/*treat_top_row_as_fkeys=*/true},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_COMMAND_DOWN}}},
+        {{ui::InputDeviceType::INPUT_DEVICE_USB},
+         {kKbdTopRowLayoutUnspecified},
+         {/*treat_top_row_as_fkeys=*/false},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+          ui::Accelerator{ui::VKEY_F3, ui::EF_NONE}}},
+        {{ui::InputDeviceType::INPUT_DEVICE_USB},
+         {kKbdTopRowLayoutUnspecified},
+         {/*treat_top_row_as_fkeys=*/true},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+          ui::Accelerator{ui::VKEY_F3, ui::EF_COMMAND_DOWN}}},
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL, ui::INPUT_DEVICE_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified},
+         {/*treat_top_row_as_fkeys=*/false, /*treat_top_row_as_fkeys=*/false},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+          ui::Accelerator{ui::VKEY_F3, ui::EF_NONE}}},
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL, ui::INPUT_DEVICE_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified},
+         {/*treat_top_row_as_fkeys=*/false, /*treat_top_row_as_fkeys=*/true},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+          ui::Accelerator{ui::VKEY_F3, ui::EF_COMMAND_DOWN}}},
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL, ui::INPUT_DEVICE_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified},
+         {/*treat_top_row_as_fkeys=*/true, /*treat_top_row_as_fkeys=*/false},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_F3, ui::EF_NONE},
+          ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+          ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_COMMAND_DOWN}}},
+        {{ui::InputDeviceType::INPUT_DEVICE_INTERNAL, ui::INPUT_DEVICE_USB},
+         {kKbdTopRowLayout1Tag, kKbdTopRowLayoutUnspecified},
+         {/*treat_top_row_as_fkeys=*/true, /*treat_top_row_as_fkeys=*/true},
+         ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+         {ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_NONE},
+          ui::Accelerator{ui::VKEY_BROWSER_REFRESH, ui::EF_COMMAND_DOWN},
+          ui::Accelerator{ui::VKEY_F3, ui::EF_COMMAND_DOWN}}},
+    }));
+
+TEST_P(ActionKeyboardVariantsTest, CheckTopRowAlias) {
+  // Add fake keyboards based on layout type.
+  fake_keyboard_manager_->RemoveAllDevices();
+  for (int i = 0; const std::string& layout : keyboard_layout_types_) {
+    ui::KeyboardDevice fake_keyboard(
+        /*id=*/i, /*type=*/keyboard_connection_type_[i],
+        /*name=*/layout);
+    fake_keyboard.sys_path = base::FilePath("path" + layout);
+    fake_keyboard.vendor_id = i;
+    fake_keyboard.product_id = i;
+    fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, layout);
+    SetTopRowAsFKeysForKeyboard(fake_keyboard, top_row_are_fkeys_[i]);
+    i++;
+  }
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  std::vector<ui::Accelerator> accelerator_alias =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator_);
+  base::ranges::sort(accelerator_alias);
+  base::ranges::sort(expected_accelerators_);
+
+  ASSERT_EQ(expected_accelerators_.size(), accelerator_alias.size());
+  for (size_t i = 0; i < expected_accelerators_.size(); i++) {
+    EXPECT_EQ(expected_accelerators_[i], accelerator_alias[i]);
+  }
 }
 
 }  // namespace ash

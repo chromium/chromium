@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsSiteSettingsPageElement} from 'chrome://settings/lazy_load.js';
+import type {CrExpandButtonElement, SettingsSiteSettingsPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {Router, routes} from 'chrome://settings/settings.js';
@@ -176,20 +176,26 @@ suite('SiteSettingsPage', function() {
         notificationsLinkRow.subLabel);
   });
 
-  test('ProtectedContentRow', function() {
+  test('ProtectedContentRow', async function() {
     setupPage();
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
-    flush();
+    const expandButton =
+        page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
     assertTrue(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!,
         '#protected-content'));
   });
 
   // TODO(crbug/1378703): Remove after crbug/1378703 launched.
-  test('SiteDataLinkRow', function() {
+  test('SiteDataLinkRow', async function() {
     setupPage();
-    page.shadowRoot!.querySelector<HTMLElement>('#expandContent')!.click();
-    flush();
+    const expandButton =
+        page.shadowRoot!.querySelector<CrExpandButtonElement>('#expandContent');
+    assertTrue(!!expandButton);
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertTrue(isChildVisible(
         page.shadowRoot!.querySelector('#advancedContentList')!, '#site-data'));

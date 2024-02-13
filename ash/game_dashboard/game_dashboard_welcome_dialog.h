@@ -15,9 +15,9 @@ namespace ash {
 // when first opening any game. It can be disabled via the Game Dashboard
 // Settings.
 class ASH_EXPORT GameDashboardWelcomeDialog : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(GameDashboardWelcomeDialog);
+  METADATA_HEADER(GameDashboardWelcomeDialog, views::FlexLayoutView)
 
+ public:
   GameDashboardWelcomeDialog();
   GameDashboardWelcomeDialog(const GameDashboardWelcomeDialog&) = delete;
   GameDashboardWelcomeDialog& operator=(const GameDashboardWelcomeDialog) =

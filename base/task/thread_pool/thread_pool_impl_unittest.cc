@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <atomic>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -24,9 +23,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_job.h"
 #include "base/task/task_features.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/environment_config.h"
@@ -294,7 +291,6 @@ class ThreadPoolImplTestBase : public testing::Test {
   ThreadPoolImplTestBase& operator=(const ThreadPoolImplTestBase&) = delete;
 
   virtual bool GetUseResourceEfficientThreadGroup() const = 0;
-  virtual bool GetUseNewJobImplementation() const = 0;
 
   void set_worker_thread_observer(
       std::unique_ptr<WorkerThreadObserver> worker_thread_observer) {
@@ -331,22 +327,15 @@ class ThreadPoolImplTestBase : public testing::Test {
 
  private:
   void SetupFeatures() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> features;
 
     if (GetUseResourceEfficientThreadGroup()) {
-      enabled_features.push_back(kUseUtilityThreadGroup);
-    } else {
-      disabled_features.push_back(kUseUtilityThreadGroup);
+      features.push_back(kUseUtilityThreadGroup);
     }
 
-    if (GetUseNewJobImplementation()) {
-      enabled_features.push_back(kUseNewJobImplementation);
-    } else {
-      disabled_features.push_back(kUseNewJobImplementation);
+    if (!features.empty()) {
+      feature_list_.InitWithFeatures(features, {});
     }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -354,17 +343,13 @@ class ThreadPoolImplTestBase : public testing::Test {
   bool did_tear_down_ = false;
 };
 
-class ThreadPoolImplTest
-    : public ThreadPoolImplTestBase,
-      public testing::WithParamInterface<
-          std::pair<bool, /* use_resource_efficient_thread_group */
-                    bool /* use_new_job_implementation */>> {
+class ThreadPoolImplTest : public ThreadPoolImplTestBase,
+                           public testing::WithParamInterface<
+                               bool /* use_resource_efficient_thread_group */> {
  public:
   bool GetUseResourceEfficientThreadGroup() const override {
-    return GetParam().first;
+    return GetParam();
   }
-
-  bool GetUseNewJobImplementation() const override { return GetParam().second; }
 };
 
 // Tests run for enough traits and execution mode combinations to cover all
@@ -385,7 +370,6 @@ class ThreadPoolImplTest_CoverAllSchedulingOptions
   bool GetUseResourceEfficientThreadGroup() const override {
     return std::get<0>(GetParam());
   }
-  bool GetUseNewJobImplementation() const override { return true; }
   TaskTraits GetTraits() const { return std::get<1>(GetParam()).traits; }
   TaskSourceExecutionMode GetExecutionMode() const {
     return std::get<1>(GetParam()).execution_mode;
@@ -1320,8 +1304,8 @@ TEST_P(ThreadPoolImplTest, WorkerThreadObserver) {
   observer->WaitCallsOnMainExit();
 }
 
-// Verify that a basic NotifyConcurrencyIncrease() runs the worker task.
-TEST_P(ThreadPoolImplTest, BasicJob) {
+// Verify a basic EnqueueJobTaskSource() runs the worker task.
+TEST_P(ThreadPoolImplTest, ScheduleJobTaskSource) {
   StartThreadPool();
 
   TestWaitableEvent threads_running;
@@ -1332,72 +1316,9 @@ TEST_P(ThreadPoolImplTest, BasicJob) {
       /* num_tasks_to_run */ 1);
   scoped_refptr<JobTaskSource> task_source =
       job_task->GetJobTaskSource(FROM_HERE, {}, thread_pool_.get());
-  task_source->NotifyConcurrencyIncrease();
 
+  thread_pool_->EnqueueJobTaskSource(task_source);
   threads_running.Wait();
-}
-
-// Verify that max concurrency is eventually reached, but not exceeded, when
-// concurrency is increased from many workers.
-TEST_P(ThreadPoolImplTest, ParallelJob) {
-  constexpr size_t kTargetMaxConcurrency = 14;
-  constexpr size_t kLargeThreadPoolSize = 15;
-  StartThreadPool(/* max_num_foreground_threads=*/kLargeThreadPoolSize,
-                  kLargeThreadPoolSize);
-
-  // This test times out with the old job implementation.
-  // Note: Exit after starting the Thread Pool since TearDown() expects the
-  // ThreadPool to be started.
-  if (!GetUseNewJobImplementation()) {
-    return;
-  }
-
-  std::atomic_size_t max_concurrency = 2;
-  std::atomic_size_t num_workers = 0;
-
-  auto worker_task = BindLambdaForTesting([&](JobDelegate* delegate) {
-    // Increase max concurrency if target is not reached.
-    size_t current_max_concurrency =
-        max_concurrency.load(std::memory_order_relaxed);
-    while (current_max_concurrency < kTargetMaxConcurrency) {
-      if (max_concurrency.compare_exchange_weak(current_max_concurrency,
-                                                current_max_concurrency + 1,
-                                                std::memory_order_relaxed)) {
-        delegate->NotifyConcurrencyIncrease();
-        break;
-      }
-    }
-
-    // Increase number of workers and verify that target max concurrency is not
-    // exceeded.
-    size_t current_num_workers =
-        num_workers.fetch_add(1, std::memory_order_relaxed);
-    EXPECT_LT(current_num_workers, kTargetMaxConcurrency);
-
-    // Busy wait until the target number of workers is reached.
-    while (num_workers.load(std::memory_order_relaxed) <
-           kTargetMaxConcurrency) {
-    }
-
-    // Sleep to detect if too many workers run the worker task.
-    PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-
-    // Force the job to exit by setting max concurrency to 0.
-    max_concurrency.store(0, std::memory_order_relaxed);
-  });
-
-  auto max_concurrency_callback =
-      BindLambdaForTesting([&](size_t worker_count) {
-        return max_concurrency.load(std::memory_order_relaxed);
-      });
-
-  auto task_source = internal::CreateJobTaskSource(
-      FROM_HERE, TaskTraits(), worker_task, max_concurrency_callback,
-      thread_pool_.get());
-  task_source->NotifyConcurrencyIncrease();
-  thread_pool_->FlushForTesting();
-
-  EXPECT_EQ(num_workers, kTargetMaxConcurrency);
 }
 
 // Verify that calling ShouldYield() returns true for a job task source that
@@ -1423,8 +1344,8 @@ TEST_P(ThreadPoolImplTest, ThreadGroupChangeShouldYield) {
       /* num_tasks_to_run */ 1);
   scoped_refptr<JobTaskSource> task_source = job_task->GetJobTaskSource(
       FROM_HERE, {TaskPriority::USER_VISIBLE}, thread_pool_.get());
-  task_source->NotifyConcurrencyIncrease();
 
+  thread_pool_->EnqueueJobTaskSource(task_source);
   threads_running.Wait();
   thread_pool_->UpdatePriority(task_source, TaskPriority::BEST_EFFORT);
   threads_continue.Signal();
@@ -1691,20 +1612,7 @@ TEST_P(ThreadPoolImplTest, UpdatePriorityFromBestEffortNoThreadPolicy) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ThreadPoolImplTest,
-    ::testing::Values(
-        // Param 1: Use resource efficient thread group.
-        // Param 2: Use new job implementation.
-        std::make_pair(true, false),
-        std::make_pair(false, false),
-        std::make_pair(false, true)),
-    [](const testing::TestParamInfo<std::pair<bool, bool>>& info) {
-      return base::StrCat(
-          {info.param.first ? "EfficientThreadGroup" : "NoEfficientThreadGroup",
-           info.param.second ? "NewJob" : "OldJob"});
-    });
+INSTANTIATE_TEST_SUITE_P(All, ThreadPoolImplTest, ::testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(
     All,

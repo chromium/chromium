@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">සුරක්ෂිත නැත</translation>
 <translation id="1075079914415273530">කෘෂිකර්මය සහ වනසම්පත්</translation>
 <translation id="1075364221219156102">මුරයතුරක් භාවිතා කරන්න</translation>
-<translation id="1078033282564106222">ගොඩනැගිලි අංක විකල්පය තෝරා ඇත</translation>
 <translation id="1080116354587839789">පළලට ගැළපෙන</translation>
 <translation id="1081061862829655580">Tray 19</translation>
 <translation id="1082026381988252344">ඔබේ බෙදා ගත් පටිත්තෙහි අන්තර්ගතය අනුචලනය කර විශාලනය කරන්න</translation>
@@ -172,6 +171,7 @@
 <translation id="1296930489679394997">විකුණුම්</translation>
 <translation id="1301227606947843452">නීතිමය අමතර</translation>
 <translation id="1301324364792935241">ඔබේ සුරක්‍ෂිත DNS සැකසුම් පරීක්‍ෂා කරන්න</translation>
+<translation id="1302418742166945866"><ph name="URL" /> හට ඔබේ MIDI උපාංග පාලන කිරීමට සහ නැවත ක්‍රමලේඛන කිරීමට අවශ්‍යයි</translation>
 <translation id="1307966114820526988">අත් හරින ලද විශේෂාංග</translation>
 <translation id="1308113895091915999">දීමනාවක් තිබේ</translation>
 <translation id="1309375166585231290">ඔබේ මාපියන් තවමත් එය හොඳින් කියා නැත</translation>
@@ -247,6 +247,7 @@
 <translation id="1428729058023778569">මෙම අඩවිය HTTPS සඳහා සහය නොදක්වන බැවින් ‍ඔබ මෙම අනතුරු ඇඟවීම දකියි. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ස්වයං ආසක්ත චිත්‍රපටය</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
+<translation id="1431021750861456539">ස්වයංක්‍රීය පූර්ණ තිරය</translation>
 <translation id="1432187715652018471">පිටුවට සේවා හසුරුවන්නෙක් ස්ථාපනය කිරීමට අවශ්‍යයි.</translation>
 <translation id="1432581352905426595">සෙවීම් යාන්ත්‍රණ කළමණාකරණය කරන්න</translation>
 <translation id="1433225466058025572">ඔබේ ගොනු නැවත ගෙන යාමට උත්සාහ කරන්න</translation>
@@ -574,6 +575,7 @@
 <translation id="2056658168519009885">ඔබ දකින දැන්වීම් පෞද්ගලීකරණය කිරීමට උදවු කිරීමට අඩවිවලට තොරතුරු සඳහා Chrome වෙතින් විමසිය හැක.</translation>
 <translation id="2059166748188874810">නගර සභාව</translation>
 <translation id="2059202684901022309">අඟ 22 x 34</translation>
+<translation id="2062723461792528824">නියම යෙදෙයි</translation>
 <translation id="2064568741209980952">හර සහ ණයට දීම</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{යෝජනා 1}one{යෝජනා #}other{යෝජනා #}}</translation>
 <translation id="2066915425250589881">මැකීමට ඉල්ලීම</translation>
@@ -586,6 +588,7 @@
 <translation id="2075497153347571252">ඔබේ පරිපාලක <ph name="ORIGIN" /> මත <ph name="PERMISSION" /> අවහිර කර ඇත</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2080021694978766903">මෙම ප්‍රතිපත්තියට <ph name="MAX_ITEMS_LIMIT" />කට වඩා වැඩි ඇතුළත් කිරීම් නොතිබිය යුතු ය.</translation>
+<translation id="2081482239432306393">නිවාස අංක විකල්පය තෝරා ඇත</translation>
 <translation id="20817612488360358">පද්ධති ප්‍රොක්සි පසුතල සකසා ඇත්තේ භාවිතා කිරීමට වන නමුත් සවිස්තර ප්‍රොක්සි වින්‍යාසකරණයද නිශ්චිතව දක්වා තිබේ.</translation>
 <translation id="2082238445998314030">ප්‍රතිඵල <ph name="TOTAL_RESULTS" /> කින් <ph name="RESULT_NUMBER" /></translation>
 <translation id="2083256696566019397">සෑම පැමිණීමකම ඉඩ දෙන්න</translation>
@@ -613,7 +616,6 @@
 <translation id="2126374524350484896">PDF නිෂ්පාදක:</translation>
 <translation id="2130448033692577677">ඔබ සඳහන් කර ඇති අච්චු DnsOverHttpsMode ප්‍රතිපත්තිය නොසැකසීම හේතුවෙන් නොයෙදිය හැක.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> භාෂා ඇසුරුම බාගනිමින්...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">පිරිමි ඇඳුම්</translation>
 <translation id="2137891579555018930">අවසරය සඳහා රැඳෙමින්...</translation>
 <translation id="213826338245044447">ජංගම පොත්සලකුණු</translation>
@@ -1292,6 +1294,7 @@
 <translation id="3515972145999192222">එය ප්‍රතිපත්තියක් උල්ලංඝනය කරන නිසා ඔබේ සංවිධානය <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> අවහිර කර ඇත. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">බහුවිධ වස්තු පරිහරණය</translation>
 <translation id="3525130752944427905">අඟ 10 x 14</translation>
+<translation id="3525435918300186947">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන් කරන්න ද?</translation>
 <translation id="3528171143076753409">සේවාදායකයේ සහතිකය තහවුරු කළ නොහැක.</translation>
 <translation id="3528485271872257980">තද දුඹුරු</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{සමමුහුර්ත කරන ලද උපාංග මත අඩු තරමින් අයිතම 1ක්}=1{අයිතම 1ක් (සහ සමමුහුර්ත කරන ලද උපාංග මත තවත්)}one{අයිතම #ක් (සහ සමමුහුර්ත කරන ලද උපාංග මත තවත්)}other{අයිතම #ක් (සහ සමමුහුර්ත කරන ලද උපාංග මත තවත්)}}</translation>
@@ -1387,7 +1390,6 @@
 <translation id="3681007416295224113">සහතික තොරතුරු</translation>
 <translation id="3681421644246505351">Chrome ඔබේ මෑත බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව උනන්දුවක් දක්වන මාතෘකා සටහන් කරයි.</translation>
 <translation id="3682094733650754138">ලිපින පිරවුම් විකල්පය තෝරා ඇත</translation>
-<translation id="3689867156802445220">ගොඩනැගිලි අංකය</translation>
 <translation id="3693327506115126094">ඔබ ඒ ඔබ බව සත්‍යාපනය කරන ආකාරය තෝරා ගන්න</translation>
 <translation id="3698629142018988477">අඩවි තනන්න බොත්තම, Google අඩවි තුළ ඉක්මනින් නව අඩවියක් තැනීමට සක්‍රිය කරන්න</translation>
 <translation id="3701325639446035885">සිදුවීම් ප්‍රවේශපත් විකුණුම්</translation>
@@ -1412,6 +1414,7 @@
 <translation id="3723663469265383848">යාවත්කාලීන කිරීමේ දී ඔබට විනාඩි 10ක් දක්වා ඔබේ උපාංගය භාවිතා කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="372429172604983730">මෙම දෝෂයට හේතු වන යෙදුම්වල ප්‍රති-වයිරස, ෆයර්වෝල් සහ වෙබ්-පෙරහන් හෝ ප්‍රොක්සි මෘදුකාංග ඇතුළත් වේ.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides තුළ ඉක්මනින් නව Google ඉදිරිපත් කිරීමක් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
+<translation id="3727309136762649052">නාම අවකාශය</translation>
 <translation id="3727850735097852673">macOS Keychain සමග Google මුරපද කළමනාකරු භාවිත කිරීමට, Chrome යළි දියත් කර Keychain ප්‍රවේශයට ඉඩ දෙන්න. ඔබේ පටිත්ත යළි දියත් කිරීමෙන් පසු නැවත විවෘත වෙයි.</translation>
 <translation id="3733139489341305600">ස්වයංක්‍රීය වාහන</translation>
 <translation id="3736520371357197498">ඔබට ඔබගේ ආරක්ෂාව සඳහා වන අවදානම් වැටහෙන්නේ නම්, ඔබ හානිකර ක්‍රමලේඛ ඉවත් කර තිබීමට පෙර <ph name="BEGIN_LINK" />මෙම අනාරක්ෂාකාරී වෙබ් අඩවිය වෙත පිවිසිය හැක<ph name="END_LINK" /></translation>
@@ -1576,6 +1579,7 @@
 <translation id="4089152113577680600">Tray 14</translation>
 <translation id="4092349052316400070">ලිපිනය පුරවන්න</translation>
 <translation id="4096237801206588987">අඟ 11 x 15</translation>
+<translation id="4098306082496067348">ඒවා ගෙවා පිටවීමට එක් කිරීමට අතථ්‍ය කාඩ්පත් විස්තර තට්ටු කරන්න.</translation>
 <translation id="4098354747657067197">රැවටිලිකාර අඩවියක් ඉදිරියෙනි</translation>
 <translation id="4099048595830172239">රහසිගත අන්තර්ගතය දෘශ්‍යමාන වන විට <ph name="APPLICATION_TITLE" /> සමග ඔබගේ තිරය බෙදා ගැනීමට පරිපාලක ප්‍රතිපත්තිය නිර්දේශ නොකරයි:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome තුළ අකුරු වර්ග තරම සහ මුහුණත අභිරුචිකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
@@ -1899,6 +1903,7 @@
 <translation id="4729147136006144950">පිනට දීම සහ දාන පරිත්‍යාගය</translation>
 <translation id="4730977633786878901">සමාලෝචන</translation>
 <translation id="4731638775147756694">ඔබේ පරිපාලකයා මෙම යෙදුම අවහිර කර ඇත</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> භාෂා ඇසුරුම බා ගත කරමින්... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> හට ඔබේ උපාංගයෙහි පිහිටීම භාවිතා කිරීමට අවශ්‍යයි</translation>
 <translation id="4736491186715342415">මෝටර් වාහන</translation>
 <translation id="4736825316280949806">Chromium යළි අරඹන්න</translation>
@@ -1920,7 +1925,6 @@
 <translation id="4757022425116568383">ඔබේ Chrome පැතිකඩෙන් මුරයතුර</translation>
 <translation id="4757993714154412917">ඔබ මේ දැන් වංචනික අඩවියකට ඔබගේ මුරපදය ඇතුළු කළේය. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, ඔබගේ සුරැකි මුරපද පරීක්ෂා කිරීමට Chromium නිර්දේශ කරයි.</translation>
 <translation id="4758311279753947758">සම්බන්ධතා තතු එක් කරන්න</translation>
-<translation id="4761104368405085019">මයික්‍රොෙෆෝනය භාවිතා කරන්න</translation>
 <translation id="4761326898079498987">වැඩිදුර විස්තර සඳහා සමාලෝචනය කරන්න</translation>
 <translation id="4761869838909035636">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
 <translation id="4763196677855776703"><ph name="URL" /> විසින් සපයනු ලබන නියමයන් සහ කොන්දේසි</translation>
@@ -2258,7 +2262,6 @@
             <ph name="LIST_ITEM" />කුකී සහ අඩවි දත්ත
             <ph name="LIST_ITEM" />පෝරම තුළ ඇතුළු කළ තොරතුරු
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> හට ඔබේ MIDI උපාංග (SysEx) පාලන කිරීමට සහ නැවත ක්‍රමලේඛන කිරීමට අවශ්‍යයි</translation>
 <translation id="5443468954631487277">ප්‍රතිවර්තන පිළිවෙළ මුහුණු ඉහළට</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> හට ඔවුන් ඔබ ගැන සුරකින ලද තතු භාවිතා කිරීමට ඉඩ දෙන්න</translation>
 <translation id="5447765697759493033">මෙම අඩවිය පරිවර්තනය නොවනු ඇත</translation>
@@ -2285,6 +2288,7 @@
     <ph name="LINE_BREAK" />
     ඔබේ පද්ධති පරිපාලක ඇමතීමට උත්සාහ කරන්න.</translation>
 <translation id="549333378215107354">ප්‍රමාණය 3</translation>
+<translation id="5501712702042287009">ස්වයංක්‍රීය පූර්ණ තිරය</translation>
 <translation id="550365051221576010">සියල්ල පුරවන්න</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">පාලිත පොත්සලකුණු</translation>
@@ -2402,6 +2406,7 @@
 <translation id="5720705177508910913">වත්මන් භාවිතකරු</translation>
 <translation id="572328651809341494">මෑතකාලීන පටිති</translation>
 <translation id="5723287205918986743">ආරක්ෂක කර්මාන්තය</translation>
+<translation id="5723873695528696965">ඔබේ MIDI උපාංග පාලන කර නැවත ක්‍රමලේඛන කරන්න</translation>
 <translation id="5725297205162868298">කෙටිමඟ @ අනුලකුණ සමග ආරම්භ කළ නොහැක: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5730040223043577876">Chrome ඔබේ මුරපදය ඔබ වෙනත් අඩවිවල නැවත භාවිත කර තිබේ නම් යළි සැකසීමට නිර්දේශ කරයි.</translation>
 <translation id="5732392974455271431">ඔබේ දෙමව්පියන්ට එය ඔබ සඳහා අනවහිර කළ හැකිය</translation>
@@ -2471,7 +2476,6 @@
 <translation id="5877831137320480913">රූපාලංකරණ සහ යෝග්‍යතාව</translation>
 <translation id="5879989559903563723">ආගන්තුක ප්‍රකාරයේ ඉඩ නොදෙයි</translation>
 <translation id="5880050725127890683">Chrome ආරක්ෂක පරීක්ෂාව වෙත යන්න</translation>
-<translation id="5883861433316751031">MIDI උපාංග පාලනය කර නැවත ක්‍රමලේඛනය කරන්න ද?</translation>
 <translation id="5884465125445718607">ලියුම් කවරය චීන #6</translation>
 <translation id="5887400589839399685">කාඩ්පත සුරැකිණි</translation>
 <translation id="5887687176710214216">අවසන් වරට ඊයේ පිවිසි</translation>
@@ -2509,6 +2513,7 @@
 <translation id="5953516610448771166">සජීවී සිරස්තල මෙම මාධ්‍ය සඳහා ලබා ගත නොහැකිය. සිරස්තල ලබා ගැනීමට, මෙම අඩවිය සඳහා <ph name="CONTENT_SETTINGS" /> අවහිර කරන්න.</translation>
 <translation id="5955063559762970069">හෝටල් සහ නවාතැන්</translation>
 <translation id="595873925609605681">වෙබ් අඩවි විශේෂාංග ක්‍රියා නොකරන්නේ නම් <ph name="BEGIN_LINK" />තුන් වන පාර්ශ්ව කුකී සඳහා තාවකාලිකව ඉඩ දීමට උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">සත්‍යාපනය</translation>
 <translation id="5963413905009737549">කොටස</translation>
 <translation id="5964247741333118902">කාවද්දන ලද අන්තර්ගතය</translation>
 <translation id="5967260682280773804">අඟ 36 x 48</translation>
@@ -2822,7 +2827,6 @@
 <translation id="6556866813142980365">නැවත කරන්න</translation>
 <translation id="6557715786897013164">අඟ 14 x 17</translation>
 <translation id="6560786330438719938">ස්ථාපන කර හෝ අස්ථාපන කර ඇති යෙදුම් සහ ඒවා කොපමණ වාරයක් භාවිත කරන්නේද යන්න</translation>
-<translation id="6567084950885568327">MIDI උපාංග පාලනය සහ නැවත ක්‍රමලේඛනය</translation>
 <translation id="6568793038316600992">ගෙවීම් ක්‍රම කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබේ ගෙවීම් සහ ණයපත් තොරතුරු කළමනාකරණය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="6569060085658103619">ඔබ දිගු පිටුවක් බලමින් සිටී</translation>
 <translation id="6569366777234823130">නාට්‍ය චිත්‍රපට</translation>
@@ -3205,6 +3209,7 @@
 <translation id="733354035281974745">උපාංග අභ්‍යන්තර ගිණුම් ප්‍රතික්‍ෂේපය</translation>
 <translation id="7334320624316649418">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
 <translation id="7335157162773372339">ඔබගේ කැමරාව භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
+<translation id="7336636595549675416">නිවාස අංකය</translation>
 <translation id="7337248890521463931">තවත් පේළි පෙන්වන්න</translation>
 <translation id="7337706099755338005">ඔබේ වේදිකාව මත නොතිබේ.</translation>
 <translation id="733923710415886693">සහතික පාරදෘශ්‍යතාව හරහා සේවාදායකයේ සහතිකය අනාවරණය නොකෙරේ.</translation>
@@ -3462,6 +3467,7 @@
 <translation id="7755287808199759310">ඔබේ දෙමව්පියන්ගෙන් අයෙකුට එය ඔබ සඳහා අනවහිර කළ හැකිය</translation>
 <translation id="7755624218968747854">Primary Roll</translation>
 <translation id="7758069387465995638">සුරැකුම් පවුර හෝ ප්‍රතිවයිරස මෘදුකාංග සබැඳුම අවහිර කර තිබෙනවා විය හැකිය.</translation>
+<translation id="7759147511335618829">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන්කරණය</translation>
 <translation id="7759809451544302770">වෛකල්පිත</translation>
 <translation id="7760497246331667482">රෙගේ සහ කැරිබියානු සංගීතය</translation>
 <translation id="776110834126722255">අත් හැරියා</translation>
@@ -3633,6 +3639,7 @@
 <translation id="8103161714697287722">ගෙවීමේ ක්‍රමය</translation>
 <translation id="8103643211515685474">කෙසේ වෙතත් මුද්‍රණය කරන්න</translation>
 <translation id="8105368624971345109">ක්‍රියා විරහිත කරන්න</translation>
+<translation id="8107664017913103177">කාඩ්පත් ප්‍රතිලාභ ලබා ගත හැක</translation>
 <translation id="810875025413331850">කිසිඳු උපාංගයක් අවටින් හමු නොවිය.</translation>
 <translation id="8116925261070264013">නිහඬයි</translation>
 <translation id="8118489163946903409">ගෙවීම් ක්‍රමය</translation>
@@ -3911,7 +3918,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> අගය ප්‍රමාණයේ අවශ්‍යතා සපුරාලන්නේ නැත.</translation>
 <translation id="867224526087042813">අත්සන</translation>
 <translation id="8672264262457010862">ව්‍යාපාරික සහ කාර්මික</translation>
-<translation id="8673776281896298303">ඔබේ MIDI උපාංග (SysEx) පාලනය කර නැවත ක්‍රමලේඛනය කරන්න</translation>
 <translation id="8676424191133491403">ප්‍රමාද නැත</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, පිළිතුර, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> හි මෙම වෙබ් පිටුව පහත හේතුව නිසා පූරණය කළ නොහැකි විය:</translation>
@@ -4152,7 +4158,6 @@
 <translation id="9148507642005240123">සංස්කරණය &amp;පසුගමනය කරන්න</translation>
 <translation id="9148599396704355100">මිල අඩුයි</translation>
 <translation id="9150025764986957246">ඔබට මෙවැනි දේවල් ඇතුළු කළ හැක:</translation>
-<translation id="9150045010208374699">ඔබගේ කැමරාව භාවිතා කරන්න</translation>
 <translation id="9150685862434908345">ඔබේ පරිපාලකට දුරස්ථව ඔබේ බ්‍රවුසර සැකසීම වෙනස් කළ හැකිය. මෙම උපාංගයේ ක්‍රියාකාරකම් Chrome වලින් පිටත ද කළමනාකරණය කිරීමට ඇතැම් විට හැකිය. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">යාවත්කාලීන කෙරිණි</translation>
 <translation id="9155211586651734179">ශ්‍රව්‍ය පර්යන්ත අමුණා ඇත</translation>

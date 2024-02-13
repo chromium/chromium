@@ -68,15 +68,15 @@
                     prefs.default_search_provider_data.template_url_data)]]">
               $i18n{searchEnginesChange}
             </cr-button>
-            <template is="dom-if" if="[[showSearchEngineListDialog_]]" restamp>
-              <settings-search-engine-list-dialog
-                  search-engines="[[searchEngines_]]"
-                  on-close="onSearchEngineListDialogClose_"
-                  on-search-engine-changed="onDefaultSearchEngineChangedInDialog_">
-              </settings-search-engine-list-dialog>
-            </template>
           </div>
         </div>
+        <template is="dom-if" if="[[showSearchEngineListDialog_]]" restamp>
+          <settings-search-engine-list-dialog
+              search-engines="[[searchEngines_]]"
+              on-close="onSearchEngineListDialogClose_"
+              on-search-engine-changed="onDefaultSearchEngineChangedInDialog_">
+          </settings-search-engine-list-dialog>
+        </template>
         <cr-toast id="confirmationToast" duration="10000">
           <div>[[confirmationToastLabel_]]</div>
         </cr-toast>

@@ -10,6 +10,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/features.h"
 #import "components/url_formatter/url_fixer.h"

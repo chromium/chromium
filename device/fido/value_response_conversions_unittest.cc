@@ -45,7 +45,7 @@ TEST(ValueResponseConversionTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  absl::optional<AuthenticatorGetAssertionResponse> response =
+  std::optional<AuthenticatorGetAssertionResponse> response =
       AuthenticatorGetAssertionResponseFromValue(*value);
   ASSERT_TRUE(response);
 
@@ -74,7 +74,7 @@ TEST(ValueResponseConversionTest,
       deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
   ASSERT_TRUE(value) << deserialize_error;
 
-  absl::optional<AuthenticatorGetAssertionResponse> response =
+  std::optional<AuthenticatorGetAssertionResponse> response =
       AuthenticatorGetAssertionResponseFromValue(*value);
   ASSERT_TRUE(response);
 
@@ -104,7 +104,7 @@ TEST(ValueResponseConversionTest,
         deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
     ASSERT_TRUE(value) << deserialize_error;
 
-    absl::optional<AuthenticatorGetAssertionResponse> response =
+    std::optional<AuthenticatorGetAssertionResponse> response =
         AuthenticatorGetAssertionResponseFromValue(*value);
     ASSERT_FALSE(response)
         << "Parsing incorrectly succeeded with no authenticatorData.";
@@ -117,7 +117,7 @@ TEST(ValueResponseConversionTest,
         deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
     ASSERT_TRUE(value) << deserialize_error;
 
-    absl::optional<AuthenticatorGetAssertionResponse> response =
+    std::optional<AuthenticatorGetAssertionResponse> response =
         AuthenticatorGetAssertionResponseFromValue(*value);
     ASSERT_FALSE(response)
         << "Parsing incorrectly succeeded with no signature.";

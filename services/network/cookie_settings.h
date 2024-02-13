@@ -180,9 +180,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   const ContentSettingsForOneType& GetContentSettings(
       ContentSettingsType type) const;
 
-  // Returns a host-indexed map of ContentSettingPatternSources associated with
-  // the input `type`.
-  const content_settings::HostIndexedContentSettings&
+  // Returns a vector of host-indexed content settings associated with the input
+  // `type`. Each element of the vector corresponds to a Provider from
+  // HostContentSettingsMap with the highest priority Provider first.
+  const std::vector<content_settings::HostIndexedContentSettings>&
   GetHostIndexedContentSettings(ContentSettingsType type) const;
 
   // Returns whether the given cookie should be allowed to be sent, according
@@ -230,8 +231,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   base::flat_map<ContentSettingsType, ContentSettingsForOneType>
       content_settings_;
 
+  // Holds a vector of indices. Each index corresponds to one
+  // ContentSettingsProvider.
   base::flat_map<ContentSettingsType,
-                 std::unique_ptr<content_settings::HostIndexedContentSettings>>
+                 std::vector<content_settings::HostIndexedContentSettings>>
       host_indexed_content_settings_;
 };
 

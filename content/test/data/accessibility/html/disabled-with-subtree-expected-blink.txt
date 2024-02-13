@@ -1,0 +1,8 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer
+++++++button name='new' restriction=disabled
+++++++++staticText name='new'
+++++++++++inlineTextBox name='new'
+++++++++genericContainer ignored
+

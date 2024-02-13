@@ -3,8 +3,6 @@ rootWebArea htmlTag='#document'
 ++++genericContainer htmlTag='body'
 ++++++svgRoot htmlTag='svg'
 ++++++++group description='Group with circle and text' htmlTag='g' descriptionFrom=svgDescElement
-++++++++++genericContainer ignored invisible htmlTag='desc'
-++++++++++++staticText ignored invisible name='Group with circle and text'
 ++++++++++genericContainer htmlTag='text'
 ++++++++++++staticText name='hello world'
 ++++++++++++++inlineTextBox name='hello world'

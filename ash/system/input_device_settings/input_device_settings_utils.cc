@@ -77,8 +77,17 @@ bool RestrictionBlocksRemapping(
     case mojom::CustomizationRestriction::kDisallowCustomizations:
       return true;
     case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
+      // No keyboard keys are allowed to be remapped.
       if (remapping.button->is_vkey()) {
         return true;
+      }
+
+      // No horizontal scroll events are allowed to be remapped.
+      if (remapping.button->is_customizable_button()) {
+        const auto& customizable_button =
+            remapping.button->get_customizable_button();
+        return customizable_button == mojom::CustomizableButton::kScrollLeft ||
+               customizable_button == mojom::CustomizableButton::kScrollRight;
       }
       return false;
     case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
@@ -95,6 +104,13 @@ bool RestrictionBlocksRemapping(
         return true;
       }
       return false;
+    case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
+      return remapping.button->is_vkey();
+    case mojom::CustomizationRestriction::kAllowTabEventRewrites:
+      if (remapping.button->is_customizable_button()) {
+        return false;
+      }
+      return remapping.button->get_vkey() != ui::VKEY_TAB;
   }
 }
 

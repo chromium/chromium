@@ -136,15 +136,15 @@ static inline float ScaleOnAxis(double a, double b, double c) {
   return ClampFloatGeometry(std::sqrt(a * a + b * b + c * c));
 }
 
-absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
+std::optional<Vector2dF> TryComputeTransform2dScaleComponents(
     const Transform& transform) {
   if (transform.rc(3, 0) != 0.0f || transform.rc(3, 1) != 0.0f) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   float w = transform.rc(3, 3);
   if (!std::isnormal(w)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   float w_scale = 1.0f / w;
 
@@ -169,7 +169,7 @@ absl::optional<Vector2dF> TryComputeTransform2dScaleComponents(
 
 Vector2dF ComputeTransform2dScaleComponents(const Transform& transform,
                                             float fallback_value) {
-  absl::optional<Vector2dF> scale =
+  std::optional<Vector2dF> scale =
       TryComputeTransform2dScaleComponents(transform);
   if (scale) {
     return *scale;

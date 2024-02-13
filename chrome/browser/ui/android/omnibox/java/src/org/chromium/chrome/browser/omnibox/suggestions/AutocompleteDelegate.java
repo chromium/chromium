@@ -4,10 +4,18 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import org.chromium.ui.base.PageTransition;
+
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Provides the additional functionality to trigger and interact with autocomplete suggestions. */
 public interface AutocompleteDelegate extends UrlBarDelegate {
+
+    /** Called when loadUrl is done on a {@link Tab}. */
+    interface AutocompleteLoadCallback {
+        void onLoadUrl(LoadUrlParams params, LoadUrlResult loadUrlResult);
+    }
+
     /** Notified that the URL text has changed. */
     void onUrlTextChanged();
 
@@ -37,32 +45,11 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
     boolean isKeyboardActive();
 
     /**
-     * Requests that the given URL be loaded in the current tab or in a new tab.
+     * Requests that the given URL be loaded.
      *
-     * @param url The URL to be loaded.
-     * @param transition The transition type associated with the url load.
-     * @param inputStart The time the input started for the load request.
-     * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
-     *     will be loaded in a new tab. If {@code false}, The URL will be loaded in the current tab.
+     * @param omniboxLoadUrlParams parameters describing the url load.
      */
-    void loadUrl(String url, @PageTransition int transition, long inputStart, boolean openInNewTab);
-
-    /**
-     * Requests that the given URL be loaded in the current tab.
-     *
-     * @param url The URL to be loaded.
-     * @param transition The transition type associated with the url load.
-     * @param inputStart The time the input started for the load request.
-     * @param postDataType postData type.
-     * @param postData Post-data to include in the tab URL's request body, ex. bitmap when image
-     *     search.
-     */
-    void loadUrlWithPostData(
-            String url,
-            @PageTransition int transition,
-            long inputStart,
-            String postDataType,
-            byte[] postData);
+    void loadUrl(OmniboxLoadUrlParams omniboxLoadUrlParams);
 
     /**
      * @return Whether the omnibox was focused via the NTP fakebox.

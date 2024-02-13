@@ -46,9 +46,6 @@ class PLATFORM_EXPORT TransformPaintPropertyNodeOrAlias
   // changed status of the paths from |this| and |relative_to_node| to the root.
   bool Changed(PaintPropertyChangeType change,
                const TransformPaintPropertyNodeOrAlias& relative_to_node) const;
-  bool ChangedExceptScroll(
-      PaintPropertyChangeType change,
-      const TransformPaintPropertyNodeOrAlias& relative_to_node) const;
 
   void AddChanged(PaintPropertyChangeType changed) {
     DCHECK_NE(PaintPropertyChangeType::kUnchanged, changed);

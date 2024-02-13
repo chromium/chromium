@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "net/cookies/cookie_deletion_info.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -74,8 +74,8 @@ class NET_EXPORT CookieStore {
       const GURL& source_url,
       const CookieOptions& options,
       SetCookiesCallback callback,
-      absl::optional<CookieAccessResult> cookie_access_result =
-          absl::nullopt) = 0;
+      std::optional<CookieAccessResult> cookie_access_result =
+          std::nullopt) = 0;
 
   // Obtains a CookieList for the given |url| and |options|. The returned
   // cookies are passed into |callback|, ordered by longest path, then earliest
@@ -174,9 +174,9 @@ class NET_EXPORT CookieStore {
   // Will return nullopt if cookies have not finished loading.
   // If the partition key is null, the method assumes it is because partitioned
   // cookies are disabled.
-  virtual absl::optional<bool> SiteHasCookieInOtherPartition(
+  virtual std::optional<bool> SiteHasCookieInOtherPartition(
       const net::SchemefulSite& site,
-      const absl::optional<CookiePartitionKey>& cookie_partition_key) const;
+      const std::optional<CookiePartitionKey>& cookie_partition_key) const;
 
  private:
   // Used to determine whether a particular cookie should be subject to legacy

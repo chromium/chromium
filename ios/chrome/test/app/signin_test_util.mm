@@ -191,7 +191,7 @@ void ResetSyncAccountSettingsPrefs() {
   // And the old global selected types for syncing users. SyncUserSettings::
   // SetSelectedTypes() CHECKs the user is signed-in, so go through SyncPrefs
   // directly.
-  // TODO(crbug.com/1462552): Remove once sync-the-feature is gone on iOS.
+  // TODO(crbug.com/40066949): Remove once sync-the-feature is gone on iOS.
   syncer::SyncPrefs(browser_state->GetPrefs())
       .SetSelectedTypesForSyncingUser(
           /*sync_everything=*/true,

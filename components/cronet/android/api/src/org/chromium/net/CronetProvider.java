@@ -7,6 +7,8 @@ package org.chromium.net;
 import android.content.Context;
 import android.util.Log;
 
+import org.chromium.net.impl.CronetLogger;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -19,13 +21,13 @@ import java.util.Set;
  * Provides a factory method to create {@link CronetEngine.Builder} instances. A {@code
  * CronetEngine.Builder} instance can be used to create a specific {@link CronetEngine}
  * implementation. To get the list of available {@link CronetProvider}s call {@link
- * #getAllProviders(Context)}.
- * <p/>
- * <b>NOTE:</b> This class is for advanced users that want to select a particular
- * Cronet implementation. Most users should simply use {@code new} {@link
+ * #getAllProviderInfos(Context)}.
+ *
+ * <p><b>NOTE:</b> This class is for advanced users that want to select a particular Cronet
+ * implementation. Most users should simply use {@code new} {@link
  * CronetEngine.Builder#CronetEngine.Builder(android.content.Context)}.
  *
- * {@hide}
+ * <p>{@hide}
  */
 public abstract class CronetProvider {
     /**
@@ -141,6 +143,11 @@ public abstract class CronetProvider {
     private static final String GMS_CORE_CRONET_PROVIDER_CLASS =
             "com.google.android.gms.net.GmsCoreCronetProvider";
 
+    static final class ProviderInfo {
+        public CronetProvider provider;
+        public CronetLogger.CronetSource logSource;
+    }
+
     /**
      * Returns an unmodifiable list of all available {@link CronetProvider}s. The providers are
      * returned in no particular order. Some of the returned providers may be in a disabled state
@@ -148,18 +155,56 @@ public abstract class CronetProvider {
      *
      * @return the list of available providers.
      */
-    public static List<CronetProvider> getAllProviders(Context context) {
+    static List<ProviderInfo> getAllProviderInfos(Context context) {
         // Use LinkedHashSet to preserve the order and eliminate duplicate providers.
-        Set<CronetProvider> providers = new LinkedHashSet<>();
-        addCronetProviderFromResourceFile(context, providers);
+        Set<ProviderInfo> providers = new LinkedHashSet<>();
+        addCronetProviderFromResourceFile(
+                context, CronetLogger.CronetSource.CRONET_SOURCE_UNSPECIFIED, providers);
         addCronetProviderImplByClassName(
-                context, PLAY_SERVICES_CRONET_PROVIDER_CLASS, providers, false);
-        addCronetProviderImplByClassName(context, GMS_CORE_CRONET_PROVIDER_CLASS, providers, false);
-        addCronetProviderImplByClassName(context, NATIVE_CRONET_PROVIDER_CLASS, providers, false);
+                context,
+                PLAY_SERVICES_CRONET_PROVIDER_CLASS,
+                CronetLogger.CronetSource.CRONET_SOURCE_PLAY_SERVICES,
+                providers,
+                false);
         addCronetProviderImplByClassName(
-                context, HTTPENGINE_NATIVE_PROVIDER_CLASS, providers, false);
-        addCronetProviderImplByClassName(context, JAVA_CRONET_PROVIDER_CLASS, providers, false);
+                context,
+                GMS_CORE_CRONET_PROVIDER_CLASS,
+                CronetLogger.CronetSource.CRONET_SOURCE_PLAY_SERVICES,
+                providers,
+                false);
+        addCronetProviderImplByClassName(
+                context,
+                NATIVE_CRONET_PROVIDER_CLASS,
+                CronetLogger.CronetSource.CRONET_SOURCE_STATICALLY_LINKED,
+                providers,
+                false);
+        addCronetProviderImplByClassName(
+                context,
+                HTTPENGINE_NATIVE_PROVIDER_CLASS,
+                CronetLogger.CronetSource.CRONET_SOURCE_PLATFORM,
+                providers,
+                false);
+        addCronetProviderImplByClassName(
+                context,
+                JAVA_CRONET_PROVIDER_CLASS,
+                CronetLogger.CronetSource.CRONET_SOURCE_FALLBACK,
+                providers,
+                false);
         return Collections.unmodifiableList(new ArrayList<>(providers));
+    }
+
+    /**
+     * Same as {@link #getAllProviderInfos}, but returning the providers directly.
+     *
+     * @deprecated This is only provided to preserve Cronet API backwards compatibility. Use {@link
+     *     #getAllProviderInfos} instead.
+     */
+    public static List<CronetProvider> getAllProviders(Context context) {
+        var providers = new ArrayList<CronetProvider>();
+        for (var providerInfo : getAllProviderInfos(context)) {
+            providers.add(providerInfo.provider);
+        }
+        return Collections.unmodifiableList(providers);
     }
 
     /**
@@ -168,17 +213,24 @@ public abstract class CronetProvider {
      * @param className the class name of the provider that should be instantiated.
      * @param providers the set of providers to add the new provider to.
      * @return {@code true} if the provider was added to the set; {@code false} if the provider
-     * couldn't be instantiated.
+     *     couldn't be instantiated.
      */
     private static boolean addCronetProviderImplByClassName(
-            Context context, String className, Set<CronetProvider> providers, boolean logError) {
+            Context context,
+            String className,
+            CronetLogger.CronetSource logSource,
+            Set<ProviderInfo> providers,
+            boolean logError) {
         ClassLoader loader = context.getClassLoader();
         try {
             Class<? extends CronetProvider> providerClass =
                     loader.loadClass(className).asSubclass(CronetProvider.class);
             Constructor<? extends CronetProvider> ctor =
                     providerClass.getConstructor(Context.class);
-            providers.add(ctor.newInstance(context));
+            var providerInfo = new ProviderInfo();
+            providerInfo.provider = ctor.newInstance(context);
+            providerInfo.logSource = logSource;
+            providers.add(providerInfo);
             return true;
         } catch (InstantiationException e) {
             logReflectiveOperationException(className, logError, e);
@@ -219,13 +271,13 @@ public abstract class CronetProvider {
      *
      * @param providers the set of providers to add the new provider to.
      * @return {@code true} if the provider was added to the set; {@code false} if the app resources
-     * do not include the string with {@link #RES_KEY_CRONET_IMPL_CLASS} key.
+     *     do not include the string with {@link #RES_KEY_CRONET_IMPL_CLASS} key.
      * @throws RuntimeException if the provider cannot be found or instantiated.
      */
     // looking up resources from other apps requires the use of getIdentifier()
     @SuppressWarnings("DiscouragedApi")
     private static boolean addCronetProviderFromResourceFile(
-            Context context, Set<CronetProvider> providers) {
+            Context context, CronetLogger.CronetSource logSource, Set<ProviderInfo> providers) {
         int resId =
                 context.getResources()
                         .getIdentifier(
@@ -247,7 +299,7 @@ public abstract class CronetProvider {
             return false;
         }
 
-        if (!addCronetProviderImplByClassName(context, className, providers, true)) {
+        if (!addCronetProviderImplByClassName(context, className, logSource, providers, true)) {
             Log.e(
                     TAG,
                     "Unable to instantiate Cronet implementation class "

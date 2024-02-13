@@ -41,7 +41,8 @@ found in the LICENSE file.
     </LinearLayout>
 
     <!-- Scroll view in case there are a lot of items. -->
-    <ScrollView
+    <org.chromium.chrome.browser.readaloud.player.expanded.MaxHeightScrollView
+        app:maxHeight="586dp"
         android:id="@+id/items_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -53,6 +54,6 @@ found in the LICENSE file.
             android:orientation="vertical">
             <!-- Menu items and headings are added programmatically here. -->
         </LinearLayout>
-    </ScrollView>
+    </org.chromium.chrome.browser.readaloud.player.expanded.MaxHeightScrollView>
 
 </org.chromium.chrome.browser.readaloud.player.expanded.Menu>

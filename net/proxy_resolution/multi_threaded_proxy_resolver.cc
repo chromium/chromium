@@ -585,7 +585,7 @@ MultiThreadedProxyResolverFactory::MultiThreadedProxyResolverFactory(
 }
 
 MultiThreadedProxyResolverFactory::~MultiThreadedProxyResolverFactory() {
-  for (auto* job : jobs_) {
+  for (Job* job : jobs_) {
     job->FactoryDestroyed();
   }
 }

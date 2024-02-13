@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.app.feed;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 
 import org.chromium.base.Callback;
@@ -47,28 +47,31 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
     private final NativePageNavigationDelegate mNavigationDelegate;
     private final BookmarkModel mBookmarkModel;
-    private final Context mActivityContext;
+    private final Activity mActivity;
     private final SnackbarManager mSnackbarManager;
     private final TabModelSelector mTabModelSelector;
     private final Profile mProfile;
+    private final BottomSheetController mBottomSheetController;
 
     @BrowserUiUtils.HostSurface private int mHostSurface;
 
     public FeedActionDelegateImpl(
-            Context activityContext,
+            Activity activity,
             SnackbarManager snackbarManager,
             NativePageNavigationDelegate navigationDelegate,
             BookmarkModel bookmarkModel,
             @BrowserUiUtils.HostSurface int hostSurface,
             TabModelSelector tabModelSelector,
-            Profile profile) {
-        mActivityContext = activityContext;
+            Profile profile,
+            BottomSheetController bottomSheetController) {
+        mActivity = activity;
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
         mHostSurface = hostSurface;
         mTabModelSelector = tabModelSelector;
         mProfile = profile;
+        mBottomSheetController = bottomSheetController;
     }
 
     @Override
@@ -138,12 +141,13 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
                 () -> {
                     assert ThreadUtils.runningOnUiThread();
                     BookmarkUtils.addToReadingList(
-                            new GURL(url),
-                            title,
-                            mSnackbarManager,
+                            mActivity,
                             mBookmarkModel,
-                            mActivityContext,
-                            mProfile);
+                            title,
+                            new GURL(url),
+                            mSnackbarManager,
+                            mProfile,
+                            mBottomSheetController);
                 });
     }
 
@@ -155,18 +159,18 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
         assert ThreadUtils.runningOnUiThread();
         Class<?> creatorActivityClass = CreatorActivity.class;
-        Intent intent = new Intent(mActivityContext, creatorActivityClass);
+        Intent intent = new Intent(mActivity, creatorActivityClass);
         intent.putExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID, webFeedName.getBytes());
         intent.putExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT, entryPoint);
         intent.putExtra(CreatorIntentConstants.CREATOR_TAB_ID, mTabModelSelector.getCurrentTabId());
-        mActivityContext.startActivity(intent);
+        mActivity.startActivity(intent);
     }
 
     @Override
     public void showSyncConsentActivity(@SigninAccessPoint int signinAccessPoint) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_SHOW_SIGN_IN_COMMAND)) {
             SyncConsentActivityLauncherImpl.get()
-                    .launchActivityIfAllowed(mActivityContext, signinAccessPoint);
+                    .launchActivityIfAllowed(mActivity, signinAccessPoint);
         }
     }
 

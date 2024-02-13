@@ -11,6 +11,7 @@
 
 #import <iomanip>
 #import <numeric>
+#include <string_view>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -18,7 +19,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_typeref.h"
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -706,9 +706,8 @@ bool PrintingContextMac::SetOutputColor(int color_mode) {
   // set every single known PPD color setting and hope that one of them sticks.
   const bool is_color = IsIppColorModelColorful(color_model);
   for (const auto& setting : GetKnownPpdColorSettings()) {
-    const base::StringPiece& color_setting_name = setting.name;
-    const base::StringPiece& color_value =
-        is_color ? setting.color : setting.bw;
+    std::string_view color_setting_name = setting.name;
+    std::string_view color_value = is_color ? setting.color : setting.bw;
     if (!SetKeyValue(color_setting_name, color_value))
       return false;
   }
@@ -736,8 +735,8 @@ bool PrintingContextMac::SetResolution(const gfx::Size& dpi_size) {
                                       &resolution) == noErr;
 }
 
-bool PrintingContextMac::SetKeyValue(base::StringPiece key,
-                                     base::StringPiece value) {
+bool PrintingContextMac::SetKeyValue(std::string_view key,
+                                     std::string_view value) {
   PMPrintSettings print_settings =
       static_cast<PMPrintSettings>([print_info_ PMPrintSettings]);
   base::apple::ScopedCFTypeRef<CFStringRef> cf_key =

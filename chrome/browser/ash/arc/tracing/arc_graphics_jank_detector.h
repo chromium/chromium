@@ -50,16 +50,15 @@ class ArcGraphicsJankDetector {
   static constexpr base::TimeDelta kPauseDetectionThreshold =
       base::Seconds(0.25);
 
-  // Threshold relative to the normal rate to consider the current frame as a
-  // jank if its duration longer than this threshold.
-  static constexpr int kJankDetectionThresholdPercent = 190;
-
   explicit ArcGraphicsJankDetector(const JankCallback& callback);
 
   ArcGraphicsJankDetector(const ArcGraphicsJankDetector&) = delete;
   ArcGraphicsJankDetector& operator=(const ArcGraphicsJankDetector&) = delete;
 
   ~ArcGraphicsJankDetector();
+
+  // Returns whether there are enough samples to run detector.
+  static bool IsEnoughSamplesToDetect(size_t num_samples);
 
   // Resets detector to its initial state, stage is set to |Stage::kWarmUp| with
   // the initial number of warm up samples. Fixed period is discarded if it was

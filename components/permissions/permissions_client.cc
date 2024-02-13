@@ -54,7 +54,8 @@ bool PermissionsClient::IsCookieDeletionDisabled(
   return false;
 }
 
-void PermissionsClient::GetUkmSourceId(content::BrowserContext* browser_context,
+void PermissionsClient::GetUkmSourceId(ContentSettingsType permission_type,
+                                       content::BrowserContext* browser_context,
                                        content::WebContents* web_contents,
                                        const GURL& requesting_origin,
                                        GetUkmSourceIdCallback callback) {

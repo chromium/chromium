@@ -63,7 +63,13 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // Allow sub-classes to initialize scoped feature list with different values.
   // TODO(b/297565024): Abstract this as we initialize more than just IPH
   //                    configs in this method.
+  // `InitializeScopedFeatureList` is the top level function for initializing
+  // scoped feature list of this test.
+  // - Override `AppendUiParams` if you only want to customize UI params.
+  // - Override `AppendTestSpecificFeatures` if you only want to customize other
+  //   feature flags in this test.
   virtual void InitializeScopedFeatureList();
+  virtual void AppendUiParams(base::FieldTrialParams& params);
   virtual void AppendTestSpecificFeatures(
       std::vector<base::test::FeatureRefAndParams>& enabled_features,
       std::vector<base::test::FeatureRef>& disabled_features) {}
@@ -74,8 +80,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
                            const base::Feature& feature);
   virtual void AppendVersionNumber(base::FieldTrialParams& params);
   void AppendFakeUiParamsNotification(base::FieldTrialParams& params,
+                                      bool has_body_text,
                                       const base::Feature& feature);
-  void AppendFakeUiParamsNotification(base::FieldTrialParams& params);
   void AppendFakeUiParamsBubble(base::FieldTrialParams& params);
   static std::string FullyQualified(const base::Feature& feature,
                                     const std::string& param_name);

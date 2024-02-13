@@ -46,7 +46,7 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                gpu::VulkanDeviceQueue* device_queue,
                                gfx::Size size,
@@ -58,7 +58,7 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::NativePixmapHandle handle) override;
-  absl::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
+  std::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
       const override;
   bool SupportsDrmModifiersFilter() const override;
   void SetDrmModifiersFilter(

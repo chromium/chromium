@@ -19,7 +19,6 @@ import "url/mojom/origin.mojom";
 // third_party/blink/public/mojom/devtools/inspector_issue.mojom.
 enum RequestTokenStatus {
   kSuccess,
-  kApprovalDeclined,
   kErrorTooManyRequests,
   kErrorCanceled,
   kError,
@@ -57,40 +56,6 @@ enum RpContext {
 enum RpMode {
   kButton,
   kWidget
-};
-
-// The details of different mechanisms that allows the browser
-// to intermediate the exchange of the user's entities.
-// Currently, federated identities are supported, and digital credentials
-// are being prototyped.
-union IdentityProvider {
-  IdentityProviderRequestOptions federated;
-  DigitalCredentialProvider holder;
-};
-
-// The specification of the query to digital credentials.
-struct DigitalCredentialProvider {
-  map<string, string>? params;
-  DigitalCredentialSelector? selector;
-  string? protocol;
-  string? request;
-  string? publicKey;
-};
-
-// The requirements of the credentials that are being requested.
-struct DigitalCredentialSelector {
-  array<string> format;
-  string? doctype;
-  array<DigitalCredentialFieldRequirement> fields;
-};
-
-// The requirements that the verifier needs on specific fields.
-struct DigitalCredentialFieldRequirement {
-  // The name of the field (e.g. "org.iso.18013.5.1.family_name").
-  string name;
-
-  // Optionally, whether the field's value is equal to a specific value or not.
-  string? equals;
 };
 
 // The details of a federated identity provider.
@@ -157,7 +122,7 @@ struct IdentityUserInfo {
 // The parameters for a get call for identity provider(s).
 struct IdentityProviderGetParameters {
   // Details of identity provider(s).
-  array<IdentityProvider> providers;
+  array<IdentityProviderRequestOptions> providers;
 
   // Controls the wording of the FedCM prompt.
   RpContext context;

@@ -1598,6 +1598,8 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
           }
           break;
         default:
+          UseCounter::Count(tree_.CurrentNode()->GetDocument(),
+                            WebFeature::kSelectParserDroppedTag);
           break;
       }
       break;

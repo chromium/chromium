@@ -108,9 +108,9 @@ class PLATFORM_EXPORT ShapeResultView final
   explicit ShapeResultView(const InitData& data);
   ShapeResultView(const ShapeResultView&) = delete;
   ShapeResultView& operator=(const ShapeResultView&) = delete;
-  ~ShapeResultView();
+  ~ShapeResultView() = default;
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(parts_); }
 
   ShapeResult* CreateShapeResult() const;
 
@@ -158,16 +158,18 @@ class PLATFORM_EXPORT ShapeResultView final
 
   void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
 
- private:
-  // Note: We allocate |RunInfoPart| in flexible array in |ShapeResultView|.
   struct RunInfoPart {
+    DISALLOW_NEW();
+
    public:
-    RunInfoPart(scoped_refptr<const ShapeResult::RunInfo> run,
+    RunInfoPart(const ShapeResult::RunInfo* run,
                 GlyphDataRange range,
                 unsigned start_index,
                 unsigned offset,
                 unsigned num_characters,
                 float width);
+
+    PLATFORM_EXPORT void Trace(Visitor*) const;
 
     using const_iterator = const HarfBuzzRunGlyphData*;
     const_iterator begin() const { return range_.begin; }
@@ -203,7 +205,7 @@ class PLATFORM_EXPORT ShapeResultView final
     unsigned PreviousSafeToBreakOffset(unsigned offset) const;
 
     // Common signatures with RunInfo, to templatize algorithms.
-    const ShapeResult::RunInfo* GetRunInfo() const { return run_.get(); }
+    const ShapeResult::RunInfo* GetRunInfo() const { return run_.Get(); }
     const GlyphDataRange& GetGlyphDataRange() const { return range_; }
     GlyphDataRange FindGlyphDataRange(unsigned start_character_index,
                                       unsigned end_character_index) const;
@@ -212,7 +214,7 @@ class PLATFORM_EXPORT ShapeResultView final
     // The helper function for implementing |PopulateRunInfoParts()| for
     // handling iterating over |Vector<scoped_refptr<RunInfo>>| and
     // |base::span<RunInfoPart>|.
-    const RunInfoPart* get() const { return this; }
+    const RunInfoPart* Get() const { return this; }
 
     template <typename RunType, typename ShapeResultType>
     static unsigned ComputeStart(const RunType& run,
@@ -250,7 +252,7 @@ class PLATFORM_EXPORT ShapeResultView final
       return {{part_start, part_end}};
     }
 
-    scoped_refptr<const ShapeResult::RunInfo> run_;
+    Member<const ShapeResult::RunInfo> run_;
     GlyphDataRange range_;
 
     // Start index for partial run, adjusted to ensure that runs are continuous.
@@ -263,14 +265,14 @@ class PLATFORM_EXPORT ShapeResultView final
     float width_;
   };
 
-  RunInfoPart* PopulateRunInfoParts(const Segment& segment, RunInfoPart* part);
+ private:
+  void PopulateRunInfoParts(const Segment& segment);
 
   // Populates |parts_[]| and accumulates |num_characters_|, |num_glyphs_| and
   // |width_| from runs in |result|.
   template <class ShapeResultType>
-  RunInfoPart* PopulateRunInfoParts(const ShapeResultType& result,
-                                    const Segment& segment,
-                                    RunInfoPart* part);
+  void PopulateRunInfoParts(const ShapeResultType& result,
+                            const Segment& segment);
 
   unsigned CharacterIndexOffsetForGlyphData(const RunInfoPart&) const;
 
@@ -280,17 +282,9 @@ class PLATFORM_EXPORT ShapeResultView final
                             gfx::RectF* ink_bounds) const;
 
   // Common signatures with ShapeResult, to templatize algorithms.
-  base::span<const RunInfoPart> RunsOrParts() const { return Parts(); }
-
-  base::span<RunInfoPart> Parts();
-
-  base::span<const RunInfoPart> Parts() const;
+  base::span<const RunInfoPart> RunsOrParts() const { return parts_; }
 
   unsigned StartIndexOffsetForRun() const { return char_index_offset_; }
-
-  // Returns byte size, aka allocation size, of |ShapeResultView| with
-  // |num_parts| count of |RunInfoPart| in flexible array member.
-  static constexpr size_t AdditionalByteSize(wtf_size_t num_parts);
 
   scoped_refptr<const SimpleFontData> const primary_font_;
 
@@ -314,14 +308,7 @@ class PLATFORM_EXPORT ShapeResultView final
   // with ShapeResult::SubRange
   const unsigned char_index_offset_;
 
-  const wtf_size_t num_parts_;
-
-  // TODO(yosin): We should declare |RunInfoPart| in this file to avoid using
-  // dummy struct.
-  // Note: To avoid declaring |RunInfoPart| here, we use dummy struct.
-  struct {
-    void* alignment;
-  } parts_[];
+  HeapVector<RunInfoPart, 1> parts_;
 
  private:
   friend class ShapeResult;
@@ -343,5 +330,8 @@ class PLATFORM_EXPORT ShapeResultView final
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::ShapeResultView::RunInfoPart)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_RESULT_VIEW_H_

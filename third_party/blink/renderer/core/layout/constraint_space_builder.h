@@ -178,6 +178,9 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   }
 
   void DisableFurtherFragmentation() { space_.DisableFurtherFragmentation(); }
+  void DisableMonolithicOverflowPropagation() {
+    space_.DisableMonolithicOverflowPropagation();
+  }
 
   void SetIsFixedInlineSize(bool b) {
     if (LIKELY(is_in_parallel_flow_))

@@ -25,6 +25,10 @@ void PaymentsAutofillClient::ShowLocalCardMigrationResults(
     const std::u16string& tip_message,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrationDeleteCardCallback delete_local_card_callback) {}
+
+void PaymentsAutofillClient::VirtualCardEnrollCompleted(bool is_vcn_enrolled) {}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+void PaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
 
 }  // namespace autofill::payments

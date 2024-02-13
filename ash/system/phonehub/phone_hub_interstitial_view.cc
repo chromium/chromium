@@ -150,7 +150,7 @@ void PhoneHubInterstitialView::AddButton(
   button_container_->AddChildView(std::move(button));
 }
 
-BEGIN_METADATA(PhoneHubInterstitialView, views::View)
+BEGIN_METADATA(PhoneHubInterstitialView)
 END_METADATA
 
 }  // namespace ash

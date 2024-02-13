@@ -343,10 +343,34 @@ void PhoneHubUiController::UpdateUiState(
     observer.OnPhoneHubUiStateChanged();
   }
 
-  if (ui_state_ == PhoneHubUiController::UiState::kPhoneConnected &&
-      phone_hub_manager_->GetPhoneHubUiReadinessRecorder()) {
-    phone_hub_manager_->GetPhoneHubUiReadinessRecorder()
-        ->RecordPhoneHubUiConnected();
+  switch (ui_state_) {
+    case UiState::kBluetoothDisabled:
+      [[fallthrough]];
+    case UiState::kPhoneDisconnected:
+      if (phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()) {
+        phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()
+            ->LogPhoneHubUiStateUpdated(
+                phonehub::PhoneHubUiState::kDisconnected);
+      }
+      break;
+    case UiState::kPhoneConnecting:
+      if (phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()) {
+        phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()
+            ->LogPhoneHubUiStateUpdated(phonehub::PhoneHubUiState::kConnecting);
+      }
+      break;
+    case UiState::kPhoneConnected:
+      if (phone_hub_manager_->GetPhoneHubUiReadinessRecorder()) {
+        phone_hub_manager_->GetPhoneHubUiReadinessRecorder()
+            ->RecordPhoneHubUiConnected();
+      }
+      if (phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()) {
+        phone_hub_manager_->GetPhoneHubStructuredMetricsLogger()
+            ->LogPhoneHubUiStateUpdated(phonehub::PhoneHubUiState::kConnected);
+      }
+      break;
+    default:
+      break;
   }
 }
 

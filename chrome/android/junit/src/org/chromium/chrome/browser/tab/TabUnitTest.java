@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -20,6 +21,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -31,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
@@ -125,6 +128,59 @@ public class TabUnitTest {
 
         verify(mObserver, never()).onRootIdChanged(any(Tab.class), anyInt());
         assertThat(mTab.getRootId(), equalTo(TAB1_ID));
+        assertThat(
+                TabStateAttributes.from(mTab).getDirtinessState(),
+                equalTo(TabStateAttributes.DirtinessState.CLEAN));
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTabGroupIdWithChange() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        assertThat(
+                TabStateAttributes.from(mTab).getDirtinessState(),
+                equalTo(TabStateAttributes.DirtinessState.CLEAN));
+        assertNull(mTab.getTabGroupId());
+
+        long tokenHigh = 0x1234567890L;
+        long tokenLow = 0xABCDEF;
+        Token token = new Token(tokenHigh, tokenLow);
+        checkTabGroupIdChange(token);
+
+        // Reverse field order so the token is unequal.
+        token = new Token(tokenLow, tokenHigh);
+        checkTabGroupIdChange(token);
+
+        checkTabGroupIdChange(null);
+    }
+
+    private void checkTabGroupIdChange(@Nullable Token token) {
+        mTab.setTabGroupId(token);
+
+        verify(mObserver).onTabGroupIdChanged(mTab, token);
+
+        TabStateAttributes attributes = TabStateAttributes.from(mTab);
+        assertThat(mTab.getTabGroupId(), equalTo(token));
+        assertThat(
+                attributes.getDirtinessState(), equalTo(TabStateAttributes.DirtinessState.DIRTY));
+
+        attributes.clearTabStateDirtiness();
+    }
+
+    @Test
+    @SmallTest
+    public void testSetTabGroupIdWithoutChange() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        assertThat(
+                TabStateAttributes.from(mTab).getDirtinessState(),
+                equalTo(TabStateAttributes.DirtinessState.CLEAN));
+        assertNull(mTab.getTabGroupId());
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setTabGroupId(null);
+
+        verify(mObserver, never()).onTabGroupIdChanged(any(Tab.class), any());
+        assertNull(mTab.getTabGroupId());
         assertThat(
                 TabStateAttributes.from(mTab).getDirtinessState(),
                 equalTo(TabStateAttributes.DirtinessState.CLEAN));

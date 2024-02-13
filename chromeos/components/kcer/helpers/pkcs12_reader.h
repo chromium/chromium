@@ -83,8 +83,8 @@ struct COMPONENT_EXPORT(KCER) KeyData {
   std::vector<uint8_t> cka_id_value;
 };
 
-// Class helper for operations with X509 certificates data which are required
-// for storing keys and certificates in Chaps.
+// Helper class for working with boringssl and related objects.
+// TODO(miersh): Rename, don't mention PKCS#12.
 class COMPONENT_EXPORT(KCER) Pkcs12Reader {
  public:
   Pkcs12Reader();

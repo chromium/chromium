@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
@@ -36,10 +37,25 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
+actions::ActionItem::ActionItemBuilder ChromeMenuAction(
+    actions::ActionItem::InvokeActionCallback callback,
+    actions::ActionId action_id,
+    int title_id,
+    int tooltip_id,
+    const gfx::VectorIcon& icon) {
+  return actions::ActionItem::Builder(callback)
+      .SetActionId(action_id)
+      .SetText(l10n_util::GetStringUTF16(title_id))
+      .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
+      .SetImage(ui::ImageModel::FromVectorIcon(
+          icon, ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
+      .SetProperty(actions::kActionItemPinnableKey, true);
+}
 
 actions::ActionItem::ActionItemBuilder SidePanelAction(
     SidePanelEntryId id,
@@ -202,5 +218,27 @@ void BrowserActions::InitializeBrowserActions() {
       SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
                       IDS_LENS_DEFAULT_TITLE, vector_icons::kImageSearchIcon,
                       kActionSidePanelShowLens, &(browser_.get()), false)
+          .Build());
+
+  //------- Chrome Menu Actions --------//
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             chrome::NewIncognitoWindow(browser->profile());
+                           },
+                           base::Unretained(&(browser_.get()))),
+                       kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
+                       IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             chrome::Print(browser);
+                           },
+                           base::Unretained(&(browser_.get()))),
+                       kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
           .Build());
 }

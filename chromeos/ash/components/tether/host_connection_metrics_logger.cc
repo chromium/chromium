@@ -83,6 +83,11 @@ void HostConnectionMetricsLogger::RecordInternalError(
           ConnectionToHostResult_FailureClientConnectionEventType::
               INTERNAL_ERROR);
       break;
+    case ConnectionToHostInternalError::CLIENT_CONNECTION_WIFI_FAILED_TO_ENABLE:
+      RecordConnectionResultFailureClientConnection(
+          ConnectionToHostResult_FailureClientConnectionEventType::
+              WIFI_FAILED_TO_ENABLED);
+      break;
     case ConnectionToHostInternalError::
         CLIENT_CONNECTION_NETWORK_CONNECTION_HANDLER_FAILED:
       RecordConnectionResultFailureClientConnection(
@@ -143,7 +148,7 @@ void HostConnectionMetricsLogger::RecordInternalError(
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::INVALID_WIFI_AP_CONFIG);
       break;
-  }
+  };
 }
 
 void HostConnectionMetricsLogger::OnActiveHostChanged(

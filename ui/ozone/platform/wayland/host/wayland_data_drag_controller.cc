@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -388,7 +389,8 @@ void WaylandDataDragController::OnDragEnter(WaylandWindow* window,
     // Reading the data may take some time so set |state_| to |kTransferring|,
     // and schedule a task to do the actual data fetching.
     state_ = State::kTransferring;
-    PostDataTransferTask(location, timestamp);
+    auto cancel_flag = base::MakeRefCounted<CancelFlag>();
+    PostDataTransferTask(location, timestamp, cancel_flag);
   }
 
   OnDragMotion(location, timestamp);
@@ -440,6 +442,7 @@ void WaylandDataDragController::OnDragLeave(base::TimeTicks timestamp) {
   // reset state kIdle now. Otherwise, it'll be reset in OnDataSourceFinish.
   if (!IsDragSource()) {
     state_ = State::kIdle;
+    CancelDataTransferIfNeeded();
   }
 
   if (!window_) {
@@ -541,11 +544,13 @@ void WaylandDataDragController::OnWindowRemoved(WaylandWindow* window) {
 
 void WaylandDataDragController::PostDataTransferTask(
     const gfx::PointF& location,
-    base::TimeTicks start_time) {
+    base::TimeTicks start_time,
+    const scoped_refptr<CancelFlag>& cancel_flag) {
   using FetchingInfo = std::vector<std::pair<std::string, int>>;
 
   DCHECK_EQ(state_, State::kTransferring);
   DCHECK(data_offer_);
+  DCHECK(!cancel_flag->data.IsSet());
 
   FetchingInfo offered_data;
   for (const auto& mime_type : data_offer_->mime_types()) {
@@ -564,22 +569,29 @@ void WaylandDataDragController::PostDataTransferTask(
   }
   connection_->Flush();
 
-  auto fetch_data_closure = [](FetchingInfo offered_data) {
+  auto fetch_data_closure = [](FetchingInfo offered_data,
+                               const scoped_refptr<CancelFlag>& cancel_flag)
+      -> std::unique_ptr<OSExchangeData> {
     auto fetched_data = std::make_unique<WaylandExchangeDataProvider>();
-    VLOG(1) << __func__ << " Starting data fetching for " << offered_data.size()
+    VLOG(1) << "Starting data fetching for " << offered_data.size()
             << " mime types.";
 
     for (const auto& [mime_type, fd_handle] : offered_data) {
       DCHECK(IsMimeTypeSupported(mime_type));
-      VLOG(1) << __func__ << " will fetch data for " << mime_type;
 
+      if (cancel_flag->data.IsSet()) {
+        VLOG(2) << "cancelled data fetching.";
+        return {};
+      }
+
+      VLOG(1) << "will fetch data for " << mime_type;
       std::vector<uint8_t> contents;
       wl::ReadDataFromFD(base::ScopedFD(fd_handle), &contents);
       if (contents.empty()) {
         continue;
       }
 
-      VLOG(1) << __func__ << " fetched " << contents.size() << " bytes.";
+      VLOG(1) << "did fetch " << contents.size() << " bytes.";
       fetched_data->AddData(base::RefCountedBytes::TakeVector(&contents),
                             mime_type);
     }
@@ -588,9 +600,11 @@ void WaylandDataDragController::PostDataTransferTask(
   };
 
   last_drag_location_ = location;
+  data_fetch_cancel_flag_ = cancel_flag;
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(fetch_data_closure, std::move(offered_data)),
+      base::BindOnce(fetch_data_closure, std::move(offered_data), cancel_flag),
       base::BindOnce(&WaylandDataDragController::OnDataTransferFinished,
                      weak_factory_.GetWeakPtr(), std::move(start_time)));
 }
@@ -602,6 +616,9 @@ void WaylandDataDragController::OnDataTransferFinished(
   DCHECK(!IsDragSource());
   VLOG(1) << __func__ << " transferring=" << (state_ == State::kTransferring)
           << " window=" << !!window_;
+
+  data_fetch_cancel_flag_.reset();
+
   if (state_ != State::kTransferring) {
     return;
   }
@@ -617,7 +634,18 @@ void WaylandDataDragController::OnDataTransferFinished(
   window_->OnDragDataAvailable(std::move(received_data));
 }
 
-absl::optional<wl::Serial>
+void WaylandDataDragController::CancelDataTransferIfNeeded() {
+  if (state_ == State::kTransferring) {
+    return;
+  }
+  if (data_fetch_cancel_flag_) {
+    VLOG(2) << "Cancelling data fetching.";
+    data_fetch_cancel_flag_->data.Set();
+    data_fetch_cancel_flag_ = nullptr;
+  }
+}
+
+std::optional<wl::Serial>
 WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
   wl::SerialType serial_type;
   bool should_drag = false;
@@ -633,7 +661,7 @@ WaylandDataDragController::GetAndValidateSerialForDrag(DragEventSource source) {
       break;
   }
   return should_drag ? connection_->serial_tracker().GetSerial(serial_type)
-                     : absl::nullopt;
+                     : std::nullopt;
 }
 
 void WaylandDataDragController::SetOfferedExchangeDataProvider(

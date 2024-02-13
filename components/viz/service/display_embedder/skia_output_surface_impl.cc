@@ -446,16 +446,6 @@ void SkiaOutputSurfaceImpl::SetUpdateVSyncParametersCallback(
   update_vsync_parameters_callback_ = std::move(callback);
 }
 
-void SkiaOutputSurfaceImpl::SetGpuVSyncEnabled(bool enabled) {
-  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetGpuVSyncEnabled,
-                             base::Unretained(impl_on_gpu_.get()), enabled);
-  gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(task), {});
-}
-
-void SkiaOutputSurfaceImpl::SetGpuVSyncCallback(GpuVSyncCallback callback) {
-  gpu_vsync_callback_ = std::move(callback);
-}
-
 void SkiaOutputSurfaceImpl::SetVSyncDisplayID(int64_t display_id) {
   auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::SetVSyncDisplayID,
                              base::Unretained(impl_on_gpu_.get()), display_id);
@@ -489,8 +479,12 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     // purpose of creating Graphite TextureInfo i.e. it will have CopySrc and
     // CopyDst usage. So don't treat it like a root surface which generally
     // won't have or support those usages.
-    skgpu::graphite::TextureInfo texture_info =
-        gpu::GraphiteBackendTextureInfo(gr_context_type_, format_);
+    skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
+        gr_context_type_, format_, /*readonly=*/false, /*plane_index=*/0,
+        /*is_yuv_plane=*/false,
+        /*mipmapped=*/false, /*scanout_dcomp_surface=*/false,
+        /*supports_multiplanar_rendering=*/false,
+        /*supports_multiplanar_copy=*/false);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {
@@ -879,9 +873,10 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
                           static_cast<SkAlphaType>(alpha_type), color_space);
     skgpu::graphite::TextureInfo texture_info = gpu::GraphiteBackendTextureInfo(
-        gr_context_type_, format, /*plane_index=*/0,
+        gr_context_type_, format, /*readonly=*/false, /*plane_index=*/0,
         /*is_yuv_plane=*/false, mipmap == skgpu::Mipmapped::kYes,
-        scanout_dcomp_surface);
+        scanout_dcomp_surface, /*supports_multiplanar_rendering=*/false,
+        /*supports_multiplanar_copy=*/false);
     if (!texture_info.isValid()) {
       DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
       return nullptr;
@@ -1117,29 +1112,9 @@ bool SkiaOutputSurfaceImpl::Initialize() {
 
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 
-  // This runner could be called from vsync or GPU thread after |this| is
-  // destroyed. We post directly to display compositor thread to check
-  // |weak_ptr_| as |dependency_| may have been destroyed.
-#if BUILDFLAG(IS_ANDROID)
-  // Callback is never used on Android. Doesn't work with WebView because
-  // calling it bypasses SkiaOutputSurfaceDependency.
-  GpuVSyncCallback vsync_callback_runner = base::DoNothing();
-#else
-  GpuVSyncCallback vsync_callback_runner = base::BindRepeating(
-      [](scoped_refptr<base::SingleThreadTaskRunner> runner,
-         base::WeakPtr<SkiaOutputSurfaceImpl> weak_ptr,
-         base::TimeTicks timebase, base::TimeDelta interval) {
-        runner->PostTask(FROM_HERE,
-                         base::BindOnce(&SkiaOutputSurfaceImpl::OnGpuVSync,
-                                        weak_ptr, timebase, interval));
-      },
-      base::SingleThreadTaskRunner::GetCurrentDefault(), weak_ptr_);
-#endif
-
   bool result = false;
-  auto callback =
-      base::BindOnce(&SkiaOutputSurfaceImpl::InitializeOnGpuThread,
-                     base::Unretained(this), vsync_callback_runner, &result);
+  auto callback = base::BindOnce(&SkiaOutputSurfaceImpl::InitializeOnGpuThread,
+                                 base::Unretained(this), &result);
   EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
   // |capabilities_| will be initialized in InitializeOnGpuThread(), so have to
@@ -1172,9 +1147,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   return result;
 }
 
-void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
-    GpuVSyncCallback vsync_callback_runner,
-    bool* result) {
+void SkiaOutputSurfaceImpl::InitializeOnGpuThread(bool* result) {
   auto did_swap_buffer_complete_callback = base::BindRepeating(
       &SkiaOutputSurfaceImpl::DidSwapBuffersComplete, weak_ptr_);
   auto buffer_presented_callback =
@@ -1193,7 +1166,7 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
       display_compositor_controller_->controller_on_gpu(),
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
-      std::move(schedule_gpu_task), std::move(vsync_callback_runner),
+      std::move(schedule_gpu_task),
       std::move(add_child_window_to_browser_callback),
       std::move(release_overlays_callback));
   if (!impl_on_gpu_) {
@@ -1398,13 +1371,6 @@ void SkiaOutputSurfaceImpl::AddChildWindowToBrowser(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(client_);
   client_->AddChildWindowToBrowser(child_window);
-}
-
-void SkiaOutputSurfaceImpl::OnGpuVSync(base::TimeTicks timebase,
-                                       base::TimeDelta interval) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (gpu_vsync_callback_)
-    gpu_vsync_callback_.Run(timebase, interval);
 }
 
 void SkiaOutputSurfaceImpl::ScheduleGpuTaskForTesting(
@@ -1765,5 +1731,23 @@ bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
                              GrRenderable::kYes)
       .isValid();
 }
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+void SkiaOutputSurfaceImpl::DetileOverlay(gpu::Mailbox input,
+                                          const gfx::Size& input_visible_size,
+                                          gpu::SyncToken input_sync_token,
+                                          gpu::Mailbox output,
+                                          const gfx::RectF& display_rect,
+                                          const gfx::RectF& crop_rect,
+                                          gfx::OverlayTransform transform) {
+  auto task = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::DetileOverlay,
+                             base::Unretained(impl_on_gpu_.get()), input,
+                             input_visible_size, output, display_rect,
+                             crop_rect, transform);
+  EnqueueGpuTask(std::move(task), {input_sync_token}, /*make_current=*/false,
+                 /*need_framebuffer=*/false);
+}
+#endif
 
 }  // namespace viz

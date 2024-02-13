@@ -8,7 +8,8 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/strings/string_util.h"
+#include "base/containers/span.h"
+#include "base/numerics/checked_math.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -41,28 +42,23 @@ void Aead::Init(base::span<const uint8_t> key) {
   key_ = key;
 }
 
-static base::span<const uint8_t> ToSpan(std::string_view sp) {
-  return base::as_bytes(base::make_span(sp));
-}
-
 void Aead::Init(const std::string* key) {
-  Init(ToSpan(*key));
+  Init(base::as_byte_span(*key));
 }
 
 std::vector<uint8_t> Aead::Seal(
     base::span<const uint8_t> plaintext,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> additional_data) const {
-  const size_t max_output_length =
-      EVP_AEAD_max_overhead(aead_) + plaintext.size();
-  CHECK(max_output_length >= plaintext.size());
-  std::vector<uint8_t> ret;
-  ret.resize(max_output_length);
+  size_t max_output_length =
+      base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead_))
+          .ValueOrDie();
+  std::vector<uint8_t> ret(max_output_length);
 
-  size_t output_length;
-  CHECK(Seal(plaintext, nonce, additional_data, ret.data(), &output_length,
-             max_output_length));
-  ret.resize(output_length);
+  std::optional<size_t> output_length =
+      Seal(plaintext, nonce, additional_data, ret);
+  CHECK(output_length);
+  ret.resize(*output_length);
   return ret;
 }
 
@@ -70,20 +66,21 @@ bool Aead::Seal(std::string_view plaintext,
                 std::string_view nonce,
                 std::string_view additional_data,
                 std::string* ciphertext) const {
-  const size_t max_output_length =
-      EVP_AEAD_max_overhead(aead_) + plaintext.size();
-  CHECK(max_output_length + 1 >= plaintext.size());
-  uint8_t* out_ptr = reinterpret_cast<uint8_t*>(
-      base::WriteInto(ciphertext, max_output_length + 1));
+  size_t max_output_length =
+      base::CheckAdd(plaintext.size(), EVP_AEAD_max_overhead(aead_))
+          .ValueOrDie();
+  ciphertext->resize(max_output_length);
 
-  size_t output_length;
-  if (!Seal(ToSpan(plaintext), ToSpan(nonce), ToSpan(additional_data), out_ptr,
-            &output_length, max_output_length)) {
+  std::optional<size_t> output_length =
+      Seal(base::as_byte_span(plaintext), base::as_byte_span(nonce),
+           base::as_byte_span(additional_data),
+           base::as_writable_byte_span(*ciphertext));
+  if (!output_length) {
     ciphertext->clear();
     return false;
   }
 
-  ciphertext->resize(output_length);
+  ciphertext->resize(*output_length);
   return true;
 }
 
@@ -92,16 +89,15 @@ std::optional<std::vector<uint8_t>> Aead::Open(
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> additional_data) const {
   const size_t max_output_length = ciphertext.size();
-  std::vector<uint8_t> ret;
-  ret.resize(max_output_length);
+  std::vector<uint8_t> ret(max_output_length);
 
-  size_t output_length;
-  if (!Open(ciphertext, nonce, additional_data, ret.data(), &output_length,
-            max_output_length)) {
+  std::optional<size_t> output_length =
+      Open(ciphertext, nonce, additional_data, ret);
+  if (!output_length) {
     return std::nullopt;
   }
 
-  ret.resize(output_length);
+  ret.resize(*output_length);
   return ret;
 }
 
@@ -110,18 +106,18 @@ bool Aead::Open(std::string_view ciphertext,
                 std::string_view additional_data,
                 std::string* plaintext) const {
   const size_t max_output_length = ciphertext.size();
-  CHECK(max_output_length + 1 > max_output_length);
-  uint8_t* out_ptr = reinterpret_cast<uint8_t*>(
-      base::WriteInto(plaintext, max_output_length + 1));
+  plaintext->resize(max_output_length);
 
-  size_t output_length;
-  if (!Open(ToSpan(ciphertext), ToSpan(nonce), ToSpan(additional_data), out_ptr,
-            &output_length, max_output_length)) {
+  std::optional<size_t> output_length =
+      Open(base::as_byte_span(ciphertext), base::as_byte_span(nonce),
+           base::as_byte_span(additional_data),
+           base::as_writable_byte_span(*plaintext));
+  if (!output_length) {
     plaintext->clear();
     return false;
   }
 
-  plaintext->resize(output_length);
+  plaintext->resize(*output_length);
   return true;
 }
 
@@ -133,50 +129,48 @@ size_t Aead::NonceLength() const {
   return EVP_AEAD_nonce_length(aead_);
 }
 
-bool Aead::Seal(base::span<const uint8_t> plaintext,
-                base::span<const uint8_t> nonce,
-                base::span<const uint8_t> additional_data,
-                uint8_t* out,
-                size_t* output_length,
-                size_t max_output_length) const {
+std::optional<size_t> Aead::Seal(base::span<const uint8_t> plaintext,
+                                 base::span<const uint8_t> nonce,
+                                 base::span<const uint8_t> additional_data,
+                                 base::span<uint8_t> out) const {
   DCHECK(key_);
   DCHECK_EQ(NonceLength(), nonce.size());
   bssl::ScopedEVP_AEAD_CTX ctx;
 
+  size_t out_len;
   if (!EVP_AEAD_CTX_init(ctx.get(), aead_, key_->data(), key_->size(),
                          EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr) ||
-      !EVP_AEAD_CTX_seal(ctx.get(), out, output_length, max_output_length,
+      !EVP_AEAD_CTX_seal(ctx.get(), out.data(), &out_len, out.size(),
                          nonce.data(), nonce.size(), plaintext.data(),
                          plaintext.size(), additional_data.data(),
                          additional_data.size())) {
-    return false;
+    return std::nullopt;
   }
 
-  DCHECK_LE(*output_length, max_output_length);
-  return true;
+  DCHECK_LE(out_len, out.size());
+  return out_len;
 }
 
-bool Aead::Open(base::span<const uint8_t> plaintext,
-                base::span<const uint8_t> nonce,
-                base::span<const uint8_t> additional_data,
-                uint8_t* out,
-                size_t* output_length,
-                size_t max_output_length) const {
+std::optional<size_t> Aead::Open(base::span<const uint8_t> plaintext,
+                                 base::span<const uint8_t> nonce,
+                                 base::span<const uint8_t> additional_data,
+                                 base::span<uint8_t> out) const {
   DCHECK(key_);
   DCHECK_EQ(NonceLength(), nonce.size());
   bssl::ScopedEVP_AEAD_CTX ctx;
 
+  size_t out_len;
   if (!EVP_AEAD_CTX_init(ctx.get(), aead_, key_->data(), key_->size(),
                          EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr) ||
-      !EVP_AEAD_CTX_open(ctx.get(), out, output_length, max_output_length,
+      !EVP_AEAD_CTX_open(ctx.get(), out.data(), &out_len, out.size(),
                          nonce.data(), nonce.size(), plaintext.data(),
                          plaintext.size(), additional_data.data(),
                          additional_data.size())) {
-    return false;
+    return std::nullopt;
   }
 
-  DCHECK_LE(*output_length, max_output_length);
-  return true;
+  DCHECK_LE(out_len, out.size());
+  return out_len;
 }
 
 }  // namespace crypto

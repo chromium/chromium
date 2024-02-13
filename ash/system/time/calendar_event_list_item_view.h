@@ -61,9 +61,9 @@ struct EventListItemIndex {
 
 // This view displays a calendar event entry.
 class ASH_EXPORT CalendarEventListItemView : public views::Button {
- public:
-  METADATA_HEADER(CalendarEventListItemView);
+  METADATA_HEADER(CalendarEventListItemView, views::Button)
 
+ public:
   CalendarEventListItemView(CalendarViewController* calendar_view_controller,
                             SelectedDateParams selected_date_params,
                             google_apis::calendar::CalendarEvent event,

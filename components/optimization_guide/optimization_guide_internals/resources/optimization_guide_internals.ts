@@ -6,9 +6,10 @@ import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import {DownloadedModelInfo, LoggedClientIds, PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
+import type {DownloadedModelInfo, LoggedClientIds} from './optimization_guide_internals.mojom-webui.js';
+import {PageHandlerFactory} from './optimization_guide_internals.mojom-webui.js';
 import {OptimizationGuideInternalsBrowserProxy} from './optimization_guide_internals_browser_proxy.js';
 
 // Contains all the log events received when the internals page is open.

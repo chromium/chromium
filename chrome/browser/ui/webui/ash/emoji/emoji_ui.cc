@@ -9,12 +9,12 @@
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper_service_factory.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/emoji_picker_resources.h"
@@ -43,7 +43,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
 
  public:
   explicit EmojiBubbleDialogView(
-      std::unique_ptr<BubbleContentsWrapper> contents_wrapper)
+      std::unique_ptr<WebUIContentsWrapper> contents_wrapper)
       : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
         contents_wrapper_(std::move(contents_wrapper)) {
     set_has_parent(false);
@@ -51,7 +51,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   }
 
  private:
-  std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
+  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
 };
 
 BEGIN_METADATA(EmojiBubbleDialogView)
@@ -151,7 +151,7 @@ void EmojiUI::Show() {
   // TODO(b/181703133): Refactor so that the webui_bubble_manager can be used
   // here to reduce code duplication.
 
-  auto contents_wrapper = std::make_unique<BubbleContentsWrapperT<EmojiUI>>(
+  auto contents_wrapper = std::make_unique<WebUIContentsWrapperT<EmojiUI>>(
       GURL(chrome::kChromeUIEmojiPickerURL), profile, IDS_ACCNAME_EMOJI_PICKER);
   // Need to reload the web contents here because the view isn't visible unless
   // ShowUI is called from the JS side.  By reloading, we trigger the JS to
@@ -177,6 +177,11 @@ void EmojiUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void EmojiUI::BindInterface(
+    mojo::PendingReceiver<emoji_search::mojom::EmojiSearch> receiver) {
+  emoji_search_ = std::make_unique<EmojiSearchProxy>(std::move(receiver));
 }
 
 void EmojiUI::BindInterface(

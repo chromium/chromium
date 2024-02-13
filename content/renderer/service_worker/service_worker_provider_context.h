@@ -231,7 +231,17 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   bool CanCreateSubresourceLoaderFactory() const;
 
   // Returns URLLoaderFactory for loading subresources with the controller
-  // ServiceWorker, or nullptr if no controller is attached.
+  // ServiceWorker, or nullptr.
+  //
+  // If the router evaluation is needed, this function always returns
+  // URLLoaderFactory for subresources. the URLLoaderFactory can be created
+  // without the controller ServiceWorker if |remote_controller_| is null, that
+  // happens when there is no fetch handler. This behavior is needed because the
+  // router evaluation is done in the ServiceWorkerSubresourceLoader.
+  //
+  // If the router evaluation is not needed, this function returns nullptr if no
+  // controller is attached (e.g. no fetch handler), or the fetch handler
+  // is no-op.
   network::mojom::URLLoaderFactory* GetSubresourceLoaderFactoryInternal();
 
   const blink::mojom::ServiceWorkerContainerType container_type_;
@@ -286,6 +296,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
   blink::mojom::ServiceWorkerFetchHandlerType effective_fetch_handler_type_ =
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  bool need_router_evaluate_ = false;
 
   blink::mojom::ServiceWorkerFetchHandlerBypassOption
       fetch_handler_bypass_option_ =

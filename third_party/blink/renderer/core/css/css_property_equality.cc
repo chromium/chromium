@@ -916,6 +916,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.Zoom() == b.Zoom();
     case CSSPropertyID::kPositionTryOrder:
       return a.PositionTryOrder() == b.PositionTryOrder();
+    case CSSPropertyID::kPositionTryOptions:
+      return base::ValuesEquivalent(a.GetPositionTryOptions(),
+                                    b.GetPositionTryOptions());
 
     // These properties are not animateable, but perhaps equality should still
     // be defined for them.

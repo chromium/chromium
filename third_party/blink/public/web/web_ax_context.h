@@ -88,12 +88,6 @@ class BLINK_EXPORT WebAXContext {
   // become dirty.
   bool HasDirtyObjects();
 
-  // Adds the event to a list of pending events that is cleared out by
-  // a subsequent call to SerializeDirtyObjectsAndEvents. Returns false if
-  // the event is already pending.
-  bool AddPendingEvent(const ui::AXEvent& event,
-                       bool insert_at_beginning = false);
-
   // Ensure that accessibility is clean and up-to-date for both the main and
   // popup document. Ensures layout is clean as well.
   void UpdateAXForAllDocuments();

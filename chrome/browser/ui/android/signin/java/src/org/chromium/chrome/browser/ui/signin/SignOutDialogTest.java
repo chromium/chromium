@@ -37,6 +37,8 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
+import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -71,6 +73,8 @@ public class SignOutDialogTest {
 
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
 
+    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeNativeMock;
+
     @Mock private SigninManager mSigninManagerMock;
 
     @Mock private IdentityManager mIdentityManagerMock;
@@ -86,6 +90,7 @@ public class SignOutDialogTest {
     @Before
     public void setUp() {
         mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
+        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
         mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
@@ -204,6 +209,34 @@ public class SignOutDialogTest {
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
 
         verify(mListenerMock).onSignOutClicked(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testFooterWhenAccountIsNotManaged_UPMDisabled() {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(false);
+
+        showSignOutDialog();
+
+        onView(withText(R.string.turn_off_sync_and_signout_message))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testFooterWhenAccountIsNotManaged_UPMEnabled() {
+        mockAllowDeletingBrowserHistoryPref(true);
+        when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
+                .thenReturn(true);
+
+        showSignOutDialog();
+
+        onView(withText(R.string.turn_off_sync_and_signout_message_without_passwords))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 
     @Test

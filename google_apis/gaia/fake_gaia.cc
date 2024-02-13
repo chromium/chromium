@@ -61,7 +61,6 @@ const char kTestReauthProofToken[] = "fake-reauth-proof-token";
 const char kTestCookieAttributes[] =
     "; Path=/; HttpOnly; SameSite=None; Secure";
 
-const char kDefaultGaiaId[] = "12345";
 const char kDefaultEmail[] = "email12345@foo.com";
 
 const base::FilePath::CharType kEmbeddedSetupChromeos[] =
@@ -775,7 +774,7 @@ void FakeGaia::HandleListAccounts(const HttpRequest& request,
   std::vector<std::string> listed_accounts;
   listed_accounts.push_back(base::StringPrintf(
       kIndividualListedAccountResponseFormat, configuration_.email.c_str(),
-      kDefaultGaiaId, kAccountIsSignedIn));
+      kDefaultGaiaId.data(), kAccountIsSignedIn));
 
   for (const std::string& gaia_id : configuration_.signed_out_gaia_ids) {
     DCHECK_NE(kDefaultGaiaId, gaia_id);

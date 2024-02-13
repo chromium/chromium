@@ -25,7 +25,11 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
-namespace ash::full_restore {
+namespace ash {
+
+struct PineContentsData;
+
+namespace full_restore {
 
 class FullRestoreAppLaunchHandler;
 class FullRestoreDataHandler;
@@ -73,7 +77,8 @@ class FullRestoreService : public KeyedService,
    public:
     virtual ~Delegate() = default;
     // Starts overview with the pine dialog unless overview is already active.
-    virtual void MaybeStartPineOverviewSession() = 0;
+    virtual void MaybeStartPineOverviewSession(
+        std::unique_ptr<PineContentsData> pine_contents_data) = 0;
   };
 
   static FullRestoreService* GetForProfile(Profile* profile);
@@ -205,6 +210,8 @@ class ScopedRestoreForTesting {
   ~ScopedRestoreForTesting();
 };
 
-}  // namespace ash::full_restore
+}  // namespace full_restore
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_APP_RESTORE_FULL_RESTORE_SERVICE_H_

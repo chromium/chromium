@@ -328,7 +328,7 @@ void SavedDeskGridView::AnimateGridItems(
   }
 }
 
-BEGIN_METADATA(SavedDeskGridView, views::View)
+BEGIN_METADATA(SavedDeskGridView)
 END_METADATA
 
 }  // namespace ash

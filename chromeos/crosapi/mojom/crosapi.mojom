@@ -72,6 +72,7 @@ import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_namespace.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
+import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/metrics.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
@@ -158,8 +159,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 132
-// Next method id: 134
+// Next version: 133
+// Next method id: 135
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -514,6 +515,11 @@ interface Crosapi {
   // Added in M90.
   [MinVersion=17] BindMachineLearningService@22(
       pending_receiver<chromeos.machine_learning.mojom.MachineLearningService> receiver);
+
+  // Binds the mahi browser delegate to the mahi browser client.
+  // Added in M123.
+  [MinVersion=132] BindMahiBrowserDelegate@134(
+      pending_receiver<MahiBrowserDelegate> receiver);
 
   // Binds the MediaUI interface for the Global Media Controls UI.
   // Added in M113.
@@ -1129,8 +1135,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 75
-// Next id: 75
+// Next version: 77
+// Next id: 77
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1574,6 +1580,12 @@ struct BrowserInitParams {
   // If true, "Compose" will be disabled. Only applies on chromeos devices.
   [MinVersion=75]
   bool should_disable_chrome_compose_on_chromeos@75;
+
+  // The seed that is used to randomize the limited entropy synthetic trial. The
+  // group assignment of this trial needs to be the same between Lacros and ash
+  // chrome.
+  [MinVersion=76]
+  uint64 limited_entropy_synthetic_trial_seed@76;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

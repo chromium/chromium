@@ -6,10 +6,10 @@
 #define UI_VIEWS_CONTROLS_BUTTON_CHECKBOX_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "cc/paint/paint_flags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/metadata/view_factory.h"
@@ -87,7 +87,7 @@ class VIEWS_EXPORT Checkbox : public LabelButton {
   // True if the checkbox is checked.
   bool checked_ = false;
 
-  absl::optional<SkColor> checked_icon_image_color_;
+  std::optional<SkColor> checked_icon_image_color_;
 };
 
 class VIEWS_EXPORT CheckboxActionViewInterface

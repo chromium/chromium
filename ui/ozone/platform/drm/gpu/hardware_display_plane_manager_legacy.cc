@@ -42,12 +42,12 @@ bool CommitPendingCrtcProperty(
     DrmDevice* device,
     uint32_t crtc_id,
     DrmWrapper::Property& prop,
-    absl::optional<ScopedDrmPropertyBlob>& pending_blob) {
+    std::optional<ScopedDrmPropertyBlob>& pending_blob) {
   if (!pending_blob.has_value()) {
     return true;
   }
   ScopedDrmPropertyBlob blob = std::move(pending_blob.value());
-  pending_blob = absl::nullopt;
+  pending_blob = std::nullopt;
   if (!prop.id) {
     return true;
   }

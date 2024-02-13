@@ -57,12 +57,12 @@ BASE_FEATURE(kAVFoundationOverlays,
 // Whether the presentation should be delayed until the next CVDisplayLink
 // callback when kCVDisplayLinkBeginFrameSource is enabled. This flag has no
 // effect if kCVDisplayLinkBeginFrameSource is disabled.
-BASE_FEATURE(kDelayOnFramePresent,
-             "DelayOnFramePresent",
+BASE_FEATURE(kVSyncAlignedPresent,
+             "VSyncAlignedPresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether the presentation for the first frame after VSync stops should be
-// delayed when kDelayOnFramePresent is enabled.
+// delayed when kVSyncAlignedPresent is enabled.
 BASE_FEATURE(kNoDelayOnFirstFramePresent,
              "NoDelayOnFirstFramePresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -189,8 +189,8 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   if (vsync_callback_mac_) {
     vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
     if (delay_presenetation_until_next_vsync &&
-        base::FeatureList::IsEnabled(kDelayOnFramePresent)) {
-      // PopulateCALayerParameters will be called in OnVSyncPresentation().
+        base::FeatureList::IsEnabled(kVSyncAlignedPresent)) {
+      // PopulateCALayerParameters will be called in OnVSyncPresentation.
       return;
     }
   }
@@ -345,7 +345,10 @@ void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
 
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource)) {
+  if (!(base::FeatureList::IsEnabled(
+            features::kCVDisplayLinkBeginFrameSource) ||
+        base::FeatureList::IsEnabled(kVSyncAlignedPresent) ||
+        base::FeatureList::IsEnabled(kNewPresentationFeedbackTimeStamps))) {
     return;
   }
 
@@ -363,7 +366,6 @@ void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
 
     display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
   }
-
   display_id_ = display_id;
 }
 

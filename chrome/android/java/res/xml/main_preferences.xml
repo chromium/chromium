@@ -98,10 +98,10 @@ found in the LICENSE file.
         android:order="17"
         android:title="@string/options_homepage_title"/>
     <Preference
-        android:fragment="org.chromium.chrome.features.magic_stack.ChromeHomeModulesConfigSettings"
+        android:fragment="org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings"
         android:key="home_modules_config"
         android:order="18"
-        android:title="@string/home_modules_context_menu_customize"/>
+        android:title="@string/home_modules_configuration"/>
     <Preference
         android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"
         android:key="toolbar_shortcut"

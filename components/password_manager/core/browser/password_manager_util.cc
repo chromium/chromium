@@ -37,6 +37,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -46,6 +47,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
+
+using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;
 #endif
 
 using autofill::password_generation::PasswordGenerationType;
@@ -68,6 +72,18 @@ std::tuple<int, base::Time, int> GetPriorityProperties(
 bool IsBetterMatch(const PasswordForm* lhs, const PasswordForm* rhs) {
   return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
+  return pref_service &&
+         static_cast<
+             password_manager::prefs::UseUpmLocalAndSeparateStoresState>(
+             pref_service->GetInteger(
+                 password_manager::prefs::
+                     kPasswordsUseUPMLocalAndSeparateStores)) ==
+             password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn;
+}
+#endif
 
 }  // namespace
 
@@ -147,6 +163,22 @@ void UserTriggeredManualGenerationFromContextMenu(
             }
           },
           base::Unretained(password_manager_client)));
+}
+
+bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client) {
+#if BUILDFLAG(IS_ANDROID)
+  if (UsesSplitStoresAndUPMForLocal(client->GetPrefs()) &&
+      IsSyncFeatureEnabledIncludingPasswords(client->GetSyncService())) {
+    // After store split on Android, AccountPasswordStore is a default store for
+    // saving passwords when sync is enabled. If either of conditions above is
+    // not satisfied fallback to ProfilePasswordStore.
+    return client->GetAccountPasswordStore() &&
+           client->GetAccountPasswordStore()->IsAbleToSavePasswords();
+  }
+#endif
+  // TODO(b/324054761): Check AccountPasswordStore store when needed.
+  return client->GetProfilePasswordStore() &&
+         client->GetProfilePasswordStore()->IsAbleToSavePasswords();
 }
 
 base::StringPiece GetSignonRealmWithProtocolExcluded(const PasswordForm& form) {

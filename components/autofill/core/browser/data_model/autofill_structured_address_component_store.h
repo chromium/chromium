@@ -25,6 +25,10 @@ class AddressComponentsStore {
 
   ~AddressComponentsStore();
 
+  // Returns the node in the tree that supports `field_type`. This node, if it
+  // exists, is unique by definition. Returns nullptr if no such node exists.
+  AddressComponent* GetNodeForType(FieldType field_type) const;
+
   AddressComponent* Root() const {
     return components_.at(ADDRESS_HOME_ADDRESS).get();
   }

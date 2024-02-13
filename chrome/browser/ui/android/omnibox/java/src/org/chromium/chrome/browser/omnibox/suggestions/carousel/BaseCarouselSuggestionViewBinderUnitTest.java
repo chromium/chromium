@@ -96,8 +96,13 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         Assert.assertEquals(0, mTiles.size());
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, tiles);
         Assert.assertEquals(3, mTiles.size());
+        verify(mView).resetSelection();
+
+        clearInvocations(mView);
+
         mModel.set(BaseCarouselSuggestionViewProperties.TILES, null);
         Assert.assertEquals(0, mTiles.size());
+        verify(mView).resetSelection();
     }
 
     @Test

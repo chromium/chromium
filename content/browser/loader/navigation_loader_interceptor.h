@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "content/browser/loader/response_head_update_params.h"
+#include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -29,8 +31,6 @@ struct ResourceRequest;
 namespace content {
 
 class BrowserContext;
-struct SubresourceLoaderParams;
-struct ResponseHeadUpdateParams;
 
 // NavigationLoaderInterceptor is given a chance to create a URLLoader and
 // intercept a navigation request before the request is handed off to the
@@ -43,16 +43,52 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   NavigationLoaderInterceptor() = default;
   virtual ~NavigationLoaderInterceptor() = default;
 
-  using LoaderCallback =
-      base::OnceCallback<void(scoped_refptr<network::SharedURLLoaderFactory>)>;
+  // When `LoaderCallback` is called with non-nullopt `Result`:
+  // - Intercept the navigation request using `single_request_factory` if
+  //   non-null, or otherwise fall back to the default loader factory.
+  // - Intercept subresource requests using `subresource_loader_params` if
+  //   non-null.
+  // - Skip all subsequent interceptors.
+  // When `LoaderCallback` is called with std::nullopt:
+  // - The navigation/subresource requests are not intercepted.
+  // - Fall back to the next interceptor if any, or otherwise to the network.
+  struct CONTENT_EXPORT Result final {
+    Result(
+        scoped_refptr<network::SharedURLLoaderFactory> single_request_factory,
+        SubresourceLoaderParams subresource_loader_params,
+        ResponseHeadUpdateParams response_head_update_params = {});
+
+    ~Result();
+    Result(const Result&) = delete;
+    Result& operator=(const Result&) = delete;
+    Result(Result&&);
+    Result& operator=(Result&&);
+
+    // When non-null, `single_request_factory` is used to handle the request.
+    // When null, the fallback network-service factory is used.
+    scoped_refptr<network::SharedURLLoaderFactory> single_request_factory;
+
+    // Used for subsequent URL requests going forward.
+    //
+    // Note that `single_request_factory` can be nullptr while
+    // `subresource_loader_params` can have non-default values if it does NOT
+    // want to handle the specific request but wants to handle the subsequent
+    // resource requests.
+    SubresourceLoaderParams subresource_loader_params;
+
+    // When `single_request_factory` is null, used to update the response params
+    // in non-intercepted loader via
+    // `NavigationURLLoaderImpl::head_update_params_`.
+    ResponseHeadUpdateParams response_head_update_params;
+  };
+
+  using LoaderCallback = base::OnceCallback<void(std::optional<Result>)>;
   using FallbackCallback =
       base::OnceCallback<void(bool /* reset_subresource_loader_params */,
-                              const ResponseHeadUpdateParams&)>;
+                              ResponseHeadUpdateParams)>;
 
   // Asks this interceptor to handle this resource load request.
-  // The interceptor must invoke `callback` eventually with either a non-null
-  // SharedURLLoaderfactory indicating its willingness to handle the request, or
-  // a nullptr to indicate that someone else should handle the request.
+  // The interceptor must always invoke `callback`.
   //
   // The `tentative_resource_request` passed to this function and the resource
   // request later passed to the loader factory given to `callback` may not be
@@ -64,38 +100,30 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   //
   // This interceptor might initially elect to handle the request, but later
   // decide to fall back to the default behavior. In that case, it can invoke
-  // `fallback_callback` to do so. An example of this is when a service worker
-  // decides to handle the request because it is in-scope, but the service
-  // worker JavaScript execution does not result in a response provided, so
-  // fallback to network is required.
+  // `fallback_callback_for_service_worker` to do so. An example of this is when
+  // a service worker decides to handle the request because it is in-scope, but
+  // the service worker JavaScript execution does not result in a response
+  // provided, so fallback to network is required.
   //
-  // If `fallback_callback` is called, it must be called prior to the
-  // interceptor making any URLLoaderClient calls. The
-  // `reset_subresource_loader_params` parameter to |fallback_callback|
-  // indicates whether to discard the subresource loader params previously
-  // returned by MaybeCreateSubresourceLoaderParams().
+  // `fallback_callback_for_service_worker` is only for service workers to
+  // fallback to the network after initially electing to intercept the request.
+  // It must be called after `callback` is called with non-null
+  // `single_request_factory` and prior to the interceptor making any
+  // URLLoaderClient calls. The `reset_subresource_loader_params` parameter to
+  // |fallback_callback| indicates whether to discard the subresource loader
+  // params previously returned by `Result::subresource_loader_params`.
   //
-  // `callback` and `fallback_callback` must not be invoked after the
-  // destruction of this interceptor.
+  // `callback` and `fallback_callback_for_service_worker` must not be invoked
+  // after the destruction of this interceptor.
+  //
+  // TODO(crbug.com/1403746): Possibly remove
+  // `fallback_callback_for_service_worker` to simplify the ServiceWorker
+  // interception.
   virtual void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
       BrowserContext* browser_context,
       LoaderCallback callback,
-      FallbackCallback fallback_callback) = 0;
-
-  // Returns a SubresourceLoaderParams if any to be used for subsequent URL
-  // requests going forward. Subclasses who want to set-up custom loader for
-  // subresource requests may want to override this.
-  //
-  // This is always called after MaybeCreateLoader().
-  //
-  // Note that the interceptor can return a null callback to
-  // MaybeCreateLoader(), and at the same time can return non-null
-  // SubresourceLoaderParams here if it does NOT want to handle the specific
-  // request given to MaybeCreateLoader() but wants to handle the subsequent
-  // resource requests or ensure otherinterceptors are skipped.
-  virtual std::optional<SubresourceLoaderParams>
-  MaybeCreateSubresourceLoaderParams();
+      FallbackCallback fallback_callback_for_service_worker) = 0;
 
   // Returns true if the interceptor creates a loader for the `response_head`
   // and `response_body` passed.  `request` is the latest request whose request

@@ -302,7 +302,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         SyncTestUtil.triggerSync();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return !SyncServiceFactory.get().isSyncFeatureEnabled();
+                    return !SyncTestUtil.getSyncServiceForLastUsedProfile().isSyncFeatureEnabled();
                 },
                 SyncTestUtil.TIMEOUT_MS,
                 SyncTestUtil.INTERVAL_MS);
@@ -372,7 +372,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                                                 SyncServiceFactory.setInstanceForTesting(
                                                         syncService);
                                             }
-                                            mSyncService = SyncServiceFactory.get();
+                                            mSyncService =
+                                                    SyncTestUtil.getSyncServiceForLastUsedProfile();
                                             mFakeServerHelper =
                                                     FakeServerHelper.createInstanceAndGet();
                                         });

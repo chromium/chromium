@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './hats.mojom-webui.js';
+import type {PageHandlerInterface} from './hats.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './hats.mojom-webui.js';
 
 type RequestSurveyFunction =
     (apiKey: string, triggerId: string, enableTesting: boolean,

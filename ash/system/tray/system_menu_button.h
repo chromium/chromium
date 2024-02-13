@@ -16,8 +16,9 @@ namespace ash {
 // A 48x48 image button with a material design ripple effect, which can be
 // used across Ash material design native UI menus.
 class SystemMenuButton : public views::ImageButton {
+  METADATA_HEADER(SystemMenuButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(SystemMenuButton);
   // Constructs the button with |callback| and a centered icon corresponding to
   // |normal_icon| when button is enabled and |disabled_icon| when it is
   // disabled. |accessible_name_id| corresponds to the string in

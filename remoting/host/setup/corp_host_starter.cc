@@ -25,6 +25,7 @@
 #include "net/base/network_interfaces.h"
 #include "remoting/base/corp_service_client.h"
 #include "remoting/base/hostname.h"
+#include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/host_config.h"
@@ -33,12 +34,6 @@
 #include "remoting/host/setup/daemon_controller.h"
 #include "remoting/host/setup/host_starter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(REMOTING_INTERNAL)
-#include "remoting/internal/proto/helpers.h"
-#else
-#include "remoting/proto/internal_stubs.h"  // nogncheck
-#endif
 
 namespace remoting {
 

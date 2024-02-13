@@ -41,6 +41,8 @@ class ThreadGroupSemaphore::SemaphoreScopedCommandsExecutor
   ~SemaphoreScopedCommandsExecutor() override {
     CheckedLock::AssertNoLockHeldOnCurrentThread();
     for (int i = 0; i < semaphore_signal_count_; ++i) {
+      TRACE_EVENT_INSTANT("wakeup.flow", "WorkerThreadSemaphore::Signal",
+                          perfetto::Flow::FromPointer(&outer()->semaphore_));
       outer()->semaphore_.Signal();
     }
   }
@@ -446,7 +448,7 @@ void ThreadGroupSemaphore::CreateAndRegisterWorkerLockRequired(
                   ? workers_.size() >= after_start().initial_max_tasks
                   : true,
               &join_called_for_testing_),
-          task_tracker_, worker_sequence_num_++, &lock_);
+          task_tracker_, worker_sequence_num_++, &lock_, &semaphore_);
   DCHECK(worker);
   workers_.push_back(worker);
   DCHECK_LE(workers_.size(), max_tasks_);

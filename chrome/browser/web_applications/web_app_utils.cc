@@ -208,6 +208,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
     case DisplayMode::kMinimalUi:
       return DisplayMode::kMinimalUi;
     case DisplayMode::kUndefined:
+    case DisplayMode::kPictureInPicture:
       NOTREACHED();
       [[fallthrough]];
     case DisplayMode::kStandalone:
@@ -622,6 +623,7 @@ apps::LaunchContainer ConvertDisplayModeToAppLaunchContainer(
     case DisplayMode::kWindowControlsOverlay:
     case DisplayMode::kTabbed:
     case DisplayMode::kBorderless:
+    case DisplayMode::kPictureInPicture:
       return apps::LaunchContainer::kLaunchContainerWindow;
     case DisplayMode::kUndefined:
       return apps::LaunchContainer::kLaunchContainerNone;

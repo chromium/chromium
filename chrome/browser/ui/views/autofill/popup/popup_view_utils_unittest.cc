@@ -176,13 +176,13 @@ TEST(PopupViewsUtilsTest, CalculatePopupBounds) {
       // Corner cases, there is not enough space to grow to the top.
       {10, 10 + element_height},
       {0, 0 + element_height},
-      {90, 90 - desired_prompt_height},
+      {90, 100 - desired_prompt_height},
       {100, 100 - desired_prompt_height},
       // Extreme case: The field is outside of the viewport.
       {120, 100 - desired_prompt_height},
       // Special case: There is not enough space for the desired height.
-      {0, 0 + element_height, 0, 30, 30 - element_height},
-      {5, 5 + element_height, 0, 30, 25 - element_height}};
+      {0, 0 + element_height, 0, 30, 30},
+      {5, 5 + element_height, 0, 30, 30}};
 
   for (const auto& x_dim : x_dimension_cases) {
     for (const auto& y_dim : y_dimension_cases) {

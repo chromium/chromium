@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/cookies/cookie_monster.h"
+
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,13 +17,11 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_monster_store_test.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -96,8 +97,8 @@ class SetCookieCallback : public CookieTestCallback {
                  const GURL& gurl,
                  const std::string& cookie_line) {
     auto cookie = CanonicalCookie::Create(
-        gurl, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-        absl::nullopt /* cookie_partition_key */);
+        gurl, cookie_line, base::Time::Now(), std::nullopt /* server_time */,
+        std::nullopt /* cookie_partition_key */);
     cm->SetCanonicalCookieAsync(
         std::move(cookie), gurl, options_,
         base::BindOnce(&SetCookieCallback::Run, base::Unretained(this)));

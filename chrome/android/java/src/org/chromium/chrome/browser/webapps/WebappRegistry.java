@@ -283,34 +283,11 @@ public class WebappRegistry {
             }
 
             WebappInfo webApkInfo = WebApkDataProvider.getPartialWebappInfo(scope);
-            if (webApkInfo == null) {
+            WebApkSpecifics webApkSpecifics = WebApkSyncService.getWebApkSpecifics(webApkInfo);
+            if (webApkSpecifics == null) {
                 continue;
             }
-
-            WebApkSpecifics.Builder webApkSpecificsBuilder = WebApkSpecifics.newBuilder();
-            if (webApkInfo.manifestId() != null) {
-                webApkSpecificsBuilder.setManifestId(webApkInfo.manifestId());
-            }
-            if (webApkInfo.manifestStartUrl() != null) {
-                webApkSpecificsBuilder.setStartUrl(webApkInfo.manifestStartUrl());
-            }
-            if (webApkInfo.name() != null) {
-                webApkSpecificsBuilder.setName(webApkInfo.name());
-            }
-            if ((webApkInfo.name() == null || webApkInfo.name().equals(""))
-                    && webApkInfo.shortName() != null) {
-                webApkSpecificsBuilder.setName(webApkInfo.shortName());
-            }
-            if (webApkInfo.hasValidToolbarColor()) {
-                webApkSpecificsBuilder.setThemeColor((int) webApkInfo.toolbarColor());
-            }
-            if (webApkInfo.scopeUrl() != null) {
-                webApkSpecificsBuilder.setScope(webApkInfo.scopeUrl());
-            }
-
-            // TODO(hartmanng): support icons and last used timestamp
-
-            webApkSpecificsList.add(webApkSpecificsBuilder.build());
+            webApkSpecificsList.add(WebApkSyncService.getWebApkSpecifics(webApkInfo));
         }
         return webApkSpecificsList;
     }

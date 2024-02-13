@@ -97,10 +97,11 @@
         validateRelativeMs(data.timing, 'sslEnd');
         validateRelativeMs(data.timing, 'sslStart');
       }
+
       // requestTime and finishTime are in TimeTicks, so their absolute values
       // can't be interpreted.
       testRunner.log(
-          data, ev.name + ' ', ['requestId', 'requestTime', 'finishTime']);
+          data, ev.name + ' ', ['requestId', 'requestTime', 'finishTime', 'value']);
     }
     testRunner.log('\n');
   }

@@ -124,6 +124,7 @@ PASS childWindow.onmousewheel is null
 PASS childWindow.onoffline is null
 PASS childWindow.ononline is null
 PASS childWindow.onpagehide is null
+PASS childWindow.onpagereveal is null
 PASS childWindow.onpageshow is null
 PASS childWindow.onpause is null
 PASS childWindow.onplay is null

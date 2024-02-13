@@ -162,7 +162,6 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   void NotifyNavigationEntriesDeleted() override {}
   void ActivateAndShowRepostFormWarningDialog() override;
   bool ShouldPreserveAbortedURLs() override;
-  WebContents* DeprecatedGetWebContents() override;
   void UpdateOverridingUserAgent() override {}
 
   NavigationControllerImpl& GetNavigationController() {

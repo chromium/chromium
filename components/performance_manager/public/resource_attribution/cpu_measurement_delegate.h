@@ -15,7 +15,7 @@ class Graph;
 class ProcessNode;
 }  // namespace performance_manager
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // A shim that Resource Attribution queries use to request CPU measurements for
 // a process. A new CPUMeasurementDelegate object will be created for each
@@ -29,7 +29,8 @@ class CPUMeasurementDelegate {
   // each ProcessNode in `graph` to be measured. The factory object must outlive
   // the graph. Usually it's owned by the test harness. nullptr will cause the
   // factory returned by GetDefaultFactory() to be used.
-  static void SetDelegateFactoryForTesting(Graph* graph, Factory* factory);
+  static void SetDelegateFactoryForTesting(performance_manager::Graph* graph,
+                                           Factory* factory);
 
   // Returns the default factory to use in production.
   static Factory* GetDefaultFactory();
@@ -52,14 +53,15 @@ class CPUMeasurementDelegate::Factory {
   // `process_node`. The production factory returns true to measure
   // renderer processes with a valid (running) base::Process and a
   // base::ProcessId assigned.
-  virtual bool ShouldMeasureProcess(const ProcessNode* process_node) = 0;
+  virtual bool ShouldMeasureProcess(
+      const performance_manager::ProcessNode* process_node) = 0;
 
   // Creates a CPUMeasurementDelegate for `process_node`. This should only be
   // called if ShouldMeasureProcess(process_node) returns true.
   virtual std::unique_ptr<CPUMeasurementDelegate> CreateDelegateForProcess(
-      const ProcessNode* process_node) = 0;
+      const performance_manager::ProcessNode* process_node) = 0;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_DELEGATE_H_

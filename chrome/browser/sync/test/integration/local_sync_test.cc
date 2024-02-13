@@ -130,6 +130,10 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
     expected_active_data_types.Put(syncer::WEBAUTHN_CREDENTIAL);
   }
 
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {
+    expected_active_data_types.Put(syncer::AUTOFILL_WALLET_CREDENTIAL);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Apps sync is controlled by a dedicated preference on Lacros,
   // corresponding to the Apps toggle in OS Sync settings. we remove

@@ -967,6 +967,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // Verifies that extensions that are force-installed by policies are
 // installed and can't be uninstalled.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ExtensionRequestInterceptor interceptor;
   extensions::ExtensionService* service = extension_service();
   extensions::ExtensionRegistry* registry = extension_registry();
@@ -1153,6 +1155,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, UpdateExtensionWithProdversionmin) {
 // extension version.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        InstallExtensionWithProdversionmin) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ExtensionRequestInterceptor interceptor;
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
@@ -1278,6 +1282,8 @@ class ExtensionPinningTest : public extensions::ExtensionBrowserTest {
 // policy.
 IN_PROC_BROWSER_TEST_F(ExtensionPinningTest,
                        UpdateExtensionWithNoUrlInManifest) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
   EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
@@ -1335,6 +1341,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPinningTest,
 // Extension with one update_url in manifest gets updated through another
 // update_url in policy.
 IN_PROC_BROWSER_TEST_F(ExtensionPinningTest, UpdateExtensionWithUrlInManifest) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
   EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
@@ -1389,6 +1397,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPinningTest, UpdateExtensionWithUrlInManifest) {
 
 // Extension with one update_url in manifest is not updated through it.
 IN_PROC_BROWSER_TEST_F(ExtensionPinningTest, IgnoreUpdateUrlInManifest) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir scoped_temp_dir;
   EXPECT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
@@ -1432,6 +1442,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPinningTest, IgnoreUpdateUrlInManifest) {
 // Store.
 IN_PROC_BROWSER_TEST_F(ExtensionPinningTest,
                        SelfHostedCWSExtensionNotUpdatedFromStore) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   // Sample Google calendar extension from Chrome Web Store, for which we have
   // an old CRX.
   const char kGoogleCalendarCrxId[] = "gmbgaklkmjakoegficnlkhebmhkjfich";
@@ -1479,6 +1491,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPinningTest,
 // test helps to notify of any change in this behaviour as there might be
 // extensions relying on it.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, UpdateManifestOrderedAppTags) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ExtensionRequestInterceptor interceptor;
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
@@ -1499,6 +1513,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, UpdateManifestOrderedAppTags) {
 // repaired (reinstalled).
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        CorruptedNonWebstoreExtensionRepaired) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ignore_content_verifier_.reset();
   ExtensionRequestInterceptor interceptor;
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1656,6 +1672,8 @@ IN_PROC_BROWSER_TEST_F(
 // will be also reinstalled.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        CorruptedNonWebstoreExtensionWithoutHashesRemained) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ignore_content_verifier_.reset();
   ExtensionRequestInterceptor interceptor;
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1719,6 +1737,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // case the remote update server is down.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
                        ExtensionInstallForcelistServerShutDown) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   base::HistogramTester histogram_tester;
   ExtensionRequestInterceptor interceptor;
 
@@ -1763,6 +1783,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // ERR_INTERNET_DISCONNECTED response instead of actually having the device
 // offline.
 IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelistOffline) {
+  // Mark as enterprise managed.
+  policy::ScopedDomainEnterpriseManagement scoped_domain;
   base::HistogramTester histogram_tester;
   ExtensionRequestInterceptor interceptor;
 

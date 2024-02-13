@@ -108,11 +108,6 @@ class CORE_EXPORT TextPainter : public TextPainterBase {
                              float dilation) override;
 
  private:
-  template <PaintInternalStep step>
-  void PaintInternalFragment(const TextFragmentPaintInfo&,
-                             DOMNodeId node_id,
-                             const AutoDarkMode& auto_dark_mode);
-
   void PaintSvgTextFragment(const TextFragmentPaintInfo&,
                             DOMNodeId node_id,
                             const AutoDarkMode& auto_dark_mode);

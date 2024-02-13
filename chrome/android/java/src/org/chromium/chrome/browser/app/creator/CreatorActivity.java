@@ -93,11 +93,12 @@ public class CreatorActivity extends SnackbarActivity {
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
         mShareDelegateSupplier = new ShareDelegateSupplier();
         mTabShareDelegateSupplier = new ShareDelegateSupplier();
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfile = Profile.getLastUsedRegularProfile();
-        mProfileSupplier.set(mProfile);
 
         super.onCreate(savedInstanceState);
+        mProfileSupplier = new ObservableSupplierImpl<>();
+        mProfile = getProfileProvider().getOriginalProfile();
+        mProfileSupplier.set(mProfile);
+
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid = new ActivityWindowAndroid(this, false, intentRequestTracker);
 
@@ -141,7 +142,12 @@ public class CreatorActivity extends SnackbarActivity {
         mShareDelegateSupplier.set(shareDelegate);
         mCreatorActionDelegate =
                 new CreatorActionDelegateImpl(
-                        this, mProfile, getSnackbarManager(), coordinator, mParentTabId);
+                        this,
+                        mProfile,
+                        getSnackbarManager(),
+                        coordinator,
+                        mParentTabId,
+                        mBottomSheetController);
 
         coordinator.queryFeedStream(
                 mCreatorActionDelegate,

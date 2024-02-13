@@ -15,10 +15,6 @@
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/linux/gbm_util.h"  // nogncheck
-#endif
-
 namespace media {
 namespace test {
 
@@ -47,14 +43,6 @@ VideoTestEnvironment::VideoTestEnvironment(
   // Initialize features. Since some of them can be for VA-API, it is necessary
   // to initialize them before calling VaapiWrapper::PreSandboxInitialization().
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // At this point, the base::FeatureList has been initialized and the process
-  // should still be single threaded. Additionally, minigbm shouldn't have
-  // been used yet by this process. Therefore, it's a good time to ensure the
-  // Intel media compression environment flag for minigbm is correctly set
-  ui::EnsureIntelMediaCompressionEnvVarIsSet();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_VAAPI)
   media::VaapiWrapper::PreSandboxInitialization(

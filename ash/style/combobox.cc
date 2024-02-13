@@ -160,8 +160,9 @@ END_METADATA
 // corresponding to the items in combobox model. The selected item will show a
 // leading checked icon.
 class Combobox::ComboboxMenuView : public views::View {
+  METADATA_HEADER(ComboboxMenuView, views::View)
+
  public:
-  METADATA_HEADER(ComboboxMenuView);
   explicit ComboboxMenuView(base::WeakPtr<Combobox> combobox)
       : combobox_(combobox),
         background_shield_(this,
@@ -349,8 +350,8 @@ Combobox::Combobox(ui::ComboboxModel* model)
   OnComboboxModelChanged(model_);
 
   // Set up layout.
-  auto* const layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetInteriorMargin(kComboboxBorderInsets);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetInteriorMargin(kComboboxBorderInsets);
   // Allow `title_` to shrink and elide, so that `drop_down_arrow_` on the
   // right always remains visible.
   title_->SetProperty(
@@ -373,8 +374,8 @@ Combobox::Combobox(ui::ComboboxModel* model)
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
       this, kComboboxRoundedCorners);
   StyleUtil::SetUpInkDropForButton(this);
-  layout->SetChildViewIgnoredByLayout(views::FocusRing::Get(this),
-                                      /*ignored=*/true);
+  views::FocusRing::Get(this)->SetProperty(views::kViewIgnoredByLayoutKey,
+                                           /*ignored=*/true);
 
   event_handler_ = std::make_unique<ComboboxEventHandler>(this);
 
@@ -801,7 +802,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   return true;
 }
 
-BEGIN_METADATA(Combobox, views::Button)
+BEGIN_METADATA(Combobox)
 END_METADATA
 
 }  // namespace ash

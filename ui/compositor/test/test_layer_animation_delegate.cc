@@ -4,8 +4,9 @@
 
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 
+#include <optional>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 
 namespace ui {
@@ -51,7 +52,7 @@ void TestLayerAnimationDelegate::ExpectLastPropertyChangeReason(
 }
 
 void TestLayerAnimationDelegate::SetFrameNumber(
-    absl::optional<int> frame_number) {
+    std::optional<int> frame_number) {
   frame_number_ = frame_number;
 }
 
@@ -202,7 +203,7 @@ TestLayerAnimationDelegate::GetThreadedAnimationDelegate() {
   return &threaded_delegate_;
 }
 
-absl::optional<int> TestLayerAnimationDelegate::GetFrameNumber() const {
+std::optional<int> TestLayerAnimationDelegate::GetFrameNumber() const {
   return frame_number_;
 }
 

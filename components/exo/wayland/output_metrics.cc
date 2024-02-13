@@ -107,6 +107,10 @@ OutputMetrics::OutputMetrics(const display::Display& display)
   scale = std::ceil(display.device_scale_factor());
 }
 
+OutputMetrics::OutputMetrics(const OutputMetrics&) = default;
+
+OutputMetrics& OutputMetrics::operator=(const OutputMetrics&) = default;
+
 OutputMetrics::~OutputMetrics() = default;
 
 }  // namespace exo::wayland

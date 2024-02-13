@@ -24,4 +24,9 @@ ClientIdentity& ClientIdentity::operator=(const ClientIdentity&) = default;
 
 ClientIdentity::~ClientIdentity() = default;
 
+bool ClientIdentity::operator==(const ClientIdentity& other) const {
+  return name == other.name && private_key == other.private_key &&
+         certificate == other.certificate;
+}
+
 }  // namespace client_certificates

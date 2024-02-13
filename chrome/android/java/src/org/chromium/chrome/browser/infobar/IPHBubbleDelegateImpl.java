@@ -69,7 +69,7 @@ class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
                 return null;
             case InfoBarIdentifier.PERMISSION_INFOBAR_DELEGATE_ANDROID:
                 if (PermissionSettingsBridge.shouldShowNotificationsPromo(mTab.getWebContents())) {
-                    PermissionSettingsBridge.didShowNotificationsPromo();
+                    PermissionSettingsBridge.didShowNotificationsPromo(mTab.getProfile());
                     return new IPHInfoBarSupport.TrackerParameters(
                             FeatureConstants.QUIET_NOTIFICATION_PROMPTS_FEATURE,
                             R.string.notifications_iph,

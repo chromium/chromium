@@ -74,7 +74,7 @@ class MESSAGE_CENTER_EXPORT DesktopMessagePopupCollection
   int32_t alignment_ = POPUP_ALIGNMENT_BOTTOM | POPUP_ALIGNMENT_RIGHT;
   int64_t primary_display_id_ = display::kInvalidDisplayId;
   raw_ptr<display::Screen> screen_ = nullptr;
-  absl::optional<display::ScopedDisplayObserver> display_observer_;
+  std::optional<display::ScopedDisplayObserver> display_observer_;
   gfx::Rect work_area_;
 };
 

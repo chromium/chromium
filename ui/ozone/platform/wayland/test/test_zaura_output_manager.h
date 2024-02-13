@@ -7,9 +7,9 @@
 
 #include "ui/ozone/platform/wayland/test/global_object.h"
 
-struct wl_resource;
-
 namespace wl {
+
+class TestOutput;
 struct TestOutputMetrics;
 
 class TestZAuraOutputManager : public GlobalObject {
@@ -20,11 +20,11 @@ class TestZAuraOutputManager : public GlobalObject {
   ~TestZAuraOutputManager() override;
 
   // Propagates events for metrics to bound clients for the output.
-  void SendOutputMetrics(wl_resource* output_resource,
+  void SendOutputMetrics(TestOutput* test_output,
                          const TestOutputMetrics& metrics);
 
   // Sends the activated event for the given output.
-  void SendActivated(wl_resource* output_resource);
+  void SendActivated(TestOutput* test_output);
 };
 
 }  // namespace wl

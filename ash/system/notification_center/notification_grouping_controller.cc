@@ -167,7 +167,7 @@ void NotificationGroupingController::PopulateGroupParent(
   }
 
   std::vector<const Notification*> notifications;
-  for (auto* notification : MessageCenter::Get()->GetNotifications()) {
+  for (Notification* notification : MessageCenter::Get()->GetNotifications()) {
     if (notification->notifier_id() == parent_view->notifier_id() &&
         notification->id() != parent_view->notification_id()) {
       notification->SetGroupChild();

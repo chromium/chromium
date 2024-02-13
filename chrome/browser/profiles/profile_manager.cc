@@ -129,7 +129,6 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
-#include "chrome/browser/search/background/wallpaper_search/wallpaper_search_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -1550,14 +1549,6 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
 
   // Ensure NavigationPredictorKeyedService is started.
   NavigationPredictorKeyedServiceFactory::GetForProfile(profile);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Ensure WallpaperSearchServiceFactory is started.
-  if (base::FeatureList::IsEnabled(optimization_guide::features::internal::
-                                       kWallpaperSearchSettingsVisibility)) {
-    WallpaperSearchServiceFactory::GetForProfile(profile);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Ensure PreloadingModelKeyedService is started.
   PreloadingModelKeyedServiceFactory::GetForProfile(profile);

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -40,7 +41,7 @@ class PluginVmLicenseChecker {
 
  private:
   std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
-      base::StringPiece access_token);
+      std::string_view access_token);
 
   void FetchAccessToken();
   void HandleStringResponse(std::unique_ptr<std::string> response_body);

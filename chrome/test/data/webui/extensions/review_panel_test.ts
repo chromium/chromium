@@ -5,9 +5,9 @@
 /** @fileoverview Suite of tests for extensions-review-panel. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsHatsBrowserProxyImpl, ExtensionsReviewPanelElement, PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
+import type {ExtensionsReviewPanelElement} from 'chrome://extensions/extensions.js';
+import {ExtensionsHatsBrowserProxyImpl, PluralStringProxyImpl} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -72,7 +72,7 @@ suite('ExtensionsReviewPanel', function() {
     assertTrue(isVisible(safetyHubHeader));
   });
 
-  test('CollapsibleList', function() {
+  test('CollapsibleList', async function() {
     const expandButton = element.$.expandButton;
     assertTrue(!!expandButton);
 
@@ -85,7 +85,7 @@ suite('ExtensionsReviewPanel', function() {
 
     // User collapses the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Button and list are collapsed.
     assertFalse(expandButton.expanded);
@@ -93,7 +93,7 @@ suite('ExtensionsReviewPanel', function() {
 
     // User expands the list.
     expandButton.click();
-    flush();
+    await expandButton.updateComplete;
 
     // Button and list are expanded.
     assertTrue(expandButton.expanded);

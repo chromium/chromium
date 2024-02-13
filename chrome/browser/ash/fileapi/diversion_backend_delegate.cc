@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/fileapi/diversion_backend_delegate.h"
 
+#include <unistd.h>
+
 #include "chrome/browser/ash/fileapi/copy_from_fd.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -120,7 +122,11 @@ void DiversionBackendDelegate::EnsureFileExists(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(url.type());
 
-  if (!ShouldDivert(url)) {
+  if (!url.is_valid()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL,
+                            /*created=*/false);
+    return;
+  } else if (!ShouldDivert(url)) {
     af_util->EnsureFileExists(std::move(context), url, std::move(callback));
     return;
   } else if (diversion_file_manager_->IsDiverting(url)) {
@@ -146,8 +152,10 @@ void DiversionBackendDelegate::EnsureFileExists(
           auto sd_result = diversion_file_manager->StartDiverting(
               url, kDiversionFileIdleTimeout,
               base::BindOnce(&DiversionBackendDelegate::OnDiversionFinished,
-                             std::move(weak_ptr), std::move(duplicated_context),
-                             url, storage::AsyncFileUtil::StatusCallback()));
+                             std::move(weak_ptr),
+                             OnDiversionFinishedCallSite::kEnsureFileExists,
+                             std::move(duplicated_context), url,
+                             storage::AsyncFileUtil::StatusCallback()));
           created =
               sd_result == DiversionFileManager::StartDivertingResult::kOK;
           std::move(callback).Run(base::File::FILE_OK, created);
@@ -244,17 +252,28 @@ void DiversionBackendDelegate::CopyFileLocal(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (src_url == dest_url) {
+  if (!src_url.is_valid() || !dest_url.is_valid()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL);
+    return;
+  } else if (src_url == dest_url) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
 
-  if (diversion_file_manager_->IsDiverting(src_url)) {
-    // TODO: flush the O_TMPFILE file to src_url and copy it to dest_url.
-  } else if (diversion_file_manager_->IsDiverting(dest_url)) {
+  if (diversion_file_manager_->IsDiverting(dest_url)) {
     // Passing a null DiversionFileManager::Callback deletes the diversion file.
     diversion_file_manager_->FinishDiverting(dest_url,
                                              DiversionFileManager::Callback());
+  }
+
+  if (diversion_file_manager_->IsDiverting(src_url)) {
+    diversion_file_manager_->FinishDiverting(
+        src_url,
+        base::BindOnce(&DiversionBackendDelegate::OnDiversionFinished,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       OnDiversionFinishedCallSite::kCopyFileLocal,
+                       std::move(context), dest_url, std::move(callback)));
+    return;
   }
 
   storage::AsyncFileUtil* af_util = wrappee_->GetAsyncFileUtil(dest_url.type());
@@ -271,7 +290,10 @@ void DiversionBackendDelegate::MoveFileLocal(
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (src_url == dest_url) {
+  if (!src_url.is_valid() || !dest_url.is_valid()) {
+    std::move(callback).Run(base::File::FILE_ERROR_INVALID_URL);
+    return;
+  } else if (src_url == dest_url) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
@@ -280,8 +302,9 @@ void DiversionBackendDelegate::MoveFileLocal(
     diversion_file_manager_->FinishDiverting(
         src_url,
         base::BindOnce(&DiversionBackendDelegate::OnDiversionFinished,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(context),
-                       dest_url, std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       OnDiversionFinishedCallSite::kMoveFileLocal,
+                       std::move(context), dest_url, std::move(callback)));
     return;
   } else if (diversion_file_manager_->IsDiverting(dest_url)) {
     // Passing a null DiversionFileManager::Callback deletes the diversion file.
@@ -372,8 +395,14 @@ bool DiversionBackendDelegate::ShouldDivertForTesting(
 }
 
 // static
+base::TimeDelta DiversionBackendDelegate::IdleTimeoutForTesting() {
+  return kDiversionFileIdleTimeout;
+}
+
+// static
 void DiversionBackendDelegate::OnDiversionFinished(
     base::WeakPtr<DiversionBackendDelegate> weak_ptr,
+    OnDiversionFinishedCallSite call_site,
     std::unique_ptr<storage::FileSystemOperationContext> context,
     const storage::FileSystemURL& dest_url,
     storage::AsyncFileUtil::StatusCallback callback,
@@ -383,6 +412,8 @@ void DiversionBackendDelegate::OnDiversionFinished(
     int64_t file_size,
     base::File::Error error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK(dest_url.is_valid());
+  CHECK(src_url.is_valid());
 
   if (error != base::File::FILE_OK) {
     if (callback) {
@@ -408,15 +439,19 @@ void DiversionBackendDelegate::OnDiversionFinished(
         if (file_error == base::File::FILE_ERROR_NOT_FOUND) {
           file_error = base::File::FILE_OK;
         }
-        std::move(callback).Run(file_error);
+        if (callback) {
+          std::move(callback).Run(file_error);
+        }
       };
 
   static constexpr auto on_copy_complete =
       [](base::WeakPtr<DiversionBackendDelegate> weak_ptr,
+         OnDiversionFinishedCallSite call_site,
          std::unique_ptr<storage::FileSystemOperationContext> context,
          const storage::FileSystemURL& src_url,
          const storage::FileSystemURL& dest_url,
          storage::AsyncFileUtil::StatusCallback callback,
+         DiversionFileManager::StoppedReason stopped_reason, int64_t file_size,
          base::ScopedFD scoped_fd,
          std::unique_ptr<storage::FileStreamWriter> fs_writer,
          net::Error net_error) {
@@ -428,6 +463,7 @@ void DiversionBackendDelegate::OnDiversionFinished(
           }
           return;
         }
+        CHECK_NE(call_site, OnDiversionFinishedCallSite::kEnsureFileExists);
 
         if (callback && (net_error != net::OK)) {
           base::File::Error first_error =
@@ -447,19 +483,44 @@ void DiversionBackendDelegate::OnDiversionFinished(
           }
           return;
         }
-        weak_ptr->wrappee_->GetAsyncFileUtil(src_url.type())
-            ->DeleteFile(std::move(context), src_url,
-                         base::BindOnce(ignore_file_error_not_found,
-                                        std::move(callback)));
+
+        switch (call_site) {
+          case OnDiversionFinishedCallSite::kEnsureFileExists:
+            NOTREACHED_NORETURN();
+
+          case OnDiversionFinishedCallSite::kCopyFileLocal: {
+            if (!scoped_fd.is_valid()) {
+              std::move(callback).Run(base::File::FILE_ERROR_FAILED);
+              return;
+            }
+            // Copy from that scoped_fd again, but this time to src_url instead
+            // of to dest_url.
+            lseek(scoped_fd.get(), 0, SEEK_SET);
+            weak_ptr->OnDiversionFinished(
+                weak_ptr, call_site, std::move(context), src_url,
+                std::move(callback), stopped_reason, src_url,
+                std::move(scoped_fd), file_size, base::File::FILE_OK);
+            break;
+          }
+
+          case OnDiversionFinishedCallSite::kMoveFileLocal:
+            weak_ptr->wrappee_->GetAsyncFileUtil(src_url.type())
+                ->DeleteFile(std::move(context), src_url,
+                             base::BindOnce(ignore_file_error_not_found,
+                                            std::move(callback)));
+            break;
+        }
       };
 
-  static constexpr auto on_ensure_file_exists =
+  static constexpr auto on_truncated =
       [](base::WeakPtr<DiversionBackendDelegate> weak_ptr,
+         OnDiversionFinishedCallSite call_site,
          std::unique_ptr<storage::FileSystemOperationContext> context,
          base::ScopedFD scoped_fd, const storage::FileSystemURL& src_url,
          const storage::FileSystemURL& dest_url,
          storage::AsyncFileUtil::StatusCallback callback,
-         base::File::Error result, bool created) {
+         DiversionFileManager::StoppedReason stopped_reason, int64_t file_size,
+         base::File::Error result) {
         if (result != base::File::FILE_OK) {
           if (callback) {
             std::move(callback).Run(result);
@@ -493,9 +554,51 @@ void DiversionBackendDelegate::OnDiversionFinished(
         CopyFromFileDescriptor(
             std::move(scoped_fd), std::move(fs_writer),
             dest_url.mount_option().flush_policy(),
-            base::BindOnce(on_copy_complete, std::move(weak_ptr),
+            base::BindOnce(on_copy_complete, std::move(weak_ptr), call_site,
                            std::move(context), src_url, dest_url,
-                           std::move(callback)));
+                           std::move(callback), stopped_reason, file_size));
+      };
+
+  static constexpr auto on_ensure_file_exists =
+      [](base::WeakPtr<DiversionBackendDelegate> weak_ptr,
+         OnDiversionFinishedCallSite call_site,
+         std::unique_ptr<storage::FileSystemOperationContext> context,
+         base::ScopedFD scoped_fd, const storage::FileSystemURL& src_url,
+         const storage::FileSystemURL& dest_url,
+         storage::AsyncFileUtil::StatusCallback callback,
+         DiversionFileManager::StoppedReason stopped_reason, int64_t file_size,
+         base::File::Error result, bool created) {
+        if (result != base::File::FILE_OK) {
+          if (callback) {
+            std::move(callback).Run(result);
+          }
+          return;
+        } else if (!weak_ptr) {
+          if (callback) {
+            std::move(callback).Run(base::File::FILE_ERROR_FAILED);
+          }
+          return;
+        } else if (created) {
+          on_truncated(std::move(weak_ptr), call_site, std::move(context),
+                       std::move(scoped_fd), src_url, dest_url,
+                       std::move(callback), stopped_reason, file_size,
+                       base::File::FILE_OK);
+          return;
+        }
+
+        std::unique_ptr<storage::FileSystemOperationContext> fsoc0 =
+            DuplicateFileSystemOperationContext(*context);
+        std::unique_ptr<storage::FileSystemOperationContext> fsoc1 =
+            std::move(context);
+
+        FileSystemBackendDelegate* wrappee = weak_ptr->wrappee_.get();
+        wrappee->GetAsyncFileUtil(dest_url.type())
+            ->Truncate(
+                std::move(fsoc0), dest_url, 0,
+                base::BindOnce(on_truncated, std::move(weak_ptr), call_site,
+                               std::move(fsoc1), std::move(scoped_fd), src_url,
+                               dest_url, std::move(callback), stopped_reason,
+                               file_size));
       };
 
   std::unique_ptr<storage::FileSystemOperationContext> fsoc0 =
@@ -507,9 +610,10 @@ void DiversionBackendDelegate::OnDiversionFinished(
   wrappee->GetAsyncFileUtil(dest_url.type())
       ->EnsureFileExists(
           std::move(fsoc0), dest_url,
-          base::BindOnce(on_ensure_file_exists, std::move(weak_ptr),
+          base::BindOnce(on_ensure_file_exists, std::move(weak_ptr), call_site,
                          std::move(fsoc1), std::move(scoped_fd), src_url,
-                         dest_url, std::move(callback)));
+                         dest_url, std::move(callback), stopped_reason,
+                         file_size));
 }
 
 }  // namespace ash

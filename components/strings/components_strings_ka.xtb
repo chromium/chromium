@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">დაუცველი</translation>
 <translation id="1075079914415273530">სოფლის მეურნეობა და მეტყევეობა</translation>
 <translation id="1075364221219156102">წვდომის გასაღების გამოყენება</translation>
-<translation id="1078033282564106222">არჩეული იყო შენობის ნომრის ვარიანტი</translation>
 <translation id="1080116354587839789">სიგანეზე მორგება</translation>
 <translation id="1081061862829655580">ლანგარი 19</translation>
 <translation id="1082026381988252344">თქვენი გაზიარებული ჩანართის კონტენტში გადაადგილება და მისი მასშტაბირება</translation>
@@ -247,6 +246,7 @@
 <translation id="1428729058023778569">ამ გაფრთხილებას ხედავთ იმიტომ, რომ ამ საიტის მიერ HTTPS მხარდაუჭერელია. <ph name="BEGIN_LEARN_MORE_LINK" />შეიტყვეთ მეტი<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">თვითმწებვარე აფსკი</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
+<translation id="1431021750861456539">ავტომატური სრულეკრანიანი რეჟიმი</translation>
 <translation id="1432187715652018471">გვერდს სურს სერვისის დამმუშავებლის ინსტალაცია.</translation>
 <translation id="1432581352905426595">საძიებო სისტემების მართვა</translation>
 <translation id="1433225466058025572">ცადეთ თქვენი ფაილების ხელახლა გადატანა</translation>
@@ -586,6 +586,7 @@
 <translation id="2075497153347571252">თქვენმა ადმინისტრატორმა დაბლოკა <ph name="PERMISSION" /> <ph name="ORIGIN" />-ზე</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2080021694978766903">ამ წესებში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი ჩანაწერი არ უნდა იყოს.</translation>
+<translation id="2081482239432306393">არჩეული იყო სახლის ნომრის ვარიანტი</translation>
 <translation id="20817612488360358">დაყენებულია სისტემის პროქსის პარამეტრების გამოყენება, მაგრამ ასევე მითითებულია პროქსის აშკარა კონფიგურაცია.</translation>
 <translation id="2082238445998314030">შედეგი <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" />-დან</translation>
 <translation id="2083256696566019397">ყველა ვიზიტზე დაშვება</translation>
@@ -613,7 +614,6 @@
 <translation id="2126374524350484896">PDF მწარმოებელი:</translation>
 <translation id="2130448033692577677">თქვენ მიერ მითითებული შაბლონების მისადაგება შეიძლება ვერ მოხერხდეს „DnsOverHttpsMode“ წესების განუსაზღვრელობის გამო.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">მიმდინარეობს <ph name="LANGUAGE" /> ენის პაკეტის ჩამოტვირთვა... <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">მამაკაცის ტანსაცმელი</translation>
 <translation id="2137891579555018930">ნებართვის მოლოდინში...</translation>
 <translation id="213826338245044447">მობილური სანიშნეები</translation>
@@ -1387,7 +1387,6 @@
 <translation id="3681007416295224113">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3681421644246505351">Chrome ინიშნავს ინტერესებს თქვენ მიერ ვების დათვალიერების ბოლოდროინდელი ისტორიის საფუძველზე.</translation>
 <translation id="3682094733650754138">არჩეული იყო მისამართის შევსების ვარიანტი</translation>
-<translation id="3689867156802445220">შენობის ნომერი</translation>
 <translation id="3693327506115126094">აირჩიეთ თქვენი ვინაობის დადასტურების მეთოდი</translation>
 <translation id="3698629142018988477">საიტის შექმნის ღილაკი, Google Sites-ში ახალი საიტის სწრაფად შესაქმნელად გაააქტიურეთ ის</translation>
 <translation id="3701325639446035885">ღონისძიების ბილეთების გაყიდვები</translation>
@@ -1412,6 +1411,7 @@
 <translation id="3723663469265383848">განახლების მიმდინარეობისას თქვენი მოწყობილობით ვერ ისარგებლებთ დაახლოებით 10 წუთის განმავლობაში.</translation>
 <translation id="372429172604983730">ამ შეცდომის გამომწვევი აპლიკაციები მოიცავს ანტივირუსულ, ქსელის დაცვისა და ვებ-გაფილტვრის ან პროქსი-სერვერების პროგრამულ უზრუნველყოფას.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides-ში ახალი Google პრეზენტაციის სწრაფად შესაქმნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
+<translation id="3727309136762649052">სახელთა სივრცე</translation>
 <translation id="3727850735097852673">Google პაროლების მმართველი macOS Keychain-თან რომ გამოიყენოთ, ხელახლა გაუშვით Chrome და დაუშვით წვდომა Keychain-ზე. ხელახლა გაშვების შემდეგ თქვენი ჩანართები თავიდან გაიხსნება.</translation>
 <translation id="3733139489341305600">ავტონომიური ავტომობილები</translation>
 <translation id="3736520371357197498">თუ გათვითცნობიერებული გაქვთ რისკი, შეგიძლიათ <ph name="BEGIN_LINK" />შეხვიდეთ ამ არასაიმედო საიტზე<ph name="END_LINK" /> საზიანო პროგრამების წაშლამდე.</translation>
@@ -1576,6 +1576,7 @@
 <translation id="4089152113577680600">ლანგარი 14</translation>
 <translation id="4092349052316400070">მისამართის შევსება</translation>
 <translation id="4096237801206588987">11 x 15 დუიმი</translation>
+<translation id="4098306082496067348">შეეხეთ ვირტუალური ბარათის დეტალებს, ისინი შეკვეთის გაფორმებისას რომ გამოიყენოთ.</translation>
 <translation id="4098354747657067197">მოერიდეთ შეცდომაში შემყვან საიტს</translation>
 <translation id="4099048595830172239">ადმინისტრატორის მიერ დადგენილი წესების მიხედვით, არ არის მიზანშეწონილი თქვენი ეკრანის <ph name="APPLICATION_TITLE" />-თან გაზიარება, როცა ეკრანზე კონფიდენციალური კონტენტი ჩანს:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ში შრიფტების ზომებისა და ტიპების მოსარგებად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
@@ -1899,6 +1900,7 @@
 <translation id="4729147136006144950">ქველმოქმედება და ფილანთროპია</translation>
 <translation id="4730977633786878901">მიმოხილვები</translation>
 <translation id="4731638775147756694">ეს აპლიკაცია დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
+<translation id="4732860731866514038">მიმდინარეობს <ph name="LANGUAGE" /> ენის პაკეტის ჩამოტვირთვა... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> ითხოვს მოწყობილობის მდებარეობის გამოყენების ნებართვას</translation>
 <translation id="4736491186715342415">ავტოსატრანსპორტო საშუალებები</translation>
 <translation id="4736825316280949806">Chromium-ის გადატვირთვა</translation>
@@ -1920,7 +1922,6 @@
 <translation id="4757022425116568383">თქვენი Chrome პროფილის წვდომის გასაღები</translation>
 <translation id="4757993714154412917">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. თქვენი ანგარიშების დაცვის მიზნით, Chromium გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="4758311279753947758">საკონტაქტო ინფორმაციის დამატება</translation>
-<translation id="4761104368405085019">გამოიყენეთ თქვენი მიკროფონი</translation>
 <translation id="4761326898079498987">შეამოწმეთ დეტალური ინფორმაციისთვის</translation>
 <translation id="4761869838909035636">Chrome-ის უსაფრთხოების შემოწმების გაშვება</translation>
 <translation id="4763196677855776703">მომსახურების პირობებს უზრუნველყოფს <ph name="URL" /></translation>
@@ -2258,7 +2259,6 @@
             <ph name="LIST_ITEM" />ქუქი-ჩანაწერები და საიტების მონაცემები
             <ph name="LIST_ITEM" />ფორმებში შეყვანილი ინფორმაცია
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" />-ს სურს, მართოს და ხელახლა დააპროგრამოს თქვენი MIDI მოწყობილობები (SysEx)</translation>
 <translation id="5443468954631487277">უკუმიმდევრობა ნაბეჭდი მხარით აღმა</translation>
 <translation id="5447235695608032700">მიეცით საშუალება <ph name="SITE" />-ს, გამოიყენოს მის მიერ თქვენ შესახებ შენახული ინფორმაცია</translation>
 <translation id="5447765697759493033">ეს გვერდი არ ითარგმნება</translation>
@@ -2285,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     დაუკავშირდით თქვენი სისტემის ადმინისტრატორს.</translation>
 <translation id="549333378215107354">ზომა 3</translation>
+<translation id="5501712702042287009">ავტომატური სრულეკრანიანი რეჟიმი</translation>
 <translation id="550365051221576010">ყველაფრის შევსება</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">მართული სანიშნეები</translation>
@@ -2471,7 +2472,6 @@
 <translation id="5877831137320480913">სილამაზე და ფიტნესი</translation>
 <translation id="5879989559903563723">დაუშვებელია სტუმრის რეჟიმში</translation>
 <translation id="5880050725127890683">Chrome-ის უსაფრთხოების შემოწმებაზე გადასვლა</translation>
-<translation id="5883861433316751031">გსურთ, მართოთ და ხელახლა დააპროგრამოთ MIDI მოწყობილობები?</translation>
 <translation id="5884465125445718607">კონვერტი Chinese 6</translation>
 <translation id="5887400589839399685">ბარათი შენახულია</translation>
 <translation id="5887687176710214216">ბოლო ვიზიტი იყო გუშინ</translation>
@@ -2822,7 +2822,6 @@
 <translation id="6556866813142980365">გამეორება</translation>
 <translation id="6557715786897013164">14 x 17 დუიმი</translation>
 <translation id="6560786330438719938">დაინსტალირებული/დეინსტალირებული აპები და მათი გამოყენების სიხშირე</translation>
-<translation id="6567084950885568327">MIDI-მოწყობილობების მართვა და გადაპროგრამება</translation>
 <translation id="6568793038316600992">გადახდის მეთოდების მართვის ღილაკი, Chrome-ის პარამეტრებიდან საგადახდო და საკრედიტო ბარათების ინფორმაციის სამართავად გაააქტიურეთ ის</translation>
 <translation id="6569060085658103619">თქვენ ათვალიერებთ გაფართოების გვერდს</translation>
 <translation id="6569366777234823130">დრამა</translation>
@@ -3205,6 +3204,7 @@
 <translation id="733354035281974745">მოწყობილობის ადგილობრივი ანგარიშის უგულებელყოფა</translation>
 <translation id="7334320624316649418">გადალაგების &amp;გამეორება</translation>
 <translation id="7335157162773372339">შეუძლია თქვენი კამერის გამოყენების თხოვნა</translation>
+<translation id="7336636595549675416">სახლის ნომერი</translation>
 <translation id="7337248890521463931">მეტი ხაზის ჩვენება</translation>
 <translation id="7337706099755338005">მიუწვდომელია თქვენი პლატფორმისთვის.</translation>
 <translation id="733923710415886693">სერვერის სერტიფიკატის გამოქვეყნება სერტიფიკატთა გამჭვირვალობის შესახებ წესების შესაბამისად არ მომხდარა.</translation>
@@ -3911,7 +3911,6 @@
 <translation id="8671519637524426245">მნიშვნელობა <ph name="SECURE_DNS_SALT" /> არ აკმაყოფილებს მოთხოვნებს ზომის მიმართ.</translation>
 <translation id="867224526087042813">ხელმოწერა</translation>
 <translation id="8672264262457010862">ბიზნესი და მრეწველობა</translation>
-<translation id="8673776281896298303">მართეთ და ხელახლა დააპროგრამეთ თქვენი MIDI მოწყობილობები (SysEx)</translation>
 <translation id="8676424191133491403">დაყოვნების გარეშე</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, პასუხი, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ზე არსებული ვებგვერდის ჩატვირთვა ვერ ხერხდება, რადგან:</translation>
@@ -4151,7 +4150,6 @@
 <translation id="9148507642005240123">რედაქტირების &amp;მოქმედების გაუქმება</translation>
 <translation id="9148599396704355100">ფასი დაბალია</translation>
 <translation id="9150025764986957246">მაგალითად, შეგიძლიათ მიუთითოთ:</translation>
-<translation id="9150045010208374699">გამოიყენეთ თქვენი კამერა</translation>
 <translation id="9150685862434908345">თქვენს ადმინისტრატორს დისტანციურად შეუძლია ბრაუზერის დაყენებული პარამეტრების შეცვლა. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმაც. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">განახლებული</translation>
 <translation id="9155211586651734179">მიერთებული პერიფერიული აუდიომოწყობილობები</translation>

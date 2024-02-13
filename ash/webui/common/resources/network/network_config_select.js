@@ -171,4 +171,11 @@ Polymer({
     }
     return this.items.includes(this.prefilledValue);
   },
+
+  /**
+   * Disable the whole item if the prefilled value is used.
+   */
+  extraSetupForPrefilledValue() {
+    this.disabled = true;
+  },
 });

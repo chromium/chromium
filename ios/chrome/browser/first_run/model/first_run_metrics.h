@@ -13,6 +13,9 @@
 
 namespace first_run {
 
+// Histogram for first run stage. Related to `enum FirstRunStage`.
+extern const char kFirstRunStageHistogram[];
+
 // The different ways to interact with the sign-in flow during First Run.
 enum SignInAttemptStatus {
   // The user did not attempt to sign in.

@@ -247,7 +247,7 @@ bool PlatformSensor::UpdateSensorInternal(const ConfigMap& configurations) {
   }
 }
 
-bool PlatformSensor::is_active() const {
+bool PlatformSensor::IsActiveForTesting() const {
   base::AutoLock auto_lock(lock_);
   return is_active_;
 }

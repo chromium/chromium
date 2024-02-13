@@ -56,6 +56,8 @@ class PersonalizationAppSeaPenProviderBase
   void BindInterface(
       mojo::PendingReceiver<mojom::SeaPenProvider> receiver) override;
 
+  bool IsEligibleForSeaPen() override;
+
   // ::ash::personalization_app::mojom::SeaPenProvider:
   void SearchWallpaper(mojom::SeaPenQueryPtr query,
                        SearchWallpaperCallback callback) override;
@@ -94,7 +96,7 @@ class PersonalizationAppSeaPenProviderBase
 
   virtual void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
-      const std::string& query_info,
+      const mojom::SeaPenQueryPtr& query,
       base::OnceCallback<void(bool success)> callback) = 0;
 
   manta::proto::FeatureName feature_name_;

@@ -11,6 +11,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.thatMatchesFirst;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
@@ -38,6 +39,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -292,5 +295,137 @@ public class AccountManagementFragmentTest {
         onView(withText(R.string.turn_off_sync_and_signout_title))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testIdentityErrorCardShownForSignedInUsers() {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+        // Sign in and open settings.
+        mSigninTestRule.addTestAccountThenSignin();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
+        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testIdentityErrorCardNotShownIfFeatureDisabled() {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+        // Sign in and open settings.
+        mSigninTestRule.addTestAccountThenSignin();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
+        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testIdentityErrorCardNotShownIfNoError() {
+        // Sign in and open settings.
+        mSigninTestRule.addTestAccountThenSignin();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
+        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testIdentityErrorCardNotShownForSyncingUsers() {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+        // Sign in, enable sync and open settings.
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
+        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testIdentityErrorCardDynamicallyShownOnError() {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+
+        // Sign in and open settings.
+        mSigninTestRule.addTestAccountThenSignin();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
+        // No error card exists right now.
+        onView(withId(R.id.identity_error_card)).check(doesNotExist());
+
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+
+        // Error card is showing now.
+        onViewWaiting(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
+    public void testIdentityErrorCardDynamicallyHidden() {
+        FakeSyncServiceImpl fakeSyncService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
+                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
+                            return fakeSyncServiceImpl;
+                        });
+
+        // Fake an identity error.
+        fakeSyncService.setRequiresClientUpgrade(true);
+
+        // Sign in and open settings.
+        mSigninTestRule.addTestAccountThenSignin();
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
+        // The error card exists right now.
+        onView(withId(R.id.identity_error_card)).check(matches(isDisplayed()));
+
+        // Clear the error.
+        fakeSyncService.setRequiresClientUpgrade(false);
+
+        // No error card exists anymore.
+        onView(withId(R.id.identity_error_card)).check(doesNotExist());
     }
 }

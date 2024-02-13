@@ -53,7 +53,7 @@ class MojoUkmRecorder;
 
 namespace content {
 
-class AXImageAnnotator;
+class AXAnnotatorsManager;
 class RenderFrameImpl;
 class RenderAccessibilityManager;
 
@@ -126,7 +126,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // An AXObject should be serialized at the next available opportunity.
   void MarkWebAXObjectDirty(
       const blink::WebAXObject& obj,
-      bool subtree,
       ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone,
       ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
       std::vector<ui::AXEventIntent> event_intents = {},
@@ -135,7 +134,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void NotifyWebAXObjectMarkedDirty(const blink::WebAXObject& obj,
     ax::mojom::Event event_type = ax::mojom::Event::kNone);
   // Called when it is safe to begin a serialization.
-  void AXReadyCallback();
+  // Returns true if a serialization occurs.
+  bool AXReadyCallback();
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
@@ -153,10 +153,17 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // machine.
   void ConnectionClosed();
 
- protected:
-  // Send queued events from the renderer to the browser.
-  void SendPendingAccessibilityEvents();
+  // The AxID of the first unlabeled image we have encountered in this tree.
+  //
+  // Used to ensure that the tutor message that explains to screen reader users
+  // how to turn on automatic image labels is provided only once.
+  mutable std::optional<int32_t> first_unlabeled_image_id_ = std::nullopt;
 
+  // Whether we should highlight annotation results visually on the page
+  // for debugging.
+  bool image_annotation_debugging_ = false;
+
+ protected:
   // Check the entire accessibility tree to see if any nodes have
   // changed location, by comparing their locations to the cached
   // versions. If any have moved, send an IPC with the new locations.
@@ -180,15 +187,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // If the document is loaded, fire a load complete event.
   void FireLoadCompleteIfLoaded();
 
-  // Creates and takes ownership of an instance of the class that automatically
-  // labels images for accessibility.
-  void CreateAXImageAnnotator();
-
-  // Automatically labels images for accessibility if the accessibility mode for
-  // this feature is turned on, otherwise stops automatic labeling and removes
-  // any automatic annotations that might have been added before.
-  void StartOrStopLabelingImages(ui::AXMode old_mode, ui::AXMode new_mode);
-
   // Marks all AXObjects with the given role in the current tree dirty.
   void MarkAllAXObjectsDirty(ax::mojom::Role role,
                              ax::mojom::Action event_from_action);
@@ -196,9 +194,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Ensure that AXReadyCallback() will be called at the next available
   // opportunity, so that any dirty objects will be serialized soon.
   void ScheduleImmediateAXUpdate();
-
-  void AddImageAnnotationDebuggingAttributes(
-      const std::vector<ui::AXTreeUpdate>& updates);
 
   // Returns the document for the active popup if any.
   blink::WebDocument GetPopupDocument();
@@ -225,12 +220,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
                                  std::vector<ui::AXTreeUpdate>& updates,
                                  bool mark_plugin_subtree_dirty);
 
-  void AddImageAnnotations(const blink::WebDocument& document,
-                           std::vector<ui::AXNodeData*>&);
-  void AddImageAnnotationsForNode(blink::WebAXObject& src, ui::AXNodeData* dst);
-
-  static void IgnoreProtocolChecksForTesting();
-
   // The RenderAccessibilityManager that owns us.
   raw_ptr<RenderAccessibilityManager, ExperimentalRenderer>
       render_accessibility_manager_;
@@ -241,8 +230,8 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // This keeps accessibility enabled as long as it lives.
   std::unique_ptr<blink::WebAXContext> ax_context_;
 
-  // Manages the automatic image annotations, if enabled.
-  std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
+  // Manages generated annotations of the AXTree.
+  std::unique_ptr<AXAnnotatorsManager> ax_annotators_manager_;
 
   using PluginAXTreeSerializer =
       ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
@@ -254,14 +243,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Token to return this token in the next IPC, so that RenderFrameHostImpl
   // can discard stale data, when the token does not match the expected token.
   std::optional<uint32_t> reset_token_;
-
-  // Whether or not we've injected a stylesheet in this document
-  // (only when debugging flags are enabled, never under normal circumstances).
-  bool has_injected_stylesheet_ = false;
-
-  // Whether we should highlight annotation results visually on the page
-  // for debugging.
-  bool image_annotation_debugging_ = false;
 
   // The specified page language, or empty if unknown.
   std::string page_language_;
@@ -296,12 +277,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // slowest_serialization_ms_. We report UKM before the user navigates
   // away, or every few minutes.
   ukm::SourceId last_ukm_source_id_;
-
-  // The AxID of the first unlabeled image we have encountered in this tree.
-  //
-  // Used to ensure that the tutor message that explains to screen reader users
-  // how to turn on automatic image labels is provided only once.
-  mutable std::optional<int32_t> first_unlabeled_image_id_ = std::nullopt;
 
   // Note: this is the accessibility mode communicated to this object.
   // The actual accessibility mode on a Document is the combination of this

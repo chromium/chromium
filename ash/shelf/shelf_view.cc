@@ -2938,7 +2938,7 @@ int ShelfView::OnDragUpdated(const ui::DropTargetEvent& event) {
   return ui::DragDropTypes::DRAG_MOVE;
 }
 
-BEGIN_METADATA(ShelfView, views::AccessiblePaneView)
+BEGIN_METADATA(ShelfView)
 END_METADATA
 
 }  // namespace ash

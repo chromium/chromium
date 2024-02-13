@@ -20,9 +20,10 @@
 #elif BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
 #elif BUILDFLAG(IS_WIN)
+#include <optional>
+
 #include "base/types/token_type.h"
 #include "base/win/scoped_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #endif
@@ -81,7 +82,7 @@ struct GFX_EXPORT GpuMemoryBufferHandle {
   ScopedIOSurface io_surface;
 #elif BUILDFLAG(IS_WIN)
   base::win::ScopedHandle dxgi_handle;
-  absl::optional<DXGIHandleToken> dxgi_token;
+  std::optional<DXGIHandleToken> dxgi_token;
 #elif BUILDFLAG(IS_ANDROID)
   base::android::ScopedHardwareBufferHandle android_hardware_buffer;
 #endif

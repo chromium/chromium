@@ -61,10 +61,6 @@ _CONFIG = [
             'absl::in_place',
             'absl::in_place_type',
             'absl::int128',
-            'absl::make_optional',
-            'absl::nullopt',
-            'absl::nullopt_t',
-            'absl::optional',
             'absl::uint128',
             'absl::variant',
             'absl::visit',
@@ -2021,6 +2017,16 @@ _CONFIG = [
         ],
         'allowed': [
             'blink_mojom::.+',
+        ]
+    },
+    {
+        'paths': [
+            'third_party/blink/renderer/modules/ml/webnn/ml_graph_tflite_converter.cc',
+            'third_party/blink/renderer/modules/ml/webnn/ml_graph_test_model_loader.cc',
+        ],
+        'allowed': [
+            'flatbuffers::.+',
+            'tflite::.+',
         ]
     },
     {

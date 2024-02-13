@@ -108,6 +108,7 @@ export {LocalizedLinkElement} from 'chrome://resources/ash/common/cr_elements/lo
 export {CrPolicyIndicatorElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js';
 export {CrTooltipIconElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 export {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_dialog.js';
+export {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 export {OpenWindowProxy, OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -203,6 +204,7 @@ export {TtsVoiceSubpageBrowserProxy, TtsVoiceSubpageBrowserProxyImpl} from './os
 export {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, BrowserChannel, ChannelInfo, EndOfLifeInfo, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, VersionInfo} from './os_about_page/about_page_browser_proxy.js';
 export {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl, DeviceNameMetadata} from './os_about_page/device_name_browser_proxy.js';
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
+export {OsAboutPageElement} from './os_about_page/os_about_page.js';
 export {AndroidAppsBrowserProxy, AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {AppManagementFileHandlingItemElement} from './os_apps_page/app_management_page/file_handling_item.js';
 export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';

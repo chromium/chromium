@@ -35,8 +35,7 @@ TEST(ProgressSampler, Samples) {
   progress_sampler.AddSample(start_time + base::Milliseconds(200), 300);
   ASSERT_TRUE(progress_sampler.HasEnoughSamples());
   ASSERT_EQ(progress_sampler.GetAverageSpeedPerMs(), 1);
-  ASSERT_EQ(*progress_sampler.GetRemainingTime(15000),
-            base::Milliseconds(14700));
+  ASSERT_EQ(progress_sampler.GetRemainingTime(15000)->InMilliseconds(), 14700);
 
   // The first sample value was added at timeline 0 is now out of
   // range (500ms) and thus discarded.
@@ -45,8 +44,40 @@ TEST(ProgressSampler, Samples) {
   // Time remaining: (15000-1200)/2 = 6900.
   progress_sampler.AddSample(start_time + base::Milliseconds(520), 1200);
   ASSERT_EQ(progress_sampler.GetAverageSpeedPerMs(), 2);
-  ASSERT_EQ(*progress_sampler.GetRemainingTime(15000),
-            base::Milliseconds(6900));
+  ASSERT_EQ(progress_sampler.GetRemainingTime(15000)->InMilliseconds(), 6900);
 }
 
+TEST(ProgressSampler, PercentageRange) {
+  // Create a sampler that keep samples within last 5s and calculates average
+  // progress only if minimum time range 1s is reached.
+  ProgressSampler progress_sampler(base::Seconds(5), base::Seconds(1));
+  ASSERT_FALSE(progress_sampler.HasEnoughSamples());
+  ASSERT_FALSE(progress_sampler.GetRemainingTime(100));
+
+  const base::Time start_time = base::Time::Now();
+  progress_sampler.AddSample(start_time, 25);
+  ASSERT_FALSE(progress_sampler.HasEnoughSamples());
+  ASSERT_FALSE(progress_sampler.GetRemainingTime(100));
+
+  // Minimum time range 1s has not been reached yet.
+  progress_sampler.AddSample(start_time + base::Seconds(0.2), 30);
+  ASSERT_FALSE(progress_sampler.HasEnoughSamples());
+  ASSERT_FALSE(progress_sampler.GetRemainingTime(100));
+
+  // Samples in queue: [(0, 25), (200, 30), (2000, 35)].
+  // Average speed: (35-25) / (2000-0) = 0.005.
+  // Time remaining: (100-35+0.005-1) / 0.005 = 12800.
+  progress_sampler.AddSample(start_time + base::Seconds(2), 35);
+  ASSERT_TRUE(progress_sampler.HasEnoughSamples());
+  ASSERT_EQ(progress_sampler.GetAverageSpeedPerMs(), 0.005);
+  ASSERT_EQ(progress_sampler.GetRemainingTime(100)->InMilliseconds(), 12800);
+
+  // The first sample value was added at timeline 0 is now out of range (5s) and
+  // thus discarded. Samples in queue now: [(200, 30), (2000, 35), (5200, 60)].
+  // Average speed: (60-30) / (5200-200) = 0.006.
+  // Time remaining: (100-60+0.006-1) / 0.006 = 6501.
+  progress_sampler.AddSample(start_time + base::Seconds(5.2), 60);
+  ASSERT_EQ(progress_sampler.GetAverageSpeedPerMs(), 0.006);
+  ASSERT_EQ(progress_sampler.GetRemainingTime(100)->InMilliseconds(), 6501);
+}
 }  // namespace updater

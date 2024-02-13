@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compose/animations/animator.js';
+import 'chrome-untrusted://compose/animations/animator.js';
 
-import {Animator} from 'chrome://compose/animations/animator.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {getTrustedHTML} from '//resources/js/static_types.js';
+import {Animator} from 'chrome-untrusted://compose/animations/animator.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('ComposeAnimator', () => {
   let animator: Animator;

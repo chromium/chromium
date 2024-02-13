@@ -58,7 +58,6 @@ class SensorProxy : public GarbageCollected<SensorProxy>,
       device::mojom::blink::SensorConfigurationPtr) = 0;
   virtual double GetDefaultFrequency() const = 0;
   virtual std::pair<double, double> GetFrequencyLimits() const = 0;
-  virtual void SetReadingForInspector(const device::SensorReading&) {}
 
   virtual void ReportError(DOMExceptionCode code, const String& description);
   // Getters.

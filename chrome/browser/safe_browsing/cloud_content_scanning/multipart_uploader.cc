@@ -60,7 +60,8 @@ std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_WIN_SHARE_DELETE);
 
-  return ConnectorDataPipeGetter::Create(boundary, metadata, std::move(file));
+  return ConnectorDataPipeGetter::CreateMultipartPipeGetter(boundary, metadata,
+                                                            std::move(file));
 }
 
 }  // namespace
@@ -252,7 +253,7 @@ void MultipartUploadRequest::SendPageRequest(
     CompleteSendRequest(std::move(request));
   } else {
     DataPipeCreatedCallback(std::move(request),
-                            ConnectorDataPipeGetter::Create(
+                            ConnectorDataPipeGetter::CreateMultipartPipeGetter(
                                 boundary_, metadata_, std::move(page_region_)));
   }
 }

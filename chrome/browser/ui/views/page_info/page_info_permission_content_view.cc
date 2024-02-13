@@ -105,11 +105,11 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
   icon_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
   toggle_button_->SetProperty(views::kMarginsKey, gfx::Insets::VH(margin, 0));
 
-  AddChildView(PageInfoViewFactory::CreateSeparator(
+  auto* separator = AddChildView(PageInfoViewFactory::CreateSeparator(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
 
-  MaybeAddMediaPreview(web_contents);
+  MaybeAddMediaPreview(web_contents, *separator);
 
   // TODO(crbug.com/1225563): Consider to use permission specific text.
   AddChildView(std::make_unique<RichHoverButton>(
@@ -201,7 +201,8 @@ void PageInfoPermissionContentView::PermissionChanged() {
 }
 
 void PageInfoPermissionContentView::MaybeAddMediaPreview(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    views::View& preceding_separator) {
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   if (!base::FeatureList::IsEnabled(features::kCameraMicPreview)) {
     return;
@@ -211,6 +212,8 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview(
       type_ != ContentSettingsType::MEDIASTREAM_MIC) {
     return;
   }
+
+  preceding_separator.GetProperty(views::kMarginsKey)->set_bottom(0);
 
   auto view_type = type_ == ContentSettingsType::MEDIASTREAM_CAMERA
                        ? MediaCoordinator::ViewType::kCameraOnly

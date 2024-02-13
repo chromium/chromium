@@ -40,10 +40,21 @@ class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
       base::PassKey<FileSuggestKeyedService>) override;
 
  private:
+  enum class SearchType {
+    kLastViewed,
+    kLastModified,
+    kSharedWithUser,
+  };
+
+  // Returns a suffix to be used in histogram names when reporting UMA about a
+  // search request.
+  static std::string GetHistogramSuffix(SearchType search_type);
+
   // Runs Drive FS search using the provided query parameters.
   // `callback` gets run when the search completes. The search results are added
   // to `pending_results_`.
-  void PerformSearch(drivefs::mojom::QueryParametersPtr query,
+  void PerformSearch(SearchType search_type,
+                     drivefs::mojom::QueryParametersPtr query,
                      drive::DriveIntegrationService* drive_service,
                      base::RepeatingClosure callback);
 
@@ -55,6 +66,7 @@ class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
   // Callback for a single Drive FS search query. Saves the returned results in
   // `pending_results_`, and runs `callback`.
   void OnSearchRequestComplete(
+      SearchType search_type,
       base::RepeatingClosure callback,
       drive::FileError error,
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
@@ -70,6 +82,9 @@ class DriveRecentFileSuggestionProvider : public FileSuggestionProvider {
   // Keeps track of results returned by individual Drive FS searches.
   std::map<base::FilePath, drivefs::mojom::FileMetadataPtr>
       query_result_files_by_path_;
+
+  // Timestamp for when search requests were issued. Used to collect UMA.
+  base::Time search_start_time_;
 
   // Used to guard the calling to get drive suggestion results.
   base::WeakPtrFactory<DriveRecentFileSuggestionProvider> weak_factory_{this};

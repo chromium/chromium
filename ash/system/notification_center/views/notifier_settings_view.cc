@@ -65,6 +65,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -491,7 +492,7 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
   // constructor, and replace TableLayout with BoxLayout.  Toggle the visibility
   // of the policy icon dynamically as needed.
 
-  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+  auto* const layout = SetLayoutManager(std::make_unique<views::TableLayout>());
   layout
       // Add a column for the checkbox.
       ->AddPaddingColumn(views::TableLayout::kFixedSize,
@@ -523,7 +524,8 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
       .AddRows(1, views::TableLayout::kFixedSize);
 
   // FocusRing is a child of Button. Ignore it.
-  layout->SetChildViewIgnoredByLayout(views::FocusRing::Get(this), true);
+  views::FocusRing::Get(this)->SetProperty(views::kViewIgnoredByLayoutKey,
+                                           true);
 
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
@@ -659,7 +661,8 @@ NotifierSettingsView::NotifierSettingsView() {
     auto scroller = std::make_unique<views::ScrollView>();
     scroller->SetBackgroundColor(std::nullopt);
     scroll_bar_ = scroller->SetVerticalScrollBar(
-        std::make_unique<views::OverlayScrollBar>(/*horizontal=*/false));
+        std::make_unique<views::OverlayScrollBar>(
+            views::ScrollBar::Orientation::kVertical));
     scroller->SetDrawOverflowIndicator(false);
     scroller_ = AddChildView(std::move(scroller));
 
@@ -746,7 +749,7 @@ void NotifierSettingsView::OnNotifierIconUpdated(const NotifierId& notifier_id,
   if (features::IsSettingsAppNotificationSettingsEnabled()) {
     return;
   }
-  for (auto* button : buttons_) {
+  for (NotifierButton* button : buttons_) {
     if (button->notifier_id() == notifier_id) {
       button->UpdateIconImage(icon);
       return;

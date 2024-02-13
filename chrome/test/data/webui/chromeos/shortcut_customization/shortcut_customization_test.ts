@@ -510,7 +510,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertTrue(editElement.hasError);
     const expected_error_message =
         'Shortcut is being used for "TestConflictName". Press a new ' +
-        'shortcut. To replace the original shortcut, press this shortcut ' +
+        'shortcut. To replace the existing shortcut, press this shortcut ' +
         'again.';
     assertEquals(
         expected_error_message,
@@ -923,7 +923,16 @@ suite('shortcutCustomizationAppTest', function() {
         AcceleratorConfigResult.kConflictCanOverride;
     const expectedErrorMessage =
         'Shortcut is being used for "BRIGHTNESS_UP". Press a new shortcut. ' +
-        'To replace the original shortcut, press this shortcut again.';
+        'To replace the existing shortcut, press this shortcut again.';
+    await validateAcceleratorInDialog(
+        acceleratorConfigResult, expectedErrorMessage);
+  });
+
+  test('ValidateNonStandardWithSearch', async () => {
+    const acceleratorConfigResult =
+        AcceleratorConfigResult.kNonStandardWithSearch;
+    const expectedErrorMessage =
+        '] is not available with the launcher key. Press a new shortcut.';
     await validateAcceleratorInDialog(
         acceleratorConfigResult, expectedErrorMessage);
   });

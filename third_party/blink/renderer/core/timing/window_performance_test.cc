@@ -1083,7 +1083,7 @@ TEST_F(WindowPerformanceTest, TouchesWithoutClick) {
 //  as event duration ending time.
 //  See crbug.com/1321819
 TEST_F(WindowPerformanceTest, ArtificialPointerupOrClick) {
-  // Arbitrary keycode picked for testing
+  // Arbitrary pointerId picked for testing
   PointerId pointer_id = 4;
 
   // Pointerdown

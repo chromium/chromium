@@ -334,6 +334,9 @@ class AddressComponent {
   // Returns a constant vector of pointers to the child nodes of the component.
   const SubcomponentsList& Subcomponents() const { return subcomponents_; }
 
+  // Returns a pointer to the parent node.
+  AddressComponent* Parent() const { return parent_; }
+
   // Register a new synthesized component in the `synthesized_subcomponents_`
   // list. Note that similarly as default subcomponents, synthesized
   // subcomponents are owned by the corresponding `AddressComponentsStore` and

@@ -27,7 +27,7 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
       </body>
     `);
 
-  Common.Settings.settingForTest('showEventListenersForAncestors').set(false);
+  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(false);
   var scriptURL = 'http://127.0.0.1:8000/devtools/service-workers/resources/service-worker-empty.js';
   var scope = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope1/';
 

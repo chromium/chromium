@@ -3,10 +3,13 @@
 <translationbundle lang="eu">
 <translation id="1075622780330595106">Fitxetako <ph name="NUMBER_OF_TABS" /> ez dira erabili azkenaldian. Itxi nahi dituzu?</translation>
 <translation id="1155815720264022949">Fitxa zaharrak itxi nahi dituzu?</translation>
+<translation id="1197088940767939838">Laranja</translation>
 <translation id="1215127405478249895">Berrikusi fitxak</translation>
 <translation id="125153950246128346">Sakatu hau beste fitxa bat ikusteko</translation>
 <translation id="1326271443836399892">Berrikusi txukuntzeko ezarpenak.</translation>
 <translation id="1499635324672558517">Ezkutuko moduko fitxa guztiak itxi nahi dituzu?</translation>
+<translation id="1555130319947370107">Urdina</translation>
+<translation id="161042844686301425">Ziana</translation>
 <translation id="1657719826150349398">Eraman fitxa behera</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Egin hautatutako fitxa <ph name="TABS_COUNT_ONE" />en laster-marka}other{Egin hautatutako <ph name="TABS_COUNT_MANY" /> fitxen laster-markak}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Taldekatu fitxa}other{Taldekatu fitxak}}</translation>
 <translation id="3996880007329611795">Jaso alertak</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
+<translation id="4159784952369912983">Morea</translation>
 <translation id="4212246570487010370">Jarraitu arakatzen</translation>
 <translation id="427987768447457592">Fitxa talde berria</translation>
 <translation id="4648718555153979859">Fitxak taldekatuta daude hemen</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Azkenaldian erabili ez duzun <ph name="TABS_COUNT_ONE" /> fitxa daukazu}other{Azkenaldian erabili ez dituzun <ph name="TABS_COUNT_MANY" /> fitxa dauzkazu}}</translation>
 <translation id="5339733443032484186">Azken fitxa</translation>
+<translation id="5400836586163650660">Grisa</translation>
 <translation id="5490235265819901748">Fitxa taldea zabalduta</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>
 <translation id="5545379293264651575">Itxi berrikusi gabe</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Prezio-jaitsierei buruzko alertak jaso nahi dituzu?</translation>
 <translation id="58326064309361797">Fitxak taldekatzeko, arrasta itzazu</translation>
 <translation id="5846292395804797011">Itxi <ph name="NUMBER_OF_TABS" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea</translation>
+<translation id="5901630391730855834">Horia</translation>
 <translation id="5972844218283131174">Desautatu guztiak</translation>
+<translation id="6017514345406065928">Berdea</translation>
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Taldekatu hautatutako <ph name="TABS_COUNT_ONE" /> fitxa}other{Taldekatu hautatutako <ph name="TABS_COUNT_MANY" /> fitxak}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_ONE" />.}other{Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_MANY" />.}}</translation>
 <translation id="7885132941432959125">Eraman fitxa eskuinera</translation>
+<translation id="7942349550061667556">Gorria</translation>
 <translation id="7966321538264951561">Baztertu iradokizunak.</translation>
 <translation id="8029301326595421733">Denda honi buruzko informazioa altuera osoan irekita dago</translation>
 <translation id="8205266828577616993">Eraman fitxa gora</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Gehitu beste fitxa bat taldean</translation>
 <translation id="955558140275419384">Berrikusi artxibatutako fitxa guztiak editore honetan sartuta, dena txukuntzeko.</translation>
 <translation id="959682366969460160">Antola zaitez</translation>
+<translation id="992256792861109788">Arrosa</translation>
 </translationbundle>

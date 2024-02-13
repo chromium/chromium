@@ -1017,6 +1017,22 @@ bool ReplaceStandardURL(const char* base,
                         CanonOutput* output,
                         Parsed* new_parsed);
 
+// For non-special URLs.
+COMPONENT_EXPORT(URL)
+bool ReplaceNonSpecialURL(const char* base,
+                          const Parsed& base_parsed,
+                          const Replacements<char>& replacements,
+                          CharsetConverter* query_converter,
+                          CanonOutput& output,
+                          Parsed& new_parsed);
+COMPONENT_EXPORT(URL)
+bool ReplaceNonSpecialURL(const char* base,
+                          const Parsed& base_parsed,
+                          const Replacements<char16_t>& replacements,
+                          CharsetConverter* query_converter,
+                          CanonOutput& output,
+                          Parsed& new_parsed);
+
 // Filesystem URLs can only have the path, query, or ref replaced.
 // All other components will be ignored.
 COMPONENT_EXPORT(URL)

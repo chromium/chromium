@@ -7,6 +7,7 @@ package org.chromium.components.webauthn;
 import android.app.PendingIntent;
 import android.net.Uri;
 import android.os.Parcel;
+import android.os.ResultReceiver;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -73,6 +74,7 @@ public class Fido2ApiCallHelper {
             PublicKeyCredentialCreationOptions options,
             Uri uri,
             byte[] clientDataHash,
+            ResultReceiver resultReceiver,
             OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback)
             throws NoSuchAlgorithmException {
@@ -84,7 +86,7 @@ public class Fido2ApiCallHelper {
 
         Fido2ApiCallParams params = WebauthnModeProvider.getInstance().getFido2ApiCallParams();
 
-        params.mMethodInterfaces.makeCredential(options, uri, clientDataHash, args);
+        params.mMethodInterfaces.makeCredential(options, uri, clientDataHash, resultReceiver, args);
 
         Task<PendingIntent> task =
                 call.run(params.mRegisterMethodId, Fido2ApiCall.TRANSACTION_REGISTER, args, result);
@@ -96,6 +98,7 @@ public class Fido2ApiCallHelper {
             PublicKeyCredentialRequestOptions options,
             Uri uri,
             byte[] clientDataHash,
+            ResultReceiver resultReceiver,
             OnSuccessListener<PendingIntent> successCallback,
             OnFailureListener failureCallback) {
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
@@ -106,7 +109,7 @@ public class Fido2ApiCallHelper {
 
         Fido2ApiCallParams params = WebauthnModeProvider.getInstance().getFido2ApiCallParams();
         params.mMethodInterfaces.getAssertion(
-                options, uri, clientDataHash, /* tunnelId= */ null, args);
+                options, uri, clientDataHash, /* tunnelId= */ null, resultReceiver, args);
         Task<PendingIntent> task =
                 call.run(params.mSignMethodId, Fido2ApiCall.TRANSACTION_SIGN, args, result);
         task.addOnSuccessListener(successCallback);

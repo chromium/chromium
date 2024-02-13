@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,17 +21,10 @@
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
-#include "chrome/browser/password_manager/android/password_accessory_metrics_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_util.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/credential_cache.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::AccessoryAction;

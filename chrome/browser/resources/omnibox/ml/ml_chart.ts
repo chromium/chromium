@@ -4,10 +4,10 @@
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {Signals} from '../omnibox.mojom-webui.js';
+import type {Signals} from '../omnibox.mojom-webui.js';
 import {clamp, signalNames} from '../omnibox_util.js';
 
-import {MlBrowserProxy} from './ml_browser_proxy';
+import type {MlBrowserProxy} from './ml_browser_proxy';
 // @ts-ignore:next-line
 import sheet from './ml_chart.css' assert {type : 'css'};
 import {getTemplate} from './ml_chart.html.js';

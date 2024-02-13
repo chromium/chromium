@@ -32,11 +32,11 @@ TEST(SimpleFileEnumeratorTest, Root) {
   EXPECT_FALSE(enumerator.HasError());
 
   // No directories should be listed, no indirect descendants should be listed.
-  EXPECT_EQ(absl::nullopt, enumerator.Next());
+  EXPECT_EQ(std::nullopt, enumerator.Next());
   EXPECT_FALSE(enumerator.HasError());
 
   // We can call enumerator.Next() after the iteration is done.
-  EXPECT_EQ(absl::nullopt, enumerator.Next());
+  EXPECT_EQ(std::nullopt, enumerator.Next());
   EXPECT_FALSE(enumerator.HasError());
 }
 
@@ -45,7 +45,7 @@ TEST(SimpleFileEnumeratorTest, NotFound) {
   SimpleFileEnumerator enumerator(kRoot);
 
   auto entry = enumerator.Next();
-  EXPECT_EQ(absl::nullopt, enumerator.Next());
+  EXPECT_EQ(std::nullopt, enumerator.Next());
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   EXPECT_TRUE(enumerator.HasError());
 #endif

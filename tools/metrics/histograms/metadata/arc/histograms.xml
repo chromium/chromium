@@ -553,7 +553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppSync.InitialSession.InstalledAppSize" units="MB"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -577,7 +577,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppSync.InitialSession.NumApps{ArcSyncAppTypes}"
-    units="apps" expires_after="2024-06-02">
+    units="apps" expires_after="2024-08-04">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.CloudDpc{TimedCloudDpcOp}.TimeDelta{SuccessFailure}{ArcUserTypes}"
-    units="ms" expires_after="2024-06-02">
+    units="ms" expires_after="2024-08-04">
   <owner>batoon@google.com</owner>
   <owner>mhasank@google.com</owner>
   <owner>arc-commercial@google.com</owner>
@@ -1367,7 +1367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.ArcBridgeFailure"
-    enum="NearbyShareArcBridgeFailResult" expires_after="2024-03-27">
+    enum="NearbyShareArcBridgeFailResult" expires_after="2024-08-04">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
@@ -1377,7 +1377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.DataHandlingFailure"
-    enum="ArcNearbyShareDataHandlingResult" expires_after="2024-03-27">
+    enum="ArcNearbyShareDataHandlingResult" expires_after="2024-08-04">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
@@ -1387,7 +1387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.FileStreamComplete.TimeDelta" units="ms"
-    expires_after="2024-07-28">
+    expires_after="2024-08-04">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
@@ -1398,7 +1398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.FileStreamFailure" enum="PlatformFileError"
-    expires_after="2024-07-28">
+    expires_after="2024-08-04">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
@@ -1409,14 +1409,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.NearbyShare.IOFailure" enum="ArcNearbyShareIOErrorResult"
-    expires_after="2024-03-27">
+    expires_after="2024-08-04">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>Records any IO errors while using NearbyShare.</summary>
 </histogram>
 
 <histogram name="Arc.NearbyShare.WindowFound" units="units"
-    expires_after="2024-03-27">
+    expires_after="2024-08-04">
   <owner>alanding@google.com</owner>
   <owner>arc-app-dev@google.com</owner>
   <summary>
@@ -1534,6 +1534,26 @@ chromium-metrics-reviews@google.com.
   <owner>yaoqq@google.com</owner>
   <owner>arc-framework@google.com</owner>
   <summary>Records the style of an Arc notification when it's created.</summary>
+</histogram>
+
+<histogram
+    name="Arc.NotificationView.{ChildView}.{FadeType}.AnimationSmoothness"
+    units="%" expires_after="2024-06-01">
+  <owner>shuminghao@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Relative smoothness of the fade animation of {ChildView} inside a
+    notification view. 100% represents ideally smooth 60 frames per second.
+    Emitted when the fade in/out animation is completed.
+  </summary>
+  <token key="ChildView">
+    <variant name="CollapsedSummaryView"/>
+    <variant name="ContentView"/>
+  </token>
+  <token key="FadeType">
+    <variant name="FadeIn"/>
+    <variant name="FadeOut"/>
+  </token>
 </histogram>
 
 <histogram name="Arc.OptInAction" enum="ArcOptInAction"
@@ -1890,7 +1910,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Standard deviation for commit time delta from ideal time. Only collected if
     the user has app syncing enabled and doesn't have a custom passphrase set.
-    {ArcPerformanceAppCategories}
+    This metric is reported for all clients. {ArcPerformanceAppCategories}.
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -1944,6 +1964,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Arc.Runtime.Performance.JanksPerMinute2{ArcPerformanceAppCategories}"
+    units="count" expires_after="2024-07-21">
+  <owner>alanding@google.com</owner>
+  <owner>matvore@google.com</owner>
+  <summary>
+    Count of the number of UI janks per minute that occured during the tracing
+    period. A jank is defined as a displayed frame with duration longer than the
+    normal display rate by 190%. {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
     name="Arc.Runtime.Performance.PerceivedFPS2{ArcPerformanceAppCategories}"
     units="fps" expires_after="2024-07-21">
   <owner>khmel@google.com</owner>
@@ -1952,6 +1988,22 @@ chromium-metrics-reviews@google.com.
     Render frames per second, not considering frames which exo could not
     present. Only collected if the user has app syncing enabled and doesn't have
     a custom passphrase set. {ArcPerformanceAppCategories}
+  </summary>
+  <token key="ArcPerformanceAppCategories"
+      variants="ArcPerformanceAppCategories">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Arc.Runtime.Performance.PresentDeviation2{ArcPerformanceAppCategories}"
+    units="microseconds" expires_after="2024-07-07">
+  <owner>khmel@google.com</owner>
+  <owner>alanding@google.com</owner>
+  <summary>
+    Standard deviation for present time delta from ideal time. Only collected if
+    the user has app syncing enabled and doesn't have a custom passphrase set.
+    This metric is reported for all clients. {ArcPerformanceAppCategories}
   </summary>
   <token key="ArcPerformanceAppCategories"
       variants="ArcPerformanceAppCategories">
@@ -2293,7 +2345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.VmDataMigration.GetAndroidDataInfoDuration" units="ms"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>momohatt@google.com</owner>
   <owner>youkichihosoi@google.com</owner>
   <owner>arc-storage@google.com</owner>
@@ -2540,7 +2592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2024-08-16">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -2554,7 +2606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Wayland.LateTiming.Event" enum="WaylandTimingEvent"
-    expires_after="2024-03-16">
+    expires_after="2024-08-16">
   <owner>alanding@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>

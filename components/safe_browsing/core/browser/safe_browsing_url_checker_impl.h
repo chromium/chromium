@@ -95,12 +95,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // which type of hash-prefix real-time lookup the profile is eligible for, if
   // any. These two must be computed in advance, since this class only exists
   // on the IO thread.
-  // |can_urt_check_subresource_url| indicates whether or not the profile has
-  // enabled real time URL lookups for subresource URLs. If this value is true,
-  // then |url_real_time_lookup_enabled| must also be true.
-  // |last_committed_url| is used for obtaining the page load token when the
-  // URL being checked is not a mainframe URL. Only used when URL real time
-  // lookup is performed.
   // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
   // object.
   // TODO(crbug.com/1103222): Add an iOS-specific WebUIDelegate implementation
@@ -123,11 +117,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
           frame_tree_node_id,
       std::optional<int64_t> navigation_id,
       bool url_real_time_lookup_enabled,
-      bool can_urt_check_subresource_url,
       bool can_check_db,
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
-      GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
@@ -315,9 +307,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // Whether real time URL lookup is enabled for this request.
   bool url_real_time_lookup_enabled_;
 
-  // Whether non mainframe url can be checked for this profile.
-  bool can_urt_check_subresource_url_;
-
   // Whether safe browsing database can be checked. It is set to false when
   // enterprise real time URL lookup is enabled and safe browsing is disabled
   // for this profile.
@@ -329,11 +318,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // URL Lookup service suffix for logging metrics.
   std::string url_lookup_service_metric_suffix_;
-
-  // The last committed URL when the checker is constructed. It is used to
-  // obtain page load token when the URL being checked is not a mainframe URL.
-  // Only used when real time lookup is performed.
-  GURL last_committed_url_;
 
   // The task runner for the UI thread.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;

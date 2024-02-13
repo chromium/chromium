@@ -287,7 +287,8 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_WarnDst) {
   EXPECT_THAT(
       events_[0],
       data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          "", "", DlpRulesManager::Restriction::kClipboard, "", "",
+          GURL(kExample1Url).spec(), GURL(kExample2Url).spec(),
+          DlpRulesManager::Restriction::kClipboard, "", "",
           DlpRulesManager::Level::kWarn)));
 }
 
@@ -313,11 +314,11 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
       &data_src, &data_dst, std::move(pasted_content),
       web_contents->GetPrimaryMainFrame(), callback.Get());
   EXPECT_EQ(events_.size(), 1u);
-  EXPECT_THAT(
-      events_[0],
-      data_controls::IsDlpPolicyEvent(
-          data_controls::CreateDlpPolicyWarningProceededEvent(
-              "", "", DlpRulesManager::Restriction::kClipboard, "", "")));
+  EXPECT_THAT(events_[0],
+              data_controls::IsDlpPolicyEvent(
+                  data_controls::CreateDlpPolicyWarningProceededEvent(
+                      GURL(kExample1Url).spec(), GURL(kExample2Url).spec(),
+                      DlpRulesManager::Restriction::kClipboard, "", "")));
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {
@@ -550,12 +551,15 @@ TEST_P(DlpControllerTest, Block_IsClipboardReadAllowed) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   if (!data_dst_ || do_notify_) {
+    std::string dst_url = data_dst_.has_value() && data_dst_->IsUrlType()
+                              ? data_dst_->GetURL()->spec()
+                              : "";
     EXPECT_EQ(events_.size(), 1u);
-    EXPECT_THAT(
-        events_[0],
-        data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-            "", "", DlpRulesManager::Restriction::kClipboard, "", "",
-            DlpRulesManager::Level::kBlock)));
+    EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
+                                data_controls::CreateDlpPolicyEvent(
+                                    data_src_.GetURL()->spec(), dst_url,
+                                    DlpRulesManager::Restriction::kClipboard,
+                                    "", "", DlpRulesManager::Level::kBlock)));
   } else {
     EXPECT_TRUE(events_.empty());
   }
@@ -575,12 +579,15 @@ TEST_P(DlpControllerTest, Block_DropIfAllowed) {
   dlp_controller_->DropIfAllowed(&drag_data_, data_dst_, callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
+  std::string dst_url = data_dst_.has_value() && data_dst_->IsUrlType()
+                            ? data_dst_->GetURL()->spec()
+                            : "";
   EXPECT_EQ(events_.size(), 1u);
-  EXPECT_THAT(
-      events_[0],
-      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          "", "", DlpRulesManager::Restriction::kClipboard, "", "",
-          DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
+                              data_controls::CreateDlpPolicyEvent(
+                                  data_src_.GetURL()->spec(), dst_url,
+                                  DlpRulesManager::Restriction::kClipboard, "",
+                                  "", DlpRulesManager::Level::kBlock)));
 
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
@@ -597,12 +604,15 @@ TEST_P(DlpControllerTest, Report_IsClipboardReadAllowed) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   if (!data_dst_ || do_notify_) {
+    std::string dst_url = data_dst_.has_value() && data_dst_->IsUrlType()
+                              ? data_dst_->GetURL()->spec()
+                              : "";
     EXPECT_EQ(events_.size(), 1u);
-    EXPECT_THAT(
-        events_[0],
-        data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-            "", "", DlpRulesManager::Restriction::kClipboard, "", "",
-            DlpRulesManager::Level::kReport)));
+    EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
+                                data_controls::CreateDlpPolicyEvent(
+                                    data_src_.GetURL()->spec(), dst_url,
+                                    DlpRulesManager::Restriction::kClipboard,
+                                    "", "", DlpRulesManager::Level::kReport)));
   } else {
     EXPECT_TRUE(events_.empty());
   }
@@ -617,12 +627,15 @@ TEST_P(DlpControllerTest, Report_DropIfAllowed) {
   dlp_controller_->DropIfAllowed(&drag_data_, data_dst_, callback.Get());
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
+  std::string dst_url = data_dst_.has_value() && data_dst_->IsUrlType()
+                            ? data_dst_->GetURL()->spec()
+                            : "";
   EXPECT_EQ(events_.size(), 1u);
-  EXPECT_THAT(
-      events_[0],
-      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          "", "", DlpRulesManager::Restriction::kClipboard, "", "",
-          DlpRulesManager::Level::kReport)));
+  EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
+                              data_controls::CreateDlpPolicyEvent(
+                                  data_src_.GetURL()->spec(), dst_url,
+                                  DlpRulesManager::Restriction::kClipboard, "",
+                                  "", DlpRulesManager::Level::kReport)));
 }
 
 TEST_P(DlpControllerTest, Warn_IsClipboardReadAllowed) {
@@ -642,12 +655,15 @@ TEST_P(DlpControllerTest, Warn_IsClipboardReadAllowed) {
   EXPECT_EQ(!show_warning, dlp_controller_->IsClipboardReadAllowed(
                                data_src_, data_dst_, std::nullopt));
   if (show_warning) {
+    std::string dst_url = data_dst_.has_value() && data_dst_->IsUrlType()
+                              ? data_dst_->GetURL()->spec()
+                              : "";
     EXPECT_EQ(events_.size(), 1u);
-    EXPECT_THAT(
-        events_[0],
-        data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-            "", "", DlpRulesManager::Restriction::kClipboard, "", "",
-            DlpRulesManager::Level::kWarn)));
+    EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
+                                data_controls::CreateDlpPolicyEvent(
+                                    data_src_.GetURL()->spec(), dst_url,
+                                    DlpRulesManager::Restriction::kClipboard,
+                                    "", "", DlpRulesManager::Level::kWarn)));
   }
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
@@ -775,11 +791,12 @@ TEST_P(DlpControllerVMsTest, Block_IsClipboardReadAllowed) {
 
   if (do_notify_) {
     EXPECT_EQ(events_.size(), 1u);
-    EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
-                                data_controls::CreateDlpPolicyEvent(
-                                    "", GetComponent(endpoint_type_.value()),
-                                    DlpRulesManager::Restriction::kClipboard,
-                                    "", "", DlpRulesManager::Level::kBlock)));
+    EXPECT_THAT(
+        events_[0],
+        data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+            data_src_.GetURL()->spec(), GetComponent(endpoint_type_.value()),
+            DlpRulesManager::Restriction::kClipboard, "", "",
+            DlpRulesManager::Level::kBlock)));
   } else {
     EXPECT_TRUE(events_.empty());
   }
@@ -800,11 +817,12 @@ TEST_P(DlpControllerVMsTest, Block_DropIfAllowed) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
-                              data_controls::CreateDlpPolicyEvent(
-                                  "", GetComponent(endpoint_type_.value()),
-                                  DlpRulesManager::Restriction::kClipboard, "",
-                                  "", DlpRulesManager::Level::kBlock)));
+  EXPECT_THAT(
+      events_[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          data_src_.GetURL()->spec(), GetComponent(endpoint_type_.value()),
+          DlpRulesManager::Restriction::kClipboard, "", "",
+          DlpRulesManager::Level::kBlock)));
 
   histogram_tester_.ExpectUniqueSample(
       data_controls::GetDlpHistogramPrefix() +
@@ -822,11 +840,12 @@ TEST_P(DlpControllerVMsTest, Report_IsClipboardReadAllowed) {
 
   if (do_notify_) {
     EXPECT_EQ(events_.size(), 1u);
-    EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
-                                data_controls::CreateDlpPolicyEvent(
-                                    "", GetComponent(endpoint_type_.value()),
-                                    DlpRulesManager::Restriction::kClipboard,
-                                    "", "", DlpRulesManager::Level::kReport)));
+    EXPECT_THAT(
+        events_[0],
+        data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+            data_src_.GetURL()->spec(), GetComponent(endpoint_type_.value()),
+            DlpRulesManager::Restriction::kClipboard, "", "",
+            DlpRulesManager::Level::kReport)));
   } else {
     EXPECT_TRUE(events_.empty());
   }
@@ -842,11 +861,12 @@ TEST_P(DlpControllerVMsTest, Report_DropIfAllowed) {
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 
   ASSERT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
-                              data_controls::CreateDlpPolicyEvent(
-                                  "", GetComponent(endpoint_type_.value()),
-                                  DlpRulesManager::Restriction::kClipboard, "",
-                                  "", DlpRulesManager::Level::kReport)));
+  EXPECT_THAT(
+      events_[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          data_src_.GetURL()->spec(), GetComponent(endpoint_type_.value()),
+          DlpRulesManager::Restriction::kClipboard, "", "",
+          DlpRulesManager::Level::kReport)));
 }
 
 TEST_P(DlpControllerVMsTest, Warn_IsClipboardReadAllowed) {
@@ -866,11 +886,12 @@ TEST_P(DlpControllerVMsTest, Warn_IsClipboardReadAllowed) {
                                                           std::nullopt));
   if (do_notify) {
     EXPECT_EQ(events_.size(), 1u);
-    EXPECT_THAT(events_[0], data_controls::IsDlpPolicyEvent(
-                                data_controls::CreateDlpPolicyEvent(
-                                    "", GetComponent(endpoint_type.value()),
-                                    DlpRulesManager::Restriction::kClipboard,
-                                    "", "", DlpRulesManager::Level::kWarn)));
+    EXPECT_THAT(
+        events_[0],
+        data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+            data_src_.GetURL()->spec(), GetComponent(endpoint_type.value()),
+            DlpRulesManager::Restriction::kClipboard, "", "",
+            DlpRulesManager::Level::kWarn)));
   }
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
   histogram_tester_.ExpectUniqueSample(

@@ -32,8 +32,10 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
@@ -60,6 +62,7 @@
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
 #import "ios/chrome/browser/ui/main_content/web_scroll_view_main_content_ui_forwarder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_mediator.h"
@@ -870,7 +873,9 @@ enum HeaderBehaviour {
   self.typingShield.autoresizingMask = initialViewAutoresizing;
   self.typingShield.accessibilityIdentifier = @"Typing Shield";
   self.typingShield.accessibilityLabel = l10n_util::GetNSString(IDS_CANCEL);
-
+  if (IsIpadPopoutOmniboxEnabled()) {
+    self.typingShield.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.25];
+  }
   [self.typingShield addTarget:self
                         action:@selector(shieldWasTapped:)
               forControlEvents:UIControlEventTouchUpInside];
@@ -1295,7 +1300,12 @@ enum HeaderBehaviour {
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
-      _fakeStatusBarView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+      _fakeStatusBarView.backgroundColor =
+          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+      // Force the UserInterfaceStyle update in incognito.
+      _fakeStatusBarView.overrideUserInterfaceStyle =
+          _isOffTheRecord ? UIUserInterfaceStyleDark
+                          : UIUserInterfaceStyleUnspecified;
     } else {
       _fakeStatusBarView.backgroundColor = UIColor.blackColor;
     }
@@ -2065,7 +2075,10 @@ enum HeaderBehaviour {
   }
   [_sideSwipeMediator setEnabled:NO];
 
-  if (!IsVisibleURLNewTabPage(self.currentWebState)) {
+  // TODO(b/324393850): Remove this condition when Omnibox iPad popout is
+  // launched.
+  if (!IsVisibleURLNewTabPage(self.currentWebState) ||
+      IsIpadPopoutOmniboxEnabled()) {
     // Tapping on web content area should dismiss the keyboard. Tapping on NTP
     // gesture should propagate to NTP view.
     [self.view insertSubview:self.typingShield aboveSubview:self.contentArea];

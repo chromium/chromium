@@ -131,7 +131,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       return;
 
     auto* animation = registry_->SetProgressIconAnimationForKey(
-        key, std::make_unique<ProgressIconAnimation>());
+        key, ProgressIconAnimation::Create());
 
     // Only `Start()` the `animation` if it is associated with the holding space
     // `controller_`. In all other cases, the `animation` is associated with a

@@ -337,7 +337,7 @@ class ProxyResolverFactoryForProxyChains : public ProxyResolverFactory {
 
 // Returns NetLog parameters describing a proxy configuration change.
 base::Value::Dict NetLogProxyConfigChangedParams(
-    const absl::optional<ProxyConfigWithAnnotation>* old_config,
+    const std::optional<ProxyConfigWithAnnotation>* old_config,
     const ProxyConfigWithAnnotation* new_config) {
   base::Value::Dict dict;
   // The "old_config" is optional -- the first notification will not have
@@ -1088,7 +1088,7 @@ void ConfiguredProxyResolutionService::SetReady() {
       weak_ptr_factory_.GetWeakPtr();
 
   auto pending_requests_copy = pending_requests_;
-  for (auto* req : pending_requests_copy) {
+  for (ConfiguredProxyResolutionRequest* req : pending_requests_copy) {
     if (!ContainsPendingRequest(req))
       continue;
 
@@ -1361,9 +1361,9 @@ ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
   init_proxy_resolver_.reset();
   SuspendAllPendingRequests();
   resolver_.reset();
-  config_ = absl::nullopt;
+  config_ = std::nullopt;
   if (reset_fetched_config)
-    fetched_config_ = absl::nullopt;
+    fetched_config_ = std::nullopt;
   current_state_ = STATE_NONE;
 
   return previous_state;

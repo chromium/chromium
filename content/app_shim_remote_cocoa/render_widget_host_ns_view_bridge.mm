@@ -9,9 +9,15 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/auto_reset.h"
+#import "base/mac/scoped_sending_event.h"
+#import "base/message_loop/message_pump_apple.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/current_thread.h"
+#import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
+#import "content/app_shim_remote_cocoa/web_menu_runner_mac.h"
 #include "content/common/mac/attributed_string_type_converters.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -334,6 +340,117 @@ void RenderWidgetHostNSViewBridge::DidOverscroll(
       overscroll->current_fling_velocity,
       overscroll->causal_event_viewport_point, overscroll->overscroll_behavior};
   [cocoa_view_ processedOverscroll:params];
+}
+
+namespace {
+class PopupMenuRunner : public mojom::PopupMenuRunner {
+ public:
+  PopupMenuRunner(mojo::PendingReceiver<mojom::PopupMenuRunner> receiver,
+                  WebMenuRunner* runner)
+      : receiver_(this, std::move(receiver)), menu_runner_(runner) {}
+
+  void Hide() override {
+    if (menu_runner_) {
+      [menu_runner_ cancelSynchronously];
+    }
+  }
+
+ private:
+  mojo::Receiver<mojom::PopupMenuRunner> receiver_;
+  WebMenuRunner* __weak menu_runner_;
+};
+}  // namespace
+
+void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
+    mojom::PopupMenuPtr menu,
+    DisplayPopupMenuCallback callback) {
+  if (showing_popup_menu_) {
+    // If we're currently showing a popup menu, we'll need to wait for that
+    // menu to finish showing to get the nested run loop of the stack.
+    // Attempting to show a new menu while the old menu is still visible or
+    // fading out confuses AppKit, since we're still in the nested event loop of
+    // DisplayPopupMenu(). See https://crbug.com/812260.
+    pending_menus_.emplace_back(std::move(menu), std::move(callback));
+    return;
+  }
+
+  // Check if the underlying native window is headless and if so, return early
+  // to avoid showing the popup menu.
+  NativeWidgetMacNSWindow* ns_window =
+      base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(cocoa_view_.window);
+  if (ns_window && ns_window.isHeadless) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Retain the Cocoa view for the duration of the pop-up so that it can't be
+  // dealloced if the widget is destroyed while the pop-up's up (which
+  // would in turn delete me, causing a crash once the -runMenuInView
+  // call returns. That's what was happening in <http://crbug.com/33250>).
+  RenderWidgetHostViewCocoa* cocoa_view = cocoa_view_;
+
+  // Get a weak pointer to `this`, so we can detect if we get destroyed while
+  // in the nested event loop below.
+  auto weak_self = weak_factory_.GetWeakPtr();
+
+  WebMenuRunner* runner =
+      [[WebMenuRunner alloc] initWithItems:menu->items
+                                  fontSize:menu->item_font_size
+                              rightAligned:menu->right_aligned];
+
+  {
+    base::AutoReset<bool> running(&showing_popup_menu_, true);
+
+    PopupMenuRunner mojo_host(std::move(menu->receiver), runner);
+
+    // Make sure events can be pumped while the menu is up. But not when the
+    // menu is being cancelled.
+    base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop
+        nested_allow;
+
+    // Prevent an autorelease pool from being created in nested event loops.
+    // Additionally, if this code runs in the browser process, one of the events
+    // that could be pumped is |window.close()|.
+    // User-initiated event-tracking loops protect against this by
+    // setting flags in -[CrApplication sendEvent:], but since
+    // web-content menus are initiated by IPC message the setup has to
+    // be done manually.
+    base::mac::ScopedSendingEvent sending_event_scoper;
+
+    // Ensure the UI can update while the menu is fading out.
+    base::ScopedPumpMessagesInPrivateModes pump_in_fade;
+
+    // Now run a NESTED EVENT LOOP until the pop-up is finished.
+    [runner runMenuInView:cocoa_view
+               withBounds:[cocoa_view flipRectToNSRect:menu->bounds]
+             initialIndex:menu->selected_item];
+  }
+
+  if (!weak_self) {
+    return;
+  }
+
+  if (runner.menuItemWasChosen) {
+    int index = runner.indexOfSelectedItem;
+    if (index < 0) {
+      std::move(callback).Run(std::nullopt);
+    } else {
+      std::move(callback).Run(index);
+    }
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  std::vector<PendingPopupMenu> next_menus = std::exchange(pending_menus_, {});
+  if (!next_menus.empty()) {
+    // If any DisplayPopupMenu calls came in while this one was showing, cancel
+    // all but the last call and display the menu for the most recent call.
+    for (int i = 0; i < static_cast<int>(next_menus.size()) - 1; ++i) {
+      std::move(next_menus[i].second).Run(std::nullopt);
+    }
+    DisplayPopupMenu(std::move(next_menus.back().first),
+                     std::move(next_menus.back().second));
+  }
 }
 
 }  // namespace remote_cocoa

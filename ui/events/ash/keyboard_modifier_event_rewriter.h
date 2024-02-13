@@ -28,7 +28,7 @@ class KeyboardCapability;
 class KeyboardModifierEventRewriter : public EventRewriter {
  public:
   struct RemappedKey {
-    absl::optional<DomCode> code;
+    std::optional<DomCode> code;
     DomKey key;
     KeyboardCode key_code;
     int flags;
@@ -45,7 +45,7 @@ class KeyboardModifierEventRewriter : public EventRewriter {
     // |modifier_key|.
     // TODO(dpad): Remove |pref_name| once fully transitioned to per-device
     // settings.
-    virtual absl::optional<mojom::ModifierKey> GetKeyboardRemappedModifierValue(
+    virtual std::optional<mojom::ModifierKey> GetKeyboardRemappedModifierValue(
         int device_id,
         mojom::ModifierKey modifier_key,
         const std::string& pref_name) const = 0;

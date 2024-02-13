@@ -57,7 +57,6 @@
 <translation id="1074497978438210769">Անվտանգ չէ</translation>
 <translation id="1075079914415273530">Գյուղատնտեսություն և անտառային տնտեսություն</translation>
 <translation id="1075364221219156102">Օգտագործել անցաբառ</translation>
-<translation id="1078033282564106222">Ընտրվել է տան համարի տարբերակը</translation>
 <translation id="1080116354587839789">Հարմարեցնել լայնությանը</translation>
 <translation id="1081061862829655580">Դարակ 19</translation>
 <translation id="1082026381988252344">Ոլորեք և խոշորացրեք ընդհանուր ներդիրի բովանդակությունը</translation>
@@ -251,6 +250,7 @@
 <translation id="1428729058023778569">Դուք տեսնում եք այս նախազգուշացումը, քանի որ կայքը չի աջակցում HTTPS-ը։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Ինքնակպչուն թաղանթ</translation>
 <translation id="1430915738399379752">Տպում</translation>
+<translation id="1431021750861456539">Ավտոմատ բացել լիաէկրան ռեժիմում</translation>
 <translation id="1432187715652018471">Էջը ծառայության մշակիչ է ուզում տեղադրել։</translation>
 <translation id="1432581352905426595">Կառավարել որոնման համակարգերը</translation>
 <translation id="1433225466058025572">Փորձեք նորից տեղափոխել ֆայլերը</translation>
@@ -590,6 +590,7 @@
 <translation id="2075497153347571252">Ձեր ադմինիստրատորն արգելել է օգտագործել «<ph name="PERMISSION" />» թույլտվությունը <ph name="ORIGIN" /> կայքում</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2080021694978766903">Այս կանոնում գրառումների առավելագույն քանակը՝ <ph name="MAX_ITEMS_LIMIT" />:</translation>
+<translation id="2081482239432306393">Ընտրվել է տան համարի տարբերակը</translation>
 <translation id="20817612488360358">Համակարգի պրոքսի-սերվերի կարգավորումները կայված են, բայց նաև նշված է նրա ուղղակի կազմաձևում:</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
 <translation id="2083256696566019397">Թույլատրել ամեն այցի ժամանակ</translation>
@@ -617,7 +618,6 @@
 <translation id="2126374524350484896">PDF-ի թողարկիչ՝</translation>
 <translation id="2130448033692577677">Ձեր նշած ձևանմուշները չեն կարող կիրառվել, քանի որ DnsOverHttpsMode կանոնը կարգավորված չէ:</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> լեզվի փաթեթը ներբեռնվում է...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Տղամարդկանց հագուստ</translation>
 <translation id="2137891579555018930">Սպասում ենք թույլտվության…</translation>
 <translation id="213826338245044447">Բջջային էջանիշներ</translation>
@@ -1393,7 +1393,6 @@
 <translation id="3681007416295224113">Վկայագրի տեղեկություններ</translation>
 <translation id="3681421644246505351">Chrome-ը որոշում է ձեզ հետաքրքրող թեմաները ձեր վերջին այցելությունների պատմության հիման վրա։</translation>
 <translation id="3682094733650754138">Ընտրվել է հասցեի լրացման տարբերակը</translation>
-<translation id="3689867156802445220">Տան համարը</translation>
 <translation id="3693327506115126094">Ընտրեք, թե ինչպես եք հաստատելու ձեր ինքնությունը</translation>
 <translation id="3698629142018988477">«Ստեղծել կայք» կոճակ․ ակտիվացրեք՝ Google Կայքերում հեշտությամբ կայք ստեղծելու համար</translation>
 <translation id="3701325639446035885">Միջոցառումների տոմսերի վաճառք</translation>
@@ -1418,6 +1417,7 @@
 <translation id="3723663469265383848">Թարմացման ժամանակ դուք մինչև 10 րոպե չեք կարողանա օգտագործել ձեր սարքը։</translation>
 <translation id="372429172604983730">Սխալի պատճառ կարող է լինել հակավիրուսային ծրագիրը, հրապատը, վեբ բովանդակության զտման կամ պրոքսի սերվերի ծրագրերը:</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սլայդներում արագ Google ներկայացում ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="3727309136762649052">Անվանատարածք</translation>
 <translation id="3727850735097852673">Google գաղտնաբառերի կառավարիչը macOS Keychain-ի միջոցով օգտագործելու համար վերագործարկեք Chrome-ը և թույլատրեք Keychain-ի օգտագործումը։ Ձեր ներդիրները կբացվեն վերագործարկումից հետո։</translation>
 <translation id="3733139489341305600">Ինքնավար տրանսպորտային միջոցներ</translation>
 <translation id="3736520371357197498">Եթե դուք հասկանում եք ձեզ սպառնացող վտանգը, ապա կարող եք նախքան վտանգավոր ծրագրերի հեռացնելը <ph name="BEGIN_LINK" />այցելել այս ոչ ապահով կայքը<ph name="END_LINK" />:</translation>
@@ -1584,6 +1584,7 @@
 <translation id="4089152113577680600">Դարակ 14</translation>
 <translation id="4092349052316400070">Լրացրեք հասցեն</translation>
 <translation id="4096237801206588987">11 x 15 դյույմ</translation>
+<translation id="4098306082496067348">Հպեք վիրտուալ քարտի մանրամասներին՝ դրանք վճարման էջում ավելացնելու համար։</translation>
 <translation id="4098354747657067197">Դուք պատրաստվում եք խաբուսիկ կայք այցելել</translation>
 <translation id="4099048595830172239">Ադմինիստրատորը խորհուրդ չի տալիս հասանելի դարձնել էկրանը <ph name="APPLICATION_TITLE" /> հավելվածին, երբ ցուցադրվում են կոնֆիդենցիալ տվյալներ՝</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա սեղմեք Enter՝ Chrome-ում տառատեսակները և դրանց չափերը կարգավորելու համար</translation>
@@ -1907,6 +1908,7 @@
 <translation id="4729147136006144950">Բարեգործություն և նվիրատվություն</translation>
 <translation id="4730977633786878901">Կարծիքներ</translation>
 <translation id="4731638775147756694">Ձեր ադմինիստրատորն արգելափակել է այս հավելվածը</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> լեզվի փաթեթը ներբեռնվում է... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> կայքն ուզում է օգտագործել ձեր սարքի տեղադրությունը</translation>
 <translation id="4736491186715342415">Տրանսպորտային միջոցներ</translation>
 <translation id="4736825316280949806">Վերագործարկեք Chromium-ը</translation>
@@ -1928,7 +1930,6 @@
 <translation id="4757022425116568383">Անցաբառ Chrome-ի ձեր պրոֆիլից</translation>
 <translation id="4757993714154412917">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Ձեր հաշիվների պաշտպանության նկատառումներով՝ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել պահված գաղտնաբառերի անվտանգությունը։</translation>
 <translation id="4758311279753947758">Ավելացնել կոնտակտային տվյալներ</translation>
-<translation id="4761104368405085019">Օգտագործել խոսափողը</translation>
 <translation id="4761326898079498987">Բացեք՝ մանրամասները տեսնելու համար</translation>
 <translation id="4761869838909035636">Անցնել Chrome-ի անվտանգության ստուգում</translation>
 <translation id="4763196677855776703">Վաճառողի տրամադրած օգտագործման պայմաններ (<ph name="URL" />)</translation>
@@ -2269,7 +2270,6 @@
             <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
             <ph name="LIST_ITEM" />ձևերում լրացված տեղեկությունները։
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> կայքն ուզում է վերահսկել և վերածրագրավորել ձեր MIDI սարքերը (SysEx)։</translation>
 <translation id="5443468954631487277">Հակառակ հերթականությամբ՝ երեսի կողմով վերև</translation>
 <translation id="5447235695608032700">Թույլատրեք <ph name="SITE" /> կայքին օգտագործել ձեր մասին պահված տեղեկությունները</translation>
 <translation id="5447765697759493033">Այս կայքը չի թարգմանվի</translation>
@@ -2296,6 +2296,7 @@
     <ph name="LINE_BREAK" />
     Փորձեք կապվել ձեր համակարգի ադմինիստրատորի հետ:</translation>
 <translation id="549333378215107354">Չափ 3</translation>
+<translation id="5501712702042287009">ավտոմատ բացել լիաէկրան ռեժիմում</translation>
 <translation id="550365051221576010">Լրացնել բոլոր տվյալները</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Կառավարվող էջանիշներ</translation>
@@ -2482,7 +2483,6 @@
 <translation id="5877831137320480913">Գեղեցկություն և ֆիթնես</translation>
 <translation id="5879989559903563723">Թույլատրված չէ հյուրի ռեժիմում</translation>
 <translation id="5880050725127890683">Անցնել «Chrome-ի անվտանգության ստուգում» էջ</translation>
-<translation id="5883861433316751031">Թույլատրե՞լ վերահսկել և վերածրագրավորել MIDI սարքերը</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">Քարտը պահվեց</translation>
 <translation id="5887687176710214216">Վերջին այցելությունը՝ երեկ</translation>
@@ -2833,7 +2833,6 @@
 <translation id="6556866813142980365">Կրկնել</translation>
 <translation id="6557715786897013164">14 x 17 դյույմ</translation>
 <translation id="6560786330438719938">Տեղադրված և ապատեղադրված հավելվածները և դրանց օգտագործման հաճախականությունը</translation>
-<translation id="6567084950885568327">MIDI սարքերի կառավարում և վերածրագրավորում</translation>
 <translation id="6568793038316600992">«Կառավարել վճարման եղանակները» կոճակ․ ակտիվացրեք ձեր վճարումները և վարկային քարտերի տվյալները Chrome-ի կարգավորումներում կառավարելու համար</translation>
 <translation id="6569060085658103619">Դուք դիտում եք ընդլայնման էջը</translation>
 <translation id="6569366777234823130">Դրամաներ</translation>
@@ -3216,6 +3215,7 @@
 <translation id="733354035281974745">Լոկալ հաշվի փոփոխում սարքում</translation>
 <translation id="7334320624316649418">&amp;Վերարկել վերադասավորումը</translation>
 <translation id="7335157162773372339">Կարող է հայցել տեսախցիկն օգտագործելու թույլտվություն</translation>
+<translation id="7336636595549675416">Տան համարը</translation>
 <translation id="7337248890521463931">Ցույց տալ ավելի շատ տողեր</translation>
 <translation id="7337706099755338005">Հասանելի չէ ձեր հարթակում:</translation>
 <translation id="733923710415886693">Սերվերի վկայագիրը չի բացահայտվել «Վկայագրերի թափանցիկություն» կանոնի միջոցով:</translation>
@@ -3922,7 +3922,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> կանոնի արժեքը չի համապատասխանում չափսի պահանջներին։</translation>
 <translation id="867224526087042813">Ստորագրություն</translation>
 <translation id="8672264262457010862">Բիզնես և արդյունաբերություն</translation>
-<translation id="8673776281896298303">Վերահսկել և վերածրագրավորել ձեր MIDI սարքերը (SysEx)</translation>
 <translation id="8676424191133491403">Առանց հետաձգման</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, պատասխան, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ի կայքէջը չհաջողվեց բեռնել, քանի որ՝</translation>
@@ -4163,7 +4162,6 @@
 <translation id="9148507642005240123">&amp;Հետարկել փոփոխումը</translation>
 <translation id="9148599396704355100">Գինը ցածր է</translation>
 <translation id="9150025764986957246">Կարող եք մուտքագրել, օրինակ՝</translation>
-<translation id="9150045010208374699">Օգտագործել տեսախցիկը</translation>
 <translation id="9150685862434908345">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chrome-ից դուրս։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Թարմացված է</translation>
 <translation id="9155211586651734179">Կցված աուդիո սարքերը</translation>

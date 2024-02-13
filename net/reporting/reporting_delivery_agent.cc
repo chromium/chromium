@@ -96,7 +96,7 @@ class Delivery {
            const NetworkAnonymizationKey& network_anonymization_key,
            const url::Origin& origin,
            const GURL& endpoint_url,
-           const absl::optional<base::UnguessableToken> reporting_source)
+           const std::optional<base::UnguessableToken> reporting_source)
         : isolation_info(isolation_info),
           network_anonymization_key(network_anonymization_key),
           origin(origin),
@@ -123,7 +123,7 @@ class Delivery {
     NetworkAnonymizationKey network_anonymization_key;
     url::Origin origin;
     GURL endpoint_url;
-    absl::optional<base::UnguessableToken> reporting_source;
+    std::optional<base::UnguessableToken> reporting_source;
   };
 
   explicit Delivery(const Target& target) : target_(target) {}
@@ -331,8 +331,8 @@ class ReportingDeliveryAgentImpl : public ReportingDeliveryAgent,
       if (delivery_it == deliveries.end()) {
         bool inserted;
         auto new_delivery = std::make_unique<Delivery>(target);
-        std::tie(delivery_it, inserted) = deliveries.insert(
-            std::make_pair(std::move(target), std::move(new_delivery)));
+        std::tie(delivery_it, inserted) =
+            deliveries.emplace(std::move(target), std::move(new_delivery));
         DCHECK(inserted);
       }
       delivery_it->second->AddReports(endpoint, bucket_start, bucket_it);

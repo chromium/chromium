@@ -159,8 +159,6 @@ class WindowRestoreControllerTest : public AshTestBase,
     DCHECK(info->activation_index);
     DCHECK(info->display_id);
 
-    app_restore::WindowInfo* info_clone = info->Clone();
-
     aura::Window* context = Shell::GetRootWindowForDisplayId(*info->display_id);
     // The display may have been disconnected.
     if (!context)
@@ -176,7 +174,8 @@ class WindowRestoreControllerTest : public AshTestBase,
         .SetShow(false)
         .SetContext(context)
         .SetShowState(chromeos::ToWindowShowState(*info->window_state_type))
-        .SetWindowProperty(app_restore::kWindowInfoKey, info_clone)
+        .SetWindowProperty(app_restore::kWindowInfoKey,
+                           new app_restore::WindowInfo(*info))
         .SetWindowProperty(app_restore::kActivationIndexKey,
                            new int32_t(*info->activation_index))
         .SetWindowProperty(app_restore::kLaunchedFromAppRestoreKey, true)

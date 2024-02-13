@@ -4,9 +4,9 @@
 
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_labels.js';
 
-import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {PowerBookmarksLabelsElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_labels.js';
-import {BookmarkProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {PowerBookmarksLabelsElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_labels.js';
+import type {BookmarkProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -103,6 +104,52 @@ scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
+mojom::NearbyConnectionStepResult ConvertStatusToStepResult(Status status) {
+  switch (status) {
+    case Status::kError:
+      return mojom::NearbyConnectionStepResult::kError;
+    case Status::kOutOfOrderApiCall:
+      return mojom::NearbyConnectionStepResult::kOutOfOrderApiCall;
+    case Status::kAlreadyHaveActiveStrategy:
+      return mojom::NearbyConnectionStepResult::kAlreadyHaveActiveStrategy;
+    case Status::kAlreadyAdvertising:
+      return mojom::NearbyConnectionStepResult::kAlreadyAdvertising;
+    case Status::kAlreadyDiscovering:
+      return mojom::NearbyConnectionStepResult::kAlreadyDiscovering;
+    case Status::kEndpointIOError:
+      return mojom::NearbyConnectionStepResult::kEndpointIOError;
+    case Status::kEndpointUnknown:
+      return mojom::NearbyConnectionStepResult::kEndpointUnknown;
+    case Status::kConnectionRejected:
+      return mojom::NearbyConnectionStepResult::kConnectionRejected;
+    case Status::kAlreadyConnectedToEndpoint:
+      return mojom::NearbyConnectionStepResult::kAlreadyConnectedToEndpoint;
+    case Status::kNotConnectedToEndpoint:
+      return mojom::NearbyConnectionStepResult::kNotConnectedToEndpoint;
+    case Status::kBluetoothError:
+      return mojom::NearbyConnectionStepResult::kBluetoothError;
+    case Status::kBleError:
+      return mojom::NearbyConnectionStepResult::kBleError;
+    case Status::kWifiLanError:
+      return mojom::NearbyConnectionStepResult::kWifiLanError;
+    case Status::kPayloadUnknown:
+      return mojom::NearbyConnectionStepResult::kPayloadUnknown;
+    case Status::kAlreadyListening:
+      return mojom::NearbyConnectionStepResult::kAlreadyAdvertising;
+    case Status::kReset:
+      return mojom::NearbyConnectionStepResult::kReset;
+    case Status::kTimeout:
+      return mojom::NearbyConnectionStepResult::kTimeout;
+    case Status::kUnknown:
+      return mojom::NearbyConnectionStepResult::kUnknown;
+    case Status::kSuccess:
+      return mojom::NearbyConnectionStepResult::kSuccess;
+    case Status::kNextValue:
+      NOTREACHED();
+      return mojom::NearbyConnectionStepResult::kMaxValue;
+  }
+}
+
 }  // namespace
 
 // static
@@ -115,6 +162,8 @@ NearbyConnectionBrokerImpl::Factory::Create(
     mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
         file_payload_handler_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener,
     const mojo::SharedRemote<NearbyConnections>& nearby_connections,
     base::OnceClosure on_connected_callback,
     base::OnceClosure on_disconnected_callback,
@@ -124,7 +173,8 @@ NearbyConnectionBrokerImpl::Factory::Create(
         bluetooth_public_address, endpoint_finder,
         std::move(message_sender_receiver),
         std::move(file_payload_handler_receiver),
-        std::move(message_receiver_remote), nearby_connections,
+        std::move(message_receiver_remote),
+        std::move(nearby_connection_state_listener), nearby_connections,
         std::move(on_connected_callback), std::move(on_disconnected_callback),
         std::move(timer));
   }
@@ -133,7 +183,8 @@ NearbyConnectionBrokerImpl::Factory::Create(
       bluetooth_public_address, eid, endpoint_finder,
       std::move(message_sender_receiver),
       std::move(file_payload_handler_receiver),
-      std::move(message_receiver_remote), nearby_connections,
+      std::move(message_receiver_remote),
+      std::move(nearby_connection_state_listener), nearby_connections,
       std::move(on_connected_callback), std::move(on_disconnected_callback),
       std::move(timer)));
 }
@@ -152,6 +203,8 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
     mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
         file_payload_handler_receiver,
     mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+    mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener,
     const mojo::SharedRemote<NearbyConnections>& nearby_connections,
     base::OnceClosure on_connected_callback,
     base::OnceClosure on_disconnected_callback,
@@ -160,6 +213,7 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
                              std::move(message_sender_receiver),
                              std::move(file_payload_handler_receiver),
                              std::move(message_receiver_remote),
+                             std::move(nearby_connection_state_listener),
                              std::move(on_connected_callback),
                              std::move(on_disconnected_callback)),
       endpoint_finder_(endpoint_finder),
@@ -167,6 +221,9 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
       timer_(std::move(timer)),
       task_runner_(CreateTaskRunner()) {
   TransitionToStatus(ConnectionStatus::kDiscoveringEndpoint);
+  NotifyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kDiscoveringEndpointStarted,
+      mojom::NearbyConnectionStepResult::kSuccess);
   endpoint_finder_->FindEndpoint(
       bluetooth_public_address, eid,
       base::BindOnce(&NearbyConnectionBrokerImpl::OnEndpointDiscovered,
@@ -224,10 +281,14 @@ void NearbyConnectionBrokerImpl::Disconnect(
     return;
   }
 
-  if (connection_status_ == ConnectionStatus::kDisconnecting)
+  if (connection_status_ == ConnectionStatus::kDisconnecting) {
     return;
+  }
 
   TransitionToStatus(ConnectionStatus::kDisconnecting);
+  NotifyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kDisconnectionStarted,
+      mojom::NearbyConnectionStepResult::kSuccess);
   nearby_connections_->DisconnectFromEndpoint(
       mojom::kServiceId, remote_endpoint_id_,
       base::BindOnce(
@@ -236,10 +297,14 @@ void NearbyConnectionBrokerImpl::Disconnect(
 }
 
 void NearbyConnectionBrokerImpl::TransitionToDisconnectedAndInvokeCallback() {
-  if (connection_status_ == ConnectionStatus::kDisconnected)
+  if (connection_status_ == ConnectionStatus::kDisconnected) {
     return;
+  }
 
   TransitionToStatus(ConnectionStatus::kDisconnected);
+  NotifyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kDisconnectionFinished,
+      mojom::NearbyConnectionStepResult::kSuccess);
   CleanUpPendingFileTransfers();
   InvokeDisconnectedCallback();
 }
@@ -248,10 +313,16 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
     const std::string& endpoint_id,
     DiscoveredEndpointInfoPtr info) {
   DCHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_);
+  NotifyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kDiscoveringEndpointEnded,
+      mojom::NearbyConnectionStepResult::kSuccess);
 
   DCHECK(!endpoint_id.empty());
   remote_endpoint_id_ = endpoint_id;
   TransitionToStatus(ConnectionStatus::kRequestingConnection);
+  NotifyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kRequestingConnectionStarted,
+      mojom::NearbyConnectionStepResult::kSuccess);
 
   nearby_connections_->RequestConnection(
       mojom::kServiceId, info->endpoint_info, remote_endpoint_id_,
@@ -271,8 +342,11 @@ void NearbyConnectionBrokerImpl::OnEndpointDiscovered(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyConnectionBrokerImpl::OnDiscoveryFailure() {
+void NearbyConnectionBrokerImpl::OnDiscoveryFailure(Status status) {
   DCHECK_EQ(ConnectionStatus::kDiscoveringEndpoint, connection_status_);
+  NotifyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kDiscoveringEndpointEnded,
+      ConvertStatusToStepResult(status));
   Disconnect(util::NearbyDisconnectionReason::kFailedDiscovery);
 }
 
@@ -281,10 +355,22 @@ void NearbyConnectionBrokerImpl::OnRequestConnectionResult(Status status) {
 
   // In the success case, OnConnectionInitiated() is expected to be called to
   // continue the flow, so nothing else needs to be done in this callback.
-  if (status == Status::kSuccess)
+  if (status == Status::kSuccess) {
+    NotifyConnectionStateChanged(
+        mojom::NearbyConnectionStep::kRequestingConnectionEnded,
+        mojom::NearbyConnectionStepResult::kSuccess);
     return;
+  }
 
   PA_LOG(WARNING) << "RequestConnection() failed: " << status;
+  if (connection_status_ != ConnectionStatus::kDisconnecting) {
+    // OnDiscoveryFailure maybe invoked after OnConnectionStatusChangeTimeout.
+    // In this case, we have already recorded NearbyConnectionStep as failed due
+    // to timeout.
+    NotifyConnectionStateChanged(
+        mojom::NearbyConnectionStep::kRequestingConnectionEnded,
+        ConvertStatusToStepResult(status));
+  }
   Disconnect(util::NearbyDisconnectionReason::kFailedRequestingConnection);
 }
 
@@ -299,13 +385,25 @@ void NearbyConnectionBrokerImpl::OnAcceptConnectionResult(Status status) {
     // kWaitingForConnectionToBeAcceptedByRemoteDevice if we are still accepting
     // the connection. See https://crbug.com/1175489 for details.
     if (connection_status_ == ConnectionStatus::kAcceptingConnection) {
+      NotifyConnectionStateChanged(
+          mojom::NearbyConnectionStep::kAcceptingConnectionFinished,
+          mojom::NearbyConnectionStepResult::kSuccess);
       TransitionToStatus(
           ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice);
+      NotifyConnectionStateChanged(
+          mojom::NearbyConnectionStep::
+              kWaitingForConnectionToBeAcceptedByRemoteDeviceStarted,
+          mojom::NearbyConnectionStepResult::kSuccess);
     }
     return;
   }
 
   PA_LOG(WARNING) << "AcceptConnection() failed: " << status;
+  if (connection_status_ == ConnectionStatus::kAcceptingConnection) {
+    NotifyConnectionStateChanged(
+        mojom::NearbyConnectionStep::kAcceptingConnectionFinished,
+        ConvertStatusToStepResult(status));
+  }
   Disconnect(util::NearbyDisconnectionReason::kFailedAcceptingConnection);
 }
 
@@ -351,31 +449,43 @@ void NearbyConnectionBrokerImpl::OnConnectionStatusChangeTimeout() {
   // If there is a timeout requesting a connection, we should still try to
   // disconnect from the endpoint in case the endpoint was almost about to be
   // connected before the timeout occurred.
-  if (connection_status_ == ConnectionStatus::kRequestingConnection)
+  if (connection_status_ == ConnectionStatus::kRequestingConnection) {
     need_to_disconnect_endpoint_ = true;
+  }
 
   PA_LOG(WARNING) << "Timeout changing connection status";
   util::NearbyDisconnectionReason reason;
+  mojom::NearbyConnectionStep connection_step;
   switch (connection_status_) {
     case ConnectionStatus::kDiscoveringEndpoint:
       reason = util::NearbyDisconnectionReason::kTimeoutDuringDiscovery;
+      connection_step = mojom::NearbyConnectionStep::kDiscoveringEndpointEnded;
       break;
     case ConnectionStatus::kRequestingConnection:
       reason = util::NearbyDisconnectionReason::kTimeoutDuringRequestConnection;
+      connection_step = mojom::NearbyConnectionStep::kRequestingConnectionEnded;
       break;
     case ConnectionStatus::kAcceptingConnection:
       reason = util::NearbyDisconnectionReason::kTimeoutDuringAcceptConnection;
+      connection_step =
+          mojom::NearbyConnectionStep::kAcceptingConnectionFinished;
       break;
     case ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice:
       reason =
           util::NearbyDisconnectionReason::kTimeoutWaitingForConnectionAccepted;
+      connection_step = mojom::NearbyConnectionStep::
+          kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded;
       break;
     default:
       NOTREACHED() << "Unexpected timeout with connection status "
                    << connection_status_;
       reason = util::NearbyDisconnectionReason::kConnectionLost;
+      connection_step = mojom::NearbyConnectionStep::kDisconnectionFinished;
       break;
   }
+  NotifyConnectionStateChanged(
+      connection_step,
+      mojom::NearbyConnectionStepResult::kTimeoutTransitionState);
   Disconnect(reason);
 }
 
@@ -385,8 +495,9 @@ void NearbyConnectionBrokerImpl::OnMojoDisconnection() {
   // If there is a mojo disconnect while requesting a connection, we should
   // still try to disconnect from the endpoint in case the endpoint was almost
   // about to be connected.
-  if (connection_status_ == ConnectionStatus::kRequestingConnection)
+  if (connection_status_ == ConnectionStatus::kRequestingConnection) {
     need_to_disconnect_endpoint_ = true;
+  }
 
   Disconnect(util::NearbyDisconnectionReason::kDisconnectionRequestedByClient);
 }
@@ -480,11 +591,15 @@ void NearbyConnectionBrokerImpl::OnConnectionInitiated(
 
   // Ignore in the event we are currently disconnecting. Either
   // OnConnectionRejected or OnDisconnected will be called eventually.
-  if (connection_status_ == ConnectionStatus::kDisconnecting)
+  if (connection_status_ == ConnectionStatus::kDisconnecting) {
     return;
+  }
 
   DCHECK_EQ(ConnectionStatus::kRequestingConnection, connection_status_);
   TransitionToStatus(ConnectionStatus::kAcceptingConnection);
+  NotifyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kAcceptingConnectionStarted,
+      mojom::NearbyConnectionStepResult::kSuccess);
   need_to_disconnect_endpoint_ = true;
 
   nearby_connections_->AcceptConnection(
@@ -505,7 +620,21 @@ void NearbyConnectionBrokerImpl::OnConnectionAccepted(
   DCHECK(connection_status_ == ConnectionStatus::kAcceptingConnection ||
          connection_status_ ==
              ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice);
+  if (connection_status_ == ConnectionStatus::kAcceptingConnection) {
+    NotifyConnectionStateChanged(
+        mojom::NearbyConnectionStep::kAcceptingConnectionFinished,
+        mojom::NearbyConnectionStepResult::kSuccess);
+  } else if (connection_status_ ==
+             ConnectionStatus::
+                 kWaitingForConnectionToBeAcceptedByRemoteDevice) {
+    NotifyConnectionStateChanged(
+        mojom::NearbyConnectionStep::
+            kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded,
+        mojom::NearbyConnectionStepResult::kSuccess);
+  }
   TransitionToStatus(ConnectionStatus::kConnected);
+  NotifyConnectionStateChanged(mojom::NearbyConnectionStep::kConnected,
+                               mojom::NearbyConnectionStepResult::kSuccess);
   RecordConnectionMediumMetric(ConnectionMedium::kConnectedViaBluetooth);
   time_when_connection_accepted_ = base::Time::Now();
 
@@ -531,6 +660,29 @@ void NearbyConnectionBrokerImpl::OnConnectionRejected(
   }
 
   PA_LOG(WARNING) << "Connection rejected: " << status;
+  mojom::NearbyConnectionStep connection_step;
+  switch (connection_status_) {
+    case ConnectionStatus::kDiscoveringEndpoint:
+      connection_step = mojom::NearbyConnectionStep::kDiscoveringEndpointEnded;
+      break;
+    case ConnectionStatus::kRequestingConnection:
+      connection_step = mojom::NearbyConnectionStep::kRequestingConnectionEnded;
+      break;
+    case ConnectionStatus::kAcceptingConnection:
+      connection_step =
+          mojom::NearbyConnectionStep::kAcceptingConnectionFinished;
+      break;
+    case ConnectionStatus::kWaitingForConnectionToBeAcceptedByRemoteDevice:
+      connection_step = mojom::NearbyConnectionStep::
+          kWaitingForConnectionToBeAcceptedByRemoteDeviceEnded;
+      break;
+    default:
+      NOTREACHED() << "Unexpected connection status when connection rejected"
+                   << connection_status_;
+      connection_step = mojom::NearbyConnectionStep::kDiscoveringEndpointEnded;
+  }
+  NotifyConnectionStateChanged(
+      connection_step, mojom::NearbyConnectionStepResult::kConnectionRejected);
   Disconnect(util::NearbyDisconnectionReason::kConnectionRejected);
 }
 
@@ -563,7 +715,8 @@ void NearbyConnectionBrokerImpl::OnBandwidthChanged(
   if (medium == Medium::kWebRtc) {
     has_upgraded_to_webrtc_ = true;
     RecordConnectionMediumMetric(ConnectionMedium::kUpgradedToWebRtc);
-
+    NotifyConnectionStateChanged(mojom::NearbyConnectionStep::kUpgradedToWebRtc,
+                                 mojom::NearbyConnectionStepResult::kSuccess);
     DCHECK(!time_when_connection_accepted_.is_null());
     base::TimeDelta webrtc_upgrade_duration =
         base::Time::Now() - time_when_connection_accepted_;

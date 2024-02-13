@@ -33,7 +33,6 @@ BASE_DECLARE_FEATURE(kIPHComposeMenuNewBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHComposeMSBBSettingsFeature);
 BASE_DECLARE_FEATURE(kIPHComposeNewBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopSharedHighlightingFeature);
-BASE_DECLARE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature);
 BASE_DECLARE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature);
@@ -230,7 +229,6 @@ BASE_DECLARE_FEATURE(kIPHiOSParcelTrackingFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPullToRefreshFeature);
 BASE_DECLARE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos);
 BASE_DECLARE_FEATURE(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature);
-BASE_DECLARE_FEATURE(kIPHiOSInlinePromoEnhancedSafeBrowsingFeature);
 BASE_DECLARE_FEATURE(kIPHiOSTabGridSwipeLeftForIncognito);
 BASE_DECLARE_FEATURE(kIPHiOSDockingPromoFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDockingPromoRemindMeLaterFeature);
@@ -238,6 +236,7 @@ BASE_DECLARE_FEATURE(kIPHiOSPromoAllTabsFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoMadeForIOSFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoStaySafeFeature);
 BASE_DECLARE_FEATURE(kIPHiOSSwipeBackForwardFeature);
+BASE_DECLARE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

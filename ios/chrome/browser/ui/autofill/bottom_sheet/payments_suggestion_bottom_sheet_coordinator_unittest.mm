@@ -11,7 +11,9 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -61,6 +63,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
 
     InsertWebState();
     credit_card_ = autofill::test::GetCreditCard();
+    virtual_card_ = autofill::test::GetVirtualCard();
     personal_data_manager->AddServerCreditCardForTest(
         std::make_unique<autofill::CreditCard>(credit_card_));
     personal_data_manager->SetSyncingForTest(true);
@@ -79,8 +82,8 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     AttachTabHelpers(web_state.get(), NO);
 
     int insertion_index = browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
     WebStateList* web_state_list = browser_->GetWebStateList();
     web_state_list->ActivateWebStateAt(insertion_index);
 
@@ -99,6 +102,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
   PaymentsSuggestionBottomSheetCoordinator* coordinator_;
   autofill::FormActivityParams params_;
   autofill::CreditCard credit_card_;
+  autofill::CreditCard virtual_card_;
 };
 
 #pragma mark - Tests
@@ -109,8 +113,30 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
 
   [coordinator_ start];
 
-  [coordinator_ primaryButtonTapped:BackendIdentifier()];
+  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
+                                        initWithCreditCard:credit_card_
+                                                      icon:nil]];
+  [coordinator_ stop];
+  task_environment_.RunUntilIdle();
 
+  histogram_tester.ExpectUniqueSample(
+      "IOS.PaymentsBottomSheet.ExitReason",
+      PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion, 1);
+}
+
+// Test that using the primary button logs the correct exit reason when a
+// virtual card is used
+TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      autofill::features::kAutofillEnableVirtualCards);
+  base::HistogramTester histogram_tester;
+
+  [coordinator_ start];
+
+  [coordinator_ primaryButtonTapped:[[CreditCardData alloc]
+                                        initWithCreditCard:virtual_card_
+                                                      icon:nil]];
   [coordinator_ stop];
   task_environment_.RunUntilIdle();
 

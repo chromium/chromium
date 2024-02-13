@@ -105,6 +105,10 @@ enum class AutoPad { kExplicit, kSameUpper, kSameLower };
 // Represents the `MLRoundingType` that is used to compute the output shape.
 enum class RoundingType { kFloor, kCeil };
 
+// Represents the `MLRecurrentNetworkDirection` that specifies the processing
+// direction of the input sequence.
+enum class RecurrentNetworkDirection { kForward, kBackward, kBoth };
+
 enum ReduceKind {
   kL1,
   kL2,
@@ -306,6 +310,34 @@ struct LayerNormalizationAttributes {
   std::optional<Operand> bias;
 };
 
+struct LstmAttributes {
+  LstmAttributes();
+  ~LstmAttributes();
+
+  LstmAttributes(LstmAttributes&& other);
+  LstmAttributes& operator=(LstmAttributes&& other);
+
+  LstmAttributes(const LstmAttributes&) = delete;
+  LstmAttributes& operator=(const LstmAttributes&) = delete;
+
+  // The bias operand.
+  std::optional<Operand> bias;
+  // The recurrent bias operand.
+  std::optional<Operand> recurrent_bias;
+  // The peephole weight operand.
+  std::optional<Operand> peephole_weight;
+  // The initial hidden state operand.
+  std::optional<Operand> initial_hidden_state;
+  // The initial cell state operand.
+  std::optional<Operand> initial_cell_state;
+  // The number of activations.
+  std::optional<uint32_t> activation_count;
+  // Indicates whether to return the outputs of the entire sequence.
+  bool return_sequence;
+  // The processing direction of the input sequence.
+  RecurrentNetworkDirection direction;
+};
+
 struct SliceAttributes {
   SliceAttributes();
   ~SliceAttributes();
@@ -434,6 +466,16 @@ base::expected<Operand, std::string> ValidateLayerNormalizationAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> axes,
     const LayerNormalizationAttributes& attributes);
+
+// Validate and infer output information of lstm operator defined
+// in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-lstm.
+base::expected<std::vector<Operand>, std::string> ValidateLstmAndInferOutput(
+    const Operand& input,
+    const Operand& weight,
+    const Operand& recurrent_weight,
+    const uint32_t steps,
+    const uint32_t hidden_size,
+    const LstmAttributes& attributes);
 
 // Validate concat operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat

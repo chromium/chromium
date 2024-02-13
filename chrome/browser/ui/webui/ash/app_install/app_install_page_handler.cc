@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 
+#include <utility>
+
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -11,6 +13,7 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "components/metrics/structured/structured_events.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
 namespace ash::app_install {
@@ -56,11 +59,11 @@ void AppInstallPageHandler::CloseDialog() {
 
     if (base::FeatureList::IsEnabled(
             metrics::structured::kAppDiscoveryLogging)) {
-      cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-          .SetWebAppInstallStatus(
-              ToLong(web_app::WebAppInstallStatus::kCancelled))
-          .SetAppId(expected_app_id_)
-          .Record();
+      metrics::structured::StructuredMetricsClient::Record(
+          std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+                        .SetWebAppInstallStatus(
+                            ToLong(web_app::WebAppInstallStatus::kCancelled))
+                        .SetAppId(expected_app_id_)));
     }
     std::move(dialog_accepted_callback_).Run(false);
   }
@@ -76,10 +79,11 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Installed"));
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
-    cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-        .SetWebAppInstallStatus(ToLong(web_app::WebAppInstallStatus::kAccepted))
-        .SetAppId(expected_app_id_)
-        .Record();
+    metrics::structured::StructuredMetricsClient::Record(
+        std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+                      .SetWebAppInstallStatus(
+                          ToLong(web_app::WebAppInstallStatus::kAccepted))
+                      .SetAppId(expected_app_id_)));
   }
 
   install_app_callback_ = std::move(callback);

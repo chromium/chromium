@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -29,6 +30,7 @@ struct CORE_EXPORT TextPaintStyle {
   mojom::blink::ColorScheme color_scheme;
   scoped_refptr<const ShadowList> shadow;
   std::optional<AppliedTextDecoration> selection_text_decoration;
+  EPaintOrder paint_order;
 
   bool operator==(const TextPaintStyle& other) const {
     return current_color == other.current_color &&
@@ -37,7 +39,8 @@ struct CORE_EXPORT TextPaintStyle {
            emphasis_mark_color == other.emphasis_mark_color &&
            stroke_width == other.stroke_width &&
            color_scheme == other.color_scheme && shadow == other.shadow &&
-           selection_text_decoration == other.selection_text_decoration;
+           selection_text_decoration == other.selection_text_decoration &&
+           paint_order == other.paint_order;
   }
   bool operator!=(const TextPaintStyle& other) const {
     return !(*this == other);

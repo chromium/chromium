@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action, Store} from 'chrome://resources/js/store.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import type {Action} from 'chrome://resources/js/store.js';
+import {Store} from 'chrome://resources/js/store.js';
+
 import {assertTrue} from './chai_assert.js';
 
 /**

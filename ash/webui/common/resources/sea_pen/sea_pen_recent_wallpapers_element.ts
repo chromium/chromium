@@ -162,16 +162,30 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     return data.url;
   }
 
-  private getWallpaperInfoMessage_(
+  private getWallpaperInfoPromptMessage_(
       recentImage: FilePath,
-      recentImageData: Record<FilePath['path'], RecentSeaPenData>,
+      _recentImageData: Record<FilePath['path'], RecentSeaPenData>,
       recentImageDataLoading: Record<FilePath['path'], boolean>): string|null {
     if (!recentImage ||
         this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
       return null;
     }
-    return recentImageData[recentImage.path].queryInfo;
+    // TODO(b/323597008): Replace with the actual prompt.
+    return this.i18n('seaPenAboutDialogPrompt', 'A radiant flower in bloom');
   }
+
+  private getWallpaperInfoDateMessage_(
+      recentImage: FilePath,
+      _recentImageData: Record<FilePath['path'], RecentSeaPenData>,
+      recentImageDataLoading: Record<FilePath['path'], boolean>): string|null {
+    if (!recentImage ||
+        this.isRecentImageLoading_(recentImage, recentImageDataLoading)) {
+      return null;
+    }
+    // TODO(b/323597008): Replace with the actual date.
+    return this.i18n('seaPenAboutDialogDate', 'Aug 25, 2023');
+  }
+
 
   private getAriaIndex_(i: number): number {
     return i + 1;

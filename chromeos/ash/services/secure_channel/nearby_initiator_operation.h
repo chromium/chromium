@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager.h"
 #include "chromeos/ash/services/secure_channel/nearby_initiator_failure_type.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -37,6 +38,10 @@ class NearbyInitiatorOperation
                ConnectionFailedCallback& failure_callback,
            const NearbyConnectionManager::BleDiscoveryStateChangeCallback&
                ble_discovery_state_changed_callback,
+           const NearbyConnectionManager::NearbyConnectionStateChangeCallback&
+               nearby_connection_state_changed_callback,
+           const NearbyConnectionManager::SecureChannelStateChangeCallback&
+               secure_channel_authentication_state_changed_callback,
            const DeviceIdPair& device_id_pair,
            ConnectionPriority connection_priority,
            scoped_refptr<base::TaskRunner> task_runner =
@@ -55,6 +60,10 @@ class NearbyInitiatorOperation
             ConnectionFailedCallback& failure_callback,
         const NearbyConnectionManager::BleDiscoveryStateChangeCallback&
             ble_discovery_state_changed_callback,
+        const NearbyConnectionManager::NearbyConnectionStateChangeCallback&
+            nearby_connection_state_changed_callback,
+        const NearbyConnectionManager::SecureChannelStateChangeCallback&
+            secure_channel_authentication_state_changed_callback,
         const DeviceIdPair& device_id_pair,
         ConnectionPriority connection_priority,
         scoped_refptr<base::TaskRunner> task_runner) = 0;
@@ -76,6 +85,10 @@ class NearbyInitiatorOperation
           ConnectionFailedCallback& failure_callback,
       const NearbyConnectionManager::BleDiscoveryStateChangeCallback&
           ble_discovery_state_changed_callback,
+      const NearbyConnectionManager::NearbyConnectionStateChangeCallback&
+          nearby_connection_state_changed_callback,
+      const NearbyConnectionManager::SecureChannelStateChangeCallback&
+          secure_channel_authentication_state_changed_callback,
       const DeviceIdPair& device_id_pair,
       ConnectionPriority connection_priority,
       scoped_refptr<base::TaskRunner> task_runner);
@@ -94,10 +107,18 @@ class NearbyInitiatorOperation
   void OnBleDiscoveryStateChanged(
       mojom::DiscoveryResult discovery_result,
       absl::optional<mojom::DiscoveryErrorCode> potential_error_code);
+  void OnNearbyConnectionStateChanged(mojom::NearbyConnectionStep step,
+                                      mojom::NearbyConnectionStepResult result);
+  void OnSecureChannelAuthenticationStateChanged(
+      mojom::SecureChannelState secure_channel_state);
 
   raw_ptr<NearbyConnectionManager> nearby_connection_manager_;
   NearbyConnectionManager::BleDiscoveryStateChangeCallback
       ble_discovery_state_changed_callback_;
+  NearbyConnectionManager::NearbyConnectionStateChangeCallback
+      nearby_connection_state_changed_callback_;
+  NearbyConnectionManager::SecureChannelStateChangeCallback
+      secure_channel_authentication_state_changed_callback_;
   base::WeakPtrFactory<NearbyInitiatorOperation> weak_ptr_factory_{this};
 };
 

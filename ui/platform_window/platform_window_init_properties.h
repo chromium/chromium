@@ -5,12 +5,12 @@
 #ifndef UI_PLATFORM_WINDOW_PLATFORM_WINDOW_INIT_PROPERTIES_H_
 #define UI_PLATFORM_WINDOW_PLATFORM_WINDOW_INIT_PROPERTIES_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -124,7 +124,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   bool prefer_dark_theme = false;
   raw_ptr<gfx::ImageSkia> icon = nullptr;
-  absl::optional<SkColor> background_color;
+  std::optional<SkColor> background_color;
 
   // Specifies the res_name and res_class fields,
   // respectively, of the WM_CLASS window property. Controls window grouping
@@ -141,16 +141,16 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
 
   // Specifies the unique session id and the restore window id.
   int32_t restore_session_id;
-  absl::optional<int32_t> restore_window_id;
+  std::optional<int32_t> restore_window_id;
 
   // Specifies the source to get `restore_window_id` from.
-  absl::optional<std::string> restore_window_id_source;
+  std::optional<std::string> restore_window_id_source;
 
   // Specifies whether the associated window is persistable.
   bool persistable = true;
 
   // Specifies the id of the target display the window will be created on.
-  absl::optional<int64_t> display_id;
+  std::optional<int64_t> display_id;
 #endif
 
 #if BUILDFLAG(IS_OZONE)

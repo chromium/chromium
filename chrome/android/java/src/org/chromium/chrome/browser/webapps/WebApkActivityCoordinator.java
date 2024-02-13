@@ -23,8 +23,8 @@ import org.chromium.components.embedder_support.util.Origin;
 import javax.inject.Inject;
 
 /**
- * Coordinator for the WebAPK activity component.
- * Add methods here if other components need to communicate with the WebAPK activity component.
+ * Coordinator for the WebAPK activity component. Add methods here if other components need to
+ * communicate with the WebAPK activity component.
  */
 @ActivityScope
 public class WebApkActivityCoordinator implements DestroyObserver {
@@ -64,6 +64,7 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         assert storage != null;
         storage.incrementLaunchCount();
 
+        WebApkSyncService.onWebApkUsed(mIntentDataProvider);
         mWebApkUpdateManager.get().updateIfNeeded(storage, mIntentDataProvider);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {

@@ -44,7 +44,8 @@ SingleClientProxyImpl::SingleClientProxyImpl(
   DCHECK(client_connection_parameters_);
   client_connection_parameters_->SetConnectionSucceeded(
       channel_->GenerateRemote(),
-      message_receiver_remote_.BindNewPipeAndPassReceiver());
+      message_receiver_remote_.BindNewPipeAndPassReceiver(),
+      nearby_connection_state_listener_remote_.BindNewPipeAndPassReceiver());
 }
 
 SingleClientProxyImpl::~SingleClientProxyImpl() = default;
@@ -60,6 +61,13 @@ void SingleClientProxyImpl::HandleReceivedMessage(const std::string& feature,
     return;
 
   message_receiver_remote_->OnMessageReceived(payload);
+}
+
+void SingleClientProxyImpl::HandleNearbyConnectionStateChanged(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  nearby_connection_state_listener_remote_->OnNearbyConnectionStateChanged(
+      step, result);
 }
 
 void SingleClientProxyImpl::HandleRemoteDeviceDisconnection() {

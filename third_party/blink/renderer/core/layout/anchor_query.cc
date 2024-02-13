@@ -35,8 +35,7 @@ CSSAnchorValue PhysicalAnchorValueFromLogicalOrAuto(
     CSSAnchorValue anchor_value,
     WritingDirectionMode writing_direction,
     WritingDirectionMode self_writing_direction,
-    bool is_y_axis,
-    bool is_right_or_bottom) {
+    bool is_y_axis) {
   switch (anchor_value) {
     case CSSAnchorValue::kSelfStart:
       writing_direction = self_writing_direction;
@@ -53,17 +52,6 @@ CSSAnchorValue PhysicalAnchorValueFromLogicalOrAuto(
           CSSAnchorValue::kRight, CSSAnchorValue::kLeft,
           CSSAnchorValue::kBottom, CSSAnchorValue::kTop, writing_direction,
           is_y_axis);
-    case CSSAnchorValue::kAuto:
-    case CSSAnchorValue::kAutoSame: {
-      bool use_right_or_bottom =
-          is_right_or_bottom == (anchor_value == CSSAnchorValue::kAutoSame);
-      if (is_y_axis) {
-        return use_right_or_bottom ? CSSAnchorValue::kBottom
-                                   : CSSAnchorValue::kTop;
-      }
-      return use_right_or_bottom ? CSSAnchorValue::kRight
-                                 : CSSAnchorValue::kLeft;
-    }
     default:
       return anchor_value;
   }
@@ -251,7 +239,7 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
   const PhysicalRect anchor = container_converter.ToPhysical(reference.rect);
   anchor_value = PhysicalAnchorValueFromLogicalOrAuto(
       anchor_value, container_converter.GetWritingDirection(),
-      self_writing_direction, is_y_axis, is_right_or_bottom);
+      self_writing_direction, is_y_axis);
   LayoutUnit value;
   switch (anchor_value) {
     case CSSAnchorValue::kCenter: {
@@ -314,8 +302,6 @@ std::optional<LayoutUnit> LogicalAnchorQuery::EvaluateAnchor(
     case CSSAnchorValue::kEnd:
     case CSSAnchorValue::kSelfStart:
     case CSSAnchorValue::kSelfEnd:
-    case CSSAnchorValue::kAuto:
-    case CSSAnchorValue::kAutoSame:
       // These logical values should have been converted to corresponding
       // physical values in `PhysicalAnchorValueFromLogicalOrAuto`.
       NOTREACHED();

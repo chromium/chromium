@@ -5,6 +5,7 @@
 #include "media/video/vpx_video_encoder.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 
 #include "base/logging.h"
@@ -12,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_codecs.h"
@@ -75,6 +77,7 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
                          "Frame is too large.");
 
   config->g_pass = VPX_RC_ONE_PASS;
+  // libvpx encoding is performed synchronously.
   config->g_lag_in_frames = 0;
   config->rc_max_quantizer = 58;
   // Increase min QP to 12 for vp8 screen sharing; It reduces the encoding
@@ -88,7 +91,11 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
     config->rc_min_quantizer = 12;
   }
   config->rc_resize_allowed = 0;
-  config->rc_dropframe_thresh = 0;  // Don't drop frames
+  // Only if latency_mode is real time, a frame might be dropped.
+  config->rc_dropframe_thresh =
+      opts.latency_mode == VideoEncoder::LatencyMode::Realtime
+          ? GetDefaultVideoEncoderDropFrameThreshold()
+          : 0;
   config->g_timebase.num = 1;
   config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
@@ -491,8 +498,18 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
                         VP9E_CONTENT_SCREEN);
     } else {
       static_thresh = 100;
-      // TODO(b/280363228): Set 2 when the latency mode is realtime.
-      vpx_codec_control(codec.get(), VP8E_SET_SCREEN_CONTENT_MODE, 1 /*On*/);
+      // Tune configs for screen sharing. The values are the same as WebRTC
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/video_coding/codecs/vp8/libvpx_vp8_encoder.cc
+      // 0: camera (default)
+      // 1: screen
+      // 2: screen with allowing drop frame.
+      unsigned int screen_content_mode = 1;
+      if (options.latency_mode == LatencyMode::Realtime &&
+          base::FeatureList::IsEnabled(kWebCodecsVideoEncoderFrameDrop)) {
+        screen_content_mode = 2;
+      }
+      vpx_codec_control(codec.get(), VP8E_SET_SCREEN_CONTENT_MODE,
+                        screen_content_mode);
     }
   }
   vpx_codec_control(codec.get(), VP8E_SET_STATIC_THRESHOLD, static_thresh);
@@ -664,14 +681,13 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   vpx_codec_flags_t flags = key_frame ? VPX_EFLAG_FORCE_KF : 0;
 
   int temporal_id = 0;
-  if (codec_config_.ts_number_layers > 1) {
+  const bool is_layer_encoding = codec_config_.ts_number_layers > 1;
+  if (is_layer_encoding) {
     if (key_frame)
       temporal_svc_frame_index_ = 0;
     unsigned int index_in_temp_cycle =
         temporal_svc_frame_index_ % codec_config_.ts_periodicity;
     temporal_id = codec_config_.ts_layer_id[index_in_temp_cycle];
-    temporal_svc_frame_index_++;
-
     if (profile_ == VP8PROFILE_ANY) {
       auto* vp8_layers_flags = codec_config_.ts_number_layers == 2
                                    ? vp8_2layers_temporal_flags
@@ -703,7 +719,20 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  DrainOutputs(temporal_id, frame->timestamp(), frame->ColorSpace());
+  auto output =
+      GetEncoderOutput(temporal_id, frame->timestamp(), frame->ColorSpace());
+  if (is_layer_encoding) {
+    // If we got an unexpected key frame, |temporal_svc_frame_index_| needs to
+    // be adjusted, because the next frame should have index 1.
+    if (output.key_frame) {
+      temporal_svc_frame_index_ = 0;
+    }
+    if (output.size != 0) {
+      temporal_svc_frame_index_++;
+    }
+  }
+
+  output_cb_.Run(std::move(output), {});
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
@@ -806,48 +835,36 @@ void VpxVideoEncoder::Flush(EncoderStatusCB done_cb) {
     return;
   }
 
-  auto vpx_error = vpx_codec_encode(codec_.get(), nullptr, -1, 0, 0, 0);
-  if (vpx_error != VPX_CODEC_OK) {
-    auto msg =
-        LogVpxErrorMessage(codec_.get(), "VPX flushing error", vpx_error);
-    auto status = EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg)
-                      .WithData("vpx_error", vpx_error);
-    std::move(done_cb).Run(std::move(status));
-    return;
-  }
-  DrainOutputs(0, base::TimeDelta(), gfx::ColorSpace());
+  // The libvpx encoder is operating synchronously and thus doesn't have to
+  // flush if and only if |g_lag_in_frames| is set to 0.
+  CHECK_EQ(codec_config_.g_lag_in_frames, 0u);
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
-void VpxVideoEncoder::DrainOutputs(int temporal_id,
-                                   base::TimeDelta ts,
-                                   gfx::ColorSpace color_space) {
+VideoEncoderOutput VpxVideoEncoder::GetEncoderOutput(
+    int temporal_id,
+    base::TimeDelta timestamp,
+    gfx::ColorSpace color_space) const {
   vpx_codec_iter_t iter = nullptr;
   const vpx_codec_cx_pkt_t* pkt = nullptr;
+  VideoEncoderOutput output;
+  // We don't given timestamps to vpx_codec_encode() that's why
+  // pkt->data.frame.pts can't be used here.
+  output.timestamp = timestamp;
   while ((pkt = vpx_codec_get_cx_data(codec_.get(), &iter))) {
     if (pkt->kind == VPX_CODEC_CX_FRAME_PKT) {
-      VideoEncoderOutput result;
-      result.key_frame = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
-
-      if (result.key_frame) {
-        // If we got an unexpected key frame, temporal_svc_frame_index needs to
-        // be adjusted, because the next frame should have index 1.
-        temporal_svc_frame_index_ = 1;
-        result.temporal_id = 0;
-      } else {
-        result.temporal_id = temporal_id;
-      }
-
-      // We don't given timestamps to vpx_codec_encode() that's why
-      // pkt->data.frame.pts can't be used here.
-      result.timestamp = ts;
-      result.color_space = color_space;
-      result.size = pkt->data.frame.sz;
-      result.data = std::make_unique<uint8_t[]>(result.size);
-      memcpy(result.data.get(), pkt->data.frame.buf, result.size);
-      output_cb_.Run(std::move(result), {});
+      // The encoder is operating synchronously. There should be exactly one
+      // encoded packet, or the frame is dropped.
+      CHECK_EQ(output.size, 0u);
+      output.size = pkt->data.frame.sz;
+      output.data = std::make_unique<uint8_t[]>(output.size);
+      memcpy(output.data.get(), pkt->data.frame.buf, output.size);
+      output.key_frame = (pkt->data.frame.flags & VPX_FRAME_IS_KEY) != 0;
+      output.temporal_id = output.key_frame ? 0 : temporal_id;
+      output.color_space = color_space;
     }
   }
+  return output;
 }
 
 void VpxVideoEncoder::RecreateVpxImageIfNeeded(vpx_img_fmt fmt,

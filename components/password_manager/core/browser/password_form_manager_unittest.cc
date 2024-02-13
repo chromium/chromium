@@ -204,7 +204,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               AutofillHttpAuth,
               (const PasswordForm&, const PasswordFormManagerForUI*),
               (override));
-  MOCK_METHOD(SyncState, GetPasswordSyncState, (), (const, override));
   MOCK_METHOD(bool, IsCommittedMainFrameSecure, (), (const, override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
@@ -400,7 +399,6 @@ class PasswordFormManagerTest : public testing::Test,
     observed_form_.action = action;
     observed_form_.name = u"sign-in";
     observed_form_.renderer_id = FormRendererId(1);
-    observed_form_.is_form_tag = true;
 
     observed_form_only_password_fields_ = observed_form_;
 
@@ -652,7 +650,6 @@ TEST_P(PasswordFormManagerTest, DoesManage) {
   EXPECT_FALSE(
       form_manager_->DoesManage(observed_form_.renderer_id, &another_driver));
   FormData another_form = observed_form_;
-  another_form.is_form_tag = false;
   another_form.renderer_id = FormRendererId();
   EXPECT_FALSE(form_manager_->DoesManage(another_form.renderer_id, &driver_));
 
@@ -663,7 +660,7 @@ TEST_P(PasswordFormManagerTest, DoesManage) {
 }
 
 TEST_P(PasswordFormManagerTest, DoesManageNoFormTag) {
-  observed_form_.is_form_tag = false;
+  observed_form_.renderer_id = FormRendererId();
   CreateFormManager(observed_form_);
 
   FormData another_form = observed_form_;
@@ -4452,6 +4449,29 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
       0 /* password generated */,
       {} /* generated password is not modified */};
   CheckPasswordGenerationUKM(test_ukm_recorder, expected_metrics);
+}
+
+TEST_F(PasswordFormManagerTestWithMockedSaver,
+       SaveStartedAfterFormFetcherIsReady) {
+  FormData submitted_form = observed_form_;
+  std::u16string new_username = saved_match_.username_value + u"1";
+  std::u16string new_password = saved_match_.password_value + u"1";
+  submitted_form.fields[kUsernameFieldIndex].value = new_username;
+  submitted_form.fields[kPasswordFieldIndex].value = new_password;
+  EXPECT_TRUE(
+      form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
+
+  fetcher_->Fetch();
+  form_manager_->Save();
+
+  PasswordForm saved_form;
+  EXPECT_CALL(*mock_password_save_manager(),
+              Save(FormDataPointeeEqualTo(observed_form_),
+                   FormHasPassword(new_password)))
+      .WillOnce(SaveArg<1>(&saved_form));
+  EXPECT_CALL(client_, UpdateFormManagers());
+  fetcher_->NotifyFetchCompleted();
+  EXPECT_THAT(*form_manager_->GetSubmittedForm(), FormHasUniqueKey(saved_form));
 }
 
 TEST_F(PasswordFormManagerTestWithMockedSaver, UpdateUsernameEmptyStore) {

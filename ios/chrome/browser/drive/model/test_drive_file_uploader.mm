@@ -46,6 +46,11 @@ void TestDriveFileUploader::SetFileUploadResult(
   file_upload_result_ = result;
 }
 
+void TestDriveFileUploader::SetStorageQuotaResult(
+    const DriveStorageQuotaResult& result) {
+  storage_quota_result_ = result;
+}
+
 void TestDriveFileUploader::SetQuitClosure(
     base::RepeatingClosure quit_closure) {
   quit_closure_ = quit_closure;
@@ -103,7 +108,6 @@ void TestDriveFileUploader::SearchSaveToDriveFolder(
                      std::move(completion_callback), GetFolderSearchResult())
           .Then(quit_closure),
       base::Milliseconds(100));
-  folder_search_result_.reset();
 }
 
 void TestDriveFileUploader::CreateSaveToDriveFolder(
@@ -120,7 +124,6 @@ void TestDriveFileUploader::CreateSaveToDriveFolder(
                      std::move(completion_callback), GetFolderCreationResult())
           .Then(quit_closure),
       base::Milliseconds(100));
-  folder_creation_result_.reset();
 }
 
 void TestDriveFileUploader::UploadFile(
@@ -162,6 +165,20 @@ void TestDriveFileUploader::UploadFile(
       delay);
 }
 
+void TestDriveFileUploader::FetchStorageQuota(
+    DriveStorageQuotaCompletionCallback completion_callback) {
+  auto quit_closure =
+      base::BindRepeating(&TestDriveFileUploader::RunQuitClosure,
+                          callbacks_weak_ptr_factory_.GetWeakPtr());
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TestDriveFileUploader::ReportStorageQuotaResult,
+                     callbacks_weak_ptr_factory_.GetWeakPtr(),
+                     std::move(completion_callback), GetStorageQuotaResult())
+          .Then(quit_closure),
+      base::Milliseconds(100));
+}
+
 #pragma mark - Private
 
 void TestDriveFileUploader::ReportFolderSearchResult(
@@ -187,6 +204,12 @@ void TestDriveFileUploader::ReportFileUploadResult(
     DriveFileUploadResult file_upload_result) {
   std::move(completion_callback).Run(file_upload_result);
   last_reported_file_upload_result_ = file_upload_result;
+}
+
+void TestDriveFileUploader::ReportStorageQuotaResult(
+    DriveStorageQuotaCompletionCallback completion_callback,
+    DriveStorageQuotaResult storage_quota_result) {
+  std::move(completion_callback).Run(storage_quota_result);
 }
 
 void TestDriveFileUploader::RunQuitClosure() {
@@ -234,4 +257,19 @@ DriveFileUploadResult TestDriveFileUploader::GetFileUploadResult() const {
     return DriveFileUploadResult{.file_link = nil, .error = error};
   }
   return DriveFileUploadResult{.file_link = @"test_file_link", .error = nil};
+}
+
+DriveStorageQuotaResult TestDriveFileUploader::GetStorageQuotaResult() const {
+  if (storage_quota_result_) {
+    return *storage_quota_result_;
+  }
+  const int64_t usage_limit = 15'000'000'000;  // 15.0GB
+  const int64_t usage_total = 14'500'000'000;  // 14.5GB
+  const int64_t usage_drive = 14'000'000'000;  // 14.0GB
+  const int64_t usage_trash = 1'000'000'000;   //  1.0GB
+  return DriveStorageQuotaResult{.limit = usage_limit,
+                                 .usage_in_drive = usage_drive,
+                                 .usage_in_drive_trash = usage_trash,
+                                 .usage = usage_total,
+                                 .error = nil};
 }

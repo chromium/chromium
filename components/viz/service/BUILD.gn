@@ -187,8 +187,6 @@ viz_component("service") {
     "frame_sinks/gmb_video_frame_pool_context_provider.h",
     "frame_sinks/gmb_video_frame_pool_context_provider_impl.cc",
     "frame_sinks/gmb_video_frame_pool_context_provider_impl.h",
-    "frame_sinks/gpu_vsync_begin_frame_source.cc",
-    "frame_sinks/gpu_vsync_begin_frame_source.h",
     "frame_sinks/root_compositor_frame_sink_impl.cc",
     "frame_sinks/root_compositor_frame_sink_impl.h",
     "frame_sinks/surface_resource_holder.cc",
@@ -428,6 +426,8 @@ viz_component("service") {
       "display_embedder/skia_output_device_dcomp.h",
       "display_embedder/software_output_device_win.cc",
       "display_embedder/software_output_device_win.h",
+      "frame_sinks/external_begin_frame_source_win.cc",
+      "frame_sinks/external_begin_frame_source_win.h",
       "gl/info_collection_gpu_service_impl.cc",
       "gl/info_collection_gpu_service_impl.h",
     ]
@@ -484,6 +484,10 @@ viz_component("service") {
         "//ui/events/platform/x11",
         "//ui/gfx/x",
       ]
+    }
+
+    if (is_chromeos && use_v4l2_codec) {
+      deps += [ "//media/gpu/chromeos:common" ]
     }
   }
 

@@ -235,7 +235,8 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   std::map<URLLoaderThrottle*, /*start=*/base::Time> deferring_throttles_;
   // nullptr is used when this loader is directly requested to pause reading
   // body from net by calling PauseReadingBodyFromNet().
-  std::set<URLLoaderThrottle*> pausing_reading_body_from_net_throttles_;
+  std::set<raw_ptr<URLLoaderThrottle, SetExperimental>>
+      pausing_reading_body_from_net_throttles_;
 
   // NOTE: This may point to a native implementation (instead of a Mojo proxy
   // object). And it is possible that the implementation of |forwarding_client_|

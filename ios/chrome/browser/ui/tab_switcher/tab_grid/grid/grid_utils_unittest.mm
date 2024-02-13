@@ -29,15 +29,16 @@ class GridUtilsTest : public PlatformTest {
 
   void AddWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state_list_->InsertWebState(0, std::move(web_state),
-                                    WebStateList::INSERT_ACTIVATE,
-                                    WebStateOpener());
+    web_state_list_->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
   void AddPinnedWebState() {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state_list_->InsertWebState(
-        0, std::move(web_state), WebStateList::INSERT_PINNED, WebStateOpener());
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Pinned());
   }
 
   web::WebTaskEnvironment task_environment_;

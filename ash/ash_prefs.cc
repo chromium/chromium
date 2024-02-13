@@ -24,6 +24,7 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/display/display_prefs.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
@@ -124,6 +125,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
   FocusModeController::RegisterProfilePrefs(registry);
   FullscreenController::RegisterProfilePrefs(registry);
+  GameDashboardController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
   GlanceablesController::RegisterUserProfilePrefs(registry);
   holding_space_prefs::RegisterProfilePrefs(registry);

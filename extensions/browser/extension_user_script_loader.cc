@@ -440,19 +440,6 @@ ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
     return sources;
   };
 
-  auto convert_run_at = [](api::content_scripts::RunAt run_at) {
-    switch (run_at) {
-      case api::content_scripts::RunAt::kDocumentStart:
-        return api::extension_types::RunAt::kDocumentStart;
-      case api::content_scripts::RunAt::kDocumentEnd:
-        return api::extension_types::RunAt::kDocumentEnd;
-      case api::content_scripts::RunAt::kDocumentIdle:
-        return api::extension_types::RunAt::kDocumentIdle;
-      case api::content_scripts::RunAt::kNone:
-        return api::extension_types::RunAt::kNone;
-    }
-  };
-
   api::scripts_internal::SerializedUserScript serialized_script;
   serialized_script.all_frames = content_script->all_frames;
   if (content_script->css) {
@@ -471,7 +458,7 @@ ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
   serialized_script.matches = std::move(content_script->matches);
   serialized_script.match_origin_as_fallback =
       content_script->match_origin_as_fallback;
-  serialized_script.run_at = convert_run_at(content_script->run_at);
+  serialized_script.run_at = content_script->run_at;
   serialized_script.source = source;
   serialized_script.world = content_script->world;
 

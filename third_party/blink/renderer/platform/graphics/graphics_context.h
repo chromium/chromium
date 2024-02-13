@@ -251,6 +251,13 @@ class PLATFORM_EXPORT GraphicsContext {
     return ImmutableState()->TextDrawingMode();
   }
 
+  void SetTextPaintOrder(const TextPaintOrder& order) {
+    MutableState()->SetTextPaintOrder(order);
+  }
+  TextPaintOrder GetTextPaintOrder() const {
+    return ImmutableState()->GetTextPaintOrder();
+  }
+
   void SetImageInterpolationQuality(InterpolationQuality quality) {
     MutableState()->SetInterpolationQuality(quality);
   }

@@ -4,12 +4,15 @@
 
 #include "chrome/browser/webauthn/enclave_manager.h"
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/overloaded.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
@@ -26,8 +29,10 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
+#include "crypto/random.h"
 #include "crypto/sha2.h"
 #include "crypto/unexportable_key.h"
+#include "crypto/user_verifying_key.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
 #include "device/fido/enclave/transact.h"
@@ -39,6 +44,10 @@
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/strcat.h"
+#endif
 
 namespace enclave = device::enclave;
 using webauthn_pb::EnclaveLocalState;
@@ -356,6 +365,33 @@ base::flat_set<std::string> GetGaiaIDs(
   return result;
 }
 
+std::optional<crypto::UserVerifyingKeyLabel> CreateUserVerifyingKeyLabel() {
+#if BUILDFLAG(IS_WIN)
+  std::vector<uint8_t> random(16);
+  crypto::RandBytes(random);
+  return base::StrCat({"enclave-uvkey-", base::Base64Encode(random)});
+#else
+  return std::nullopt;
+#endif
+}
+
+std::string UserVerifyingLabelToString(crypto::UserVerifyingKeyLabel label) {
+#if BUILDFLAG(IS_WIN)
+  return label;
+#else
+  return std::string();
+#endif
+}
+
+std::optional<crypto::UserVerifyingKeyLabel> UserVerifyingKeyLabelFromString(
+    std::string saved_label) {
+#if BUILDFLAG(IS_WIN)
+  return saved_label;
+#else
+  return std::nullopt;
+#endif
+}
+
 }  // namespace
 
 EnclaveManager::EnclaveManager(
@@ -401,6 +437,10 @@ unsigned EnclaveManager::store_keys_count() const {
   return store_keys_count_;
 }
 
+bool EnclaveManager::is_uv_key_available() const {
+  return user_ && !user_->wrapped_uv_private_key().empty();
+}
+
 void EnclaveManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kInit) {
@@ -423,32 +463,144 @@ enclave::SigningCallback EnclaveManager::HardwareKeySigningCallback() {
   CHECK(!user_->wrapped_hardware_private_key().empty());
   CHECK(user_->registered());
 
-  return base::BindRepeating(
+  scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
+      base::SingleThreadTaskRunner::GetCurrentDefault();
+
+  return base::BindOnce(
       // TODO: this callback should also take a WeakPtr to the EnclaveManager so
       // that the EnclaveManager can hold a cache of loaded keys and so that
       // signing errors can be signaled up and cause the registration to be
       // erased. (TPMs sometimes lose keys in practice.)
-      [](std::string wrapped_hardware_private_key, std::string device_id,
-         base::span<const uint8_t> message_to_be_signed)
-          -> enclave::ClientSignature {
-        // TODO: cache the key loading. TPMs are slow.
-        auto provider = crypto::GetSoftwareUnsecureUnexportableKeyProvider();
-        std::unique_ptr<crypto::UnexportableSigningKey> key =
-            provider->FromWrappedSigningKeySlowly(
-                ToVector(wrapped_hardware_private_key));
-        std::optional<std::vector<uint8_t>> signature =
-            key->SignSlowly(message_to_be_signed);
-        // TODO: this should be allowed to fail.
-        CHECK(signature);
+      [](scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+         std::string wrapped_hardware_private_key, std::string device_id,
+         enclave::SignedMessage message_to_be_signed,
+         base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
+             result_callback) {
+        // Post to a blocking thread for the slow operation.
+        base::ThreadPool::PostTask(
+            FROM_HERE, {base::MayBlock()},
+            base::BindOnce(
+                [](scoped_refptr<base::SingleThreadTaskRunner>
+                       caller_task_runner,
+                   std::string wrapped_hardware_private_key,
+                   std::string device_id,
+                   enclave::SignedMessage message_to_be_signed,
+                   base::OnceCallback<void(
+                       std::optional<enclave::ClientSignature>)>
+                       result_callback) {
+                  // TODO(enclave): cache the key loading. TPMs are slow.
+                  auto provider =
+                      crypto::GetSoftwareUnsecureUnexportableKeyProvider();
+                  std::unique_ptr<crypto::UnexportableSigningKey> key =
+                      provider->FromWrappedSigningKeySlowly(
+                          ToVector(wrapped_hardware_private_key));
+                  if (!key) {
+                    caller_task_runner->PostTask(
+                        FROM_HERE,
+                        base::BindOnce(
+                            [](base::OnceCallback<void(
+                                   std::optional<enclave::ClientSignature>)>
+                                   result_callback) {
+                              std::move(result_callback).Run(std::nullopt);
+                            },
+                            std::move(result_callback)));
+                    return;
+                  }
+                  std::optional<std::vector<uint8_t>> signature =
+                      key->SignSlowly(message_to_be_signed);
+                  if (!signature) {
+                    caller_task_runner->PostTask(
+                        FROM_HERE,
+                        base::BindOnce(
+                            [](base::OnceCallback<void(
+                                   std::optional<enclave::ClientSignature>)>
+                                   result_callback) {
+                              std::move(result_callback).Run(std::nullopt);
+                            },
+                            std::move(result_callback)));
+                    return;
+                  }
 
-        enclave::ClientSignature ret;
-        ret.device_id = ToVector(device_id);
-        ret.signature = std::move(*signature);
-        ret.key_type = enclave::ClientKeyType::kHardware;
-
-        return ret;
+                  enclave::ClientSignature client_signature;
+                  client_signature.device_id = ToVector(device_id);
+                  client_signature.signature = std::move(*signature);
+                  client_signature.key_type = enclave::ClientKeyType::kHardware;
+                  caller_task_runner->PostTask(
+                      FROM_HERE,
+                      base::BindOnce(
+                          [](base::OnceCallback<void(
+                                 std::optional<enclave::ClientSignature>)>
+                                 result_callback,
+                             enclave::ClientSignature client_signature) {
+                            std::move(result_callback)
+                                .Run(std::move(client_signature));
+                          },
+                          std::move(result_callback),
+                          std::move(client_signature)));
+                },
+                caller_task_runner, std::move(wrapped_hardware_private_key),
+                std::move(device_id), std::move(message_to_be_signed),
+                std::move(result_callback)));
       },
-      user_->wrapped_hardware_private_key(), user_->device_id());
+      caller_task_runner, user_->wrapped_hardware_private_key(),
+      user_->device_id());
+}
+
+enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!user_->wrapped_uv_private_key().empty());
+  CHECK(user_->registered());
+
+  auto key_label =
+      UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
+  CHECK(key_label);
+
+  return base::BindOnce(
+      [](crypto::UserVerifyingKeyLabel uv_key_label, std::string device_id,
+         enclave::SignedMessage message_to_be_signed,
+         base::OnceCallback<void(std::optional<enclave::ClientSignature>)>
+             result_callback) {
+        auto provider = crypto::GetUserVerifyingKeyProvider();
+        provider->GetUserVerifyingSigningKey(
+            std::move(uv_key_label),
+            base::BindOnce(
+                [](std::string device_id,
+                   enclave::SignedMessage message_to_be_signed,
+                   base::OnceCallback<void(
+                       std::optional<enclave::ClientSignature>)>
+                       result_callback,
+                   std::unique_ptr<crypto::UserVerifyingSigningKey>
+                       uv_signing_key) {
+                  if (!uv_signing_key) {
+                    std::move(result_callback).Run(std::nullopt);
+                    return;
+                  }
+                  uv_signing_key->Sign(
+                      message_to_be_signed,
+                      base::BindOnce(
+                          [](std::string device_id,
+                             base::OnceCallback<void(
+                                 std::optional<enclave::ClientSignature>)>
+                                 result_callback,
+                             std::optional<std::vector<uint8_t>> signature) {
+                            if (!signature) {
+                              std::move(result_callback).Run(std::nullopt);
+                              return;
+                            }
+                            enclave::ClientSignature client_signature;
+                            client_signature.device_id = ToVector(device_id);
+                            client_signature.signature = std::move(*signature);
+                            client_signature.key_type =
+                                enclave::ClientKeyType::kUserVerified;
+                            std::move(result_callback)
+                                .Run(std::move(client_signature));
+                          },
+                          std::move(device_id), std::move(result_callback)));
+                },
+                std::move(device_id), std::move(message_to_be_signed),
+                std::move(result_callback)));
+      },
+      std::move(*key_label), user_->device_id());
 }
 
 std::optional<std::vector<uint8_t>> EnclaveManager::GetWrappedSecret(
@@ -613,8 +765,8 @@ std::string EnclaveManager::ToString(State state) {
       return "Loading";
     case State::kNextAction:
       return "NextAction";
-    case State::kGeneratingKey:
-      return "GeneratingKey";
+    case State::kGeneratingKeys:
+      return "GeneratingKeys";
     case State::kWaitingForEnclaveTokenForRegistration:
       return "WaitingForEnclaveTokenForRegistration";
     case State::kRegisteringWithEnclave:
@@ -689,7 +841,7 @@ void EnclaveManager::Loop(Event in_event) {
         break;
       }
 
-      case State::kGeneratingKey: {
+      case State::kGeneratingKeys: {
         if (absl::holds_alternative<None>(event)) {
           return;
         } else if (absl::holds_alternative<Failure>(event)) {
@@ -699,7 +851,7 @@ void EnclaveManager::Loop(Event in_event) {
           state_ = State::kNextAction;
           return;
         }
-        DoGeneratingKey(std::move(event));
+        DoGeneratingKeys(std::move(event));
         break;
       }
 
@@ -883,8 +1035,37 @@ void EnclaveManager::HandleIdentityChange() {
 
 void EnclaveManager::StartEnclaveRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  state_ = State::kGeneratingKeys;
 
-  state_ = State::kGeneratingKey;
+  auto uv_provider = crypto::GetUserVerifyingKeyProvider();
+  std::optional<crypto::UserVerifyingKeyLabel> key_label;
+  // TODO(enclave): Reusing the label makes sense on Windows because it will
+  // overwrite the existing key with a new one. This might be different on
+  // other platforms.
+  if (user_ && !user_->wrapped_uv_private_key().empty()) {
+    key_label =
+        UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
+  }
+  if (!key_label) {
+    key_label = CreateUserVerifyingKeyLabel();
+  }
+  if (!uv_provider || !key_label) {
+    // Null `uv_provider` means the current platform does not support user-
+    // verifying keys.
+    // nullopt for |key_label| means Chrome does not support them on this OS.
+    GenerateHardwareKey(nullptr);
+    return;
+  }
+  uv_provider->GenerateUserVerifyingSigningKey(
+      *key_label, kSigningAlgorithms,
+      base::BindOnce(&EnclaveManager::GenerateHardwareKey,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EnclaveManager::GenerateHardwareKey(
+    std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(state_ == State::kGeneratingKeys);
   std::optional<std::vector<uint8_t>> existing_key_id;
   if (user_ && !user_->wrapped_hardware_private_key().empty()) {
     existing_key_id = ToVector(user_->wrapped_hardware_private_key());
@@ -892,7 +1073,8 @@ void EnclaveManager::StartEnclaveRegistration() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(
-          [](std::optional<std::vector<uint8_t>> key_id) -> Event {
+          [](std::optional<std::vector<uint8_t>> key_id,
+             std::unique_ptr<crypto::UserVerifyingSigningKey> uv_key) -> Event {
             auto provider =
                 crypto::GetSoftwareUnsecureUnexportableKeyProvider();
             if (!provider) {
@@ -902,7 +1084,8 @@ void EnclaveManager::StartEnclaveRegistration() {
               std::unique_ptr<crypto::UnexportableSigningKey> key =
                   provider->FromWrappedSigningKeySlowly(*key_id);
               if (key) {
-                return KeyReady(std::move(key));
+                return KeyReady(
+                    std::make_pair(std::move(uv_key), std::move(key)));
               }
             }
             std::unique_ptr<crypto::UnexportableSigningKey> key =
@@ -910,9 +1093,9 @@ void EnclaveManager::StartEnclaveRegistration() {
             if (!key) {
               return Failure();
             }
-            return KeyReady(std::move(key));
+            return KeyReady(std::make_pair(std::move(uv_key), std::move(key)));
           },
-          std::move(existing_key_id)),
+          std::move(existing_key_id), std::move(uv_key)),
       base::BindOnce(&EnclaveManager::Loop, weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -940,11 +1123,26 @@ void EnclaveManager::DoLoading(Event event) {
   state_ = State::kNextAction;
 }
 
-void EnclaveManager::DoGeneratingKey(Event event) {
+void EnclaveManager::DoGeneratingKeys(Event event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(absl::holds_alternative<KeyReady>(event)) << ToString(event);
 
-  hardware_key_ = std::move(absl::get_if<KeyReady>(&event)->value());
+  bool state_dirty = false;
+  user_verifying_key_ =
+      std::move(absl::get_if<KeyReady>(&event)->value().first);
+  hardware_key_ = std::move(absl::get_if<KeyReady>(&event)->value().second);
+
+  if (user_verifying_key_) {
+    const std::vector<uint8_t> uv_public_key =
+        user_verifying_key_->GetPublicKey();
+    const std::string uv_public_key_str = VecToString(uv_public_key);
+    if (user_->uv_public_key() != uv_public_key_str) {
+      user_->set_uv_public_key(uv_public_key_str);
+      user_->set_wrapped_uv_private_key(
+          UserVerifyingLabelToString(user_verifying_key_->GetKeyLabel()));
+      state_dirty = true;
+    }
+  }
 
   const std::vector<uint8_t> spki = hardware_key_->GetSubjectPublicKeyInfo();
   const std::string spki_str = VecToString(spki);
@@ -955,7 +1153,10 @@ void EnclaveManager::DoGeneratingKey(Event event) {
     user_->set_wrapped_hardware_private_key(
         VecToString(hardware_key_->GetWrappedKey()));
     user_->set_device_id(VecToString(device_id));
+    state_dirty = true;
+  }
 
+  if (state_dirty) {
     WriteState();
   }
 

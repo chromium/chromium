@@ -228,14 +228,11 @@ void PlatformNotificationServiceImpl::DisplayNotification(
       ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
       notification.origin_url());
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kNotificationInteractionHistory)) {
     auto* service =
         NotificationsEngagementServiceFactory::GetForProfile(profile_);
     // This service might be missing for incognito profiles and in tests.
     if (service)
       service->RecordNotificationDisplayed(notification.origin_url());
-  }
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(
@@ -273,13 +270,11 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
         ->LogPersistentNotificationSize(profile_, notification_data, origin);
   }
 
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kNotificationInteractionHistory)) {
-    auto* service =
-        NotificationsEngagementServiceFactory::GetForProfile(profile_);
-    // This service might be missing for incognito profiles and in tests.
-    if (service)
-      service->RecordNotificationDisplayed(notification.origin_url());
+  auto* service =
+      NotificationsEngagementServiceFactory::GetForProfile(profile_);
+  // This service might be missing for incognito profiles and in tests.
+  if (service) {
+    service->RecordNotificationDisplayed(notification.origin_url());
   }
 
   permissions::PermissionUmaUtil::RecordPermissionUsage(
@@ -395,13 +390,11 @@ void PlatformNotificationServiceImpl::RecordNotificationUkmEvent(
     return;
   }
 
-  // Check if this event can be recorded via UKM.
-  auto* ukm_background_service =
-      ukm::UkmBackgroundRecorderFactory::GetForProfile(profile_);
-  ukm_background_service->GetBackgroundSourceIdIfAllowed(
-      url::Origin::Create(data.origin),
-      base::BindOnce(&PlatformNotificationServiceImpl::DidGetBackgroundSourceId,
-                     std::move(ukm_recorded_closure_for_testing_), data));
+  ukm::SourceId source_id = ukm::UkmRecorder::GetSourceIdForNotificationEvent(
+      base::PassKey<PlatformNotificationServiceImpl>(), data.origin);
+
+  RecordNotificationUkmEventWithSourceId(
+      std::move(ukm_recorded_closure_for_testing_), data, source_id);
 }
 
 NotificationTriggerScheduler*
@@ -410,15 +403,11 @@ PlatformNotificationServiceImpl::GetNotificationTriggerScheduler() {
 }
 
 // static
-void PlatformNotificationServiceImpl::DidGetBackgroundSourceId(
+void PlatformNotificationServiceImpl::RecordNotificationUkmEventWithSourceId(
     base::OnceClosure recorded_closure,
     const content::NotificationDatabaseData& data,
-    std::optional<ukm::SourceId> source_id) {
-  // This background event did not meet the requirements for the UKM service.
-  if (!source_id)
-    return;
-
-  ukm::builders::Notification builder(*source_id);
+    ukm::SourceId source_id) {
+  ukm::builders::Notification builder(source_id);
 
   int64_t time_until_first_click_millis =
       data.time_until_first_click_millis.has_value()

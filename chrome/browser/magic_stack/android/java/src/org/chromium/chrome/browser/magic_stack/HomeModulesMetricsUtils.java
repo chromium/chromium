@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.magic_stack;
 
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.TAB_RESUMPTION;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
@@ -56,6 +59,13 @@ public class HomeModulesMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_MODULE_PROFILE_READY_DELAY_MS = ".Module.ProfileReadyDelayMs";
 
+    private static final String HOME_MODULES_SHOW_ALL_MODULES_PARAM = "show_all_modules";
+    public static final BooleanCachedFieldTrialParameter HOME_MODULES_SHOW_ALL_MODULES =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.MAGIC_STACK_ANDROID,
+                    HOME_MODULES_SHOW_ALL_MODULES_PARAM,
+                    false);
+
     /** Returns a string name of a module. */
     public static String getModuleName(@ModuleType int moduleType) {
         switch (moduleType) {
@@ -63,6 +73,8 @@ public class HomeModulesMetricsUtils {
                 return "SingleTab";
             case (PRICE_CHANGE):
                 return "PriceChange";
+            case (TAB_RESUMPTION):
+                return "TabResumption";
             default:
                 assert false : "Module type not supported!";
                 return null;

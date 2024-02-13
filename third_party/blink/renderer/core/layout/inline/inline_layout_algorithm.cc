@@ -486,20 +486,21 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
       item.GetLayoutObject()->ClearNeedsLayoutWithFullPaintInvalidation();
 
     } else if (item.Type() == InlineItem::kControl) {
-      PlaceControlItem(item, *line_info, &item_result, line_box, box);
+      PlaceControlItem(item, line_info->ItemsData().text_content, &item_result,
+                       line_box, box);
     } else if (item.Type() == InlineItem::kOpenTag) {
       box = HandleOpenTag(item, item_result, line_box, box_states_);
     } else if (item.Type() == InlineItem::kCloseTag) {
       box = HandleCloseTag(item, item_result, line_box, box);
     } else if (item.Type() == InlineItem::kAtomicInline) {
-      box = PlaceAtomicInline(item, *line_info, &item_result, line_box);
+      box = PlaceAtomicInline(item, &item_result, line_box);
       has_relative_positioned_items |=
           item.Style()->GetPosition() == EPosition::kRelative;
     } else if (item.Type() == InlineItem::kBlockInInline) {
       DCHECK(line_info->IsBlockInInline());
-      PlaceBlockInInline(item, *line_info, &item_result, line_box);
+      PlaceBlockInInline(item, &item_result, line_box);
     } else if (item.Type() == InlineItem::kListMarker) {
-      PlaceListMarker(item, &item_result, *line_info);
+      PlaceListMarker(item, &item_result);
     } else if (item.Type() == InlineItem::kOutOfFlowPositioned) {
       // An inline-level OOF child positions itself based on its direction, a
       // block-level OOF child positions itself based on the direction of its
@@ -538,7 +539,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
       // [1] https://drafts.csswg.org/css-inline/#initial-letter-block-position
       DCHECK(!initial_letter_item_result);
       initial_letter_item_result = &item_result;
-      PlaceInitialLetterBox(item, *line_info, &item_result, line_box);
+      PlaceInitialLetterBox(item, &item_result, line_box);
     }
   }
 
@@ -738,7 +739,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 }
 
 void InlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
-                                             const LineInfo& line_info,
+                                             const String& text_content,
                                              InlineItemResult* item_result,
                                              LogicalLineItems* line_box,
                                              InlineBoxState* box) {
@@ -747,7 +748,7 @@ void InlineLayoutAlgorithm::PlaceControlItem(const InlineItem& item,
   DCHECK(!item.TextShapeResult());
   DCHECK_NE(item.TextType(), TextItemType::kNormal);
 #if DCHECK_IS_ON()
-  item.CheckTextType(line_info.ItemsData().text_content);
+  item.CheckTextType(text_content);
 #endif
 
   // Don't generate fragments if this is a generated (not in DOM) break
@@ -793,7 +794,6 @@ void InlineLayoutAlgorithm::PlaceHyphen(const InlineItemResult& item_result,
 
 InlineBoxState* InlineLayoutAlgorithm::PlaceAtomicInline(
     const InlineItem& item,
-    const LineInfo& line_info,
     InlineItemResult* item_result,
     LogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
@@ -853,7 +853,6 @@ void InlineLayoutAlgorithm::PlaceLayoutResult(InlineItemResult* item_result,
 }
 
 void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
-                                               const LineInfo& line_info,
                                                InlineItemResult* item_result,
                                                LogicalLineItems* line_box) {
   DCHECK_EQ(item.Type(), InlineItem::kBlockInInline);
@@ -896,7 +895,6 @@ void InlineLayoutAlgorithm::PlaceBlockInInline(const InlineItem& item,
 }
 
 void InlineLayoutAlgorithm::PlaceInitialLetterBox(const InlineItem& item,
-                                                  const LineInfo& line_info,
                                                   InlineItemResult* item_result,
                                                   LogicalLineItems* line_box) {
   DCHECK(item_result->layout_result);
@@ -1105,8 +1103,7 @@ void InlineLayoutAlgorithm::PlaceRelativePositionedItems(
 
 // Place a list marker.
 void InlineLayoutAlgorithm::PlaceListMarker(const InlineItem& item,
-                                            InlineItemResult* item_result,
-                                            const LineInfo& line_info) {
+                                            InlineItemResult* item_result) {
   if (UNLIKELY(quirks_mode_)) {
     box_states_->LineBoxState().EnsureTextMetrics(
         *item.Style(), item.Style()->GetFont(), baseline_type_);
@@ -1210,8 +1207,9 @@ std::optional<LayoutUnit> InlineLayoutAlgorithm::ApplyJustify(
   }
 
   for (InlineItemResult& item_result : *line_info->MutableResults()) {
-    if (item_result.has_only_trailing_spaces)
+    if (item_result.has_only_pre_wrap_trailing_spaces) {
       break;
+    }
     if (item_result.shape_result) {
       ShapeResult* shape_result = item_result.shape_result->CreateShapeResult();
       DCHECK_GE(item_result.StartOffset(), line_text_start_offset);
@@ -1840,7 +1838,7 @@ void InlineLayoutAlgorithm::BidiReorder(TextDirection base_direction,
     }
     DCHECK_NE(item.bidi_level, kOpaqueBidiLevel);
     // UAX#9 L1: trailing whitespaces should use paragraph direction.
-    if (item.has_only_trailing_spaces) {
+    if (item.has_only_bidi_trailing_spaces) {
       levels.push_back(base_direction_level);
       continue;
     }

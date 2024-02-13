@@ -123,14 +123,6 @@ config("config") {
       "blink-gc-plugin",
     ]
 
-    # Enable GC plugin forbidding weak ptrs to GCed:
-    cflags += [
-      "-Xclang",
-      "-plugin-arg-blink-gc-plugin",
-      "-Xclang",
-      "enable-weak-ptrs-check",
-    ]
-
     # Add arguments for enabled GC plugin options:
     if (blink_gc_plugin_option_do_dump_graph) {
       cflags += [

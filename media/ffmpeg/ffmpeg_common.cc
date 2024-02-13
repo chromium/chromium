@@ -843,12 +843,18 @@ ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
       return CHANNEL_LAYOUT_MONO;
     case AV_CH_LAYOUT_STEREO:
       return CHANNEL_LAYOUT_STEREO;
+    case AV_CH_LAYOUT_2POINT1:
+      return CHANNEL_LAYOUT_2POINT1;
     case AV_CH_LAYOUT_2_1:
       return CHANNEL_LAYOUT_2_1;
     case AV_CH_LAYOUT_SURROUND:
       return CHANNEL_LAYOUT_SURROUND;
+    case AV_CH_LAYOUT_3POINT1:
+      return CHANNEL_LAYOUT_3_1;
     case AV_CH_LAYOUT_4POINT0:
       return CHANNEL_LAYOUT_4_0;
+    case AV_CH_LAYOUT_4POINT1:
+      return CHANNEL_LAYOUT_4_1;
     case AV_CH_LAYOUT_2_2:
       return CHANNEL_LAYOUT_2_2;
     case AV_CH_LAYOUT_QUAD:
@@ -861,20 +867,6 @@ ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
       return CHANNEL_LAYOUT_5_0_BACK;
     case AV_CH_LAYOUT_5POINT1_BACK:
       return CHANNEL_LAYOUT_5_1_BACK;
-    case AV_CH_LAYOUT_7POINT0:
-      return CHANNEL_LAYOUT_7_0;
-    case AV_CH_LAYOUT_7POINT1:
-      return CHANNEL_LAYOUT_7_1;
-    case AV_CH_LAYOUT_7POINT1_WIDE:
-      return CHANNEL_LAYOUT_7_1_WIDE;
-    case AV_CH_LAYOUT_STEREO_DOWNMIX:
-      return CHANNEL_LAYOUT_STEREO_DOWNMIX;
-    case AV_CH_LAYOUT_2POINT1:
-      return CHANNEL_LAYOUT_2POINT1;
-    case AV_CH_LAYOUT_3POINT1:
-      return CHANNEL_LAYOUT_3_1;
-    case AV_CH_LAYOUT_4POINT1:
-      return CHANNEL_LAYOUT_4_1;
     case AV_CH_LAYOUT_6POINT0:
       return CHANNEL_LAYOUT_6_0;
     case AV_CH_LAYOUT_6POINT0_FRONT:
@@ -887,14 +879,22 @@ ChannelLayout ChannelLayoutToChromeChannelLayout(int64_t layout, int channels) {
       return CHANNEL_LAYOUT_6_1_BACK;
     case AV_CH_LAYOUT_6POINT1_FRONT:
       return CHANNEL_LAYOUT_6_1_FRONT;
+    case AV_CH_LAYOUT_7POINT0:
+      return CHANNEL_LAYOUT_7_0;
     case AV_CH_LAYOUT_7POINT0_FRONT:
       return CHANNEL_LAYOUT_7_0_FRONT;
+    case AV_CH_LAYOUT_7POINT1:
+      return CHANNEL_LAYOUT_7_1;
+    case AV_CH_LAYOUT_7POINT1_WIDE:
+      return CHANNEL_LAYOUT_7_1_WIDE;
 #ifdef AV_CH_LAYOUT_7POINT1_WIDE_BACK
     case AV_CH_LAYOUT_7POINT1_WIDE_BACK:
       return CHANNEL_LAYOUT_7_1_WIDE_BACK;
 #endif
     case AV_CH_LAYOUT_OCTAGONAL:
       return CHANNEL_LAYOUT_OCTAGONAL;
+    case AV_CH_LAYOUT_STEREO_DOWNMIX:
+      return CHANNEL_LAYOUT_STEREO_DOWNMIX;
     default:
       // FFmpeg channel_layout is 0 for .wav and .mp3.  Attempt to guess layout
       // based on the channel count.

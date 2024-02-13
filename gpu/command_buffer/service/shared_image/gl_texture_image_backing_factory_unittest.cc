@@ -82,9 +82,12 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
 
     supports_bgra_ = feature_info->feature_flags().ext_texture_format_bgra8888;
 
-    backing_factory_ = std::make_unique<GLTextureImageBackingFactory>(
-        gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
-        &progress_reporter_, for_cpu_upload_usage);
+    std::unique_ptr<GLTextureImageBackingFactory> backing_factory =
+        std::make_unique<GLTextureImageBackingFactory>(
+            gpu_preferences_, gpu_workarounds_, context_state_->feature_info(),
+            &progress_reporter_, for_cpu_upload_usage);
+    backing_factory->EnableSupportForAllMetalUsagesForTesting();
+    backing_factory_ = std::move(backing_factory);
   }
 
   bool IsFormatSupport(viz::SharedImageFormat format) const {

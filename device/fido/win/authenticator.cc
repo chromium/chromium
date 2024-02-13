@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/win/type_conversions.h"
 #include "device/fido/win/webauthn_api.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
@@ -213,7 +213,7 @@ void WinWebAuthnApiAuthenticator::MakeCredential(
 void WinWebAuthnApiAuthenticator::MakeCredentialDone(
     MakeCredentialCallback callback,
     std::pair<CtapDeviceResponseCode,
-              absl::optional<AuthenticatorMakeCredentialResponse>> result) {
+              std::optional<AuthenticatorMakeCredentialResponse>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_pending_);
   is_pending_ = false;
@@ -224,12 +224,12 @@ void WinWebAuthnApiAuthenticator::MakeCredentialDone(
     return;
   }
   if (result.first != CtapDeviceResponseCode::kSuccess) {
-    std::move(callback).Run(result.first, absl::nullopt);
+    std::move(callback).Run(result.first, std::nullopt);
     return;
   }
   if (!result.second) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   std::move(callback).Run(result.first, std::move(result.second));
@@ -258,7 +258,7 @@ void WinWebAuthnApiAuthenticator::GetAssertion(CtapGetAssertionRequest request,
 void WinWebAuthnApiAuthenticator::GetAssertionDone(
     GetAssertionCallback callback,
     std::pair<CtapDeviceResponseCode,
-              absl::optional<AuthenticatorGetAssertionResponse>> result) {
+              std::optional<AuthenticatorGetAssertionResponse>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_pending_);
   is_pending_ = false;
@@ -335,11 +335,11 @@ std::string WinWebAuthnApiAuthenticator::GetId() const {
   return "WinWebAuthnApiAuthenticator";
 }
 
-absl::optional<FidoTransportProtocol>
+std::optional<FidoTransportProtocol>
 WinWebAuthnApiAuthenticator::AuthenticatorTransport() const {
   // The Windows API could potentially use any external or
   // platform authenticator.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 const AuthenticatorSupportedOptions& WinWebAuthnApiAuthenticator::Options()

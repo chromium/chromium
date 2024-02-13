@@ -762,7 +762,7 @@ void FidoDeviceAuthenticator::RunOperation(
     base::OnceCallback<void(CtapDeviceResponseCode, std::optional<Response>)>
         callback,
     base::OnceCallback<
-        std::optional<Response>(const absl::optional<cbor::Value>&)> parser,
+        std::optional<Response>(const std::optional<cbor::Value>&)> parser,
     bool (*string_fixup_predicate)(const std::vector<const cbor::Value*>&)) {
   DCHECK(!task_);
   DCHECK(!operation_);

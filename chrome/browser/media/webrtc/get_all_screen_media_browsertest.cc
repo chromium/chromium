@@ -7,17 +7,22 @@
 #include <string>
 #include <vector>
 
-#include "ash/shell.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/content_browser_client.h"
@@ -31,8 +36,18 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/display/test/display_manager_test_api.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/message_center.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/message_center.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 std::string ExtractError(const std::string& message) {
@@ -77,8 +92,6 @@ bool RunGetAllScreensMediaAndGetIds(content::WebContents* tab,
   return true;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 bool CheckScreenDetailedExists(content::WebContents* tab,
                                const std::string& track_id) {
   static constexpr char kVideoTrackContainsScreenDetailsCall[] =
@@ -89,8 +102,6 @@ bool CheckScreenDetailedExists(content::WebContents* tab,
                                 track_id.c_str()))
              .ExtractString() == "success-screen-detailed";
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ContentBrowserClientMock : public ChromeContentBrowserClient {
  public:
@@ -334,4 +345,240 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(true, AreAllTracksLive("getAllScreensMedia"));
 }
 
-#endif  // #if BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+class MultiCaptureNotificationTest : public InProcessBrowserTest {
+ public:
+  MultiCaptureNotificationTest() = default;
+  MultiCaptureNotificationTest(const MultiCaptureNotificationTest&) = delete;
+  MultiCaptureNotificationTest& operator=(const MultiCaptureNotificationTest&) =
+      delete;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    client_ = static_cast<ChromeContentBrowserClient*>(
+        content::SetBrowserClientForTesting(nullptr));
+    content::SetBrowserClientForTesting(client_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    ClearAllNotifications();
+    WaitUntilDisplayNotificationCount(/*display_count=*/0u);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
+    client_ = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    ClearAllNotifications();
+    WaitUntilDisplayNotificationCount(/*display_count=*/0u);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
+ protected:
+  ChromeContentBrowserClient* client() { return client_; }
+
+  auto GetAllNotifications() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
+    NotificationDisplayService::GetForProfile(browser()->profile())
+        ->GetDisplayed(get_displayed_future.GetCallback());
+#else
+    base::test::TestFuture<const std::vector<std::string>&>
+        get_displayed_future;
+    auto& remote = chromeos::LacrosService::Get()
+                       ->GetRemote<crosapi::mojom::MessageCenter>();
+    EXPECT_TRUE(remote.get());
+    remote->GetDisplayedNotifications(get_displayed_future.GetCallback());
+#endif
+    const auto& notification_ids = get_displayed_future.Get<0>();
+    EXPECT_TRUE(get_displayed_future.Wait());
+    return notification_ids;
+  }
+
+  void ClearAllNotifications() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NotificationDisplayService* service =
+        NotificationDisplayService::GetForProfile(browser()->profile());
+#else
+    base::test::TestFuture<const std::vector<std::string>&>
+        get_displayed_future;
+    auto& service = chromeos::LacrosService::Get()
+                        ->GetRemote<crosapi::mojom::MessageCenter>();
+    EXPECT_TRUE(service.get());
+#endif
+    for (const std::string& notification_id : GetAllNotifications()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      service->Close(NotificationHandler::Type::TRANSIENT, notification_id);
+#else
+      service->CloseNotification(notification_id);
+#endif
+    }
+  }
+
+  size_t GetDisplayedNotificationsCount() {
+    return GetAllNotifications().size();
+  }
+
+  void WaitUntilDisplayNotificationCount(size_t display_count) {
+    ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+      return GetDisplayedNotificationsCount() == display_count;
+    }));
+  }
+
+  webapps::AppId InstallPWA(Profile* profile, const GURL& start_url) {
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->scope = start_url.GetWithoutFilename();
+    web_app_info->user_display_mode =
+        web_app::mojom::UserDisplayMode::kStandalone;
+    web_app_info->title = u"A Web App";
+    return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+  }
+
+  void PostNotifyStateChanged(
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
+      const std::string& label,
+      content::ContentBrowserClient::MultiCaptureChanged state) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &content::ContentBrowserClient::NotifyMultiCaptureStateChanged,
+            base::Unretained(client_), render_frame_host_id, label, state));
+  }
+
+  bool NotificationIdContainsLabel() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    return chromeos::LacrosService::Get()
+               ->GetInterfaceVersion<crosapi::mojom::MultiCaptureService>() >=
+           (int)crosapi::mojom::MultiCaptureService::MethodMinVersions::
+               kMultiCaptureStartedFromAppMinVersion;
+#else
+    NOTREACHED();
+#endif
+  }
+
+  raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
+                       SingleRequestNotificationIsShown) {
+  const GURL url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  const auto renderer_id = browser()
+                               ->tab_strip_model()
+                               ->GetWebContentsAt(0)
+                               ->GetPrimaryMainFrame()
+                               ->GetGlobalId();
+
+  PostNotifyStateChanged(
+      renderer_id,
+      /*label=*/"testinglabel1",
+      content::ContentBrowserClient::MultiCaptureChanged::kStarted);
+
+  WaitUntilDisplayNotificationCount(/*display_count=*/1u);
+  EXPECT_THAT(GetAllNotifications(),
+              testing::UnorderedElementsAre(
+                  testing::AllOf(testing::HasSubstr("multi_capture"),
+                                 testing::HasSubstr(url.host()))));
+
+  PostNotifyStateChanged(
+      renderer_id,
+      /*label=*/"testinglabel1",
+      content::ContentBrowserClient::MultiCaptureChanged::kStopped);
+  WaitUntilDisplayNotificationCount(/*display_count=*/0u);
+}
+
+IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
+                       CalledFromAppSingleRequestNotificationIsShown) {
+  Browser* app_browser = web_app::LaunchWebAppBrowserAndWait(
+      browser()->profile(),
+      InstallPWA(browser()->profile(), GURL("http://www.example.com")));
+  const auto renderer_id = app_browser->tab_strip_model()
+                               ->GetWebContentsAt(0)
+                               ->GetPrimaryMainFrame()
+                               ->GetGlobalId();
+
+  PostNotifyStateChanged(
+      renderer_id,
+      /*label=*/"testinglabel",
+      content::ContentBrowserClient::MultiCaptureChanged::kStarted);
+
+  std::string expected_notifier_id =
+      NotificationIdContainsLabel() ? "testinglabel" : "www.example.com";
+  WaitUntilDisplayNotificationCount(/*display_count=*/1u);
+  EXPECT_THAT(GetAllNotifications(),
+              testing::UnorderedElementsAre(
+                  testing::AllOf(testing::HasSubstr("multi_capture"),
+                                 testing::HasSubstr(expected_notifier_id))));
+
+  PostNotifyStateChanged(
+      renderer_id,
+      /*label=*/"testinglabel",
+      content::ContentBrowserClient::MultiCaptureChanged::kStopped);
+  WaitUntilDisplayNotificationCount(/*display_count=*/0u);
+}
+
+IN_PROC_BROWSER_TEST_F(MultiCaptureNotificationTest,
+                       CalledFromAppMultipleRequestsNotificationsAreShown) {
+  Browser* app_browser_1 = web_app::LaunchWebAppBrowserAndWait(
+      browser()->profile(),
+      InstallPWA(browser()->profile(), GURL("http://www.example1.com")));
+  Browser* app_browser_2 = web_app::LaunchWebAppBrowserAndWait(
+      browser()->profile(),
+      InstallPWA(browser()->profile(), GURL("http://www.example2.com")));
+  const auto renderer_id_1 = app_browser_1->tab_strip_model()
+                                 ->GetWebContentsAt(0)
+                                 ->GetPrimaryMainFrame()
+                                 ->GetGlobalId();
+  const auto renderer_id_2 = app_browser_2->tab_strip_model()
+                                 ->GetWebContentsAt(0)
+                                 ->GetPrimaryMainFrame()
+                                 ->GetGlobalId();
+
+  std::string expected_notifier_id_1 =
+      NotificationIdContainsLabel() ? "testinglabel1" : "www.example1.com";
+  PostNotifyStateChanged(
+      renderer_id_1,
+      /*label=*/"testinglabel1",
+      content::ContentBrowserClient::MultiCaptureChanged::kStarted);
+  WaitUntilDisplayNotificationCount(/*display_count=*/1u);
+  EXPECT_THAT(GetAllNotifications(),
+              testing::UnorderedElementsAre(
+                  testing::AllOf(testing::HasSubstr("multi_capture"),
+                                 testing::HasSubstr(expected_notifier_id_1))));
+
+  std::string expected_notifier_id_2 =
+      NotificationIdContainsLabel() ? "testinglabel2" : "www.example2.com";
+  PostNotifyStateChanged(
+      renderer_id_2,
+      /*label=*/"testinglabel2",
+      content::ContentBrowserClient::MultiCaptureChanged::kStarted);
+  WaitUntilDisplayNotificationCount(/*display_count=*/2u);
+  EXPECT_THAT(GetAllNotifications(),
+              testing::UnorderedElementsAre(
+                  testing::AllOf(testing::HasSubstr("multi_capture"),
+                                 testing::HasSubstr(expected_notifier_id_1)),
+                  testing::AllOf(testing::HasSubstr("multi_capture"),
+                                 testing::HasSubstr(expected_notifier_id_2))));
+
+  PostNotifyStateChanged(
+      renderer_id_2,
+      /*label=*/"testinglabel2",
+      content::ContentBrowserClient::MultiCaptureChanged::kStopped);
+  WaitUntilDisplayNotificationCount(/*display_count=*/1u);
+  EXPECT_THAT(GetAllNotifications(),
+              testing::UnorderedElementsAre(
+                  testing::AllOf(testing::HasSubstr("multi_capture"),
+                                 testing::HasSubstr(expected_notifier_id_1))));
+
+  PostNotifyStateChanged(
+      renderer_id_1,
+      /*label=*/"testinglabel1",
+      content::ContentBrowserClient::MultiCaptureChanged::kStopped);
+  WaitUntilDisplayNotificationCount(/*display_count=*/0u);
+}

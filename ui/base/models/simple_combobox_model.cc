@@ -65,7 +65,7 @@ bool SimpleComboboxModel::IsItemSeparatorAt(size_t index) const {
   return items_[index].text.empty();
 }
 
-absl::optional<size_t> SimpleComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> SimpleComboboxModel::GetDefaultIndex() const {
   return size_t{0};
 }
 

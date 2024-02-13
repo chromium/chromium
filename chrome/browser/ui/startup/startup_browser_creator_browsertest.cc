@@ -220,7 +220,8 @@ Browser* OpenNewBrowser(Profile* profile) {
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl creator(base::FilePath(), dummy,
                                     chrome::startup::IsFirstRun::kYes);
-  creator.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr);
+  creator.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr,
+                 /*restore_tabbed_browser=*/true);
   return chrome::FindBrowserWithProfile(profile);
 }
 
@@ -2115,7 +2116,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorRestartTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl creator(base::FilePath(), dummy,
                                     chrome::startup::IsFirstRun::kNo);
-  creator.Launch(test_profile, chrome::startup::IsProcessStartup::kNo, nullptr);
+  creator.Launch(test_profile, chrome::startup::IsProcessStartup::kNo, nullptr,
+                 /*restore_tabbed_browser=*/true);
   restore_waiter.Wait();
 
   // We expect a browser to open, but we should NOT get a duplicate app.
@@ -2543,7 +2545,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                    chrome::startup::IsFirstRun::kNo);
   // Fake |process_startup| true.
-  launch.Launch(&profile1, chrome::startup::IsProcessStartup::kYes, nullptr);
+  launch.Launch(&profile1, chrome::startup::IsProcessStartup::kYes, nullptr,
+                /*restore_tabbed_browser=*/true);
 
   // We should get two windows from profile1.
   ASSERT_EQ(3u, BrowserList::GetInstance()->size());
@@ -3124,7 +3127,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorFirstRunTest, AddFirstRunTabs) {
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
-                nullptr);
+                nullptr, /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -3183,7 +3186,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorFirstRunTest,
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
-                nullptr);
+                nullptr, /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -3229,7 +3232,7 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorFirstRunTest,
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
-                nullptr);
+                nullptr, /*restore_tabbed_browser=*/true);
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -3668,7 +3671,8 @@ class StartupBrowserCreatorInfobarsWithoutStartupWindowTest
 
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                      chrome::startup::IsFirstRun::kNo);
-    launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr);
+    launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr,
+                  /*restore_tabbed_browser=*/true);
     Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
 
     return infobars::ContentInfoBarManager::FromWebContents(
@@ -3751,7 +3755,8 @@ class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
     command_line.AppendSwitch(extra_switch);
     StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                      chrome::startup::IsFirstRun::kNo);
-    launch.Launch(profile, chrome::startup::IsProcessStartup::kYes, nullptr);
+    launch.Launch(profile, chrome::startup::IsProcessStartup::kYes, nullptr,
+                  /*restore_tabbed_browser=*/true);
 
     // This should have created a new browser window.
     Browser* new_browser = FindOneOtherBrowser(browser());
@@ -4366,7 +4371,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosGuestSessionTest, Startup) {
   StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
                                    chrome::startup::IsFirstRun::kNo);
   launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
-                nullptr);
+                nullptr, /*restore_tabbed_browser=*/true);
 
   // A new browser window should be open.
   Browser* new_browser = FindOneOtherBrowser(browser());

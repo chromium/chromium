@@ -809,7 +809,7 @@ TEST(PNGCodec, DecodeGamma) {
 
   for (const auto& sf : kSourceFiles) {
     base::FilePath filename = data_dir.AppendASCII(sf.filename);
-    absl::optional<const std::vector<uint8_t>> opt_input =
+    std::optional<const std::vector<uint8_t>> opt_input =
         base::ReadFileToBytes(filename);
     ASSERT_TRUE(opt_input.has_value()) << "failed to load: " << filename;
     const std::vector<uint8_t>& input = opt_input.value();

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL PASS] Code cache padding should be stable.
-Harness: the test ran to completion.
-

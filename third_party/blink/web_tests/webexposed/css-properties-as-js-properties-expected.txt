@@ -357,6 +357,7 @@ popoverShowDelay
 position
 positionFallback
 positionFallbackBounds
+positionTryOptions
 positionTryOrder
 prefix
 quotes

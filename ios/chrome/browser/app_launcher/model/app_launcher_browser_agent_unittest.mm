@@ -134,10 +134,10 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
             app_launcher_tab_helper_browser_presentation_provider_);
 
     // Insert the WebState into the Browser's WebStateList.
-    int index = browser_->GetWebStateList()->count();
     browser_->GetWebStateList()->InsertWebState(
-        index, std::move(passed_web_state), WebStateList::INSERT_ACTIVATE,
-        WebStateOpener(opener));
+        std::move(passed_web_state),
+        WebStateList::InsertionParams::Automatic().Activate().WithOpener(
+            WebStateOpener(opener)));
     return web_state;
   }
 
@@ -337,7 +337,7 @@ TEST_F(AppLauncherBrowserAgentTest, ShowDialogInOpener) {
 
   // Verify that an app launch overlay request was added to `web_state`'s queue.
   EXPECT_TRUE(IsShowingDialog(
-      opener,
+      web_state,
       app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther));
 }
 

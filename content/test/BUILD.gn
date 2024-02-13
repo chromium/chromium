@@ -360,6 +360,8 @@ static_library("test_support") {
     "../public/test/web_transport_simple_test_server.h",
     "../public/test/web_ui_browsertest_util.cc",
     "../public/test/web_ui_browsertest_util.h",
+    "../renderer/accessibility/render_accessibility_impl_test.cc",
+    "../renderer/accessibility/render_accessibility_impl_test.h",
     "../renderer/mock_agent_scheduling_group.cc",
     "../renderer/mock_agent_scheduling_group.h",
     "content_browser_consistency_checker.cc",
@@ -393,8 +395,6 @@ static_library("test_support") {
     "mock_clipboard_host.h",
     "mock_commit_deferring_condition.cc",
     "mock_commit_deferring_condition.h",
-    "mock_display_feature.cc",
-    "mock_display_feature.h",
     "mock_keyboard.cc",
     "mock_keyboard.h",
     "mock_overscroll_observer.h",
@@ -787,6 +787,7 @@ static_library("test_support") {
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+      "//chromeos/startup",
       "//chromeos/startup:constants",
     ]
   }
@@ -803,8 +804,6 @@ static_library("test_support") {
       "../browser/smart_card/mock_smart_card_context_factory.cc",
       "../browser/smart_card/mock_smart_card_context_factory.h",
     ]
-
-    deps += [ "//ui/gfx/linux:gbm" ]
   }
 
   if (is_fuchsia) {
@@ -1014,6 +1013,7 @@ static_library("browsertest_support") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
+    "//cc/slim",
     "//components/network_session_configurator/common:common",
     "//components/services/storage:storage",
     "//content/app:for_content_tests",
@@ -1578,8 +1578,8 @@ test("content_browsertests") {
     "../browser/web_contents/web_contents_observer_browsertest.cc",
     "../browser/web_package/signed_exchange_request_handler_browsertest.cc",
     "../browser/web_package/signed_exchange_subresource_prefetch_browsertest.cc",
-    "../browser/webid/test/mock_digital_credential_provider.cc",
-    "../browser/webid/test/mock_digital_credential_provider.h",
+    "../browser/webid/test/mock_digital_identity_provider.cc",
+    "../browser/webid/test/mock_digital_identity_provider.h",
     "../browser/webid/test/mock_identity_request_dialog_controller.cc",
     "../browser/webid/test/mock_identity_request_dialog_controller.h",
     "../browser/webid/test/mock_modal_dialog_view_delegate.cc",
@@ -1620,6 +1620,7 @@ test("content_browsertests") {
     "../browser/worker_host/worker_browsertest.cc",
     "../browser/worker_network_isolation_key_browsertest.cc",
     "../child/webthemeengine_impl_default_browsertest.cc",
+    "../renderer/accessibility/annotations/ax_image_annotator_browsertest.cc",
     "../renderer/accessibility/render_accessibility_impl_browsertest.cc",
     "../renderer/blink_platform_audio_hardware_browsertest.cc",
     "../renderer/fluent_scrollbar_browsertest.cc",
@@ -2417,8 +2418,6 @@ test("content_unittests") {
     "../browser/indexed_db/indexed_db_cleanup_on_io_error_unittest.cc",
     "../browser/indexed_db/indexed_db_context_unittest.cc",
     "../browser/indexed_db/indexed_db_database_unittest.cc",
-    "../browser/indexed_db/indexed_db_dispatcher_host_unittest.cc",
-    "../browser/indexed_db/indexed_db_factory_unittest.cc",
     "../browser/indexed_db/indexed_db_fake_backing_store.cc",
     "../browser/indexed_db/indexed_db_fake_backing_store.h",
     "../browser/indexed_db/indexed_db_leveldb_coding_unittest.cc",
@@ -2796,7 +2795,7 @@ test("content_unittests") {
     "../public/test/permission_type_unittest.cc",
     "../public/test/referrer_unittest.cc",
     "../public/test/test_utils_unittest.cc",
-    "../renderer/accessibility/ax_image_stopwords_unittest.cc",
+    "../renderer/accessibility/annotations/ax_image_stopwords_unittest.cc",
     "../renderer/content_security_policy_util_unittest.cc",
     "../renderer/media/batching_media_log_unittest.cc",
     "../renderer/media/gpu/gpu_video_accelerator_factories_impl_unittest.cc",

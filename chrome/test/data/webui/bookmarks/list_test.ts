@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksAppElement, BookmarksItemElement, BookmarksListElement, BrowserProxyImpl, Command, MenuSource, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarksAppElement, BookmarksItemElement, BookmarksListElement, SelectItemsAction} from 'chrome://bookmarks/bookmarks.js';
+import {BrowserProxyImpl, Command, MenuSource} from 'chrome://bookmarks/bookmarks.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

@@ -35,8 +35,9 @@ namespace arc {
 class ArcSplashScreenDialogView : public views::BubbleDialogDelegateView,
                                   public views::ViewObserver,
                                   public wm::ActivationChangeObserver {
+  METADATA_HEADER(ArcSplashScreenDialogView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(ArcSplashScreenDialogView);
   // TestApi is used for tests to get internal implementation details.
   class TestApi {
    public:

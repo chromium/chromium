@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">選取的分頁</translation>
 <translation id="1943432128510653496">儲存密碼</translation>
 <translation id="1944535645109964458">沒有密碼金鑰</translation>
-<translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
 <translation id="1959679933317802873">正在等候內容</translation>
 <translation id="1960290143419248813">這個版本的 Android 已停止支援 Chrome 更新</translation>
 <translation id="1963976881984600709">標準防護</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">移除所有連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="2139186145475833000">加到主畫面</translation>
+<translation id="2139414603196655536">你在「網頁深入分析」中的活動會儲存至 Google 帳戶。<ph name="BEGIN_LINK" />瞭解如何管理這項設定<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">根據你的使用情形</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2155214902713132423">這部裝置不支援這項驗證方法，請在另一部裝置上採用其他選項。</translation>
@@ -379,7 +379,6 @@
 <translation id="3027644380269727216">以你的網站活動做為依據。這項設定已開啟。</translation>
 <translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">通關密語不符</translation>
-<translation id="303514781271618814">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的提示</translation>
@@ -873,6 +872,7 @@
 <translation id="5698878456427040674">請確認系統是否支援所選帳戶。</translation>
 <translation id="570347048394355941">切換至分頁</translation>
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
+<translation id="571930967925877633">書籤、歷史記錄和其他 Chrome 資料將不再同步到 Google 帳戶</translation>
 <translation id="572328651809341494">最近開啟的分頁</translation>
 <translation id="5726692708398506830">放大網頁上的所有內容</translation>
 <translation id="5744751019568455640">你可以在這裡挑選讓我朗讀網頁內容的聲音。如果你喜歡這個聲音，只要輕觸語音名稱即可繼續使用。</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">昨天已檢查</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="671481426037969117">「<ph name="FQDN" />」計時器已結束計時，將於明天重新開始。</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{書籤已儲存到「<ph name="FOLDER_NAME" />」，且只會儲存在這部裝置上。}other{書籤已儲存到「<ph name="FOLDER_NAME" />」，且只會儲存在這部裝置上。}}</translation>
 <translation id="6715020873764921614">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="6719634564325948108">要連結 QR 圖碼嗎？</translation>
 <translation id="6723740634201835758">在你的 Google 帳戶中</translation>
@@ -1105,7 +1106,6 @@
 <translation id="6828070228333235514">停止追蹤價格</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻譯</translation>
-<translation id="6833996806551876956">Privacy Sandbox 試用期</translation>
 <translation id="6836206421467243968">將「<ph name="TITLE_OF_GROUP" />」分頁群組還原為新的背景分頁群組。</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">下載作業仍在進行中</translation>
@@ -1161,7 +1161,6 @@
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
 <translation id="7105047059074518658">登入即可讓跨裝置瀏覽更順暢</translation>
 <translation id="7106762743910369165">你的瀏覽器是由貴機構管理</translation>
-<translation id="7116588989735740310">如要重新造訪在其他裝置上瀏覽過的網站，可以同步分頁和歷史記錄</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7140829094791862589">依手動順序排序</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對你很重要：</translation>
@@ -1220,7 +1219,7 @@
 <translation id="7411224099004328643">Google 帳戶使用者</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
-<translation id="7431991332293347422">控制 Google 使用瀏覽記錄提供個人化搜尋服務和其他內容的方式</translation>
+<translation id="7431991332293347422">控管 Google 如何使用瀏覽記錄，提供個人化的搜尋服務和其他內容</translation>
 <translation id="7435356471928173109">已由系統管理員停用</translation>
 <translation id="7437998757836447326">登出 Chrome</translation>
 <translation id="7450926666485653189">透過隱私權伺服器隱藏你的 IP 位址，再將經過模糊處理的部分網址傳送給 Google</translation>
@@ -1251,7 +1250,6 @@
 <translation id="752220631458524187">請在完成後拔除傳輸線</translation>
 <translation id="7523960634226602883">使用 Google 智慧鏡頭透過相機進行搜尋</translation>
 <translation id="752731652852882757">使用無痕模式時封鎖</translation>
-<translation id="7539698981064401140">同步分頁和歷史記錄</translation>
 <translation id="7562080006725997899">正在清除瀏覽資料</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7577900504646297215">管理興趣喜好</translation>
@@ -1404,6 +1402,7 @@
 <translation id="8237871086242677046">網頁洞察資訊底部功能表</translation>
 <translation id="8243077599929149377">新增使用者名稱</translation>
 <translation id="8250920743982581267">文件</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{書籤已儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的「<ph name="FOLDER_NAME" />」。}other{書籤已儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />) 中的「<ph name="FOLDER_NAME" />」。}}</translation>
 <translation id="8255617931166444521">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
 <translation id="8259179246279078674">由於預先載入的網頁已經過加密，Google 不會得知預先載入網頁內容的相關資訊。Google 伺服器會知道哪些網站已透過私密方式預先載入。這項資訊僅用於預先載入網頁，不會與你 Google 帳戶的其他資訊連結。</translation>
 <translation id="8260126382462817229">請嘗試重新登入</translation>
@@ -1446,7 +1445,6 @@
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
 <translation id="8466613982764129868">請確認「<ph name="TARGET_DEVICE_NAME" />」已連上網際網路</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
-<translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">開啟記錄頁面</translation>
 <translation id="8493948351860045254">釋出空間</translation>
@@ -1496,7 +1494,6 @@
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8731268612289859741">安全碼</translation>
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
-<translation id="874726034427945498">如要讓網址列顯示更貼近需求的建議，可以同步分頁和歷史記錄</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8754448020583829686">複製 (不含連結)</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
@@ -1538,7 +1535,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
-<translation id="8987736167266086032">接續上次進度</translation>
 <translation id="8993760627012879038">在無痕模式下開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
@@ -1561,7 +1557,6 @@
 <translation id="9070377983101773829">開始語音搜尋</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
-<translation id="9084103763810123431">如要在其他裝置上繼續瀏覽，可以同步分頁和歷史記錄</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9086455579313502267">無法存取網路</translation>
 <translation id="9099220545925418560">以你的瀏覽記錄做為依據。這項設定已關閉。</translation>

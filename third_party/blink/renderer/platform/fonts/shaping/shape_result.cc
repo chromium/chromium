@@ -65,7 +65,7 @@ struct SameSizeAsHarfBuzzRunGlyphData {
 
 ASSERT_SIZE(HarfBuzzRunGlyphData, SameSizeAsHarfBuzzRunGlyphData);
 
-struct SameSizeAsRunInfo : public RefCounted<SameSizeAsRunInfo> {
+struct SameSizeAsRunInfo {
   struct GlyphDataCollection {
     void* pointers[2];
     unsigned integer;
@@ -166,7 +166,7 @@ void ShapeResult::EnsureGraphemes(const StringView& text) const {
     return;
 
   unsigned result_start_index = StartIndex();
-  for (const scoped_refptr<RunInfo>& run : runs_) {
+  for (const Member<RunInfo>& run : runs_) {
     if (!run)
       continue;
     DCHECK_GE(run->start_index_, result_start_index);
@@ -423,12 +423,18 @@ ShapeResult::ShapeResult(const ShapeResult& other)
       direction_(other.direction_),
       has_vertical_offsets_(other.has_vertical_offsets_),
       is_applied_spacing_(other.is_applied_spacing_) {
-  runs_.reserve(other.runs_.size());
+  runs_.ReserveInitialCapacity(other.runs_.size());
   for (const auto& run : other.runs_)
-    runs_.push_back(run->Create(*run.get()));
+    runs_.push_back(MakeGarbageCollected<RunInfo>(*run));
 }
 
 ShapeResult::~ShapeResult() = default;
+
+void ShapeResult::Trace(Visitor* visitor) const {
+  visitor->Trace(deprecated_ink_bounds_);
+  visitor->Trace(runs_);
+  visitor->Trace(character_position_);
+}
 
 size_t ShapeResult::ByteSize() const {
   size_t self_byte_size = sizeof(*this);
@@ -460,10 +466,10 @@ bool ShapeResult::IsStartSafeToBreak() const {
   const RunInfo* run = nullptr;
   const HarfBuzzRunGlyphData* glyph_data = nullptr;
   if (IsLtr()) {
-    run = runs_.front().get();
+    run = runs_.front().Get();
     glyph_data = &run->glyph_data_.front();
   } else {
-    run = runs_.back().get();
+    run = runs_.back().Get();
     glyph_data = &run->glyph_data_.back();
   }
   return glyph_data->safe_to_break_before &&
@@ -581,8 +587,7 @@ void ShapeResult::OffsetForPosition(float target_x,
   unsigned characters_so_far = IsRtl() ? NumCharacters() : 0;
   float current_x = 0;
 
-  for (const scoped_refptr<RunInfo>& run_ptr : runs_) {
-    const RunInfo* run = run_ptr.get();
+  for (const Member<RunInfo>& run : runs_) {
     if (!run)
       continue;
     if (IsRtl())
@@ -721,7 +726,7 @@ float ShapeResult::CaretPositionForOffset(
 
 bool ShapeResult::HasFallbackFonts() const {
   const SimpleFontData* primary_font = PrimaryFont();
-  for (const scoped_refptr<RunInfo>& run : runs_) {
+  for (const Member<RunInfo>& run : runs_) {
     if (run->font_data_ != primary_font) {
       return true;
     }
@@ -1172,11 +1177,10 @@ const ShapeResult* ShapeResult::UnapplyAutoSpacing(
   ShapeResult* sub_range = SubRange(start_offset, break_offset);
 
   // Remove the auto-spacing from the last glyph.
-  for (const scoped_refptr<RunInfo>& run : base::Reversed(sub_range->runs_)) {
+  for (const Member<RunInfo>& run : base::Reversed(sub_range->runs_)) {
     if (UNLIKELY(!run->NumGlyphs())) {
       continue;
     }
-    DCHECK(run->HasOneRef());  // Ensure it's copied and thus safe to modify.
     HarfBuzzRunGlyphData& last_glyph = run->glyph_data_.back();
     DCHECK(PrimaryFont());
     const float width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
@@ -1438,13 +1442,12 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
   run->CheckConsistency();
 }
 
-void ShapeResult::InsertRun(scoped_refptr<ShapeResult::RunInfo> run_to_insert,
+void ShapeResult::InsertRun(ShapeResult::RunInfo* run,
                             unsigned start_glyph,
                             unsigned num_glyphs,
                             unsigned* next_start_glyph,
                             hb_buffer_t* harfbuzz_buffer) {
   DCHECK_GT(num_glyphs, 0u);
-  scoped_refptr<ShapeResult::RunInfo> run(std::move(run_to_insert));
 
   const hb_glyph_info_t* glyph_infos =
       hb_buffer_get_glyph_infos(harfbuzz_buffer, nullptr);
@@ -1460,47 +1463,41 @@ void ShapeResult::InsertRun(scoped_refptr<ShapeResult::RunInfo> run_to_insert,
 
   if (run->IsHorizontal()) {
     // Inserting a horizontal run into a horizontal or vertical result.
-    ComputeGlyphPositions<true>(run.get(), start_glyph, num_glyphs,
-                                harfbuzz_buffer);
+    ComputeGlyphPositions<true>(run, start_glyph, num_glyphs, harfbuzz_buffer);
   } else {
     // Inserting a vertical run to a vertical result.
-    ComputeGlyphPositions<false>(run.get(), start_glyph, num_glyphs,
-                                 harfbuzz_buffer);
+    ComputeGlyphPositions<false>(run, start_glyph, num_glyphs, harfbuzz_buffer);
   }
   width_ += run->width_;
   num_glyphs_ += run->NumGlyphs();
   DCHECK_GE(num_glyphs_, run->NumGlyphs());
 
-  InsertRun(std::move(run));
+  InsertRun(run);
 }
 
-void ShapeResult::InsertRun(scoped_refptr<ShapeResult::RunInfo> run) {
+void ShapeResult::InsertRun(ShapeResult::RunInfo* run) {
   // The runs are stored in result->m_runs in visual order. For LTR, we place
   // the run to be inserted before the next run with a bigger character start
   // index.
-  const auto ltr_comparer = [](scoped_refptr<RunInfo>& run,
-                               unsigned start_index) {
+  const auto ltr_comparer = [](Member<RunInfo>& run, unsigned start_index) {
     return run->start_index_ < start_index;
   };
 
   // For RTL, we place the run before the next run with a lower character
   // index. Otherwise, for both directions, at the end.
-  const auto rtl_comparer = [](scoped_refptr<RunInfo>& run,
-                               unsigned start_index) {
+  const auto rtl_comparer = [](Member<RunInfo>& run, unsigned start_index) {
     return run->start_index_ > start_index;
   };
 
-  Vector<scoped_refptr<RunInfo>>::iterator iterator = std::lower_bound(
+  auto* it = std::lower_bound(
       runs_.begin(), runs_.end(), run->start_index_,
       HB_DIRECTION_IS_FORWARD(run->direction_) ? ltr_comparer : rtl_comparer);
-  if (iterator != runs_.end()) {
-    runs_.insert(static_cast<wtf_size_t>(iterator - runs_.begin()),
-                 std::move(run));
+  if (it != runs_.end()) {
+    runs_.insert(static_cast<wtf_size_t>(it - runs_.begin()), run);
+  } else {
+    // If we didn't find an existing slot to place it, append.
+    runs_.push_back(run);
   }
-
-  // If we didn't find an existing slot to place it, append.
-  if (run)
-    runs_.push_back(std::move(run));
 }
 
 ShapeResult::RunInfo* ShapeResult::InsertRunForTesting(
@@ -1508,7 +1505,7 @@ ShapeResult::RunInfo* ShapeResult::InsertRunForTesting(
     unsigned num_characters,
     TextDirection direction,
     Vector<uint16_t> safe_break_offsets) {
-  auto run = RunInfo::Create(
+  auto* run = MakeGarbageCollected<RunInfo>(
       nullptr, blink::IsLtr(direction) ? HB_DIRECTION_LTR : HB_DIRECTION_RTL,
       CanvasRotationInVertical::kRegular, HB_SCRIPT_COMMON, start_index,
       num_characters, num_characters);
@@ -1521,9 +1518,8 @@ ShapeResult::RunInfo* ShapeResult::InsertRunForTesting(
   if (IsRtl())
     run->glyph_data_.Reverse();
   num_glyphs_ += run->NumGlyphs();
-  RunInfo* run_ptr = run.get();
-  InsertRun(std::move(run));
-  return run_ptr;
+  InsertRun(run);
+  return run;
 }
 
 // Moves runs at (run_size_before, end) to the front of |runs_|.
@@ -1536,22 +1532,22 @@ void ShapeResult::ReorderRtlRuns(unsigned run_size_before) {
   if (runs_.size() == run_size_before + 1) {
     if (!run_size_before)
       return;
-    scoped_refptr<RunInfo> new_run(std::move(runs_.back()));
-    runs_.Shrink(runs_.size() - 1);
-    runs_.push_front(std::move(new_run));
+    RunInfo* new_run = runs_.back();
+    runs_.pop_back();
+    runs_.push_front(new_run);
     return;
   }
 
   // |push_front| is O(n) that we should not call it multiple times.
   // Create a new list in the correct order and swap it.
-  Vector<scoped_refptr<RunInfo>> new_runs;
+  HeapVector<Member<RunInfo>> new_runs;
   new_runs.ReserveInitialCapacity(runs_.size());
   for (unsigned i = run_size_before; i < runs_.size(); i++)
-    new_runs.push_back(std::move(runs_[i]));
+    new_runs.push_back(runs_[i]);
 
   // Then append existing runs.
   for (unsigned i = 0; i < run_size_before; i++)
-    new_runs.push_back(std::move(runs_[i]));
+    new_runs.push_back(runs_[i]);
   runs_.swap(new_runs);
 }
 
@@ -1636,16 +1632,16 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
       unsigned end = std::min(end_offset, run_end) - run_start;
       DCHECK(end > start);
 
-      if (scoped_refptr<RunInfo> sub_run = run->CreateSubRun(start, end)) {
+      if (RunInfo* sub_run = run->CreateSubRun(start, end)) {
         sub_run->start_index_ += index_diff;
         target->width_ += sub_run->width_;
         target->num_glyphs_ += sub_run->glyph_data_.size();
-        if (auto merged_run =
+        if (auto* merged_run =
                 should_merge ? target->runs_.back()->MergeIfPossible(*sub_run)
-                             : scoped_refptr<RunInfo>()) {
-          target->runs_.back() = std::move(merged_run);
+                             : nullptr) {
+          target->runs_.back() = merged_run;
         } else {
-          target->runs_.push_back(std::move(sub_run));
+          target->runs_.push_back(sub_run);
         }
       }
       should_merge = false;
@@ -1768,7 +1764,7 @@ const ShapeResult* ShapeResult::CreateForTabulationCharacters(
   float advance = font->TabWidth(font_data, tab_size, position);
   do {
     unsigned run_length = std::min(length, HarfBuzzRunGlyphData::kMaxGlyphs);
-    scoped_refptr<ShapeResult::RunInfo> run = RunInfo::Create(
+    RunInfo* run = MakeGarbageCollected<RunInfo>(
         font_data, hb_direction, CanvasRotationInVertical::kRegular,
         HB_SCRIPT_COMMON, start_index, run_length, run_length);
     float start_position = position;
@@ -1782,7 +1778,7 @@ const ShapeResult* ShapeResult::CreateForTabulationCharacters(
     }
     run->width_ = position - start_position;
     result->width_ += run->width_;
-    result->runs_.push_back(std::move(run));
+    result->runs_.push_back(run);
     DCHECK_GE(length, run_length);
     length -= run_length;
     start_index += run_length;
@@ -1806,7 +1802,7 @@ const ShapeResult* ShapeResult::CreateForSpaces(const Font* font,
       font_data->PlatformData().IsVerticalAnyUpright();
   hb_direction_t hb_direction =
       blink::IsLtr(direction) ? HB_DIRECTION_LTR : HB_DIRECTION_RTL;
-  scoped_refptr<ShapeResult::RunInfo> run = RunInfo::Create(
+  RunInfo* run = MakeGarbageCollected<RunInfo>(
       font_data, hb_direction, CanvasRotationInVertical::kRegular,
       HB_SCRIPT_COMMON, start_index, length, length);
   result->width_ = run->width_ = width;
@@ -1816,7 +1812,7 @@ const ShapeResult* ShapeResult::CreateForSpaces(const Font* font,
     run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, width};
     width = 0;
   }
-  result->runs_.push_back(std::move(run));
+  result->runs_.push_back(run);
   return result;
 }
 
@@ -1832,7 +1828,7 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
 
   hb_direction_t hb_direction = HB_DIRECTION_LTR;
   unsigned glyph_index = 0;
-  scoped_refptr<ShapeResult::RunInfo> run = RunInfo::Create(
+  RunInfo* run = MakeGarbageCollected<RunInfo>(
       font->PrimaryFont(), hb_direction, CanvasRotationInVertical::kRegular,
       HB_SCRIPT_COMMON, start_index, 1 /* num_glyph */, num_characters);
   run->glyph_data_[glyph_index] = {glyph_variant, 0 /* character index */,
@@ -1842,7 +1838,7 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
 
   result->width_ = run->width_;
   result->num_glyphs_ = run->NumGlyphs();
-  result->runs_.push_back(std::move(run));
+  result->runs_.push_back(run);
 
   return result;
 }
@@ -1864,7 +1860,7 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
 
   hb_direction_t hb_direction =
       is_horizontal_assembly ? HB_DIRECTION_LTR : HB_DIRECTION_TTB;
-  scoped_refptr<ShapeResult::RunInfo> run = RunInfo::Create(
+  RunInfo* run = MakeGarbageCollected<RunInfo>(
       font->PrimaryFont(), hb_direction, CanvasRotationInVertical::kRegular,
       HB_SCRIPT_COMMON, start_index, assembly_parameters.glyph_count,
       num_characters);
@@ -1906,7 +1902,7 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
 
   result->width_ = run->width_;
   result->num_glyphs_ = run->NumGlyphs();
-  result->runs_.push_back(std::move(run));
+  result->runs_.push_back(run);
   return result;
 }
 
@@ -2038,9 +2034,7 @@ void ShapeResult::EnsurePositionData() const {
     return;
   }
 
-  Vector<ShapeResultCharacterData> character_position(num_characters_);
-  character_position_.swap(character_position);
-
+  character_position_ = HeapVector<ShapeResultCharacterData>(num_characters_);
   RecalcCharacterPositions();
 }
 
@@ -2280,14 +2274,14 @@ gfx::RectF ShapeResult::ComputeInkBounds() const {
   for (const auto& run : runs_) {
     if (run->glyph_data_.HasNonZeroOffsets()) {
       if (run->IsHorizontal())
-        ComputeRunInkBounds<true, true>(*run.get(), run_advance, &ink_bounds);
+        ComputeRunInkBounds<true, true>(*run, run_advance, &ink_bounds);
       else
-        ComputeRunInkBounds<false, true>(*run.get(), run_advance, &ink_bounds);
+        ComputeRunInkBounds<false, true>(*run, run_advance, &ink_bounds);
     } else {
       if (run->IsHorizontal())
-        ComputeRunInkBounds<true, false>(*run.get(), run_advance, &ink_bounds);
+        ComputeRunInkBounds<true, false>(*run, run_advance, &ink_bounds);
       else
-        ComputeRunInkBounds<false, false>(*run.get(), run_advance, &ink_bounds);
+        ComputeRunInkBounds<false, false>(*run, run_advance, &ink_bounds);
     }
     run_advance += run->width_;
   }

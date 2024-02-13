@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {makeStoreClientMixin} from 'chrome://resources/cr_elements/store_client/store_client.js';
-import {Action, Store} from 'chrome://resources/js/store.js';
+import type {Action} from 'chrome://resources/js/store.js';
+import {Store} from 'chrome://resources/js/store.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

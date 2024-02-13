@@ -753,7 +753,7 @@ SimpleBackendImpl::DiskStatResult SimpleBackendImpl::InitCacheStructureOnDisk(
                << " path: " << path.LossyDisplayName();
     result.net_error = net::ERR_FAILED;
   } else {
-    absl::optional<base::File::Info> file_info =
+    std::optional<base::File::Info> file_info =
         file_operations->GetFileInfo(path);
     if (!file_info.has_value()) {
       // Something deleted the directory between when we set it up and the

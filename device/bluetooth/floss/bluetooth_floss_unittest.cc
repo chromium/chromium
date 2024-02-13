@@ -50,7 +50,7 @@ class FakeBluetoothLowEnergyScanSessionDelegate
 
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override {
     sessions_started_++;
   }
@@ -236,7 +236,7 @@ TEST_F(BluetoothFlossTest, BondFailureTriggersCallbacks) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_TRUE(error.has_value());
             run_loop.Quit();
           }));
@@ -260,7 +260,7 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -283,14 +283,14 @@ TEST_F(BluetoothFlossTest, PairingTwiceRejectsSecondRequest) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_TRUE(error.has_value());
             run_loop.Quit();
           }));
@@ -317,7 +317,7 @@ TEST_F(BluetoothFlossTest, PairConfirmPasskey) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -352,7 +352,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeySucceeded) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -389,7 +389,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPasskeyFailed) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_TRUE(error.has_value());
             run_loop.Quit();
           }));
@@ -415,7 +415,7 @@ TEST_F(BluetoothFlossTest, PairPasskeyEntry) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -442,7 +442,7 @@ TEST_F(BluetoothFlossTest, RemoveBonding) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -513,7 +513,7 @@ TEST_F(BluetoothFlossTest, PairDisplayPinCodeSucceeded) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -547,7 +547,7 @@ TEST_F(BluetoothFlossTest, PairRequestPinCodeSucceeded) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));
@@ -571,7 +571,7 @@ TEST_F(BluetoothFlossTest, Disconnect) {
   device->Connect(
       &pairing_delegate,
       base::BindLambdaForTesting(
-          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+          [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error) {
             EXPECT_FALSE(error.has_value());
             run_loop.Quit();
           }));

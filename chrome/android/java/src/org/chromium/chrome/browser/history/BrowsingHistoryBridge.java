@@ -90,6 +90,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         mNativeHistoryBridge,
                         BrowsingHistoryBridge.this,
                         item.getUrl(),
+                        item.getAppId(),
                         item.getNativeTimestamps());
     }
 
@@ -119,6 +120,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
             GURL url,
             String domain,
             String title,
+            String appId,
             long mostRecentJavaTimestamp,
             long[] nativeTimestamps,
             boolean blockedVisit) {
@@ -127,6 +129,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                         url,
                         domain,
                         title,
+                        appId,
                         mostRecentJavaTimestamp,
                         nativeTimestamps,
                         blockedVisit));
@@ -191,6 +194,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
                 long nativeBrowsingHistoryBridge,
                 BrowsingHistoryBridge caller,
                 GURL url,
+                String appId,
                 long[] nativeTimestamps);
 
         void removeItems(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);

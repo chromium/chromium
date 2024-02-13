@@ -15,6 +15,7 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -1780,6 +1781,60 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, SnapFloatedWindow) {
   ApplyPendingRequestedBounds();
   VerifySnappedBounds(window(), chromeos::kDefaultSnapRatio);
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
+}
+
+// Tests that floating a fullscreen window to replace a floated window works
+// properly without any crash. Regression test for b/322374826.
+TEST_P(ClientControlledStateTestClamshellAndTablet,
+       ReplaceFloatedWindowWithFullscreenWindow) {
+  // The AppType must be set to any except `AppType::NON_APP` (default value) to
+  // make it floatable.
+  window()->SetProperty(aura::client::kAppType,
+                        static_cast<int>(AppType::ARC_APP));
+  widget_delegate()->EnableFloat();
+  ASSERT_TRUE(chromeos::wm::CanFloatWindow(window()));
+
+  // Make `window()` fullscreen to hide shelf.
+  const WMEvent enter_fullscreen(WM_EVENT_FULLSCREEN);
+  window_state()->OnWMEvent(&enter_fullscreen);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(widget()->IsFullscreen());
+
+  // Create another client-controlled window.
+  auto widget2 = TestWidgetBuilder()
+                     .SetParent(Shell::GetPrimaryRootWindow()->GetChildById(
+                         desks_util::GetActiveDeskContainerId()))
+                     .SetBounds(kInitialBounds)
+                     .SetTestWidgetDelegate()
+                     .SetWindowProperty(aura::client::kAppType,
+                                        static_cast<int>(AppType::ARC_APP))
+                     .SetShow(false)
+                     .BuildOwnsNativeWidget();
+  auto* const window_state2 = WindowState::Get(widget2->GetNativeWindow());
+  window_state2->set_allow_set_bounds_direct(true);
+  auto delegate2 = std::make_unique<TestClientControlledStateDelegate>();
+  auto* const state_delegate2_ptr = delegate2.get();
+  auto state2 = std::make_unique<ClientControlledState>(std::move(delegate2));
+  auto* state2_ptr = state2.get();
+  window_state2->SetStateObject(std::move(state2));
+  widget2->Show();
+
+  // Float `widget2`.
+  const WindowFloatWMEvent float_event(
+      chromeos::FloatStartLocation::kBottomRight);
+  window_state2->OnWMEvent(&float_event);
+  state2_ptr->EnterNextState(window_state2, state_delegate2_ptr->new_state());
+  ASSERT_TRUE(window_state2->IsFloated());
+
+  // Float `window`.
+  window_state()->OnWMEvent(&float_event);
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
+  ASSERT_TRUE(window_state()->IsFloated());
+
+  // Floating `window` should result in unfloating `widget2`.
+  state2_ptr->EnterNextState(window_state2, state_delegate2_ptr->new_state());
+  EXPECT_FALSE(window_state2->IsFloated());
 }
 
 }  // namespace ash

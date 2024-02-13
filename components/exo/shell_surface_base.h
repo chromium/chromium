@@ -465,6 +465,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   raw_ptr<views::Widget> widget_ = nullptr;
   bool movement_disabled_ = false;
+  // This value is in the screen coordinates.
   gfx::Point origin_;
 
   // Container Window Id (see ash/public/cpp/shell_window_ids.h)

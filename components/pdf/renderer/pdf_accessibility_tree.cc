@@ -2366,13 +2366,6 @@ std::unique_ptr<ui::AXActionTarget> PdfAccessibilityTree::CreateActionTarget(
 }
 
 void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
-  if (!mode.has_mode(ui::AXMode::kPDF)) {
-    if (GetRenderAccessibility()) {
-      GetRenderAccessibility()->SetPluginTreeSource(nullptr);
-    }
-    return;
-  }
-
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (!mode.has_mode(ui::AXMode::kPDFOcr)) {
     if (ocr_service_) {

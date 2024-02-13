@@ -130,7 +130,9 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool AddSecondaryReference(const gpu::Mailbox& mailbox);
 
   // Returns the usage for the shared image backing. If no backing is registered
-  // for `mailbox` this will return 0.
+  // for `mailbox` this will return 0. This can only get usages for mailboxes
+  // registered on this factory. If you need to query all mailboxes use
+  // |SharedImageManager::GetUsageForMailbox|.
   uint32_t GetUsageForMailbox(const Mailbox& mailbox);
 
   SharedContextState* GetSharedContextState() const {
@@ -246,6 +248,13 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<LegacyOverlayImageRepresentation> ProduceLegacyOverlay(
       const Mailbox& mailbox);
+#endif
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_OZONE)
+  std::unique_ptr<VulkanImageRepresentation> ProduceVulkan(
+      const Mailbox& mailbox,
+      gpu::VulkanDeviceQueue* vulkan_device_queue,
+      gpu::VulkanImplementation& vulkan_impl);
 #endif
 
  private:

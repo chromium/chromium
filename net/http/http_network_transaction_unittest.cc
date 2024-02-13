@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -127,7 +128,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -704,7 +704,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const ClientSocketPool::GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       ClientSocketPool::RespectLimits respect_limits,
@@ -745,7 +745,7 @@ class CaptureGroupIdTransportSocketPool : public TransportClientSocketPool {
 // Helper functions for validating that AuthChallengeInfo's are correctly
 // configured for common cases.
 bool CheckBasicServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -757,7 +757,7 @@ bool CheckBasicServerAuth(
 }
 
 bool CheckBasicSecureServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -769,7 +769,7 @@ bool CheckBasicSecureServerAuth(
 }
 
 bool CheckBasicProxyAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -781,7 +781,7 @@ bool CheckBasicProxyAuth(
 }
 
 bool CheckBasicSecureProxyAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -793,7 +793,7 @@ bool CheckBasicSecureProxyAuth(
 }
 
 bool CheckDigestServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -806,7 +806,7 @@ bool CheckDigestServerAuth(
 
 #if defined(NTLM_PORTABLE)
 bool CheckNTLMServerAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -818,7 +818,7 @@ bool CheckNTLMServerAuth(
 }
 
 bool CheckNTLMProxyAuth(
-    const absl::optional<AuthChallengeInfo>& auth_challenge) {
+    const std::optional<AuthChallengeInfo>& auth_challenge) {
   if (!auth_challenge) {
     return false;
   }
@@ -7777,7 +7777,8 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxySpdyGetWithSessionRace) {
   session_deps_.host_resolver->set_ondemand_mode(false);
   SpdySessionKey key(HostPortPair("proxy", 70), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, net_log_with_source);
 
@@ -13650,7 +13651,7 @@ TEST_P(HttpNetworkTransactionTest, ResetStateForRestart) {
 
   // Setup state in response_
   HttpResponseInfo* response = &trans.response_;
-  response->auth_challenge = absl::nullopt;
+  response->auth_challenge = std::nullopt;
   response->ssl_info.cert_status = static_cast<CertStatus>(-1);  // Nonsensical.
   response->response_time = base::Time::Now();
   response->was_cached = true;  // (Wouldn't ever actually be true...)
@@ -15906,7 +15907,7 @@ TEST_P(HttpNetworkTransactionTest, ChangeAuthRealms) {
   EXPECT_THAT(rv, IsOk());
   const HttpResponseInfo* response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
-  absl::optional<AuthChallengeInfo> challenge = response->auth_challenge;
+  std::optional<AuthChallengeInfo> challenge = response->auth_challenge;
   ASSERT_TRUE(challenge);
   EXPECT_FALSE(challenge->is_proxy);
   EXPECT_EQ("http://www.example.org", challenge->challenger.Serialize());
@@ -17515,7 +17516,8 @@ TEST_P(HttpNetworkTransactionTest,
   SpdySessionKey key(host_port_pair, PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow);
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, NetLogWithSource());
 
@@ -18948,7 +18950,7 @@ TEST_P(HttpNetworkTransactionTest, ProxyGet) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength());
   EXPECT_TRUE(response->was_fetched_via_proxy);
-  EXPECT_FALSE(response->was_ip_protected);
+  EXPECT_FALSE(response->proxy_chain.is_for_ip_protection());
   EXPECT_EQ(ProxyChain(ProxyServer::SCHEME_HTTP,
                        HostPortPair::FromString("myproxy:70")),
             response->proxy_chain);
@@ -19215,7 +19217,8 @@ TEST_P(HttpNetworkTransactionTest, PreconnectWithExistingSpdySession) {
   SpdySessionKey key(host_port_pair, PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow);
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> spdy_session =
       CreateSpdySession(session.get(), key, NetLogWithSource());
 
@@ -19556,8 +19559,8 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
         StaticSocketDataProvider data1;
         session_deps_.socket_factory->AddSocketDataProvider(&data1);
 
-        absl::optional<SSLSocketDataProvider> ssl_data2;
-        absl::optional<StaticSocketDataProvider> data2;
+        std::optional<SSLSocketDataProvider> ssl_data2;
+        std::optional<StaticSocketDataProvider> data2;
         MockRead error_in_read[] = {MockRead(ASYNC, reject_error)};
         if (reject_in_connect) {
           ssl_data2.emplace(ASYNC, reject_error);
@@ -19579,8 +19582,8 @@ TEST_P(HttpNetworkTransactionTest, ClientAuthCertCache_Proxy_Fail) {
 
         // If the handshake returns ERR_SSL_PROTOCOL_ERROR, we attempt to
         // connect twice.
-        absl::optional<SSLSocketDataProvider> ssl_data3;
-        absl::optional<StaticSocketDataProvider> data3;
+        std::optional<SSLSocketDataProvider> ssl_data3;
+        std::optional<StaticSocketDataProvider> data3;
         if (reject_in_connect && reject_error == ERR_SSL_PROTOCOL_ERROR) {
           ssl_data3.emplace(ASYNC, reject_error);
           data3.emplace();  // There are no reads or writes.
@@ -19789,7 +19792,7 @@ TEST_P(HttpNetworkTransactionTest, UseIPConnectionPooling) {
   // Preload mail.example.com into HostCache.
   rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.com", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request2;
@@ -20569,7 +20572,7 @@ TEST_P(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request1;
@@ -20697,7 +20700,7 @@ TEST_P(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request1;
@@ -20973,7 +20976,7 @@ TEST_P(HttpNetworkTransactionTest,
   // Preload cache entries into HostCache.
   rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.com", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request2;
@@ -21742,7 +21745,8 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   SpdySessionKey spdy_session_key_a(
       host_port_pair_a, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_a));
 
@@ -21777,7 +21781,8 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   SpdySessionKey spdy_session_key_b(
       host_port_pair_b, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_b));
   HttpRequestInfo request2;
@@ -21809,7 +21814,8 @@ TEST_P(HttpNetworkTransactionTest, CloseIdleSpdySessionToOpenNewOne) {
   SpdySessionKey spdy_session_key_a1(
       host_port_pair_a1, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
   EXPECT_FALSE(
       HasSpdySession(session->spdy_session_pool(), spdy_session_key_a1));
   HttpRequestInfo request3;
@@ -24244,7 +24250,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
       HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
-      absl::nullopt);
+      std::nullopt);
   EXPECT_THAT(rv, IsOk());
 
   HttpRequestInfo request1;
@@ -27219,7 +27225,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Direct) {
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, false);
-  EXPECT_EQ(response_info.was_ip_protected, false);
+  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_EQ(response_info.proxy_chain, ProxyChain::Direct());
 }
 
@@ -27232,7 +27238,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Proxied) {
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
-  EXPECT_EQ(response_info.was_ip_protected, false);
+  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_EQ(response_info.proxy_chain, proxy_chain);
 }
 
@@ -27243,7 +27249,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_Empty) {
   HttpNetworkTransaction::SetProxyInfoInResponse(empty_proxy_info,
                                                  &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
-  EXPECT_EQ(response_info.was_ip_protected, false);
+  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), false);
   EXPECT_FALSE(response_info.proxy_chain.IsValid());
 }
 
@@ -27258,7 +27264,7 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   HttpResponseInfo response_info;
   HttpNetworkTransaction::SetProxyInfoInResponse(proxy_info, &response_info);
   EXPECT_EQ(response_info.was_fetched_via_proxy, true);
-  EXPECT_EQ(response_info.was_ip_protected, true);
+  EXPECT_EQ(response_info.proxy_chain.is_for_ip_protection(), true);
   EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
 }
 

@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
@@ -18,7 +20,6 @@
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/text_input_client.h"
@@ -50,14 +51,23 @@
 namespace ui {
 namespace {
 
-absl::optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
-                                            uint32_t offset) {
+// Only enable the preedit string for sequence mode (i.e. when using dead keys
+// or the Compose key) on Linux ozone/wayland (see b/220370007).
+constexpr CharacterComposer::PreeditStringMode kPreeditStringMode =
+#if BUILDFLAG(IS_LINUX)
+    CharacterComposer::PreeditStringMode::kAlwaysEnabled;
+#else
+    CharacterComposer::PreeditStringMode::kHexModeOnly;
+#endif  // BUILDFLAG(IS_LINUX)
+
+std::optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
+                                           uint32_t offset) {
   if (offset > text.length())
-    return absl::nullopt;
+    return std::nullopt;
 
   std::u16string converted;
   if (!base::UTF8ToUTF16(text.data(), offset, &converted))
-    return absl::nullopt;
+    return std::nullopt;
 
   return converted.size();
 }
@@ -94,23 +104,23 @@ bool IsImeEnabled() {
 
 // Returns ImeTextSpan style to be assigned. Maybe nullopt if it is not
 // supported.
-absl::optional<std::pair<ImeTextSpan::Type, ImeTextSpan::Thickness>>
+std::optional<std::pair<ImeTextSpan::Type, ImeTextSpan::Thickness>>
 ConvertStyle(uint32_t style) {
   switch (style) {
     case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_DEFAULT:
-      return absl::make_optional(std::make_pair(ImeTextSpan::Type::kComposition,
-                                                ImeTextSpan::Thickness::kNone));
+      return std::make_optional(std::make_pair(ImeTextSpan::Type::kComposition,
+                                               ImeTextSpan::Thickness::kNone));
     case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_HIGHLIGHT:
-      return absl::make_optional(std::make_pair(
-          ImeTextSpan::Type::kComposition, ImeTextSpan::Thickness::kThick));
+      return std::make_optional(std::make_pair(ImeTextSpan::Type::kComposition,
+                                               ImeTextSpan::Thickness::kThick));
     case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_UNDERLINE:
-      return absl::make_optional(std::make_pair(ImeTextSpan::Type::kComposition,
-                                                ImeTextSpan::Thickness::kThin));
+      return std::make_optional(std::make_pair(ImeTextSpan::Type::kComposition,
+                                               ImeTextSpan::Thickness::kThin));
     case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_SELECTION:
-      return absl::make_optional(std::make_pair(ImeTextSpan::Type::kSuggestion,
-                                                ImeTextSpan::Thickness::kNone));
+      return std::make_optional(std::make_pair(ImeTextSpan::Type::kSuggestion,
+                                               ImeTextSpan::Thickness::kNone));
     case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_INCORRECT:
-      return absl::make_optional(
+      return std::make_optional(
           std::make_pair(ImeTextSpan::Type::kMisspellingSuggestion,
                          ImeTextSpan::Thickness::kNone));
     case ZWP_TEXT_INPUT_V1_PREEDIT_STYLE_NONE:
@@ -119,7 +129,7 @@ ConvertStyle(uint32_t style) {
     default:
       VLOG(1) << "Unsupported style. Skipped: " << style;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Returns the biggest range that is included in the |range|,
@@ -158,7 +168,7 @@ struct OffsetText {
 // of the surrounding text, which is 4000 bytes. This gives it a try to keep
 // the surrounding text around the selection with respecting UTF-8 boundary.
 // Returns the trimmed string and UTF-8 offset.
-absl::optional<OffsetText> TrimSurroundingTextForStandard(
+std::optional<OffsetText> TrimSurroundingTextForStandard(
     base::StringPiece text_utf8,
     gfx::Range selection_utf8) {
   // The text length for set_surrounding_text can not be longer than the maximum
@@ -169,7 +179,7 @@ absl::optional<OffsetText> TrimSurroundingTextForStandard(
   // If the selection range in UTF8 form is longer than the maximum length of
   // wayland messages, skip sending set_surrounding_text requests.
   if (selection_utf8.length() > kWaylandMessageDataMaxLength) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (text_utf8.size() <= kWaylandMessageDataMaxLength) {
@@ -213,7 +223,7 @@ absl::optional<OffsetText> TrimSurroundingTextForStandard(
                     truncated_range.start()};
 }
 
-absl::optional<OffsetText> TrimSurroundingTextForExtension(
+std::optional<OffsetText> TrimSurroundingTextForExtension(
     base::StringPiece text_utf8,
     const base::span<size_t> offsets) {
   // Heuristically, send leading/trailing (almost) 500 bytes in addition to
@@ -245,7 +255,8 @@ WaylandInputMethodContext::WaylandInputMethodContext(
     : connection_(connection),
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
-      text_input_(nullptr) {
+      text_input_(nullptr),
+      character_composer_(kPreeditStringMode) {
   connection_->window_manager()->AddObserver(this);
   Init();
 }
@@ -378,8 +389,8 @@ void WaylandInputMethodContext::SetSurroundingText(
     const std::u16string& text,
     const gfx::Range& text_range,
     const gfx::Range& selection_range,
-    const absl::optional<GrammarFragment>& fragment,
-    const absl::optional<AutocorrectInfo>& autocorrect) {
+    const std::optional<GrammarFragment>& fragment,
+    const std::optional<AutocorrectInfo>& autocorrect) {
   if (!selection_range.IsBoundedBy(text_range)) {
     // There seems some edge case that selection_range is outside of text_range.
     // In the case we ignore it temporarily, wishing the next event will
@@ -682,7 +693,7 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   // To avoid accident, we also check text_input_extension, which is available
   // only on ash-chrome.
   // We can remove this workaround check in M104 or later.
-  absl::optional<std::vector<base::StringPiece>> modifiers;
+  std::optional<std::vector<base::StringPiece>> modifiers;
   if (!connection_->text_input_extension_v1() ||
       base::Contains(modifiers_map_, XKB_MOD_NAME_CAPS)) {
     std::vector<base::StringPiece> modifier_content;
@@ -706,7 +717,7 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
   key_delegate_->OnKeyboardKeyEvent(
-      type, dom_code, /*repeat=*/false, absl::nullopt,
+      type, dom_code, /*repeat=*/false, std::nullopt,
       wl::EventMillisecondsToTimeTicks(time), device_id,
       WaylandKeyboard::KeyEventKind::kKey);
 #else

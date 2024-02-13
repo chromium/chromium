@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
@@ -69,7 +71,15 @@ bool LayoutFlexibleBox::IsChildAllowed(LayoutObject* object,
     // For a size=1 <select>, we only render the active option label through the
     // InnerElement. We do not allow adding layout objects for options and
     // optgroups.
-    return object->GetNode() == &select->InnerElement();
+    if (select->SlottedButton()) {
+      // For stylable select, we want children to be renderable so that we can
+      // render the author provided <button> element. However, we don't want the
+      // <option>s to be rendered if they will be displayed in a native popup.
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      return !IsA<HTMLOptionElement>(object->GetNode());
+    } else {
+      return object->GetNode() == &select->InnerElement();
+    }
   }
   return LayoutBlock::IsChildAllowed(object, style);
 }

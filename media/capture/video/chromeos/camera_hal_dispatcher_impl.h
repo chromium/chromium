@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -216,7 +217,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       const base::UnguessableToken& auth_token,
       RegisterClientWithTokenCallback callback) final;
 
-  // CameraHalServerCallbacks implementations.
+  // CrosCameraServiceObserver implementations.
   void CameraDeviceActivityChange(int32_t camera_id,
                                   bool opened,
                                   cros::mojom::CameraClientType type) final;
@@ -225,6 +226,8 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       int32_t camera_id) final;
   void CameraSWPrivacySwitchStateChange(
       cros::mojom::CameraPrivacySwitchState state) final;
+
+  void CameraEffectChange(cros::mojom::EffectsConfigPtr config) final;
 
   base::UnguessableToken GetTokenForTrustedClient(
       cros::mojom::CameraClientType type);
@@ -371,7 +374,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   mojo::Receiver<cros::mojom::CrosCameraServiceObserver>
       camera_service_observer_receiver_;
 
-  std::set<CameraClientObserver*> client_observers_;
+  std::set<raw_ptr<CameraClientObserver, SetExperimental>> client_observers_;
 
   TokenManager token_manager_;
 

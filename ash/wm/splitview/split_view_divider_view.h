@@ -19,9 +19,9 @@ class SplitViewDividerHandlerView;
 // A view that acts as the contents view of the split view divider widget.
 class SplitViewDividerView : public views::View,
                              public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(SplitViewDividerView);
+  METADATA_HEADER(SplitViewDividerView, views::View)
 
+ public:
   explicit SplitViewDividerView(SplitViewController* controller,
                                 SplitViewDivider* divider);
   SplitViewDividerView(const SplitViewDividerView&) = delete;

@@ -24,9 +24,9 @@ class Switch;
 // dashboard button.
 class ASH_EXPORT GameDashboardMainMenuView
     : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(GameDashboardMainMenuView);
+  METADATA_HEADER(GameDashboardMainMenuView, views::BubbleDialogDelegateView)
 
+ public:
   explicit GameDashboardMainMenuView(GameDashboardContext* context);
 
   GameDashboardMainMenuView(const GameDashboardMainMenuView&) = delete;
@@ -82,18 +82,18 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // Adds feature details rows, for example, including Game Controls or window
   // size.
-  void AddFeatureDetailsRows();
+  void MaybeAddArcFeatureRows();
 
   // Adds Game Controls feature tile in `container` if it is the ARC game window
   // and Game Controls is available.
   void MaybeAddGameControlsTile(views::View* container);
 
   // Adds menu controls row for Game Controls.
-  void MaybeAddGameControlsDetailsRow(views::View* container);
+  void AddGameControlsDetailsRow(views::View* container);
 
   // Adds a row to access a settings page controlling the screen size if the
   // given game window is an ARC app.
-  void MaybeAddScreenSizeSettingsRow(views::View* container);
+  void AddScreenSizeSettingsRow(views::View* container);
 
   // Adds the dashboard cluster (containing feedback, settings, and help
   // buttons) to the Game Controls tile view.

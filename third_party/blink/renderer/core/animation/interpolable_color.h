@@ -109,14 +109,14 @@ class CORE_EXPORT InterpolableColor : public BaseInterpolableColor {
     v->Trace(quirk_inherit_);
   }
 
-  InterpolableColor(InlinedInterpolableNumber param0,
-                    InlinedInterpolableNumber param1,
-                    InlinedInterpolableNumber param2,
-                    InlinedInterpolableNumber alpha,
-                    InlinedInterpolableNumber current_color,
-                    InlinedInterpolableNumber webkit_active_link,
-                    InlinedInterpolableNumber webkit_link,
-                    InlinedInterpolableNumber quirk_inherit,
+  InterpolableColor(InlinedInterpolableDouble param0,
+                    InlinedInterpolableDouble param1,
+                    InlinedInterpolableDouble param2,
+                    InlinedInterpolableDouble alpha,
+                    InlinedInterpolableDouble current_color,
+                    InlinedInterpolableDouble webkit_active_link,
+                    InlinedInterpolableDouble webkit_link,
+                    InlinedInterpolableDouble quirk_inherit,
                     Color::ColorSpace color_space);
 
  private:
@@ -126,15 +126,15 @@ class CORE_EXPORT InterpolableColor : public BaseInterpolableColor {
 
   // All color params are stored premultiplied by alpha.
   // https://csswg.sesse.net/css-color-4/#interpolation-space
-  InlinedInterpolableNumber param0_;
-  InlinedInterpolableNumber param1_;
-  InlinedInterpolableNumber param2_;
-  InlinedInterpolableNumber alpha_;
+  InlinedInterpolableDouble param0_;
+  InlinedInterpolableDouble param1_;
+  InlinedInterpolableDouble param2_;
+  InlinedInterpolableDouble alpha_;
 
-  InlinedInterpolableNumber current_color_;
-  InlinedInterpolableNumber webkit_active_link_;
-  InlinedInterpolableNumber webkit_link_;
-  InlinedInterpolableNumber quirk_inherit_;
+  InlinedInterpolableDouble current_color_;
+  InlinedInterpolableDouble webkit_active_link_;
+  InlinedInterpolableDouble webkit_link_;
+  InlinedInterpolableDouble quirk_inherit_;
 
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
 };

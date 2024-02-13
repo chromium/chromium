@@ -299,6 +299,7 @@ TextPaintStyle DocumentMarkerPainter::ComputeTextPaintStyleFrom(
   text_style.stroke_width = style.TextStrokeWidth();
   text_style.color_scheme = style.UsedColorScheme();
   text_style.shadow = nullptr;
+  text_style.paint_order = style.PaintOrder();
   if (marker.GetType() == DocumentMarker::kTextMatch)
     return text_style;
   return HighlightStyleUtils::HighlightPaintingStyle(

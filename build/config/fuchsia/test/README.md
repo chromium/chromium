@@ -48,10 +48,6 @@ Capabilities required by anything that uses `//base/test` when running in the
 (default) `chromium` test realm. It is the default base fragment for most
 `test()` Components.
 
-The system-wide `config-data` directory capability is routed to tests running in
-the realm so that individual tests may route subdirectories as needed.
-TODO(crbug.com/1360077): Remove this after migrating to the new mechanism.
-
 #### logger.shard.test-cml
 For tests that test logging functionality by providing `fuchsia.logger.Log`.
 

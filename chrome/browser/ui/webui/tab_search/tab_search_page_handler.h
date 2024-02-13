@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
+#include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +31,7 @@
 class Browser;
 class MetricsReporter;
 class TabOrganizationService;
+class OptimizationGuideKeyedService;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -47,11 +49,13 @@ enum class TabSearchRecentlyClosedToggleAction {
   kMaxValue = kCollapse,
 };
 
-class TabSearchPageHandler : public tab_search::mojom::PageHandler,
-                             public TabStripModelObserver,
-                             public BrowserTabStripTrackerDelegate,
-                             public TabOrganizationSession::Observer,
-                             public TabOrganizationObserver {
+class TabSearchPageHandler
+    : public tab_search::mojom::PageHandler,
+      public TabStripModelObserver,
+      public BrowserTabStripTrackerDelegate,
+      public TabOrganizationSession::Observer,
+      public TabOrganizationObserver,
+      public optimization_guide::SettingsEnabledObserver {
  public:
   TabSearchPageHandler(
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver,
@@ -87,10 +91,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   void SetTabIndex(int32_t index) override;
   void StartTabGroupTutorial() override;
   void TriggerFeedback(int32_t session_id) override;
-  void TriggerSync() override;
   void TriggerSignIn() override;
   void OpenHelpPage() override;
-  void OpenSyncSettings() override;
   void SetUserFeedback(int32_t session_id,
                        int32_t organization_id,
                        tab_search::mojom::UserFeedback feedback) override;
@@ -128,6 +130,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   // TabOrganizationObserver
   void OnSessionCreated(const Browser* browser,
                         TabOrganizationSession* session) override;
+
+  // SettingsEnabledObserver
+  void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override;
 
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
@@ -191,7 +196,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   void NotifyTabIndexPrefChanged(const Profile* profile);
 
-  void NotifySettingEnabledPrefChanged(Profile* profile);
+  void NotifyShowFREPrefChanged(const Profile* profile);
 
   mojo::Receiver<tab_search::mojom::PageHandler> receiver_;
   mojo::Remote<tab_search::mojom::Page> page_;
@@ -203,6 +208,7 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
   std::unique_ptr<base::RetainingOneShotTimer> debounce_timer_;
   raw_ptr<TabOrganizationService> organization_service_;
   PrefChangeRegistrar pref_change_registrar_;
+  raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
 
   // Tracks how many times |CloseTab()| has been evoked for the currently open
   // instance of Tab Search for logging in UMA.

@@ -5,7 +5,7 @@
 import 'chrome://sync-confirmation/sync_confirmation_app.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
+import type {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -43,11 +43,16 @@ suite(`SigninSyncConfirmationTest`, function() {
     await browserProxy.whenCalled('requestAccountInfo');
   });
 
-  // Tests that no DCHECKS are thrown during initialization of the UI.
+  // Tests that the buttons are initially hidden, pending minor-mode compliance
+  // configuration.
   test('LoadPage', function() {
     const cancelButton =
         app.shadowRoot!.querySelector<HTMLElement>('#notNowButton');
-    assertFalse(cancelButton!.hidden);
+    assertTrue(cancelButton!.hidden);
+
+    const confirmButton =
+        app.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
+    assertTrue(confirmButton!.hidden);
   });
 
   // Tests clicking on confirm button.

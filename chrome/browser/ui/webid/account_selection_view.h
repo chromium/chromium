@@ -33,6 +33,8 @@ class AccountSelectionView {
     virtual void OnLoginToIdP(const GURL& idp_config_url,
                               const GURL& idp_login_url) = 0;
     virtual void OnMoreDetails() = 0;
+    // Informs the controller that the accounts dialog has been displayed.
+    virtual void OnAccountsDisplayed() = 0;
     // The web page view containing the focused field.
     virtual gfx::NativeView GetNativeView() = 0;
     // The WebContents for the page.

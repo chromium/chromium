@@ -109,6 +109,9 @@ struct ControllerServiceWorkerInfo {
   // this value.
   string? sha256_script_checksum;
 
+  // Indicates if the router has to be evaluated in a renderer-side.
+  bool need_router_evaluate;
+
   // Experimental feature (crbug.com/1371756).
   // A field to keep ServiceWorker static routing API data.
   //

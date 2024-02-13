@@ -13,9 +13,10 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
-#include "ash/wm/window_restore/window_restore_controller.h"
+#include "ash/wm/window_restore/pine_controller.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -100,11 +101,10 @@ TEST_F(PineContextMenuModelTest, LayoutAndCommands) {
 // Tests that pressing the settings button in Pine properly displays the inline
 // context menu.
 TEST_F(PineContextMenuModelTest, ShowContextMenuOnSettingsButtonClicked) {
-  base::RunLoop run_loop;
-  OverviewController::Get()->set_pine_callback_for_test(run_loop.QuitClosure());
-  Shell::Get()->window_restore_controller()->MaybeStartPineOverviewSession();
-  run_loop.Run();
-  ASSERT_TRUE(OverviewController::Get()->overview_session());
+  Shell::Get()
+      ->pine_controller()
+      ->MaybeStartPineOverviewSessionDevAccelerator();
+  WaitForOverviewEntered();
 
   // Get the active Pine widget.
   OverviewGrid* grid = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());

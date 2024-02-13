@@ -21,10 +21,6 @@
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/gbm_device.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/linux/gbm_util.h"  // nogncheck
-#endif
-
 #if !defined(MINIGBM)
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -489,10 +485,6 @@ class Device final : public ui::GbmDevice {
 namespace ui {
 
 std::unique_ptr<GbmDevice> CreateGbmDevice(int fd) {
-#if BUILDFLAG(IS_CHROMEOS)
-  CHECK(ui::IntelMediaCompressionEnvVarIsSet());
-#endif
-
   gbm_device* device = gbm_create_device(fd);
   if (!device)
     return nullptr;

@@ -97,6 +97,7 @@ static_library("autofill") {
       "//chrome/android:jni_headers",
       "//chrome/app:generated_resources",
       "//chrome/browser/autofill/android:jni_headers",
+      "//chrome/browser/keyboard_accessory/android:public",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/autofill/core/common/mojom:mojo_types",
       "//components/messages/android:feature_flags",
@@ -170,6 +171,7 @@ static_library("test_support") {
       "//chrome/android:test_support_jni_headers",
       "//chrome/browser",
       "//chrome/browser/autofill",
+      "//chrome/browser/keyboard_accessory/android:public",
     ]
     public_deps += [ "test:test_support" ]
   }

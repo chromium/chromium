@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 
+#include <string_view>
+
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
@@ -323,7 +325,7 @@ void LaunchTerminalSettings(Profile* profile, int64_t display_id) {
 }
 
 void RecordTerminalSettingsChangesUMAs(Profile* profile) {
-  static constexpr auto kSettingsMap = base::MakeFixedFlatMap<base::StringPiece,
+  static constexpr auto kSettingsMap = base::MakeFixedFlatMap<std::string_view,
                                                               TerminalSetting>({
       {"alt-gr-mode", TerminalSetting::kAltGrMode},
       {"alt-backspace-is-meta-backspace",
@@ -420,7 +422,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
       continue;
     }
     const auto* it = kSettingsMap.find(
-        base::StringPiece(item.first).substr(kSettingPrefixSize));
+        std::string_view(item.first).substr(kSettingPrefixSize));
     base::UmaHistogramEnumeration(
         "Crostini.TerminalSettingsChanged",
         it != kSettingsMap.end() ? it->second : TerminalSetting::kUnknown);

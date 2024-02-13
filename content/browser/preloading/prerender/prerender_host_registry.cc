@@ -554,6 +554,13 @@ int PrerenderHostRegistry::CreateAndStartHost(
       return RenderFrameHost::kNoFrameTreeNodeId;
     }
 
+    // Check the about://flags toggle.
+    if (!base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+      builder.RejectAsNotEligible(attributes,
+                                  PrerenderFinalStatus::kPreloadingDisabled);
+      return RenderFrameHost::kNoFrameTreeNodeId;
+    }
+
     // Check whether preloading is enabled. If it is not enabled, report the
     // reason.
     switch (initiator_web_contents.GetDelegate()->IsPrerender2Supported(

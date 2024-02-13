@@ -50,16 +50,16 @@ void RecordEvent(CableV2DiscoveryEvent event) {
 Discovery::Discovery(
     FidoRequestType request_type,
     network::mojom::NetworkContext* network_context,
-    absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
+    std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<AdvertEventStream> advert_stream,
     std::unique_ptr<EventStream<std::unique_ptr<Pairing>>>
         contact_device_stream,
     const std::vector<CableDiscoveryData>& extension_contents,
-    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+    std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback,
-    absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+    std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         invalidated_pairing_callback,
-    absl::optional<base::RepeatingCallback<void(Event)>> event_callback)
+    std::optional<base::RepeatingCallback<void(Event)>> event_callback)
     : FidoDeviceDiscovery(FidoTransportProtocol::kHybrid),
       request_type_(request_type),
       network_context_(network_context),
@@ -150,7 +150,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
 
   if (qr_keys_) {
     // Check whether the EID matches a QR code.
-    absl::optional<CableEidArray> plaintext =
+    std::optional<CableEidArray> plaintext =
         eid::Decrypt(advert_array, qr_keys_->eid_key);
     if (plaintext) {
       FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
@@ -169,7 +169,7 @@ void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
 
   // Check whether the EID matches the extension.
   for (const auto& extension : extension_keys_) {
-    absl::optional<CableEidArray> plaintext =
+    std::optional<CableEidArray> plaintext =
         eid::Decrypt(advert_array, extension.eid_key);
     if (plaintext) {
       FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
@@ -205,11 +205,11 @@ void Discovery::PairingIsInvalid(std::unique_ptr<Pairing> pairing) {
 }
 
 // static
-absl::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
-    const absl::optional<base::span<const uint8_t, kQRKeySize>>
+std::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
+    const std::optional<base::span<const uint8_t, kQRKeySize>>
         qr_generator_key) {
   if (!qr_generator_key) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   UnpairedKeys ret;
@@ -239,7 +239,7 @@ std::vector<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
       continue;
     }
 
-    absl::optional<Discovery::UnpairedKeys> keys = KeysFromQRGeneratorKey(
+    std::optional<Discovery::UnpairedKeys> keys = KeysFromQRGeneratorKey(
         base::make_span<kQRKeySize>(data.v2->server_link_data));
     if (keys.has_value()) {
       ret.emplace_back(std::move(keys.value()));

@@ -6,8 +6,9 @@ import './diagnose_info_view.js';
 
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {DiagnoseInfoViewElement} from './diagnose_info_view.js';
-import {AccessPointData, GeolocationDiagnostics, GeolocationInternalsObserverInterface, GeolocationInternalsObserverReceiver, GeolocationInternalsRemote, NetworkLocationResponse} from './geolocation_internals.mojom-webui.js';
+import type {DiagnoseInfoViewElement} from './diagnose_info_view.js';
+import type {AccessPointData, GeolocationDiagnostics, GeolocationInternalsObserverInterface, NetworkLocationResponse} from './geolocation_internals.mojom-webui.js';
+import {GeolocationInternalsObserverReceiver, GeolocationInternalsRemote} from './geolocation_internals.mojom-webui.js';
 import {LocationInternalsHandler} from './location_internals.mojom-webui.js';
 
 export const WATCH_BUTTON_ID = 'watch-btn';

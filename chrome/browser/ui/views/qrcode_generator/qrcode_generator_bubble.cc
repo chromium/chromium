@@ -147,11 +147,13 @@ void QRCodeGeneratorBubble::UpdateQRContent() {
   // comment of `QRImageGenerator::GenerateQRCode`).
   auto callback = base::BindOnce(
       &QRCodeGeneratorBubble::OnCodeGeneratorResponse, base::Unretained(this));
-  if (qrcode_service_override_.is_null()) {
-    qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
-  } else {
-    qrcode_service_override_.Run(std::move(request), std::move(callback));
+  if (qrcode_error_override_.has_value()) {
+    auto response = qrcode_generator::mojom::GenerateQRCodeResponse::New();
+    response->error_code = qrcode_error_override_.value();
+    std::move(callback).Run(std::move(response));
+    return;
   }
+  qrcode_service_->GenerateQRCode(std::move(request), std::move(callback));
 }
 
 void QRCodeGeneratorBubble::OnCodeGeneratorResponse(
@@ -279,10 +281,14 @@ void QRCodeGeneratorBubble::Init() {
   textfield_url_ = AddChildView(std::move(textfield_url));
 
   // Lower error message.
-  // User-facing limit rounded down to 250 characters for readability.
+  // User-facing limit rounded down to 2000 characters for readability
+  // (QR code version 40 with M-level error correction can encode binary
+  // inputs of up to 2331 bytes, and digit-only inputs of up to 5596 bytes).
+  // See https://www.qrcode.com/en/about/version.html.
+  const int kMaxInputLength = 2000;
   auto bottom_error_label = std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16Int(
-          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, 250),
+          IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG, kMaxInputLength),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
   bottom_error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   bottom_error_label->SetVisible(false);
@@ -346,7 +352,7 @@ void QRCodeGeneratorBubble::Init() {
   // End controls row
 
   // Initialize Service
-  if (!qrcode_service_ && qrcode_service_override_.is_null()) {
+  if (!qrcode_service_) {
     qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
   }
 }
@@ -427,11 +433,9 @@ gfx::ImageSkia QRCodeGeneratorBubble::AddQRCodeQuietZone(
   return final_image;
 }
 
-void QRCodeGeneratorBubble::SetQRCodeServiceForTesting(
-    base::RepeatingCallback<void(mojom::GenerateQRCodeRequestPtr request,
-                                 QRImageGenerator::ResponseCallback callback)>
-        qrcode_service_override) {
-  qrcode_service_override_ = std::move(qrcode_service_override);
+void QRCodeGeneratorBubble::SetQRCodeErrorForTesting(
+    std::optional<qrcode_generator::mojom::QRCodeGeneratorError> error) {
+  qrcode_error_override_ = error;
 }
 
 const SkBitmap QRCodeGeneratorBubble::GetBitmap() {

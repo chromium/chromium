@@ -98,7 +98,7 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
   for (uint32_t i = 0; i < controller_states_.size(); i++) {
     device::OpenXrController* controller = &controller_states_[i].controller;
 
-    absl::optional<GamepadButton> menu_button =
+    std::optional<GamepadButton> menu_button =
         controller->GetButton(OpenXrButtonType::kMenu);
 
     // Pressing a menu buttons is treated as a signal to exit the WebXR session.
@@ -106,9 +106,9 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
       OnExitGesture();
     }
 
-    absl::optional<GamepadButton> primary_button =
+    std::optional<GamepadButton> primary_button =
         controller->GetButton(OpenXrButtonType::kTrigger);
-    absl::optional<GamepadButton> squeeze_button =
+    std::optional<GamepadButton> squeeze_button =
         controller->GetButton(OpenXrButtonType::kSqueeze);
 
     // Having a trigger button is the minimum for an webxr input.

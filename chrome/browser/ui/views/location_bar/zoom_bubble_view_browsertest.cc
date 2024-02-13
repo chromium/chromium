@@ -8,7 +8,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_zoom_request_client.h"
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
   {
     // The fullscreen change notification is sent asynchronously. Wait for the
     // notification before testing the zoom bubble visibility.
-    FullscreenNotificationObserver waiter(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
     static_cast<content::WebContentsDelegate*>(browser())
         ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame(), {});
     waiter.Wait();
@@ -89,11 +89,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ContentFullscreen) {
   EXPECT_FALSE(zoom_bubble->GetAnchorView());
 
   // Exit fullscreen before ending the test for the sake of sanity.
-  {
-    FullscreenNotificationObserver waiter(browser());
-    chrome::ToggleFullscreenMode(browser());
-    waiter.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 }
 
 // Immersive fullscreen is either/or on Mac. Base class for tests that only
@@ -141,13 +137,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleImmersiveDisabledBrowserTest,
   const views::View* org_anchor_view = zoom_bubble->GetAnchorView();
 
   // Enter into a browser fullscreen mode. This would close the zoom bubble.
-  {
-    // The fullscreen change notification is sent asynchronously. Wait for the
-    // notification before testing the zoom bubble visibility.
-    FullscreenNotificationObserver waiter(browser());
-    chrome::ToggleFullscreenMode(browser());
-    waiter.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -192,11 +182,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleImmersiveDisabledBrowserTest,
   }
 
   // Don't leave the browser in fullscreen for subsequent tests.
-  {
-    FullscreenNotificationObserver waiter(browser());
-    chrome::ToggleFullscreenMode(browser());
-    waiter.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -214,11 +200,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
       .SetupForTest();
 
   // Enter immersive fullscreen.
-  {
-    FullscreenNotificationObserver waiter(browser());
-    chrome::ToggleFullscreenMode(browser());
-    waiter.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_TRUE(immersive_controller->IsEnabled());
   ASSERT_FALSE(immersive_controller->IsRevealed());
 
@@ -254,11 +236,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
   EXPECT_FALSE(immersive_controller->IsRevealed());
 
   // Exit fullscreen before ending the test for the sake of sanity.
-  {
-    FullscreenNotificationObserver waiter(browser());
-    chrome::ToggleFullscreenMode(browser());
-    waiter.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

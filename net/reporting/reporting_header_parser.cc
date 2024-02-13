@@ -149,7 +149,7 @@ bool ProcessEndpointGroup(
   }
   parsed_endpoint_group_out->ttl = base::Seconds(ttl_sec);
 
-  absl::optional<bool> subdomains_bool = dict->FindBool(kIncludeSubdomainsKey);
+  std::optional<bool> subdomains_bool = dict->FindBool(kIncludeSubdomainsKey);
   if (subdomains_bool && subdomains_bool.value()) {
     // Disallow eTLDs from setting include_subdomains endpoint groups.
     if (registry_controlled_domains::GetRegistryLength(
@@ -239,18 +239,18 @@ bool ProcessV1Endpoint(ReportingDelegate* delegate,
 
 }  // namespace
 
-absl::optional<base::flat_map<std::string, std::string>>
-ParseReportingEndpoints(const std::string& header) {
+std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
+    const std::string& header) {
   // Ignore empty header values. Skip logging metric to maintain parity with
   // ReportingHeaderType::kReportToInvalid.
   if (header.empty())
-    return absl::nullopt;
-  absl::optional<structured_headers::Dictionary> header_dict =
+    return std::nullopt;
+  std::optional<structured_headers::Dictionary> header_dict =
       structured_headers::ParseDictionary(header);
   if (!header_dict) {
     ReportingHeaderParser::RecordReportingHeaderType(
         ReportingHeaderParser::ReportingHeaderType::kReportingEndpointsInvalid);
-    return absl::nullopt;
+    return std::nullopt;
   }
   base::flat_map<std::string, std::string> parsed_header;
   for (const structured_headers::DictionaryMember& entry : *header_dict) {
@@ -259,7 +259,7 @@ ParseReportingEndpoints(const std::string& header) {
       ReportingHeaderParser::RecordReportingHeaderType(
           ReportingHeaderParser::ReportingHeaderType::
               kReportingEndpointsInvalid);
-      return absl::nullopt;
+      return std::nullopt;
     }
     const std::string& endpoint_url_string =
         entry.second.member.front().item.GetString();

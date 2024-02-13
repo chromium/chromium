@@ -24,7 +24,8 @@ bool PlatformWindowDelegate::State::ProducesFrameOnUpdateFrom(
     const State& old) const {
   // Changing the bounds origin won't produce a new frame. Anything else will.
   return old.bounds_dip.size() != bounds_dip.size() || old.size_px != size_px ||
-         old.window_scale != window_scale || old.raster_scale != raster_scale;
+         old.window_scale != window_scale || old.raster_scale != raster_scale ||
+         old.insets != insets;
 }
 
 std::string PlatformWindowDelegate::State::ToString() const {
@@ -34,6 +35,7 @@ std::string PlatformWindowDelegate::State::ToString() const {
   result << ", size_px = " << size_px.ToString();
   result << ", window_scale = " << window_scale;
   result << ", raster_scale = " << raster_scale;
+  result << ", insets = " << insets.ToString();
   result << "}";
   return result.str();
 }
@@ -53,12 +55,12 @@ void PlatformWindowDelegate::OnFullscreenTypeChanged(
     PlatformFullscreenType new_type) {}
 #endif
 
-absl::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
-  return absl::nullopt;
+std::optional<gfx::Size> PlatformWindowDelegate::GetMinimumSizeForWindow() {
+  return std::nullopt;
 }
 
-absl::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
-  return absl::nullopt;
+std::optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
+  return std::nullopt;
 }
 
 bool PlatformWindowDelegate::CanMaximize() {
@@ -84,9 +86,9 @@ int64_t PlatformWindowDelegate::OnStateUpdate(const State& old,
   return -1;
 }
 
-absl::optional<OwnedWindowAnchor>
+std::optional<OwnedWindowAnchor>
 PlatformWindowDelegate::GetOwnedWindowAnchorAndRectInDIP() {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PlatformWindowDelegate::SetFrameRateThrottleEnabled(bool enabled) {}

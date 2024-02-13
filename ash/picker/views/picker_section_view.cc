@@ -23,7 +23,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
@@ -34,7 +36,9 @@
 namespace ash {
 namespace {
 
-constexpr auto kSectionTitlePadding = gfx::Insets::VH(8, 16);
+constexpr auto kSectionTitleMargins = gfx::Insets::VH(8, 16);
+constexpr auto kSectionTitleTrailingLinkMargins =
+    gfx::Insets::TLBR(4, 8, 4, 16);
 
 // Horizontal padding between small grid items.
 constexpr auto kSmallGridItemMargins = gfx::Insets::VH(0, 12);
@@ -48,8 +52,13 @@ constexpr gfx::Size kSmallGridItemPreferredSize(32, 32);
 // Padding between and around image grid items.
 constexpr int kImageGridPadding = 8;
 
-// TODO: b/323279115 - Compute this in terms of available width.
-constexpr int kImageGridColumnWidth = 148;
+// Number of columns in an image grid.
+constexpr int kNumImageGridColumns = 2;
+
+int GetImageGridColumnWidth(int section_width) {
+  return (section_width - (kNumImageGridColumns + 1) * kImageGridPadding) /
+         kNumImageGridColumns;
+}
 
 std::unique_ptr<views::View> CreateSmallItemsGridRow() {
   auto row = views::Builder<views::FlexLayoutView>()
@@ -114,21 +123,48 @@ std::unique_ptr<views::View> CreateListItemsContainer() {
 
 }  // namespace
 
-PickerSectionView::PickerSectionView(const std::u16string& title_text) {
+PickerSectionView::PickerSectionView(int section_width)
+    : section_width_(section_width) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  title_ = AddChildView(
-      bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2, title_text,
-                                cros_tokens::kCrosSysOnSurfaceVariant));
-  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_->SetBorder(views::CreateEmptyBorder(kSectionTitlePadding));
+  title_container_ =
+      AddChildView(views::Builder<views::FlexLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kHorizontal)
+                       .Build());
 }
 
 PickerSectionView::~PickerSectionView() = default;
 
-void PickerSectionView::SetMaximumWidth(int maximum_width) {
-  maximum_width_ = maximum_width;
+void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
+  title_label_ = title_container_->AddChildView(
+      views::Builder<views::Label>(
+          bubble_utils::CreateLabel(TypographyToken::kCrosAnnotation2,
+                                    title_text,
+                                    cros_tokens::kCrosSysOnSurfaceVariant))
+          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::MinimumFlexSizeRule::kScaleToMinimum,
+                           views::MaximumFlexSizeRule::kUnbounded)
+                           .WithWeight(1))
+          .SetProperty(views::kMarginsKey, kSectionTitleMargins)
+          .Build());
+}
+
+void PickerSectionView::AddTitleTrailingLink(
+    const std::u16string& link_text,
+    views::Link::ClickedCallback link_callback) {
+  title_trailing_link_ = title_container_->AddChildView(
+      views::Builder<views::Link>()
+          .SetText(link_text)
+          .SetCallback(link_callback)
+          .SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
+              ash::TypographyToken::kCrosAnnotation2))
+          .SetEnabledColorId(cros_tokens::kCrosSysPrimary)
+          .SetForceUnderline(false)
+          .SetProperty(views::kMarginsKey, kSectionTitleTrailingLinkMargins)
+          .Build());
 }
 
 void PickerSectionView::AddListItem(std::unique_ptr<views::View> list_item) {
@@ -166,7 +202,7 @@ void PickerSectionView::AddImageItem(
     image_grid_ = AddChildView(CreateImageGrid());
   }
 
-  image_item->SetImageSizeFromWidth(kImageGridColumnWidth);
+  image_item->SetImageSizeFromWidth(GetImageGridColumnWidth(section_width_));
   views::View* shortest_column =
       base::ranges::min(image_grid_->children(),
                         /*comp=*/base::ranges::less(),
@@ -186,10 +222,10 @@ void PickerSectionView::AddSmallGridItem(
   // Try to add the item to the last row. If it doesn't fit, create a new row
   // and add the item there.
   views::View* row = small_items_grid_->children().back();
-  if (!row->children().empty() && maximum_width_.has_value() &&
+  if (!row->children().empty() &&
       row->GetPreferredSize().width() + kSmallGridItemMargins.left() +
               grid_item->GetPreferredSize().width() >
-          maximum_width_.value()) {
+          section_width_) {
     row = small_items_grid_->AddChildView(CreateSmallItemsGridRow());
   }
   item_views_.push_back(row->AddChildView(std::move(grid_item)));

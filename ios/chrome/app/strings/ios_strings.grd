@@ -424,6 +424,12 @@
       <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
         You can swipe the edge to go back or forward.
       </message>
+      <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH_BACK_ONLY" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
+        You can swipe the edge to go back.
+      </message>
+      <message name="IDS_IOS_BACK_FORWARD_SWIPE_IPH_FORWARD_ONLY" desc="The text for the full screen in-product help for side swipe on the current tab to navigate.">
+        You can swipe the edge to go forward.
+      </message>
       <message name="IDS_IOS_BADGE_INCOGNITO_HINT" desc="Button displayed when the user is in Incognito mode. [iOS only]">
         Current Webpage is on Incognito
       </message>
@@ -446,6 +452,11 @@
           {count, plural,
           =1 {Bookmark saved}
           other {{count} Bookmarks saved}}
+      </message>
+      <message name="IDS_IOS_BOOKMARKS_SAVED" desc="This confirmation message is intended to help users understand that multiple bookmarks have been saved. The confirmation message appears at the bottom of the page after users bulk add bookmarks, telling them how many bookmarks they've added. The tone should be informative.">
+          {count, plural,
+          =1 {Bookmark saved}
+          other {Bookmarks saved}}
       </message>
       <message name="IDS_IOS_BOOKMARKS_BULK_SAVED_ACCOUNT" desc="This confirmation message is intended to help users understand that multiple bookmarks have been saved in their account. The confirmation message appears at the bottom of the page after users bulk add bookmarks, telling them how many bookmarks they've added into their account. The tone should be informative.">
           {count, plural,
@@ -623,20 +634,40 @@
           =1 {Bookmark saved to "{title}"}
           other {Bookmarks saved to "{title}"}}
       </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER" desc="This confirmation message is intended to help users understand that a bookmark has been saved in Chrome. These users are not signed in to a Google Account and are not syncing their data, so we do not specify where the bookmark is saved. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
+          {count, plural,
+          =1 {Bookmark saved to "{title}"}
+          other {{count} Bookmarks saved to "{title}"}}
+      </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER_TO_DEVICE" desc="This confirmation message is intended to help users understand that a bookmark has been saved in Chrome. These users are not signed in to a Google Account and are not syncing their data, so we do not specify where the bookmark is saved. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
           {count, plural,
-          =1 {Bookmark saved to "{title}". It is only saved to this device.}
-          other {Bookmarks saved to "{title}". It is only saved to this device.}}
+          =1 {Bookmark saved to "{title}". It is saved only to this device.}
+          other {Bookmarks saved to "{title}". They are only saved to this device.}}
+      </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER_TO_DEVICE" desc="This confirmation message is intended to help users understand that a bookmark has been saved in Chrome. These users are not signed in to a Google Account and are not syncing their data, so we do not specify where the bookmark is saved. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
+          {count, plural,
+          =1 {Bookmark saved to "{title}". It is saved only to this device.}
+          other {{count} Bookmarks saved to "{title}". They are saved only to this device.}}
       </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT" desc="This confirmation message is intended to help users understand that a bookmark has been saved in their Google Account. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
           {count, plural,
           =1 {Bookmark saved in your Google Account, {email}}
           other {Bookmarks saved in your Google Account, {email}}}
       </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT" desc="This confirmation message is intended to help users understand that a bookmark has been saved in their Google Account. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
+          {count, plural,
+          =1 {Bookmark saved in your Google Account, {email}}
+          other {{count} Bookmarks saved in your Google Account, {email}}}
+      </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER" desc="This confirmation message is intended to help users understand that a bookmark has been saved to a particular folder in their Google Account. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
          {count, plural,
          =1 {Bookmark saved to "{title}" in your account, {email}}
          other {Bookmarks saved to "{title}" in your account, {email}}}
+      </message>
+      <message name="IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_INTO_ACCOUNT_FOLDER" desc="This confirmation message is intended to help users understand that a bookmark has been saved to a particular folder in their Google Account. The confirmation message appears at the bottom of the page after users choose to bookmark a page. The tone should be informative.">
+         {count, plural,
+         =1 {Bookmark saved to "{title}" in your account, {email}}
+         other {{count} Bookmarks saved to "{title}" in your account, {email}}}
       </message>
       <message name="IDS_IOS_BOOKMARK_SNACKBAR_EDIT_BOOKMARK" desc="This string is found on a button that takes the user to the Edit Bookmark screen when the user taps it. The button is on a confirmation message that users see when they save a bookmark to their device or in their Google Account. This text is a verb and is short for the longer phrase 'edit the bookmark.' The tone should be informative. Use Apple-style title case. [CHAR_LIMIT=15]">
         Edit
@@ -1008,7 +1039,7 @@ See your search engine’s instructions for deleting your search history, if app
         Yes, I'm in
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_SECONDARY_BUTTON" desc="Text for the Notifications promo secondary button.">
-        No Thanks
+        Don't get updates
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_TEXT" desc="Text for the Notifications promo.">
         Would you like notifications for news, sports, and more based on your interests?
@@ -2192,7 +2223,7 @@ See your search engine’s instructions for deleting your search history, if app
         Add Language
       </message>
       <message name="IDS_IOS_LANGUAGE_SETTINGS_HEADER" desc="Header for the fluent languages section in the language settings page. [Length: unlimited] [iOS only]">
-        Websites will show text in your preferred language, when possible.
+        Let websites know the languages you speak. They'll show content in those languages, when possible.
       </message>
       <message name="IDS_IOS_LANGUAGE_SETTINGS_NEVER_TRANSLATE_TITLE" desc="Label shown next to a language for which translation is not offered. [Length: 25em] [iOS only]">
         Never Translate
@@ -2247,6 +2278,15 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_MAGIC_STACK_SEE_MORE" desc="The See More button in Magic Stack modules to show a detailed view. [Length: 10em]">
         See More
+      </message>
+      <message name="IDS_IOS_MANAGE_STORAGE_ALERT_TITLE" desc="Title of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
+        Your Storage is Full
+      </message>
+      <message name="IDS_IOS_MANAGE_STORAGE_ALERT_MESSAGE" desc="Message of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
+        To download files, photos, and more you need more storage space.
+      </message>
+      <message name="IDS_IOS_MANAGE_STORAGE_ALERT_MANAGE_STORAGE_BUTTON" desc="Label of the primary action button in an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. The button opens a page where the user can manage their storage space. [iOS only] [Length: 12em]" meaning="Label of the primary action button in an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. The button opens a page where the user can manage their storage space. [iOS only] [Length: 12em]">
+        Manage Storage
       </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_ACCEPT_UNITY" desc="Label on the button to proceed with signout and clear all Chrome data.[Length: 30em].">
         Clear
@@ -4792,8 +4832,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH" desc="The text for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid for RTL devices.">
         You can swipe left to browse in Incognito.
       </message>
+      <message name="IDS_IOS_SWIPE_LEFT_TO_INCOGNITO_IPH_VOICEOVER" desc="The voice over announcement for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid for RTL devices.">
+        You can scroll right to browse in Incognito.
+      </message>
       <message name="IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH" desc="The text for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid.">
         You can swipe right to browse in Incognito.
+      </message>
+      <message name="IDS_IOS_SWIPE_RIGHT_TO_INCOGNITO_IPH_VOICEOVER" desc="The voice over announcement for the full screen in-product help for swipe right to see incognito tabs on regular tabs grid.">
+        You can scroll left to browse in Incognito.
       </message>
       <message name="IDS_IOS_SYNC_ADDRESSES_DIALOG_CONTINUE" desc="Action of a dialog to enable saving addresses to the Google Account. If the user chose to continue, addresses will start syncing.">
         Continue
@@ -4905,6 +4951,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_SECTION_HEADER_TITLE" desc="Section header for the section that contains all the open tabs from the search results.">
         Open Tabs
+      </message>
+      <message name="IDS_IOS_TABS_SEARCH_TAB_GROUPS_SECTION_HEADER_TITLE" desc="Section header for the section that contains all the tab groups from the search results.">
+        Tab Groups
       </message>
       <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS" desc="Section header for the suggested actions section shown in the tab grid at the bottom of search results.">
         Suggested
@@ -5822,6 +5871,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_DOCKING_PROMO_SECONDARY_BUTTON_TITLE" desc="Title of the secondary button in the Docking Promo, which schedules the Docking Promo for display at a later time, i.e. Remind Me Later functionality.">
         Remind Me Later
+      </message>
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_CLOSE_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's close button.">
+        Dismiss expanded view
+      </message>
+      <message name="IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's password tab.">
+        Google Password Manager
+      </message>
+            <message name="IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's payment method tab.">
+        Payment methods
+      </message>
+            <message name="IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL" desc="Accessibility label of the expanded manual fill view's address tab.">
+        Addresses and more
       </message>
     </messages>
   </release>

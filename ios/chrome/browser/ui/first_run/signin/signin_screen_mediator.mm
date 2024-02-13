@@ -207,7 +207,8 @@
     self.localPrefService->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
                                       self.UMAReportingUserChoice);
     self.localPrefService->CommitPendingWrite();
-    base::UmaHistogramEnumeration("FirstRun.Stage", firstRunStage);
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
+                                  firstRunStage);
     RecordFirstRunSignInMetrics(self.identityManager, self.attemptStatus,
                                 self.hadIdentitiesAtStartup);
   }

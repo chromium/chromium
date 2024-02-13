@@ -743,6 +743,16 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetDeviceStates) {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
+                       GetDeviceStatesLacros) {
+  if (!SetUpAsh()) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+  EXPECT_TRUE(RunNetworkingSubtest("getDeviceStatesLacros")) << message_;
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, RequestNetworkScan) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!SetUpAsh()) {

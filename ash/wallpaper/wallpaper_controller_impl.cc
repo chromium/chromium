@@ -1107,7 +1107,7 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
 void WallpaperControllerImpl::SetSeaPenWallpaper(
     const AccountId& account_id,
     const SeaPenImage& sea_pen_image,
-    const std::string& query_info,
+    const personalization_app::mojom::SeaPenQueryPtr& query,
     SetWallpaperCallback callback) {
   CHECK(features::IsSeaPenEnabled());
   DCHECK(callback);
@@ -1126,7 +1126,7 @@ void WallpaperControllerImpl::SetSeaPenWallpaper(
       GetUserSeaPenWallpaperDir(account_id).Append(sea_pen_file_name);
 
   sea_pen_wallpaper_manager_.DecodeAndSaveSeaPenImage(
-      sea_pen_image, GetUserSeaPenWallpaperDir(account_id), query_info,
+      sea_pen_image, GetUserSeaPenWallpaperDir(account_id), query,
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
                      sea_pen_wallpaper_path, std::move(callback)));
@@ -2145,15 +2145,17 @@ void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
 
   if (photo.is_null()) {
     // The photo doesn't exist, or has been deleted. If this photo is the
-    // current wallpaper, we need to reset to the default.
-    if (current_wallpaper_ &&
-        current_wallpaper_->wallpaper_info().location == params.id) {
+    // wallpaper for `params.account_id`, we need to reset to the default.
+    WallpaperInfo wallpaper_info;
+    if (GetUserWallpaperInfo(params.account_id, &wallpaper_info) &&
+        wallpaper_info.location == params.id) {
       sequenced_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&DeleteGooglePhotosCache, params.account_id));
       wallpaper_cache_map_.erase(params.account_id);
-      SetDefaultWallpaperImpl(GetUserType(params.account_id),
-                              /*show_wallpaper=*/true, base::DoNothing());
+      SetDefaultWallpaper(params.account_id,
+                          /*show_wallpaper=*/IsActiveUser(params.account_id),
+                          base::DoNothing());
       return;
     }
     wallpaper_metrics_manager_->LogWallpaperResult(
@@ -2191,7 +2193,8 @@ void WallpaperControllerImpl::OnDailyGooglePhotosPhotoFetched(
             SetWallpaperResult::kFileNotFound);
         // If the request succeeded, but no photos came back, then the album is
         // empty or deleted. Reset to default as a fallback.
-        SetDefaultWallpaper(params.account_id, /*show_wallpaper=*/true,
+        SetDefaultWallpaper(params.account_id,
+                            /*show_wallpaper=*/IsActiveUser(params.account_id),
                             base::DoNothing());
       } else {
         wallpaper_metrics_manager_->LogWallpaperResult(

@@ -16,8 +16,7 @@ namespace quick_answers {
 namespace {
 using base::Value;
 
-constexpr char kBTagBegin[] = "<b>";
-constexpr char kBTagEnd[] = "</b>";
+const constexpr char* kKnownHTMLTags[] = {"<b>", "</b>", "<i>", "</i>"};
 
 }  // namespace
 
@@ -41,8 +40,9 @@ const Value::Dict* ResultParser::GetFirstDictElementFromList(
 std::string ResultParser::RemoveKnownHtmlTags(const std::string& input) {
   // Copy input string to another string so we don't modify the passed value.
   std::string out = input;
-  base::ReplaceSubstringsAfterOffset(&out, /*start_offset=*/0, kBTagBegin, "");
-  base::ReplaceSubstringsAfterOffset(&out, /*start_offset=*/0, kBTagEnd, "");
+  for (const char* html_tag : kKnownHTMLTags) {
+    base::ReplaceSubstringsAfterOffset(&out, /*start_offset=*/0, html_tag, "");
+  }
   return out;
 }
 

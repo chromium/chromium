@@ -1,5 +1,6 @@
 monorail: {
-  # Use WebAppInstalls as a catch-all component.
-  # ChromeOS-specific issues should be triaged to Platform>Apps>Foundation.
   component: "UI>Browser>WebAppInstalls"
+}
+buganizer_public: {
+  component_id: 1457043
 }

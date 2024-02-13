@@ -29,6 +29,18 @@ class RulesService : public KeyedService {
   Verdict GetPasteVerdict(const content::ClipboardEndpoint& source,
                           const content::ClipboardEndpoint& destination,
                           const content::ClipboardMetadata& metadata) const;
+
+  // Returns a clipboard verdict only based the source of the copy, without
+  // making any special destination assumptions. This is meant to trigger rules
+  // that only have "sources" conditions, and blocking/warning verdicts returned
+  // by this function should trigger a dialog.
+  Verdict GetCopyRestrictedBySourceVerdict(const GURL& source) const;
+
+  // Returns a clipboard verdict with the provided source attributes, and with
+  // the "os_clipboard" destination. This is meant to trigger rules that make
+  // use of the "os_clipboard" destination attribute. Blocking verdicts returned
+  // by this function should replace the data put in the clipboard, and warning
+  // verdicts should trigger a dialog.
   Verdict GetCopyToOSClipboardVerdict(const GURL& source) const;
 
  protected:
@@ -37,6 +49,15 @@ class RulesService : public KeyedService {
   explicit RulesService(content::BrowserContext* browser_context);
 
  private:
+  // Helpers to convert action-specific types to rule-specific types.
+  ActionSource GetAsActionSource(
+      const content::ClipboardEndpoint& endpoint) const;
+  ActionDestination GetAsActionDestination(
+      const content::ClipboardEndpoint& endpoint) const;
+  template <typename ActionSourceOrDestination>
+  ActionSourceOrDestination ExtractPasteActionContext(
+      const content::ClipboardEndpoint& endpoint) const;
+
   // `profile_` and `rules_manager_` are initialized with the browser_context
   // passed in the constructor.
   const raw_ptr<Profile> profile_ = nullptr;

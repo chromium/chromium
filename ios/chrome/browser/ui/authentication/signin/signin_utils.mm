@@ -266,7 +266,7 @@ IdentitySigninState GetPrimaryIdentitySigninState(
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browser_state);
-  // TODO(crbug.com/1462552): After phase 3 migration of kSync users, Remove
+  // TODO(crbug.com/40066949): After phase 3 migration of kSync users, Remove
   // this usage.
   if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
       syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {

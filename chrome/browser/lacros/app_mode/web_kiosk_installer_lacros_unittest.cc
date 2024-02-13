@@ -10,6 +10,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -198,6 +199,7 @@ class WebKioskInstallerLacrosTest : public testing::Test {
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<TestingProfile> profile_;
+  KioskSessionServiceLacros kiosk_session_service_lacros_;
 };
 
 TEST_F(WebKioskInstallerLacrosTest, CreatingUnboundInstallerShouldNotCrash) {

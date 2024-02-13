@@ -5,7 +5,10 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECTION_OBSERVER_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_CONNECTION_OBSERVER_H_
 
+#include <optional>
+
 #include "chromeos/ash/services/secure_channel/connection.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 
 namespace ash::secure_channel {
 
@@ -32,6 +35,15 @@ class ConnectionObserver {
   virtual void OnSendCompleted(const Connection& connection,
                                const WireMessage& message,
                                bool success) {}
+};
+
+class NearbyConnectionObserver {
+ public:
+  virtual ~NearbyConnectionObserver() {}
+
+  virtual void OnNearbyConnectionStateChagned(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) {}
 };
 
 }  // namespace ash::secure_channel

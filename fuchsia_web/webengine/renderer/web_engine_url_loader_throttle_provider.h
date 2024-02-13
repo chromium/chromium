@@ -17,7 +17,7 @@ class WebEngineURLLoaderThrottleProvider
     : public blink::URLLoaderThrottleProvider {
  public:
   explicit WebEngineURLLoaderThrottleProvider(
-      WebEngineContentRendererClient* content_renderer_client);
+      const WebEngineContentRendererClient* const content_renderer_client);
 
   WebEngineURLLoaderThrottleProvider(
       const WebEngineURLLoaderThrottleProvider&) = delete;

@@ -104,6 +104,7 @@ class ScalableIphDelegate {
   enum class NotificationImageType {
     kNoImage = 0,
     kWallpaper,
+    kMinecraft,
   };
 
   enum class NotificationIcon {

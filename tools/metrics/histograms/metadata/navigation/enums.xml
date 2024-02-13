@@ -1582,6 +1582,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <int value="-2066290458" label="search.mojom.EmbeddedSearchConnector"/>
   <int value="-2012727489" label="device.mojom.ScreenOrientation"/>
+  <int value="-1700130222" label="blink.mojom.SharedStorageDocumentService"/>
   <int value="-1398143678" label="blink.mojom.ClipboardHost (Unexpected)"/>
   <int value="-1354302262" label="blink.mojom.BackForwardCacheControllerHost"/>
   <int value="-1150785480"
@@ -1593,6 +1594,7 @@ chromium-metrics-reviews@google.com.
   <int value="-4973921" label="blink.mojom.AttributionHost"/>
   <int value="191605727" label="content.mojom.PepperHost"/>
   <int value="828689080" label="blink.mojom.BlobURLStore (Obsolete)"/>
+  <int value="1054828948" label="extensions.mojom.GuestView"/>
   <int value="1515506006" label="extensions.mojom.RendererHost"/>
   <int value="1984681860"
       label="chrome.mojom.OpenSearchDescriptionDocumentHandler (Obsolete)"/>
@@ -1702,6 +1704,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kPotentiallySyncAccessible"/>
 </enum>
 
+<enum name="RendererBlockedURLReason">
+  <int value="0" label="Invalid URL"/>
+  <int value="1" label="URL Was Too Long"/>
+  <int value="2" label="Invalid about: URL">
+    URL had about: scheme without being about:blank or about:srcdoc.
+  </int>
+</enum>
+
 <enum name="ThirdPartyCookieBlockState">
   <int value="0" label="Cookies allowed"/>
   <int value="1" label="Third-party cookies blocked"/>
@@ -1714,6 +1724,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kReadingMetadataFileFailed"/>
   <int value="3" label="kParsingToProtoFailed"/>
   <int value="4" label="kErroneousSpec"/>
+  <int value="5" label="kErroneousSource"/>
 </enum>
 
 <enum name="UserAgentStringType">

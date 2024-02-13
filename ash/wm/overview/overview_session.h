@@ -344,6 +344,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnTouchEvent(ui::TouchEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
   // ShellObserver:
@@ -448,6 +449,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void OnItemAdded(aura::Window* window);
 
   size_t GetNumWindows() const;
+
+  // Let `SplitViewOverviewSession` handle the `event` if it is alive.
+  void MaybeDelegateEventToSplitViewOverviewSession(ui::LocatedEvent* event);
 
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.

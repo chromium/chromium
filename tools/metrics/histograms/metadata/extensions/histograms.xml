@@ -146,7 +146,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2024-06-02">
+    units="Extension Count" expires_after="2024-08-04">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -580,7 +580,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.CWSInfoService.NetworkResponseCodeOrError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-05-04">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-08-04">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -590,7 +590,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.CWSInfoService.NetworkRetriesTillSuccess"
-    units="retries" expires_after="2024-05-04">
+    units="retries" expires_after="2024-08-04">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -722,7 +722,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.IsLargeRegexRule"
-    enum="RegexRuleStatus" expires_after="2024-03-17">
+    enum="RegexRuleStatus" expires_after="2025-03-17">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -1562,7 +1562,7 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.ExtensionReenabledRemotely" units="count"
-    expires_after="2024-06-10">
+    expires_after="2024-08-11">
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3649,6 +3649,25 @@ of interesting buckets, such as "internal + external".
     profiles&quot; (profiles where people can install extensions, specifically
     profiles that can have non-component extensions installed) open.
   </summary>
+</histogram>
+
+<histogram
+    name="Extensions.NonWebstoreLocationWithDeveloperModeOff{ExtensionState}"
+    enum="ExtensionLocation" expires_after="2024-06-30">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of {ExtensionState} non-webstore extensions with a non-webstore
+    update_url loaded on profile open and developer mode disabled. Grouped by
+    Extension::Location, which only includes external pref, registry, and
+    unpacked. Emitted on every profile open only for &quot;user profiles&quot;
+    (profiles where people can install extensions, specifically profiles that
+    can have non-component extensions installed).
+  </summary>
+  <token key="ExtensionState">
+    <variant name=".Disabled" summary="disabled"/>
+    <variant name=".Enabled" summary="enabled"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides" units="units"

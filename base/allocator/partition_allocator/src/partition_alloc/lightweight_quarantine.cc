@@ -62,7 +62,7 @@ bool LightweightQuarantineBranch::Quarantine(void* object,
     branch_size_in_bytes_ += usable_size;
     PA_DCHECK(branch_size_in_bytes_ <= capacity_in_bytes);
 
-    slots_.emplace_back(object, usable_size);
+    slots_.emplace_back(slot_start, usable_size);
 
     // Swap randomly so that the quarantine list remain shuffled.
     // This is not uniformly random, but sufficiently random.
@@ -79,6 +79,17 @@ bool LightweightQuarantineBranch::Quarantine(void* object,
   return true;
 }
 
+bool LightweightQuarantineBranch::IsQuarantinedForTesting(void* object) {
+  ConditionalScopedGuard guard(lock_required_, lock_);
+  uintptr_t slot_start = root_.allocator_root_.ObjectToSlotStart(object);
+  for (const auto& slot : slots_) {
+    if (slot.slot_start == slot_start) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void LightweightQuarantineBranch::PurgeInternal(size_t target_size_in_bytes) {
   size_t size_in_bytes = root_.size_in_bytes_.load(std::memory_order_acquire);
   int64_t freed_count = 0;
@@ -91,14 +102,13 @@ void LightweightQuarantineBranch::PurgeInternal(size_t target_size_in_bytes) {
     const auto& to_free = slots_.back();
     size_t to_free_size = to_free.usable_size;
 
-    auto* slot_span = SlotSpanMetadata::FromObject(to_free.object);
-    uintptr_t slot_start =
-        root_.allocator_root_.ObjectToSlotStart(to_free.object);
-    PA_DCHECK(slot_span == SlotSpanMetadata::FromSlotStart(slot_start));
+    auto* slot_span = SlotSpanMetadata::FromSlotStart(to_free.slot_start);
+    void* object = root_.allocator_root_.SlotStartToObject(to_free.slot_start);
+    PA_DCHECK(slot_span == SlotSpanMetadata::FromObject(object));
 
-    PA_DCHECK(to_free.object);
-    root_.allocator_root_.FreeNoHooksImmediate(to_free.object, slot_span,
-                                               slot_start);
+    PA_DCHECK(to_free.slot_start);
+    root_.allocator_root_.FreeNoHooksImmediate(object, slot_span,
+                                               to_free.slot_start);
 
     freed_count++;
     freed_size_in_bytes += to_free_size;

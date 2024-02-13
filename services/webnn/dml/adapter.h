@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Adapter final
 
   DML_FEATURE_LEVEL max_feature_level_supported_ = DML_FEATURE_LEVEL_1_0;
 
-  static bool is_debug_layer_enabled_;
+  static bool enable_d3d12_debug_layer_for_testing_;
 
   static Adapter* instance_;
 };

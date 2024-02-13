@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_test_helper.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
@@ -41,6 +42,7 @@ class DocumentLoaderAutoSpeculationRulesTest : public ::testing::Test {
   }
 
  private:
+  test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   WebViewImpl* web_view_impl_;

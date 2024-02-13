@@ -11,7 +11,6 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 
 namespace base::apple::internal {
@@ -22,9 +21,12 @@ base::FilePath GetExecutablePath() {
   uint32_t executable_length = 0;
   _NSGetExecutablePath(NULL, &executable_length);
   DCHECK_GT(executable_length, 1u);
-  std::string executable_path;
-  int rv = _NSGetExecutablePath(
-      base::WriteInto(&executable_path, executable_length), &executable_length);
+  // `executable_length` is the total buffer size required including the NUL
+  // terminator, while `basic_string` guarantees that enough space is reserved
+  // so that index may be any value between 0 and size() inclusive, though it is
+  // UB to set `str[size()]` to anything other than '\0'.
+  std::string executable_path(executable_length - 1, '\0');
+  int rv = _NSGetExecutablePath(executable_path.data(), &executable_length);
   DCHECK_EQ(rv, 0);
 
   // _NSGetExecutablePath may return paths containing ./ or ../ which makes

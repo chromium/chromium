@@ -275,10 +275,10 @@ display::PanelOrientation GetPanelOrientation(const DrmWrapper& drm,
 
 // Read a file and trim whitespace. If the file can't be read, returns
 // nullopt.
-absl::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
+std::optional<std::string> ReadFileAndTrim(const base::FilePath& path) {
   std::string data;
   if (!base::ReadFileToString(path, &data))
-    return absl::nullopt;
+    return std::nullopt;
 
   return std::string(
       base::TrimWhitespaceASCII(data, base::TrimPositions::TRIM_ALL));
@@ -572,7 +572,7 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   color_info.bits_per_channel = 8u;
   // Active pixels size from the first detailed timing descriptor in the EDID.
   gfx::Size active_pixel_size;
-  absl::optional<uint16_t> vsync_rate_min;
+  std::optional<uint16_t> vsync_rate_min;
 
   ScopedDrmPropertyBlobPtr edid_blob(
       GetDrmPropertyBlob(drm, info->connector(), "EDID"));
@@ -769,22 +769,22 @@ std::string GetEnumNameForProperty(
   return std::string();
 }
 
-absl::optional<std::string> GetDrmDriverNameFromFd(int fd) {
+std::optional<std::string> GetDrmDriverNameFromFd(int fd) {
   ScopedDrmVersionPtr version(drmGetVersion(fd));
   if (!version) {
     LOG(ERROR) << "Failed to query DRM version";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return std::string(version->name, version->name_len);
 }
 
-absl::optional<std::string> GetDrmDriverNameFromPath(
+std::optional<std::string> GetDrmDriverNameFromPath(
     const char* device_file_name) {
   base::ScopedFD fd(open(device_file_name, O_RDWR));
   if (!fd.is_valid()) {
     LOG(ERROR) << "Failed to open DRM device " << device_file_name;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return GetDrmDriverNameFromFd(fd.get());

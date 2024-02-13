@@ -202,7 +202,8 @@ void ArcAppPerformanceTracing::OnCustomTraceDone(
           .Set("perceivedFps", success ? result->perceived_fps : 0)
           .Set("commitDeviation", success ? result->commit_deviation : 0)
           .Set("presentDeviation", success ? result->present_deviation : 0)
-          .Set("renderQuality", success ? result->render_quality : 0));
+          .Set("renderQuality", success ? result->render_quality : 0)
+          .Set("janksPerMinute", success ? result->janks_per_minute : 0));
 }
 
 bool ArcAppPerformanceTracing::StartCustomTracing() {

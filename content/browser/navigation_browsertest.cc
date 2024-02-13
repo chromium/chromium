@@ -3600,6 +3600,54 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(main_frame_process_host, wc->GetPrimaryMainFrame()->GetProcess());
 }
 
+// Verify that actual renderer-initiated navigations to about:blank#blocked
+// are respected, even though both the browser and renderer rewrite some illegal
+// navigations to that URL as well. See https://crbug.com/40066983.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentHashNavigationToBlockedFragmentAllowed) {
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  TestNavigationObserver blank_observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "location.href = 'about:blank';"));
+  blank_observer.Wait();
+
+  GURL blocked_url = GURL(kBlockedURL);
+  TestNavigationObserver blocked_observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("location.href = $1", blocked_url)));
+  blocked_observer.Wait();
+
+  // If the browser process receives a request to same-document navigate to
+  // about:blank#blocked, the URL should be used and not ignored (as in a
+  // blocked case like the SameDocumentLongURLHashNavigation test).
+  EXPECT_EQ(blocked_url, web_contents()->GetLastCommittedURL());
+}
+
+// Verify that same-document navigations from about:blank to an excessively long
+// fragment do not crash the browser.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameDocumentAboutBlankLongURLHashNavigation) {
+  const GURL blank_url(url::kAboutBlankURL);
+  EXPECT_TRUE(NavigateToURL(shell(), blank_url));
+
+  std::string long_url = "#";
+  long_url.append(2 * url::kMaxURLChars, 'a');
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("location = $1", long_url)));
+
+  // If the renderer attempts to navigate same-document from about:blank to a
+  // too long hash (>2 MB), the URL (and base URL) will be blocked and rewritten
+  // in the renderer to avoid the Mojo serialization limit. Ensure that the
+  // browser process does not crash due to an empty base URL, and that the
+  // blocked URL is used, unlike in the non-about:blank case in the
+  // SameDocumentLongURLHashNavigation test.
+  // TODO(crbug.com/1464018): Ideally this would be blocked earlier in the
+  // renderer process, failing the navigation.
+  EXPECT_EQ(GURL(kBlockedURL), web_contents()->GetLastCommittedURL());
+  // The renderer process considers the same-document navigation to the long URL
+  // to have successfully completed.
+  EXPECT_EQ(long_url, EvalJs(web_contents(), "location.hash"));
+}
+
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
                        SameDocumentLongURLHashNavigation) {
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
@@ -7522,11 +7570,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, AboutMumble) {
 
   // Verify that browser-initiated navigation to `about:mumble` doesn't crash.
   //
-  // The Commit IPC will carry the original "about:mumble" URL, which will still
-  // show up via `window.location.href`, but the URL passed back in DidCommit
-  // will be rewritten to `about:blank#blocked` in
-  // `RenderProcessHostImpl::FilterURL` and therefore this is what we expect in
-  // `GetLastCommittedURL`.
+  // The renderer will try to commit the original "about:mumble" URL, which will
+  // still show up via `window.location.href`, but the URL passed back in the
+  // DidCommit IPC will be rewritten to `about:blank#blocked` due to
+  // `RenderFrameImpl`'s `IsValidCommitUrl` and therefore this is what we expect
+  // in `GetLastCommittedURL`.
   ASSERT_FALSE(NavigateToURL(shell(), GURL("about:mumble")));
   EXPECT_EQ(EvalJs(shell(), "window.location.href"), "about:mumble");
   EXPECT_EQ(

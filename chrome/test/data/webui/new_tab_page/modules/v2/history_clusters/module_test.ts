@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Discount} from 'chrome://new-tab-page/discount.mojom-webui.js';
-import {Cluster, InteractionState, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
+import type {Discount} from 'chrome://new-tab-page/discount.mojom-webui.js';
+import type {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
+import {InteractionState} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {LayoutType} from 'chrome://new-tab-page/history_clusters_layout_type.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters_v2.mojom-webui.js';
-import {DismissModuleInstanceEvent, HistoryClustersProxyImplV2, historyClustersV2Descriptor, HistoryClustersV2ModuleElement, HistoryClusterV2ImageDisplayState, PageImageServiceBrowserProxy, VisitTileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {DismissModuleInstanceEvent, HistoryClustersV2ModuleElement, VisitTileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {HistoryClustersProxyImplV2, historyClustersV2Descriptor, HistoryClusterV2ImageDisplayState, PageImageServiceBrowserProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';

@@ -1419,6 +1419,38 @@ base::Lock& GetUpdateShortcutsLock() {
   return *lock;
 }
 
+bool CopyStagingBundleToDestination(base::FilePath staging_path,
+                                    base::FilePath dst_app_path) {
+  if (!app_mode::UseAdHocSigningForWebAppShims()) {
+    return base::CopyDirectory(staging_path, dst_app_path, true);
+  }
+
+  // When using ad-hoc signing for web app shims, the final app shim must be
+  // written to disk by a separate helper tool. This helper tool is used
+  // so that binary authorization tools, such as Santa, can transitively trust
+  // app shims that it creates without trusting all files written by Chrome.
+  // This allows app shims to be trusted by the binary authorization tool
+  // despite having only ad-hoc code signatures.
+
+  base::FilePath web_app_shortcut_copier_path =
+      base::apple::FrameworkBundlePath().Append("Helpers").Append(
+          "web_app_shortcut_copier");
+  base::CommandLine command_line(web_app_shortcut_copier_path);
+  command_line.AppendArgPath(staging_path);
+  command_line.AppendArgPath(dst_app_path);
+
+  // Synchronously wait for the copy to complete to match the semantics of
+  // `base::CopyDirectory`.
+  std::string command_output;
+  int exit_code;
+  if (base::GetAppOutputWithExitCode(command_line, &command_output,
+                                     &exit_code)) {
+    return !exit_code;
+  }
+
+  return false;
+}
+
 void WebAppShortcutCreator::CreateShortcutsAt(
     const std::vector<base::FilePath>& dst_app_paths,
     std::vector<base::FilePath>* updated_paths) const {
@@ -1465,7 +1497,7 @@ void WebAppShortcutCreator::CreateShortcutsAt(
     base::DeletePathRecursively(dst_app_path);
 
     // Copy the bundle to |dst_app_path|.
-    if (!base::CopyDirectory(staging_path, dst_app_path, true)) {
+    if (!CopyStagingBundleToDestination(staging_path, dst_app_path)) {
       RecordCreateShortcut(CreateShortcutResult::kFailToCopyApp);
       LOG(ERROR) << "Copying app to dst dir: " << dst_parent_dir.value()
                  << " failed";

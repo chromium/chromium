@@ -25,9 +25,9 @@ class AssistantViewDelegate;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOptInView
     : public views::View,
       public AssistantStateObserver {
- public:
-  METADATA_HEADER(AssistantOptInView);
+  METADATA_HEADER(AssistantOptInView, views::View)
 
+ public:
   explicit AssistantOptInView(AssistantViewDelegate* delegate_);
   AssistantOptInView(const AssistantOptInView&) = delete;
   AssistantOptInView& operator=(const AssistantOptInView&) = delete;

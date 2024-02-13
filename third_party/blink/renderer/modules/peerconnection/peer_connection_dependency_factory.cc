@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -24,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "crypto/openssl_util.h"
@@ -37,6 +40,7 @@
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -44,14 +48,18 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/p2p/empty_network_manager.h"
@@ -469,6 +477,8 @@ PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
     PassKey)
     : Supplement(context),
       ExecutionContextLifecycleObserver(&context),
+      context_task_runner_(
+          context.GetTaskRunner(TaskType::kInternalMediaRealTime)),
       network_manager_(nullptr),
       p2p_socket_dispatcher_(P2PSocketDispatcher::From(context)) {
   // Initialize mojo pipe for encode/decode performance stats data collection.
@@ -656,6 +666,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
         }
     )");
   socket_factory_ = std::make_unique<IpcPacketSocketFactory>(
+      WTF::CrossThreadBindRepeating(
+          &PeerConnectionDependencyFactory::DoGetDevtoolsToken,
+          WrapCrossThreadWeakPersistent(this)),
       p2p_socket_dispatcher_.Get(), traffic_annotation, /*batch_udp_packets=*/
       base::FeatureList::IsEnabled(features::kWebRtcSendPacketBatch));
 
@@ -725,6 +738,33 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   pc_factory_->SetOptions(factory_options);
 
   event->Signal();
+}
+
+void PeerConnectionDependencyFactory::DoGetDevtoolsToken(
+    base::OnceCallback<void(std::optional<base::UnguessableToken>)> then) {
+  context_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
+          [](PeerConnectionDependencyFactory* factory)
+              -> std::optional<base::UnguessableToken> {
+            if (!factory) {
+              return std::nullopt;
+            }
+            return factory->GetDevtoolsToken();
+          },
+          WrapCrossThreadWeakPersistent(this))),
+      std::move(then));
+}
+
+std::optional<base::UnguessableToken>
+PeerConnectionDependencyFactory::GetDevtoolsToken() {
+  if (!GetExecutionContext()) {
+    return std::nullopt;
+  }
+  CHECK(GetExecutionContext()->IsContextThread());
+  std::optional<base::UnguessableToken> devtools_token;
+  probe::WillCreateP2PSocketUdp(GetExecutionContext(), &devtools_token);
+  return devtools_token;
 }
 
 bool PeerConnectionDependencyFactory::PeerConnectionFactoryCreated() {

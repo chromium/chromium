@@ -226,9 +226,17 @@ class WebGLConformanceIntegrationTestBase(
     super()._RestoreBrowserEnvironment()
 
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
+    retry_from_super = super()._ShouldForceRetryOnFailureFirstTest()
     # Force RetryOnFailure of the first test on a shard on ChromeOS VMs.
     # See crbug.com/1079244.
-    return 'chromeos-board-amd64-generic' in self.GetPlatformTags(self.browser)
+    try:
+      retry_on_amd64_generic = ('chromeos-board-amd64-generic'
+                                in self.GetPlatformTags(self.browser))
+    except Exception:  # pylint: disable=broad-except
+      logging.warning(
+          'Failed to determine if running on a ChromeOS VM, assuming no')
+      retry_on_amd64_generic = False
+    return retry_from_super or retry_on_amd64_generic
 
   def _TestWasSlow(self) -> bool:
     # Consider the test slow if it had a relatively long time between

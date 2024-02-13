@@ -88,7 +88,7 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
   // fields to have different labels, form control types, etc.
   auto SimilarityTuple = [](const FormData& f) {
     return std::tie(f.host_frame, f.renderer_id, f.name, f.id_attribute,
-                    f.name_attribute, f.url, f.action, f.is_form_tag);
+                    f.name_attribute, f.url, f.action);
   };
   return SimilarityTuple(form_) == SimilarityTuple(form) &&
          SimilarFieldsAs(form);
@@ -114,7 +114,6 @@ FormDataAndroid::SimilarFormAsWithDiagnosis(const FormData& form) const {
                   SimilarityCheckComponent::kNameAttribute);
   check_component(&FormData::url, SimilarityCheckComponent::kUrl);
   check_component(&FormData::action, SimilarityCheckComponent::kAction);
-  check_component(&FormData::is_form_tag, SimilarityCheckComponent::kIsFormTag);
 
   if (!SimilarFieldsAs(form)) {
     result.value() |= base::to_underlying(SimilarityCheckComponent::kFields);

@@ -20,6 +20,7 @@
 namespace gpu {
 
 namespace {
+
 bool SupportsMultiplanarRendering(SharedContextState* context_state) {
   auto* dawn_context_provider = context_state->dawn_context_provider();
   if (!dawn_context_provider) {
@@ -96,7 +97,8 @@ SkiaGraphiteDawnImageRepresentation::~SkiaGraphiteDawnImageRepresentation() {
 
 std::vector<skgpu::graphite::BackendTexture>
 SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
-    wgpu::Texture texture) {
+    wgpu::Texture texture,
+    bool readonly) {
   std::vector<skgpu::graphite::BackendTexture> backend_textures;
   const bool supports_multiplanar_rendering =
       SupportsMultiplanarRendering(context_state_.get());
@@ -112,7 +114,8 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
       SkISize plane_size =
           gfx::SizeToSkISize(format().GetPlaneSize(plane_index, size()));
       skgpu::graphite::DawnTextureInfo plane_info = DawnBackendTextureInfo(
-          format(), /*is_yuv_plane=*/true, plane_index, /*mipmapped=*/false,
+          format(), readonly, /*is_yuv_plane=*/true, plane_index,
+          /*mipmapped=*/false,
           /*scanout_dcomp_surface=*/false, supports_multiplanar_rendering,
           supports_multiplanar_copy);
       backend_textures.emplace_back(plane_size, plane_info, texture.Get());
@@ -121,7 +124,7 @@ SkiaGraphiteDawnImageRepresentation::CreateBackendTextures(
     // Legacy multi-planar NV12 - format() is either R8 or RG8.
     SkISize plane_size = gfx::SizeToSkISize(size());
     skgpu::graphite::DawnTextureInfo plane_info = DawnBackendTextureInfo(
-        format(), /*is_yuv_plane=*/true, legacy_plane_index_,
+        format(), readonly, /*is_yuv_plane=*/true, legacy_plane_index_,
         /*mipmapped=*/false, /*scanout_dcomp_surface=*/false,
         supports_multiplanar_rendering, supports_multiplanar_copy);
     backend_textures = {
@@ -148,7 +151,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
   }
 
   std::vector<skgpu::graphite::BackendTexture> backend_textures =
-      CreateBackendTextures(dawn_scoped_access_->texture());
+      CreateBackendTextures(dawn_scoped_access_->texture(), /*readonly=*/false);
 
   std::vector<sk_sp<SkSurface>> surfaces;
   surfaces.reserve(format().NumberOfPlanes());
@@ -189,7 +192,8 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   }
 
   mode_ = RepresentationAccessMode::kWrite;
-  return CreateBackendTextures(dawn_scoped_access_->texture());
+  return CreateBackendTextures(dawn_scoped_access_->texture(),
+                               /*readonly=*/false);
 }
 
 void SkiaGraphiteDawnImageRepresentation::EndWriteAccess() {
@@ -202,16 +206,18 @@ std::vector<skgpu::graphite::BackendTexture>
 SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
-
+  constexpr wgpu::TextureUsage kReadOnlyTextureUsage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
-      supported_tex_usages_, AllowUnclearedAccess::kNo);
+      supported_tex_usages_ & kReadOnlyTextureUsage, AllowUnclearedAccess::kNo);
   if (!dawn_scoped_access_) {
     DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
   }
 
   mode_ = RepresentationAccessMode::kRead;
-  return CreateBackendTextures(dawn_scoped_access_->texture());
+  return CreateBackendTextures(dawn_scoped_access_->texture(),
+                               /*readonly=*/true);
 }
 
 void SkiaGraphiteDawnImageRepresentation::EndReadAccess() {

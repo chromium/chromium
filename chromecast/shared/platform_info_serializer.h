@@ -5,11 +5,11 @@
 #ifndef CHROMECAST_SHARED_PLATFORM_INFO_SERIALIZER_H_
 #define CHROMECAST_SHARED_PLATFORM_INFO_SERIALIZER_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
-#include "base/strings/string_piece.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "third_party/cast_core/public/src/proto/bindings/media_capabilities.pb.h"
 
@@ -43,7 +43,7 @@ class PlatformInfoSerializer {
 
   std::string Serialize() const;
   static std::optional<PlatformInfoSerializer> Deserialize(
-      base::StringPiece base64);
+      std::string_view base64);
 
   // Setters for known valid properties.
   void SetMaxWidth(int max_width);

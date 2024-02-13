@@ -314,7 +314,7 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
           gfx::RectF(bounds_rect), gfx::RectF(1.f, 1.f) /* no crop */, false,
           damage_region, 1.0f /*opacity*/, gfx::OverlayPriorityHint::kNone,
           gfx::RRectF(gfx::RectF(bounds_rect), corners), gfx::ColorSpace(),
-          absl::nullopt),
+          std::nullopt),
       nullptr, buffer_id, surface_scale_factor);
   CommitOverlays(widget, frame_id, data, std::move(overlay_configs));
 }

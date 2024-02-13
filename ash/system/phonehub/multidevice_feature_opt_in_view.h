@@ -21,9 +21,9 @@ namespace ash {
 class ASH_EXPORT MultideviceFeatureOptInView
     : public SubFeatureOptInView,
       public phonehub::MultideviceFeatureAccessManager::Observer {
- public:
-  METADATA_HEADER(MultideviceFeatureOptInView);
+  METADATA_HEADER(MultideviceFeatureOptInView, SubFeatureOptInView)
 
+ public:
   explicit MultideviceFeatureOptInView(
       phonehub::MultideviceFeatureAccessManager*
           multidevice_feature_access_manager);

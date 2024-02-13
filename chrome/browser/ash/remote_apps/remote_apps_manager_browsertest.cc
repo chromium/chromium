@@ -365,7 +365,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DISABLED_AddApp) {
 
 // Adds an app with an empty icon URL and checks if the app gets assigned the
 // default placeholder icon.
-IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
+// Flaky (b/41483673)
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
+                       DISABLED_AddAppPlaceholderIcon) {
   // Show launcher UI so that app icons are loaded.
   ShowLauncherAppsGrid(/*wait_for_opening_animation=*/true);
 

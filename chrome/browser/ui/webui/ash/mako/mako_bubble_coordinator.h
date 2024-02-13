@@ -10,7 +10,7 @@
 
 #include "ui/gfx/geometry/rect.h"
 
-class BubbleContentsWrapper;
+class WebUIContentsWrapper;
 class Profile;
 
 namespace ash {
@@ -55,7 +55,7 @@ class MakoBubbleCoordinator {
   // contents wrapper and probably won't handle the bubble widget lifetimes
   // correctly. Figure out how WebUI bubbles work, then implement this properly
   // (maybe using a WebUIBubbleManager).
-  std::unique_ptr<BubbleContentsWrapper> contents_wrapper_;
+  std::unique_ptr<WebUIContentsWrapper> contents_wrapper_;
 };
 
 }  // namespace ash

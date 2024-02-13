@@ -13,12 +13,12 @@ ThemedLabel::ThemedLabel() = default;
 
 ThemedLabel::~ThemedLabel() = default;
 
-absl::optional<ui::ColorId> ThemedLabel::GetEnabledColorId() const {
+std::optional<ui::ColorId> ThemedLabel::GetEnabledColorId() const {
   return enabled_color_id_;
 }
 
 void ThemedLabel::SetEnabledColorId(
-    absl::optional<ui::ColorId> enabled_color_id) {
+    std::optional<ui::ColorId> enabled_color_id) {
   if (enabled_color_id == enabled_color_id_)
     return;
   enabled_color_id_ = enabled_color_id;
@@ -33,7 +33,7 @@ void ThemedLabel::OnThemeChanged() {
 }
 
 BEGIN_METADATA(ThemedLabel)
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, EnabledColorId)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, EnabledColorId)
 END_METADATA
 
 }  // namespace views::examples

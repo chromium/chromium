@@ -2064,7 +2064,7 @@ public class AwContentsTest extends AwParameterizedTest {
                         0,
                         0);
         HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher("Input.UnrecognizedToolType.Android", 20);
+                HistogramWatcher.newSingleRecordWatcher("Input.ToolType.Android", 20);
         Assert.assertFalse(awContents.onTouchEvent(event));
         watcher.assertExpected();
     }

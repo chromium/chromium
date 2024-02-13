@@ -9,15 +9,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
-#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/test_utils.h"
 
@@ -25,67 +21,11 @@
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
-class Browser;
-
 namespace base {
 class TickClock;
 }  // namespace base
 
-// BrowserFullscreenModeWaiter can be used to wait for entering or exiting
-// browser fullscreen mode.
-class BrowserFullscreenModeWaiter : public FullscreenObserver {
- public:
-  BrowserFullscreenModeWaiter(Browser* browser,
-                              bool wait_until_exit_fullscreen_mode);
-
-  BrowserFullscreenModeWaiter(const BrowserFullscreenModeWaiter&) = delete;
-  BrowserFullscreenModeWaiter& operator=(const BrowserFullscreenModeWaiter&) =
-      delete;
-
-  ~BrowserFullscreenModeWaiter() override;
-
-  // Runs a loop until it enters or exits the expected fullscreen mode.
-  void Wait();
-
-  // FullscreenObserver:
-  void OnFullscreenStateChanged() override;
-
- protected:
-  // If true, wait until browser fullscreen mode is off; otherwise wait until
-  // browser fullscreen mode is on.
-  const bool wait_until_exit_fullscreen_mode_;
-  bool observed_change_ = false;
-  raw_ptr<FullscreenController> controller_;  // not owned
-  base::ScopedObservation<FullscreenController, FullscreenObserver>
-      observation_{this};
-  base::RunLoop run_loop_;
-};
-
-// Observer for fullscreen state change notifications.
-class FullscreenNotificationObserver : public FullscreenObserver {
- public:
-  explicit FullscreenNotificationObserver(Browser* browser);
-
-  FullscreenNotificationObserver(const FullscreenNotificationObserver&) =
-      delete;
-  FullscreenNotificationObserver& operator=(
-      const FullscreenNotificationObserver&) = delete;
-
-  ~FullscreenNotificationObserver() override;
-
-  // Runs a loop until a fullscreen change is seen (unless one has already been
-  // observed, in which case it returns immediately).
-  void Wait();
-
-  // FullscreenObserver:
-  void OnFullscreenStateChanged() override;
-
- protected:
-  bool observed_change_ = false;
-  base::ScopedObservation<FullscreenController, FullscreenObserver>
-      observation_{this};
-  base::RunLoop run_loop_;
-};
+class FullscreenController;
 
 // Test fixture with convenience functions for fullscreen, keyboard lock, and
 // pointer lock.
@@ -116,7 +56,6 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   void GoBack();
   void Reload();
   void EnterActiveTabFullscreen();
-  void ToggleBrowserFullscreen();
   void EnterExtensionInitiatedFullscreen();
 
   static const char kFullscreenKeyboardLockHTML[];
@@ -145,9 +84,6 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
       keyboard_lock_bubble_hide_reason_recorder_;
 
  private:
-  void ToggleTabFullscreen_Internal(bool enter_fullscreen,
-                                    bool retry_until_success);
-
 #if BUILDFLAG(IS_MAC)
   // On Mac, entering into the system fullscreen mode can tickle crashes in
   // the WindowServer (c.f. https://crbug.com/828031), so provide a fake for

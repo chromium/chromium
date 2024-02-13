@@ -51,6 +51,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/types/event_type.h"
 
 namespace ash {
 
@@ -371,6 +372,35 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
     return AcceleratorConfigResult::kReservedKeyNotAllowed;
   }
 
+  // Case: A function key accelerator cannot have the meta key modifier.
+  if ((modifiers & ui::EF_COMMAND_DOWN) != 0 &&
+      ui::KeyboardCapability::IsFunctionKey(accelerator.key_code())) {
+    VLOG(1) << "Failed to validate accelerator: "
+            << accelerator.GetShortcutText() << " with error: "
+            << static_cast<int>(AcceleratorConfigResult::kKeyNotAllowed)
+            << ". Accelerator has meta key with Function key.";
+    return AcceleratorConfigResult::kSearchWithFunctionKeyNotAllowed;
+  }
+
+  // Case: Non-standard keys cannot have search as a modifier.
+  absl::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
+      key_code_entry = FindKeyCodeEntry(accelerator.key_code());
+  if (key_code_entry.has_value()) {
+    const ui::KeyEvent key_event(
+        ui::ET_KEY_PRESSED, key_code_entry->resulting_key_code,
+        key_code_entry->dom_code, accelerator.modifiers());
+    const AcceleratorKeyInputType input_type =
+        GetKeyInputTypeFromKeyEvent(key_event);
+    if ((input_type == AcceleratorKeyInputType::kMisc ||
+         input_type == AcceleratorKeyInputType::kTopRow) &&
+        (modifiers & ui::EF_COMMAND_DOWN) != 0) {
+      VLOG(1) << "Failed to validate accelerator: "
+              << accelerator.GetShortcutText() << " with error: "
+              << " Cannot have search with non-standard key.";
+      return AcceleratorConfigResult::kNonStandardWithSearch;
+    }
+  }
+
   // Case: Top-row action keys cannot be part of the accelerator.
   std::optional<ui::TopRowActionKey> top_row_action_key =
       ui::KeyboardCapability::ConvertToTopRowActionKey(accelerator.key_code());
@@ -390,16 +420,6 @@ std::optional<AcceleratorConfigResult> ValidateAccelerator(
             << accelerator.GetShortcutText() << " with error: "
             << static_cast<int>(AcceleratorConfigResult::kShiftOnlyNotAllowed);
     return AcceleratorConfigResult::kShiftOnlyNotAllowed;
-  }
-
-  // Case: A function key accelerator cannot have the meta key modifier.
-  if ((modifiers & ui::EF_COMMAND_DOWN) != 0 &&
-      ui::KeyboardCapability::IsFunctionKey(accelerator.key_code())) {
-    VLOG(1) << "Failed to validate accelerator: "
-            << accelerator.GetShortcutText() << " with error: "
-            << static_cast<int>(AcceleratorConfigResult::kKeyNotAllowed)
-            << ". Accelerator has meta key with Function key.";
-    return AcceleratorConfigResult::kSearchWithFunctionKeyNotAllowed;
   }
 
   // No errors with the accelerator.

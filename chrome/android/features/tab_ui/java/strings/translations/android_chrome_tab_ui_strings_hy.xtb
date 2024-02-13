@@ -3,10 +3,13 @@
 <translationbundle lang="hy">
 <translation id="1075622780330595106">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վերջերս չեն օգտագործվել։ Փակե՞լ դրանք։</translation>
 <translation id="1155815720264022949">Փակե՞լ հին ներդիրները</translation>
+<translation id="1197088940767939838">Նարնջագույն</translation>
 <translation id="1215127405478249895">Ներդիրների դիտում</translation>
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1326271443836399892">Բացեք կարգաբերման ընթացիկ կարգավորումները։</translation>
 <translation id="1499635324672558517">Փակե՞լ բոլոր ինկոգնիտո ներդիրները</translation>
+<translation id="1555130319947370107">Կապույտ</translation>
+<translation id="161042844686301425">Երկնագույն</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Էջանշել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Էջանշել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ավելացնել ներդիրը խմբում}one{Ավելացնել ներդիրը խմբում}other{Ավելացնել ներդիրները խմբում}}</translation>
 <translation id="3996880007329611795">Ստանալ ծանուցումներ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
+<translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="427987768447457592">Ներդիրների նոր խումբ</translation>
 <translation id="4648718555153979859">Ձեր ներդիրները խմբավորվում են այստեղ</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Դուք ունեք <ph name="TABS_COUNT_ONE" /> ներդիր, որը վերջերս չեք օգտագործել}one{Դուք ունեք <ph name="TABS_COUNT_MANY" /> ներդիր, որը վերջերս չեք օգտագործել}other{Դուք ունեք <ph name="TABS_COUNT_MANY" /> ներդիր, որոնք վերջերս չեք օգտագործել}}</translation>
 <translation id="5339733443032484186">Ձեր վերջին ներդիրը</translation>
+<translation id="5400836586163650660">Մոխրագույն</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5545379293264651575">Փակել առանց ստուգելու</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Ստանա՞լ ծանուցումներ գների իջեցման մասին</translation>
 <translation id="58326064309361797">Քաշեք ներդիրները՝ դրանք խմբավորելու համար</translation>
 <translation id="5846292395804797011">Փակել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը</translation>
+<translation id="5901630391730855834">Դեղին</translation>
 <translation id="5972844218283131174">Ապընտրել բոլորը</translation>
+<translation id="6017514345406065928">Կանաչ</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
 <translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Խմբավորել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Խմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}other{Խմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> կարծիք}one{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}other{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}}</translation>
 <translation id="7885132941432959125">Տեղափոխել ներդիրն աջ</translation>
+<translation id="7942349550061667556">Կարմիր</translation>
 <translation id="7966321538264951561">Փակել հուշումները։</translation>
 <translation id="8029301326595421733">Այս խանութի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
 <translation id="8205266828577616993">Տեղափոխել ներդիրը վերև</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Ավելացնել նոր ներդիր խմբում</translation>
 <translation id="955558140275419384">Բացեք այս խմբագրիչը և դիտեք բոլոր արխիվացված ներդիրները՝ կարգի բերելու համար։</translation>
 <translation id="959682366969460160">Աշխատանքի կազմակերպում</translation>
+<translation id="992256792861109788">Վարդագույն</translation>
 </translationbundle>

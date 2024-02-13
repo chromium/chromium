@@ -23,7 +23,7 @@
 
 SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
                                        base::RepeatingClosure close_cb,
-                                       BubbleContentsWrapper* contents_wrapper)
+                                       WebUIContentsWrapper* contents_wrapper)
     : on_show_cb_(std::move(on_show_cb)),
       close_cb_(std::move(close_cb)),
       contents_wrapper_(contents_wrapper) {

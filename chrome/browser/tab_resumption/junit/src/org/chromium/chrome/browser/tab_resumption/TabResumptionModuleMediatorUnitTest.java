@@ -4,14 +4,10 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.ViewStub;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -50,14 +46,13 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
     @Mock private TabResumptionDataProvider mDataProvider;
     @Mock private UrlImageProvider mUrlImageProvider;
-    @Mock private ViewStub mViewStub;
 
     @Captor private ArgumentCaptor<Callback<List<SuggestionEntry>>> mFetchSuggestionCallbackCaptor;
     @Captor private ArgumentCaptor<GURL> mFetchImagePageUrlCaptor;
 
-    private TabResumptionModuleView mModuleView;
-    private TabResumptionModuleCoordinator mCoordinator;
     private PropertyModel mModel;
+    private TabResumptionModuleView mModuleView;
+    private TabResumptionModuleMediator mMediator;
 
     private SuggestionClickCallback mClickCallback;
 
@@ -70,34 +65,29 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
         Context context = ApplicationProvider.getApplicationContext();
         context.setTheme(R.style.Theme_BrowserUI_DayNight);
+
+        mModel = new PropertyModel(TabResumptionModuleProperties.ALL_KEYS);
         mModuleView =
                 (TabResumptionModuleView)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.tab_resumption_module_layout, null);
-        when(mViewStub.inflate()).thenReturn(mModuleView);
 
         mClickCallback =
                 (GURL url) -> {
                     mLastClickUrl = url;
                     ++mClickCount;
                 };
-        mCoordinator =
-                new TabResumptionModuleCoordinator(
-                        mDataProvider, mUrlImageProvider, mClickCallback, mViewStub) {
+
+        mMediator =
+                new TabResumptionModuleMediator(
+                        context, mModel, mDataProvider, mUrlImageProvider, mClickCallback) {
                     @Override
-                    protected TabResumptionModuleMediator createMediator() {
-                        return new TabResumptionModuleMediator(mModel) {
-                            @Override
-                            long getCurrentTimeMs() {
-                                return CURRENT_TIME_MS;
-                            }
-                        };
+                    long getCurrentTimeMs() {
+                        return CURRENT_TIME_MS;
                     }
                 };
-        mModel = mCoordinator.getModelForTesting();
 
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
-        Assert.assertEquals(mDataProvider, mModel.get(TabResumptionModuleProperties.DATA_PROVIDER));
         Assert.assertEquals(
                 mUrlImageProvider, mModel.get(TabResumptionModuleProperties.URL_IMAGE_PROVIDER));
         // `mClickCallback` may get wrapped, so just check for non-null.
@@ -106,16 +96,16 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
     @After
     public void tearDown() {
-        mCoordinator.destroy();
+        mMediator.destroy();
         mModel = null;
-        mCoordinator = null;
+        mMediator = null;
         mModuleView = null;
     }
 
     @Test
     @SmallTest
     public void testNullSuggestions() {
-        mCoordinator.reload();
+        mMediator.loadModule();
         verify(mDataProvider).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getValue().onResult(null);
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
@@ -125,7 +115,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @SmallTest
     public void testEmptySuggestions() {
         List<SuggestionEntry> emptySuggestions = new ArrayList<SuggestionEntry>();
-        mCoordinator.reload();
+        mMediator.loadModule();
         verify(mDataProvider).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getValue().onResult(emptySuggestions);
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
@@ -154,33 +144,19 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Collections.sort(suggestions);
 
         Assert.assertFalse((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
-        mCoordinator.reload();
+        mMediator.loadModule();
         verify(mDataProvider).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getValue().onResult(suggestions);
 
         Assert.assertTrue((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
+        Assert.assertEquals(
+                "Continue with this tab", mModel.get(TabResumptionModuleProperties.TITLE));
 
         SuggestionBundle bundle =
                 (SuggestionBundle) mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
         Assert.assertEquals(CURRENT_TIME_MS, bundle.referenceTimeMs);
         Assert.assertEquals(1, bundle.entries.size());
         Assert.assertEquals(entryValid, bundle.entries.get(0));
-
-        // Check image URL load request.
-        verify(mUrlImageProvider, atLeastOnce())
-                .fetchImageForUrl(mFetchImagePageUrlCaptor.capture(), any());
-        Assert.assertEquals(1, mFetchImagePageUrlCaptor.getAllValues().size());
-        Assert.assertEquals(entryValid.url, mFetchImagePageUrlCaptor.getAllValues().get(0));
-
-        // Simulate click (without UI) by calling the stored handler directly.
-        Assert.assertEquals(0, mClickCount);
-        Assert.assertEquals(null, mLastClickUrl);
-        GURL clickUrl = JUnitTestGURLs.GOOGLE_URL_CAT;
-        SuggestionClickCallback clickCallback =
-                (SuggestionClickCallback) mModel.get(TabResumptionModuleProperties.CLICK_CALLBACK);
-        clickCallback.onSuggestionClick(clickUrl);
-        Assert.assertEquals(1, mClickCount);
-        Assert.assertEquals(clickUrl, mLastClickUrl);
     }
 
     @Test
@@ -206,11 +182,13 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         suggestions.add(entryOldest);
         Collections.sort(suggestions);
 
-        mCoordinator.reload();
+        mMediator.loadModule();
         verify(mDataProvider).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getValue().onResult(suggestions);
 
         Assert.assertTrue((Boolean) mModel.get(TabResumptionModuleProperties.IS_VISIBLE));
+        Assert.assertEquals(
+                "Continue with these tabs", mModel.get(TabResumptionModuleProperties.TITLE));
 
         SuggestionBundle bundle =
                 (SuggestionBundle) mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
@@ -218,12 +196,5 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertEquals(2, bundle.entries.size());
         Assert.assertEquals(entryNewest, bundle.entries.get(0));
         Assert.assertEquals(entryNewer, bundle.entries.get(1));
-
-        // Check image URL load requests.
-        verify(mUrlImageProvider, atLeastOnce())
-                .fetchImageForUrl(mFetchImagePageUrlCaptor.capture(), any());
-        Assert.assertEquals(2, mFetchImagePageUrlCaptor.getAllValues().size());
-        Assert.assertEquals(entryNewest.url, mFetchImagePageUrlCaptor.getAllValues().get(0));
-        Assert.assertEquals(entryNewer.url, mFetchImagePageUrlCaptor.getAllValues().get(1));
     }
 }

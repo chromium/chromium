@@ -137,6 +137,11 @@ network::mojom::SharedDictionaryInfoPtr ToMojoSharedDictionaryInfo(
     const DictionaryInfoType& info) {
   auto mojo_info = network::mojom::SharedDictionaryInfo::New();
   mojo_info->match = info.match();
+  for (const auto dest : info.match_dest()) {
+    mojo_info->match_dest.push_back(dest);
+  }
+  std::sort(mojo_info->match_dest.begin(), mojo_info->match_dest.end());
+  mojo_info->id = info.id();
   mojo_info->dictionary_url = info.url();
   mojo_info->response_time = info.response_time();
   mojo_info->expiration = info.expiration();

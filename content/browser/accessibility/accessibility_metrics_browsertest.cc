@@ -34,11 +34,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityMetricsBrowserTest, EventProcessingTime) {
 
   // There should be at least one recording to the "first" histogram, and at
   // least one to the non-suffxed ("others") histogram.
-  ASSERT_FALSE(
-      histogram_tester_.GetAllSamples("Accessibility.EventProcessingTime.First")
-          .empty());
   ASSERT_FALSE(histogram_tester_
-                   .GetAllSamples("Accessibility.EventProcessingTime.NotFirst")
+                   .GetAllSamples("Accessibility.EventProcessingTime2.First")
+                   .empty());
+  ASSERT_FALSE(histogram_tester_
+                   .GetAllSamples("Accessibility.EventProcessingTime2.NotFirst")
                    .empty());
 }
 

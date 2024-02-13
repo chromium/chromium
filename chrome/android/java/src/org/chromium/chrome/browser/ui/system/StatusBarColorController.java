@@ -117,6 +117,12 @@ public class StatusBarColorController
     private StartSurface.StateObserver mStartSurfaceStateObserver;
     private @StartSurfaceState int mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
 
+    // Tab strip transition states.
+    private boolean mTabStripHiddenOnTablet;
+    private @ColorInt int mTabStripTransitionOverlayColor = ScrimProperties.INVALID_COLOR;
+    private float mTabStripTransitionOverlayAlpha;
+    private boolean mAllowToolbarColorOnTablets;
+
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
                 @Override
@@ -171,6 +177,7 @@ public class StatusBarColorController
         mStatusBarColorProvider = statusBarColorProvider;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mAllowToolbarColorOnTablets = false;
 
         mStandardPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, false);
         mIncognitoPrimaryBgColor = ChromeColors.getPrimaryBackgroundColor(context, true);
@@ -372,12 +379,13 @@ public class StatusBarColorController
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
     @Override
     public void onToolbarColorChanged(@ColorInt int color) {
-        if (!OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            return;
-        }
-
-        // Status bar on tablets should not change at all times.
-        if (mIsTablet) {
+        boolean shouldUseToolbarColorOnPhone =
+                !mIsTablet && OmniboxFeatures.shouldMatchToolbarAndStatusBarColor();
+        // Status bar color on tablets could change when the DYNAMIC_TOP_CHROME feature is enabled,
+        // where it might be required for the status bar color to match the toolbar color when the
+        // tab strip is hidden.
+        boolean shouldUseToolbarColorOnTablet = mIsTablet && mAllowToolbarColorOnTablets;
+        if (!shouldUseToolbarColorOnPhone && !shouldUseToolbarColorOnTablet) {
             return;
         }
 
@@ -438,6 +446,20 @@ public class StatusBarColorController
     }
 
     /**
+     * Add the tab strip transition scrim overlay on the status bar during a tab strip transition.
+     *
+     * @param overlayColor The overlay color.
+     * @param overlayAlpha The alpha that |overlayColor| should have on the status bar color.
+     */
+    public void setTabStripColorOverlay(@ColorInt int overlayColor, float overlayAlpha) {
+        assert mIsTablet;
+        if (!mAllowToolbarColorOnTablets) return;
+        mTabStripTransitionOverlayColor = overlayColor;
+        mTabStripTransitionOverlayAlpha = overlayAlpha;
+        updateStatusBarColor();
+    }
+
+    /**
      * @param tabModelSelector The {@link TabModelSelector} to check whether incognito model is
      *                         selected.
      */
@@ -456,8 +478,21 @@ public class StatusBarColorController
         mStatusBarColorWithoutStatusIndicator = calculateBaseStatusBarColor();
         @ColorInt
         int statusBarColor = applyStatusBarIndicatorColor(mStatusBarColorWithoutStatusIndicator);
+        statusBarColor = applyTabStripOverlay(statusBarColor);
         statusBarColor = applyCurrentScrimToColor(statusBarColor);
         setStatusBarColor(mWindow, statusBarColor);
+    }
+
+    /**
+     * Set whether the tab strip is hidden or visible on a tablet. This state will be used to
+     * determine the base status bar color on a tablet.
+     *
+     * @param tabStripHiddenOnTablet Whether the tab strip is hidden or visible on a tablet.
+     */
+    public void setTabStripHiddenOnTablet(boolean tabStripHiddenOnTablet) {
+        assert mIsTablet;
+        if (!mAllowToolbarColorOnTablets) return;
+        mTabStripHiddenOnTablet = tabStripHiddenOnTablet;
     }
 
     /**
@@ -480,7 +515,9 @@ public class StatusBarColorController
         }
 
         if (mIsTablet) {
-            return TabUiThemeUtil.getTabStripBackgroundColor(mWindow.getContext(), mIsIncognito);
+            return mTabStripHiddenOnTablet
+                    ? mToolbarColor
+                    : TabUiThemeUtil.getTabStripBackgroundColor(mWindow.getContext(), mIsIncognito);
         }
 
         // When Omnibox gains focus, we want to clear the status bar theme color.
@@ -584,6 +621,31 @@ public class StatusBarColorController
         }
         // Apply a color overlay if the scrim is showing.
         return ColorUtils.overlayColor(color, mScrimColor, mStatusBarScrimFraction);
+    }
+
+    /**
+     * Apply and get the tab strip overlay applied color if the strip transition scrim is showing.
+     *
+     * @param color Base color to apply the overlay to.
+     */
+    private @ColorInt int applyTabStripOverlay(@ColorInt int color) {
+        // If the tab strip is transitioning on a tablet, apply the strip overlay on the status bar.
+        if (mIsTablet && mTabStripTransitionOverlayAlpha > 0) {
+            return ColorUtils.getColorWithOverlay(
+                    color, mTabStripTransitionOverlayColor, mTabStripTransitionOverlayAlpha);
+        }
+        return color;
+    }
+
+    /**
+     * Determines whether the status bar color could use the toolbar color on tablets when certain
+     * conditions are met. This is currently supported on ChromeTabbedActivity's with the
+     * DYNAMIC_TOP_CHROME feature enabled.
+     *
+     * @param allowToolbarColorOnTablets Whether the status bar color could use the toolbar color.
+     */
+    public void setAllowToolbarColorOnTablets(boolean allowToolbarColorOnTablets) {
+        mAllowToolbarColorOnTablets = allowToolbarColorOnTablets;
     }
 
     /**

@@ -514,30 +514,30 @@ bool IsInstalled(const std::string& app_id, Profile* profile) {
 
 bool IsInstalledAndEnabled(const std::string& app_id, Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   return app;
 }
 
 bool PathExists(const std::string& app_id, Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   return app && base::PathExists(app->path());
 }
 
 base::FilePath GetPath(const std::string& app_id, Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   return app ? app->path() : base::FilePath();
 }
 
 std::optional<std::string> GetVersion(const std::string& app_id,
                                       Profile* profile) {
   const extensions::Extension* app =
-      extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
-          app_id, extensions::ExtensionRegistry::ENABLED);
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          app_id);
   if (!app)
     return std::nullopt;
   return app->VersionString();

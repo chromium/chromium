@@ -104,6 +104,10 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
     return loader_wrapper_ ? loader_wrapper_->get() : nullptr;
   }
 
+  void set_parent_client_uuid(std::string uuid) {
+    parent_client_uuid_ = std::move(uuid);
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerControlleeRequestHandlerTest,
                            ActivateWaitingVersion);
@@ -168,6 +172,7 @@ class CONTENT_EXPORT ServiceWorkerControlleeRequestHandler final {
   blink::StorageKey storage_key_;
   bool force_update_started_;
   const int frame_tree_node_id_;
+  std::string parent_client_uuid_;
 
   NavigationLoaderInterceptor::LoaderCallback loader_callback_;
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;

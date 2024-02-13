@@ -1577,4 +1577,21 @@
   <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
     Restore apps and pages
   </message>
+
+  <!-- Multitasking section. -->
+  <message name="IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW" desc="Text for search result item which, when clicked, navigates the user to Multitasking settings, with a toggle to enable/disable snap window suggestions. Alternate phrase for 'Split screen set up', 'Dock window', 'Snap window', 'Split screen overview'">
+    Split screen window suggestion
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT1" desc="Text for search result item which, when clicked, navigates the user to Multitasking settings, with a toggle to enable/disable snap window suggestions. Alternate phrase for 'Split screen window suggestion', 'Dock window', 'Snap window', 'Split screen overview'">
+    Split screen set up
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT2" desc="Text for search result item which, when clicked, navigates the user to Multitasking settings, with a toggle to enable/disable snap window suggestions. Alternate phrase for 'Split screen window suggestion', 'Split screen set up', 'Snap window', 'Split screen overview'">
+    Dock window
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT3" desc="Text for search result item which, when clicked, navigates the user to Multitasking settings, with a toggle to enable/disable snap window suggestions. Alternate phrase for 'Split screen window suggestion', 'Split screen set up', 'Dock window', 'Split screen overview'">
+    Snap window
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT4" desc="Text for search result item which, when clicked, navigates the user to Multitasking settings, with a toggle to enable/disable snap window suggestions. Alternate phrase for 'Split screen window suggestion', 'Split screen set up', 'Dock window', 'Snap window'">
+    Split screen overview
+  </message>
 </grit-part>

@@ -1,4 +1,7 @@
 mixins: "//ui/accessibility/COMMON_METADATA"
-monorail {
+monorail: {
   component: "UI>Accessibility"
+}
+buganizer_public: {
+  component_id: 1457135
 }

@@ -190,15 +190,6 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
                          int wheel_delta_y,
                          base::OnceCallback<void(DOMException*)> callback);
 
-  // Retrieves the zoom level from the captured tab.
-  //
-  // `callback` is used to report the result.
-  // `callback.zoom_level` has the zoom level or nullopt in case of failure.
-  // `callback.error` has the error message upon failure. (Empty otherwise.)
-  virtual void GetZoomLevel(
-      base::OnceCallback<void(std::optional<int> zoom_level,
-                              const String& error)> callback);
-
   // Sets the zoom level for the captured tab.
   //
   // `zoom_level` is the requested zoom level and must be among the values

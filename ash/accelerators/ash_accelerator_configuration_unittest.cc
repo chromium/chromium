@@ -24,6 +24,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_codes_array.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -2649,6 +2650,51 @@ TEST_F(AshAcceleratorConfigurationTest, PrefsResetWithFlag) {
   SimulateUserLogin(kFakeUserEmail);
   const base::Value::Dict& original_pref_overrides = GetOverridePref();
   EXPECT_TRUE(original_pref_overrides.empty());
+}
+
+TEST_F(AshAcceleratorConfigurationTest, FindAcceleratorActionPositionalKeys) {
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_OEM_4, ui::EF_ALT_DOWN,
+       AcceleratorAction::kWindowCycleSnapLeft},
+  };
+
+  config_->Initialize(test_data);
+  config_->SetUsePositionalLookup(/*use_positional_lookup=*/true);
+
+  // The the DE-de layout, alt + bracket left is mapped to alt + VKEY_OEM_1.
+  // Performing a lookup should be able to remap the lookup correctly from
+  // VKEY_OEM_1 -> VKEY_OEM_4.
+  const ui::Accelerator de_alt_left_bracket(
+      ui::VKEY_OEM_1, ui::DomCode::BRACKET_LEFT, ui::EF_ALT_DOWN);
+  const AcceleratorAction* found_action =
+      config_->FindAcceleratorAction(de_alt_left_bracket);
+  EXPECT_TRUE(found_action);
+  EXPECT_EQ(AcceleratorAction::kWindowCycleSnapLeft, *found_action);
+
+  // Now reset all accelerators and still expect the lookup to succeed.
+  config_->RestoreAllDefaults();
+  const AcceleratorAction* found_action2 =
+      config_->FindAcceleratorAction(de_alt_left_bracket);
+  EXPECT_TRUE(found_action2);
+  EXPECT_EQ(AcceleratorAction::kWindowCycleSnapLeft, *found_action2);
+}
+
+TEST_F(AshAcceleratorConfigurationTest,
+       FindAcceleratorActionPositionalDisabledKeys) {
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_OEM_4, ui::EF_ALT_DOWN,
+       AcceleratorAction::kWindowCycleSnapLeft},
+  };
+
+  config_->Initialize(test_data);
+  config_->SetUsePositionalLookup(/*use_positional_lookup=*/false);
+
+  // The inputted accelerator here will not be positionally remapped.
+  const ui::Accelerator de_alt_left_bracket(
+      ui::VKEY_OEM_1, ui::DomCode::BRACKET_LEFT, ui::EF_ALT_DOWN);
+  const AcceleratorAction* found_action =
+      config_->FindAcceleratorAction(de_alt_left_bracket);
+  EXPECT_FALSE(found_action);
 }
 
 }  // namespace ash

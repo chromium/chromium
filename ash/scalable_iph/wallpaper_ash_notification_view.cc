@@ -102,7 +102,7 @@ void WallpaperAshNotificationView::CreatePreview() {
   }
 }
 
-BEGIN_METADATA(WallpaperAshNotificationView, ScalableIphAshNotificationView)
+BEGIN_METADATA(WallpaperAshNotificationView)
 END_METADATA
 
 }  // namespace ash

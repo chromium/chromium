@@ -200,8 +200,9 @@ TEST_F(BrowsingDataCounterUtilsTest, DeletePasswordsAndSigninData) {
   // This counter does not really count anything; we just need a reference to
   // pass to the SigninDataResult ctor.
   browsing_data::SigninDataCounter counter(
-      password_store, nullptr, SyncServiceFactory::GetForProfile(GetProfile()),
-      nullptr);
+      /*profile_store=*/password_store, /*account_store=*/nullptr,
+      /*pref_service=*/nullptr, SyncServiceFactory::GetForProfile(GetProfile()),
+      /*opt_platform_credential_store=*/nullptr);
 
   // Use a separate struct for input to make test cases easier to read after
   // auto formatting.

@@ -19,9 +19,9 @@
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
@@ -1037,7 +1037,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Verify the bulk upload view is popped.
+  // Verify the bulk upload view is shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(
                                    kBulkUploadTableViewAccessibilityIdentifier)]
@@ -1073,14 +1073,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                    kBulkUploadSaveButtonAccessibilityIdentifer)]
       performAction:grey_tap()];
 
-  // Verify the "manage sync" view is not visible yet.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kManageSyncTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_notVisible()];
-
   // Successful auth should remove blocking view and "manage sync" view should
-  // be visible.
+  // be fully visible.
   [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:

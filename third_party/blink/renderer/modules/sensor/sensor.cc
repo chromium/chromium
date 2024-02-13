@@ -186,8 +186,12 @@ void Sensor::InitSensorProxyIfNeeded() {
 }
 
 void Sensor::ContextDestroyed() {
-  if (!IsIdleOrErrored())
+  // We do not use IsIdleOrErrored() here because we also want to call
+  // Deactivate() if |pending_error_notification_| is active (see
+  // https://crbug.com/324301018).
+  if (state_ != SensorState::kIdle) {
     Deactivate();
+  }
 
   state_ = SensorState::kIdle;
 

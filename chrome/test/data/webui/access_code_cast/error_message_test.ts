@@ -5,7 +5,7 @@
 import 'chrome://access-code-cast/error_message/error_message.js';
 
 import {AddSinkResultCode} from 'chrome://access-code-cast/access_code_cast.mojom-webui.js';
-import {ErrorMessageElement} from 'chrome://access-code-cast/error_message/error_message.js';
+import type {ErrorMessageElement} from 'chrome://access-code-cast/error_message/error_message.js';
 import {RouteRequestResultCode} from 'chrome://access-code-cast/route_request_result_code.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 

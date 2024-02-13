@@ -21,19 +21,6 @@
 
 class GURL;
 
-namespace settings {
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest, GetAllSites);
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest, GetRecentSitePermissions);
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest,
-                     StorageAccessExceptions_Description_Embargoed);
-FORWARD_DECLARE_TEST(SiteSettingsHandlerTest,
-                     StorageAccessExceptions_Description_EmbargoedTwoProfiles);
-}  // namespace settings
-
-namespace site_settings {
-FORWARD_DECLARE_TEST(RecentSiteSettingsHelperTest, CheckRecentSitePermissions);
-}  // namespace site_settings
-
 namespace permissions {
 
 // Mockable interface for PermissionDecisionAutoBlocker (see below), for those
@@ -178,27 +165,15 @@ class PermissionDecisionAutoBlocker : public PermissionDecisionAutoBlockerBase,
 
   static const char* GetPromptDismissCountKeyForTesting();
 
- private:
-  friend class PermissionDecisionAutoBlockerUnitTest;
-  FRIEND_TEST_ALL_PREFIXES(site_settings::RecentSiteSettingsHelperTest,
-                           CheckRecentSitePermissions);
-  FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest, GetAllSites);
-  FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest,
-                           GetRecentSitePermissions);
-  FRIEND_TEST_ALL_PREFIXES(settings::SiteSettingsHandlerTest,
-                           StorageAccessExceptions_Description_Embargoed);
-  FRIEND_TEST_ALL_PREFIXES(
-      settings::SiteSettingsHandlerTest,
-      StorageAccessExceptions_Description_EmbargoedTwoProfiles);
+  void SetClockForTesting(base::Clock* clock);
 
+ private:
   void PlaceUnderEmbargo(const GURL& request_origin,
                          ContentSettingsType permission,
                          const char* key);
 
   void NotifyEmbargoStarted(const GURL& origin,
                             ContentSettingsType content_setting);
-
-  void SetClockForTesting(base::Clock* clock);
 
   // Keys used for storing count data in a website setting.
   static const char kPromptDismissCountKey[];

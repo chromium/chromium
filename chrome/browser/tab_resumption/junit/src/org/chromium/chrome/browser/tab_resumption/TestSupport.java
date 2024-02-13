@@ -16,24 +16,56 @@ public class TestSupport {
     static final long CURRENT_TIME_MS = makeTimestamp(24, 0, 0);
 
     static final ForeignSessionTab TAB1 =
-            new ForeignSessionTab(JUnitTestGURLs.BLUE_1, "Blue 1", makeTimestamp(3, 0, 0), 101);
+            new ForeignSessionTab(
+                    JUnitTestGURLs.BLUE_1,
+                    "Blue 1",
+                    makeTimestamp(3, 0, 0),
+                    makeTimestamp(3, 0, 0),
+                    101);
     // This one is stale.
     static final ForeignSessionTab TAB2 =
             new ForeignSessionTab(
-                    JUnitTestGURLs.GOOGLE_URL_DOG, "Google Dog", makeTimestamp(0, 0, -1), 102);
+                    JUnitTestGURLs.GOOGLE_URL_DOG,
+                    "Google Dog",
+                    makeTimestamp(0, 0, -1),
+                    makeTimestamp(0, 0, -1),
+                    102);
     static final ForeignSessionTab TAB3 =
             new ForeignSessionTab(
-                    JUnitTestGURLs.CHROME_ABOUT, "About", makeTimestamp(7, 0, 0), 103);
+                    JUnitTestGURLs.CHROME_ABOUT,
+                    "About",
+                    makeTimestamp(0, 0, -1), // timestamp != lastUpdatedTime.
+                    makeTimestamp(7, 0, 0),
+                    103);
     static final ForeignSessionTab TAB4 =
-            new ForeignSessionTab(JUnitTestGURLs.URL_1, "One", makeTimestamp(0, 30, 0), 104);
+            new ForeignSessionTab(
+                    JUnitTestGURLs.URL_1,
+                    "One",
+                    makeTimestamp(0, 30, 0),
+                    makeTimestamp(0, 30, 0),
+                    104);
     static final ForeignSessionTab TAB5 =
-            new ForeignSessionTab(JUnitTestGURLs.MAPS_URL, "Maps", makeTimestamp(4, 0, 0), 105);
+            new ForeignSessionTab(
+                    JUnitTestGURLs.MAPS_URL,
+                    "Maps",
+                    makeTimestamp(4, 0, 0),
+                    makeTimestamp(4, 0, 0),
+                    105);
     // This one is the most recent.
     static final ForeignSessionTab TAB6 =
             new ForeignSessionTab(
-                    JUnitTestGURLs.INITIAL_URL, "Initial", makeTimestamp(8, 0, 0), 106);
+                    JUnitTestGURLs.INITIAL_URL,
+                    "Initial",
+                    makeTimestamp(2, 0, 0), // timestamp != lastUpdatedTime.
+                    makeTimestamp(8, 0, 0),
+                    106);
     static final ForeignSessionTab TAB7 =
-            new ForeignSessionTab(JUnitTestGURLs.HTTP_URL, "Old HTTP", makeTimestamp(3, 0, 0), 107);
+            new ForeignSessionTab(
+                    JUnitTestGURLs.HTTP_URL,
+                    "Old HTTP",
+                    makeTimestamp(3, 0, 0),
+                    makeTimestamp(3, 0, 0),
+                    107);
 
     /** Makes a test bitmap with specified dimensions. */
     static Bitmap makeBitmap(int width, int height) {

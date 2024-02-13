@@ -259,9 +259,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.widthAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.trailingAnchor
-        constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor],
+        constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
+                       constant:-ntp_home::kIdentityAvatarPadding],
     [self.identityDiscView.topAnchor
-        constraintEqualToAnchor:self.toolBarView.topAnchor],
+        constraintEqualToAnchor:self.toolBarView.topAnchor
+                       constant:ntp_home::kIdentityAvatarPadding],
   ]];
 }
 

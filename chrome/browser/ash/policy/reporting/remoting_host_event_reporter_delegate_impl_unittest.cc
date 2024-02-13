@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/policy/reporting/remoting_host_event_reporter_delegate_impl.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
@@ -48,7 +48,7 @@ class HostEventReporterDelegateImplTest : public ::testing::Test {
 
     ON_CALL(*mock_queue, AddRecord(_, ::reporting::Priority::FAST_BATCH, _))
         .WillByDefault(
-            [this, status](base::StringPiece record_string,
+            [this, status](std::string_view record_string,
                            ::reporting::Priority event_priority,
                            ::reporting::ReportQueue::EnqueueCallback cb) {
               if (status.ok()) {

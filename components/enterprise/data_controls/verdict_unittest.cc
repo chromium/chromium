@@ -4,24 +4,86 @@
 
 #include "components/enterprise/data_controls/verdict.h"
 
+#include <vector>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace data_controls {
 
+namespace {
+
+// Helpers to make the tests more concise.
+Verdict NotSet() {
+  return Verdict::NotSet();
+}
+Verdict Report() {
+  return Verdict::Report(base::DoNothing());
+}
+Verdict Warn() {
+  return Verdict::Warn(base::DoNothing(), base::DoNothing());
+}
+Verdict Block() {
+  return Verdict::Block(base::DoNothing());
+}
+Verdict Allow() {
+  return Verdict::Allow();
+}
+
+}  // namespace
+
 TEST(DataControlVerdictTest, Level) {
-  ASSERT_EQ(Verdict::NotSet().level(), Rule::Level::kNotSet);
-  ASSERT_EQ(Verdict::Report(base::DoNothing()).level(), Rule::Level::kReport);
-  ASSERT_EQ(Verdict::Warn(base::DoNothing(), base::DoNothing()).level(),
-            Rule::Level::kWarn);
-  ASSERT_EQ(Verdict::Block(base::DoNothing()).level(), Rule::Level::kBlock);
-  ASSERT_EQ(Verdict::Allow().level(), Rule::Level::kAllow);
+  ASSERT_EQ(NotSet().level(), Rule::Level::kNotSet);
+  ASSERT_EQ(Report().level(), Rule::Level::kReport);
+  ASSERT_EQ(Warn().level(), Rule::Level::kWarn);
+  ASSERT_EQ(Block().level(), Rule::Level::kBlock);
+  ASSERT_EQ(Allow().level(), Rule::Level::kAllow);
+}
+
+TEST(DataControlVerdictTest, MergedLevel_NotSet) {
+  ASSERT_EQ(Verdict::Merge(NotSet(), NotSet()).level(), Rule::Level::kNotSet);
+  ASSERT_EQ(Verdict::Merge(NotSet(), Report()).level(), Rule::Level::kReport);
+  ASSERT_EQ(Verdict::Merge(NotSet(), Warn()).level(), Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::Merge(NotSet(), Block()).level(), Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::Merge(NotSet(), Allow()).level(), Rule::Level::kAllow);
+}
+
+TEST(DataControlVerdictTest, MergedLevel_Report) {
+  ASSERT_EQ(Verdict::Merge(Report(), NotSet()).level(), Rule::Level::kReport);
+  ASSERT_EQ(Verdict::Merge(Report(), Report()).level(), Rule::Level::kReport);
+  ASSERT_EQ(Verdict::Merge(Report(), Warn()).level(), Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::Merge(Report(), Block()).level(), Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::Merge(Report(), Allow()).level(), Rule::Level::kAllow);
+}
+
+TEST(DataControlVerdictTest, MergedLevel_Warn) {
+  ASSERT_EQ(Verdict::Merge(Warn(), NotSet()).level(), Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::Merge(Warn(), Report()).level(), Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::Merge(Warn(), Warn()).level(), Rule::Level::kWarn);
+  ASSERT_EQ(Verdict::Merge(Warn(), Block()).level(), Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::Merge(Warn(), Allow()).level(), Rule::Level::kAllow);
+}
+
+TEST(DataControlVerdictTest, MergedLevel_Block) {
+  ASSERT_EQ(Verdict::Merge(Block(), NotSet()).level(), Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::Merge(Block(), Report()).level(), Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::Merge(Block(), Warn()).level(), Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::Merge(Block(), Block()).level(), Rule::Level::kBlock);
+  ASSERT_EQ(Verdict::Merge(Block(), Allow()).level(), Rule::Level::kAllow);
+}
+
+TEST(DataControlVerdictTest, MergedLevel_Allow) {
+  ASSERT_EQ(Verdict::Merge(Allow(), NotSet()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::Merge(Allow(), Report()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::Merge(Allow(), Warn()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::Merge(Allow(), Block()).level(), Rule::Level::kAllow);
+  ASSERT_EQ(Verdict::Merge(Allow(), Allow()).level(), Rule::Level::kAllow);
 }
 
 TEST(DataControlVerdictTest, InitialReport) {
-  ASSERT_TRUE(Verdict::NotSet().TakeInitialReportClosure().is_null());
-  ASSERT_TRUE(Verdict::Allow().TakeInitialReportClosure().is_null());
+  ASSERT_TRUE(NotSet().TakeInitialReportClosure().is_null());
+  ASSERT_TRUE(Allow().TakeInitialReportClosure().is_null());
 
   base::test::TestFuture<void> report_future;
   auto report = Verdict::Report(report_future.GetCallback());
@@ -46,12 +108,10 @@ TEST(DataControlVerdictTest, InitialReport) {
 }
 
 TEST(DataControlVerdictTest, BypassReport) {
-  ASSERT_TRUE(Verdict::NotSet().TakeBypassReportClosure().is_null());
-  ASSERT_TRUE(
-      Verdict::Block(base::DoNothing()).TakeBypassReportClosure().is_null());
-  ASSERT_TRUE(Verdict::Allow().TakeBypassReportClosure().is_null());
-  ASSERT_TRUE(
-      Verdict::Report(base::DoNothing()).TakeBypassReportClosure().is_null());
+  ASSERT_TRUE(NotSet().TakeBypassReportClosure().is_null());
+  ASSERT_TRUE(Block().TakeBypassReportClosure().is_null());
+  ASSERT_TRUE(Allow().TakeBypassReportClosure().is_null());
+  ASSERT_TRUE(Report().TakeBypassReportClosure().is_null());
 
   base::test::TestFuture<void> warn_future;
   auto warn = Verdict::Warn(base::DoNothing(), warn_future.GetCallback());
@@ -59,6 +119,34 @@ TEST(DataControlVerdictTest, BypassReport) {
   ASSERT_FALSE(warn_callback.is_null());
   std::move(warn_callback).Run();
   ASSERT_TRUE(warn_future.Wait());
+}
+
+TEST(DataControlVerdictTest, MergedCallbacks) {
+  base::test::TestFuture<void> source_initial_report_future;
+  base::test::TestFuture<void> source_bypass_report_future;
+  auto source_verdict =
+      Verdict::Warn(source_initial_report_future.GetCallback(),
+                    source_bypass_report_future.GetCallback());
+
+  base::test::TestFuture<void> destination_initial_report_future;
+  base::test::TestFuture<void> destination_bypass_report_future;
+  auto destination_verdict =
+      Verdict::Warn(destination_initial_report_future.GetCallback(),
+                    destination_bypass_report_future.GetCallback());
+
+  auto merged_verdict =
+      Verdict::Merge(std::move(source_verdict), std::move(destination_verdict));
+  auto merged_initial_report = merged_verdict.TakeInitialReportClosure();
+  ASSERT_TRUE(merged_initial_report);
+  std::move(merged_initial_report).Run();
+  ASSERT_TRUE(source_initial_report_future.Wait());
+  ASSERT_TRUE(destination_initial_report_future.Wait());
+
+  auto merged_bypass_report = merged_verdict.TakeBypassReportClosure();
+  ASSERT_TRUE(merged_bypass_report);
+  std::move(merged_bypass_report).Run();
+  ASSERT_TRUE(source_bypass_report_future.Wait());
+  ASSERT_TRUE(destination_bypass_report_future.Wait());
 }
 
 }  // namespace data_controls

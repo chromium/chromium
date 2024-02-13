@@ -44,6 +44,29 @@ void FakeSecureChannelConnection::ChangeStatus(const Status& new_status) {
   }
 }
 
+void FakeSecureChannelConnection::ChangeNearbyConnectionState(
+    mojom::NearbyConnectionStep nearby_connection_step,
+    mojom::NearbyConnectionStepResult result) {
+  // Copy to prevent channel from being removed during handler.
+  std::vector<raw_ptr<Observer, VectorExperimental>> observers_copy =
+      observers_;
+  for (Observer* observer : observers_copy) {
+    observer->OnNearbyConnectionStateChanged(this, nearby_connection_step,
+                                             result);
+  }
+}
+
+void FakeSecureChannelConnection::ChangeSecureChannelAuthenticationState(
+    mojom::SecureChannelState secure_channel_authentication_state) {
+  // Copy to prevent channel from being removed during handler.
+  std::vector<raw_ptr<Observer, VectorExperimental>> observers_copy =
+      observers_;
+  for (Observer* observer : observers_copy) {
+    observer->OnSecureChannelAuthenticationStateChanged(
+        this, secure_channel_authentication_state);
+  }
+}
+
 void FakeSecureChannelConnection::ReceiveMessage(const std::string& feature,
                                                  const std::string& payload) {
   // Copy to prevent channel from being removed during handler.

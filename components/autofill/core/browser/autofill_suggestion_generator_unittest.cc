@@ -64,24 +64,6 @@ using testing::Matcher;
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
 
-Matcher<Suggestion> EqualsSuggestion(PopupItemId id) {
-  return Field(&Suggestion::popup_item_id, id);
-}
-
-Matcher<Suggestion> EqualsSuggestion(PopupItemId id,
-                                     const std::u16string& main_text) {
-  return AllOf(
-      Field(&Suggestion::popup_item_id, id),
-      Field(&Suggestion::main_text,
-            Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true))));
-}
-
-Matcher<Suggestion> EqualsSuggestion(PopupItemId id,
-                                     const std::u16string& main_text,
-                                     Suggestion::Icon icon) {
-  return AllOf(EqualsSuggestion(id, main_text), Field(&Suggestion::icon, icon));
-}
-
 Matcher<Suggestion> EqualsFieldByFieldFillingSuggestion(
     PopupItemId id,
     const std::u16string& main_text,
@@ -218,7 +200,8 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
                          /*history_service=*/nullptr,
                          /*sync_service=*/&sync_service_,
                          /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr);
+                         /*image_fetcher=*/nullptr,
+                         /*shared_storage_handler=*/nullptr);
     suggestion_generator_ = std::make_unique<TestAutofillSuggestionGenerator>(
         autofill_client_, personal_data());
     autofill_client_.set_autofill_offer_manager(
@@ -1301,12 +1284,14 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
               ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile().guid()),
-              {{Suggestion::Text(u"Building number")}}),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}}),
           EqualsFieldByFieldFillingSuggestion(
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
               ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile().guid()),
-              {{Suggestion::Text(u"Street")}})));
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
 }
 
 TEST_F(
@@ -1571,14 +1556,17 @@ TEST_F(
                   PopupItemId::kAddressFieldByFieldFilling,
                   profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
                   ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile.guid()),
-                  {{Suggestion::Text(u"Street")}})));
+                  {{Suggestion::Text(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
   // The address line 2 (seventh child) should have the house number as child.
-  EXPECT_THAT(suggestions[0].children[2].children,
-              ElementsAre(EqualsFieldByFieldFillingSuggestion(
-                  PopupItemId::kAddressFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
-                  ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()),
-                  {{Suggestion::Text(u"Building number")}})));
+  EXPECT_THAT(
+      suggestions[0].children[2].children,
+      ElementsAre(EqualsFieldByFieldFillingSuggestion(
+          PopupItemId::kAddressFieldByFieldFilling,
+          profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
+          ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()),
+          {{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}})));
 }
 
 TEST_F(
@@ -1914,6 +1902,36 @@ TEST_F(AutofillSuggestionGeneratorTest, GetSuggestionsForProfiles_Filtering) {
   std::vector<Suggestion> manual_fallback_suggestions =
       suggestion_generator()->GetSuggestionsForProfiles(
           {NAME_FIRST}, triggering_field, NAME_FIRST,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  EXPECT_EQ(manual_fallback_suggestions.size(), 4ul);
+  EXPECT_THAT(manual_fallback_suggestions, ContainsAddressFooterSuggestions());
+}
+
+// Tests that regular suggestions are filtered by the last usage timestamp, but
+// manual fallback suggestions are not.
+TEST_F(AutofillSuggestionGeneratorTest,
+       GetSuggestionsForProfiles_TimestampFiltering) {
+  AutofillProfile profile1 = test::GetFullProfile();
+  AutofillProfile profile2 = test::GetFullProfile2();
+  profile2.set_use_date(AutofillClock::Now() - kDisusedDataModelTimeDelta -
+                        base::Days(1));
+  personal_data().AddProfile(profile1);
+  personal_data().AddProfile(profile2);
+
+  // Expect that regular suggestions filter.
+  std::vector<Suggestion> address_suggestions =
+      suggestion_generator()->GetSuggestionsForProfiles(
+          {NAME_FIRST}, FormFieldData(), NAME_FIRST,
+          /*last_targeted_fields=*/std::nullopt,
+          AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  EXPECT_EQ(address_suggestions.size(), 3ul);
+  EXPECT_THAT(address_suggestions, ContainsAddressFooterSuggestions());
+
+  // But manual fallback suggestions do not.
+  std::vector<Suggestion> manual_fallback_suggestions =
+      suggestion_generator()->GetSuggestionsForProfiles(
+          {NAME_FIRST}, FormFieldData(), NAME_FIRST,
           /*last_targeted_fields=*/std::nullopt,
           AutofillSuggestionTriggerSource::kManualFallbackAddress);
   EXPECT_EQ(manual_fallback_suggestions.size(), 4ul);

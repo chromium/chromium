@@ -6,6 +6,7 @@
 #define UI_LINUX_LINUX_UI_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -82,6 +83,15 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
     kRightClick,
   };
 
+  struct FontSettings {
+    std::string family;
+    int size_pixels = 0;
+    // Holds a bitfield of gfx::Font::Style values.
+    int style = 0;
+    // A standard font weight as used in Pango.  Must be a value in [1, 999].
+    int weight = 0;
+  };
+
   LinuxUi(const LinuxUi&) = delete;
   LinuxUi& operator=(const LinuxUi&) = delete;
   virtual ~LinuxUi();
@@ -111,6 +121,9 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   void RemoveCursorThemeObserver(CursorThemeManagerObserver* observer);
 
+  // Returns details about the default UI font.
+  FontSettings GetDefaultFontDescription();
+
   // Determines the device scale factor for all screens.
   const display::DisplayConfig& display_config() const {
     return display_config_;
@@ -119,6 +132,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   // Returns true on success.  If false is returned, this instance shouldn't
   // be used and the behavior of all functions is undefined.
   [[nodiscard]] virtual bool Initialize() = 0;
+
+  // Caches the default font render parameters.  This doesn't need to be called
+  // explicitly since the first call to get the font settings will implicitly
+  // initialize the default front render parameters.
+  virtual void InitializeFontSettings() = 0;
 
   virtual base::TimeDelta GetCursorBlinkInterval() const = 0;
 
@@ -171,16 +189,7 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
       std::vector<TextEditCommandAuraLinux>* commands) = 0;
 
   // Returns the default font rendering settings.
-  virtual gfx::FontRenderParams GetDefaultFontRenderParams() const = 0;
-
-  // Returns details about the default UI font. |style_out| holds a bitfield of
-  // gfx::Font::Style values.
-  virtual void GetDefaultFontDescription(
-      std::string* family_out,
-      int* size_pixels_out,
-      int* style_out,
-      int* weight_out,
-      gfx::FontRenderParams* params_out) const = 0;
+  virtual gfx::FontRenderParams GetDefaultFontRenderParams() = 0;
 
   // Indicates if animations are enabled by the toolkit.
   virtual bool AnimationsEnabled() const = 0;
@@ -232,6 +241,11 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
 
   display::DisplayConfig& display_config() { return display_config_; }
 
+  void set_default_font_settings(
+      const std::optional<FontSettings>& default_font_settings) {
+    default_font_settings_ = default_font_settings;
+  }
+
  private:
   // Objects to notify when the device scale factor changes.
   base::ObserverList<DeviceScaleFactorObserver>::Unchecked
@@ -241,6 +255,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUi {
   base::ObserverList<CursorThemeManagerObserver> cursor_theme_observer_list_;
 
   display::DisplayConfig display_config_;
+
+  std::optional<FontSettings> default_font_settings_;
 };
 
 class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {

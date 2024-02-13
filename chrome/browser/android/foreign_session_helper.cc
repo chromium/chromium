@@ -103,7 +103,8 @@ void JNI_ForeignSessionHelper_CopyTabToJava(
   Java_ForeignSessionHelper_pushTab(
       env, j_window, url::GURLAndroid::FromNativeGURL(env, tab_url),
       ConvertUTF16ToJavaString(env, current_navigation.title()),
-      tab.timestamp.InMillisecondsSinceUnixEpoch(), tab.tab_id.id());
+      tab.timestamp.InMillisecondsSinceUnixEpoch(),
+      tab.last_active_time.InMillisecondsSinceUnixEpoch(), tab.tab_id.id());
 }
 
 void JNI_ForeignSessionHelper_CopyWindowToJava(

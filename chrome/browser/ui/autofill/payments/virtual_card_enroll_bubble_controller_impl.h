@@ -52,9 +52,11 @@ class VirtualCardEnrollBubbleControllerImpl
 
 #if !BUILDFLAG(IS_ANDROID)
   void HideIconAndBubble() override;
+
+  bool IsEnrollmentInProgress() const override;
 #endif
 
-  void OnAcceptButton() override;
+  void OnAcceptButton(bool did_switch_to_loading_state = false) override;
   void OnDeclineButton() override;
   void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                      const GURL& url) override;
@@ -90,6 +92,10 @@ class VirtualCardEnrollBubbleControllerImpl
 #else
   // Returns whether the web content associated with this controller is active.
   virtual bool IsWebContentsActive();
+
+  // Denotes if the virtual card enrollment process is in progress. Is true
+  // after user has accepted virtual card enrollment.
+  bool is_enrollment_in_progress_ = false;
 
   // Represents the current state of icon and bubble.
   BubbleState bubble_state_ = BubbleState::kHidden;

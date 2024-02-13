@@ -10,7 +10,7 @@ import './button_bar.js';
 import './psim_flow_ui.js';
 import './esim_flow_ui.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ButtonBarElement} from './button_bar.js';
 import {getTemplate} from './cellular_setup.html.js';
@@ -152,7 +152,15 @@ export class CellularSetupElement extends PolymerElement {
   }
 
   private onFocusDefaultButton_(): void {
-    this.$.buttonBar.focusDefaultButton();
+    afterNextRender(this, () => {
+      // Try to focus on page elements before defaulting to focusing the button
+      // bar.
+      if (this.currentPage_.maybeFocusPageElement()) {
+        return;
+      }
+
+      this.$.buttonBar.focusDefaultButton();
+    });
   }
 
   private shouldShowPsimFlow_(currentPage: string): boolean {
@@ -161,6 +169,12 @@ export class CellularSetupElement extends PolymerElement {
 
   private shouldShowEsimFlow_(currentPage: string): boolean {
     return currentPage === CellularSetupPageName.ESIM_FLOW_UI;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [CellularSetupElement.is]: CellularSetupElement;
   }
 }
 

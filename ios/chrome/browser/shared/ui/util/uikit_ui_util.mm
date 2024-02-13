@@ -411,3 +411,22 @@ bool IsScrollViewScrolledToBottom(UIScrollView* scroll_view) {
                               scroll_view.bounds.size.height;
   return scroll_view.contentOffset.y >= scrollable_height;
 }
+
+CGFloat DeviceCornerRadius() {
+  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
+
+  UIWindow* window = nil;
+  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
+    UIWindowScene* windowScene =
+        base::apple::ObjCCastStrict<UIWindowScene>(scene);
+    UIWindow* firstWindow = [windowScene.windows firstObject];
+    if (firstWindow) {
+      window = firstWindow;
+      break;
+    }
+  }
+
+  const BOOL isRoundedDevice =
+      (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
+  return isRoundedDevice ? 40.0 : 0.0;
+}

@@ -30,8 +30,4 @@ void UpdatePrimaryButton(UIButton* button,
 // engine has to be prepopulated.
 UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url);
 
-// Whether chrome is allowed to display the search engine choice UI in this
-// build.
-bool IsSearchEngineForceEnabled();
-
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_UI_UTIL_H_

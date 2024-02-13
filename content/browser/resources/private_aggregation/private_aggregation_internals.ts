@@ -6,9 +6,11 @@ import './private_aggregation_internals_table.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AggregatableReportRequestID, Factory as PrivateAggregationInternalsFactory, HandlerRemote as PrivateAggregationInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, WebUIAggregatableReport} from './private_aggregation_internals.mojom-webui.js';
-import {PrivateAggregationInternalsTableElement} from './private_aggregation_internals_table.js';
-import {Column, TableModel} from './table_model.js';
+import type {AggregatableReportRequestID, ObserverInterface, WebUIAggregatableReport} from './private_aggregation_internals.mojom-webui.js';
+import {Factory as PrivateAggregationInternalsFactory, HandlerRemote as PrivateAggregationInternalsHandlerRemote, ObserverReceiver, ReportStatus} from './private_aggregation_internals.mojom-webui.js';
+import type {PrivateAggregationInternalsTableElement} from './private_aggregation_internals_table.js';
+import type {Column} from './table_model.js';
+import {TableModel} from './table_model.js';
 
 function compareDefault<T>(a: T, b: T): number {
   return (a < b) ? -1 : ((a > b) ? 1 : 0);

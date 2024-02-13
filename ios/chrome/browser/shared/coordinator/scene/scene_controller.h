@@ -13,13 +13,14 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 @protocol BrowserProviderInterface;
 
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <SceneStateObserver,
                                        ApplicationCommands,
-                                       ApplicationSettingsCommands,
+                                       SettingsCommands,
                                        ConnectionInformation,
                                        TabOpening,
                                        WebStateListObserving>

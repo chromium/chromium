@@ -219,6 +219,14 @@ bool IsSupportedRenameCall(FILE_RENAME_INFORMATION* file_info,
 // Get the CLIENT_ID from the current TEB.
 CLIENT_ID GetCurrentClientId();
 
+// Version of memset that can be called before the CRT is initialized.
+__forceinline void Memset(void* ptr, int value, size_t num_bytes) {
+  unsigned char* byte_ptr = static_cast<unsigned char*>(ptr);
+  while (num_bytes--) {
+    *byte_ptr++ = static_cast<unsigned char>(value);
+  }
+}
+
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_SANDBOX_NT_UTIL_H_

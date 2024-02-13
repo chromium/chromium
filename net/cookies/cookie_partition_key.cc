@@ -19,7 +19,7 @@ CookiePartitionKey::CookiePartitionKey() = default;
 
 CookiePartitionKey::CookiePartitionKey(
     const SchemefulSite& site,
-    absl::optional<base::UnguessableToken> nonce)
+    std::optional<base::UnguessableToken> nonce)
     : site_(site), nonce_(nonce) {}
 
 CookiePartitionKey::CookiePartitionKey(const GURL& url)
@@ -54,7 +54,7 @@ bool CookiePartitionKey::operator<(const CookiePartitionKey& other) const {
 }
 
 // static
-bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
+bool CookiePartitionKey::Serialize(const std::optional<CookiePartitionKey>& in,
                                    std::string& out) {
   if (!in) {
     out = kEmptyCookiePartitionKey;
@@ -72,9 +72,9 @@ bool CookiePartitionKey::Serialize(const absl::optional<CookiePartitionKey>& in,
 
 // static
 bool CookiePartitionKey::Deserialize(const std::string& in,
-                                     absl::optional<CookiePartitionKey>& out) {
+                                     std::optional<CookiePartitionKey>& out) {
   if (in == kEmptyCookiePartitionKey) {
-    out = absl::nullopt;
+    out = std::nullopt;
     return true;
   }
   if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
@@ -88,40 +88,40 @@ bool CookiePartitionKey::Deserialize(const std::string& in,
     DLOG(WARNING) << "Cannot deserialize opaque origin to CookiePartitionKey";
     return false;
   }
-  out = absl::make_optional(CookiePartitionKey(schemeful_site, absl::nullopt));
+  out = std::make_optional(CookiePartitionKey(schemeful_site, std::nullopt));
   return true;
 }
 
-absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
+std::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
     const NetworkIsolationKey& network_isolation_key) {
   if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  const absl::optional<base::UnguessableToken>& nonce =
+  const std::optional<base::UnguessableToken>& nonce =
       network_isolation_key.GetNonce();
 
   // Use frame site for nonced partitions. Since the nonce is unique, this still
   // creates a unique partition key. The reason we use the frame site is to
   // align CookiePartitionKey's implementation of nonced partitions with
   // StorageKey's. See https://crbug.com/1440765.
-  const absl::optional<SchemefulSite>& partition_key_site =
+  const std::optional<SchemefulSite>& partition_key_site =
       nonce ? network_isolation_key.GetFrameSiteForCookiePartitionKey(
                   NetworkIsolationKey::CookiePartitionKeyPassKey())
             : network_isolation_key.GetTopFrameSite();
   if (!partition_key_site)
-    return absl::nullopt;
+    return std::nullopt;
 
   return net::CookiePartitionKey(*partition_key_site, nonce);
 }
 
 // static
-absl::optional<net::CookiePartitionKey>
+std::optional<net::CookiePartitionKey>
 CookiePartitionKey::FromStorageKeyComponents(
     const SchemefulSite& site,
-    const absl::optional<base::UnguessableToken>& nonce) {
+    const std::optional<base::UnguessableToken>& nonce) {
   if (!base::FeatureList::IsEnabled(features::kPartitionedCookies)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return CookiePartitionKey::FromWire(site, nonce);
 }

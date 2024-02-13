@@ -317,6 +317,7 @@ TEST_F(PositionIteratorTest, DecrementFromSelectElementAfterChildren) {
       ScanBackward(PositionInFlatTree::LastPositionInNode(select_element)),
       ElementsAre("---E SELECT@1 SELECT@afterAnchor",
                   "---E SELECT@1 SELECT@afterAnchor",
+                  "---E SELECT@1 SELECT@afterAnchor",
                   "-S-E SELECT@0 SELECT@beforeAnchor SELECT@afterAnchor",
                   "---- BODY BODY@offsetInAnchor[1]",
                   "---E #text \"ABC\"@3 #text \"ABC\"@offsetInAnchor[3]",
@@ -338,6 +339,7 @@ TEST_F(PositionIteratorTest, DecrementFromSelectElementAfterNode) {
   EXPECT_THAT(
       ScanBackward(PositionInFlatTree::AfterNode(select_element)),
       ElementsAre("---E SELECT@1 SELECT@afterAnchor",
+                  "---E SELECT@1 SELECT@afterAnchor",
                   "---E SELECT@1 SELECT@afterAnchor",
                   "-S-E SELECT@0 SELECT@beforeAnchor SELECT@afterAnchor",
                   "---- BODY BODY@offsetInAnchor[1]",
@@ -400,9 +402,13 @@ TEST_F(PositionIteratorTest, DecrementFromSelectElementOffset1) {
   EXPECT_THAT(
       ScanBackward(PositionInFlatTree(select_element, 1)),
       ElementsAre("---- SELECT@1 SELECT@offsetInAnchor[1] SELECT@beforeAnchor",
+                  "---E SLOT id=\"select-button\" SLOT "
+                  "id=\"select-button\"@afterChildren",
                   "---E DIV DIV@afterChildren",
                   "-S-E #text \"\"@0 #text \"\"@offsetInAnchor[0]",
-                  "-S-- DIV DIV@offsetInAnchor[0]"));
+                  "-S-- DIV DIV@offsetInAnchor[0]",
+                  "-S-- SLOT id=\"select-button\" SLOT "
+                  "id=\"select-button\"@offsetInAnchor[0]"));
 }
 
 TEST_F(PositionIteratorTest, DecrementWithBrInOption) {
@@ -897,9 +903,13 @@ TEST_F(PositionIteratorTest, IncrementFromSelectElementBeforeNode) {
   EXPECT_THAT(
       ScanForward(PositionInFlatTree::BeforeNode(select_element)),
       ElementsAre("-S-- SELECT@0 SELECT@offsetInAnchor[0] SELECT@beforeAnchor",
+                  "-S-- SLOT id=\"select-button\" SLOT "
+                  "id=\"select-button\"@offsetInAnchor[0]",
                   "-S-- DIV DIV@offsetInAnchor[0]",
                   "-S-E #text \"\"@0 #text \"\"@offsetInAnchor[0]",
-                  "---E DIV DIV@afterChildren"));
+                  "---E DIV DIV@afterChildren",
+                  "---E SLOT id=\"select-button\" SLOT "
+                  "id=\"select-button\"@afterChildren"));
 }
 
 TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset0) {
@@ -911,9 +921,13 @@ TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset0) {
   EXPECT_THAT(
       ScanForward(PositionInFlatTree(select_element, 0)),
       ElementsAre("-S-- SELECT@0 SELECT@offsetInAnchor[0] SELECT@beforeAnchor",
+                  "-S-- SLOT id=\"select-button\" SLOT "
+                  "id=\"select-button\"@offsetInAnchor[0]",
                   "-S-- DIV DIV@offsetInAnchor[0]",
                   "-S-E #text \"\"@0 #text \"\"@offsetInAnchor[0]",
-                  "---E DIV DIV@afterChildren"));
+                  "---E DIV DIV@afterChildren",
+                  "---E SLOT id=\"select-button\" SLOT "
+                  "id=\"select-button\"@afterChildren"));
 }
 
 TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset1) {
@@ -925,9 +939,9 @@ TEST_F(PositionIteratorTest, IncrementFromSelectElementOffset1) {
   EXPECT_THAT(
       ScanForward(PositionInFlatTree(select_element, 1)),
       ElementsAre("---- SELECT@1 SELECT@offsetInAnchor[1] SELECT@beforeAnchor",
-                  "-S-- SLOT SLOT@offsetInAnchor[0]",
-                  "-S-E OPTION OPTION@beforeAnchor OPTION@offsetInAnchor[0]",
-                  "---E SLOT SLOT@afterChildren"));
+                  "-S-E SLOT id=\"select-datalist\" SLOT "
+                  "id=\"select-datalist\"@beforeAnchor SLOT "
+                  "id=\"select-datalist\"@offsetInAnchor[0]"));
 }
 
 TEST_F(PositionIteratorTest, IncrementWithCollapsedSpace) {

@@ -260,7 +260,7 @@ class TestNetworkContext : public mojom::NetworkContext {
   void PreconnectSockets(
       uint32_t num_streams,
       const GURL& url,
-      bool allow_credentials,
+      mojom::CredentialsMode credentials_mode,
       const net::NetworkAnonymizationKey& network_anonymization_key) override {}
 #if BUILDFLAG(IS_P2P_ENABLED)
   void CreateP2PSocketManager(

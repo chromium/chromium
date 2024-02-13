@@ -37,6 +37,7 @@ source_set("autofill") {
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/device_reauth",
+    "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/metrics/model",
     "//ios/chrome/browser/passwords/model",

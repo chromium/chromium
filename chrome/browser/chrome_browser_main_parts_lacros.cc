@@ -16,6 +16,7 @@
 #include "chromeos/startup/browser_params_proxy.h"
 #include "content/public/browser/tts_platform.h"
 #include "content/public/common/result_codes.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/core/wm_core_switches.h"
 
 ChromeBrowserMainPartsLacros::ChromeBrowserMainPartsLacros(
@@ -104,6 +105,8 @@ void ChromeBrowserMainPartsLacros::PostMainMessageLoopRun() {
   kcer::KcerFactory::Shutdown();
 
   ChromeBrowserMainParts::PostMainMessageLoopRun();
+
+  ui::OzonePlatform::GetInstance()->PostMainMessageLoopRun();
 }
 
 void ChromeBrowserMainPartsLacros::PostDestroyThreads() {

@@ -1545,6 +1545,18 @@ TEST_F(AutofillI18nStructuredAddress, ParseStreetAddressDE) {
        .street_name = "Implerstr.",
        .house_number = "73",
        .overflow = "abcdefg"},
+      {.country_code = "DE",
+       .street_address = "Implerstr. nummer 73\nRückgebäude",
+       .street_location = "Implerstr. nummer 73",
+       .street_name = "Implerstr.",
+       .house_number = "73",
+       .overflow = "Rückgebäude"},
+      {.country_code = "DE",
+       .street_address = "Implerstr. nummer 73\nRückgebäude\nExtra info",
+       .street_location = "Implerstr. nummer 73",
+       .street_name = "Implerstr.",
+       .house_number = "73",
+       .overflow = "Rückgebäude\nExtra info"},
   };
 
   for (const auto& test_case : test_cases) {

@@ -153,6 +153,74 @@ class IntersectionObserverTest : public SimTest,
                 scroll_margin_delegate->LastEntry()->intersectionRatio(),
                 0.001);
   }
+
+  void TestMinScrollDeltaToUpdateWithIntermediateClip() {
+    Element* root = GetDocument().getElementById(AtomicString("root"));
+    Element* target = GetDocument().getElementById(AtomicString("target"));
+    LocalFrameView* frame_view = GetDocument().View();
+
+    auto* observer_init = IntersectionObserverInit::Create();
+    observer_init->setRoot(
+        MakeGarbageCollected<V8UnionDocumentOrElement>(root));
+    DummyExceptionStateForTesting exception_state;
+    TestIntersectionObserverDelegate* observer_delegate =
+        MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
+    IntersectionObserver* observer = IntersectionObserver::Create(
+        observer_init, *observer_delegate, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    observer->observe(target, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    const IntersectionObservation* observation =
+        target->IntersectionObserverData()->GetObservationFor(*observer);
+    EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
+    EXPECT_EQ(LocalFrameView::kRequired,
+              frame_view->GetIntersectionObservationStateForTesting());
+
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    EXPECT_EQ(observer_delegate->CallCount(), 1);
+    EXPECT_EQ(observer_delegate->EntryCount(), 1);
+    EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+    EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
+    EXPECT_EQ(LocalFrameView::kNotNeeded,
+              frame_view->GetIntersectionObservationStateForTesting());
+
+    root->scrollTo(0, 50);
+    EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
+    EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
+              frame_view->GetIntersectionObservationStateForTesting());
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    EXPECT_EQ(observer_delegate->CallCount(), 1);
+    EXPECT_EQ(observer_delegate->EntryCount(), 1);
+    EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+
+    root->scrollTo(0, 100);
+    EXPECT_EQ(gfx::Vector2dF(50, 50), observation->MinScrollDeltaToUpdate());
+    EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
+              frame_view->GetIntersectionObservationStateForTesting());
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    EXPECT_EQ(observer_delegate->CallCount(), 2);
+    EXPECT_EQ(observer_delegate->EntryCount(), 2);
+    EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+    EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
+    EXPECT_EQ(LocalFrameView::kNotNeeded,
+              frame_view->GetIntersectionObservationStateForTesting());
+
+    root->scrollTo(0, 101);
+    EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
+    EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
+              frame_view->GetIntersectionObservationStateForTesting());
+    Compositor().BeginFrame();
+    test::RunPendingTasks();
+    EXPECT_EQ(observer_delegate->CallCount(), 2);
+    EXPECT_EQ(observer_delegate->EntryCount(), 2);
+    EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
+    EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
+    EXPECT_EQ(LocalFrameView::kNotNeeded,
+              frame_view->GetIntersectionObservationStateForTesting());
+  }
 };
 
 class IntersectionObserverV2Test : public IntersectionObserverTest {
@@ -911,6 +979,10 @@ TEST_P(IntersectionObserverTest, RootMarginDevicePixelRatio) {
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -978,11 +1050,7 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
   // observation2 can't use cached rects because the observer's root is not
   // the target's enclosing scroller.
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
-  }
+  EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
 
   // Scrolling the root should not invalidate.
   root->scrollTo(0, 100);
@@ -1006,12 +1074,8 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
       DocumentUpdateReason::kTest);
   EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  } else {
-    // This is incorrect.
-    EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
-  }
+  // This is incorrect.
+  EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
 
   // Changing layout between root and target should invalidate.
   target1->parentElement()->SetInlineStyleProperty(CSSPropertyID::kMarginLeft,
@@ -1038,6 +1102,10 @@ TEST_P(IntersectionObserverTest, CachedRectsWithScrollers) {
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1101,11 +1169,7 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
   // observation2 can't use cached rects because the observer's root is not
   // the target's enclosing scroller.
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
@@ -1132,11 +1196,7 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   target3->parentElement()->scrollTo(0, 200);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
   EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
   EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
 
@@ -1159,18 +1219,16 @@ TEST_P(IntersectionObserverTest, CachedRectsWithOverflowHidden) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_TRUE(observation2->CanUseCachedRectsForTesting());
-    EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-    EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1242,20 +1300,18 @@ TEST_P(IntersectionObserverTest, CachedRectsWithoutIntermediateScrollable) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_TRUE(observation2->CanUseCachedRectsForTesting());
-    EXPECT_TRUE(observation3->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-    EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(observation3->CanUseCachedRectsForTesting());
   // scroller3 is an intermediate scroller between root and target4.
   EXPECT_FALSE(observation4->CanUseCachedRectsForTesting());
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1292,21 +1348,13 @@ TEST_P(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
   // Generate initial notifications and populate cache.
   Compositor().BeginFrame();
   test::RunPendingTasks();
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
 
   // Change of opacity doesn't invalidate cached rects.
   container->SetInlineStyleProperty(CSSPropertyID::kOpacity, "0.6");
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
 
   container->SetInlineStyleProperty(CSSPropertyID::kTransform,
                                     "translateY(20px)");
@@ -1316,6 +1364,10 @@ TEST_P(IntersectionObserverTest, CachedRectsWithPaintPropertyChange) {
 }
 
 TEST_P(IntersectionObserverTest, CachedRectsDisplayNone) {
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
@@ -1344,11 +1396,7 @@ TEST_P(IntersectionObserverTest, CachedRectsDisplayNone) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation->CanUseCachedRectsForTesting());
 
   target->setAttribute(html_names::kStyleAttr, AtomicString("display: none"));
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
@@ -1396,24 +1444,14 @@ TEST_P(IntersectionObserverTest, CachedRectsWithFixedPosition) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_TRUE(observation2->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
 
   GetDocument().domWindow()->scrollTo(0, 100);
   GetDocument().View()->UpdateLifecycleToPrePaintClean(
       DocumentUpdateReason::kTest);
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    EXPECT_TRUE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_TRUE(observation2->CanUseCachedRectsForTesting());
-  } else {
-    EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
-    EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
-  }
+  EXPECT_FALSE(observation1->CanUseCachedRectsForTesting());
+  EXPECT_FALSE(observation2->CanUseCachedRectsForTesting());
 }
 
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateNotScrollable) {
@@ -1641,7 +1679,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdZero) {
 
   root->scrollTo(0, 50);
   EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1651,7 +1689,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdZero) {
 
   root->scrollTo(0, 100);
   EXPECT_EQ(gfx::Vector2dF(50, 50), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1664,7 +1702,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdZero) {
 
   root->scrollTo(0, 101);
   EXPECT_EQ(gfx::Vector2dF(50, 0), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1677,7 +1715,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdZero) {
 
   root->scrollTo(51, 101);
   EXPECT_EQ(gfx::Vector2dF(50, 1), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1740,7 +1778,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateWithPageZoom) {
   root->scrollTo(0, 50);
   // While our internal geometries are zoomed.
   EXPECT_EQ(gfx::Vector2dF(100, 200), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1750,7 +1788,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateWithPageZoom) {
 
   root->scrollTo(0, 100);
   EXPECT_EQ(gfx::Vector2dF(100, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1763,7 +1801,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateWithPageZoom) {
 
   root->scrollTo(0, 101);
   EXPECT_EQ(gfx::Vector2dF(100, 0), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1776,7 +1814,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateWithPageZoom) {
 
   root->scrollTo(51, 101);
   EXPECT_EQ(gfx::Vector2dF(100, 2), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1832,7 +1870,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateImplicitRoot) {
 
   window.scrollTo(0, 50);
   EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1845,7 +1883,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateImplicitRoot) {
 
   window.scrollTo(0, 100);
   EXPECT_EQ(gfx::Vector2dF(50, 50), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1858,7 +1896,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateImplicitRoot) {
 
   window.scrollTo(0, 101);
   EXPECT_EQ(gfx::Vector2dF(50, 0), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1871,7 +1909,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateImplicitRoot) {
 
   window.scrollTo(51, 101);
   EXPECT_EQ(gfx::Vector2dF(50, 1), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -1901,70 +1939,48 @@ TEST_P(IntersectionObserverTest,
     </div>
   )HTML");
 
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  LocalFrameView* frame_view = GetDocument().View();
+  TestMinScrollDeltaToUpdateWithIntermediateClip();
+}
 
-  IntersectionObserverInit* observer_init = IntersectionObserverInit::Create();
-  observer_init->setRoot(MakeGarbageCollected<V8UnionDocumentOrElement>(root));
-  DummyExceptionStateForTesting exception_state;
-  TestIntersectionObserverDelegate* observer_delegate =
-      MakeGarbageCollected<TestIntersectionObserverDelegate>(GetDocument());
-  IntersectionObserver* observer = IntersectionObserver::Create(
-      observer_init, *observer_delegate, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-  observer->observe(target, exception_state);
-  ASSERT_FALSE(exception_state.HadException());
-  const IntersectionObservation* observation =
-      target->IntersectionObserverData()->GetObservationFor(*observer);
-  EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kRequired,
-            frame_view->GetIntersectionObservationStateForTesting());
+TEST_P(IntersectionObserverTest,
+       MinScrollDeltaToUpdateThresholdZeroIntermediateClipPath) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id='root' style="width: 100px; height: 100px; overflow: scroll">
+      <div style="height: 200px"></div>
+      <div id="clip" style="width: 50px; height: 20px; clip-path: border-box">
+        <div id='target' style="width: 50px; height: 100px"></div>
+      </div>
+      <div style="width: 1000px; height: 1000px"></div>
+    </div>
+  )HTML");
 
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
-  EXPECT_EQ(observer_delegate->EntryCount(), 1);
-  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kNotNeeded,
-            frame_view->GetIntersectionObservationStateForTesting());
+  TestMinScrollDeltaToUpdateWithIntermediateClip();
+}
 
-  root->scrollTo(0, 50);
-  EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
-            frame_view->GetIntersectionObservationStateForTesting());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  EXPECT_EQ(observer_delegate->CallCount(), 1);
-  EXPECT_EQ(observer_delegate->EntryCount(), 1);
-  EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
+TEST_P(IntersectionObserverTest,
+       MinScrollDeltaToUpdateThresholdZeroClipPathOnTarget) {
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    return;
+  }
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete(R"HTML(
+    <div id='root' style="width: 100px; height: 100px; overflow: scroll">
+      <div style="height: 200px"></div>
+      <div id='target' style="width: 50px; height: 100px;
+                              clip-path: rect(0 50px 20px 0)"></div>
+      <div style="width: 1000px; height: 1000px"></div>
+    </div>
+  )HTML");
 
-  root->scrollTo(0, 100);
-  EXPECT_EQ(gfx::Vector2dF(50, 50), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
-            frame_view->GetIntersectionObservationStateForTesting());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  EXPECT_EQ(observer_delegate->CallCount(), 2);
-  EXPECT_EQ(observer_delegate->EntryCount(), 2);
-  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kNotNeeded,
-            frame_view->GetIntersectionObservationStateForTesting());
-
-  root->scrollTo(0, 101);
-  EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
-            frame_view->GetIntersectionObservationStateForTesting());
-  Compositor().BeginFrame();
-  test::RunPendingTasks();
-  EXPECT_EQ(observer_delegate->CallCount(), 2);
-  EXPECT_EQ(observer_delegate->EntryCount(), 2);
-  EXPECT_TRUE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kNotNeeded,
-            frame_view->GetIntersectionObservationStateForTesting());
+  TestMinScrollDeltaToUpdateWithIntermediateClip();
 }
 
 TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateMinimumThreshold) {
@@ -2016,7 +2032,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateMinimumThreshold) {
 
   root->scrollTo(0, 50);
   EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2026,7 +2042,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateMinimumThreshold) {
 
   root->scrollTo(0, 100);
   EXPECT_EQ(gfx::Vector2dF(50, 50), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2039,7 +2055,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateMinimumThreshold) {
 
   root->scrollTo(0, 101);
   EXPECT_EQ(gfx::Vector2dF(50, 0), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2052,7 +2068,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateMinimumThreshold) {
 
   root->scrollTo(51, 101);
   EXPECT_EQ(gfx::Vector2dF(50, 1), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2112,7 +2128,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThreshold0_5) {
 
   root->scrollTo(0, 50);
   EXPECT_EQ(gfx::Vector2dF(50, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2123,7 +2139,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThreshold0_5) {
 
   root->scrollTo(0, 100);
   EXPECT_EQ(gfx::Vector2dF(50, 50), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2136,7 +2152,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThreshold0_5) {
 
   root->scrollTo(0, 101);
   EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2149,7 +2165,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThreshold0_5) {
 
   root->scrollTo(0, 151);
   EXPECT_EQ(gfx::Vector2dF(), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2210,7 +2226,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOne) {
 
   root->scrollTo(0, 100);
   EXPECT_EQ(gfx::Vector2dF(20, 200), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2221,7 +2237,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOne) {
 
   root->scrollTo(0, 200);
   EXPECT_EQ(gfx::Vector2dF(20, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2234,7 +2250,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOne) {
 
   root->scrollTo(20, 200);
   EXPECT_EQ(gfx::Vector2dF(20, 0), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2307,7 +2323,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
 
   root->scrollTo(0, 100);
   EXPECT_EQ(gfx::Vector2dF(30, 200), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -2318,7 +2334,7 @@ TEST_P(IntersectionObserverTest, MinScrollDeltaToUpdateThresholdOneOfRoot) {
 
   root->scrollTo(30, 200);
   EXPECT_EQ(gfx::Vector2dF(30, 100), observation->MinScrollDeltaToUpdate());
-  EXPECT_EQ(LocalFrameView::kDesired,
+  EXPECT_EQ(LocalFrameView::kScrollAndVisibilityOnly,
             frame_view->GetIntersectionObservationStateForTesting());
   Compositor().BeginFrame();
   test::RunPendingTasks();

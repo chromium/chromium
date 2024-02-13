@@ -18,21 +18,21 @@ constexpr char kCredentialTypeKey[] = "type";
 }  // namespace
 
 // static
-absl::optional<PublicKeyCredentialDescriptor>
+std::optional<PublicKeyCredentialDescriptor>
 PublicKeyCredentialDescriptor::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const cbor::Value::MapValue& map = cbor.GetMap();
   auto type = map.find(cbor::Value(kCredentialTypeKey));
   if (type == map.end() || !type->second.is_string() ||
       type->second.GetString() != kPublicKey)
-    return absl::nullopt;
+    return std::nullopt;
 
   auto id = map.find(cbor::Value(kCredentialIdKey));
   if (id == map.end() || !id->second.is_bytestring())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto ret = PublicKeyCredentialDescriptor(CredentialType::kPublicKey,
                                            id->second.GetBytestring());

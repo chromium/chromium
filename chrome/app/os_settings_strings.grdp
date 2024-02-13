@@ -2449,8 +2449,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_LABEL" desc="The text associated with the primary section setting. This contains settings for a Linux container running in a virtual machine for use by software developers.">
     Linux development environment
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_CROSTINI_SET_UP" desc="Crostini Set up button label.">
-    Set Up
+  <message name="IDS_OS_SETTINGS_REVAMP_CROSTINI_SET_UP" desc="The label for the button that, when clicked, opens the Crostini setup flow.">
+    Set up
   </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Crostini.">
     Shared folders are available in Linux at <ph name="BASE_DIR">$1<ex>/mnt/chromeos</ex></ph>.
@@ -2865,6 +2865,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_NUDGE_HEADER" desc="Header in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their mice.">
     Add or locate buttons on your mouse
   </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_NUDGE_HEADER" desc="Header in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their graphics tablet.">
+    Add or locate buttons on your tablet
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_PEN_BUTTONS_NUDGE_HEADER" desc="Header in the customize mouse buttons page nudge above the customize buttons subsection suggesting users to click buttons on their graphics tablet stylus.">
+    Add or locate buttons on your pen
+  </message>
   <message name="IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL" desc="Label of key combination option in the button remapping action dropdown menu.">
     Key combination
   </message>
@@ -2892,8 +2898,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_KEY_COMBINATION_DIALOG_TITLE" desc="Title of the key combination dialog that pops up after clicking key combination choice in the button remapping action dropdown menu.">
     Enter key combination
   </message>
-  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_SUBPAGE_DESCRIPTION" desc="In customize buttons subpage, the description label above customize buttons to describe the actions user can perform.">
-    Click additional buttons on your <ph name="DEVICE_NAME">$1<ex>MX Anywhere 2S</ex></ph> to add or locate buttons.
+  <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_SUBPAGE_DESCRIPTION" desc="In customize buttons subpage, the description label above customize buttons to describe the actions the user should perform.">
+    Press a button that's not the left or right mouse button on your <ph name="DEVICE_NAME">$1<ex>MX Anywhere 2S</ex></ph>.
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZE_TABLET_BUTTONS_SUBPAGE_DESCRIPTION" desc="In customize buttons subpage, the description label above customize buttons to describe the actions the user should perform.">
+    Press a button on your <ph name="DEVICE_NAME">$1<ex>MX Anywhere 2S</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_CHARACTER_COUNT" desc="Character count of the button renaming dialog input that shows up the current and maximum character count.">
     <ph name="CURRENT_CHARACTER_COUNT">$1<ex>15</ex></ph>/<ph name="MAX_CHARACTER_COUNT">$2<ex>64</ex></ph>
@@ -5081,6 +5090,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS" desc="Tells the user that there is no phone with their account on it that can connect to their Chromebook.">
     No eligible devices. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_NO_ELIGIBLE_HOSTS" desc="Tells the user that there is no phone with their account on it that can connect to their Chromebook.">
+    No available devices. Add your Google Account to your phone to connect it to this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$2<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_VERIFICATION_TEXT" desc="Text to tell user that their Chromebook needs to verify that it can connect with their phone.">
     Waiting for verification. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
@@ -5549,8 +5561,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_SCHEDULE_SUNSET_TO_SUNRISE" desc="In Device Settings > Displays, the label of the option to set the automatic schedule of the Night Light feature to turn on at sunset and off at sunrise.">
     Sunset to sunrise
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT" translateable="false" desc="In Device Settings > Displays, the warning text that tells users that system geolocation permission is needed for scheduled night light.">
-    Current schedule won't be updated. To automatically update the sunset and sunrise schedule <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on Location access<ph name="END_LINK">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_GEOLOCATION_WARNING_TEXT" translateable="true" desc="In Device Settings > Displays, the warning text that tells users that system geolocation permission is needed for scheduled night light.">
+    Current schedule is set to <ph name="SUNRISE">$1<ex>6am</ex></ph> - <ph name="SUNSET">$2<ex>6pm</ex></ph>. To automatically update the sunset and sunrise schedule, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on location access<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_DISPLAY_NIGHT_LIGHT_TEXT" desc="In Device Settings > Displays, text describing the Night Light feature.">
     Make it easier to look at your screen or read in dim light
@@ -6057,19 +6069,19 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Packaged web applications with enhanced capabilities. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION" desc="The description for the settings row button in the App section of OS Settings which links to the App Notifications page.">
-    Manage app notifications, Do not disturb, and app badging
+    Manage app notifications, Do Not Disturb, and app badging
   </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of ChromeOS apps installed.">
     <ph name="APP_COUNT">$1<ex>3</ex></ph> apps
   </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do not disturb is on.">
-    Do not disturb enabled
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do Not Disturb is on.">
+    Do Not Disturb enabled
   </message>
-  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications DoNotDisturb toggle that lets the user silence all app notifications.">
-    Do not disturb
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications Do Not Disturb toggle that lets the user silence all app notifications.">
+    Do Not Disturb
   </message>
-   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
-    Notifications won't pop up on the screen. You can still see notifications by clicking the Do not disturb icon on the bottom right of your screen.
+   <message name="IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the Do Not Disturb toggle within help icon tooltip.">
+    Notifications won't pop up on the screen. You can still see notifications by clicking the Do Not Disturb icon on the bottom right of your screen.
   </message>
    <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION" desc="The text description of the DoNotDisturb toggle within help icon tooltip.">
     When turned on, all notifications will be silenced
@@ -6573,14 +6585,14 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MENU_ITEM_DESCRIPTION" desc="Description for the System Preferences menu item in the left menu. This static list describes device storage, battery/energy saver, and language settings.">
     Storage, power, language
   </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_TITLE" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
-    Multitasking
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_TITLE" desc="The title of the Multitasking settings card in the System Preferences page.">
+    Windows and desks
   </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_LABEL" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
-    Show window snap suggestions
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_LABEL" desc="The title of the Multitasking settings card in the System Preferences page.">
+    Show window suggestions when starting split-screen
   </message>
-  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_DESCRIPTION" desc="The title of the Multitasking settings card in the System Preferences page." translateable="false">
-    If you snap a window, you'll see window suggestions for the other side
+  <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_MULTITASKING_SNAP_WINDOW_DESCRIPTION" desc="The title of the Multitasking settings card in the System Preferences page.">
+    If you snap a window to one side to use split-screen, you'll see window suggestions for the other side
   </message>
   <message name="IDS_OS_SETTINGS_SYSTEM_PREFERENCES_STORAGE_AND_POWER_TITLE" desc="The title of the Storage and Power settings card in the System Preferences page.">
     Storage and power

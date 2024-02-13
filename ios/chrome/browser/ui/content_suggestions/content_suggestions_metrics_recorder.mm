@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 
@@ -73,9 +74,7 @@ const float kMaxModuleEngagementIndex = 50;
       break;
     }
 
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
+    case ContentSuggestionsModuleType::kSafetyCheck: {
       // Increment freshness pref since it is an impression of
       // the latest Safety Check results as the top module.
       int freshness_impression_count = _localState->GetInteger(
@@ -98,8 +97,7 @@ const float kMaxModuleEngagementIndex = 50;
           freshness_impression_count + 1);
       break;
     }
-    case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore: {
+    case ContentSuggestionsModuleType::kParcelTracking: {
       // Increment freshness pref since it is an impression of
       // the latest Tab Resumption results as the top module.
       int freshness_impression_count = _localState->GetInteger(
@@ -139,8 +137,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       UMA_HISTOGRAM_EXACT_LINEAR(
           kMagicStackModuleEngagementSafetyCheckIndexHistogram, index,
           kMaxModuleEngagementIndex);
@@ -151,7 +147,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMaxModuleEngagementIndex);
       break;
     case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       UMA_HISTOGRAM_EXACT_LINEAR(
           kMagicStackModuleEngagementParcelTrackingIndexHistogram, index,
           kMaxModuleEngagementIndex);

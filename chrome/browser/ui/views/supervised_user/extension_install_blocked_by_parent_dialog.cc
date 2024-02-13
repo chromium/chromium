@@ -41,6 +41,8 @@ std::u16string GetTitle(
 
 namespace extensions {
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
+
 void ShowExtensionInstallBlockedByParentDialog(
     ExtensionInstalledBlockedByParentDialogAction action,
     const extensions::Extension* extension,
@@ -54,14 +56,15 @@ void ShowExtensionInstallBlockedByParentDialog(
           .SetTitle(GetTitle(action, extension_type))
           .SetIcon(ui::ImageModel::FromVectorIcon(
               chromeos::kNotificationSupervisedUserIcon, ui::kColorIcon))
-          .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-              IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE)))
+          .AddParagraph(
+              ui::DialogModelLabel(l10n_util::GetStringUTF16(
+                  IDS_EXTENSION_PERMISSIONS_BLOCKED_BY_PARENT_PROMPT_MESSAGE)),
+              std::u16string(), kParentBlockedDialogMessage)
           .AddOkButton(base::DoNothing(),
                        ui::DialogModel::Button::Params().SetLabel(
                            l10n_util::GetStringUTF16(IDS_OK)))
           .SetDialogDestroyingCallback(std::move(done_callback))
           .Build();
-
   gfx::NativeWindow parent_window =
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
   constrained_window::ShowBrowserModal(std::move(dialog_model), parent_window);

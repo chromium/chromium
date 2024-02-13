@@ -8,40 +8,62 @@ import {SettingsRadioGroupElement, TimezoneSubpageElement} from 'chrome://os-set
 import {CrSettingsPrefs, GeolocationAccessLevel, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('<timezone-subpage>', function() {
-  let timezoneSubpage: TimezoneSubpageElement;
+let timezoneSubpage: TimezoneSubpageElement;
 
-  setup(async function() {
-    const prefElement = document.createElement('settings-prefs');
-    document.body.appendChild(prefElement);
+async function init(): Promise<void> {
+  const prefElement = document.createElement('settings-prefs');
+  document.body.appendChild(prefElement);
 
-    await CrSettingsPrefs.initialized;
-    timezoneSubpage = document.createElement('timezone-subpage');
-    timezoneSubpage.prefs = {
-      ...prefElement.prefs,
-      ash: {
-        user: {
-          geolocation_access_level: {
-            key: 'ash.user.geolocation_access_level',
-            type: chrome.settingsPrivate.PrefType.NUMBER,
-            value: GeolocationAccessLevel.ALLOWED,
-          },
+  await CrSettingsPrefs.initialized;
+  timezoneSubpage = document.createElement('timezone-subpage');
+  timezoneSubpage.prefs = {
+    ...prefElement.prefs,
+    ash: {
+      user: {
+        geolocation_access_level: {
+          key: 'ash.user.geolocation_access_level',
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: GeolocationAccessLevel.ALLOWED,
         },
       },
-    };
+    },
+  };
 
-    document.body.appendChild(timezoneSubpage);
+  document.body.appendChild(timezoneSubpage);
+  await flushTasks();
+}
+
+function testTeardown() {
+  timezoneSubpage.remove();
+  CrSettingsPrefs.resetForTesting();
+  Router.getInstance().resetRouteForTesting();
+}
+
+suite('<timezone-subpage> with logged-in user', () => {
+  setup(async () => {
+    await init();
   });
 
-  teardown(function() {
-    timezoneSubpage.remove();
-    CrSettingsPrefs.resetForTesting();
-    Router.getInstance().resetRouteForTesting();
+  teardown(() => {
+    testTeardown();
+  });
+
+  test('timezone radio group is enabled', async () => {
+    // Enable automatic timezone.
+    timezoneSubpage.setPrefValue(
+        'generated.resolve_timezone_by_geolocation_on_off', true);
+    await flushTasks();
+
+    const timezoneRadioGroup =
+        timezoneSubpage.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+            '#timeZoneRadioGroup');
+    assert(timezoneRadioGroup);
+    assertFalse(timezoneRadioGroup.disabled);
   });
 
   test('Timezone autodetect by geolocation radio', async () => {
@@ -53,13 +75,13 @@ suite('<timezone-subpage>', function() {
     // Resolve timezone by geolocation is on.
     timezoneSubpage.setPrefValue(
         'generated.resolve_timezone_by_geolocation_on_off', true);
-    flush();
+    await flushTasks();
     assertEquals('true', timezoneRadioGroup.selected);
 
     // Resolve timezone by geolocation is off.
     timezoneSubpage.setPrefValue(
         'generated.resolve_timezone_by_geolocation_on_off', false);
-    flush();
+    await flushTasks();
     assertEquals('false', timezoneRadioGroup.selected);
 
     // Set timezone autodetect on by clicking the 'on' radio.
@@ -115,7 +137,6 @@ suite('<timezone-subpage>', function() {
         timezoneSubpage.setPrefValue(
             'generated.resolve_timezone_by_geolocation_on_off', true);
 
-
         // Geolocation is allowed by default, the warning text should be hidden.
         assertFalse(isVisible(
             timezoneSubpage.shadowRoot!.querySelector('#warningText')));
@@ -124,7 +145,31 @@ suite('<timezone-subpage>', function() {
         timezoneSubpage.setPrefValue(
             'ash.user.geolocation_access_level',
             GeolocationAccessLevel.DISALLOWED);
-        flush();
+        await flushTasks();
         assertTrue(!!timezoneSubpage.shadowRoot!.querySelector('#warningText'));
       });
+});
+
+suite('<timezone-subpage> with guest user', () => {
+  setup(async () => {
+    loadTimeData.overrideValues({isGuest: true});
+    await init();
+  });
+
+  teardown(() => {
+    testTeardown();
+  });
+
+  test('timezone radio group is disabled', async () => {
+    // Enable automatic timezone.
+    timezoneSubpage.setPrefValue(
+        'generated.resolve_timezone_by_geolocation_on_off', true);
+    await flushTasks();
+
+    const timezoneRadioGroup =
+        timezoneSubpage.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+            '#timeZoneRadioGroup');
+    assert(timezoneRadioGroup);
+    assertTrue(timezoneRadioGroup.disabled);
+  });
 });

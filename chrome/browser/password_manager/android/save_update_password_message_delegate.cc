@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
+#include <optional>
 #include <utility>
 
 #include "base/android/build_info.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/password_manager/android/password_infobar_utils.h"
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -25,8 +27,10 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -35,6 +39,8 @@
 #include "url/origin.h"
 
 namespace {
+
+using password_manager::UsesSplitStoresAndUPMForLocal;
 
 // Duration of message before timeout; 20 seconds.
 const int kMessageDismissDurationMs = 20000;
@@ -188,13 +194,7 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
     passwords_state_.OnPendingPassword(std::move(form_to_save));
   }
 
-  if (account_info.has_value()) {
-    account_email_ = account_info->CanHaveEmailAddressDisplayed()
-                         ? account_info.value().email
-                         : account_info.value().full_name;
-  } else {
-    account_email_ = std::string();
-  }
+  account_email_ = GetAccountForMessageDescription(account_info);
 
   CreateMessage(update_password);
   RecordMessageShownMetrics();
@@ -303,17 +303,32 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveMessageMenuItemClick(
 std::u16string SaveUpdatePasswordMessageDelegate::GetMessageDescription(
     const password_manager::PasswordForm& pending_credentials,
     bool update_password) {
-  if (!account_email_.empty()) {
+  // If password is being updated in the profile storage, don't show the account
+  // even if it's available.
+  if (account_email_.has_value() &&
+      !IsUsingProfileStore(pending_credentials.username_value)) {
     return l10n_util::GetStringFUTF16(
         update_password
             ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION
             : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_IN_MESSAGE_DESCRIPTION,
-        base::UTF8ToUTF16(account_email_));
+        base::UTF8ToUTF16(account_email_.value()));
   }
   return l10n_util::GetStringUTF16(
       update_password
           ? IDS_PASSWORD_MANAGER_UPDATE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION
           : IDS_PASSWORD_MANAGER_SAVE_PASSWORD_SIGNED_OUT_MESSAGE_DESCRIPTION);
+}
+
+std::optional<std::string>
+SaveUpdatePasswordMessageDelegate::GetAccountForMessageDescription(
+    const std::optional<AccountInfo>& account_info) {
+  if (!account_info.has_value()) {
+    return std::nullopt;
+  }
+
+  return account_info->CanHaveEmailAddressDisplayed()
+             ? account_info.value().email
+             : account_info.value().full_name;
 }
 
 int SaveUpdatePasswordMessageDelegate::GetPrimaryButtonTextId(
@@ -388,10 +403,10 @@ void SaveUpdatePasswordMessageDelegate::HandleUpdateButtonClicked() {
 
 void SaveUpdatePasswordMessageDelegate::DisplayEditDialog(
     bool update_password) {
-  const std::u16string& current_username =
-      passwords_state_.form_manager()->GetPendingCredentials().username_value;
-  const std::u16string& current_password =
-      passwords_state_.form_manager()->GetPendingCredentials().password_value;
+  const password_manager::PasswordForm& password_form =
+      passwords_state_.form_manager()->GetPendingCredentials();
+  const std::u16string& current_username = password_form.username_value;
+  const std::u16string& current_password = password_form.password_value;
 
   CreatePasswordEditDialog();
 
@@ -445,17 +460,8 @@ bool SaveUpdatePasswordMessageDelegate::HasMultipleCredentialsStored() {
 }
 
 void SaveUpdatePasswordMessageDelegate::CreatePasswordEditDialog() {
-  // Binding with base::Unretained(this) is safe here because
-  // SaveUpdatePasswordMessageDelegate owns password_edit_dialog_. Callbacks
-  // won't be called after the SaveUpdatePasswordMessageDelegate object is
-  // destroyed.
-  password_edit_dialog_ = password_edit_dialog_factory_.Run(
-      web_contents_.get(),
-      base::BindOnce(
-          &SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog,
-          base::Unretained(this)),
-      base::BindOnce(&SaveUpdatePasswordMessageDelegate::HandleDialogDismissed,
-                     base::Unretained(this)));
+  password_edit_dialog_ =
+      password_edit_dialog_factory_.Run(web_contents_.get(), this);
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleDialogDismissed(
@@ -485,6 +491,25 @@ void SaveUpdatePasswordMessageDelegate::HandleSavePasswordFromDialog(
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_state_.form_manager());
   SavePassword();
+}
+
+bool SaveUpdatePasswordMessageDelegate::IsUsingProfileStore(
+    const std::u16string& username) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (!UsesSplitStoresAndUPMForLocal(profile->GetPrefs())) {
+    return !account_email_;
+  }
+
+  auto has_username_in_profile_store = [&username](const auto& form) {
+    return (form->username_value == username) && form->IsUsingProfileStore();
+  };
+  // TODO(crbug.com/1054410): Fix the update logic to use all best matches,
+  // rather than current_forms which is best_matches without PSL-matched
+  // credentials.
+  return !account_email_ ||
+         base::ranges::any_of(passwords_state_.GetCurrentForms(),
+                              has_username_in_profile_store);
 }
 
 void SaveUpdatePasswordMessageDelegate::ClearState() {

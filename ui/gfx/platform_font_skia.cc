@@ -116,7 +116,7 @@ PlatformFontSkia::PlatformFontSkia(const std::string& font_name,
 PlatformFontSkia::PlatformFontSkia(
     sk_sp<SkTypeface> typeface,
     int font_size_pixels,
-    const absl::optional<FontRenderParams>& params) {
+    const std::optional<FontRenderParams>& params) {
   DCHECK(typeface);
 
   SkString family_name;
@@ -171,11 +171,13 @@ void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
 #if BUILDFLAG(IS_LINUX)
   // On Linux, LinuxUi is used to query the native toolkit (e.g.
   // GTK) for the default UI font.
-  if (const auto* linux_ui = ui::LinuxUi::instance()) {
-    int weight_int;
-    linux_ui->GetDefaultFontDescription(
-        &family, &size_pixels, &style, static_cast<int*>(&weight_int), &params);
-    weight = static_cast<Font::Weight>(weight_int);
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    const auto& font_settings = linux_ui->GetDefaultFontDescription();
+    family = font_settings.family;
+    size_pixels = font_settings.size_pixels;
+    style = font_settings.style;
+    weight = static_cast<Font::Weight>(font_settings.weight);
+    params = linux_ui->GetDefaultFontRenderParams();
   } else
 #endif
       if (default_font_description_) {
@@ -478,7 +480,7 @@ PlatformFont* PlatformFont::CreateFromNameAndSize(const std::string& font_name,
 PlatformFont* PlatformFont::CreateFromSkTypeface(
     sk_sp<SkTypeface> typeface,
     int font_size_pixels,
-    const absl::optional<FontRenderParams>& params) {
+    const std::optional<FontRenderParams>& params) {
   TRACE_EVENT0("fonts", "PlatformFont::CreateFromSkTypeface");
   return new PlatformFontSkia(typeface, font_size_pixels, params);
 }

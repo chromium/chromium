@@ -153,11 +153,13 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     public ContextMenuPopulatorFactory createContextMenuPopulatorFactory(Tab tab) {
         return new ChromeContextMenuPopulatorFactory(
                 new TabContextMenuItemDelegate(
+                        mActivity,
                         tab,
                         mTabModelSelectorSupplier.get(),
                         mEphemeralTabCoordinatorSupplier,
                         mContextMenuCopyLinkObserver,
-                        mSnackbarManagerSupplier),
+                        mSnackbarManagerSupplier,
+                        () -> mBottomSheetController),
                 mShareDelegateSupplier,
                 ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
                 ExternalAuthUtils.getInstance());

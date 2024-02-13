@@ -89,4 +89,13 @@ base::Version ClientFilterableState::GetOSVersion() {
   return ret;
 }
 
+std::string ClientFilterableState::GetHardwareClass() {
+  // TODO(crbug/1111131): Expand to other platforms.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+  return base::SysInfo::HardwareModelName();
+#else
+  return "";
+#endif
+}
+
 }  // namespace variations

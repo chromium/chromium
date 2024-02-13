@@ -76,7 +76,6 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "extensions/browser/extension_registry.h"
@@ -513,7 +512,7 @@ bool ChromeWebAuthenticationDelegate::IsEnclaveAuthenticatorAvailable(
   }
 
   auto* const sync_service = SyncServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/1462552): Remove this call once IsSyncFeatureEnabled()
+  // TODO(crbug.com/40066949): Remove this call once IsSyncFeatureEnabled()
   // is fully deprecated, see ConsentLevel::kSync documentation for details,
   // in components/signin/public/base/consent_level.h.
   return sync_service && sync_service->IsSyncFeatureEnabled() &&
@@ -745,12 +744,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     RequestSource request_source,
     device::FidoRequestType request_type,
     std::optional<device::ResidentKeyRequirement> resident_key_requirement,
+    device::UserVerificationRequirement user_verification_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     bool is_enclave_authenticator_available,
     device::FidoDiscoveryFactory* discovery_factory) {
   DCHECK(request_type == device::FidoRequestType::kGetAssertion ||
          resident_key_requirement.has_value());
   request_type_ = request_type;
+  user_verification_requirement_ = user_verification_requirement;
   Profile* const profile = Profile::FromBrowserContext(GetBrowserContext());
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
@@ -1347,15 +1348,36 @@ void ChromeAuthenticatorRequestDelegate::OnAccountStateDownloaded(
 
 void ChromeAuthenticatorRequestDelegate::StartEnclaveTransaction(
     std::optional<std::string> token) {
+  CHECK(request_type_);
+  CHECK(user_verification_requirement_);
   // The UI has advanced to the point where it wants to perform an enclave
   // transaction. This code collects the needed values and triggers
   // `enclave_request_callback_` which surfaces in
   // `EnclaveDiscovery::OnUIRequest`.
 
   auto request = std::make_unique<device::enclave::CredentialRequest>();
-  // TODO(enclave): this will need to decide between a UV-interlocked key and
-  // a regular hardware-backed key in the future.
-  request->signing_callback = enclave_manager_->HardwareKeySigningCallback();
+
+  // TODO(enclave): We should test if biometrics are available for the
+  // underlying system, and if not, fall back to GPM PIN once that is
+  // implemented.
+  switch (*user_verification_requirement_) {
+    case device::UserVerificationRequirement::kDiscouraged:
+      request->signing_callback =
+          enclave_manager_->HardwareKeySigningCallback();
+      break;
+    case device::UserVerificationRequirement::kPreferred:
+    case device::UserVerificationRequirement::kRequired:
+      // TODO(enclave): For kRequired when local UV is not available, this is
+      // wrong. When GPM PIN exists that becomes the fallback UV mechanism.
+      if (enclave_manager_->is_uv_key_available()) {
+        request->signing_callback =
+            enclave_manager_->UserVerifyingKeySigningCallback();
+      } else {
+        request->signing_callback =
+            enclave_manager_->HardwareKeySigningCallback();
+      }
+      break;
+  }
 
   // If fetching the access token failed a transaction is still started. Without
   // a token it will fail, but that failure will trigger suitable error

@@ -218,11 +218,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, Standard) {
   prefs->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
   prefs->SetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
 
-  // The 'protectedContentEnabled' pref is only available on ChromeOS and
-  // Windows, so pass a JSON array object with any unsupported prefs into
-  // the test , so it can skip those.
+  // The 'protectedContentEnabled' pref is only available as browser pref
+  // associated with browser profile on ChromeOS and Windows, so pass a JSON
+  // array object with any unsupported prefs into the test , so it can skip
+  // those.
   static constexpr char kMissingPrefs[] =
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
       "[ ]";
 #else
       "[ \"protectedContentEnabled\" ]";

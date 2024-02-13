@@ -21,7 +21,7 @@
 # "ios_chrome_ui_eg2tests_module_iPhone 6s 14.0"
 
 # The goal is to drive the number of exceptions to zero, to make all
-# the bots behave similarly.
+# the bots behave similarly. whitespace
 {
   'accessibility_unittests': {
     'modifications': {
@@ -204,6 +204,11 @@
           # crbug.com/
           '--gtest_filter=-ConstructCompilerTest.DefaultParameters',
         ],
+      },
+      'linux-chromeos-rel': {
+        # b/41493162: angle_unittests has a high failure rate.
+        # Re-enable cq when the issue is fixed.
+        'ci_only': True,
       },
     },
   },
@@ -1313,6 +1318,13 @@
       'Win11 Tests x64',
     ],
   },
+  'browser_tests_require_lacros': {
+    'modifications': {
+      'linux-chromeos-rel': {
+        'retry_only_failed_tests': True
+      }
+    }
+  },
   'capture_unittests': {
     'modifications': {
       'WebRTC Chromium Linux Tester': {
@@ -1408,6 +1420,15 @@
       'chromeos-betty-pi-arc-chrome': {
         'swarming': {
           'shards': 15,
+        },
+        'args': [
+          '--tast-shard-method=hash',
+        ],
+      },
+      'chromeos-betty-pi-arc-chrome-dchecks': {
+        'swarming': {
+          # DCHECK builder is slower than non-DCHECK one.
+          'shards': 20,
         },
         'args': [
           '--tast-shard-method=hash',
@@ -1659,15 +1680,6 @@
             'os': 'Ubuntu-22.04',
           },
         },
-      },
-    },
-  },
-  'chrome_wpt_tests': {
-    'modifications': {
-      'linux-wpt-chromium-rel': {
-        'args': [
-          '--additional-driver-flag=--headless=new'
-        ],
       },
     },
   },
@@ -2290,6 +2302,13 @@
   },
   'context_lost_passthrough_tests': {
     'modifications': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': [
           # These devices have issues running these tests in parallel.
@@ -2298,6 +2317,13 @@
       },
     },
     'replacements': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
@@ -2964,13 +2990,6 @@
       'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
-      'Win10 FYI x64 Exp Release (NVIDIA)': {
-        'args': [
-          # TODO(crbug.com/1505895): Remove this filter when these tests no
-          # longer crash on the newer driver.
-          '--gtest_filter=-DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive:DelegatedInkPointRendererGpuTest.MaximumPointerIds:DelegatedInkPointRendererGpuTest.MultiplePointerIds:DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens',
-        ],
-      },
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': [
           # crbug.com/1523061
@@ -3289,6 +3308,11 @@
             'ssd': '1',
           },
         }
+      },
+      'win11-arm64-dbg-tests': {
+        'swarming': {
+          'shards': 9,
+        },
       },
     },
   },
@@ -3630,6 +3654,7 @@
   'net_unittests BRYA_RELEASE_LKGM': {
     # TODO(b/319364912): vpython cannot be delivered via CIPD on skylab builders
     'remove_from': [
+      'chromeos-brya-chrome-dchecks-skylab',
       'chromeos-brya-chrome-skylab',
     ],
   },
@@ -3672,6 +3697,33 @@
       'ToTWin64(dbg)',
       'ToTWin64(dll)',
     ],
+  },
+  'ondevice_stability_tests AMD Radeon RX 5500 XT': {
+    'modifications': {
+      'optimization_guide-win32': {
+        'args': [
+          '--target-platform=win32',
+        ],
+      },
+    },
+  },
+  'ondevice_stability_tests Intel UHD 630': {
+    'modifications': {
+      'optimization_guide-win32': {
+        'args': [
+          '--target-platform=win32',
+        ],
+      },
+    },
+  },
+  'ondevice_stability_tests NVIDIA GeForce GTX 1660': {
+    'modifications': {
+      'optimization_guide-win32': {
+        'args': [
+          '--target-platform=win32',
+        ],
+      },
+    },
   },
   'ozone_unittests': {
     'modifications': {
@@ -3838,6 +3890,13 @@
           '--extra-browser-args=--disable-wcg-for-test',
         ],
       },
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
       'android_optional_gpu_tests_rel': {
         'args': [
           # See above.
@@ -3861,6 +3920,13 @@
       'Win V8 FYI Release (NVIDIA)': {
         'args': {
           '--git-revision': '${got_cr_revision}',
+        },
+      },
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
         },
       },
     },
@@ -4408,6 +4474,22 @@
           'shards': 2,
         },
       },
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
+    },
+    'replacements': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
     },
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
@@ -4698,6 +4780,26 @@
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
     ],
+  },
+  'webcodecs_tests': {
+    'modifications': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
+          # helps with stability.
+          '--jobs=2',
+        ],
+      },
+    },
+    'replacements': {
+      'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
+    },
   },
   'webdriver_wpt_tests': {
     'modifications': {
@@ -5314,5 +5416,25 @@
       # running related tests.
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
     ],
+    'modifications': {
+      'Win10 FYI x64 Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
+          # resolved.
+          '--gtest_filter=-WebXrVrPermissionsBrowserTest.TestPermissionPersists',
+        ],
+      },
+    },
+  },
+  'xr_browser_tests 8086:9bc5': {
+    'modifications': {
+      'win_optional_gpu_tests_rel': {
+        'args': [
+          # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
+          # resolved.
+          '--gtest_filter=-WebXrVrPermissionsBrowserTest.TestPermissionPersists',
+        ],
+      },
+    },
   },
 }

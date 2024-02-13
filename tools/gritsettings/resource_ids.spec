@@ -249,10 +249,6 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [2980],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/commander/resources.grd": {
-    "META": {"sizes": {"includes": [15]}},
-    "includes": [3020],
-  },
   "chrome/browser/resources/component_extension_resources.grd": {
     "includes": [3040],
     "structures": [3060],
@@ -518,7 +514,7 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [4320],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/network_ui/network_ui_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/network_ui/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [4340],
   },
@@ -844,6 +840,10 @@
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/print_management/resources/resources.grd": {
     "META": {"join": 2, "sizes": {"includes": [20]}},
     "includes": [5880],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/print_preview_cros/resources/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [5885],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/sample_system_web_app_ui/resources/trusted/resources.grd": {
     "META": {"sizes": {"includes": [50],}},

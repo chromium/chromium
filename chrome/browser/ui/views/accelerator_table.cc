@@ -247,10 +247,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_OEM_MINUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
      IDC_ZOOM_MINUS},
     {ui::VKEY_OEM_PLUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
-    // TODO(https://crbug.com/1016439): This is a temporary hotkey. Chrome OS
-    // uses this for switching IMEs, but since this feature is only exposed via
-    // command line flag at the moment, we'll exclude them entirely for now.
-    {ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, IDC_TOGGLE_QUICK_COMMANDS},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && \

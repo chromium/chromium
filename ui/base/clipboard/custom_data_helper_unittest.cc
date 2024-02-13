@@ -40,7 +40,7 @@ TEST(CustomDataHelperTest, EmptyReadSingleType) {
   base::Pickle pickle;
   PrepareEmptyTestData(&pickle);
 
-  EXPECT_EQ(absl::nullopt, ReadCustomDataForType(pickle, u"f"));
+  EXPECT_EQ(std::nullopt, ReadCustomDataForType(pickle, u"f"));
 }
 
 TEST(CustomDataHelperTest, EmptyReadMap) {
@@ -118,8 +118,8 @@ TEST(CustomDataHelperTest, BadPickle) {
     malformed.WriteString16(u"hello");
     malformed.WriteString16(u"world");
 
-    EXPECT_EQ(absl::nullopt, ReadCustomDataForType(malformed, u"f"));
-    EXPECT_EQ(absl::nullopt, ReadCustomDataIntoMap(malformed));
+    EXPECT_EQ(std::nullopt, ReadCustomDataForType(malformed, u"f"));
+    EXPECT_EQ(std::nullopt, ReadCustomDataIntoMap(malformed));
   }
 
   {
@@ -127,8 +127,8 @@ TEST(CustomDataHelperTest, BadPickle) {
     malformed.WriteUInt32(1);
     malformed.WriteString16(u"hello");
 
-    EXPECT_EQ(absl::nullopt, ReadCustomDataForType(malformed, u"f"));
-    EXPECT_EQ(absl::nullopt, ReadCustomDataIntoMap(malformed));
+    EXPECT_EQ(std::nullopt, ReadCustomDataForType(malformed, u"f"));
+    EXPECT_EQ(std::nullopt, ReadCustomDataIntoMap(malformed));
   }
 }
 

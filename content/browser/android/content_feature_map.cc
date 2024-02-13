@@ -25,6 +25,8 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityJNIOptimizations,
     &features::kAccessibilityPageZoom,
     &features::kAccessibilityPageZoomEnhancements,
+    &features::kAccessibilityUnifiedSnapshots,
+    &features::kAndroidOpenPdfInline,
     &features::kDevicePosture,
     &features::kFedCm,
     &features::kMouseAndTrackpadDropdownMenu,
@@ -35,6 +37,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kSelectionMenuItemModification,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
+    &features::kViewportSegments,
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebNfc,
 };

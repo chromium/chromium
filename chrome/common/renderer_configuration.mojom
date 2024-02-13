@@ -39,7 +39,7 @@ enum ResumeBlockedRequestsTrigger {
   kObservedFreshCookies = 0,
   kCookieRefreshFetchSuccess = 1,
   kCookieRefreshFetchFailure = 2,
-  kNetworkConnectionOffline = 3,
+  // kNetworkConnectionOffline = 3, Deprecated
   kTimeout = 4,
   kShutdownOrSessionTermination = 5,
   kCookieAlreadyFresh = 6,

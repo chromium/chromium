@@ -6,6 +6,7 @@
 #define UI_GFX_X_WINDOW_CACHE_H_
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
@@ -66,8 +66,8 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
     // so we store children in a vector instead of a node-based structure.
     std::vector<Window> children;
 
-    absl::optional<std::vector<Rectangle>> bounding_rects_px;
-    absl::optional<std::vector<Rectangle>> input_rects_px;
+    std::optional<std::vector<Rectangle>> bounding_rects_px;
+    std::optional<std::vector<Rectangle>> input_rects_px;
 
     ScopedEventSelector events;
     std::unique_ptr<ScopedShapeEventSelector> shape_events;
@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
 
   // The latest event processed out-of-order, or nullopt if the latest event was
   // processed in order.
-  absl::optional<uint32_t> last_processed_event_;
+  std::optional<uint32_t> last_processed_event_;
 
   // True iff GetWindowAtPoint() was called since the last timer interval.
   bool delete_when_destroy_timer_fires_ = false;

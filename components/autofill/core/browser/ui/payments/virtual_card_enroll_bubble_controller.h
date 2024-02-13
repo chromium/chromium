@@ -50,10 +50,16 @@ class VirtualCardEnrollBubbleController {
 #if !BUILDFLAG(IS_ANDROID)
   // Hides the bubble and icon if it is showing.
   virtual void HideIconAndBubble() = 0;
+
+  // Returns true if bubble is already accepted and the virtual card enrollment
+  // process is in progress.
+  virtual bool IsEnrollmentInProgress() const = 0;
 #endif
 
   // Virtual card enroll button takes card information to enroll into a VCN.
-  virtual void OnAcceptButton() = 0;
+  // `did_switch_to_loading_state` denotes if bubble is waiting for enrollment
+  // to finish on server before closing.
+  virtual void OnAcceptButton(bool did_switch_to_loading_state = false) = 0;
   virtual void OnDeclineButton() = 0;
   virtual void OnLinkClicked(VirtualCardEnrollmentLinkType link_type,
                              const GURL& url) = 0;

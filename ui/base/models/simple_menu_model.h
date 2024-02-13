@@ -5,6 +5,7 @@
 #ifndef UI_BASE_MODELS_SIMPLE_MENU_MODEL_H_
 #define UI_BASE_MODELS_SIMPLE_MENU_MODEL_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -208,7 +208,7 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
 
   // Returns the index of the item that has the given |command_id|. Returns
   // nullopt if not found.
-  absl::optional<size_t> GetIndexOfCommandId(int command_id) const;
+  std::optional<size_t> GetIndexOfCommandId(int command_id) const;
 
   // Overridden from MenuModel:
   size_t GetItemCount() const override;

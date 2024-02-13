@@ -125,6 +125,7 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // Code path for plugins which supply their own mailbox.
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
+  void SetNeedsSetTransferableResource();
 
   // Set or unset HDR metadata.
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata);
@@ -152,6 +153,10 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
     if (const auto& resource_holder = resource_holder_.Read(*this))
       return resource_holder->resource();
     return viz::TransferableResource();
+  }
+
+  bool needs_set_resource_for_testing() const {
+    return needs_set_resource_.Read(*this);
   }
 
  protected:

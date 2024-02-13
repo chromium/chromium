@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -156,11 +157,11 @@ bool IsZhuyinEngine(const std::string& engine_id) {
   return engine_id == "zh-hant-t-i0-und";
 }
 
-bool IsVietnameseTelexEngine(base::StringPiece engine_id) {
+bool IsVietnameseTelexEngine(std::string_view engine_id) {
   return engine_id == "vkd_vi_telex";
 }
 
-bool IsVietnameseVniEngine(base::StringPiece engine_id) {
+bool IsVietnameseVniEngine(std::string_view engine_id) {
   return engine_id == "vkd_vi_vni";
 }
 

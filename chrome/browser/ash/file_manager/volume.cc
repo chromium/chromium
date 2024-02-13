@@ -88,24 +88,24 @@ std::string GenerateVolumeId(const Volume& volume) {
 }
 
 // Returns the localized label for a given media view.
-std::string MediaViewDocumentIdToLabel(const base::StringPiece id) {
-  if (id == arc::kAudioRootDocumentId) {
+std::string MediaViewRootIdToLabel(const base::StringPiece root_id) {
+  if (root_id == arc::kAudioRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
   }
 
-  if (id == arc::kImagesRootDocumentId) {
+  if (root_id == arc::kImagesRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_IMAGES_ROOT_LABEL);
   }
 
-  if (id == arc::kVideosRootDocumentId) {
+  if (root_id == arc::kVideosRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_VIDEOS_ROOT_LABEL);
   }
 
-  if (id == arc::kDocumentsRootDocumentId) {
+  if (root_id == arc::kDocumentsRootId) {
     return GetStringUTF8(IDS_FILE_BROWSER_MEDIA_VIEW_DOCUMENTS_ROOT_LABEL);
   }
 
-  NOTREACHED() << "Unexpected root document ID: " << id;
+  NOTREACHED() << "Unexpected root ID: " << root_id;
   return "";
 }
 
@@ -288,17 +288,16 @@ std::unique_ptr<Volume> Volume::CreateForMTP(base::FilePath mount_path,
 }
 
 // static
-std::unique_ptr<Volume> Volume::CreateForMediaView(
-    const std::string& root_document_id) {
+std::unique_ptr<Volume> Volume::CreateForMediaView(const std::string& root_id) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MEDIA_VIEW;
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = arc::GetDocumentsProviderMountPath(
-      arc::kMediaDocumentsProviderAuthority, root_document_id);
-  volume->volume_label_ = MediaViewDocumentIdToLabel(root_document_id);
+      arc::kMediaDocumentsProviderAuthority, root_id);
+  volume->volume_label_ = MediaViewRootIdToLabel(root_id);
   volume->is_read_only_ = false;
   volume->watchable_ = false;
-  volume->volume_id_ = arc::GetMediaViewVolumeId(root_document_id);
+  volume->volume_id_ = arc::GetMediaViewVolumeId(root_id);
   return volume;
 }
 
@@ -358,7 +357,6 @@ std::unique_ptr<Volume> Volume::CreateForAndroidFiles(
 std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
     const std::string& authority,
     const std::string& root_id,
-    const std::string& document_id,
     const std::string& title,
     const std::string& summary,
     const GURL& icon_url,
@@ -368,8 +366,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
   volume->type_ = VOLUME_TYPE_DOCUMENTS_PROVIDER;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
-  volume->mount_path_ =
-      arc::GetDocumentsProviderMountPath(authority, document_id);
+  volume->mount_path_ = arc::GetDocumentsProviderMountPath(authority, root_id);
   volume->volume_label_ = title;
   volume->is_read_only_ = read_only;
   volume->watchable_ = false;

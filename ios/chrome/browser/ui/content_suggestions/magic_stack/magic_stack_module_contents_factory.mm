@@ -58,15 +58,12 @@
           static_cast<TabResumptionItem*>(config);
       return [self tabResumptionViewForConfig:tabResumptionItem];
     }
-    case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore: {
+    case ContentSuggestionsModuleType::kParcelTracking: {
       ParcelTrackingItem* parcelTrackingItem =
           static_cast<ParcelTrackingItem*>(config);
       return [self parcelTrackingViewForConfig:parcelTrackingItem];
     }
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
+    case ContentSuggestionsModuleType::kSafetyCheck: {
       SafetyCheckState* safetyCheckConfig =
           static_cast<SafetyCheckState*>(config);
       return [self safetyCheckViewForConfigState:safetyCheckConfig];

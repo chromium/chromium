@@ -57,6 +57,12 @@ public class TokenUnitTest {
                 new Token(0xfffffffffffffffdL, 0xfffffffffffffffeL).toString());
     }
 
+    @Test
+    public void testCreateRandom() {
+        Token token = Token.createRandom();
+        assertFalse(token.isZero());
+    }
+
     private void checkEquals(Token first, Token second) {
         assertEquals(first, second);
         assertEquals(first.hashCode(), second.hashCode());

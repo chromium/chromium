@@ -498,7 +498,7 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_ExpectedResult) {
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -519,7 +519,7 @@ TEST_F(AggregationServiceStorageSqlTest, DeleteRequest_ExpectedResult) {
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -561,7 +561,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       2);
 }
 
@@ -595,7 +595,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -620,7 +620,7 @@ TEST_F(AggregationServiceStorageSqlTest, DatabaseReopened_RequestsPersisted) {
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -652,7 +652,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       2);
 }
 
@@ -677,7 +677,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -767,7 +767,7 @@ TEST_F(AggregationServiceStorageSqlTest,
             kExampleTime);
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 
   std::vector<AggregationServiceStorage::RequestAndId> example_time_reports =
@@ -784,7 +784,7 @@ TEST_F(AggregationServiceStorageSqlTest,
             kExampleTime + base::Hours(1));
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       2);
 
   EXPECT_EQ(storage_
@@ -794,7 +794,7 @@ TEST_F(AggregationServiceStorageSqlTest,
             2u);
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       4);
 
   std::vector<AggregationServiceStorage::RequestAndId> all_reports =
@@ -803,7 +803,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   EXPECT_EQ(all_reports[2].id, RequestId(3));
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       7);
 
   EXPECT_FALSE(
@@ -812,7 +812,7 @@ TEST_F(AggregationServiceStorageSqlTest,
             3u);
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       7);
 }
 
@@ -833,7 +833,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -869,7 +869,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -914,7 +914,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -1082,7 +1082,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -1162,7 +1162,7 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_RespectsLimit) {
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
   histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
@@ -1224,7 +1224,7 @@ TEST_F(AggregationServiceStorageSqlTest, StoreRequest_LimitIsScopedCorrectly) {
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
   histograms_.ExpectBucketCount(
       "PrivacySandbox.AggregationService.Storage.Sql.StoreRequestHasCapacity",
@@ -1269,7 +1269,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -1304,7 +1304,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -1347,7 +1347,7 @@ TEST_F(AggregationServiceStorageSqlTest,
       stored_requests_and_ids[0].request, request));
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -1372,7 +1372,7 @@ TEST_F(AggregationServiceStorageSqlInMemoryTest,
       storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
   histograms.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -1439,7 +1439,7 @@ TEST_F(AggregationServiceStorageSqlTest,
             "https://aws.example.test/");
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 
@@ -1489,7 +1489,7 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
-      "RequestDelayFromUpdatedReportTime",
+      "RequestDelayFromUpdatedReportTime2",
       0);
 }
 

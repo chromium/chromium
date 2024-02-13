@@ -111,8 +111,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       SkColor profile_background_color,
       std::optional<EditButtonParams> edit_button_params,
       const ui::ImageModel& image_model,
+      const ui::ImageModel& management_badge,
       const std::u16string& title,
       const std::u16string& subtitle = std::u16string(),
+      const std::u16string& management_label = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
   // Displays the sync info section as a rounded rectangle with text on top and
   // a button on the bottom. Clicking the button triggers |action|.

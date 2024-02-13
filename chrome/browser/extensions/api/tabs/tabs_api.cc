@@ -29,11 +29,13 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -72,7 +74,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
@@ -88,6 +92,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/common/language_detection_details.h"
+#include "components/webapps/common/web_app_id.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -581,6 +586,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   std::optional<windows::Create::Params::CreateData>& create_data =
       params->create_data;
 
+  std::optional<web_app::IsolatedWebAppUrlInfo> isolated_web_app_url_info;
+
   // Look for optional url.
   if (create_data && create_data->url) {
     std::vector<std::string> url_strings;
@@ -597,6 +604,21 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
           url_string, extension(), browser_context());
       if (!url.has_value()) {
         return RespondNow(Error(std::move(url.error())));
+      }
+      if (url->SchemeIs(chrome::kIsolatedAppScheme)) {
+        if (url_strings.size() > 1) {
+          return RespondNow(Error(
+              tabs_constants::kWindowCreateSupportsOnlySingleIwaUrlError));
+        }
+
+        base::expected<web_app::IsolatedWebAppUrlInfo, std::string>
+            maybe_url_info = web_app::IsolatedWebAppUrlInfo::Create(*url);
+        if (!maybe_url_info.has_value()) {
+          return RespondNow(Error(base::StringPrintf(
+              tabs_constants::kWindowCreateCannotParseIwaUrlError,
+              maybe_url_info.error().c_str())));
+        }
+        isolated_web_app_url_info = *maybe_url_info;
       }
       urls.push_back(*url);
     }
@@ -622,6 +644,11 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
   // Look for optional tab id.
   if (create_data && create_data->tab_id) {
+    if (isolated_web_app_url_info.has_value()) {
+      return RespondNow(
+          Error(tabs_constants::kWindowCreateCannotUseTabIdWithIwaError));
+    }
+
     // Find the tab. |source_tab_strip| and |tab_index| will later be used to
     // move the tab into the created window.
     Browser* source_browser = nullptr;
@@ -630,6 +657,13 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
                     include_incognito_information(), &source_browser,
                     &source_tab_strip, &web_contents, &tab_index, &error)) {
       return RespondNow(Error(std::move(error)));
+    }
+
+    if (web_app::AppBrowserController* controller =
+            source_browser->app_controller();
+        controller && controller->IsIsolatedWebApp()) {
+      return RespondNow(
+          Error(tabs_constants::kWindowCreateCannotMoveIwaTabError));
     }
 
     if (!ExtensionTabUtil::IsTabStripEditable())
@@ -660,8 +694,12 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       case windows::CreateType::kPanel:
       case windows::CreateType::kPopup:
         window_type = Browser::TYPE_POPUP;
-        if (extension())
+        if (isolated_web_app_url_info.has_value()) {
+          return RespondNow(Error(tabs_constants::kInvalidWindowTypeError));
+        }
+        if (extension()) {
           extension_id = extension()->id();
+        }
         break;
       case windows::CreateType::kNone:
       case windows::CreateType::kNormal:
@@ -727,13 +765,19 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   }
   Browser::CreateParams create_params(window_type, window_profile,
                                       user_gesture());
-  if (extension_id.empty()) {
+  if (isolated_web_app_url_info.has_value()) {
+    create_params = Browser::CreateParams::CreateForApp(
+        web_app::GenerateApplicationNameFromAppId(
+            isolated_web_app_url_info->app_id()),
+        /*trusted_source=*/false, window_bounds, window_profile,
+        user_gesture());
+  } else if (extension_id.empty()) {
     create_params.initial_bounds = window_bounds;
   } else {
     // extension_id is only set for CREATE_TYPE_POPUP.
     create_params = Browser::CreateParams::CreateForAppPopup(
         web_app::GenerateApplicationNameFromAppId(extension_id),
-        false /* trusted_source */, window_bounds, window_profile,
+        /*trusted_source=*/false, window_bounds, window_profile,
         user_gesture());
   }
   create_params.initial_show_state = ui::SHOW_STATE_NORMAL;
@@ -785,6 +829,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   // a tabbed window.
   if (window_type == Browser::TYPE_NORMAL || urls.empty()) {
     if (source_tab_strip) {
+      CHECK(!isolated_web_app_url_info.has_value());
       std::unique_ptr<content::WebContents> detached_tab =
           source_tab_strip->DetachWebContentsAtForInsertion(tab_index);
       contents = detached_tab.get();

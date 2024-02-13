@@ -23,8 +23,11 @@ class CORE_EXPORT ShadowIncludingTreeOrderTraversal {
   using TraversalNodeType = Node;
 
   static Node* Next(const Node& current, const Node* stay_within);
+  static Node* NextSibling(const Node& node);
   static Node* FirstWithin(const Node& current);
 
+  static TraversalSiblingRange<ShadowIncludingTreeOrderTraversal> ChildrenOf(
+      const Node&);
   static TraversalDescendantRange<ShadowIncludingTreeOrderTraversal>
   DescendantsOf(const Node&);
 
@@ -45,11 +48,21 @@ inline Node* ShadowIncludingTreeOrderTraversal::Next(const Node& current,
   return nullptr;
 }
 
+inline Node* ShadowIncludingTreeOrderTraversal::NextSibling(const Node& node) {
+  return TraverseNextSibling(node);
+}
+
 inline Node* ShadowIncludingTreeOrderTraversal::FirstWithin(
     const Node& current) {
   if (ShadowRoot* shadow_root = current.GetShadowRoot())
     return shadow_root;
   return current.firstChild();
+}
+
+inline TraversalSiblingRange<ShadowIncludingTreeOrderTraversal>
+ShadowIncludingTreeOrderTraversal::ChildrenOf(const Node& parent) {
+  return TraversalSiblingRange<ShadowIncludingTreeOrderTraversal>(
+      ShadowIncludingTreeOrderTraversal::FirstWithin(parent));
 }
 
 inline TraversalDescendantRange<ShadowIncludingTreeOrderTraversal>

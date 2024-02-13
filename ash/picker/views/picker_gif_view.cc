@@ -34,13 +34,17 @@ constexpr base::TimeDelta kAdjustedDurationForShortFrames =
 }  // namespace
 
 PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
-                             const gfx::Size& original_dimensions)
+                             const gfx::Size& original_dimensions,
+                             std::u16string accessible_name)
     : original_dimensions_(original_dimensions) {
   // Show a placeholder rect while the gif loads.
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysAppBaseShaded, kPickerGifCornerRadius));
-  SetImage(ui::ImageModel::FromImageSkia(
-      image_util::CreateEmptyImage(original_dimensions)));
+  views::Builder<PickerGifView>(this)
+      .SetBackground(views::CreateThemedRoundedRectBackground(
+          cros_tokens::kCrosSysAppBaseShaded, kPickerGifCornerRadius))
+      .SetImage(ui::ImageModel::FromImageSkia(
+          image_util::CreateEmptyImage(original_dimensions)))
+      .SetAccessibleName(std::move(accessible_name))
+      .BuildChildren();
 
   std::move(frames_fetcher)
       .Run(base::BindOnce(&PickerGifView::OnFramesFetched,
@@ -97,7 +101,7 @@ void PickerGifView::OnFramesFetched(
   UpdateFrame();
 }
 
-BEGIN_METADATA(PickerGifView, views::ImageView)
+BEGIN_METADATA(PickerGifView)
 END_METADATA
 
 }  // namespace ash

@@ -6,13 +6,17 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/account_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
@@ -48,12 +52,14 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
     PlatformTest::SetUp();
     TestChromeBrowserState::Builder builder;
     browser_state_ = builder.Build();
+    drive_service_ =
+        drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
-    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                                WebStateList::INSERT_ACTIVATE,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     base_view_controller_ = [[FakeUIViewController alloc] init];
 
@@ -67,11 +73,11 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
-    mock_application_settings_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+    mock_settings_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_settings_commands_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+        startDispatchingToTarget:mock_settings_commands_handler_
+                     forProtocol:@protocol(SettingsCommands)];
 
     mock_save_to_drive_mediator_ = OCMClassMock([SaveToDriveMediator class]);
 
@@ -84,11 +90,13 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   void SetUpMediatorStub() {
     OCMStub([mock_save_to_drive_mediator_ alloc])
         .andReturn(mock_save_to_drive_mediator_);
-    OCMStub(
-        [mock_save_to_drive_mediator_
-                  initWithDownloadTask:download_task_.get()
-            saveToDriveCommandsHandler:static_cast<id<SaveToDriveCommands>>(
-                                           browser_->GetCommandDispatcher())])
+    OCMStub([mock_save_to_drive_mediator_
+                     initWithDownloadTask:download_task_.get()
+                       saveToDriveHandler:[OCMArg any]
+                manageStorageAlertHandler:[OCMArg any]
+                       applicationHandler:[OCMArg any]
+                     accountPickerHandler:[OCMArg any]
+                             driveService:drive_service_])
         .andReturn(mock_save_to_drive_mediator_);
   }
 
@@ -116,11 +124,12 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
+  raw_ptr<drive::DriveService> drive_service_;
 
   id mock_save_to_drive_mediator_;
   id mock_save_to_drive_commands_handler_;
   id mock_application_commands_handler_;
-  id mock_application_settings_commands_handler_;
+  id mock_settings_commands_handler_;
 };
 
 // Tests that the SaveToDriveCoordinator creates the mediator when started and
@@ -128,13 +137,25 @@ class SaveToDriveCoordinatorTest : public PlatformTest {
 TEST_F(SaveToDriveCoordinatorTest, StartsAndDisconnectsMediator) {
   SaveToDriveCoordinator* coordinator = CreateSaveToDriveCoordinator();
 
+  ASSERT_TRUE([SaveToDriveCoordinator
+      conformsToProtocol:@protocol(ManageStorageAlertCommands)]);
+  id<ManageStorageAlertCommands> manage_storage_commands =
+      static_cast<id<ManageStorageAlertCommands>>(coordinator);
+  ASSERT_TRUE([SaveToDriveCoordinator
+      conformsToProtocol:@protocol(AccountPickerCommands)]);
+  id<AccountPickerCommands> account_picker_commands =
+      static_cast<id<AccountPickerCommands>>(coordinator);
   OCMExpect([mock_save_to_drive_mediator_ alloc])
       .andReturn(mock_save_to_drive_mediator_);
-  OCMExpect(
-      [mock_save_to_drive_mediator_
-                initWithDownloadTask:download_task_.get()
-          saveToDriveCommandsHandler:static_cast<id<SaveToDriveCommands>>(
-                                         browser_->GetCommandDispatcher())])
+  OCMExpect([mock_save_to_drive_mediator_
+                     initWithDownloadTask:download_task_.get()
+                       saveToDriveHandler:static_cast<id<SaveToDriveCommands>>(
+                                              browser_->GetCommandDispatcher())
+                manageStorageAlertHandler:manage_storage_commands
+                       applicationHandler:static_cast<id<ApplicationCommands>>(
+                                              browser_->GetCommandDispatcher())
+                     accountPickerHandler:account_picker_commands
+                             driveService:drive_service_])
       .andReturn(mock_save_to_drive_mediator_);
   [coordinator start];
   EXPECT_OCMOCK_VERIFY(mock_save_to_drive_mediator_);

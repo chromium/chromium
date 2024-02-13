@@ -10,6 +10,7 @@
 
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
@@ -202,7 +203,7 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
   // will no longer be needed.
 
   static constexpr auto kSettingsPathOverrides =
-      base::MakeFixedFlatMap<ContentSettingsType, base::StringPiece>({
+      base::MakeFixedFlatMap<ContentSettingsType, std::string_view>({
           {ContentSettingsType::AUTOMATIC_DOWNLOADS, "automaticDownloads"},
           {ContentSettingsType::BACKGROUND_SYNC, "backgroundSync"},
           {ContentSettingsType::MEDIASTREAM_MIC, "microphone"},
@@ -212,14 +213,15 @@ std::string GenerateContentSettingsExceptionsSubPage(ContentSettingsType type) {
           {ContentSettingsType::HID_CHOOSER_DATA, "hidDevices"},
           {ContentSettingsType::STORAGE_ACCESS, "storageAccess"},
           {ContentSettingsType::USB_CHOOSER_DATA, "usbDevices"},
+          {ContentSettingsType::WEB_PRINTING, "webPrinting"},
       });
 
-  const auto* it = kSettingsPathOverrides.find(type);
-
-  return base::StrCat({kContentSettingsSubPage, "/",
-                       (it == kSettingsPathOverrides.end())
-                           ? site_settings::ContentSettingsTypeToGroupName(type)
-                           : it->second});
+  const std::string_view* override =
+      base::FindOrNull(kSettingsPathOverrides, type);
+  return base::StrCat(
+      {kContentSettingsSubPage, "/",
+       override ? *override
+                : site_settings::ContentSettingsTypeToGroupName(type)});
 }
 
 bool SiteGURLIsValid(const GURL& url) {

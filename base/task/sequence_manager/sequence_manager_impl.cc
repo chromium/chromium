@@ -1002,8 +1002,10 @@ Value::Dict SequenceManagerImpl::AsValueWithSelectorResult(
   TimeTicks now = NowTicks();
   Value::Dict state;
   Value::List active_queues;
-  for (auto* const queue : main_thread_only().active_queues)
+  for (internal::TaskQueueImpl* const queue :
+       main_thread_only().active_queues) {
     active_queues.Append(queue->AsValue(now, force_verbose));
+  }
   state.Set("active_queues", std::move(active_queues));
   Value::List shutdown_queues;
   Value::List queues_to_delete;
@@ -1054,7 +1056,7 @@ void SequenceManagerImpl::ReclaimMemory() {
   LazyNow lazy_now(main_thread_clock());
   for (auto it = main_thread_only().active_queues.begin();
        it != main_thread_only().active_queues.end();) {
-    auto* const queue = *it++;
+    auto* const queue = (*it++).get();
     ReclaimMemoryFromQueue(queue, &lazy_now);
   }
 }

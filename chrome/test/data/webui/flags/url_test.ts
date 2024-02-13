@@ -14,9 +14,10 @@
 
 import 'chrome://flags/app.js';
 
-import {FlagsAppElement} from 'chrome://flags/app.js';
-import {FlagsExperimentElement} from 'chrome://flags/experiment.js';
-import {ExperimentalFeaturesData, Feature, FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
+import type {FlagsAppElement} from 'chrome://flags/app.js';
+import type {FlagsExperimentElement} from 'chrome://flags/experiment.js';
+import type {ExperimentalFeaturesData, Feature} from 'chrome://flags/flags_browser_proxy.js';
+import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';

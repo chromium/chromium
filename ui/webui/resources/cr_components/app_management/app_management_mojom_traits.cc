@@ -105,7 +105,7 @@ bool StructTraits<PermissionDataView, apps::PermissionPtr>::Read(
   if (!data.ReadValue(&value))
     return false;
 
-  absl::optional<std::string> details;
+  std::optional<std::string> details;
   if (!data.ReadDetails(&details)) {
     return false;
   }

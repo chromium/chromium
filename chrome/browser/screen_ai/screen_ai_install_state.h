@@ -96,7 +96,6 @@ class ScreenAIInstallState {
   State get_state() { return state_; }
 
   void ResetForTesting();
-  void SetComponentFolderForTesting();
   void SetStateForTesting(State state);
 
  private:

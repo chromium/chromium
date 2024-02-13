@@ -322,27 +322,23 @@ void ApplyRationalizationEngineRules(
                     .Build())
 
             .SetTriggerField(FieldCondition{
-                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE2},
-                .regex_reference_match = "OVERFLOW",  // In the case of Germany,
-                                                      // overflow references the
-                                                      // Adresszusatz field.
-            })
+                .possible_overall_types = FieldTypeSet{ADDRESS_HOME_OVERFLOW}})
             .SetOtherFieldConditions({
                 FieldCondition{
                     .location = FieldLocation::kLastClassifiedPredecessor,
                     .possible_overall_types =
-                        FieldTypeSet{ADDRESS_HOME_LINE1,
-                                     ADDRESS_HOME_STREET_ADDRESS},
+                        FieldTypeSet{ADDRESS_HOME_STREET_ADDRESS,
+                                     ADDRESS_HOME_STREET_LOCATION},
                 },
             })
             .SetActions({
                 SetTypeAction{
                     .target = FieldLocation::kLastClassifiedPredecessor,
-                    .set_overall_type = ADDRESS_HOME_STREET_LOCATION,
+                    .set_overall_type = ADDRESS_HOME_LINE1,
                 },
                 SetTypeAction{
                     .target = FieldLocation::kTriggerField,
-                    .set_overall_type = ADDRESS_HOME_OVERFLOW,
+                    .set_overall_type = ADDRESS_HOME_LINE2,
                 },
             })
             .Build(),

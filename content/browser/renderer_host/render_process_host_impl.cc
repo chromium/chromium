@@ -1060,8 +1060,9 @@ BASE_FEATURE(kCheckNoNewRefCountsWhenRphDeletingSoon,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Please keep in sync with "RenderProcessHostBlockedURLReason" in
-// tools/metrics/histograms/enums.xml. // These values are persisted to logs.
-// Entries should not be renumbered and numeric values should never be reused.
+// tools/metrics/histograms/metadata/browser/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class BlockedURLReason {
   kInvalidURL = 0,
   kFailedCanRequestURLCheck = 1,
@@ -3120,9 +3121,14 @@ void RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedSiteInstance(
 }
 
 // static
-RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHostForTesting() {
+RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHost() {
   return SpareRenderProcessHostManager::GetInstance()
       .spare_render_process_host();
+}
+
+// static
+RenderProcessHost* RenderProcessHost::GetSpareRenderProcessHostForTesting() {
+  return GetSpareRenderProcessHost();
 }
 
 // static
@@ -3860,6 +3866,10 @@ base::SafeRef<RenderProcessHost> RenderProcessHostImpl::GetSafeRef() const {
 
 bool RenderProcessHostImpl::IsInitializedAndNotDead() {
   return is_initialized_ && !is_dead_;
+}
+
+bool RenderProcessHostImpl::IsDeletingSoon() {
+  return deleting_soon_;
 }
 
 void RenderProcessHostImpl::SetBlocked(bool blocked) {

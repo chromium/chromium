@@ -43,10 +43,6 @@ class CrashReportDatabase;
 
 namespace crash_reporter {
 
-#if BUILDFLAG(IS_CHROMEOS)
-bool IsCrashpadEnabled();
-#endif
-
 // Initializes Crashpad in a way that is appropriate for initial_client and
 // process_type.
 //

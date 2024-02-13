@@ -35,7 +35,7 @@ bool OSExchangeData::IsRendererTainted() const {
   return provider_->IsRendererTainted();
 }
 
-absl::optional<url::Origin> OSExchangeData::GetRendererTaintedOrigin() const {
+std::optional<url::Origin> OSExchangeData::GetRendererTaintedOrigin() const {
   return provider_->GetRendererTaintedOrigin();
 }
 

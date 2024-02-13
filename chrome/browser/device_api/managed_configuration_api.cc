@@ -355,7 +355,7 @@ void ManagedConfigurationAPI::PromoteObservers() {
   for (auto it = unmanaged_observers_.begin();
        it != unmanaged_observers_.end();) {
     if (CanHaveManagedStore((*it)->GetOrigin())) {
-      auto* observer = *it;
+      auto* observer = (*it).get();
       it = unmanaged_observers_.erase(it);
       AddObserver(observer);
     } else {

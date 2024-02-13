@@ -8,13 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace net {
@@ -42,7 +42,7 @@ NET_EXPORT_PRIVATE bool GetClientCertInfo(const X509Certificate* certificate,
 // Returns the encoded form of |digest| for use with RSA-PSS with |pubkey|,
 // using |md| as the hash function and MGF-1 function, and the digest size of
 // |md| as the salt length.
-absl::optional<std::vector<uint8_t>> AddPSSPadding(
+std::optional<std::vector<uint8_t>> AddPSSPadding(
     EVP_PKEY* pubkey,
     const EVP_MD* md,
     base::span<const uint8_t> digest);

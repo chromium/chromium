@@ -3,10 +3,13 @@
 <translationbundle lang="ro">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dintre file nu au fost folosite în ultima vreme. Vrei să le închizi?</translation>
 <translation id="1155815720264022949">Vrei să închizi filele vechi?</translation>
+<translation id="1197088940767939838">Portocaliu</translation>
 <translation id="1215127405478249895">Examinează filele</translation>
 <translation id="125153950246128346">Atinge pentru a vedea altă filă</translation>
 <translation id="1326271443836399892">Examinează setările actuale pentru ordonare.</translation>
 <translation id="1499635324672558517">Închizi toate filele incognito?</translation>
+<translation id="1555130319947370107">Albastru</translation>
+<translation id="161042844686301425">Cyan</translation>
 <translation id="1657719826150349398">Mută fila mai jos</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Marchează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Marchează <ph name="TABS_COUNT_MANY" /> file selectate}other{Marchează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Adaugă fila la un grup}few{Grupează filele}other{Grupează filele}}</translation>
 <translation id="3996880007329611795">Primește notificări</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
+<translation id="4159784952369912983">Mov</translation>
 <translation id="4212246570487010370">Continuă navigarea</translation>
 <translation id="427987768447457592">Grup de file nou</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Ai <ph name="TABS_COUNT_ONE" /> filă pe care nu ai folosit-o recent}few{Ai <ph name="TABS_COUNT_MANY" /> file pe care nu le-ai folosit recent}other{Ai <ph name="TABS_COUNT_MANY" /> de file pe care nu le-ai folosit recent}}</translation>
 <translation id="5339733443032484186">Ultima filă</translation>
+<translation id="5400836586163650660">Gri</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5545379293264651575">Închide fără să examinezi</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Vrei să primești alerte privind scăderile de prețuri?</translation>
 <translation id="58326064309361797">Trage filele pentru a le grupa</translation>
 <translation id="5846292395804797011">Închide grupul <ph name="TITLE_OF_GROUP" /> cu <ph name="NUMBER_OF_TABS" /> file</translation>
+<translation id="5901630391730855834">Galben</translation>
 <translation id="5972844218283131174">Deselectează tot</translation>
+<translation id="6017514345406065928">Verde</translation>
 <translation id="6054741997831917303">Prețul articolului a scăzut recent de la <ph name="PREVIOUS_PRICE" /> la <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selectează file</translation>
 <translation id="6228793724645064692">(evaluare a magazinului)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Adaugă <ph name="TABS_COUNT_ONE" /> filă selectată la un grup}few{Adaugă <ph name="TABS_COUNT_MANY" /> file selectate la un grup}other{Adaugă <ph name="TABS_COUNT_MANY" /> de file selectate la un grup}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recenzie}few{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recenzii}other{Evaluare: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> de recenzii}}</translation>
 <translation id="7885132941432959125">Mută fila spre dreapta</translation>
+<translation id="7942349550061667556">Roșu</translation>
 <translation id="7966321538264951561">Închide sugestiile.</translation>
 <translation id="8029301326595421733">Informațiile despre magazin deschise la înălțimea completă</translation>
 <translation id="8205266828577616993">Mută fila mai sus</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>
 <translation id="955558140275419384">Examinează toate filele arhivate pentru a le ordona, accesând acest editor.</translation>
 <translation id="959682366969460160">Organizează-te</translation>
+<translation id="992256792861109788">Roz</translation>
 </translationbundle>

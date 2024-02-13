@@ -90,6 +90,8 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
 
+  void EnableSupportForAllMetalUsagesForTesting();
+
  private:
   std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(
       const Mailbox& mailbox,
@@ -104,6 +106,11 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
       base::span<const uint8_t> pixel_data);
 
   const bool for_cpu_upload_usage_;
+
+  // Many shared image usages are disabled on Metal so that they fall back to an
+  // IOSurface backing. IOSurface backings are much better suited for cross-API
+  // or cross-GPU usages.
+  bool support_all_metal_usages_;
 };
 
 }  // namespace gpu

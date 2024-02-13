@@ -6,13 +6,13 @@
 #define UI_BASE_PREDICTION_PREDICTION_METRICS_HANDLER_H_
 
 #include <deque>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
@@ -102,7 +102,7 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   gfx::PointF last_interpolated_, last_frame_interpolated_;
   // Last predicted point that pop from predicted_event_queue_. Use for
   // computing Jitter metrics.
-  absl::optional<gfx::PointF> last_predicted_ = absl::nullopt;
+  std::optional<gfx::PointF> last_predicted_ = std::nullopt;
   // The first real event position which time is later than the predicted time.
   gfx::PointF next_real_;
 

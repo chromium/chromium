@@ -62,7 +62,6 @@ class PageInsightsDataLoader {
     void loadInsightsData(
             GURL url,
             boolean isUserInitiated,
-            @Nullable Long navigationTimestampMs,
             PageInsightsConfig config,
             Callback<PageInsightsMetadata> callback) {
         mCurrentCallback = callback;
@@ -82,8 +81,8 @@ class PageInsightsDataLoader {
             builder.setIsUserInitiated(isUserInitiated)
                     .setIsInitialPage(config.getIsInitialPage())
                     .setShouldNotLogOrPersonalize(config.getServerShouldNotLogOrPersonalize());
-            if (mSendTimestamp && navigationTimestampMs != null) {
-                builder.setNavigationTimestampMs(navigationTimestampMs);
+            if (mSendTimestamp && config.hasNavigationTimestampMs()) {
+                builder.setNavigationTimestampMs(config.getNavigationTimestampMs());
             }
             requestContextMetadataBuilder.setPageInsightsHubMetadata(builder);
         }

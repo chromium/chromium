@@ -35,6 +35,7 @@ class CORE_EXPORT InterpolableValue
                            const double progress,
                            InterpolableValue& result) const = 0;
 
+  virtual bool IsDouble() const { return false; }
   virtual bool IsNumber() const { return false; }
   virtual bool IsBool() const { return false; }
   virtual bool IsColor() const { return false; }
@@ -83,12 +84,12 @@ class CORE_EXPORT InterpolableValue
   virtual InterpolableValue* RawCloneAndZero() const = 0;
 };
 
-class CORE_EXPORT InlinedInterpolableNumber final {
+class CORE_EXPORT InlinedInterpolableDouble final {
   DISALLOW_NEW();
 
  public:
-  InlinedInterpolableNumber() = default;
-  explicit InlinedInterpolableNumber(double d) : value_(d) {}
+  InlinedInterpolableDouble() = default;
+  explicit InlinedInterpolableDouble(double d) : value_(d) {}
 
   double Value() const { return value_; }
   void Set(double value) { value_ = value; }
@@ -110,7 +111,9 @@ class CORE_EXPORT InlinedInterpolableNumber final {
 class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
  public:
   InterpolableNumber() = default;
-  explicit InterpolableNumber(double value);
+  explicit InterpolableNumber(double value,
+                              CSSPrimitiveValue::UnitType unit_type =
+                                  CSSPrimitiveValue::UnitType::kNumber);
   explicit InterpolableNumber(const CSSMathExpressionNode& expression);
 
   // TODO(crbug.com/1521261): Remove this, once the bug is fixed.
@@ -138,7 +141,7 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
 
  private:
   InterpolableNumber* RawClone() const final {
-    if (IsDouble()) {
+    if (IsDoubleValue()) {
       return MakeGarbageCollected<InterpolableNumber>(value_.Value());
     }
     return MakeGarbageCollected<InterpolableNumber>(*expression_);
@@ -147,16 +150,17 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
     return MakeGarbageCollected<InterpolableNumber>(0);
   }
 
-  bool IsDouble() const { return type_ == Type::kDouble; }
+  bool IsDoubleValue() const { return type_ == Type::kDouble; }
   bool IsExpression() const { return type_ == Type::kExpression; }
 
-  void SetDouble(double value);
+  void SetDouble(double value, CSSPrimitiveValue::UnitType unit_type);
   void SetExpression(const CSSMathExpressionNode& expression);
   const CSSMathExpressionNode& AsExpression() const;
 
   enum class Type { kDouble, kExpression };
   Type type_;
-  InlinedInterpolableNumber value_;
+  InlinedInterpolableDouble value_;
+  CSSPrimitiveValue::UnitType unit_type_;
   Member<const CSSMathExpressionNode> expression_;
 };
 

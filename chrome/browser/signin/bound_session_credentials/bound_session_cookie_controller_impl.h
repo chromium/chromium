@@ -29,19 +29,18 @@ class StoragePartition;
 
 class BoundSessionCookieObserver;
 class SessionBindingHelper;
-class WaitForNetworkCallbackHelper;
 
 class BoundSessionCookieControllerImpl
     : public BoundSessionCookieController,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
-
   BoundSessionCookieControllerImpl(
       unexportable_keys::UnexportableKeyService& key_service,
       content::StoragePartition* storage_partition,
       network::NetworkConnectionTracker* network_connection_tracker,
       const bound_session_credentials::BoundSessionParams& bound_session_params,
-      Delegate* delegate);
+      Delegate* delegate,
+      bool is_off_the_record_profile);
 
   ~BoundSessionCookieControllerImpl() override;
 
@@ -71,8 +70,6 @@ class BoundSessionCookieControllerImpl
           const GURL& url,
           base::flat_set<std::string> cookie_names)>;
 
-  bool IsConnectionTypeAvailableAndOffline();
-
   std::unique_ptr<BoundSessionRefreshCookieFetcher> CreateRefreshCookieFetcher()
       const;
   void CreateBoundCookiesObservers();
@@ -101,6 +98,8 @@ class BoundSessionCookieControllerImpl
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   const raw_ptr<content::StoragePartition> storage_partition_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const bool is_off_the_record_profile_;
+
   std::vector<std::unique_ptr<BoundSessionCookieObserver>>
       bound_cookies_observers_;
 
@@ -108,9 +107,9 @@ class BoundSessionCookieControllerImpl
       network::NetworkConnectionTracker,
       network::NetworkConnectionTracker::NetworkConnectionObserver>
       network_connection_observer_{this};
+  // Also `true` while the initial connection state is unknown.
+  bool is_offline_ = true;
 
-  std::unique_ptr<WaitForNetworkCallbackHelper>
-      wait_for_network_callback_helper_;
   std::unique_ptr<SessionBindingHelper> session_binding_helper_;
   std::unique_ptr<BoundSessionRefreshCookieFetcher> refresh_cookie_fetcher_;
 
@@ -130,9 +129,6 @@ class BoundSessionCookieControllerImpl
   std::unique_ptr<base::RetainingOneShotTimer> artifical_cookie_rotation_delay_;
   std::optional<BoundSessionRefreshCookieFetcher::Result>
       artificial_cookie_rotation_result_;
-
-  base::WeakPtrFactory<BoundSessionCookieControllerImpl> weak_ptr_factory_{
-      this};
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_COOKIE_CONTROLLER_IMPL_H_

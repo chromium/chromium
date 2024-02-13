@@ -16,15 +16,17 @@ import 'chrome://resources/cr_components/certificate_manager/certificate_passwor
 import 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
 import 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
 
-import {CaTrustEditDialogElement} from 'chrome://resources/cr_components/certificate_manager/ca_trust_edit_dialog.js';
-import {CertificateDeleteConfirmationDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_delete_confirmation_dialog.js';
-import {CertificateListElement} from 'chrome://resources/cr_components/certificate_manager/certificate_list.js';
-import {CertificateManagerElement} from 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
-import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
-import {CertificatePasswordDecryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_decryption_dialog.js';
-import {CertificatePasswordEncryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_encryption_dialog.js';
-import {CertificateSubentryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
-import {CaTrustInfo, CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificatesOrgGroup, CertificateSubnode, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
+import type {CaTrustEditDialogElement} from 'chrome://resources/cr_components/certificate_manager/ca_trust_edit_dialog.js';
+import type {CertificateDeleteConfirmationDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_delete_confirmation_dialog.js';
+import type {CertificateListElement} from 'chrome://resources/cr_components/certificate_manager/certificate_list.js';
+import type {CertificateManagerElement} from 'chrome://resources/cr_components/certificate_manager/certificate_manager.js';
+import type { CertificateActionEventDetail} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
+import {CertificateAction, CertificateActionEvent} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
+import type {CertificatePasswordDecryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_decryption_dialog.js';
+import type {CertificatePasswordEncryptionDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_password_encryption_dialog.js';
+import type {CertificateSubentryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_subentry.js';
+import type {CaTrustInfo, CertificatesBrowserProxy, CertificatesError, CertificatesOrgGroup, CertificateSubnode} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
+import { CertificatesBrowserProxyImpl, CertificateType} from 'chrome://resources/cr_components/certificate_manager/certificates_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

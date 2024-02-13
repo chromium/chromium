@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/check_op.h"
-
 namespace updater::ui {
 
 // Finds all the primary windows owned by the given process. A primary window is
@@ -42,15 +40,6 @@ HRESULT SetWindowIcon(HWND hwnd, WORD icon_id, HICON* hicon);
 // Returns a localized installer name for a bundle. If |bundle_name| is empty,
 // the friendly company name is used.
 std::wstring GetInstallerDisplayName(const std::u16string& bundle_name);
-
-// Returns the quotient of the two numbers (m/n) rounded upwards to the
-// nearest integer type. T should be unsigned integer type, such as unsigned
-// short, unsigned long, unsigned int etc.
-template <typename T>
-inline T CeilingDivide(T m, T n) {
-  CHECK_NE(0, n);
-  return (m + n - 1) / n;
-}
 
 // Gets the text corresponding to a control in a dialog box.
 bool GetDlgItemText(HWND dlg, int item_id, std::wstring* text);

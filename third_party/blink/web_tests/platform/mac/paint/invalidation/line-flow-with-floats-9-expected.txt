@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGBlockFlow HTML",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [485, 606],
       "invalidations": [
         [0, 0, 485, 606]

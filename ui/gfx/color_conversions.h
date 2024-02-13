@@ -5,9 +5,9 @@
 #ifndef UI_GFX_COLOR_CONVERSIONS_H_
 #define UI_GFX_COLOR_CONVERSIONS_H_
 
+#include <optional>
 #include <tuple>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/gfx_export.h"
 

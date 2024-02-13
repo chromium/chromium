@@ -5,9 +5,8 @@
 #ifndef DEVICE_BLUETOOTH_BLUEZ_METRICS_RECORDER_H_
 #define DEVICE_BLUETOOTH_BLUEZ_METRICS_RECORDER_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace bluetooth {
 
@@ -63,7 +62,7 @@ enum class ConnectToServiceFailureReason {
 
 // Returns the ConnectToServiceInsecurelyResult type associated with
 // |error_string|, or null if no result could be found.
-absl::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
+std::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
     const std::string& error_string);
 
 // Returns the ConnectToServiceFailureReason type associated with

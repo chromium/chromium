@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ ProfileSelections TpcdTrialServiceFactory::CreateProfileSelections() {
       .WithRegular(ProfileSelection::kOriginalOnly)
       .WithGuest(ProfileSelection::kOwnInstance)
       // The Following will be completely unselected as users do not "browse"
-      // within this profiles.
+      // within these profiles.
       .WithSystem(ProfileSelection::kNone)
       .WithAshInternals(ProfileSelection::kNone)
       .Build();

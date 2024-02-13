@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -153,7 +153,7 @@ std::set<redaction::PIIType> GetPiiTypes(
 }
 
 std::string ErrorsToString(const std::set<SupportToolError>& errors) {
-  std::vector<base::StringPiece> error_messages;
+  std::vector<std::string_view> error_messages;
   error_messages.reserve(errors.size());
   for (const auto& error : errors) {
     error_messages.push_back(error.error_message);

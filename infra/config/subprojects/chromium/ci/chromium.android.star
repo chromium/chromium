@@ -962,7 +962,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
-            "android_low_end",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1086,7 +1085,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
-            "android_low_end",
             "cronet_android",
             "official_optimize",
             "release_builder",
@@ -1284,7 +1282,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
-            "android_low_end",
             "cronet_android",
             "official_optimize",
             "release_builder",

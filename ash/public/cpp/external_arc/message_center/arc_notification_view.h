@@ -26,10 +26,10 @@ class ArcNotificationContentView;
 // ArcNotificationContentView which shows content of the notification.
 class ArcNotificationView : public message_center::MessageView,
                             public ArcNotificationItem::Observer {
+  METADATA_HEADER(ArcNotificationView, message_center::MessageView)
+
  public:
   static ArcNotificationView* FromView(views::View* message_view);
-
-  METADATA_HEADER(ArcNotificationView);
   // |content_view| is a view to be hosted in this view.
   ArcNotificationView(ArcNotificationItem* item,
                       const message_center::Notification& notification,
@@ -64,12 +64,15 @@ class ArcNotificationView : public message_center::MessageView,
   void UpdateBackgroundPainter() override;
   base::TimeDelta GetBoundsAnimationDuration(
       const message_center::Notification&) const override;
+  void AnimateGroupedChildExpandedCollapse(bool expanded) override;
+  void AnimateSingleToGroup(const std::string& notification_id,
+                            std::string parent_id) override;
+  void SetGroupedChildExpanded(bool expanded) override;
 
   // views::SlideOutControllerDelegate:
   void OnSlideChanged(bool in_progress) override;
 
   // Overridden from views::View:
-  gfx::Size CalculatePreferredSize() const override;
   void Layout(PassKey) override;
   bool HasFocus() const override;
   void RequestFocus() override;
@@ -100,7 +103,11 @@ class ArcNotificationView : public message_center::MessageView,
 
   const bool shown_in_popup_;
 
-  const bool is_group_child_;
+  bool is_group_child_;
+
+  raw_ptr<views::View> collapsed_summary_view_ = nullptr;
+
+  base::WeakPtrFactory<ArcNotificationView> weak_factory_{this};
 };
 
 }  // namespace ash

@@ -7,6 +7,7 @@
 
 #include "ash/shell_observer.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_observer.h"
@@ -17,6 +18,7 @@ struct wl_resource;
 
 namespace exo::wayland {
 
+class AuraOutputManagerV2;
 class WaylandDisplayOutput;
 
 // Responsible for keeping output state consistent with system display state and
@@ -26,6 +28,8 @@ struct OutputController : public display::DisplayManagerObserver,
  public:
   using DisplayOutputMap =
       base::flat_map<int64_t, std::unique_ptr<WaylandDisplayOutput>>;
+  using WaylandOutputList = std::vector<raw_ptr<const WaylandDisplayOutput>>;
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -55,6 +59,15 @@ struct OutputController : public display::DisplayManagerObserver,
   // the `display_id`.
   WaylandDisplayOutput* GetWaylandDisplayOutput(int64_t display_id);
 
+  // Returns a list of the current active outputs tracked by the server.
+  WaylandOutputList GetActiveOutputs() const;
+
+  // Sends the necessary events for a configuration change to clients of the the
+  // aura output manager. Returns true if update events were sent and a done is
+  // needed.
+  bool ProcessDisplayChangesForAuraOutputManager(
+      const DisplayConfigurationChange& configuration_change);
+
   // Updates exo to align with the system's currently active window.
   void UpdateActivatedDisplayIfNecessary();
 
@@ -62,6 +75,7 @@ struct OutputController : public display::DisplayManagerObserver,
   int64_t dispatched_activated_display_id_ = display::kInvalidDisplayId;
 
   DisplayOutputMap outputs_;
+  std::unique_ptr<AuraOutputManagerV2> aura_output_manager_v2_;
 
   // The delegate will strictly outlive the controller.
   const raw_ptr<Delegate> delegate_;

@@ -6,8 +6,8 @@
 #define UI_VIEWS_CONTROLS_BUTTON_IMAGE_BUTTON_FACTORY_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/button.h"
@@ -28,7 +28,7 @@ VIEWS_EXPORT std::unique_ptr<ImageButton>
 CreateVectorImageButtonWithNativeTheme(
     Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
-    absl::optional<int> dip_size = absl::nullopt,
+    std::optional<int> dip_size = std::nullopt,
     SkColor icon_color = ui::kColorIcon,
     SkColor icon_disabled_color = ui::kColorIconDisabled);
 
@@ -76,7 +76,7 @@ VIEWS_EXPORT void SetImageFromVectorIconWithColorId(
     const gfx::VectorIcon& icon,
     ui::ColorId icon_color_id,
     ui::ColorId icon_disabled_color_id,
-    absl::optional<int> icon_size = absl::nullopt);
+    std::optional<int> icon_size = std::nullopt);
 
 // Sets images on a `ToggleImageButton` |button| for STATE_NORMAL and
 // STATE_DISABLED with the default size from the given vector icon and colors.
@@ -85,7 +85,7 @@ VIEWS_EXPORT void SetToggledImageFromVectorIconWithColorId(
     const gfx::VectorIcon& icon,
     ui::ColorId icon_color_id,
     ui::ColorId icon_disabled_color_id,
-    absl::optional<int> icon_size = absl::nullopt);
+    std::optional<int> icon_size = std::nullopt);
 
 }  // namespace views
 

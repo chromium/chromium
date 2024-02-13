@@ -16,6 +16,7 @@ module.exports = {
       '@typescript-eslint',
     ],
     'rules': {
+      '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/naming-convention': [
         'error',
         // Override default format to allow test functions like testFoo_bar().

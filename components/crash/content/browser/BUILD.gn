@@ -22,14 +22,14 @@ source_set("browser") {
     "//content/public/common",
   ]
 
-  if (is_castos || is_chromeos || is_android) {
+  if (is_castos || is_android) {
     sources += [
       "crash_handler_host_linux.cc",
       "crash_handler_host_linux.h",
     ]
   }
 
-  if (is_castos || is_chromeos) {
+  if (is_castos) {
     configs += [ "//third_party/breakpad:client_config" ]
     public_configs = [ "//third_party/breakpad:client_config" ]
     deps += [

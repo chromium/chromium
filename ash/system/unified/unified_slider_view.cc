@@ -156,7 +156,7 @@ void UnifiedSliderView::OnEvent(ui::Event* event) {
   views::View::OnEvent(event);
 }
 
-BEGIN_METADATA(UnifiedSliderView, views::View)
+BEGIN_METADATA(UnifiedSliderView)
 END_METADATA
 
 }  // namespace ash

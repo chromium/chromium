@@ -4,14 +4,13 @@
 
 source_set("model") {
   sources = [
-    "features.h",
-    "features.mm",
     "tab_based_iph_browser_agent.h",
     "tab_based_iph_browser_agent.mm",
     "utils.h",
     "utils.mm",
   ]
   deps = [
+    ":features",
     "//base",
     "//components/feature_engagement/public",
     "//components/segmentation_platform/embedder/default_model",
@@ -24,5 +23,16 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/url_loading/model",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }

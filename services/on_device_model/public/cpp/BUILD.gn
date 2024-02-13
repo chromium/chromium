@@ -15,6 +15,8 @@ source_set("cpp") {
 
 component("model_assets") {
   sources = [
+    "adaptation_assets_mojom_traits.cc",
+    "adaptation_assets_mojom_traits.h",
     "model_assets.cc",
     "model_assets.h",
     "model_assets_mojom_traits.cc",

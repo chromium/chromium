@@ -34,20 +34,22 @@ constexpr char kTableName[] = "dictionaries";
 // metadata because calculating the total size is an expensive operation.
 constexpr char kTotalDictSizeKey[] = "total_dict_size";
 
-const int kCurrentVersionNumber = 1;
-const int kCompatibleVersionNumber = 1;
+const int kCurrentVersionNumber = 2;
+const int kCompatibleVersionNumber = 2;
 
-bool CreateV1Schema(sql::Database* db, sql::MetaTable* meta_table) {
+bool CreateV2Schema(sql::Database* db, sql::MetaTable* meta_table) {
   CHECK(!db->DoesTableExist(kTableName));
 
   static constexpr char kCreateTableQuery[] =
       // clang-format off
       "CREATE TABLE dictionaries("
-          "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
+          "primary_key INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,"
           "frame_origin TEXT NOT NULL,"
           "top_frame_site TEXT NOT NULL,"
           "host TEXT NOT NULL,"
           "match TEXT NOT NULL,"
+          "match_dest TEXT NOT NULL,"
+          "id TEXT NOT NULL,"
           "url TEXT NOT NULL,"
           "res_time INTEGER NOT NULL,"
           "exp_time INTEGER NOT NULL,"
@@ -64,7 +66,8 @@ bool CreateV1Schema(sql::Database* db, sql::MetaTable* meta_table) {
           "frame_origin,"
           "top_frame_site,"
           "host,"
-          "match)";
+          "match,"
+          "match_dest)";
   // clang-format on
 
   // This index is used for the size and count limitation per top_frame_site.
@@ -106,31 +109,32 @@ bool CreateV1Schema(sql::Database* db, sql::MetaTable* meta_table) {
           "last_used_time)";
   // clang-format on
 
-  if (!db->Execute(kCreateTableQuery) ||
+  sql::Transaction transaction(db);
+  if (!transaction.Begin() || !db->Execute(kCreateTableQuery) ||
       !db->Execute(kCreateUniqueIndexQuery) ||
       !db->Execute(kCreateTopFrameSiteIndexQuery) ||
       !db->Execute(kCreateIsolationIndexQuery) ||
       !db->Execute(kCreateTokenIndexQuery) ||
       !db->Execute(kCreateExpirationTimeIndexQuery) ||
       !db->Execute(kCreateLastUsedTimeIndexQuery) ||
-      !meta_table->SetValue(kTotalDictSizeKey, 0)) {
+      !meta_table->SetValue(kTotalDictSizeKey, 0) || !transaction.Commit()) {
     return false;
   }
   return true;
 }
 
-absl::optional<SHA256HashValue> ToSHA256HashValue(
+std::optional<SHA256HashValue> ToSHA256HashValue(
     base::span<const uint8_t> sha256_bytes) {
   SHA256HashValue sha256_hash;
   if (sha256_bytes.size() != sizeof(sha256_hash.data)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   memcpy(sha256_hash.data, sha256_bytes.data(), sha256_bytes.size());
   return sha256_hash;
 }
 
-absl::optional<base::UnguessableToken> ToUnguessableToken(int64_t token_high,
-                                                          int64_t token_low) {
+std::optional<base::UnguessableToken> ToUnguessableToken(int64_t token_high,
+                                                         int64_t token_low) {
   // There is no `sql::Statement::ColumnUint64()` method. So we cast to
   // uint64_t.
   return base::UnguessableToken::Deserialize(static_cast<uint64_t>(token_high),
@@ -174,7 +178,7 @@ void RecordErrorHistogram(
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult::
     RegisterDictionaryResult(
         int64_t primary_key_in_database,
-        absl::optional<base::UnguessableToken> replaced_disk_cache_key_token,
+        std::optional<base::UnguessableToken> replaced_disk_cache_key_token,
         std::set<base::UnguessableToken> evicted_disk_cache_key_tokens,
         uint64_t total_dictionary_size,
         uint64_t total_dictionary_count)
@@ -299,8 +303,9 @@ class SQLitePersistentSharedDictionaryStore::Backend
       const SharedDictionaryIsolationKey& isolation_key,
       const url::SchemeHostPort& host,
       const std::string& match,
+      const std::string& match_dest,
       int64_t* size_out,
-      absl::optional<base::UnguessableToken>* disk_cache_key_out);
+      std::optional<base::UnguessableToken>* disk_cache_key_out);
 
   // Updates the total dictionary size in MetaTable by `size_delta` and returns
   // the updated total dictionary size.
@@ -313,7 +318,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
   // SQLitePersistentStoreBackendBase implementation
   bool CreateDatabaseSchema() override;
-  absl::optional<int> DoMigrateDatabaseSchema() override;
+  std::optional<int> DoMigrateDatabaseSchema() override;
   void DoCommit() override;
 
   // Commits the last used time update.
@@ -386,22 +391,36 @@ class SQLitePersistentSharedDictionaryStore::Backend
 
 bool SQLitePersistentSharedDictionaryStore::Backend::CreateDatabaseSchema() {
   if (!db()->DoesTableExist(kTableName) &&
-      !CreateV1Schema(db(), meta_table())) {
+      !CreateV2Schema(db(), meta_table())) {
     return false;
   }
   return true;
 }
 
-absl::optional<int>
+std::optional<int>
 SQLitePersistentSharedDictionaryStore::Backend::DoMigrateDatabaseSchema() {
   int cur_version = meta_table()->GetVersionNumber();
-  if (cur_version != kCurrentVersionNumber) {
-    return absl::nullopt;
+  if (cur_version == 1) {
+    sql::Transaction transaction(db());
+    if (!transaction.Begin() ||
+        !db()->Execute("DROP TABLE IF EXISTS dictionaries") ||
+        !meta_table()->DeleteKey(kTotalDictSizeKey)) {
+      return std::nullopt;
+    }
+    // The version 1 is used during the Origin Trial period (M119-M122).
+    // We don't need to migrate the data from version 1.
+    ++cur_version;
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return std::nullopt;
+    }
   }
 
   // Future database upgrade statements go here.
 
-  return absl::make_optional(cur_version);
+  return std::make_optional(cur_version);
 }
 
 void SQLitePersistentSharedDictionaryStore::Backend::DoCommit() {
@@ -436,7 +455,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
     return Error::kFailedToInitializeDatabase;
   }
   static constexpr char kQuery[] =
-      "UPDATE dictionaries SET last_used_time=? WHERE id=?";
+      "UPDATE dictionaries SET last_used_time=? WHERE primary_key=?";
 
   if (!db()->IsSQLValid(kQuery)) {
     return Error::kInvalidSql;
@@ -493,12 +512,12 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
   }
 
   int64_t size_of_removed_dict = 0;
-  absl::optional<base::UnguessableToken> replaced_disk_cache_key_token;
+  std::optional<base::UnguessableToken> replaced_disk_cache_key_token;
   int64_t size_delta = dictionary_info.size();
   if (GetExistingDictionarySizeAndDiskCacheKeyToken(
           isolation_key, url::SchemeHostPort(dictionary_info.url()),
-          dictionary_info.match(), &size_of_removed_dict,
-          &replaced_disk_cache_key_token)) {
+          dictionary_info.match(), dictionary_info.match_dest_string(),
+          &size_of_removed_dict, &replaced_disk_cache_key_token)) {
     size_delta -= size_of_removed_dict;
   }
 
@@ -509,6 +528,8 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
           "top_frame_site,"
           "host,"
           "match,"
+          "match_dest,"
+          "id,"
           "url,"
           "res_time,"
           "exp_time,"
@@ -517,7 +538,7 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
           "sha256,"
           "token_high,"
           "token_low) "
-          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+          "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -530,24 +551,26 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
   statement.BindString(2,
                        url::SchemeHostPort(dictionary_info.url()).Serialize());
   statement.BindString(3, dictionary_info.match());
-  statement.BindString(4, dictionary_info.url().spec());
-  statement.BindTime(5, dictionary_info.response_time());
-  statement.BindTime(6, dictionary_info.GetExpirationTime());
-  statement.BindTime(7, dictionary_info.last_used_time());
-  statement.BindInt64(8, dictionary_info.size());
-  statement.BindBlob(9, base::make_span(dictionary_info.hash().data));
+  statement.BindString(4, dictionary_info.match_dest_string());
+  statement.BindString(5, dictionary_info.id());
+  statement.BindString(6, dictionary_info.url().spec());
+  statement.BindTime(7, dictionary_info.response_time());
+  statement.BindTime(8, dictionary_info.GetExpirationTime());
+  statement.BindTime(9, dictionary_info.last_used_time());
+  statement.BindInt64(10, dictionary_info.size());
+  statement.BindBlob(11, base::make_span(dictionary_info.hash().data));
   // There is no `sql::Statement::BindUint64()` method. So we cast to int64_t.
   int64_t token_high = static_cast<int64_t>(
       dictionary_info.disk_cache_key_token().GetHighForSerialization());
   int64_t token_low = static_cast<int64_t>(
       dictionary_info.disk_cache_key_token().GetLowForSerialization());
-  statement.BindInt64(10, token_high);
-  statement.BindInt64(11, token_low);
+  statement.BindInt64(12, token_high);
+  statement.BindInt64(13, token_low);
 
   if (!statement.Run()) {
     return base::unexpected(Error::kFailedToExecuteSql);
   }
-  int64_t id = db()->GetLastInsertRowId();
+  int64_t primary_key = db()->GetLastInsertRowId();
 
   uint64_t total_dictionary_size = 0;
   Error error =
@@ -570,7 +593,7 @@ SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
     return base::unexpected(Error::kFailedToCommitTransaction);
   }
   return base::ok(RegisterDictionaryResult{
-      id, replaced_disk_cache_key_token,
+      primary_key, replaced_disk_cache_key_token,
       std::set<base::UnguessableToken>(evicted_disk_cache_key_tokens.begin(),
                                        evicted_disk_cache_key_tokens.end()),
       total_dictionary_size, total_dictionary_count});
@@ -652,7 +675,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "id,"
+          "primary_key,"
           "size,"
           "token_high,"
           "token_low FROM dictionaries "
@@ -673,7 +696,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
     const int64_t token_high = statement.ColumnInt64(2);
     const int64_t token_low = statement.ColumnInt64(3);
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -707,7 +730,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionaryCountPerSite(
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "COUNT(id) FROM dictionaries "
+          "COUNT(primary_key) FROM dictionaries "
           "WHERE top_frame_site=?";
   // clang-format on
 
@@ -762,8 +785,10 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "id,"
+          "primary_key,"
           "match,"
+          "match_dest,"
+          "id,"
           "url,"
           "res_time,"
           "exp_time,"
@@ -773,7 +798,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
           "token_high,"
           "token_low FROM dictionaries "
           "WHERE frame_origin=? AND top_frame_site=? "
-          "ORDER BY id";
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -787,28 +812,31 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
   while (statement.Step()) {
     const int64_t primary_key_in_database = statement.ColumnInt64(0);
     const std::string match = statement.ColumnString(1);
-    const std::string url_string = statement.ColumnString(2);
-    const base::Time response_time = statement.ColumnTime(3);
-    const base::Time expiration_time = statement.ColumnTime(4);
-    const base::Time last_used_time = statement.ColumnTime(5);
-    const size_t size = statement.ColumnInt64(6);
+    const std::string match_dest = statement.ColumnString(2);
+    const std::string id = statement.ColumnString(3);
+    const std::string url_string = statement.ColumnString(4);
+    const base::Time response_time = statement.ColumnTime(5);
+    const base::Time expiration_time = statement.ColumnTime(6);
+    const base::Time last_used_time = statement.ColumnTime(7);
+    const size_t size = statement.ColumnInt64(8);
 
-    absl::optional<SHA256HashValue> sha256_hash =
-        ToSHA256HashValue(statement.ColumnBlob(7));
+    std::optional<SHA256HashValue> sha256_hash =
+        ToSHA256HashValue(statement.ColumnBlob(9));
     if (!sha256_hash) {
       LOG(WARNING) << "Invalid hash";
       continue;
     }
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
-        ToUnguessableToken(statement.ColumnInt64(8), statement.ColumnInt64(9));
+    std::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(statement.ColumnInt64(10),
+                           statement.ColumnInt64(11));
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
       continue;
     }
     result.emplace_back(GURL(url_string), response_time,
-                        expiration_time - response_time, match, last_used_time,
-                        size, *sha256_hash, *disk_cache_key_token,
-                        primary_key_in_database);
+                        expiration_time - response_time, match, match_dest, id,
+                        last_used_time, size, *sha256_hash,
+                        *disk_cache_key_token, primary_key_in_database);
   }
   return base::ok(std::move(result));
 }
@@ -823,10 +851,12 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "id,"
+          "primary_key,"
           "frame_origin,"
           "top_frame_site,"
           "match,"
+          "match_dest,"
+          "id,"
           "url,"
           "res_time,"
           "exp_time,"
@@ -835,7 +865,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
           "sha256,"
           "token_high,"
           "token_low FROM dictionaries "
-          "ORDER BY id";
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -851,22 +881,24 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     const std::string frame_origin_string = statement.ColumnString(1);
     const std::string top_frame_site_string = statement.ColumnString(2);
     const std::string match = statement.ColumnString(3);
-    const std::string url_string = statement.ColumnString(4);
-    const base::Time response_time = statement.ColumnTime(5);
-    const base::Time expiration_time = statement.ColumnTime(6);
-    const base::Time last_used_time = statement.ColumnTime(7);
-    const size_t size = statement.ColumnInt64(8);
+    const std::string match_dest = statement.ColumnString(4);
+    const std::string id = statement.ColumnString(5);
+    const std::string url_string = statement.ColumnString(6);
+    const base::Time response_time = statement.ColumnTime(7);
+    const base::Time expiration_time = statement.ColumnTime(8);
+    const base::Time last_used_time = statement.ColumnTime(9);
+    const size_t size = statement.ColumnInt64(10);
 
-    absl::optional<SHA256HashValue> sha256_hash =
-        ToSHA256HashValue(statement.ColumnBlob(9));
+    std::optional<SHA256HashValue> sha256_hash =
+        ToSHA256HashValue(statement.ColumnBlob(11));
     if (!sha256_hash) {
       LOG(WARNING) << "Invalid hash";
       continue;
     }
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
-        ToUnguessableToken(statement.ColumnInt64(10),
-                           statement.ColumnInt64(11));
+    std::optional<base::UnguessableToken> disk_cache_key_token =
+        ToUnguessableToken(statement.ColumnInt64(12),
+                           statement.ColumnInt64(13));
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
       continue;
@@ -877,8 +909,8 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
 
     result[SharedDictionaryIsolationKey(frame_origin, top_frame_site)]
         .emplace_back(GURL(url_string), response_time,
-                      expiration_time - response_time, match, last_used_time,
-                      size, *sha256_hash, *disk_cache_key_token,
+                      expiration_time - response_time, match, match_dest, id,
+                      last_used_time, size, *sha256_hash, *disk_cache_key_token,
                       primary_key_in_database);
   }
   return base::ok(std::move(result));
@@ -897,7 +929,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetUsageInfoImpl() {
           "frame_origin,"
           "top_frame_site,"
           "size FROM dictionaries "
-          "ORDER BY id";
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -945,7 +977,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetOriginsBetweenImpl(
       "SELECT "
           "frame_origin FROM dictionaries "
           "WHERE res_time>=? AND res_time<? "
-          "ORDER BY id";
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -988,7 +1020,7 @@ SQLitePersistentSharedDictionaryStore::Backend::ClearAllDictionariesImpl() {
   while (statement.Step()) {
     const int64_t token_high = statement.ColumnInt64(0);
     const int64_t token_low = statement.ColumnInt64(1);
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       continue;
@@ -1067,12 +1099,12 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectMatchingDictionaries(
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "id,"
+          "primary_key,"
           "size,"
           "token_high,"
           "token_low FROM dictionaries "
           "WHERE res_time>=? AND res_time<? "
-          "ORDER BY id";
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -1089,7 +1121,7 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectMatchingDictionaries(
     const size_t size = statement.ColumnInt64(1);
     const int64_t token_high = statement.ColumnInt64(2);
     const int64_t token_low = statement.ColumnInt64(3);
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1116,7 +1148,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "id,"
+          "primary_key,"
           "frame_origin,"
           "top_frame_site,"
           "host,"
@@ -1124,7 +1156,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
           "token_high,"
           "token_low FROM dictionaries "
           "WHERE res_time>=? AND res_time<? "
-          "ORDER BY id";
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -1150,7 +1182,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
         !url_matcher.Run(GURL(host))) {
       continue;
     }
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1201,7 +1233,7 @@ SQLitePersistentSharedDictionaryStore::Backend::
 
     checked_total_size += size;
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       continue;
@@ -1257,7 +1289,7 @@ SQLitePersistentSharedDictionaryStore::Backend::DeleteExpiredDictionariesImpl(
 
     checked_total_size += size;
 
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1355,7 +1387,7 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "id,"
+          "primary_key,"
           "size,"
           "token_high,"
           "token_low FROM dictionaries "
@@ -1372,7 +1404,7 @@ SQLitePersistentSharedDictionaryStore::Backend::SelectEvictionCandidates(
     const size_t size = statement.ColumnInt64(1);
     const int64_t token_high = statement.ColumnInt64(2);
     const int64_t token_low = statement.ColumnInt64(3);
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(token_high, token_low);
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1403,7 +1435,8 @@ SQLitePersistentSharedDictionaryStore::Error
 SQLitePersistentSharedDictionaryStore::Backend::DeleteDictionaryByPrimaryKey(
     int64_t primary_key) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  static constexpr char kQuery[] = "DELETE FROM dictionaries WHERE id=?";
+  static constexpr char kQuery[] =
+      "DELETE FROM dictionaries WHERE primary_key=?";
   if (!db()->IsSQLValid(kQuery)) {
     return Error::kInvalidSql;
   }
@@ -1499,10 +1532,10 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDiskCacheKeyTokensImpl() {
   static constexpr char kQuery[] =
       // clang-format off
       "SELECT "
-          "id,"
+          "primary_key,"
           "token_high,"
           "token_low FROM dictionaries "
-          "ORDER BY id";
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -1512,7 +1545,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDiskCacheKeyTokensImpl() {
   sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
   std::vector<base::UnguessableToken> tokens;
   while (statement.Step()) {
-    absl::optional<base::UnguessableToken> disk_cache_key_token =
+    std::optional<base::UnguessableToken> disk_cache_key_token =
         ToUnguessableToken(statement.ColumnInt64(1), statement.ColumnInt64(2));
     if (!disk_cache_key_token) {
       LOG(WARNING) << "Invalid token";
@@ -1555,7 +1588,8 @@ void SQLitePersistentSharedDictionaryStore::Backend::
 base::expected<uint64_t, SQLitePersistentSharedDictionaryStore::Error>
 SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionaryCount() {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
-  static constexpr char kQuery[] = "SELECT COUNT(id) FROM dictionaries";
+  static constexpr char kQuery[] =
+      "SELECT COUNT(primary_key) FROM dictionaries";
 
   if (!db()->IsSQLValid(kQuery)) {
     return base::unexpected(Error::kInvalidSql);
@@ -1573,8 +1607,9 @@ bool SQLitePersistentSharedDictionaryStore::Backend::
         const SharedDictionaryIsolationKey& isolation_key,
         const url::SchemeHostPort& host,
         const std::string& match,
+        const std::string& match_dest,
         int64_t* size_out,
-        absl::optional<base::UnguessableToken>* disk_cache_key_out) {
+        std::optional<base::UnguessableToken>* disk_cache_key_out) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
 
   static constexpr char kQuery[] =
@@ -1583,8 +1618,13 @@ bool SQLitePersistentSharedDictionaryStore::Backend::
           "size,"
           "token_high,"
           "token_low FROM dictionaries "
-          "WHERE frame_origin=? AND top_frame_site=? AND host=? AND match=? "
-          "ORDER BY id";
+          "WHERE "
+              "frame_origin=? AND "
+              "top_frame_site=? AND "
+              "host=? AND "
+              "match=? AND "
+              "match_dest=? "
+          "ORDER BY primary_key";
   // clang-format on
 
   if (!db()->IsSQLValid(kQuery)) {
@@ -1595,6 +1635,7 @@ bool SQLitePersistentSharedDictionaryStore::Backend::
   statement.BindString(1, isolation_key.top_frame_site().Serialize());
   statement.BindString(2, host.Serialize());
   statement.BindString(3, match);
+  statement.BindString(4, match_dest);
 
   if (statement.Step()) {
     *size_out = statement.ColumnInt64(0);

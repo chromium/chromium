@@ -30,6 +30,7 @@ static_library("access_code_cast_integration_base") {
     "//components/media_router/browser:browser",
     "//components/media_router/browser:test_support",
     "//components/media_router/common:test_support",
+    "//components/performance_manager:performance_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/user_manager:user_manager",
     "//content/test:test_support",

@@ -101,6 +101,8 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.listenerIds_.push(
         callbackRouter.tabOrganizationSessionUpdated.addListener(
             this.setSession_.bind(this)));
+    this.listenerIds_.push(
+        callbackRouter.showFREChanged.addListener(this.setShowFre_.bind(this)));
     if (document.visibilityState === 'visible') {
       this.onVisible_();
     }
@@ -138,6 +140,10 @@ export class TabOrganizationPageElement extends PolymerElement {
       this.availableHeight_ =
           activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
     });
+  }
+
+  private setShowFre_(show: boolean) {
+    this.showFRE_ = show;
   }
 
   setSessionForTesting(session: TabOrganizationSession) {
@@ -224,16 +230,8 @@ export class TabOrganizationPageElement extends PolymerElement {
     return this.state_ === state;
   }
 
-  private onSyncClick_() {
-    this.apiProxy_.triggerSync();
-  }
-
   private onSignInClick_() {
     this.apiProxy_.triggerSignIn();
-  }
-
-  private onSettingsClick_() {
-    this.apiProxy_.openSyncSettings();
   }
 
   private onOrganizeTabsClick_() {

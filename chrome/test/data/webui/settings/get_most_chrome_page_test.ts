@@ -34,17 +34,19 @@ suite('GetMostChromePage', function() {
     flush();
   });
 
-  test('Basic', function() {
+  test('Basic', async function() {
     const rows = testElement.shadowRoot!.querySelectorAll('cr-expand-button');
     assertTrue(rows.length > 0);
-    rows.forEach((row) => {
+    for (const row of rows) {
       const ironCollapse = row.nextElementSibling as IronCollapseElement;
       assertTrue(!!ironCollapse);
 
       assertFalse(ironCollapse.opened);
       row.click();
+      await row.updateComplete;
+
       assertTrue(ironCollapse.opened);
-    });
+    }
   });
 
   test('HatsSurveyRequested', async function() {

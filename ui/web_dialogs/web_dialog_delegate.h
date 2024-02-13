@@ -131,6 +131,10 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // certain that the window is about to be closed.
   virtual void OnDialogWillClose() {}
 
+  // A callback to notify the delegate that the dialog is about to close due to
+  // the user pressing the ESC key.
+  virtual void OnDialogClosingFromKeyEvent() {}
+
   // A callback to notify the delegate that the dialog closed.
   // IMPORTANT: Implementations should delete |this| here (unless they've
   // arranged for the delegate to be deleted in some other way, e.g. by
@@ -255,7 +259,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
  private:
   base::flat_map<Accelerator, AcceleratorHandler> accelerators_;
-  absl::optional<std::u16string> accessible_title_;
+  std::optional<std::u16string> accessible_title_;
   bool allow_default_context_menu_ = true;
   bool allow_web_contents_creation_ = true;
   std::string args_;
@@ -269,7 +273,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // TODO(ellyjones): Make this default to false.
   bool delete_on_close_ = true;
   FrameKind frame_kind_ = FrameKind::kNonClient;
-  absl::optional<gfx::Size> minimum_size_;
+  std::optional<gfx::Size> minimum_size_;
   ModalType modal_type_ = ui::MODAL_TYPE_NONE;
   std::string name_;
   bool show_close_button_ = true;

@@ -827,7 +827,7 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveBubbleType) {
   // ShowConfirmationBubbleView() should not change the bubble type or hide
   // the bubble view if the AutofillEnableSaveCardLoadingAndConfirmation feature
   // flag is not enabled.
-  controller()->ShowConfirmationBubbleView();
+  controller()->ShowConfirmationBubbleView(/*card_saved=*/true);
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
   EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
 
@@ -1031,8 +1031,9 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
 
   EXPECT_EQ(GetAutofillBubbleHandler()->SaveCardConfirmationBubbleShownCount(),
             0);
-  controller()->ShowConfirmationBubbleView();
+  controller()->ShowConfirmationBubbleView(/*card_saved=*/true);
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_COMPLETED);
+  EXPECT_TRUE(controller()->GetConfirmationUiParams().is_success);
   EXPECT_EQ(GetAutofillBubbleHandler()->SaveCardConfirmationBubbleShownCount(),
             1);
 
@@ -1040,6 +1041,34 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);
   EXPECT_FALSE(controller()->IsIconVisible());
   EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+}
+
+// Test that when passing in "card_saved=false" for ShowConfirmationBubbleView()
+// the confirmation UI model has "is_success" set to false.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       Upload_OnShowConfirmation_ShowFailureUIModel) {
+  controller()->ShowConfirmationBubbleView(/*card_saved=*/false);
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_COMPLETED);
+  EXPECT_FALSE(controller()->GetConfirmationUiParams().is_success);
+  EXPECT_EQ(GetAutofillBubbleHandler()->SaveCardConfirmationBubbleShownCount(),
+            1);
+}
+
+// Test that when showing the upload bubble when the confirmation bubble view is
+// still up, the confirmation bubble view is closed and the upload bubble view
+// is still shown.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       Upload_OnShowConfirmationBubbleView_ThenShowUploadView) {
+  controller()->ShowConfirmationBubbleView(/*card_saved=*/true);
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_COMPLETED);
+  EXPECT_TRUE(controller()->GetConfirmationUiParams().is_success);
+  EXPECT_EQ(GetAutofillBubbleHandler()->SaveCardConfirmationBubbleShownCount(),
+            1);
+
+  ShowUploadBubble();
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
+  EXPECT_TRUE(controller()->IsIconVisible());
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
 }
 
 // Test that `Accepted` metric is recorded on upload card save and that the
@@ -1056,7 +1085,7 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
       autofill_metrics::SaveCardPromptResult::kAccepted, 1);
 
-  controller()->ShowConfirmationBubbleView();
+  controller()->ShowConfirmationBubbleView(/*card_saved=*/true);
   CloseBubble();
 
   // Expect the metric not to change from the save button interaction.

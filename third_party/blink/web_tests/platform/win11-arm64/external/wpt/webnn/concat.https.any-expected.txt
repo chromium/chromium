@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] concat two float32 1D constant tensors of same shape along axis 0 / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] concat two float32 1D tensors of same shape along axis 0 / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] concat two float16 1D tensors of same shape along axis 0 / async

@@ -2007,28 +2007,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHiOSInlinePromoEnhancedSafeBrowsingFeature.name == feature->name) {
-    std::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(LESS_THAN, 1);
-    config->trigger = EventConfig("enhanced_safe_browsing_inline_promo_trigger",
-                                  Comparator(ANY, 0), 360, 360);
-    config->event_configs.insert(EventConfig(
-        feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet,
-        Comparator(GREATER_THAN_OR_EQUAL, 1), 7, 360));
-    config->event_configs.insert(EventConfig(
-        feature_engagement::events::kEnhancedSafeBrowsingInlinePromoClosed,
-        Comparator(LESS_THAN, 1), 360, 360));
-    config->used =
-        EventConfig("enhanced_safe_browsing_inline_promo_used",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    config->blocked_by.type = BlockedBy::Type::NONE;
-    config->blocking.type = Blocking::Type::NONE;
-    return config;
-  }
-
   if (kIPHiOSTabGridSwipeLeftForIncognito.name == feature->name) {
     // The IPH of the tab grid swipe feature.
     //

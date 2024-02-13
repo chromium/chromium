@@ -38,8 +38,8 @@ class IsolateDaemon(AbstractContextManager):
         # Keep the alphabetical order.
         self._extra_inits = [
             self.IsolateDir(),
+            ScopedFfxConfig('ffx.isolated', 'true'),
             ScopedFfxConfig('daemon.autostart', 'false'),
-            ScopedFfxConfig('discovery.zedboot.enabled', 'false'),
             # fxb/126212: The timeout rate determines the timeout for each file
             # transfer based on the size of the file / this rate (in MB).
             # Decreasing the rate to 1 (from 5) increases the timeout in
@@ -47,13 +47,14 @@ class IsolateDaemon(AbstractContextManager):
             ScopedFfxConfig('fastboot.flash.timeout_rate', '1'),
             ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'),
             ScopedFfxConfig('fastboot.usb.disabled', 'true'),
-            ScopedFfxConfig('ffx.fastboot.inline_target', 'true'),
             ScopedFfxConfig('log.level', 'debug'),
             ScopedFfxConfig('repository.server.listen', '"[::]:0"'),
         ] + (extra_inits or [])
 
+    # Updating configurations to meet the requirement of isolate.
     def __enter__(self):
-        # Updating configurations to meet the requirement of isolate.
+        # This environment variable needs to be set before stopping ffx daemon
+        # to avoid sending unnecessary analytics.
         os.environ['FUCHSIA_ANALYTICS_DISABLED'] = '1'
         stop_ffx_daemon()
         for extra_init in self._extra_inits:

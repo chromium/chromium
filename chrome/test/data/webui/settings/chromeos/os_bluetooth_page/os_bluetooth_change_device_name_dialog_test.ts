@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsBluetoothChangeDeviceNameDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {CrInputElement} from 'chrome://os-settings/os_settings.js';
-import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -18,6 +18,7 @@ suite('<os-settings-bluetooth-change-device-name-dialog>', () => {
   let bluetoothDeviceChangeNameDialog:
       SettingsBluetoothChangeDeviceNameDialogElement;
   let bluetoothConfig: FakeBluetoothConfig;
+  const deviceId = '12//345&6789';
 
   setup(() => {
     bluetoothConfig = new FakeBluetoothConfig();
@@ -61,7 +62,7 @@ suite('<os-settings-bluetooth-change-device-name-dialog>', () => {
 
   test('Input is sanitized', async () => {
     const device1 = createDefaultBluetoothDevice(
-        /*id=*/ '12//345&6789',
+        /*id=*/ deviceId,
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         DeviceConnectionState.kConnected,
@@ -109,8 +110,10 @@ suite('<os-settings-bluetooth-change-device-name-dialog>', () => {
   });
 
   test('Device name is changed', async () => {
-    const id = '12//345&6789';
-    const nickname = 'Nickname';
+    const initialNickname = 'device1';
+    const newNickname = 'nickname';
+    const htmlNickname = '<a>html</a>';
+
     const getDoneBtn = () => {
       const doneButton = bluetoothDeviceChangeNameDialog.shadowRoot!
                              .querySelector<HTMLButtonElement>('#done');
@@ -119,11 +122,11 @@ suite('<os-settings-bluetooth-change-device-name-dialog>', () => {
     };
 
     const device = createDefaultBluetoothDevice(
-        id,
+        deviceId,
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         DeviceConnectionState.kConnected,
-        /*opt_nickname=*/ 'device1');
+        /*opt_nickname=*/ initialNickname);
 
     bluetoothDeviceChangeNameDialog.set('device', {...device});
     bluetoothConfig.appendToPairedDeviceList([device]);
@@ -132,18 +135,27 @@ suite('<os-settings-bluetooth-change-device-name-dialog>', () => {
     const input = bluetoothDeviceChangeNameDialog.shadowRoot!
                       .querySelector<CrInputElement>('#changeNameInput');
     assertTrue(!!input);
-    assertEquals('device1', input.value);
+    assertEquals(initialNickname, input.value);
     assertTrue(getDoneBtn().disabled);
 
-    input.value = nickname;
+    input.value = newNickname;
     await flushTasks();
     assertFalse(getDoneBtn().disabled);
 
     getDoneBtn().click();
     await flushTasks();
+    assertEquals(
+        newNickname,
+        getDeviceNameUnsafe(bluetoothConfig.getPairedDeviceById(deviceId)));
 
-    const newName = getDeviceName(bluetoothConfig.getPairedDeviceById(id));
+    input.value = htmlNickname;
+    await flushTasks();
+    assertFalse(getDoneBtn().disabled);
 
-    assertEquals(nickname, newName);
+    getDoneBtn().click();
+    await flushTasks();
+    assertEquals(
+        htmlNickname,
+        getDeviceNameUnsafe(bluetoothConfig.getPairedDeviceById(deviceId)));
   });
 });

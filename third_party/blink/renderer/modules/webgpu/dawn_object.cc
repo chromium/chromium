@@ -4,10 +4,30 @@
 
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 
+#include "base/numerics/checked_math.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 
 namespace blink {
+
+// ExternalMemoryTracker
+
+ExternalMemoryTracker::~ExternalMemoryTracker() {
+  SetCurrentSize(0);
+}
+
+void ExternalMemoryTracker::SetCurrentSize(size_t newSizeUnchecked) {
+  base::CheckedNumeric<int64_t> newSize = newSizeUnchecked;
+  base::CheckedNumeric<int64_t> deltaChecked = newSize - size_;
+
+  int64_t delta = deltaChecked.ValueOrDie();
+  if (delta != 0) {
+    v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(delta);
+    size_ = newSize.ValueOrDie();
+  }
+}
+
+// DawnObjectBase
 
 DawnObjectBase::DawnObjectBase(
     scoped_refptr<DawnControlClientHolder> dawn_control_client)
@@ -30,6 +50,8 @@ void DawnObjectBase::EnsureFlush(scheduler::EventLoop& event_loop) {
 void DawnObjectBase::FlushNow() {
   dawn_control_client_->Flush();
 }
+
+// DawnObjectImpl
 
 DawnObjectImpl::DawnObjectImpl(GPUDevice* device)
     : DawnObjectBase(device->GetDawnControlClient()), device_(device) {}

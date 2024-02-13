@@ -54,24 +54,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="IDBContextForcedCloseReason">
-  <int value="0" label="DeleteOrigin">
-    A request was made to delete the data for an origin.
-  </int>
-  <int value="1" label="BackingStoreFailure">
-    An unrecoverable error occurred accessing the backing store.
-  </int>
-  <int value="2" label="InternalsPage">
-    A forced close was requested from the indexeddb-internals page.
-  </int>
-  <int value="3" label="CopyOrigin">
-    The database is force closed so that it can be copied.
-  </int>
-  <int value="4" label="ForceSchemaDowngradeInternalsPage">
-    A forced schema downgrade was requested from the indexeddb-internals page.
-  </int>
-</enum>
-
 <enum name="IDBException">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Constraint error"/>

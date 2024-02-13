@@ -32,6 +32,7 @@
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/test/test_data_device_delegate.h"
+#include "components/exo/test/test_data_source_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -48,6 +49,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+using ::exo::test::TestDataSourceDelegate;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
@@ -698,7 +700,7 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   auto configure_callback = base::BindLambdaForTesting(
       [&](const gfx::Rect& bounds, chromeos::WindowStateType state_type,
           bool resizing, bool activated, const gfx::Vector2d& origin_offset,
-          float raster_scale,
+          float raster_scale, aura::Window::OcclusionState occlusion_state,
           std::optional<chromeos::WindowStateType> restore_state_type) {
         drop_bounds = bounds;
         return ++serial;

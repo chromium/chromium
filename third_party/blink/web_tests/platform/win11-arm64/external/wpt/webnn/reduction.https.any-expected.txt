@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 159 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] reduceL1 float32 1D constant tensor all positive default options / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceL1 float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceL1 float32 1D tensor all negative default options / async
@@ -31,6 +33,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceL1 float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceL1 float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceL2 float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceL2 float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -64,6 +68,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceL2 float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceLogSum float32 1D constant tensor all non-negative default options / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceLogSum float32 1D tensor all non-negative default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceLogSum float32 1D tensor all non-negative integers default options / async
@@ -91,6 +97,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceLogSum float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceLogSumExp float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceLogSumExp float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -124,6 +132,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceLogSumExp float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceMax float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMax float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMax float32 2D tensor default options / async
@@ -149,6 +159,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceMax float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMax float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceMean float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMean float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -182,6 +194,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMean float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceMin float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMin float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMin float32 2D tensor default options / async
@@ -208,6 +222,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceMin float32 4D tensor options.axes with options.keepDimensions=true / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceProduct float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceProduct float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceProduct float32 2D tensor default options / async
@@ -233,6 +249,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceProduct float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceProduct float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceSum float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceSum float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -265,6 +283,8 @@ Found 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] reduceSum float32 4D tensor options.axes with options.keepDimensions=false / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceSum float32 4D tensor options.axes with options.keepDimensions=true / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] reduceSumSquare float32 1D constant tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] reduceSumSquare float32 1D tensor all positive default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"

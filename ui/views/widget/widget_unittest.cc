@@ -168,7 +168,7 @@ class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
   }
 
  private:
-  std::set<View*> removed_views_;
+  std::set<raw_ptr<View, SetExperimental>> removed_views_;
 };
 
 }  // namespace
@@ -4708,7 +4708,7 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   expected.insert(w21);
   expected.insert(w22);
 
-  std::set<Widget*> child_widgets;
+  std::set<raw_ptr<Widget, SetExperimental>> child_widgets;
   Widget::GetAllChildWidgets(toplevel->GetNativeView(), &child_widgets);
 
   EXPECT_TRUE(base::ranges::equal(expected, child_widgets));
@@ -4718,7 +4718,7 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
   // except the root Widget is not included.
   EXPECT_EQ(1u, expected.erase(toplevel.get()));
 
-  std::set<Widget*> owned_widgets;
+  std::set<raw_ptr<Widget, SetExperimental>> owned_widgets;
   Widget::GetAllOwnedWidgets(toplevel->GetNativeView(), &owned_widgets);
 
   EXPECT_TRUE(base::ranges::equal(expected, owned_widgets));
@@ -5691,7 +5691,7 @@ class WidgetShadowTest : public WidgetTest {
   }
 
  protected:
-  absl::optional<Widget::InitParams::Type> override_type_;
+  std::optional<Widget::InitParams::Type> override_type_;
   std::string name_;
   bool force_child_ = false;
 

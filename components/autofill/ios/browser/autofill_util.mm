@@ -223,8 +223,6 @@ bool ExtractFormData(const base::Value::Dict& form,
   if (const std::string* id_attribute = form.FindString("id_attribute")) {
     form_data->id_attribute = base::UTF8ToUTF16(*id_attribute);
   }
-  form_data->is_form_tag =
-      form.FindBool("is_form_tag").value_or(form_data->is_form_tag);
 
   if (include_frame_metadata) {
     // Child frame tokens, optional.

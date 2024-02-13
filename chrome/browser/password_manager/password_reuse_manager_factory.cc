@@ -39,7 +39,7 @@ SignInState GetSignInStateForMetrics(Profile* profile) {
     return SignInState::kSignedOut;
   }
 
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const std::string sync_username =

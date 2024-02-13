@@ -165,14 +165,6 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     loader_->StopDeferringForThrottle(throttle_);
   }
 
-  void SetPriority(net::RequestPriority priority) override {
-    if (!loader_)
-      return;
-
-    ScopedDelegateCall scoped_delegate_call(this);
-    loader_->SetPriority(priority);
-  }
-
   void UpdateDeferredRequestHeaders(
       const net::HttpRequestHeaders& modified_request_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_request_headers)

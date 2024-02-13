@@ -224,4 +224,10 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [ProvisioningPageElement.is]: ProvisioningPageElement;
+  }
+}
+
 customElements.define(ProvisioningPageElement.is, ProvisioningPageElement);

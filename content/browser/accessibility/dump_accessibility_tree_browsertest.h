@@ -133,16 +133,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
       std::vector<base::test::FeatureRef>* disabled_features) override;
 };
 
-// Subclass of DumpAccessibilityTreeTest that exposes ignored nodes.
-class DumpAccessibilityTreeTestWithIgnoredNodes
-    : public DumpAccessibilityTreeTest {
- protected:
-  // Override from DumpAccessibilityTreeTest.
-  void ChooseFeatures(
-      std::vector<base::test::FeatureRef>* enabled_features,
-      std::vector<base::test::FeatureRef>* disabled_features) override;
-};
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ACCESSIBILITY_DUMP_ACCESSIBILITY_TREE_BROWSERTEST_H_

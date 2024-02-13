@@ -267,7 +267,7 @@ void SuggestionContainerView::OnButtonPressed(SuggestionChipView* chip_view) {
   delegate()->OnSuggestionPressed(selected_chip_->suggestion_id());
 }
 
-BEGIN_METADATA(SuggestionContainerView, AnimatedContainerView)
+BEGIN_METADATA(SuggestionContainerView)
 END_METADATA
 
 }  // namespace ash

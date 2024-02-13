@@ -37,7 +37,7 @@ class ExtensionLocalizationURLLoader : public network::mojom::URLLoaderClient,
  public:
   ExtensionLocalizationURLLoader(
       const std::optional<blink::LocalFrameToken>& frame_token,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       mojo::PendingRemote<network::mojom::URLLoaderClient>
           destination_url_loader_client)
       : frame_token_(frame_token),

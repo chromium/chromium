@@ -36,6 +36,10 @@ using ReasonsMatcher = testing::Matcher<
     const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&>;
 using SameOriginMatcher = testing::Matcher<
     const blink::mojom::SameOriginBfcacheNotRestoredDetailsPtr&>;
+using BlockingDetailsReasonsMatcher =
+    testing::Matcher<const blink::mojom::BFCacheBlockingDetailedReasonPtr&>;
+using BlockingReasonLocationMatcher =
+    testing::Matcher<const blink::mojom::BlockingReasonSourceLocationPtr&>;
 using BlockingDetailsMatcher =
     testing::Matcher<const blink::mojom::BlockingDetailsPtr&>;
 
@@ -143,12 +147,26 @@ class BackForwardCacheBrowserTest
       const std::optional<testing::Matcher<std::string>>& id,
       const std::optional<testing::Matcher<std::string>>& name,
       const std::optional<testing::Matcher<std::string>>& src,
-      const std::vector<testing::Matcher<std::string>>& reasons,
+      const std::vector<BlockingDetailsReasonsMatcher>& reasons,
       const std::optional<SameOriginMatcher>& same_origin_details);
+
   SameOriginMatcher MatchesSameOriginDetails(
       const testing::Matcher<std::string>& url,
       const std::vector<ReasonsMatcher>& children);
 
+  // Used in tests that ensure source location is sent to the renderer side from
+  // the browser one
+  BlockingDetailsReasonsMatcher MatchesDetailedReason(
+      const testing::Matcher<std::string>& name,
+      const std::optional<BlockingReasonLocationMatcher>& source);
+
+  BlockingReasonLocationMatcher MatchesSourceLocation(
+      const testing::Matcher<std::string>& url,
+      const testing::Matcher<uint64_t>& line_number,
+      const testing::Matcher<uint64_t>& column_number);
+
+  // Used in tests that ensure source location is sent to the browser side from
+  // the renderer one.
   BlockingDetailsMatcher MatchesBlockingDetails(
       const std::optional<testing::Matcher<std::string>>& url,
       const std::optional<testing::Matcher<std::string>>& function_name,

@@ -3,10 +3,13 @@
 <translationbundle lang="ja">
 <translation id="1075622780330595106">しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
 <translation id="1155815720264022949">古いタブを閉じますか？</translation>
+<translation id="1197088940767939838">オレンジ</translation>
 <translation id="1215127405478249895">タブを確認</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
 <translation id="1326271443836399892">現在の整理の設定を確認できます。</translation>
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
+<translation id="1555130319947370107">青</translation>
+<translation id="161042844686301425">シアン</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをブックマークに追加}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをブックマークに追加}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{タブをグループ化する}other{タブをグループ化する}}</translation>
 <translation id="3996880007329611795">通知を受け取る</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
+<translation id="4159784952369912983">パープル</translation>
 <translation id="4212246570487010370">引き続き閲覧</translation>
 <translation id="427987768447457592">新しいタブグループ</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">タイトルが必要です</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{最近使用していないタブが <ph name="TABS_COUNT_ONE" /> 個あります}other{最近使用していないタブが <ph name="TABS_COUNT_MANY" /> 個あります}}</translation>
 <translation id="5339733443032484186">最後のタブ</translation>
+<translation id="5400836586163650660">グレー</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5545379293264651575">確認しないで閉じる</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">値下げアラートを受け取りますか？</translation>
 <translation id="58326064309361797">タブをグループ化するにはドラッグします</translation>
 <translation id="5846292395804797011"><ph name="TITLE_OF_GROUP" /> グループの <ph name="NUMBER_OF_TABS" /> 個のタブを閉じます</translation>
+<translation id="5901630391730855834">黄</translation>
 <translation id="5972844218283131174">すべての選択を解除</translation>
+<translation id="6017514345406065928">緑</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループ化する}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループ化する}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ}other{<ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ}}</translation>
 <translation id="7885132941432959125">タブを右に移動</translation>
+<translation id="7942349550061667556">赤</translation>
 <translation id="7966321538264951561">提案を閉じます。</translation>
 <translation id="8029301326595421733">このショップに関する情報が画面全体に表示されています</translation>
 <translation id="8205266828577616993">タブを上に移動</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">グループに新しいタブを追加</translation>
 <translation id="955558140275419384">このエディタを開くと、アーカイブ済みのすべてのタブを確認して整理できます。</translation>
 <translation id="959682366969460160">タブを整理</translation>
+<translation id="992256792861109788">ピンク</translation>
 </translationbundle>

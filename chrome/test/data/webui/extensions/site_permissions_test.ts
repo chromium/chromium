@@ -5,7 +5,8 @@
 /** @fileoverview Suite of tests for extension-site-permissions. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsSitePermissionsElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
+import type {ExtensionsSitePermissionsElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

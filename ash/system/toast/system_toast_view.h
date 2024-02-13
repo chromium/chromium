@@ -20,9 +20,9 @@ class SystemShadow;
 // toast data parameters. It will always have a body text, and may have a
 // leading icon and a trailing button.
 class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(SystemToastView);
+  METADATA_HEADER(SystemToastView, views::FlexLayoutView)
 
+ public:
   explicit SystemToastView(const ToastData& toast_data);
   SystemToastView(const SystemToastView&) = delete;
   SystemToastView& operator=(const SystemToastView&) = delete;

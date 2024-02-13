@@ -85,7 +85,6 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
-#include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -187,6 +186,7 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -335,6 +335,10 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "chrome/browser/enterprise/watermark/watermark_view.h"
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::WebContents;
@@ -420,7 +424,7 @@ bool GetGestureCommand(ui::GestureEvent* event, int* command) {
 bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
   views::Widget::Widgets widgets;
   views::Widget::GetAllChildWidgets(parent_widget->GetNativeView(), &widgets);
-  for (auto* widget : widgets) {
+  for (views::Widget* widget : widgets) {
     if (widget == parent_widget)
       continue;
     if (widget->IsModal())
@@ -917,8 +921,19 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   contents_web_view_ =
       contents_container->AddChildView(std::move(contents_web_view));
   contents_web_view_->set_is_primary_web_contents_for_window(true);
+
+  views::View* watermark_view = nullptr;
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+  if (base::FeatureList::IsEnabled(features::kEnableWatermarkView)) {
+    watermark_view = contents_container->AddChildView(
+        std::make_unique<enterprise_watermark::WatermarkView>(
+            "Private! Confidential!"));
+  }
+#endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
   contents_container->SetLayoutManager(std::make_unique<ContentsLayoutManager>(
-      devtools_web_view_, contents_web_view_));
+      devtools_web_view_, contents_web_view_, watermark_view));
 
   toolbar_ = top_container_->AddChildView(
       std::make_unique<ToolbarView>(browser_.get(), this));
@@ -2395,7 +2410,7 @@ bool BrowserView::WidgetOwnedByAnchorContainsPoint(
   views::Widget::Widgets widgets;
   views::Widget::GetAllOwnedWidgets(anchor_widget->GetNativeView(), &widgets);
   return base::ranges::any_of(widgets, [point_in_screen_coords,
-                                        anchor_widget](auto* widget) {
+                                        anchor_widget](views::Widget* widget) {
     return widget != anchor_widget && widget->IsVisible() &&
            widget->GetWindowBoundsInScreen().Contains(point_in_screen_coords);
   });
@@ -3633,9 +3648,7 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
     const uint64_t memory_used =
         tab_data.tab_resource_usage->memory_usage_in_bytes();
     const bool is_high_memory_usage =
-        memory_used > static_cast<uint64_t>(
-                          performance_manager::features::
-                              kMemoryUsageInHovercardsHighThresholdBytes.Get());
+        tab_data.tab_resource_usage->is_high_memory_usage();
     if (is_high_memory_usage || is_for_tab) {
       const int message_id = is_high_memory_usage ? IDS_TAB_AX_HIGH_MEMORY_USAGE
                                                   : IDS_TAB_AX_MEMORY_USAGE;

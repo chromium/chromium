@@ -539,8 +539,9 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, IeemSitelistInvalidUrl) {
   EXPECT_FALSE(fetch_happened);
 }
 
+// TODO(crbug.com/323787135): Times out flakily on CI.
 IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
-                       IeemFetchAndParseAfterStartup) {
+                       DISABLED_IeemFetchAndParseAfterStartup) {
   SetUseIeSitelist(true);
   BrowserSwitcherServiceWin::SetIeemSitelistUrlForTesting(kAValidUrl);
 
@@ -644,7 +645,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, WritesPrefsToCacheFile) {
       "IExplore.exe\n"
       "--bogus-flag\n"
       "chrome.exe\n"
-      "--force-dark-mode\n"
+      "--force-dark-mode --from-browser-switcher\n"
       "1\n"
       "*://example.com/\n"
       "1\n"
@@ -711,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
       "\n"
       "\n"
       "%s\n"
-      "\n"
+      "--from-browser-switcher\n"
       "2\n"
       "docs.google.com\n"
       "yahoo.com\n"
@@ -775,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest, CacheFileCorrectOnStartup) {
       "\n"
       "\n"
       "%s\n"
-      "\n"
+      "--from-browser-switcher\n"
       "1\n"
       "docs.google.com\n"
       "0\n"

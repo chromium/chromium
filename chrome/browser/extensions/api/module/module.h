@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_MODULE_MODULE_H_
 
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/extension_id.h"
 
 namespace extensions {
 class ExtensionPrefs;
@@ -13,7 +14,7 @@ class ExtensionPrefs;
 namespace extension {
 // Return the extension's update URL data, if any.
 std::string GetUpdateURLData(const ExtensionPrefs* prefs,
-                             const std::string& extension_id);
+                             const ExtensionId& extension_id);
 }  // namespace extension
 
 class ExtensionSetUpdateUrlDataFunction : public ExtensionFunction {

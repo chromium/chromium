@@ -387,6 +387,13 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::
               kStorageAccessAPI_requestStorageAccess_BeyondCookies_cookies,
           WebFeature::kFirstPartySharedWorkerSameSiteCookiesNone,
+          WebFeature::kUserFeatureNuxtImage,
+          WebFeature::kUserFeatureNuxtPicture,
+          WebFeature::kUserFeatureNuxtThirdPartiesGA,
+          WebFeature::kUserFeatureNuxtThirdPartiesGTM,
+          WebFeature::kUserFeatureNuxtThirdPartiesYouTubeEmbed,
+          WebFeature::kUserFeatureNuxtThirdPartiesGoogleMaps,
+          WebFeature::kMouseDragOnCancelledMouseMove,
       }));
   return *opt_in_features;
 }

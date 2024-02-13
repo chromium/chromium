@@ -56,6 +56,10 @@ class URL_MATCHER_EXPORT URLMatcherFactory {
   static std::unique_ptr<URLMatcherPortFilter> CreateURLMatcherPorts(
       const base::Value* value,
       std::string* error);
+
+  static std::unique_ptr<URLMatcherCidrBlockFilter> CreateURLMatcherCidrBlocks(
+      const base::Value* value,
+      std::string* error);
 };
 
 }  // namespace url_matcher

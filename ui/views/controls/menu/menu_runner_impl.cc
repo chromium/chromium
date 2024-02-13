@@ -116,8 +116,8 @@ void MenuRunnerImpl::RunMenuAt(
     MenuAnchorPosition anchor,
     int32_t run_types,
     gfx::NativeView native_view_for_gestures,
-    absl::optional<gfx::RoundedCornersF> corners,
-    absl::optional<std::string> show_menu_host_duration_histogram) {
+    std::optional<gfx::RoundedCornersF> corners,
+    std::optional<std::string> show_menu_host_duration_histogram) {
   closing_event_time_ = base::TimeTicks();
   if (running_) {
     // Ignore requests to show the menu while it's already showing. MenuItemView
@@ -251,8 +251,9 @@ void MenuRunnerImpl::SiblingMenuCreated(MenuItemView* menu) {
 }
 
 MenuRunnerImpl::~MenuRunnerImpl() {
-  for (auto* sibling_menu : sibling_menus_)
+  for (MenuItemView* sibling_menu : sibling_menus_) {
     delete sibling_menu;
+  }
 }
 
 bool MenuRunnerImpl::ShouldShowMnemonics(int32_t run_types) {

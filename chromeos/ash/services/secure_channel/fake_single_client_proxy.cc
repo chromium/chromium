@@ -37,6 +37,13 @@ void FakeSingleClientProxy::HandleRemoteDeviceDisconnection() {
   was_remote_device_disconnection_handled_ = true;
 }
 
+void FakeSingleClientProxy::HandleNearbyConnectionStateChanged(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  nearby_connection_step_ = step;
+  nearby_connection_step_result_ = result;
+}
+
 FakeSingleClientProxyDelegate::FakeSingleClientProxyDelegate() = default;
 
 FakeSingleClientProxyDelegate::~FakeSingleClientProxyDelegate() = default;

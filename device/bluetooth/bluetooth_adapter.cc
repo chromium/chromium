@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
@@ -200,7 +201,7 @@ BluetoothAdapter::GetMergedDiscoveryFilter() const {
       std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_DUAL);
   bool first_merge = true;
 
-  for (auto* iter : discovery_sessions_) {
+  for (BluetoothDiscoverySession* iter : discovery_sessions_) {
     if (!iter->IsActive())
       continue;
 
@@ -399,7 +400,7 @@ int BluetoothAdapter::NumDiscoverySessions() const {
 
 int BluetoothAdapter::NumScanningDiscoverySessions() const {
   int count = 0;
-  for (auto* session : discovery_sessions_) {
+  for (BluetoothDiscoverySession* session : discovery_sessions_) {
     if (session->status() ==
         BluetoothDiscoverySession::SessionStatus::SCANNING) {
       ++count;
@@ -555,8 +556,9 @@ void BluetoothAdapter::OnDiscoveryChangeComplete(
 
   // Inform BluetoothDiscoverySession that updates being processed have
   // completed.
-  for (auto* session : discovery_sessions_)
+  for (BluetoothDiscoverySession* session : discovery_sessions_) {
     session->StartingSessionsScanning();
+  }
 
   current_discovery_filter_.CopyFrom(filter_being_set_);
 
@@ -618,8 +620,9 @@ void BluetoothAdapter::ProcessDiscoveryQueue() {
 
   // Inform BluetoothDiscoverySession that any updates they have made are being
   // processed.
-  for (auto* session : discovery_sessions_)
+  for (BluetoothDiscoverySession* session : discovery_sessions_) {
     session->PendingSessionsStarting();
+  }
 
   auto result_callback = base::BindOnce(
       &BluetoothAdapter::OnDiscoveryChangeComplete, GetWeakPtr());
@@ -658,7 +661,8 @@ void BluetoothAdapter::MarkDiscoverySessionsAsInactive() {
   // have become inactive, upon which the adapter will remove them from
   // |discovery_sessions_|. To avoid invalidating the iterator, make a copy
   // here.
-  std::set<BluetoothDiscoverySession*> temp(discovery_sessions_);
+  std::set<raw_ptr<BluetoothDiscoverySession, SetExperimental>> temp(
+      discovery_sessions_);
   for (auto iter = temp.begin(); iter != temp.end(); ++iter) {
     (*iter)->MarkAsInactive();
     RemoveDiscoverySession(*iter, base::DoNothing(), base::DoNothing());

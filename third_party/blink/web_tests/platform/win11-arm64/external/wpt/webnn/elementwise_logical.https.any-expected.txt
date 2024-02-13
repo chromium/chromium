@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
-Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 67 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] equal float32 0D scalar / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] equal float32 1D constant tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] equal float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -24,6 +26,8 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] greater float32 0D scalar / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] greater float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] greater float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] greater float32 2D tensors / async
@@ -45,6 +49,8 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] greater float32 broadcast 4D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] greaterOrEqual float32 0D scalar / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] greaterOrEqual float32 1D constant tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] greaterOrEqual float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -68,6 +74,8 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] lesser float32 0D scalar / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] lesser float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] lesser float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] lesser float32 2D tensors / async
@@ -90,6 +98,8 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] lesserOrEqual float32 0D scalar / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] lesserOrEqual float32 1D constant tensors / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] lesserOrEqual float32 1D tensors / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] lesserOrEqual float32 2D tensors / async
@@ -111,6 +121,8 @@ Found 61 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] lesserOrEqual float32 broadcast 4D to 4D / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] logicalNot uint8 0D scalar / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] logicalNot uint8 1D constant tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] logicalNot uint8 1D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"

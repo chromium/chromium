@@ -53,16 +53,14 @@ constexpr char kOverallSuffix[] = ".Overall";
 constexpr char kWithCustomPassphraseSuffix[] = ".WithCustomPassphrase";
 constexpr char kWithoutCustomPassphraseSuffix[] = ".WithoutCustomPassphrase";
 
-bool IsCustomPassphraseEnabled(password_manager::SyncState sync_state) {
+bool IsCustomPassphraseEnabled(
+    password_manager::sync_util::SyncState sync_state) {
   switch (sync_state) {
-    case password_manager::SyncState::kSyncingWithCustomPassphrase:
-    case password_manager::SyncState::
-        kAccountPasswordsActiveWithCustomPassphrase:
-      return true;
-    case password_manager::SyncState::kNotSyncing:
-    case password_manager::SyncState::kSyncingNormalEncryption:
-    case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
+    case password_manager::sync_util::SyncState::kNotActive:
+    case password_manager::sync_util::SyncState::kActiveWithNormalEncryption:
       return false;
+    case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
+      return true;
   }
   NOTREACHED_NORETURN();
 }

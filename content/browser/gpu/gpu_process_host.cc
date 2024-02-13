@@ -151,6 +151,7 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
       NOTREACHED();
       return nullptr;
     case gpu::GpuMode::HARDWARE_GL:
+    case gpu::GpuMode::HARDWARE_GRAPHITE:
     case gpu::GpuMode::HARDWARE_VULKAN:
       return kProcessLifetimeEventsHardwareAccelerated;
     case gpu::GpuMode::SWIFTSHADER:
@@ -1162,12 +1163,12 @@ std::string GpuProcessHost::GetIsolationKey(
       if (!version) {
         continue;
       }
-      if (token.GetAs<blink::ServiceWorkerToken>() !=
-          version->embedded_worker()->token().value()) {
-        continue;
-      }
       ServiceWorkerHost* service_worker_host = version->worker_host();
       if (!service_worker_host) {
+        continue;
+      }
+      if (service_worker_host->token() !=
+          token.GetAs<blink::ServiceWorkerToken>()) {
         continue;
       }
       auto isolation_key =

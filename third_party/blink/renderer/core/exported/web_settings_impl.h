@@ -55,6 +55,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAutoplayPolicy(mojom::blink::AutoplayPolicy) override;
   void SetRequireTransientActivationForGetDisplayMedia(bool) override;
   void SetRequireTransientActivationForShowFileOrDirectoryPicker(bool) override;
+  void SetRequireTransientActivationForHtmlFullscreen(bool) override;
   void SetLCDTextPreference(LCDTextPreference) override;
   void SetAccessibilityPasswordValuesEnabled(bool) override;
   void SetAllowFileAccessFromFileURLs(bool) override;
@@ -206,12 +207,12 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
 
   // TODO(rajendrant): Remove these lazyload distance threshold settings for
   // frames and images, once the values are finalized from the experiment.
-  void SetLazyFrameLoadingDistanceThresholdPxUnknown(int) override;
-  void SetLazyFrameLoadingDistanceThresholdPxOffline(int) override;
-  void SetLazyFrameLoadingDistanceThresholdPxSlow2G(int) override;
-  void SetLazyFrameLoadingDistanceThresholdPx2G(int) override;
-  void SetLazyFrameLoadingDistanceThresholdPx3G(int) override;
-  void SetLazyFrameLoadingDistanceThresholdPx4G(int) override;
+  void SetLazyLoadingFrameMarginPxUnknown(int) override;
+  void SetLazyLoadingFrameMarginPxOffline(int) override;
+  void SetLazyLoadingFrameMarginPxSlow2G(int) override;
+  void SetLazyLoadingFrameMarginPx2G(int) override;
+  void SetLazyLoadingFrameMarginPx3G(int) override;
+  void SetLazyLoadingFrameMarginPx4G(int) override;
   void SetLazyLoadingImageMarginPxUnknown(int) override;
   void SetLazyLoadingImageMarginPxOffline(int) override;
   void SetLazyLoadingImageMarginPxSlow2G(int) override;

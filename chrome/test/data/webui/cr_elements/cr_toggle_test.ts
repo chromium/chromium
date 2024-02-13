@@ -6,7 +6,8 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {CrToggleElement, MOVE_THRESHOLD_PX} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import { MOVE_THRESHOLD_PX} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on

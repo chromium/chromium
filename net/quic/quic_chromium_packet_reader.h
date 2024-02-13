@@ -77,6 +77,9 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   quic::QuicTime yield_after_;
   scoped_refptr<IOBufferWithSize> read_buffer_;
   NetLogWithSource net_log_;
+  // Stores whether receiving ECN is in the feature list to avoid accessing
+  // the feature list for every packet.
+  bool report_ecn_;
 
   base::WeakPtrFactory<QuicChromiumPacketReader> weak_factory_{this};
 };

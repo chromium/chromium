@@ -41,7 +41,7 @@ namespace client_certificates {
 namespace {
 
 constexpr char kTestIdentityName[] = "identity_name";
-// constexpr char kOtherTestIdentityName[] = "other_identity_name";
+constexpr char kOtherTestIdentityName[] = "other_identity_name";
 
 constexpr char kFakeWrappedValue[] = "some_wrapped_value";
 
@@ -371,6 +371,154 @@ TEST_F(CertificateStoreTest, CommitCertificate_UpdateFail) {
   base::test::TestFuture<std::optional<StoreError>> test_future;
   store_->CommitCertificate(kTestIdentityName, test_cert,
                             test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->GetCallback(/*success=*/true);
+  fake_db_->UpdateCallback(/*success=*/false);
+
+  // Not checking the mocked database's state, as the mock behaves as if the
+  // update succeeded, but in this test case it was mocked to fail - so we can
+  // assume it failed.
+  EXPECT_EQ(test_future.Get(), StoreError::kCertificateCommitFailed);
+}
+
+// Tests that an existing private key is moved and a certificate can be saved
+// to the database.
+TEST_F(CertificateStoreTest, CommitIdentity_SuccessWithPrivateKey) {
+  client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
+  client_certificates_pb::ClientIdentity proto_identity;
+  *proto_identity.mutable_private_key() = proto_key;
+  AddDatabaseEntry(kOtherTestIdentityName, proto_identity);
+
+  auto test_cert = LoadTestCert();
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity(kOtherTestIdentityName, kTestIdentityName, test_cert,
+                         test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->GetCallback(/*success=*/true);
+  fake_db_->UpdateCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future.Get(), std::nullopt);
+
+  PersistCertificate(proto_identity, test_cert);
+  ExpectDatabaseEntry(kTestIdentityName, proto_identity);
+  ExpectNoDatabaseEntry(kOtherTestIdentityName);
+}
+
+// Tests that a certificate cannot be saved to the database when the temporary
+// identity does not already exist in the database.
+TEST_F(CertificateStoreTest, CommitIdentity_FailWithoutIdentity) {
+  auto test_cert = LoadTestCert();
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity(kOtherTestIdentityName, kTestIdentityName, test_cert,
+                         test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->GetCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future.Get(), StoreError::kIdentityNotFound);
+
+  ExpectNoDatabaseEntry(kTestIdentityName);
+  ExpectNoDatabaseEntry(kOtherTestIdentityName);
+}
+
+// Tests that a certificate won't be saved to the database when the temporary
+// identity name is invalid.
+TEST_F(CertificateStoreTest, CommitIdentity_InvalidTemporaryIdentityNameFail) {
+  auto test_cert = LoadTestCert();
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity("", kTestIdentityName, test_cert,
+                         test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidIdentityName);
+  ExpectNoDatabaseEntry("");
+  ExpectNoDatabaseEntry(kTestIdentityName);
+}
+
+// Tests that a certificate won't be saved to the database when the database
+// initialization failed.
+TEST_F(CertificateStoreTest, CommitIdentity_DatabaseInitFail) {
+  auto test_cert = LoadTestCert();
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity(kOtherTestIdentityName, kTestIdentityName, test_cert,
+                         test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kCorrupt);
+
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidDatabaseState);
+  ExpectNoDatabaseEntry(kOtherTestIdentityName);
+  ExpectNoDatabaseEntry(kTestIdentityName);
+}
+
+// Tests that a certificate won't be saved to the database when failing to "get"
+// from the database.
+TEST_F(CertificateStoreTest, CommitIdentity_GetIdentityFail) {
+  auto test_cert = LoadTestCert();
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity(kOtherTestIdentityName, kTestIdentityName, test_cert,
+                         test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->GetCallback(/*success=*/false);
+
+  EXPECT_EQ(test_future.Get(), StoreError::kGetDatabaseEntryFailed);
+  ExpectNoDatabaseEntry(kOtherTestIdentityName);
+  ExpectNoDatabaseEntry(kTestIdentityName);
+}
+
+// Tests that a certificate won't be saved to the database when the given
+// certificate instance is invalid (nullptr).
+TEST_F(CertificateStoreTest, CommitIdentity_InvalidCertificateFail) {
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity(kOtherTestIdentityName, kTestIdentityName,
+                         /*certificate=*/nullptr, test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->GetCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidCertificateInput);
+  ExpectNoDatabaseEntry(kOtherTestIdentityName);
+  ExpectNoDatabaseEntry(kTestIdentityName);
+}
+
+// Tests that a certificate won't be saved to the database when the given
+// certificate instance is invalid (nullptr).
+TEST_F(CertificateStoreTest, CommitIdentity_InvalidFinalNameFail) {
+  auto test_cert = LoadTestCert();
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity(kOtherTestIdentityName, "", test_cert,
+                         test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->GetCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidFinalIdentityName);
+  ExpectNoDatabaseEntry(kOtherTestIdentityName);
+  ExpectNoDatabaseEntry(kTestIdentityName);
+}
+
+// Tests that a certificate won't be saved to the database when failing to
+// "update" the database.
+TEST_F(CertificateStoreTest, CommitIdentity_UpdateFail) {
+  client_certificates_pb::PrivateKey proto_key = CreateFakeProtoKey();
+  client_certificates_pb::ClientIdentity proto_identity;
+  *proto_identity.mutable_private_key() = proto_key;
+  AddDatabaseEntry(kOtherTestIdentityName, proto_identity);
+
+  auto test_cert = LoadTestCert();
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->CommitIdentity(kOtherTestIdentityName, kTestIdentityName, test_cert,
+                         test_future.GetCallback());
 
   fake_db_->InitStatusCallback(InitStatus::kOK);
   fake_db_->GetCallback(/*success=*/true);

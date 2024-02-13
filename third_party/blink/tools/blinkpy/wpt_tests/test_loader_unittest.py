@@ -5,13 +5,18 @@
 import json
 import textwrap
 import unittest
+from unittest import mock
 
 from blinkpy.common import path_finder
 from blinkpy.common.host_mock import MockHost
-from blinkpy.wpt_tests.test_loader import TestLoader, wpt_url_to_blink_test
+from blinkpy.wpt_tests.test_loader import (
+    allow_any_subtests_on_timeout,
+    TestLoader,
+    wpt_url_to_blink_test,
+)
 
 path_finder.bootstrap_wpt_imports()
-from wptrunner import wptlogging
+from wptrunner import wptlogging, wpttest
 from tools.manifest.manifest import load_and_update
 
 
@@ -263,14 +268,51 @@ class TestLoaderTestCase(unittest.TestCase):
 
         subtest = test.get_subtest('subtest1')
         self.assertEqual(subtest.expected, 'FAIL')
-        self.assertEqual(subtest.known_intermittent, ['TIMEOUT', 'NOTRUN'])
+        self.assertEqual(subtest.known_intermittent, [])
 
         subtest = test.get_subtest('subtest2')
         self.assertEqual(subtest.expected, 'PASS')
-        self.assertEqual(subtest.known_intermittent, ['TIMEOUT', 'NOTRUN'])
+        self.assertEqual(subtest.known_intermittent, [])
 
     def test_wpt_url_to_exp_test(self):
         self.assertEqual(wpt_url_to_blink_test('/css/test.html?a'),
                          'external/wpt/css/test.html?a')
         self.assertEqual(wpt_url_to_blink_test('/wpt_internal/test.html'),
                          'wpt_internal/test.html')
+
+    def test_allow_any_subtests_on_timeout(self):
+        test = mock.Mock()
+        test.expected_fail_message.return_value = 'expect this message'
+        test_result = wpttest.TestharnessResult('TIMEOUT',
+                                                message=None,
+                                                expected='TIMEOUT')
+        subtest_result = wpttest.TestharnessSubtestResult('subtest',
+                                                          'TIMEOUT',
+                                                          message=None,
+                                                          expected='FAIL')
+
+        test_result, (subtest_result, ) = allow_any_subtests_on_timeout(
+            test, (test_result, [subtest_result]))
+        self.assertEqual(subtest_result.expected, 'TIMEOUT')
+        self.assertEqual(subtest_result.known_intermittent, [])
+        self.assertEqual(subtest_result.message, 'expect this message')
+        test.expected_fail_message.assert_called_once_with('subtest')
+
+    def test_do_not_allow_any_subtests_on_completion(self):
+        test = mock.Mock()
+        test.expected_fail_message.return_value = (
+            'should not expect this message')
+        test_result = wpttest.TestharnessResult('OK',
+                                                message=None,
+                                                expected='TIMEOUT')
+        subtest_result = wpttest.TestharnessSubtestResult('subtest',
+                                                          'FAIL',
+                                                          message=None,
+                                                          expected='TIMEOUT')
+
+        test_result, (subtest_result, ) = allow_any_subtests_on_timeout(
+            test, (test_result, [subtest_result]))
+        self.assertEqual(subtest_result.expected, 'TIMEOUT')
+        self.assertEqual(subtest_result.known_intermittent, [])
+        self.assertIsNone(subtest_result.message)
+        test.expected_fail_message.assert_not_called()

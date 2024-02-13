@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -42,7 +43,6 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/ssl/ssl_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RunLoop;
@@ -128,7 +128,8 @@ struct MockReadWrite {
         result(0),
         data(nullptr),
         data_len(0),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write failure (no data).
   MockReadWrite(IoMode io_mode, int result)
@@ -136,7 +137,8 @@ struct MockReadWrite {
         result(result),
         data(nullptr),
         data_len(0),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write failure (no data), with sequence information.
   MockReadWrite(IoMode io_mode, int result, int seq)
@@ -144,7 +146,8 @@ struct MockReadWrite {
         result(result),
         data(nullptr),
         data_len(0),
-        sequence_number(seq) {}
+        sequence_number(seq),
+        tos(0) {}
 
   // Asynchronous read/write success (inferred data length).
   explicit MockReadWrite(const char* data)
@@ -152,7 +155,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(strlen(data)),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write success (inferred data length).
   MockReadWrite(IoMode io_mode, const char* data)
@@ -160,7 +164,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(strlen(data)),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write success.
   MockReadWrite(IoMode io_mode, const char* data, int data_len)
@@ -168,7 +173,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(data_len),
-        sequence_number(0) {}
+        sequence_number(0),
+        tos(0) {}
 
   // Read/write success (inferred data length) with sequence information.
   MockReadWrite(IoMode io_mode, int seq, const char* data)
@@ -176,7 +182,8 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(strlen(data)),
-        sequence_number(seq) {}
+        sequence_number(seq),
+        tos(0) {}
 
   // Read/write success with sequence information.
   MockReadWrite(IoMode io_mode, const char* data, int data_len, int seq)
@@ -184,7 +191,21 @@ struct MockReadWrite {
         result(0),
         data(data),
         data_len(data_len),
-        sequence_number(seq) {}
+        sequence_number(seq),
+        tos(0) {}
+
+  // Read/write success with sequence and TOS information.
+  MockReadWrite(IoMode io_mode,
+                const char* data,
+                int data_len,
+                int seq,
+                uint8_t tos_byte)
+      : mode(io_mode),
+        result(0),
+        data(data),
+        data_len(data_len),
+        sequence_number(seq),
+        tos(tos_byte) {}
 
   IoMode mode;
   int result;
@@ -196,6 +217,9 @@ struct MockReadWrite {
   // an ERR_IO_PENDING is returned.
   int sequence_number;  // The sequence number at which a read is allowed
                         // to occur.
+
+  // The TOS byte of the datagram, for datagram sockets only.
+  uint8_t tos;
 };
 
 typedef MockReadWrite<MOCK_READ> MockRead;
@@ -286,7 +310,7 @@ class SocketDataProvider {
   }
   bool set_keep_alive_result() const { return set_keep_alive_result_; }
 
-  const absl::optional<AddressList>& expected_addresses() const {
+  const std::optional<AddressList>& expected_addresses() const {
     return expected_addresses_;
   }
   void set_expected_addresses(net::AddressList addresses) {
@@ -331,7 +355,7 @@ class SocketDataProvider {
   int set_send_buffer_size_result_ = net::OK;
   bool set_no_delay_result_ = true;
   bool set_keep_alive_result_ = true;
-  absl::optional<AddressList> expected_addresses_;
+  std::optional<AddressList> expected_addresses_;
 };
 
 // The AsyncSocket is an interface used by the SocketDataProvider to
@@ -486,7 +510,7 @@ struct SSLSocketDataProvider {
   NextProto next_proto = kProtoUnknown;
 
   // Result for GetPeerApplicationSettings().
-  absl::optional<std::string> peer_application_settings;
+  std::optional<std::string> peer_application_settings;
 
   // Result for GetSSLInfo().
   SSLInfo ssl_info;
@@ -497,19 +521,19 @@ struct SSLSocketDataProvider {
   // Result for GetECHRetryConfigs().
   std::vector<uint8_t> ech_retry_configs;
 
-  absl::optional<NextProtoVector> next_protos_expected_in_ssl_config;
-  absl::optional<SSLConfig::ApplicationSettings> expected_application_settings;
+  std::optional<NextProtoVector> next_protos_expected_in_ssl_config;
+  std::optional<SSLConfig::ApplicationSettings> expected_application_settings;
 
   uint16_t expected_ssl_version_min;
   uint16_t expected_ssl_version_max;
-  absl::optional<bool> expected_early_data_enabled;
-  absl::optional<bool> expected_send_client_cert;
+  std::optional<bool> expected_early_data_enabled;
+  std::optional<bool> expected_send_client_cert;
   scoped_refptr<X509Certificate> expected_client_cert;
-  absl::optional<HostPortPair> expected_host_and_port;
-  absl::optional<bool> expected_ignore_certificate_errors;
-  absl::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
-  absl::optional<bool> expected_disable_sha1_server_signatures;
-  absl::optional<std::vector<uint8_t>> expected_ech_config_list;
+  std::optional<HostPortPair> expected_host_and_port;
+  std::optional<bool> expected_ignore_certificate_errors;
+  std::optional<NetworkAnonymizationKey> expected_network_anonymization_key;
+  std::optional<bool> expected_disable_sha1_server_signatures;
+  std::optional<std::vector<uint8_t>> expected_ech_config_list;
 
   bool is_connect_data_consumed = false;
   bool is_confirm_data_consumed = false;
@@ -902,7 +926,7 @@ class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
   int GetPeerAddress(IPEndPoint* address) const override;
   int GetLocalAddress(IPEndPoint* address) const override;
   NextProto GetNegotiatedProtocol() const override;
-  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  std::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   void GetSSLCertRequestInfo(
       SSLCertRequestInfo* cert_request_info) const override;
@@ -974,7 +998,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
   int SetDoNotFragment() override;
-  int SetRecvEcn() override;
+  int SetRecvTos() override;
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) override;
 
   // DatagramSocket implementation.
   void Close() override;
@@ -999,6 +1024,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
   void SetMsgConfirm(bool confirm) override {}
+  DscpAndEcn GetLastTos() const override;
 
   // AsyncSocket implementation.
   void OnReadComplete(const MockRead& data) override;
@@ -1053,6 +1079,8 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   SocketTag tag_;
   bool data_transferred_ = false;
   bool tagged_before_data_transferred_ = true;
+
+  uint8_t last_tos_ = 0;
 
   base::WeakPtrFactory<MockUDPClientSocket> weak_factory_{this};
 };
@@ -1115,7 +1143,7 @@ class ClientSocketPoolTest {
         new TestSocketRequest(&request_order_, &completion_count_));
     requests_.push_back(base::WrapUnique(request));
     int rv = request->handle()->Init(
-        group_id, socket_params, absl::nullopt /* proxy_annotation_tag */,
+        group_id, socket_params, std::nullopt /* proxy_annotation_tag */,
         priority, SocketTag(), respect_limits, request->callback(),
         ClientSocketPool::ProxyAuthCallback(), socket_pool, NetLogWithSource());
     if (rv != ERR_IO_PENDING)
@@ -1223,7 +1251,7 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
   int RequestSocket(
       const GroupId& group_id,
       scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-      const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+      const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       RequestPriority priority,
       const SocketTag& socket_tag,
       RespectLimits respect_limits,

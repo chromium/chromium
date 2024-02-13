@@ -280,7 +280,7 @@ void ResizeConfirmationDialogView::Show(views::Widget* parent,
   views::BubbleDialogDelegateView::CreateBubble(std::move(dialog_view))->Show();
 }
 
-BEGIN_METADATA(ResizeConfirmationDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ResizeConfirmationDialogView)
 END_METADATA
 
 }  // namespace arc

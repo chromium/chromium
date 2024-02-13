@@ -53,8 +53,9 @@ void RecordExtendedReportingPrefChanged(
 // and path from a URL. Equivalent to clearing any username, password, query,
 // and ref. Return empty URL if |url| is not valid.
 GURL GetSimplifiedURL(const GURL& url) {
-  if (!url.is_valid() || !url.IsStandard())
+  if (!url.is_valid() || !url.IsStandard()) {
     return GURL();
+  }
 
   GURL::Replacements replacements;
   replacements.ClearUsername();
@@ -138,7 +139,7 @@ bool IsSafeBrowsingExtensionControlled(const PrefService& prefs) {
   // Checking only kSafeBrowsingEnabled since there is no extension API
   // that can control the kSafeBrowsingEnhanced protection pref.
   return prefs.FindPreference(prefs::kSafeBrowsingEnabled)
-             ->IsExtensionControlled();
+      ->IsExtensionControlled();
 }
 
 bool AreHashPrefixRealTimeLookupsAllowedByPolicy(const PrefService& prefs) {
@@ -235,9 +236,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingSurveysEnabled, true);
   registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanningEnabled, true);
-  registry->RegisterBooleanPref(prefs::kSafeBrowsingDeepScanPromptSeen, false);
-  registry->RegisterTimePref(prefs::kSafeBrowsingEsbEnabledTimestamp,
-                             base::Time());
+  registry->RegisterBooleanPref(
+      prefs::kSafeBrowsingEsbOptInWithFriendlierSettings, false);
 }
 
 const base::Value::Dict& GetExtensionTelemetryConfig(const PrefService& prefs) {
@@ -370,19 +370,22 @@ void CanonicalizeDomainList(
     url::CanonHostInfo host_info;
     std::string canonical_host =
         net::CanonicalizeHost(value.GetString(), &host_info);
-    if (!canonical_host.empty())
+    if (!canonical_host.empty()) {
       out_canonicalized_domain_list->push_back(canonical_host);
+    }
   }
 }
 
 bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
-  if (!pref.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains))
+  if (!pref.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains)) {
     return false;
+  }
   const base::Value::List& allowlist =
       pref.GetList(prefs::kSafeBrowsingAllowlistDomains);
   for (const base::Value& value : allowlist) {
-    if (url.DomainIs(value.GetString()))
+    if (url.DomainIs(value.GetString())) {
       return true;
+    }
   }
   return false;
 }
@@ -400,8 +403,9 @@ std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service) {
 bool MatchesEnterpriseAllowlist(const PrefService& pref,
                                 const std::vector<GURL>& url_chain) {
   for (const GURL& url : url_chain) {
-    if (IsURLAllowlistedByPolicy(url, pref))
+    if (IsURLAllowlistedByPolicy(url, pref)) {
       return true;
+    }
   }
   return false;
 }
@@ -414,15 +418,17 @@ void GetPasswordProtectionLoginURLsPref(const PrefService& prefs,
   for (const base::Value& value : pref_value) {
     GURL login_url(value.GetString());
     // Skip invalid or none-http/https login URLs.
-    if (login_url.is_valid() && login_url.SchemeIsHTTPOrHTTPS())
+    if (login_url.is_valid() && login_url.SchemeIsHTTPOrHTTPS()) {
       out_login_url_list->push_back(login_url);
+    }
   }
 }
 
 bool MatchesPasswordProtectionLoginURL(const GURL& url,
                                        const PrefService& prefs) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   std::vector<GURL> login_urls;
   GetPasswordProtectionLoginURLsPref(prefs, &login_urls);
@@ -430,8 +436,9 @@ bool MatchesPasswordProtectionLoginURL(const GURL& url,
 }
 
 bool MatchesURLList(const GURL& target_url, const std::vector<GURL> url_list) {
-  if (url_list.empty() || !target_url.is_valid())
+  if (url_list.empty() || !target_url.is_valid()) {
     return false;
+  }
   GURL simple_target_url = GetSimplifiedURL(target_url);
   for (const GURL& url : url_list) {
     if (GetSimplifiedURL(url) == simple_target_url) {
@@ -442,8 +449,9 @@ bool MatchesURLList(const GURL& target_url, const std::vector<GURL> url_list) {
 }
 
 GURL GetPasswordProtectionChangePasswordURLPref(const PrefService& prefs) {
-  if (!prefs.HasPrefPath(prefs::kPasswordProtectionChangePasswordURL))
+  if (!prefs.HasPrefPath(prefs::kPasswordProtectionChangePasswordURL)) {
     return GURL();
+  }
   GURL change_password_url_from_pref(
       prefs.GetString(prefs::kPasswordProtectionChangePasswordURL));
   // Skip invalid or non-http/https URL.
@@ -457,12 +465,14 @@ GURL GetPasswordProtectionChangePasswordURLPref(const PrefService& prefs) {
 
 bool MatchesPasswordProtectionChangePasswordURL(const GURL& url,
                                                 const PrefService& prefs) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   GURL change_password_url = GetPasswordProtectionChangePasswordURLPref(prefs);
-  if (change_password_url.is_empty())
+  if (change_password_url.is_empty()) {
     return false;
+  }
 
   return GetSimplifiedURL(change_password_url) == GetSimplifiedURL(url);
 }

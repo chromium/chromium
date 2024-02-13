@@ -3709,7 +3709,9 @@ void TestRunner::FinishTest(WebFrameTestProxy& source) {
         DCHECK_GT(actual.info().height(), 0);
 
         base::MD5Digest digest;
-        base::MD5Sum(actual.getPixels(), actual.computeByteSize(), &digest);
+        auto bytes = base::span(static_cast<const uint8_t*>(actual.getPixels()),
+                                actual.computeByteSize());
+        base::MD5Sum(bytes, &digest);
         dump_result->actual_pixel_hash = base::MD5DigestToBase16(digest);
 
         if (dump_result->actual_pixel_hash != test_config_.expected_pixel_hash)

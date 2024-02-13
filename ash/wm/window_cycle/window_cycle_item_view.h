@@ -30,9 +30,9 @@ class WindowCycleController;
 // This view represents a single aura::Window by displaying a title and a
 // thumbnail of the window's contents.
 class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
- public:
-  METADATA_HEADER(WindowCycleItemView);
+  METADATA_HEADER(WindowCycleItemView, WindowMiniView)
 
+ public:
   explicit WindowCycleItemView(aura::Window* window);
   WindowCycleItemView(const WindowCycleItemView&) = delete;
   WindowCycleItemView& operator=(const WindowCycleItemView&) = delete;
@@ -60,9 +60,9 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
 // Container view used to host multiple `WindowCycleItemView`s and be the focus
 // target for window groups while tabbing in window cycle view.
 class GroupContainerCycleView : public WindowMiniViewBase {
- public:
-  METADATA_HEADER(GroupContainerCycleView);
+  METADATA_HEADER(GroupContainerCycleView, WindowMiniViewBase)
 
+ public:
   explicit GroupContainerCycleView(SnapGroup* snap_group);
   GroupContainerCycleView(const GroupContainerCycleView&) = delete;
   GroupContainerCycleView& operator=(const GroupContainerCycleView&) = delete;

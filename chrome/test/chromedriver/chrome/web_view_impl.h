@@ -59,7 +59,7 @@ class WebViewImpl : public WebView {
   bool IsServiceWorker() const override;
   std::string GetId() override;
   bool WasCrashed() override;
-  Status AttachTo(DevToolsClient* parent);
+  Status AttachTo(DevToolsClient* root_client);
   Status AttachChildView(WebViewImpl* child);
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,
                            const Timeout& timeout) override;
@@ -89,7 +89,7 @@ class WebViewImpl : public WebView {
                                  const std::string& function,
                                  const base::Value::List& args,
                                  const base::TimeDelta& timeout,
-                                 std::unique_ptr<base::Value>* result);
+                                 std::unique_ptr<base::Value>* result) override;
   Status CallFunction(const std::string& frame,
                       const std::string& function,
                       const base::Value::List& args,
@@ -110,16 +110,16 @@ class WebViewImpl : public WebView {
                             std::string* out_frame) override;
   Status DispatchMouseEvents(const std::vector<MouseEvent>& events,
                              const std::string& frame,
-                             bool async_dispatch_events = false) override;
+                             bool async_dispatch_events) override;
   Status DispatchTouchEvent(const TouchEvent& event,
-                            bool async_dispatch_events = false) override;
+                            bool async_dispatch_events) override;
   Status DispatchTouchEvents(const std::vector<TouchEvent>& events,
-                             bool async_dispatch_events = false) override;
+                             bool async_dispatch_events) override;
   Status DispatchTouchEventWithMultiPoints(
       const std::vector<TouchEvent>& events,
-      bool async_dispatch_events = false) override;
+      bool async_dispatch_events) override;
   Status DispatchKeyEvents(const std::vector<KeyEvent>& events,
-                           bool async_dispatch_events = false) override;
+                           bool async_dispatch_events) override;
   Status GetCookies(base::Value* cookies,
                     const std::string& current_page_url) override;
   Status DeleteCookie(const std::string& name,
@@ -181,7 +181,7 @@ class WebViewImpl : public WebView {
   void Unlock();
   bool IsLocked() const;
   void SetDetached();
-  bool IsDetached() const;
+  bool IsDetached() const override;
 
  protected:
   WebViewImpl(const std::string& id,
@@ -191,7 +191,7 @@ class WebViewImpl : public WebView {
               std::unique_ptr<DevToolsClient> client);
 
  private:
-  WebViewImpl* GetTargetForFrame(const std::string& frame);
+  WebView* GetTargetForFrame(const std::string& frame);
   Status GetLoaderId(const std::string& frame_id,
                      const Timeout& timeout,
                      std::string& loader_id);
@@ -242,6 +242,9 @@ class WebViewImpl : public WebView {
   Status DispatchTouchEventsForMouseEvents(
       const std::vector<MouseEvent>& events,
       const std::string& frame);
+
+  std::unique_ptr<PageLoadStrategy> CreatePageLoadStrategy(
+      const std::string& strategy);
 
   std::string id_;
   bool w3c_compliant_;

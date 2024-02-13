@@ -86,9 +86,11 @@ class ExpireHistoryBackend {
   // Deletes everything associated with each URL in the list until `end_time`.
   void DeleteURLs(const std::vector<GURL>& url, base::Time end_time);
 
-  // Removes all visits to restrict_urls (or all URLs if empty) in the given
+  // Removes all visits to restrict_urls (or all URLs if empty) and
+  // restrict_app_id (or all entries if absent) in the given
   // time range, updating the URLs accordingly.
   void ExpireHistoryBetween(const std::set<GURL>& restrict_urls,
+                            absl::optional<std::string> restrict_app_id,
                             base::Time begin_time,
                             base::Time end_time,
                             bool user_initiated);

@@ -26,14 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AppsPageDragSource">
-  <int value="0" label="Same apps pane"/>
-  <int value="1" label="Different apps pane"/>
-  <int value="2" label="Most visited pane"/>
-  <int value="3" label="Bookmarks pane"/>
-  <int value="4" label="Outside of NTP (e.g. bookmarks bar)"/>
-</enum>
-
 <enum name="BooleanFromHTTPCache">
   <int value="0" label="Downloaded from network"/>
   <int value="1" label="HTTP cache hit"/>
@@ -239,6 +231,9 @@ chromium-metrics-reviews@google.com.
 <enum name="NTPChromeWebStoreOpen">
   <int value="0" label="Appearance section"/>
   <int value="1" label="Theme collections page"/>
+  <int value="2" label="'Writing essentials' collection page"/>
+  <int value="3" label="'Workflow and Planning' category page"/>
+  <int value="4" label="'Shopping' category page"/>
 </enum>
 
 <enum name="NTPCollectionId">

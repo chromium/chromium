@@ -7,21 +7,22 @@
  * it into a Macro.
  */
 
-import {InputController} from '../input_controller.js';
+import {InputController} from '/common/action_fulfillment/input_controller.js';
+import {DeletePrevSentMacro} from '/common/action_fulfillment/macros/delete_prev_sent_macro.js';
+import {InputTextViewMacro, NewLineMacro} from '/common/action_fulfillment/macros/input_text_view_macro.js';
+import {Macro} from '/common/action_fulfillment/macros/macro.js';
+import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
+import {NavNextSentMacro, NavPrevSentMacro} from '/common/action_fulfillment/macros/nav_sent_macro.js';
+import {RepeatMacro} from '/common/action_fulfillment/macros/repeat_macro.js';
+import * as RepeatableKeyPress from '/common/action_fulfillment/macros/repeatable_key_press_macro.js';
+import {SmartDeletePhraseMacro} from '/common/action_fulfillment/macros/smart_delete_phrase_macro.js';
+import {SmartInsertBeforeMacro} from '/common/action_fulfillment/macros/smart_insert_before_macro.js';
+import {SmartReplacePhraseMacro} from '/common/action_fulfillment/macros/smart_replace_phrase_macro.js';
+import {SmartSelectBetweenMacro} from '/common/action_fulfillment/macros/smart_select_between_macro.js';
+import {ToggleDictationMacro} from '/common/action_fulfillment/macros/toggle_dictation_macro.js';
+
 import {LocaleInfo} from '../locale_info.js';
-import {DeletePrevSentMacro} from '../macros/delete_prev_sent_macro.js';
-import {InputTextViewMacro, NewLineMacro} from '../macros/input_text_view_macro.js';
 import {ListCommandsMacro} from '../macros/list_commands_macro.js';
-import {Macro} from '../macros/macro.js';
-import {MacroName} from '../macros/macro_names.js';
-import {NavNextSentMacro, NavPrevSentMacro} from '../macros/nav_sent_macro.js';
-import {RepeatMacro} from '../macros/repeat_macro.js';
-import * as RepeatableKeyPress from '../macros/repeatable_key_press_macro.js';
-import {SmartDeletePhraseMacro} from '../macros/smart_delete_phrase_macro.js';
-import {SmartInsertBeforeMacro} from '../macros/smart_insert_before_macro.js';
-import {SmartReplacePhraseMacro} from '../macros/smart_replace_phrase_macro.js';
-import {SmartSelectBetweenMacro} from '../macros/smart_select_between_macro.js';
-import {StopListeningMacro} from '../macros/stop_listening_macro.js';
 
 import {ParseStrategy} from './parse_strategy.js';
 
@@ -213,9 +214,9 @@ class SimpleMacroFactory {
       },
       [MacroName.NEW_LINE]:
           {messageId: 'dictation_command_new_line', build: NewLineMacro},
-      [MacroName.STOP_LISTENING]: {
+      [MacroName.TOGGLE_DICTATION]: {
         messageId: 'dictation_command_stop_listening',
-        build: StopListeningMacro,
+        build: ToggleDictationMacro,
       },
       [MacroName.DELETE_PREV_WORD]: {
         messageId: 'dictation_command_delete_prev_word',
@@ -300,7 +301,7 @@ export class SimpleParseStrategy extends ParseStrategy {
         .add(MacroName.UNSELECT_TEXT)
         .add(MacroName.LIST_COMMANDS)
         .add(MacroName.NEW_LINE)
-        .add(MacroName.STOP_LISTENING)
+        .add(MacroName.TOGGLE_DICTATION)
         .add(MacroName.DELETE_PREV_WORD)
         .add(MacroName.DELETE_PREV_SENT)
         .add(MacroName.NAV_NEXT_WORD)

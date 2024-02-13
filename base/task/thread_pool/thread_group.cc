@@ -183,16 +183,13 @@ void ThreadGroup::StartImpl(
       thread_type_hint_ != ThreadType::kBackground
           ? kForegroundBlockedWorkersPoll
           : kBackgroundBlockedWorkersPoll;
-  in_start().ensure_enough_workers_at_end_of_get_work =
-      base::FeatureList::IsEnabled(kUseNewJobImplementation);
   in_start().max_num_workers_created = base::kMaxNumWorkersCreated.Get();
 
   CheckedAutoLock auto_lock(lock_);
 
   max_tasks_ = max_tasks;
   DCHECK_GE(max_tasks_, 1U);
-  in_start().initial_max_tasks = max_tasks_;
-  DCHECK_LE(in_start().initial_max_tasks, kMaxNumberOfWorkers);
+  in_start().initial_max_tasks = std::min(max_tasks_, kMaxNumberOfWorkers);
   max_best_effort_tasks_ = max_best_effort_tasks;
   in_start().suggested_reclaim_time = suggested_reclaim_time;
   in_start().worker_environment = worker_environment;

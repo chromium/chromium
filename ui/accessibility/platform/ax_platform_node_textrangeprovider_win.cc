@@ -187,7 +187,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::CompareEndpoints(
           ? other_provider->start()
           : other_provider->end();
 
-  absl::optional<int> comparison =
+  std::optional<int> comparison =
       this_provider_endpoint->CompareTo(*other_provider_endpoint);
   if (!comparison)
     return UIA_E_INVALIDOPERATION;
@@ -594,7 +594,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     DCHECK(common_anchor);
 
     HRESULT hr = common_anchor->GetTextAttributeValue(
-        attribute_id, absl::nullopt, absl::nullopt, &attribute_value);
+        attribute_id, std::nullopt, std::nullopt, &attribute_value);
 
     if (FAILED(hr))
       return E_FAIL;
@@ -642,13 +642,13 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
     const bool at_end_leaf_text_anchor =
         it->anchor_id() == end_leaf_text_position->anchor_id() &&
         it->tree_id() == end_leaf_text_position->tree_id();
-    const absl::optional<int> start_offset =
-        it->IsTextPosition() ? absl::make_optional(it->text_offset())
-                             : absl::nullopt;
-    const absl::optional<int> end_offset =
+    const std::optional<int> start_offset =
+        it->IsTextPosition() ? std::make_optional(it->text_offset())
+                             : std::nullopt;
+    const std::optional<int> end_offset =
         at_end_leaf_text_anchor
-            ? absl::make_optional(end_leaf_text_position->text_offset())
-            : absl::nullopt;
+            ? std::make_optional(end_leaf_text_position->text_offset())
+            : std::nullopt;
     HRESULT hr = platform_node->GetTextAttributeValue(
         attribute_id, start_offset, end_offset, &current_value);
     if (FAILED(hr))
@@ -894,7 +894,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByUnitImpl(
 
   // If the start was moved past the end, create a degenerate range with the end
   // equal to the start; do the equivalent if the end moved past the start.
-  absl::optional<int> endpoint_comparison =
+  std::optional<int> endpoint_comparison =
       AXNodeRange::CompareEndpoints(start().get(), end().get());
   DCHECK(endpoint_comparison.has_value());
 
@@ -2160,7 +2160,7 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
     } else {
       SetStart(AXNodePosition::CreateNullPosition());
     }
-    validation_necessary_for_start_ = absl::nullopt;
+    validation_necessary_for_start_ = std::nullopt;
   }
 
   if (validation_necessary_for_end_.has_value() &&
@@ -2170,7 +2170,7 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
     } else {
       SetEnd(AXNodePosition::CreateNullPosition());
     }
-    validation_necessary_for_end_ = absl::nullopt;
+    validation_necessary_for_end_ = std::nullopt;
   }
 }
 

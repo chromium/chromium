@@ -88,7 +88,7 @@ void HistoryQuickProvider::DoAutocomplete() {
   // In keyword mode, it's possible we only provide results from one or two
   // autocomplete provider(s), so it's sometimes necessary to show more results
   // than provider_max_matches_.
-  size_t max_matches = InKeywordMode(autocomplete_input_)
+  size_t max_matches = autocomplete_input_.InKeywordMode()
                            ? provider_max_matches_in_keyword_mode_
                            : provider_max_matches_;
 
@@ -130,8 +130,9 @@ void HistoryQuickProvider::DoAutocomplete() {
   // `provider_max_matches_`.
 
   // In keyword mode, already have enough matches.
-  if (InKeywordMode(autocomplete_input_))
+  if (autocomplete_input_.InKeywordMode()) {
     return;
+  }
 
   static const size_t domain_suggestions_min_char =
       OmniboxFieldTrial::kDomainSuggestionsMinInputLength.Get();
@@ -361,7 +362,7 @@ AutocompleteMatch HistoryQuickProvider::QuickMatchToACMatch(
     match.transition = ui::PAGE_TRANSITION_KEYWORD;
   }
 
-  if (InKeywordMode(autocomplete_input_)) {
+  if (autocomplete_input_.InKeywordMode()) {
     match.from_keyword = true;
   }
 

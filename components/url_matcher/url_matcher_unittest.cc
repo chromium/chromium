@@ -67,6 +67,69 @@ TEST(URLMatcherPortFilter, TestMatching) {
   EXPECT_FALSE(filter.IsMatch(GURL("https://www.example.com")));
 }
 
+namespace {
+void CreateAndAddCidrBlock(
+    const std::string& cidr_block,
+    std::vector<URLMatcherCidrBlockFilter::CidrBlock>& blocks) {
+  const auto& block = URLMatcherCidrBlockFilter::CreateCidrBlock(cidr_block);
+  ASSERT_TRUE(block.has_value());
+  blocks.push_back(std::move(*block));
+}
+}  // namespace
+
+TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv4) {
+  std::vector<URLMatcherCidrBlockFilter::CidrBlock> blocks;
+  // 127.0.0.1/10 is equal to 127.0.0.1-127.63.255.255
+  CreateAndAddCidrBlock("127.0.0.1/10", blocks);
+  // 129.0.0.1/32 is equal to 129.0.0.1
+  CreateAndAddCidrBlock("129.0.0.1/32", blocks);
+  ASSERT_EQ(blocks.size(), 2u);
+
+  URLMatcherCidrBlockFilter filter(blocks);
+  EXPECT_TRUE(filter.IsMatch(GURL("http://129.0.0.1/test.html")));
+  EXPECT_TRUE(filter.IsMatch(GURL("http://129.0.0.1:80/test.html")));
+  EXPECT_TRUE(filter.IsMatch(GURL("http://127.0.0.1:81/test.html")));
+  EXPECT_TRUE(filter.IsMatch(GURL("http://127.63.255.255:90/test.html")));
+  EXPECT_TRUE(filter.IsMatch(GURL("http://127.63.0.255/test.html")));
+  EXPECT_FALSE(filter.IsMatch(GURL("http://129.0.0.2:79/test.html")));
+  EXPECT_FALSE(filter.IsMatch(GURL("http://127.64.255.255:91/test.html")));
+  EXPECT_FALSE(filter.IsMatch(GURL("http://127.64.255.255/test.html")));
+  // Test that an IPv4 mapped IPv6 literal matches an IPv4 CIDR rule.
+  EXPECT_TRUE(filter.IsMatch(GURL("http://[::ffff:127.63.0.255]/test.html")));
+}
+
+TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv6) {
+  std::vector<URLMatcherCidrBlockFilter::CidrBlock> blocks;
+  CreateAndAddCidrBlock("a:b:c:d::/48", blocks);
+  // This is the IPv4 mapped equivalent to 192.168.1.1/16.
+  CreateAndAddCidrBlock("::ffff:192.168.1.1/112", blocks);
+  ASSERT_EQ(blocks.size(), 2u);
+
+  URLMatcherCidrBlockFilter filter(blocks);
+  EXPECT_TRUE(filter.IsMatch(GURL("http://[A:b:C:9::]/test.html")));
+  EXPECT_FALSE(filter.IsMatch(GURL("http://foobar.com/test.html")));
+  EXPECT_FALSE(filter.IsMatch(GURL("http://192.169.1.1/test.html")));
+
+  // Test that an IPv4 literal matches an IPv4 mapped IPv6 CIDR rule.
+  EXPECT_TRUE(filter.IsMatch(GURL("http://[::ffff:192.168.1.3]/test.html")));
+  EXPECT_TRUE(filter.IsMatch(GURL("http://192.168.11.11/test.html")));
+  EXPECT_FALSE(filter.IsMatch(GURL("http://10.10.1.1/test.html")));
+
+  // Test using an IP range that is close to IPv4 mapped, but not
+  // quite. Should not result in matches.
+  blocks.clear();
+  CreateAndAddCidrBlock("::fffe:192.168.1.1/112", blocks);
+  ASSERT_EQ(blocks.size(), 1u);
+
+  URLMatcherCidrBlockFilter close_filter(blocks);
+  EXPECT_TRUE(
+      close_filter.IsMatch(GURL("http://[::fffe:192.168.1.3]/test.html")));
+  EXPECT_FALSE(
+      close_filter.IsMatch(GURL("http://[::ffff:192.168.1.3]/test.html")));
+  EXPECT_FALSE(close_filter.IsMatch(GURL("http://192.168.11.11/test.html")));
+  EXPECT_FALSE(close_filter.IsMatch(GURL("http://10.10.1.1/test.html")));
+}
+
 TEST(URLMatcherConditionTest, IsFullURLCondition) {
   MatcherStringPattern pattern("example.com", 1);
   EXPECT_FALSE(URLMatcherCondition(URLMatcherCondition::HOST_SUFFIX, &pattern)
@@ -501,12 +564,14 @@ TEST(URLMatcherConditionSetTest, Matching) {
   scoped_refptr<URLMatcherConditionSet> condition_set2(
       new URLMatcherConditionSet(
           1, conditions, std::make_unique<URLMatcherSchemeFilter>("https"),
-          std::unique_ptr<URLMatcherPortFilter>()));
+          std::unique_ptr<URLMatcherPortFilter>(),
+          std::unique_ptr<URLMatcherCidrBlockFilter>()));
   EXPECT_FALSE(condition_set2->IsMatch(matching_patterns, url1));
   scoped_refptr<URLMatcherConditionSet> condition_set3(
       new URLMatcherConditionSet(
           1, conditions, std::make_unique<URLMatcherSchemeFilter>("http"),
-          std::unique_ptr<URLMatcherPortFilter>()));
+          std::unique_ptr<URLMatcherPortFilter>(),
+          std::unique_ptr<URLMatcherCidrBlockFilter>()));
   EXPECT_TRUE(condition_set3->IsMatch(matching_patterns, url1));
 
   // Test port filters.
@@ -515,9 +580,9 @@ TEST(URLMatcherConditionSetTest, Matching) {
   std::unique_ptr<URLMatcherPortFilter> filter(
       new URLMatcherPortFilter(ranges));
   scoped_refptr<URLMatcherConditionSet> condition_set4(
-      new URLMatcherConditionSet(1, conditions,
-                                 std::unique_ptr<URLMatcherSchemeFilter>(),
-                                 std::move(filter)));
+      new URLMatcherConditionSet(
+          1, conditions, std::unique_ptr<URLMatcherSchemeFilter>(),
+          std::move(filter), std::unique_ptr<URLMatcherCidrBlockFilter>()));
   EXPECT_TRUE(condition_set4->IsMatch(matching_patterns, url1));
   EXPECT_TRUE(condition_set4->IsMatch(matching_patterns, url3));
   EXPECT_FALSE(condition_set4->IsMatch(matching_patterns, url4));

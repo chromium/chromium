@@ -23,7 +23,6 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-class WaitForNetworkCallbackHelper;
 class SessionBindingHelper;
 
 class BoundSessionRefreshCookieFetcherImpl
@@ -32,10 +31,10 @@ class BoundSessionRefreshCookieFetcherImpl
  public:
   BoundSessionRefreshCookieFetcherImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      WaitForNetworkCallbackHelper& wait_for_network_callback_helper,
       SessionBindingHelper& session_binding_helper,
       const GURL& cookie_url,
-      base::flat_set<std::string> cookie_names);
+      base::flat_set<std::string> cookie_names,
+      bool is_off_the_record_profile);
   ~BoundSessionRefreshCookieFetcherImpl() override;
 
   // BoundSessionRefreshCookieFetcher:
@@ -83,13 +82,16 @@ class BoundSessionRefreshCookieFetcherImpl
                  observer) override;
 
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ref<WaitForNetworkCallbackHelper> wait_for_network_callback_helper_;
   const raw_ref<SessionBindingHelper> session_binding_helper_;
 
   // Used to check whether the refresh request has set the required cookie.
   // Otherwise, the request is considered a failure.
   const GURL expected_cookie_domain_;
   const base::flat_set<std::string> expected_cookie_names_;
+
+  // Required to attach X-Client-Data header to cookie rotation request for
+  // GWS-visible Finch experiment.
+  const bool is_off_the_record_profile_;
 
   RefreshCookieCompleteCallback callback_;
 

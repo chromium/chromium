@@ -12,8 +12,9 @@ namespace network {
 SharedDictionaryInMemory::SharedDictionaryInMemory(
     scoped_refptr<net::IOBuffer> data,
     size_t size,
-    const net::SHA256HashValue& sha256)
-    : data_(std::move(data)), size_(size), sha256_(sha256) {}
+    const net::SHA256HashValue& sha256,
+    const std::string& id)
+    : data_(std::move(data)), size_(size), sha256_(sha256), id_(id) {}
 
 SharedDictionaryInMemory::~SharedDictionaryInMemory() = default;
 
@@ -37,6 +38,10 @@ size_t SharedDictionaryInMemory::size() const {
 
 const net::SHA256HashValue& SharedDictionaryInMemory::hash() const {
   return sha256_;
+}
+
+const std::string& SharedDictionaryInMemory::id() const {
+  return id_;
 }
 
 }  // namespace network

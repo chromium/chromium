@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/register_payload_file_request.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
@@ -54,6 +55,11 @@ class FakeSecureChannelConnection : public SecureChannel {
   void ChangeStatus(const Status& new_status);
   void ReceiveMessage(const std::string& feature, const std::string& payload);
   void CompleteSendingMessage(int sequence_number);
+  void ChangeNearbyConnectionState(
+      mojom::NearbyConnectionStep nearby_connection_step,
+      mojom::NearbyConnectionStepResult result);
+  void ChangeSecureChannelAuthenticationState(
+      mojom::SecureChannelState secure_channel_authentication_state);
 
   std::vector<raw_ptr<Observer, VectorExperimental>> observers() {
     return observers_;

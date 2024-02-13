@@ -123,23 +123,37 @@ class Callspec(object):
       if parameter['name'] in self.comment:
         parameter['description'] = self.comment[parameter['name']]
       parameters.append(parameter)
-    # All functions with an asynchronous return are defined with a trailing
-    # callback in their parameters. For promise supporting functions, pull off
-    # the callback and put it into the separate returns async field.
+    # At the moment all functions in IDL with an asynchronous return are defined
+    # with a trailing callback in their parameters, but in our schema model we
+    # represent this with a separate returns 'async_field'. If there is a
+    # trailing callback, pop it off into the returns asyc property.
     # Note: We only do this for interface types of 'Functions' and 'Properties',
-    # not for 'Events' and callback definitions which have function parameters
-    # that can be called multiple times.
+    # not for 'Events' and IDL callback definitions (specified by the
+    # |use_returns_async parameter|) or for Function definitions with trailing
+    # callbacks which are not asynchronous returns (specified by the
+    # trailingCallbackIsFunctionParameter extended attribute).
+    # TODO(tjudkins): Once IDL definitions are changed to describe returning
+    # promises, we can condition on that instead.
     if (
         use_returns_async
+        and not self.node.GetProperty('trailingCallbackIsFunctionParameter')
         and len(parameters) > 0
         and parameters[-1].get('type') == 'function'
     ):
-      supports_promises = not self.node.GetProperty('doesNotSupportPromises')
-      if supports_promises:
-        returns_async = parameters.pop()
-        # The returns_async field is inherently a function, so doesn't need type
-        # specified on it.
-        returns_async.pop('type')
+      returns_async = parameters.pop()
+      # The returns_async field is inherently a function, so doesn't need type
+      # specified on it.
+      returns_async.pop('type')
+      does_not_support_promises = self.node.GetProperty(
+          'doesNotSupportPromises'
+      )
+      if does_not_support_promises is not None:
+        returns_async['does_not_support_promises'] = does_not_support_promises
+      else:
+        assert return_type is None, (
+            'Function "%s" cannot support promises and also have a '
+            'return value.' % self.node.GetName()
+        )
     else:
       assert not self.node.GetProperty('doesNotSupportPromises'), (
           'Callspec "%s" does not need to specify [doesNotSupportPromises] if '
@@ -263,9 +277,6 @@ class Member(object):
           if return_type is not None:
             properties['returns'] = return_type
           if returns_async is not None:
-            assert return_type is None, (
-                'Function "%s" cannot support promises and also have a '
-                'return value.' % name)
             properties['returns_async'] = returns_async
 
     properties['name'] = name
@@ -502,8 +513,8 @@ class Namespace(object):
     members = []
     # Callspec definitions for Functions and Properties with an asynchronous
     # return are defined with a trailing callback, but during parsing we move
-    # the details to a returns_async field. We need to pass this info along so
-    # we don't do this for Event definitions or callback definitions themselves.
+    # the details to a returns_async field. We only want to do this for Function
+    # and Property definitions, not for Event or IDL callback definitions.
     # TODO(tjudkins): Once IDL definitions are changed to describe returning
     # promises, we can condition on that rather than this special casing here.
     use_returns_async = node.GetName() in ['Functions', 'Properties']

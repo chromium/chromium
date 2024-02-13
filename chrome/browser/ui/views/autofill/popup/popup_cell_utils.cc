@@ -25,7 +25,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/style/typography.h"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/resources/vector_icons.h"
 #endif
@@ -518,19 +520,31 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
   int non_primary_text_style = ShouldApplyNewAutofillPopupStyle()
                                    ? views::style::TextStyle::STYLE_BODY_3
                                    : views::style::TextStyle::STYLE_PRIMARY;
-  return std::make_unique<views::Label>(
+  auto label = std::make_unique<views::Label>(
       main_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
       main_text.is_primary ? primary_text_style : non_primary_text_style);
+
+  if (!main_text.is_primary && ShouldApplyNewAutofillPopupStyle()) {
+    label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+  }
+
+  return label;
 }
 
 // Creates a label for the suggestion's minor text.
 std::unique_ptr<views::Label> CreateMinorTextLabel(
     const Suggestion::Text& minor_text) {
-  return minor_text.value.empty()
-             ? nullptr
-             : std::make_unique<views::Label>(
-                   minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-                   GetSecondaryTextStyle());
+  if (minor_text.value.empty()) {
+    return nullptr;
+  }
+
+  auto label = std::make_unique<views::Label>(
+      minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
+      GetSecondaryTextStyle());
+  if (ShouldApplyNewAutofillPopupStyle()) {
+    label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+  }
+  return label;
 }
 
 int GetMaxPopupAddressProfileWidth() {
@@ -572,6 +586,9 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
               label_text.value,
               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
               text_style ? *text_style : GetSecondaryTextStyle()));
+      if (ShouldApplyNewAutofillPopupStyle()) {
+        label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+      }
       content_view.TrackLabel(label);
       // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
       if (!base::FeatureList::IsEnabled(

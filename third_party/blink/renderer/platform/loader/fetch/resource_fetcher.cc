@@ -46,6 +46,7 @@
 #include "services/network/public/cpp/request_mode.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
@@ -517,26 +518,49 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
   }
 
   // LCP Critical Path Predictor identified resources get a priority boost.
-  if ((is_potentially_lcp_element || is_potentially_lcp_influencer) &&
-      !features::kLCPCriticalPathPredictorDryRun.Get()) {
+  if (LcppEnabled()) {
+    bool should_modify_request_priority = false;
     features::LcppResourceLoadPriority preferred_priority =
-        is_potentially_lcp_element
-            ? features::kLCPCriticalPathPredictorImageLoadPriority.Get()
-            : features::kLCPCriticalPathPredictorInfluencerScriptLoadPriority
-                  .Get();
+        features::LcppResourceLoadPriority::kMedium;
 
-    ++potentially_lcp_resource_priority_boosts_;
+    if (is_potentially_lcp_element) {
+      // Adjust priority of LCP image request.
+      if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
+          !features::kLCPCriticalPathPredictorDryRun.Get()) {
+        should_modify_request_priority = true;
+        preferred_priority =
+            features::kLCPCriticalPathPredictorImageLoadPriority.Get();
+      }
 
-    switch (preferred_priority) {
-      case features::LcppResourceLoadPriority::kMedium:
-        priority = std::max(priority, ResourceLoadPriority::kMedium);
-        break;
-      case features::LcppResourceLoadPriority::kHigh:
-        priority = std::max(priority, ResourceLoadPriority::kHigh);
-        break;
-      case features::LcppResourceLoadPriority::kVeryHigh:
-        priority = std::max(priority, ResourceLoadPriority::kVeryHigh);
-        break;
+      if (base::FeatureList::IsEnabled(features::kLCPScriptObserver) &&
+          features::kLCPScriptObserverAdjustImageLoadPriority.Get()) {
+        should_modify_request_priority = true;
+        preferred_priority =
+            features::kLCPScriptObserverImageLoadPriority.Get();
+      }
+    }
+
+    if (is_potentially_lcp_influencer &&
+        base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+      // Adjust priority of LCP influencing script request.
+      should_modify_request_priority = true;
+      preferred_priority = features::kLCPScriptObserverScriptLoadPriority.Get();
+    }
+
+    if (should_modify_request_priority) {
+      ++potentially_lcp_resource_priority_boosts_;
+
+      switch (preferred_priority) {
+        case features::LcppResourceLoadPriority::kMedium:
+          priority = std::max(priority, ResourceLoadPriority::kMedium);
+          break;
+        case features::LcppResourceLoadPriority::kHigh:
+          priority = std::max(priority, ResourceLoadPriority::kHigh);
+          break;
+        case features::LcppResourceLoadPriority::kVeryHigh:
+          priority = std::max(priority, ResourceLoadPriority::kVeryHigh);
+          break;
+      }
     }
   }
 

@@ -12,6 +12,8 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/wire_message.h"
 
@@ -64,6 +66,7 @@ SecureChannel::PendingMessage::~PendingMessage() {}
 SecureChannel::SecureChannel(std::unique_ptr<Connection> connection)
     : status_(Status::DISCONNECTED), connection_(std::move(connection)) {
   connection_->AddObserver(this);
+  connection_->AddNearbyConnectionObserver(this);
 }
 
 SecureChannel::~SecureChannel() {
@@ -237,6 +240,22 @@ void SecureChannel::OnSendCompleted(const Connection& connection,
   Disconnect();
 }
 
+void SecureChannel::OnNearbyConnectionStateChagned(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  for (auto& observer : observer_list_) {
+    observer.OnNearbyConnectionStateChanged(this, step, result);
+  }
+}
+
+void SecureChannel::OnAuthenticationStateChanged(
+    mojom::SecureChannelState secure_channel_state) {
+  for (auto& observer : observer_list_) {
+    observer.OnSecureChannelAuthenticationStateChanged(this,
+                                                       secure_channel_state);
+  }
+}
+
 void SecureChannel::TransitionToStatus(const Status& new_status) {
   if (new_status == status_) {
     // Only report changes to state.
@@ -257,6 +276,7 @@ void SecureChannel::Authenticate() {
   authenticator_ = DeviceToDeviceAuthenticator::Factory::Create(
       connection_.get(),
       multidevice::SecureMessageDelegateImpl::Factory::Create());
+  authenticator_->AddObserver(this);
   authenticator_->Authenticate(base::BindOnce(
       &SecureChannel::OnAuthenticationResult, weak_ptr_factory_.GetWeakPtr()));
 
@@ -312,6 +332,7 @@ void SecureChannel::OnAuthenticationResult(
   DCHECK(status_ == Status::AUTHENTICATING);
 
   // The authenticator is no longer needed, so release it.
+  authenticator_->RemoveObserver(this);
   authenticator_.reset();
 
   if (result != Authenticator::Result::SUCCESS) {

@@ -37,7 +37,7 @@ base::CallbackListSubscription AccentColorObserver::Subscribe(
 }
 
 void AccentColorObserver::SetAccentColorForTesting(
-    absl::optional<SkColor> accent_color) {
+    std::optional<SkColor> accent_color) {
   accent_color_ = accent_color;
   callbacks_.Notify();
 }
@@ -49,7 +49,7 @@ void AccentColorObserver::SetUseDwmFrameColorForTesting(
 }
 
 void AccentColorObserver::OnDwmKeyUpdated() {
-  accent_border_color_ = absl::nullopt;
+  accent_border_color_ = std::nullopt;
   DWORD colorization_color, colorization_color_balance;
   if ((dwm_key_->ReadValueDW(L"ColorizationColor", &colorization_color) ==
        ERROR_SUCCESS) &&
@@ -76,8 +76,8 @@ void AccentColorObserver::OnDwmKeyUpdated() {
                                 colorization_color_balance / 100.0f);
   }
 
-  accent_color_ = absl::nullopt;
-  accent_color_inactive_ = absl::nullopt;
+  accent_color_ = std::nullopt;
+  accent_color_inactive_ = std::nullopt;
   DWORD accent_color = 0;
   if (dwm_key_->ReadValueDW(L"AccentColor", &accent_color) == ERROR_SUCCESS) {
     accent_color_ = skia::COLORREFToSkColor(accent_color);

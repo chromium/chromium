@@ -15,9 +15,12 @@ using ::testing::ElementsAre;
 
 TEST(PickerModel, AvailableCategories) {
   PickerModel model;
-  EXPECT_THAT(model.GetAvailableCategories(),
-              ElementsAre(PickerCategory::kEmojis, PickerCategory::kSymbols,
-                          PickerCategory::kEmoticons, PickerCategory::kGifs));
+  EXPECT_THAT(
+      model.GetAvailableCategories(),
+      ElementsAre(PickerCategory::kEmojis, PickerCategory::kSymbols,
+                  PickerCategory::kEmoticons, PickerCategory::kGifs,
+                  PickerCategory::kOpenTabs, PickerCategory::kBrowsingHistory,
+                  PickerCategory::kBookmarks));
 }
 
 }  // namespace

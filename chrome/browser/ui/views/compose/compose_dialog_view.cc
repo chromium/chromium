@@ -141,7 +141,7 @@ ComposeDialogView::~ComposeDialogView() = default;
 
 ComposeDialogView::ComposeDialogView(
     View* anchor_view,
-    std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper,
+    std::unique_ptr<WebUIContentsWrapperT<ComposeUntrustedUI>> bubble_wrapper,
     const gfx::Rect& anchor_bounds,
     views::BubbleBorder::Arrow anchor_position)
     : WebUIBubbleDialogView(anchor_view,

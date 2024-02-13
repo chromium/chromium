@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
@@ -222,7 +223,7 @@ InputMethodEngine::ReplaceSurroundingText(
     int context_id,
     int length_before_selection,
     int length_after_selection,
-    const base::StringPiece16 replacement_text) {
+    const std::u16string_view replacement_text) {
   if (!IsActive()) {
     return base::unexpected(Error::kInputMethodNotActive);
   }

@@ -158,7 +158,7 @@ def blink_type_info(idl_type):
         def has_null_value(self):
             """
             Returns True if the Blink implementation type can represent IDL
-            null value without use of absl::optional<T>.  E.g. pointer type =>
+            null value without use of std::optional<T>.  E.g. pointer type =>
             True and int32_t => False
             """
             return self._has_null_value
@@ -409,7 +409,7 @@ def blink_type_info(idl_type):
                             is_move_effective=False,
                             is_heap_vector_type=False)
         assert not inner_type.is_traceable
-        return TypeInfo("absl::optional<{}>".format(inner_type.value_t),
+        return TypeInfo("std::optional<{}>".format(inner_type.value_t),
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         is_move_effective=inner_type.is_move_effective,
@@ -631,8 +631,8 @@ def make_default_value_expr(idl_type, default_value):
     assignment_deps = []
     if default_value.idl_type.is_nullable:
         if not type_info.has_null_value:
-            initializer_expr = None  # !absl::optional::has_value() by default
-            assignment_value = "absl::nullopt"
+            initializer_expr = None  # !std::optional::has_value() by default
+            assignment_value = "std::nullopt"
         elif idl_type.unwrap().type_definition_object is not None:
             initializer_expr = "nullptr"
             is_initialization_lightweight = True

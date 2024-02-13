@@ -20,8 +20,9 @@ namespace ash {
 // The code for Mahi main panel view. This view is placed within
 // `MahiPanelWidget`.
 class ASH_EXPORT MahiPanelView : public views::BoxLayoutView {
+  METADATA_HEADER(MahiPanelView, views::BoxLayoutView)
+
  public:
-  METADATA_HEADER(MahiPanelView);
   enum ViewId {
     kCloseButton = 1,
     kSummaryLabel,

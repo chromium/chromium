@@ -505,6 +505,16 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
   }
 
+  void ConfigurePasswordSuggestionFiltering(bool enabled) {
+    if (enabled) {
+      scoped_feature_list_.InitAndEnableFeature(
+          password_manager::features::kNoPasswordSuggestionFiltering);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          password_manager::features::kNoPasswordSuggestionFiltering);
+    }
+  }
+
   void EnableOverwritingPlaceholderUsernames() {
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kEnableOverwritingPlaceholderUsernames);
@@ -671,7 +681,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   }
 
   // Helper to simulate that KeyboardReplacingSurface was closed in order to
-  // test regular popups, e.g. |ShowPasswordSuggestions|.
+  // test regular popups, e.g. `ShowPasswordSuggestions`.
   void SimulateClosingKeyboardReplacingSurfaceIfAndroid(
       const std::string& element_id) {
     // Put the build guard here to save space in the caller test.
@@ -766,16 +776,12 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
   // is the expected flag for the PasswordAutofillManager, whether to show all
   // suggestions, or only those starting with `typed_username`.
   void CheckSuggestions(const std::u16string& typed_username, bool show_all) {
-    auto show_all_matches = [show_all](int options) {
-      return show_all == ((options & autofill::SHOW_ALL) != 0);
-    };
+    std::u16string expected_username = show_all ? u"" : typed_username;
 
     EXPECT_CALL(fake_driver_,
                 ShowPasswordSuggestions(AllOf(
                     Field(&autofill::PasswordSuggestionRequest::typed_username,
-                          typed_username),
-                    Field(&autofill::PasswordSuggestionRequest::options,
-                          Truly(show_all_matches)))))
+                          expected_username))))
         .Times(testing::AtLeast(1));
     base::RunLoop().RunUntilIdle();
   }
@@ -2327,6 +2333,45 @@ TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
   CheckSuggestions(kAliceUsername16, true);
 
   CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
+}
+
+// Tests that password suggestions are prefix matched against typed username.
+// TODO(b:322923603): Clean up when the feature is launched.
+TEST_F(PasswordAutofillAgentTest, SuggestionsPrefixMatchedByTypedUsername) {
+  ConfigurePasswordSuggestionFiltering(/*enabled=*/false);
+  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
+
+  ClearUsernameAndPasswordFieldValues();
+  // Make sure there's password data to fill in the field.
+  SimulateOnFillPasswordForm(fill_data_);
+  // Enter the value manually.
+  SimulateUsernameTyping("ali");
+
+  // Simulate a user clicking on the username element. This should produce a
+  // message with all the usernames.
+  autofill_agent_->FormControlElementClicked(username_element_);
+  CheckSuggestions(u"ali", /*show_all=*/false);
+  base::RunLoop().RunUntilIdle();
+}
+
+// Tests that all password suggestiona are shown when suggestion filtering is
+// disabled.
+TEST_F(PasswordAutofillAgentTest,
+       SuggestionsNotPrefixMatchedWhenFeatureEnabled) {
+  ConfigurePasswordSuggestionFiltering(/*enabled=*/true);
+  SimulateClosingKeyboardReplacingSurfaceIfAndroid(kUsernameName);
+
+  ClearUsernameAndPasswordFieldValues();
+  // Make sure there's password data to fill in the field.
+  SimulateOnFillPasswordForm(fill_data_);
+  // Enter the value manually.
+  SimulateUsernameTyping("ali");
+
+  // Simulate a user clicking on the username element. This should produce a
+  // message with all the usernames.
+  autofill_agent_->FormControlElementClicked(username_element_);
+  CheckSuggestions(u"ali", /*show_all=*/true);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(PasswordAutofillAgentTest,

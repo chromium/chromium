@@ -14,11 +14,17 @@ class TestDriveService final : public DriveService {
   TestDriveService();
   ~TestDriveService() final;
 
+  // Sets file uploader to be returned by `CreateFileUploader(...)`.
+  void SetFileUploader(std::unique_ptr<DriveFileUploader> uploader);
+
   // DriveService implementation
   bool IsSupported() const final;
   std::unique_ptr<DriveFileUploader> CreateFileUploader(
       id<SystemIdentity> identity) final;
   std::string GetSuggestedFolderName() const final;
+
+ private:
+  std::unique_ptr<DriveFileUploader> file_uploader_;
 };
 
 }  // namespace drive

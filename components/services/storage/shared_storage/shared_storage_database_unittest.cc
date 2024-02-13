@@ -449,6 +449,8 @@ TEST_F(SharedStorageDatabaseTest, DestroyTooNew) {
             db_->ResetBudgetForDevTools(kOrigin));
 
   auto metadata = db_->GetMetadata(kOrigin);
+  EXPECT_EQ(-1, metadata.length);
+  EXPECT_EQ(-1, metadata.bytes_used);
   EXPECT_EQ(OperationResult::kInitFailure, metadata.time_result);
   EXPECT_EQ(OperationResult::kInitFailure, metadata.budget_result);
 
@@ -874,6 +876,84 @@ TEST_P(SharedStorageDatabaseParamTest, Length) {
   // 2 keys for `kOrigin1` have now expired, so `Length()` will not count them
   // even though they have not been purged yet.
   EXPECT_EQ(1L, db_->Length(kOrigin1));
+}
+
+TEST_P(SharedStorageDatabaseParamTest, BytesUsed) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_EQ(0L, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(0L, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  EXPECT_EQ(8 + 12, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"a", u""));
+  EXPECT_EQ(8 + 12 + 2 + 0, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 0,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"a", u"b"));
+  EXPECT_EQ(8 + 12 + 2 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kIgnored,
+            db_->Set(kOrigin1, u"a", u"bb", SetBehavior::kIgnoreIfPresent));
+  EXPECT_EQ(8 + 12 + 2 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+  EXPECT_EQ(0L, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(0L, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+
+  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin2, u"key1", u"val1"));
+  EXPECT_EQ(8 + 8, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(8 + 8, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+  EXPECT_EQ(8 + 12 + 2 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin2, u"key1", u"extra"));
+  EXPECT_EQ(8 + 8 + 10, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(8 + 8 + 10, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+  EXPECT_EQ(8 + 12 + 2 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin2, u"key1"));
+  EXPECT_EQ(0L, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(0L, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+  EXPECT_EQ(8 + 12 + 2 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key3", u"v"));
+  EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+  EXPECT_EQ(0L, db_->BytesUsed(kOrigin2));
+  EXPECT_EQ(0L, db_->NumBytesUsedIncludeExpiredForTesting(kOrigin2));
+
+  // Advance the clock halfway towards expiration of the keys.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+
+  // Update one entry, with no change in number of bytes.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value0"));
+  EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
+
+  // Advance the clock to original key expiration time.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0) + base::Seconds(1));
+
+  // 2 keys for `kOrigin1` have now expired, so `BytesUsed()` will not count
+  // them even though they have not been purged yet.
+  EXPECT_EQ(8 + 12, db_->BytesUsed(kOrigin1));
+  EXPECT_EQ(8 + 12 + 2 + 2 + 8 + 2,
+            db_->NumBytesUsedIncludeExpiredForTesting(kOrigin1));
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Keys) {
@@ -1962,7 +2042,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
 // Tests correct calculation of five-number summary when there is only one
 // origin.
 TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
-  db_ = LoadFromFile("shared_storage.v3.single_origin.sql");
+  db_ = LoadFromFile("shared_storage.v5.single_origin.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -1988,7 +2068,7 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
 // Tests correct calculation of five-number summary when number of origins is
 // greater than one and has remainder 1 modulo 4.
 TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.5origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.5origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2019,7 +2099,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 2 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SixOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.6origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.6origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2051,7 +2131,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 3 modulo 4.
 TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.7origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.7origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
@@ -2086,7 +2166,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
 // Tests correct calculation of five-number summary when number of origins has
 // remainder 0 modulo 4.
 TEST_F(SharedStorageDatabaseTest, EightOrigins) {
-  db_ = LoadFromFile("shared_storage.v3.empty_values_mapping.8origins.sql");
+  db_ = LoadFromFile("shared_storage.v5.empty_values_mapping.8origins.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 

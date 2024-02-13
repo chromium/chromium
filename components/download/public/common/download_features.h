@@ -54,6 +54,11 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDeleteOverwrittenDownloads);
 
 // Whether to allow changing the size of file buffer.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowFileBufferSizeControl);
+
+#if BUILDFLAG(IS_ANDROID)
+// Whether to make pdf download from a link a transient download.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kTransientPdfLinkDownload);
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features
 
 }  // namespace download

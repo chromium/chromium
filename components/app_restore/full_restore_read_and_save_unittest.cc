@@ -371,8 +371,7 @@ class FullRestoreReadAndSaveTest : public testing::Test {
     EXPECT_TRUE(app_restore_data_it != launch_list_it->second.end());
 
     const auto& data = app_restore_data_it->second;
-    EXPECT_TRUE(data->activation_index.has_value());
-    EXPECT_EQ(index, data->activation_index.value());
+    EXPECT_THAT(data->window_info.activation_index, testing::Optional(index));
   }
 
   content::BrowserTaskEnvironment& task_environment() {
@@ -557,8 +556,8 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
   EXPECT_TRUE(app_restore_data_it1 != launch_list_it->second.end());
 
   const auto& data1 = app_restore_data_it1->second;
-  EXPECT_TRUE(data1->activation_index.has_value());
-  EXPECT_EQ(kActivationIndex1, data1->activation_index.value());
+  EXPECT_THAT(data1->window_info.activation_index,
+              testing::Optional(kActivationIndex1));
 
   // Verify the restore data for |kId2| doesn't exist.
   EXPECT_FALSE(base::Contains(launch_list_it->second, kId2));
@@ -568,8 +567,8 @@ TEST_F(FullRestoreReadAndSaveTest, SaveAndReadRestoreData) {
   ASSERT_NE(app_restore_data_it3, launch_list_it->second.end());
 
   const auto& data3 = app_restore_data_it3->second;
-  EXPECT_TRUE(data3->activation_index.has_value());
-  EXPECT_EQ(kActivationIndex2, data3->activation_index.value());
+  EXPECT_THAT(data3->window_info.activation_index,
+              testing::Optional(kActivationIndex2));
 }
 
 TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
@@ -805,8 +804,8 @@ TEST_F(FullRestoreReadAndSaveTest, ArcWindowRestore) {
   // Verify the AppRestoreData.
   const std::unique_ptr<app_restore::AppRestoreData>& data =
       app_restore_data_it->second;
-  EXPECT_TRUE(data->activation_index.has_value());
-  EXPECT_EQ(kActivationIndex1, data->activation_index.value());
+  EXPECT_THAT(data->window_info.activation_index,
+              testing::Optional(kActivationIndex1));
 
   // Simulate the ARC app launching, and set the arc session id kArcSessionId2
   // for the restore window id |kArcTaskId1|.

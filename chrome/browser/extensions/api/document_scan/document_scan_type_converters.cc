@@ -401,6 +401,7 @@ TypeConverter<extensions::api::document_scan::GetScannerListResponse,
         ConvertTo<document_scan::ConnectionType>(scanner_in->connection_type);
     scanner_out.secure = scanner_in->secure;
     scanner_out.image_formats = scanner_in->image_formats;
+    scanner_out.protocol_type = scanner_in->protocol_type.value_or("");
   }
   return output;
 }

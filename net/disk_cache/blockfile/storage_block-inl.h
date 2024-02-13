@@ -12,6 +12,7 @@
 
 #include <type_traits>
 
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -193,7 +194,8 @@ template<typename T> void StorageBlock<T>::DeleteData() {
 
 template <typename T>
 uint32_t StorageBlock<T>::CalculateHash() const {
-  return base::PersistentHash(data_, offsetof(T, self_hash));
+  base::span<const uint8_t> bytes = base::as_bytes(base::span_from_ref(*data_));
+  return base::PersistentHash(bytes.first(offsetof(T, self_hash)));
 }
 
 }  // namespace disk_cache

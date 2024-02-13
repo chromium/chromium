@@ -66,7 +66,19 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
       MigrationDeleteCardCallback delete_local_card_callback);
+
+  // Called after virtual card enrollment is finished. Shows enrollment
+  // result to users. `is_vcn_enrolled` indicates if the card was successfully
+  // enrolled as a virtual card.
+  virtual void VirtualCardEnrollCompleted(bool is_vcn_enrolled);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // Called after credit card upload is finished. Will show upload result to
+  // users. `card_saved` indicates if the card is successfully saved.
+  // TODO(crbug.com/932818): This function is overridden in iOS codebase and in
+  // the desktop codebase. If iOS is not using it to do anything, please keep
+  // this function for desktop.
+  virtual void CreditCardUploadCompleted(bool card_saved);
 };
 
 }  // namespace payments

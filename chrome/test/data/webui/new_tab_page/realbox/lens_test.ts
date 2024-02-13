@@ -4,8 +4,9 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import {BrowserProxyImpl, MetricsReporterImpl, mojoString16, RealboxBrowserProxy, RealboxElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import type {RealboxElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {BrowserProxyImpl, MetricsReporterImpl, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import type {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

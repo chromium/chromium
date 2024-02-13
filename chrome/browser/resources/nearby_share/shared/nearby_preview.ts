@@ -18,7 +18,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_preview.html.js';
-import {PayloadPreview} from './nearby_share.mojom-webui.js';
+import type {PayloadPreview} from './nearby_share.mojom-webui.js';
 import {ShareType} from './nearby_share_share_type.mojom-webui.js';
 
 const NearbyPreviewElementBase = I18nMixin(PolymerElement);

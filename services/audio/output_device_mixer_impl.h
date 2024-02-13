@@ -13,6 +13,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
@@ -100,8 +101,8 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
 
   using MixTracks =
       std::set<std::unique_ptr<MixTrack>, base::UniquePtrComparator>;
-  using ActiveTracks = std::set<MixTrack*>;
-  using Listeners = std::set<Listener*>;
+  using ActiveTracks = std::set<raw_ptr<MixTrack, SetExperimental>>;
+  using Listeners = std::set<raw_ptr<Listener, SetExperimental>>;
 
   // Operations delegated by MixableOutputStream.
   bool OpenStream(MixTrack* mix_track);

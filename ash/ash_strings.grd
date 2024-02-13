@@ -278,19 +278,16 @@ Style notes:
         See all apps
       </message>
       <message name="IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE" desc="The title used for the previous desk button within the desk button on the shelf.">
-        Previous Desk: <ph name="PREVIOUS_DESK_NAME">$1<ex>Desk 1</ex></ph>, use Search+Space or keyboard shortcut: Shift+Search+<ph name="PREVIOUS_DESK_INDEX">$2<ex>1</ex></ph> to activate.
+        Previous desk: <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>1</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
-      <message name="IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE_16_DESKS" desc="The title used for the previous desk button within the desk button on the shelf when that desk is beyond the 8th desk.">
-        Previous Desk: <ph name="PREVIOUS_DESK_NAME">$1<ex>Desk 12</ex></ph>, use Search+Space to activate.
+      <message name="IDS_SHELF_DESK_BUTTON_TITLE_NO_PROFILE_AVATAR" desc="The title used for the desk button on the shelf with no profile avatar.">
+        Current desk: <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>2</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
-      <message name="IDS_SHELF_DESK_BUTTON_TITLE" desc="The title used for the desk button on the shelf.">
-        Current Desk: <ph name="CURRENT_DESK_NAME">$1<ex>Desk 2</ex></ph>, use Search+Space to open all desks menu.
+      <message name="IDS_SHELF_DESK_BUTTON_TITLE_WITH_PROFILE_AVATAR" desc="The title used for the desk button on the shelf with profile avatar.">
+        Current desk: <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph>. <ph name="PROFILE_NAME">$2<ex>Profile name</ex></ph> <ph name="EMAIL">$3<ex>test@gmail.com</ex></ph>. Desk <ph name="DESK_INDEX">$4<ex>2</ex></ph> of <ph name="DESK_COUNT">$5<ex>3</ex></ph>.
       </message>
       <message name="IDS_SHELF_NEXT_DESK_BUTTON_TITLE" desc="The title used for the next desk button within the desk button on the shelf.">
-        Next Desk: <ph name="NEXT_DESK_NAME">$1<ex>Desk 3</ex></ph>, use Search+Space or keyboard shortcut: Shift+Search+<ph name="NEXT_DESK_INDEX">$2<ex>3</ex></ph> to activate.
-      </message>
-      <message name="IDS_SHELF_NEXT_DESK_BUTTON_TITLE_16_DESKS" desc="The title used for the next desk button within the desk button on the shelf when that desk is beyond the 8th desk.">
-        Next Desk: <ph name="NEXT_DESK_NAME">$1<ex>Desk 14</ex></ph>, use Search+Space to activate.
+        Next desk: <ph name="DESK_NAME">$1<ex>Desk 3</ex></ph>. Desk <ph name="DESK_INDEX">$2<ex>3</ex></ph> of <ph name="DESK_COUNT">$3<ex>3</ex></ph>.
       </message>
 
 
@@ -827,6 +824,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_FEEDBACK_BUTTON" translateable="false" desc="The text used for the feedback button.">
         Send feedback
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE" translateable="false" desc="The text used for the ending moment nudge, as well as the tooltip.">
+        Time's up for your Focus session! Great job!
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_TITLE" translateable="false" desc="The title for the ending moment panel.">
         You are an inspiration!
       </message>
@@ -836,6 +836,9 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_BODY_WITH_TASK" translateable="false" desc="The message for the ending moment panel if the user has an unfinished task.">
         Congratulations on another productive session! Check off your task if it's done!
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DIALOG" translateable="false" desc="The annoucement for the ending moment panel.">
+        <ph name="TITLE">$1<ex>You are an inspiration!</ex></ph> <ph name="BODY">$2<ex>Congratulations on another productive session!</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_DONE_BUTTON" translateable="false" desc="The text for the button that dismisses the ending moment panel.">
         Done
       </message>
@@ -843,7 +846,7 @@ Style notes:
         Show Focus session settings. Duration set to <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_ACTIVE" translateable="false" desc="The accessible name for the focus mode feature tile in the quick settings menu when focus mode is active.">
-        Show Focus session settings. <ph name="FOCUS_DURATION">$1<ex>7 minutes</ex></ph> left for the current Focus session
+        Show Focus session settings. <ph name="REMAINING_TIME">$1<ex>7 minutes</ex></ph> left for the current Focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_INITIAL" translateable="false" desc="The accessible name for the focus mode feature tile in the quick settings menu when focus mode has never been used before.">
         Show Focus session settings
@@ -852,13 +855,13 @@ Style notes:
         Toggle Focus session. Duration set to <ph name="FOCUS_DURATION">$1<ex>25 minutes</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_ACTIVE" translateable="false" desc="The accessible name for the toggle button in the focus mode feature tile in the quick settings menu when focus mode is active.">
-        Toggle Focus session. <ph name="FOCUS_DURATION">$1<ex>7 minutes</ex></ph> left for the current Focus session
+        Toggle Focus session. <ph name="REMAINING_TIME">$1<ex>7 minutes</ex></ph> left for the current Focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the toggle button in the focus mode toggle row in the focus mode detailed view when focus mode is not active.">
         Start Focus session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the toggle button in the focus mode toggle row in the focus mode detailed view for when focus mode is active.">
-        Finish Focus session. <ph name="FOCUS_DURATION">$1<ex>24 minutes</ex></ph> left
+        Finish Focus session. <ph name="REMAINING_TIME">$1<ex>24 minutes</ex></ph> left
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_SELECTED_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the task textfield in the focus mode detailed view.">
         Focusing on <ph name="TASK_NAME">$1<ex>Plan for trip to Paris</ex></ph> Press enter to edit task
@@ -875,14 +878,14 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_DO_NOT_DISTURB_ACCESSIBLE_NAME_DISABLED" translateable="false" desc="The accessible name for the do not disturb switch when disabled in the focus mode detailed view.">
         Enable Do not disturb while in Focus. Do not disturb is disabled
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the focus mode tray icon.">
+        Focusing, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph> left
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_TASK_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the tray bubble contextual panel when there is a selected task.">
-        Focus session, <ph name="FOCUS_DURATION">$1<ex>24 minutes 35 seconds</ex></ph>, focusing on <ph name="TASK_NAME">$2<ex>Plan for trip to Paris</ex></ph>
+        Focus session, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph>, focusing on <ph name="TASK_NAME">$2<ex>Plan for trip to Paris</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the tray bubble contextual panel when there is no selected task.">
-        Focus session, <ph name="FOCUS_DURATION">$1<ex>24 minutes 35 seconds</ex></ph>
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ENDING_MOMENT_ACCESSIBLE_NAME" translateable="false" desc="The accessible name for the tray bubble contextual panel when in the ending moment.">
-        Time's up! Great job!
+        Focus session, <ph name="REMAINING_TIME">$1<ex>24 minutes 35 seconds</ex></ph>
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
@@ -2457,11 +2460,17 @@ Style notes:
       <message name="IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a close-able overview item.">
         Press Ctrl + W to close.
       </message>
-      <message name="IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility text read by screen readers for a closeable desk mini view when the close all feature is enabled.">
-          Press Ctrl + W to combine with <ph name="DESK_NAME">$1<ex>Desk 1</ex></ph>. Press Ctrl + Shift + W to close desk and windows.
+       <message name="IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL" desc="The accessible name for the Overview Settings button during faster splitscreen setup.">
+        Windows and desks settings
       </message>
-       <message name="IDS_ASH_OVERVIEW_SETTINGS_BUTTON_LABEL" translateable="false" desc="The accessible name for the Overview Settings button during faster splitscreen setup.">
-        Multitasking settings
+      <message name="IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST" desc="The text for the Faster Splitscreen toast during faster splitscreen setup.">
+        Choose a window for this side
+      </message>
+      <message name="IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_SKIP" desc="The text for the Faster Splitscreen toast skip button.">
+        Dismiss
+      </message>
+      <message name="IDS_ASH_OVERVIEW_FASTER_SPLITSCREEN_TOAST_DISMISS_WINDOW_SUGGESTIONS" desc="The a11y text for the Faster Splitscreen toast to dismiss window suggestions.">
+        Dismiss window suggestions
       </message>
       <message name="IDS_ASH_OVERVIEW_WINDOW_CLOSING_A11Y_ALERT" desc="The accessibility alert read by screen readers to alert the user that a window in overview mode is closing.">
         Window <ph name="WINDOW_TITILE">$1<ex>1</ex></ph> closed.
@@ -2593,7 +2602,10 @@ Style notes:
       </message>
 
       <!-- Virtual Desks -->
-      <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The label of the new virtual desk (a.k.a. workspaces) button.">
+      <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON" desc="The new desk button's accessible name">
+        Add new desk
+      </message>
+      <message name="IDS_ASH_DESKS_NEW_DESK_BUTTON_LABEL" desc="The label of the new virtual desk (a.k.a. workspaces) button.">
         New desk
       </message>
       <message name="IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE" desc="The label of the first virtual desk thumbnail.">
@@ -2650,23 +2662,20 @@ Style notes:
       <message name="IDS_ASH_DESKS_MIN_NUM_REACHED" desc="Message shown to users when they attempt to remove the last virtual.">
         Last desk can't be removed.
       </message>
-      <message name="IDS_ASH_DESKS_ACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a highlighted active desk mini_view.">
-        active desk
-      </message>
-      <message name="IDS_ASH_DESKS_INACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a highlighted inactive desk mini_view.">
-        inactive desk
-      </message>
       <message name="IDS_ASH_DESKS_DESK_NAME" desc="Alert when highlighting the desk name">
         Desk name
       </message>
-      <message name="IDS_ASH_DESKS_DESK_PREVIEW" desc="The desk preview accessible name">
-        Desk preview
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW_ACTIVE" desc="The desk preview's accessible name when active">
+        <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> preview. Active desk.
+      </message>
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW_INACTIVE" desc="The desk preview's accessible name when inactive">
+        <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> preview. Inactive desk.
+      </message>
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION" desc="The desk preview's role description">
+        Use tab for more options. Use left and right arrows to access all desks.
       </message>
       <message name="IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME" desc="The full accessible desk name">
         Desk: <ph name="DESK_NAME">$1</ph>
-      </message>
-      <message name="IDS_ASH_DESKS_DESK_PREVIEW_A11Y_NAME" desc="The full accessible desk name">
-        Go to <ph name="ACTIVE_STATE">$1</ph> <ph name="DESK_NAME">$2</ph> button.
       </message>
       <message name="IDS_ASH_DESKS_DESK_NAME_COMMIT" desc="Alert when the desk name is committed">
         Desk name was changed to <ph name="DESK_NAME">$1</ph>
@@ -2675,7 +2684,16 @@ Style notes:
         Combine with <ph name="DESK_NAME">$1</ph>
       </message>
       <message name="IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION" desc="The tooltip and context menu text that describes the action of closing a desk and all of its windows.">
-        Close desk and windows
+        Close <ph name="DESK_NAME">$1<ex>Desk 2</ex></ph> and windows
+      </message>
+      <message name="IDS_ASH_DESKS_DESK_PROFILES_BUTTON" desc="The desk profile button's accessible name">
+        Desk profile menu
+      </message>
+      <message name="IDS_ASH_DESKS_MENU_ITEM_PROFILE_CHECKED" desc="The profile menu item's accessible name">
+        <ph name="PROFILE_NAME">$1</ph> <ph name="EMAIL">$2</ph> Check box checked.
+      </message>
+      <message name="IDS_ASH_DESKS_MENU_ITEM_PROFILE_NOT_CHECKED" desc="The profile menu item's accessible name">
+        <ph name="PROFILE_NAME">$1</ph> <ph name="EMAIL">$2</ph> Check box not checked.
       </message>
       <message name="IDS_ASH_DESKS_OPEN_PROFILE_MANAGER" desc="The tooltip and context menu text that describes the action of open the profile manager.">
         Manage profiles
@@ -3676,6 +3694,12 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING" desc="The message to display in the network list when mobile data is turning off (disabling).">
         Mobile data is turning off...
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_NO_TETHER_DEVICES_FOUND" desc="The message to display in the tether hosts network list when no tether devices are found.">
+        No available hotspot. Make sure your device is nearby and Bluetooth is turned on.
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_TETHER_NO_BLUETOOTH" desc="The message to display in the tether hosts network list when Bluetooth is disabled.">
+        Turn on Bluetooth to discover available hotspots nearby
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_VPN_DISCONNECTED" desc="The label used in system tray bubble to display vpn is disconnected.">
         VPN disconnected
       </message>
@@ -3757,6 +3781,9 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT" desc="The text of the popup when the user preses the exit shortcut in chrome-os.">
         Press Ctrl+Shift+Q twice to sign out.
+      </message>
+      <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_DYNAMIC" desc="The text of the popup when the user preses the exit shortcut in chrome-os.">
+        Press <ph name="accelerator">$1<ex>Ctrl+Shift+Q</ex></ph> twice to sign out.
       </message>
       <message name="IDS_ASH_SIGN_OUT_WARNING_POPUP_TEXT_ACCESSIBLE" desc="The message used by accessibility to indicate the content of the popup when the user preses the exit shortcut in chrome-os.">
         Press Control Shift Q twice to sign out.
@@ -3891,6 +3918,22 @@ Some features are limited to increase battery life.
       <message name="IDS_FULLSCREEN_MAGNIFIER_ACCEL_MSG"
                desc="Notification message to tell users that they just pressed the Ctrl+Search+M shortcut to toggle Full-screen Magnifier, and that pressing it again will toggle it off.">
         Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.
+      </message>
+
+      <message name="IDS_ASH_ACCELERATOR_LAUNCHER_KEY" desc="Label for the launcher key in ChromeOS keyboards.">
+        launcher
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_SEARCH_KEY" desc="Label for the search key in ChromeOS keyboards.">
+        search
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_SHIFT_KEY" desc="Label for the search key in ChromeOS keyboards.">
+        shift
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_CONTROL_KEY" desc="Label for the control key in ChromeOS keyboards.">
+        ctrl
+      </message>
+      <message name="IDS_ASH_ACCELERATOR_ALT_KEY" desc="Label for the alt key in ChromeOS keyboards.">
+        alt
       </message>
 
       <!-- Accelerator Actions-->
@@ -6927,8 +6970,56 @@ New install
 
       <!-- Picker -->
       <!-- TODO: b/309706053 - Finalize these strings and then mark them as these as translateable -->
-      <message name="IDS_PICKER_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
+      <message name="IDS_PICKER_EMOJIS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show emoji results.">
+        Emojis
+      </message>
+      <message name="IDS_PICKER_SYMBOLS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show symbol results.">
+        Symbols
+      </message>
+      <message name="IDS_PICKER_EMOTICONS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show emoticon results.">
+        Emoticons
+      </message>
+      <message name="IDS_PICKER_GIFS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show gif results.">
+        Gifs
+      </message>
+      <message name="IDS_PICKER_OPEN_TABS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show open tab results.">
+        Open tabs
+      </message>
+      <message name="IDS_PICKER_BROWSING_HISTORY_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show browsing history results.">
+        Browsing history
+      </message>
+      <message name="IDS_PICKER_BOOKMARKS_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show bookmark results.">
+        Bookmarks
+      </message>
+      <message name="IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
         Search to insert
+      </message>
+      <message name="IDS_PICKER_EMOJIS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the emojis category is selected.">
+        Search Emojis
+      </message>
+      <message name="IDS_PICKER_SYMBOLS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the symbols category is selected.">
+        Search Symbols
+      </message>
+      <message name="IDS_PICKER_EMOTICONS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the emoticons category is selected.">
+        Search Emoticons
+      </message>
+      <message name="IDS_PICKER_GIFS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the gifs category is selected.">
+        Search Gifs
+      </message>
+      <message name="IDS_PICKER_OPEN_TABS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the open tabs category is selected.">
+        Search Open Tabs
+      </message>
+      <message name="IDS_PICKER_BROWSING_HISTORY_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the browsing history category is selected.">
+        Search Browsing History
+      </message>
+      <message name="IDS_PICKER_BOOKMARKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI when the bookmarks category is selected.">
+        Search Bookmarks
+      </message>
+      <message name="IDS_PICKER_EXPRESSIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains expression categories, i.e. emojis, symbols, emoticons and gifs.">
+        Expressions
+      </message>
+      <message name="IDS_PICKER_LINKS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains link categories, e.g. browsing history, open tabs, bookmarks.">
+        Links
       </message>
 
       <!-- WM -->
@@ -7428,14 +7519,17 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
         The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click from alt + click
       </message>
-      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE" desc="Notification title to tell users that the peripheral is customizable.">
-        Customize your <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE" desc="Notification title to tell users that the mouse is customizable.">
+        Customize your mouse
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_GRAPHICS_TABLET_TITLE" desc="Notification title to tell users that the graphics tablet is customizable.">
+        Customize your tablet
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION" desc="The message shown to notify a user that the mouse is customizable in settings.">
-        <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph> is connected and ready to use. You can customize your mouse in Settings.
+        You can personalize button actions, cursor speed, and more for your <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph>
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION" desc="The message shown to notify a user that the graphics tablet is customizable in settings.">
-        <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph> is connected and ready to use. You can customize your graphics tablet in Settings.
+        You can personalize button actions for your <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph>
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_OPEN_SETTINGS_BUTTON" desc="Notification button text, if the user clicks on the button it will redirect them to the Settings App.">
         Open Settings

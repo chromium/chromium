@@ -384,7 +384,8 @@ class AutocompleteProviderTest : public testing::Test {
       const SuggestionGroupsTestData& test_data);
 
   void RunSearchboxStatsTest(const SearchboxStatsTestData* sbs_test_data,
-                             size_t size);
+                             size_t size,
+                             bool input_is_zero_suggest);
 
   void RunQuery(const std::string& query, bool allow_exact_keyword_match);
 
@@ -630,7 +631,7 @@ void AutocompleteProviderTest::UpdateResultsWithSuggestionGroupsTestData(
     }
     matches.push_back(match);
   }
-  result_.Reset();
+  result_.ClearMatches();
   result_.AppendMatches(matches);
 
   // Update the result with the suggestion groups information.
@@ -641,8 +642,17 @@ void AutocompleteProviderTest::UpdateResultsWithSuggestionGroupsTestData(
 
 void AutocompleteProviderTest::RunSearchboxStatsTest(
     const SearchboxStatsTestData* sbs_test_data,
-    size_t size) {
-  // Prepare input.
+    size_t size,
+    bool input_is_zero_suggest) {
+  if (input_is_zero_suggest) {
+    // Prepare the input.
+    AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+                            TestingSchemeClassifier());
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+    controller_->input_ = input;
+  }
+
+  // Prepare the results.
   const size_t kMaxRelevance = 1000;
   ACMatches matches;
   for (size_t i = 0; i < size; ++i) {
@@ -657,7 +667,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
     match.subtypes = sbs_test_data[i].subtypes;
     matches.push_back(match);
   }
-  result_.Reset();
+  result_.ClearMatches();
   result_.AppendMatches(matches);
   result_.MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
 
@@ -687,7 +697,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
 
 void AutocompleteProviderTest::RunQuery(const std::string& query,
                                         bool allow_exact_keyword_match) {
-  result_.Reset();
+  result_.ClearMatches();
   AutocompleteInput input(base::ASCIIToUTF16(query),
                           metrics::OmniboxEventProto::OTHER,
                           TestingSchemeClassifier());
@@ -1061,7 +1071,7 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
          omnibox::TYPE_NATIVE_CHROME}};
     SCOPED_TRACE("No matches");
     // Note: We pass 0 here to ignore the dummy data above.
-    RunSearchboxStatsTest(test_data, 0);
+    RunSearchboxStatsTest(test_data, 0, /*input_is_zero_suggest=*/false);
   }
 
   // Note: See suggest.proto for the types and subtypes referenced below.
@@ -1082,7 +1092,8 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
          searchbox_stats,
          omnibox::TYPE_NATIVE_CHROME}};
     SCOPED_TRACE("One match");
-    RunSearchboxStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data),
+                          /*input_is_zero_suggest=*/false);
   }
 
   {
@@ -1104,7 +1115,8 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
          omnibox::TYPE_ENTITY,
          {omnibox::SUBTYPE_PERSONAL}}};
     SCOPED_TRACE("One match with provider populated subtypes");
-    RunSearchboxStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data),
+                          /*input_is_zero_suggest=*/false);
   }
 
   {
@@ -1143,7 +1155,8 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
          {omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES}},
     };
     SCOPED_TRACE("Multiple matches in horizontal render group");
-    RunSearchboxStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data),
+                          /*input_is_zero_suggest=*/true);
   }
 
   {
@@ -1216,7 +1229,8 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
          {omnibox::SUBTYPE_ZERO_PREFIX}},
     };
     SCOPED_TRACE("Multiple matches with horizontal render group");
-    RunSearchboxStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data),
+                          /*input_is_zero_suggest=*/true);
   }
 
   {
@@ -1316,7 +1330,8 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
          {omnibox::SUBTYPE_PERSONAL, omnibox::SUBTYPE_TRENDS}},
     };
     SCOPED_TRACE("Complex set of matches with repetitive subtypes");
-    RunSearchboxStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data),
+                          /*input_is_zero_suggest=*/true);
   }
 
   // This test confirms that selection of trivial suggestions does not get
@@ -1440,7 +1455,8 @@ TEST_F(AutocompleteProviderTest, UpdateSearchboxStats) {
          omnibox::TYPE_NATIVE_CHROME},
     };
     SCOPED_TRACE("Trivial and zero-prefix matches");
-    RunSearchboxStatsTest(test_data, std::size(test_data));
+    RunSearchboxStatsTest(test_data, std::size(test_data),
+                          /*input_is_zero_suggest=*/true);
   }
 }
 

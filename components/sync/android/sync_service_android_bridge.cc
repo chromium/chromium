@@ -73,6 +73,12 @@ ScopedJavaLocalRef<jintArray> UserSelectableTypeSetToJavaIntArray(
   return base::android::ToJavaIntArray(env, type_vector);
 }
 
+syncer::UserSelectableType IntToUserSelectableTypeChecked(int type) {
+  CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
+  CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
+  return static_cast<syncer::UserSelectableType>(type);
+}
+
 }  // namespace
 
 SyncServiceAndroidBridge::SyncServiceAndroidBridge(
@@ -177,18 +183,14 @@ ScopedJavaLocalRef<jintArray> SyncServiceAndroidBridge::GetSelectedTypes(
 
 jboolean SyncServiceAndroidBridge::IsTypeManagedByPolicy(JNIEnv* env,
                                                          jint type) {
-  CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
-  CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
   return native_sync_service_->GetUserSettings()->IsTypeManagedByPolicy(
-      static_cast<syncer::UserSelectableType>(type));
+      IntToUserSelectableTypeChecked(type));
 }
 
 jboolean SyncServiceAndroidBridge::IsTypeManagedByCustodian(JNIEnv* env,
                                                             jint type) {
-  CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
-  CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
   return native_sync_service_->GetUserSettings()->IsTypeManagedByCustodian(
-      static_cast<syncer::UserSelectableType>(type));
+      IntToUserSelectableTypeChecked(type));
 }
 
 void SyncServiceAndroidBridge::SetSelectedTypes(
@@ -201,13 +203,18 @@ void SyncServiceAndroidBridge::SetSelectedTypes(
 
   syncer::UserSelectableTypeSet user_selectable_types;
   for (int type : types_vector) {
-    CHECK_GE(type, static_cast<int>(syncer::UserSelectableType::kFirstType));
-    CHECK_LE(type, static_cast<int>(syncer::UserSelectableType::kLastType));
-    user_selectable_types.Put(static_cast<syncer::UserSelectableType>(type));
+    user_selectable_types.Put(IntToUserSelectableTypeChecked(type));
   }
 
   native_sync_service_->GetUserSettings()->SetSelectedTypes(
       sync_everything, user_selectable_types);
+}
+
+void SyncServiceAndroidBridge::SetSelectedType(JNIEnv* env,
+                                               jint type,
+                                               jboolean is_type_on) {
+  native_sync_service_->GetUserSettings()->SetSelectedType(
+      IntToUserSelectableTypeChecked(type), is_type_on);
 }
 
 jboolean SyncServiceAndroidBridge::IsCustomPassphraseAllowed(JNIEnv* env) {

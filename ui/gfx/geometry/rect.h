@@ -358,6 +358,14 @@ inline Rect ScaleToRoundedRect(const Rect& rect, float scale) {
   return ScaleToRoundedRect(rect, scale, scale);
 }
 
+// Scales `rect` by `scale` and rounds to enclosing rect, but for each edge, if
+// the distance between the edge and the nearest integer grid is smaller than
+// `error`, the edge is snapped to the integer grid.  The default error is 0.001
+// , which is used by cc/viz. Use this when scaling the window/layer size.
+GEOMETRY_EXPORT Rect ScaleToEnclosingRectIgnoringError(const Rect& rect,
+                                                       float scale,
+                                                       float error = 0.001f);
+
 // Return a maximum rectangle that is covered by the a or b.
 GEOMETRY_EXPORT Rect MaximumCoveredRect(const Rect& a, const Rect& b);
 

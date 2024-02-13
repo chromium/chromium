@@ -54,7 +54,7 @@ AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
     new ParseTestCase('unselect', {name: 'UNSELECT_TEXT'}),
     new ParseTestCase('help', {name: 'LIST_COMMANDS'}),
     new ParseTestCase('new line', {name: 'NEW_LINE'}),
-    new ParseTestCase('cancel', {name: 'STOP_LISTENING'}),
+    new ParseTestCase('cancel', {name: 'TOGGLE_DICTATION'}),
     new ParseTestCase('delete the previous word', {name: 'DELETE_PREV_WORD'}),
     new ParseTestCase('move to the next word', {name: 'NAV_NEXT_WORD'}),
     new ParseTestCase('move to the previous word', {name: 'NAV_PREV_WORD'}),

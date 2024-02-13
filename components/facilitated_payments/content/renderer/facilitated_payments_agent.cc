@@ -8,7 +8,9 @@
 
 #include "base/location.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/facilitated_payments/core/util/pix_code_validator.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -28,10 +30,11 @@ FacilitatedPaymentsAgent::FacilitatedPaymentsAgent(
 FacilitatedPaymentsAgent::~FacilitatedPaymentsAgent() = default;
 
 void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(mojom::PixCodeDetectionResult)> callback) {
   if (will_destruct_ || !render_frame() || !render_frame()->IsMainFrame() ||
       !render_frame()->GetWebFrame()) {
-    std::move(callback).Run(/*found_pix_code=*/false);
+    std::move(callback).Run(
+        mojom::PixCodeDetectionResult::kPixCodeDetectionNotRun);
     return;
   }
 
@@ -39,10 +42,18 @@ void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
   blink::WebString result =
       render_frame()->GetWebFrame()->GetDocument().FindTextInElementWith(
           blink::WebString(kPixCodeIdentifier));
-  std::u16string trimmed = std::u16string(
+  std::string trimmed = base::UTF16ToUTF8(
       base::TrimWhitespace(result.Utf16(), base::TrimPositions::TRIM_ALL));
 
-  std::move(callback).Run(/*found_pix_code=*/!trimmed.empty());
+  if (trimmed.empty()) {
+    std::move(callback).Run(mojom::PixCodeDetectionResult::kPixCodeNotFound);
+    return;
+  }
+
+  std::move(callback).Run(
+      IsValidPixCode(trimmed)
+          ? mojom::PixCodeDetectionResult::kValidPixCodeFound
+          : mojom::PixCodeDetectionResult::kInvalidPixCodeFound);
 }
 
 void FacilitatedPaymentsAgent::OnDestruct() {

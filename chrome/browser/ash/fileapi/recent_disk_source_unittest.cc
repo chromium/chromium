@@ -66,8 +66,9 @@ struct TestParams {
   }
 
   RecentSource::Params MakeParams(storage::FileSystemContext* context,
+                                  const int32_t call_id,
                                   const GURL& origin) {
-    return RecentSource::Params(context, origin, query_, cutoff_time_,
+    return RecentSource::Params(context, call_id, origin, query_, cutoff_time_,
                                 base::TimeTicks::Max(), file_type_);
   }
 
@@ -130,7 +131,7 @@ class RecentDiskSourceTest : public testing::Test {
 
     auto source = params.MakeSource(mount_point_name_, uma_histogram_name_);
     source->GetRecentFiles(
-        params.MakeParams(file_system_context_.get(), origin_),
+        params.MakeParams(file_system_context_.get(), 0, origin_),
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
                std::vector<RecentFile> files) {

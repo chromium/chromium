@@ -350,14 +350,14 @@ base::StringPiece QuicHttpStream::GetAcceptChViaAlps() const {
   return session()->GetAcceptChViaAlps(url::SchemeHostPort(request_info_->url));
 }
 
-absl::optional<quic::QuicErrorCode> QuicHttpStream::GetQuicErrorCode() const {
+std::optional<quic::QuicErrorCode> QuicHttpStream::GetQuicErrorCode() const {
   if (stream_) {
     return stream_->connection_error();
   }
   return connection_error_;
 }
 
-absl::optional<quic::QuicRstStreamErrorCode>
+std::optional<quic::QuicRstStreamErrorCode>
 QuicHttpStream::GetQuicRstStreamErrorCode() const {
   if (stream_) {
     return stream_->stream_error();

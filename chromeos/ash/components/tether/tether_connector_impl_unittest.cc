@@ -70,12 +70,10 @@ class FakeConnectTetheringOperation : public ConnectTetheringOperation {
       multidevice::RemoteDeviceRef device_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
-      TetherHostResponseRecorder* tether_host_response_recorder,
       bool setup_required)
       : ConnectTetheringOperation(device_to_connect,
                                   device_sync_client,
                                   secure_channel_client,
-                                  tether_host_response_recorder,
                                   setup_required),
         setup_required_(setup_required) {}
 
@@ -123,12 +121,11 @@ class FakeConnectTetheringOperationFactory
       multidevice::RemoteDeviceRef device_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
-      TetherHostResponseRecorder* tether_host_response_recorder,
       bool setup_required) override {
     FakeConnectTetheringOperation* operation =
-        new FakeConnectTetheringOperation(
-            device_to_connect, device_sync_client, secure_channel_client,
-            tether_host_response_recorder, setup_required);
+        new FakeConnectTetheringOperation(device_to_connect, device_sync_client,
+                                          secure_channel_client,
+                                          setup_required);
     created_operations_.push_back(operation);
     return base::WrapUnique(operation);
   }
@@ -266,6 +263,10 @@ class TetherConnectorImplTest : public testing::Test {
       HostConnectionMetricsLogger::ConnectionToHostResult expected_event_type,
       std::optional<HostConnectionMetricsLogger::ConnectionToHostInternalError>
           expected_internal_error) {
+    EXPECT_CALL(*mock_tether_host_response_recorder_,
+                RecordSuccessfulConnectTetheringResponse(testing::_))
+        .Times(0);
+
     EXPECT_CALL(*mock_host_connection_metrics_logger_,
                 RecordConnectionToHostResult(
                     expected_event_type,
@@ -623,11 +624,18 @@ TEST_F(TetherConnectorImplTest, TestCancelWhileConnectingToWifi) {
       fake_wifi_hotspot_disconnector_->last_disconnected_wifi_network_guid());
 }
 
+MATCHER_P(HasID, id, "") {
+  return true;
+}
+
 TEST_F(TetherConnectorImplTest, TestSuccessfulConnection) {
   EXPECT_CALL(*mock_host_connection_metrics_logger_,
               RecordConnectionToHostResult(
                   HostConnectionMetricsLogger::ConnectionToHostResult::SUCCESS,
                   test_devices_[0].GetDeviceId(), Eq(std::nullopt)));
+
+  EXPECT_CALL(*mock_tether_host_response_recorder_,
+              RecordSuccessfulConnectTetheringResponse(test_devices_[0]));
 
   CallConnect(GetTetherNetworkGuid(test_devices_[0].GetDeviceId()));
   EXPECT_EQ(ActiveHost::ActiveHostStatus::CONNECTING,

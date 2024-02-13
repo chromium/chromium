@@ -18,8 +18,9 @@ class TestEventStorage final : public EventStorage {
   ~TestEventStorage() override;
 
   // EventStorage:
-  void AddEvent(StructuredEventProto&& event) override;
-  void MoveEvents(ChromeUserMetricsExtension& uma_proto) override;
+  void AddEvent(StructuredEventProto event) override;
+  ::google::protobuf::RepeatedPtrField<StructuredEventProto> TakeEvents()
+      override;
   int RecordedEventsCount() const override;
   void Purge() override;
   void AddBatchEvents(

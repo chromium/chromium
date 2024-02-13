@@ -6,11 +6,11 @@
 #define UI_QT_QT_UI_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "printing/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/gfx/font_render_params.h"
@@ -37,6 +37,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
 
   // ui::LinuxUi:
   bool Initialize() override;
+  void InitializeFontSettings() override;
   base::TimeDelta GetCursorBlinkInterval() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
@@ -58,13 +59,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
       const ui::Event& event,
       int text_flags,
       std::vector<ui::TextEditCommandAuraLinux>* commands) override;
-  gfx::FontRenderParams GetDefaultFontRenderParams() const override;
-  void GetDefaultFontDescription(
-      std::string* family_out,
-      int* size_pixels_out,
-      int* style_out,
-      int* weight_out,
-      gfx::FontRenderParams* params_out) const override;
+  gfx::FontRenderParams GetDefaultFontRenderParams() override;
   bool AnimationsEnabled() const override;
   void AddWindowButtonOrderObserver(
       ui::WindowButtonOrderObserver* observer) override;
@@ -99,7 +94,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
 
   void ScaleFactorMaybeChangedImpl();
 
-  absl::optional<SkColor> GetColor(int id, bool use_custom_frame) const;
+  std::optional<SkColor> GetColor(int id, bool use_custom_frame) const;
 
   // TODO(https://crbug.com/1317782): This is a fallback for any unimplemented
   // functionality in the QT backend and should eventually be removed.
@@ -112,13 +107,7 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   int qt_version_ = 0;
 
   // Cached default font settings.
-  std::string font_family_;
-  int font_size_pixels_ = 0;
-  int font_size_points_ = 0;
-  gfx::Font::FontStyle font_style_ = gfx::Font::NORMAL;
-  int font_weight_;
-  gfx::FontRenderParams font_params_;
-
+  std::optional<gfx::FontRenderParams> font_params_;
   std::unique_ptr<QtInterface> shim_;
 
   std::unique_ptr<QtNativeTheme> native_theme_;

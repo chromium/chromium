@@ -88,7 +88,8 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
 
     // Stores the set of Exo aura::Window instances whose surface widget has
     // been committed prior to |window_id_| is set.
-    std::set<aura::Window*> windows_committed_prior_to_window_id_;
+    std::set<raw_ptr<aura::Window, SetExperimental>>
+        windows_committed_prior_to_window_id_;
   };
 
   // Destroys the WindowObserver once the "WebUI tab-drop closure routine has

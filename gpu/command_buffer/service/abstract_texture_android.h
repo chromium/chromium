@@ -31,8 +31,7 @@ class TexturePassthrough;
 // for things that set up textures using some client's decoder.  Creating an
 // AbstractTextureAndroid is similar to "glGenTexture", and deleting it is
 // similar to calling "glDeleteTextures".
-class GPU_GLES2_EXPORT AbstractTextureAndroid
-    : public base::SupportsWeakPtr<AbstractTextureAndroid> {
+class GPU_GLES2_EXPORT AbstractTextureAndroid final {
  public:
   static std::unique_ptr<AbstractTextureAndroid> CreateForValidating(
       gfx::Size size);
@@ -68,6 +67,10 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid
 
   unsigned int service_id() const { return GetTextureBase()->service_id(); }
 
+  base::WeakPtr<AbstractTextureAndroid> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   bool have_context_ = true;
 
@@ -76,6 +79,7 @@ class GPU_GLES2_EXPORT AbstractTextureAndroid
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   gfx::Size texture_passthrough_size_;
   raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
+  base::WeakPtrFactory<AbstractTextureAndroid> weak_ptr_factory_{this};
 };
 
 }  // namespace gpu

@@ -26,7 +26,7 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
     std::vector<uint8_t> cbor_attestation_statement;
     uint8_t used_transport;  // WEBAUTHN_CTAP_TRANSPORT_* from <webauthn.h>
     bool success;
-    absl::optional<FidoTransportProtocol> expected_transport;
+    std::optional<FidoTransportProtocol> expected_transport;
   } test_cases[] = {
       {L"packed",
        fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
@@ -50,7 +50,7 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
        fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
        fido_parsing_utils::Materialize(
            test_data::kPackedAttestationStatementCBOR),
-       WEBAUTHN_CTAP_TRANSPORT_TEST, true, absl::nullopt},
+       WEBAUTHN_CTAP_TRANSPORT_TEST, true, std::nullopt},
       // Unknown attestation formats
       {L"weird-unknown-format",
        fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
@@ -137,7 +137,7 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
 TEST(TypeConversionsTest, Transports) {
   for (int i = 0; i < 16; i++) {
     const uint32_t mask = 1u << i;
-    const absl::optional<FidoTransportProtocol> transport =
+    const std::optional<FidoTransportProtocol> transport =
         FromWinTransportsMask(mask);
     if (transport) {
       const uint32_t result = ToWinTransportsMask({*transport});

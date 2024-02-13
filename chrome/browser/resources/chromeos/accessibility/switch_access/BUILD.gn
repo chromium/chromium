@@ -35,21 +35,23 @@ ts_modules = [
   "commands.ts",
   "focus_ring_manager.ts",
   "history.ts",
+  "menu_manager.ts",
   "metrics.ts",
   "navigator.ts",
   "navigator_interfaces.ts",
   "nodes/switch_access_node.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
+  "switch_access.ts",
   "switch_access_constants.ts",
   "switch_access_loader.ts",
+  "text_navigation_manager.ts",
 ]
 
 # JS files needed to compile TS.
 js_modules = [
   "action_manager.js",
   "item_scan_manager.js",
-  "menu_manager.js",
   "nodes/back_button_node.js",
   "nodes/basic_node.js",
   "nodes/combo_box_node.js",
@@ -61,9 +63,7 @@ js_modules = [
   "nodes/slider_node.js",
   "nodes/tab_node.js",
   "nodes/window_node.js",
-  "switch_access.js",
   "switch_access_predicate.js",
-  "text_navigation_manager.js",
 ]
 
 # Root dir must be the parent directory so it can reach common.
@@ -83,6 +83,7 @@ ts_library("ts_build") {
   definitions = [
     "../definitions/accessibility_private_mv2.d.ts",
     "../definitions/automation.d.ts",
+    "../definitions/clipboard_mv2.d.ts",
     "../definitions/command_line_private.d.ts",
     "../definitions/extension_types.d.ts",
     "../definitions/extensions.d.ts",

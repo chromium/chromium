@@ -312,8 +312,7 @@ void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
       continue;
 
     auto* new_wake_up_budget_pool = parent_page_scheduler_->GetWakeUpBudgetPool(
-        task_queue, frame_origin_type_, frame_visible_, is_visible_area_large_,
-        had_user_activation_);
+        task_queue, frame_origin_type_, frame_visible_, IsImportant());
     if (task_queue->GetWakeUpBudgetPool() == new_wake_up_budget_pool) {
       continue;
     }
@@ -321,8 +320,7 @@ void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
     parent_page_scheduler_->RemoveQueueFromWakeUpBudgetPool(task_queue,
                                                             &lazy_now);
     parent_page_scheduler_->AddQueueToWakeUpBudgetPool(
-        task_queue, frame_origin_type_, frame_visible_, is_visible_area_large_,
-        had_user_activation_, &lazy_now);
+        task_queue, new_wake_up_budget_pool, &lazy_now);
   }
 }
 
@@ -355,10 +353,6 @@ void FrameSchedulerImpl::SetVisibleAreaLarge(bool is_large) {
   UpdatePolicy();
 }
 
-bool FrameSchedulerImpl::IsVisibleAreaLarge() const {
-  return is_visible_area_large_;
-}
-
 void FrameSchedulerImpl::SetHadUserActivation(bool had_user_activation) {
   DCHECK(parent_page_scheduler_);
   if (had_user_activation_ == had_user_activation) {
@@ -372,10 +366,6 @@ void FrameSchedulerImpl::SetHadUserActivation(bool had_user_activation) {
 
   MoveTaskQueuesToCorrectWakeUpBudgetPool();
   UpdatePolicy();
-}
-
-bool FrameSchedulerImpl::HadUserActivation() const {
-  return had_user_activation_;
 }
 
 void FrameSchedulerImpl::SetCrossOriginToNearestMainFrame(bool cross_origin) {
@@ -695,6 +685,10 @@ void FrameSchedulerImpl::ResetForNavigation() {
   back_forward_cache_disabling_feature_tracker_.Reset();
 }
 
+bool FrameSchedulerImpl::IsImportant() const {
+  return is_visible_area_large_ || had_user_activation_;
+}
+
 void FrameSchedulerImpl::OnStartedUsingNonStickyFeature(
     SchedulingPolicy::Feature feature,
     const SchedulingPolicy& policy,
@@ -791,8 +785,8 @@ void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("frame_type", frame_type_ == FrameScheduler::FrameType::kMainFrame
                              ? "MainFrame"
                              : "Subframe");
-  dict.Add("is_visible_area_large", IsVisibleAreaLarge());
-  dict.Add("had_user_activation", HadUserActivation());
+  dict.Add("is_visible_area_large", is_visible_area_large_);
+  dict.Add("had_user_activation", had_user_activation_);
   dict.Add("disable_background_timer_throttling",
            !RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled());
 
@@ -984,16 +978,18 @@ bool FrameSchedulerImpl::ShouldThrottleTaskQueues() const {
   DCHECK(parent_page_scheduler_);
 
   if (parent_page_scheduler_->ThrottleUnimportantFrameTimers() &&
-      IsCrossOriginToNearestMainFrame() && frame_visible_ &&
-      !IsVisibleAreaLarge() && !HadUserActivation()) {
+      IsCrossOriginToNearestMainFrame() && frame_visible_ && !IsImportant()) {
     return true;
   }
-  if (!RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled())
+  if (!RuntimeEnabledFeatures::TimerThrottlingForBackgroundTabsEnabled()) {
     return false;
-  if (parent_page_scheduler_->IsAudioPlaying())
+  }
+  if (parent_page_scheduler_->IsAudioPlaying()) {
     return false;
-  if (!parent_page_scheduler_->IsPageVisible())
+  }
+  if (!parent_page_scheduler_->IsPageVisible()) {
     return true;
+  }
   return !frame_visible_ && IsCrossOriginToNearestMainFrame();
 }
 
@@ -1158,8 +1154,10 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
     }
 
     parent_page_scheduler_->AddQueueToWakeUpBudgetPool(
-        task_queue, frame_origin_type_, frame_visible_, is_visible_area_large_,
-        had_user_activation_, &lazy_now);
+        task_queue,
+        parent_page_scheduler_->GetWakeUpBudgetPool(
+            task_queue, frame_origin_type_, frame_visible_, IsImportant()),
+        &lazy_now);
 
     if (task_queues_throttled_) {
       MainThreadTaskQueue::ThrottleHandle handle = task_queue->Throttle();

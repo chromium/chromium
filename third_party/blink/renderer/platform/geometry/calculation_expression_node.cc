@@ -20,7 +20,7 @@ namespace blink {
 
 float CalculationExpressionNumberNode::Evaluate(
     float max_value,
-    const Length::AnchorEvaluator*) const {
+    const Length::EvaluationInput&) const {
   return value_;
 }
 
@@ -44,11 +44,73 @@ CalculationExpressionNumberNode::ResolvedResultType() const {
 }
 #endif
 
+// ------ CalculationExpressionSizingKeywordNode ------
+
+CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
+    Keyword keyword)
+    : keyword_(keyword) {
+  if (keyword != Keyword::kSize && keyword != Keyword::kAny) {
+    // TODO(https://crbug.com/313072): When we implement 'auto' it probably
+    // needs to be tracked separately here.
+    has_content_or_intrinsic_ = true;
+  }
+#if DCHECK_IS_ON()
+  result_type_ = ResultType::kPixelsAndPercent;
+#endif
+}
+
+float CalculationExpressionSizingKeywordNode::Evaluate(
+    float max_value,
+    const Length::EvaluationInput& input) const {
+  Length::Type intrinsic_type = Length::kFixed;
+  switch (keyword_) {
+    case Keyword::kSize:
+      CHECK(input.size_keyword_basis);
+      return *input.size_keyword_basis;
+    case Keyword::kAny:
+      return 0.0f;
+    // TODO(https://crbug.com/313072): Add support for 'auto'.
+    case Keyword::kMinContent:
+    case Keyword::kWebkitMinContent:
+      intrinsic_type = Length::Type::kMinContent;
+      break;
+    case Keyword::kMaxContent:
+    case Keyword::kWebkitMaxContent:
+      intrinsic_type = Length::Type::kMaxContent;
+      break;
+    case Keyword::kFitContent:
+    case Keyword::kWebkitFitContent:
+      intrinsic_type = Length::Type::kFitContent;
+      break;
+    case Keyword::kWebkitFillAvailable:
+      intrinsic_type = Length::Type::kFillAvailable;
+      break;
+  }
+
+  if (!input.intrinsic_evaluator) {
+    // TODO(https://crbug.com/313072): I'd like to be able to CHECK() this
+    // instead.  However, we hit this code in three cases:
+    //  * the code in ContentMinimumInlineSize, which passes max_value of 0
+    //  * the (questionable) code in EvaluateValueIfNaNorInfinity(), which
+    //    passes max_value of 1 or -1
+    //  * the DCHECK()s in
+    //    CSSLengthInterpolationType::ApplyStandardPropertyValue pass a max
+    //    value of 100
+    // So we have to return something.  Return 0 for now, though this may
+    // not be ideal.
+    CHECK(max_value == 1.0f || max_value == -1.0f || max_value == 0.0f ||
+          max_value == 100.0f);
+    return 0.0f;
+  }
+  CHECK(input.intrinsic_evaluator);
+  return (*input.intrinsic_evaluator)(Length(intrinsic_type));
+}
+
 // ------ CalculationExpressionPixelsAndPercentNode ------
 
 float CalculationExpressionPixelsAndPercentNode::Evaluate(
     float max_value,
-    const Length::AnchorEvaluator*) const {
+    const Length::EvaluationInput&) const {
   return value_.pixels + value_.percent / 100 * max_value;
 }
 
@@ -283,28 +345,18 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children.size(), 2u);
+      // TODO(https://crbug.com/313072): It may be worth implementing
+      // simplification for calc-size(), but it's not likely to be possible to
+      // simplify calc-size() in any of its real use cases.
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          std::move(children), op);
+    }
     case CalculationOperator::kInvalid:
       NOTREACHED();
       return nullptr;
   }
-}
-
-bool CalculationExpressionOperationNode::ComputeHasAnchorQueries() const {
-  for (const auto& child : children_) {
-    if (child->HasAnchorQueries())
-      return true;
-  }
-  return false;
-}
-
-bool CalculationExpressionOperationNode::ComputeHasAutoAnchorPositioning()
-    const {
-  for (const auto& child : children_) {
-    if (child->HasAutoAnchorPositioning()) {
-      return true;
-    }
-  }
-  return false;
 }
 
 CalculationExpressionOperationNode::CalculationExpressionOperationNode(
@@ -315,55 +367,59 @@ CalculationExpressionOperationNode::CalculationExpressionOperationNode(
   result_type_ = ResolvedResultType();
   DCHECK_NE(result_type_, ResultType::kInvalid);
 #endif
-  has_anchor_queries_ = ComputeHasAnchorQueries();
-  has_auto_anchor_positioning_ = ComputeHasAutoAnchorPositioning();
+  for (const auto& child : children_) {
+    if (child->HasAnchorQueries()) {
+      has_anchor_queries_ = true;
+    }
+    if (child->HasContentOrIntrinsicSize()) {
+      has_content_or_intrinsic_ = true;
+    }
+  }
 }
 
 float CalculationExpressionOperationNode::Evaluate(
     float max_value,
-    const Length::AnchorEvaluator* anchor_evaluator) const {
+    const Length::EvaluationInput& input) const {
   switch (operator_) {
     case CalculationOperator::kAdd: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float left = children_[0]->Evaluate(max_value, input);
+      float right = children_[1]->Evaluate(max_value, input);
       return left + right;
     }
     case CalculationOperator::kSubtract: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float left = children_[0]->Evaluate(max_value, input);
+      float right = children_[1]->Evaluate(max_value, input);
       return left - right;
     }
     case CalculationOperator::kMultiply: {
       DCHECK_EQ(children_.size(), 2u);
-      float left = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float right = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float left = children_[0]->Evaluate(max_value, input);
+      float right = children_[1]->Evaluate(max_value, input);
       return left * right;
     }
     case CalculationOperator::kMin: {
       DCHECK(!children_.empty());
-      float minimum = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float minimum = children_[0]->Evaluate(max_value, input);
       for (auto& child : children_) {
-        minimum =
-            std::min(minimum, child->Evaluate(max_value, anchor_evaluator));
+        minimum = std::min(minimum, child->Evaluate(max_value, input));
       }
       return minimum;
     }
     case CalculationOperator::kMax: {
       DCHECK(!children_.empty());
-      float maximum = children_[0]->Evaluate(max_value, anchor_evaluator);
+      float maximum = children_[0]->Evaluate(max_value, input);
       for (auto& child : children_) {
-        maximum =
-            std::max(maximum, child->Evaluate(max_value, anchor_evaluator));
+        maximum = std::max(maximum, child->Evaluate(max_value, input));
       }
       return maximum;
     }
     case CalculationOperator::kClamp: {
       DCHECK(!children_.empty());
-      float min = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float val = children_[1]->Evaluate(max_value, anchor_evaluator);
-      float max = children_[2]->Evaluate(max_value, anchor_evaluator);
+      float min = children_[0]->Evaluate(max_value, input);
+      float val = children_[1]->Evaluate(max_value, input);
+      float max = children_[2]->Evaluate(max_value, input);
       // clamp(MIN, VAL, MAX) is identical to max(MIN, min(VAL, MAX))
       return std::max(min, std::min(val, max));
     }
@@ -374,15 +430,15 @@ float CalculationExpressionOperationNode::Evaluate(
     case CalculationOperator::kMod:
     case CalculationOperator::kRem: {
       DCHECK_EQ(children_.size(), 2u);
-      float a = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float b = children_[1]->Evaluate(max_value, anchor_evaluator);
+      float a = children_[0]->Evaluate(max_value, input);
+      float b = children_[1]->Evaluate(max_value, input);
       return EvaluateSteppedValueFunction(operator_, a, b);
     }
     case CalculationOperator::kHypot: {
       DCHECK_GE(children_.size(), 1u);
       float value = 0;
       for (scoped_refptr<const CalculationExpressionNode> operand : children_) {
-        float a = operand->Evaluate(max_value, anchor_evaluator);
+        float a = operand->Evaluate(max_value, input);
         value = std::hypot(value, a);
       }
       return value;
@@ -390,8 +446,7 @@ float CalculationExpressionOperationNode::Evaluate(
     case CalculationOperator::kAbs:
     case CalculationOperator::kSign: {
       DCHECK_EQ(children_.size(), 1u);
-      const float value =
-          children_.front()->Evaluate(max_value, anchor_evaluator);
+      const float value = children_.front()->Evaluate(max_value, input);
       if (operator_ == CalculationOperator::kAbs) {
         return std::abs(value);
       } else {
@@ -402,11 +457,18 @@ float CalculationExpressionOperationNode::Evaluate(
       }
     }
     case CalculationOperator::kProgress: {
-      DCHECK(!children_.empty());
-      float progress = children_[0]->Evaluate(max_value, anchor_evaluator);
-      float from = children_[1]->Evaluate(max_value, anchor_evaluator);
-      float to = children_[2]->Evaluate(max_value, anchor_evaluator);
+      DCHECK_EQ(children_.size(), 3u);
+      float progress = children_[0]->Evaluate(max_value, input);
+      float from = children_[1]->Evaluate(max_value, input);
+      float to = children_[2]->Evaluate(max_value, input);
       return (progress - from) / (to - from);
+    }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children_.size(), 2u);
+      Length::EvaluationInput calculation_input(input);
+      calculation_input.size_keyword_basis =
+          children_[0]->Evaluate(max_value, input);
+      return children_[1]->Evaluate(max_value, calculation_input);
     }
     case CalculationOperator::kInvalid:
       break;
@@ -445,6 +507,11 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
           children_[0]->IsNumber() ? children_[1] : children_[0];
       return CreateSimplified(
           Children({pixels_and_percent->Zoom(factor), number}), operator_);
+    }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children_.size(), 2u);
+      return CreateSimplified(
+          Children({children_[0], children_[1]->Zoom(factor)}), operator_);
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax:
@@ -504,6 +571,16 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
         return ResultType::kPixelsAndPercent;
 
       return ResultType::kNumber;
+    }
+    case CalculationOperator::kCalcSize: {
+      DCHECK_EQ(children_.size(), 2u);
+      auto basis_type = children_[0]->ResolvedResultType();
+      auto calculation_type = children_[1]->ResolvedResultType();
+      if (basis_type != ResultType::kPixelsAndPercent ||
+          calculation_type != ResultType::kPixelsAndPercent) {
+        return ResultType::kInvalid;
+      }
+      return ResultType::kPixelsAndPercent;
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax:

@@ -1350,6 +1350,7 @@ mojom("mojom") {
   generate_java = true
   sources = [
     "cert_verifier_service.mojom",
+    "cert_verifier_service_updater.mojom",
     "clear_data_filter.mojom",
     "cookie_encryption_provider.mojom",
     "cors_origin_pattern.mojom",
@@ -1364,6 +1365,7 @@ mojom("mojom") {
     "net_log.mojom",
     "network_annotation_monitor.mojom",
     "network_context.mojom",
+    "network_context_client.mojom",
     "network_quality_estimator_manager.mojom",
     "network_service.mojom",
     "network_service_test.mojom",

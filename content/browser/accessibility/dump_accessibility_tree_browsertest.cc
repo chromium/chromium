@@ -130,17 +130,6 @@ void DumpAccessibilityTreeTest::ChooseFeatures(
                                             disabled_features);
 }
 
-void DumpAccessibilityTreeTestWithIgnoredNodes::ChooseFeatures(
-    std::vector<base::test::FeatureRef>* enabled_features,
-    std::vector<base::test::FeatureRef>* disabled_features) {
-  // http://crbug.com/1063155 - temporary until this is enabled
-  // everywhere.
-  enabled_features->emplace_back(
-      features::kEnableAccessibilityExposeIgnoredNodes);
-  DumpAccessibilityTreeTest::ChooseFeatures(enabled_features,
-                                            disabled_features);
-}
-
 class DumpAccessibilityTreeTestExceptUIA : public DumpAccessibilityTreeTest {};
 
 // Parameterize the tests so that each test-pass is run independently.
@@ -183,12 +172,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     DumpAccessibilityTreeTestExceptUIA,
     ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPassesExceptUIA()),
-    DumpAccessibilityTreeTestPassToString());
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    DumpAccessibilityTreeTestWithIgnoredNodes,
-    ::testing::ValuesIn(DumpAccessibilityTestBase::TreeTestPasses()),
     DumpAccessibilityTreeTestPassToString());
 
 INSTANTIATE_TEST_SUITE_P(
@@ -848,8 +831,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenChangedOnButtons) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-changed-on-buttons.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaHiddenDescendants) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-descendants.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenLineBreakingObjects) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-hidden-line-breaking-objects.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -1804,6 +1797,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDisabled) {
   RunHtmlTest(FILE_PATH_LITERAL("disabled.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityDisabledWithSubtree) {
+  RunHtmlTest(FILE_PATH_LITERAL("disabled-with-subtree.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityDiv) {
   RunHtmlTest(FILE_PATH_LITERAL("div.html"));
 }
@@ -1854,8 +1852,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
+// TODO(b/324376803): Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       AccessibilityContenteditableDocsLi) {
+                       DISABLED_AccessibilityContenteditableDocsLi) {
   RunHtmlTest(FILE_PATH_LITERAL("contenteditable-docs-li.html"));
 }
 
@@ -2300,8 +2299,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
 #else
 #define MAYBE_InertAttribute InertAttribute
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
-                       MAYBE_InertAttribute) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MAYBE_InertAttribute) {
   RunHtmlTest(FILE_PATH_LITERAL("inert-attribute.html"));
 }
 
@@ -2470,7 +2468,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputRadio) {
   RunHtmlTest(FILE_PATH_LITERAL("input-radio.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityInputRadioCheckboxLabel) {
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-checkbox-label.html"));
 }
@@ -2850,12 +2848,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-opened.html"));
 }
 
-// http://crbug.com/738497
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityModalDialogInIframeClosed) {
-  RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-in-iframe-closed.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityModalDialogInIframeOpened) {
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-in-iframe-opened.html"));
@@ -2866,7 +2858,7 @@ IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-in-iframe-opened.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityModalDialogAndIframes) {
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-and-iframes.html"));
 }

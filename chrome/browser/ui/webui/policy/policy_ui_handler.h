@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
+#include "components/policy/core/common/schema_registry.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/buildflags/buildflags.h"
@@ -26,9 +27,9 @@
 class PrefChangeRegistrar;
 
 // The JavaScript message handler for the chrome://policy page.
-class PolicyUIHandler
-    : public content::WebUIMessageHandler,
-      public policy::PolicyValueAndStatusAggregator::Observer {
+class PolicyUIHandler : public content::WebUIMessageHandler,
+                        public policy::PolicyValueAndStatusAggregator::Observer,
+                        public policy::SchemaRegistry::Observer {
  public:
   PolicyUIHandler();
 
@@ -45,6 +46,9 @@ class PolicyUIHandler
 
   // policy::PolicyValueAndStatusAggregator::Observer implementation.
   void OnPolicyValueAndStatusChanged() override;
+
+  // policy::SchemaRegistry::Observer implementation.
+  void OnSchemaRegistryUpdated(bool has_new_schemas) override;
 
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
@@ -76,6 +80,10 @@ class PolicyUIHandler
   // separately.
   void SendPolicies();
 
+  // Send the current policy schema to the UI: the list of supported Chrome &
+  // extension policies, and their types.
+  void SendSchema();
+
   // Send the status of cloud policy to the UI. For each scope that has cloud
   // policy enabled (device and/or user), a dictionary containing status
   // information.
@@ -95,6 +103,9 @@ class PolicyUIHandler
   base::ScopedObservation<policy::PolicyValueAndStatusAggregator,
                           policy::PolicyValueAndStatusAggregator::Observer>
       policy_value_and_status_observation_{this};
+  base::ScopedObservation<policy::SchemaRegistry,
+                          policy::SchemaRegistry::Observer>
+      schema_registry_observation_{this};
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

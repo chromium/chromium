@@ -23,7 +23,7 @@ class AccountInfoGetter {
   // feature enabled. This value should be exclusively used for metrics only
   // or in the communication with the payments server, if this communication
   // only influences metrics.
-  // TODO(crbug.com/1462552): Simplify once ConsentLevel::kSync and
+  // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and
   // SyncService::IsSyncFeatureEnabled() are deleted from the codebase.
   virtual bool IsSyncFeatureEnabledForPaymentsServerMetrics() const = 0;
 

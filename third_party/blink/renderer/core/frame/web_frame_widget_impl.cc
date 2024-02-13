@@ -617,9 +617,9 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
 
   if (auto* text_control = EnclosingTextControl(stylus_writable_element)) {
     text_control->Focus(FocusParams(FocusTrigger::kUserGesture));
-  } else if (auto* html_element =
-                 DynamicTo<HTMLElement>(stylus_writable_element)) {
-    html_element->Focus(FocusParams(FocusTrigger::kUserGesture));
+  } else if (auto* root_editable_html_element = DynamicTo<HTMLElement>(
+                 RootEditableElement(*stylus_writable_element))) {
+    root_editable_html_element->Focus(FocusParams(FocusTrigger::kUserGesture));
   }
   Element* focused_element = FocusedElement();
   // Since the element can change after it gets focused, we just verify if
@@ -4391,12 +4391,18 @@ float WebFrameWidgetImpl::GetCompositingScaleFactor() {
   return compositing_scale_factor_;
 }
 
-const cc::LayerTreeDebugState& WebFrameWidgetImpl::GetLayerTreeDebugState() {
-  return widget_base_->LayerTreeHost()->GetDebugState();
+const cc::LayerTreeDebugState* WebFrameWidgetImpl::GetLayerTreeDebugState() {
+  if (!View()->does_composite()) {
+    return nullptr;
+  }
+  return &widget_base_->LayerTreeHost()->GetDebugState();
 }
 
 void WebFrameWidgetImpl::SetLayerTreeDebugState(
     const cc::LayerTreeDebugState& state) {
+  if (!View()->does_composite()) {
+    return;
+  }
   widget_base_->LayerTreeHost()->SetDebugState(state);
 }
 

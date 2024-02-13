@@ -32,6 +32,8 @@ class ASH_EXPORT AcceleratorLookup {
     std::u16string key_display;
   };
 
+  static std::u16string GetAcceleratorDetailsText(AcceleratorDetails details);
+
   // Returns a list of all accelerator details for `action`.
   std::vector<AcceleratorDetails> GetAcceleratorsForAction(
       uint32_t action) const;

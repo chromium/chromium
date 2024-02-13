@@ -185,7 +185,9 @@ suite('acceleratorEditDialogTest', function() {
         'Press 1-4 modifiers and 1 other key on your keyboard. To exit ' +
         'editing mode, press alt + esc.';
     const statusMessageElement = strictQuery(
-        '#acceleratorInfoText', acceleratorElements[0]!.shadowRoot,
+        '#container',
+        acceleratorElements[0]!.shadowRoot!.querySelector(
+                                               '#status')!.shadowRoot,
         HTMLDivElement);
     assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
 
@@ -315,9 +317,11 @@ suite('acceleratorEditDialogTest', function() {
     const expectedErrorMessage =
         'Shortcut is being used for "TestConflictDescription". Edit or ' +
         'remove to resolve the conflict.';
-    const statusMessageElement =
+    const statusMessageElement = strictQuery(
+        '#container',
         updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
-            '#acceleratorInfoText') as HTMLDivElement;
+                                                      '#status')!.shadowRoot,
+        HTMLDivElement);
     assertEquals(
         expectedErrorMessage, statusMessageElement.textContent!.trim());
   });
@@ -562,9 +566,11 @@ suite('acceleratorEditDialogTest', function() {
     const expectedErrorMessage =
         'Shortcut is being used for "TestConflictDescription". Edit or ' +
         'remove to resolve the conflict.';
-    const statusMessageElement =
+    const statusMessageElement = strictQuery(
+        '#container',
         updatedAcceleratorElements[0]!.shadowRoot!.querySelector(
-            '#acceleratorInfoText') as HTMLDivElement;
+                                                      '#status')!.shadowRoot,
+        HTMLDivElement);
     assertEquals(
         expectedErrorMessage, statusMessageElement.textContent!.trim());
   });

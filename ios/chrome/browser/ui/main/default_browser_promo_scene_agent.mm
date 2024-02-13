@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
+#import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 
@@ -46,7 +47,7 @@
 // Registers the post restore default browser promo if the user is eligible. To
 // be eligible, they must be in the first session after an iOS restore and have
 // previously set Chrome as their default browser.
-- (void)maybeRegisterPostRestorePromo {
+- (void)updatePostRestorePromoRegistration {
   if (!_postRestorePromoSeenInCurrentSession &&
       IsPostRestoreDefaultBrowserEligibleUser()) {
     // TODO(crbug.com/1453786): register other variations.
@@ -59,6 +60,16 @@
   } else {
     self.promosManager->DeregisterPromo(
         promos_manager::Promo::PostRestoreDefaultBrowserAlert);
+  }
+}
+
+- (void)updatePostDefaultAbandonmentPromoRegistration {
+  if (IsEligibleForPostDefaultAbandonmentPromo()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::PostDefaultAbandonment);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::PostDefaultAbandonment);
   }
 }
 
@@ -109,11 +120,11 @@
 }
 
 - (void)onEnteringForeground {
-  // Post Restore promo takes priority over other default browser promos.
-  [self maybeRegisterPostRestorePromo];
-
-  // Register default browser promo manager to the promo manager.
   DCHECK(self.promosManager);
+
+  [self updatePostRestorePromoRegistration];
+  [self updatePostDefaultAbandonmentPromoRegistration];
+
   if (ShouldRegisterPromoWithPromoManager(self.signedIn,
                                           /*is_omnibox_copy_paste=*/false)) {
     self.promosManager->RegisterPromoForSingleDisplay(

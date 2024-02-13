@@ -11,7 +11,6 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
-#include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/url_constants.h"
@@ -19,6 +18,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/webapps_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
@@ -65,7 +65,7 @@ WebappInstallSource WebappsClientAndroid::GetInstallSource(
 
 AppBannerManager* WebappsClientAndroid::GetAppBannerManager(
     content::WebContents* web_contents) {
-  return ChromeAppBannerManagerAndroid::FromWebContents(web_contents);
+  return AppBannerManagerAndroid::FromWebContents(web_contents);
 }
 
 bool WebappsClientAndroid::IsWebAppConsideredFullyInstalled(

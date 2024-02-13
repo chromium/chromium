@@ -114,7 +114,8 @@ class InstanceRegistry {
   void OnInstance(InstancePtr delta);
 
   // Returns instances for the |app_id|.
-  std::set<const Instance*> GetInstances(const std::string& app_id);
+  std::set<raw_ptr<const Instance, SetExperimental>> GetInstances(
+      const std::string& app_id);
 
   // Returns one state for the `window`.
   //
@@ -278,7 +279,9 @@ class InstanceRegistry {
   std::map<const base::UnguessableToken, aura::Window*> instance_id_to_window_;
 
   // Maps from app id to instances.
-  std::map<const std::string, std::set<const Instance*>> app_id_to_instances_;
+  std::map<const std::string,
+           std::set<raw_ptr<const Instance, SetExperimental>>>
+      app_id_to_instances_;
 
   std::unique_ptr<Instance> old_state_;
 

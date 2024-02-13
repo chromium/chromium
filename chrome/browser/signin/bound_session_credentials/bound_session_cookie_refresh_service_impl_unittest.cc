@@ -296,7 +296,8 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
         std::make_unique<BoundSessionCookieRefreshServiceImpl>(
             fake_unexportable_key_service_,
             BoundSessionParamsStorage::CreatePrefsStorageForTesting(prefs_),
-            &storage_partition_, content::GetNetworkConnectionTracker());
+            &storage_partition_, content::GetNetworkConnectionTracker(),
+            /*is_off_the_record_profile=*/false);
     cookie_refresh_service->set_controller_factory_for_testing(
         base::BindRepeating(&BoundSessionCookieRefreshServiceImplTest::
                                 CreateBoundSessionCookieController,

@@ -47,6 +47,13 @@ GFX_EXPORT base::FilePath GetFontPath(FcPattern* pattern);
 GFX_EXPORT void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
                                                  FontRenderParams* param_out);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Adds a given directory to the available fonts in the application.
+// Directory must start with `/run/imageloader/` (guaranteed by DLC).
+// Returns whether the fonts were added or not.
+GFX_EXPORT bool AddAppFontDir(base::FilePath dir);
+#endif
+
 }  // namespace gfx
 
 #endif  // UI_GFX_LINUX_FONTCONFIG_UTIL_H_

@@ -114,15 +114,6 @@ class FencedFrameURLMappingTestPeer {
   // Insert urn mappings until it reaches the limit.
   void FillMap(const GURL& url);
 
-  // TODO(crbug.com/1422301): This method allows setting of an arbitrary id of
-  // the fenced frame mapping. It is used to test that the auction fails if
-  // there is a mismatch between the fenced frame mapping used at the beginning
-  // of the auction and at the end of the auction. Once the root cause is known
-  // and the issue fixed, remove `SetId()` and `GetNextId()`.
-  void SetId(FencedFrameURLMapping::Id id);
-
-  FencedFrameURLMapping::Id GetNextId() const;
-
  private:
   raw_ptr<FencedFrameURLMapping> fenced_frame_url_mapping_;
 };

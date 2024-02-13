@@ -2140,5 +2140,43 @@ TEST_P(QuicChromiumClientSessionTest, WriteErrorAfterHandshakeConfirmed) {
       connectivity_monitor_->GetCountForWriteErrorCode(ERR_CONNECTION_RESET));
 }
 
+// Much like above, but checking that ECN marks are reported.
+TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(net::features::kReceiveEcn);
+  FLAGS_quic_reloadable_flag_quic_clone_ecn = true;
+
+  MockQuicData mock_quic_data(version_);
+  int write_packet_num = 1, read_packet_num = 0;
+  quic::QuicEcnCounts ecn(1, 0, 0);  // 1 ECT(0) packet received
+  mock_quic_data.AddWrite(
+      ASYNC, client_maker_.MakeInitialSettingsPacket(write_packet_num++));
+  mock_quic_data.AddRead(
+      ASYNC, server_maker_.MakeInitialSettingsPacket(read_packet_num++));
+  server_maker_.set_ecn_codepoint(quic::ECN_ECT0);
+  mock_quic_data.AddRead(ASYNC,
+                         server_maker_.MakePingPacket(read_packet_num++));
+  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(
+                                           write_packet_num++, 0, 1, 0, ecn));
+  server_maker_.set_ecn_codepoint(quic::ECN_ECT1);
+  mock_quic_data.AddRead(ASYNC,
+                         server_maker_.MakePingPacket(read_packet_num++));
+  server_maker_.set_ecn_codepoint(quic::ECN_CE);
+  mock_quic_data.AddRead(ASYNC,
+                         server_maker_.MakePingPacket(read_packet_num++));
+  ecn.ect1 = 1;
+  ecn.ce = 1;
+  mock_quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeAckPacket(
+                                           write_packet_num++, 0, 3, 0, ecn));
+  mock_quic_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  mock_quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(mock_quic_data.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
+}
+
 }  // namespace
 }  // namespace net::test

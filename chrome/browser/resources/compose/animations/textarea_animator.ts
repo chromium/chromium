@@ -49,6 +49,46 @@ export class ComposeTextareaAnimator extends Animator {
     ].flat();
   }
 
+  transitionToResult(bodyHeight: number): Animation[] {
+    const dimensionsAnimation = this.animate(
+        '#inputContainer textarea, #readonlyContainer',
+        [
+          {
+            height: `${bodyHeight}px`,
+            padding: 'var(--compose-textarea-input-padding)',
+          },
+          {
+            height: 'var(--compose-textarea-readonly-height)',
+            padding: 'var(--compose-textarea-readonly-padding)',
+          },
+        ],
+        {duration: 200, easing: STANDARD_EASING});
+
+    const colorAnimation = this.animate(
+        '#inputContainer textarea, #readonlyContainer',
+        [
+          {
+            background: 'transparent',
+          },
+          {
+            background: 'var(--compose-textarea-readonly-background)',
+            outlineColor: 'transparent',
+          },
+        ],
+        {duration: 100, easing: 'linear'});
+
+    return [
+      dimensionsAnimation,
+      colorAnimation,
+
+      // Hide scrollbar resulting from shrinking textarea.
+      this.maintainStyles(
+          '#inputContainer textarea', {overflow: 'hidden'}, {duration: 200}),
+      // Fade in edit button.
+      this.fadeIn('#editButton', {delay: 100, duration: 100}),
+    ].flat();
+  }
+
   transitionToReadonly(fromHeight?: number): Animation[] {
     const fromHeightValue =
         fromHeight ? `${fromHeight}px` : 'var(--compose-textarea-input-height)';

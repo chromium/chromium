@@ -54,7 +54,7 @@ ASH_EXPORT aura::Window* GetTopMostWindow(const aura::Window::Windows& windows);
 // window tree. Windows which are descendants of a different root window will be
 // returned in an arbitrary order relative to each-other.
 ASH_EXPORT std::vector<aura::Window*> SortWindowsBottomToTop(
-    std::set<aura::Window*> window_set);
+    std::set<raw_ptr<aura::Window, SetExperimental>> window_set);
 
 // Returns the window with capture, null if no window currently has capture.
 ASH_EXPORT aura::Window* GetCaptureWindow();
@@ -219,7 +219,12 @@ bool IsFasterSplitScreenOrSnapGroupEnabledInClamshell();
 // Returns true if `SplitViewOverviewSession` is created through faster split
 // screen setup, i.e. partial overview is started on the other side of the
 // screen when `window` is snapped.
-bool IsInFasterSplitScreenSetupSession(aura::Window* window);
+bool IsInFasterSplitScreenSetupSession(const aura::Window* window);
+
+// Returns true if overview is in session in clamshell mode and any overview
+// grid is in faster splitview. This is a specific mode during which we don't
+// show the desk bar or save desk buttons.
+bool IsInFasterSplitScreenSetupSession();
 
 }  // namespace ash::window_util
 

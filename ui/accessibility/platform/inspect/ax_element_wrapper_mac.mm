@@ -234,24 +234,24 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
   return AXOptionalNSObject::Error(kUnsupportedObject);
 }
 
-absl::optional<id> AXElementWrapper::PerformSelector(
+std::optional<id> AXElementWrapper::PerformSelector(
     const std::string& selector_string) const {
   if (![node_ conformsToProtocol:@protocol(NSAccessibility)])
-    return absl::nullopt;
+    return std::nullopt;
 
   NSString* selector_nsstring = base::SysUTF8ToNSString(selector_string);
   SEL selector = NSSelectorFromString(selector_nsstring);
 
   if ([node_ respondsToSelector:selector])
     return [node_ valueForKey:selector_nsstring];
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<id> AXElementWrapper::PerformSelector(
+std::optional<id> AXElementWrapper::PerformSelector(
     const std::string& selector_string,
     const std::string& argument_string) const {
   if (![node_ conformsToProtocol:@protocol(NSAccessibility)])
-    return absl::nullopt;
+    return std::nullopt;
 
   SEL selector =
       NSSelectorFromString(base::SysUTF8ToNSString(selector_string + ":"));
@@ -262,7 +262,7 @@ absl::optional<id> AXElementWrapper::PerformSelector(
   if ([node_ respondsToSelector:selector])
     return [node_ performSelector:selector withObject:argument];
 #pragma clang diagnostic pop
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AXElementWrapper::SetAttributeValue(NSString* attribute, id value) const {

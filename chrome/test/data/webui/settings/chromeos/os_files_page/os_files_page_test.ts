@@ -63,8 +63,7 @@ suite('<os-settings-files-page>', () => {
   async function createFilesPage() {
     prefElement = document.createElement('settings-prefs');
     const fakeSettingsPrivate = new FakeSettingsPrivate(getFakePrefs());
-    prefElement.initialize(
-        fakeSettingsPrivate as unknown as typeof chrome.settingsPrivate);
+    prefElement.initialize(fakeSettingsPrivate);
     await CrSettingsPrefs.initialized;
 
     filesPage = document.createElement('os-settings-files-page');

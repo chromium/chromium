@@ -56,6 +56,7 @@
 #include "extensions/browser/requirements_checker.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
@@ -202,7 +203,7 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
   }
 }
 
-void CrxInstaller::InstallUnpackedCrx(const std::string& extension_id,
+void CrxInstaller::InstallUnpackedCrx(const ExtensionId& extension_id,
                                       const std::string& public_key,
                                       const base::FilePath& unpacked_dir) {
   ExtensionService* service = service_weak_.get();
@@ -258,7 +259,7 @@ void CrxInstaller::ConvertUserScriptOnSharedFileThread() {
 }
 
 void CrxInstaller::UpdateExtensionFromUnpackedCrx(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& public_key,
     const base::FilePath& unpacked_dir) {
   ExtensionService* service = service_weak_.get();
@@ -943,7 +944,7 @@ void CrxInstaller::ReloadExtensionAfterInstall(
   // lazily and based on the Extension's root path at that moment.
   // TODO(rdevlin.cronin): Continue removing std::string errors and replacing
   // with std::u16string
-  std::string extension_id = extension()->id();
+  ExtensionId extension_id = extension()->id();
   std::string error;
   extension_ = file_util::LoadExtension(
       version_dir, install_source_,
@@ -1074,7 +1075,7 @@ void CrxInstaller::NotifyCrxInstallBegin() {
 void CrxInstaller::NotifyCrxInstallComplete(
     const std::optional<CrxInstallError>& error) {
   ReportInstallationStage(InstallationStage::kComplete);
-  const std::string extension_id =
+  const ExtensionId extension_id =
       expected_id_.empty() && extension() ? extension()->id() : expected_id_;
   InstallStageTracker* install_stage_tracker =
       InstallStageTracker::Get(profile_);

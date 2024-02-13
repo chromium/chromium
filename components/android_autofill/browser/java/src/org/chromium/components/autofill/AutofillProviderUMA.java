@@ -5,7 +5,6 @@
 package org.chromium.components.autofill;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.IntDef;
 
@@ -27,19 +26,9 @@ public class AutofillProviderUMA {
     // Records whether the Autofill service is enabled or not.
     public static final String UMA_AUTOFILL_ENABLED = "Autofill.WebView.Enabled";
 
-    // Records whether Autofill was enabled or disabled in a session where the
-    // ViewStructure was not
-    // disabled.
-    public static final String UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED =
-            "Autofill.WebView.AutofillState.NoVirtualStructureProvided";
-
     // Records whether the Autofill provider is created by activity context or not.
     public static final String UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT =
             "Autofill.WebView.CreatedByActivityContext";
-
-    // Records whether the current autofill service is AwG.
-    public static final String UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE =
-            "Autofill.WebView.AwGIsCurrentService";
 
     // Records what happened in an autofill session.
     public static final String UMA_AUTOFILL_AUTOFILL_SESSION = "Autofill.WebView.AutofillSession";
@@ -87,12 +76,6 @@ public class AutofillProviderUMA {
 
     public static final String UMA_AUTOFILL_VALID_SERVER_PREDICTION =
             "Autofill.WebView.ServerPredicton.HasValidServerPrediction";
-
-    // Records whether manual edits to a form (e.g., typing, pasting) affected previously autofilled
-    // fields.
-    // The metric is not recorded if user did not perform any manual changes to the form.
-    public static final String UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD =
-            "Autofill.WebView.UserChangedAutofilledField";
 
     public static final String UMA_AUTOFILL_SUBMISSION_SOURCE = "Autofill.WebView.SubmissionSource";
     // The possible value of UMA_AUTOFILL_SUBMISSION_SOURCE.
@@ -178,16 +161,7 @@ public class AutofillProviderUMA {
             // Do not record any event until we get EVENT_VIRTUAL_STRUCTURE_PROVIDED, which makes
             // the following events meaningful.
             if (event != EVENT_VIRTUAL_STRUCTURE_PROVIDED && mState == 0) return;
-
-            // mUserChangedAutofilledField has three possible states:
-            // - null (no field was manually edited)
-            // - Boolean.false (fields were manually edited and no manually edited field was an
-            //   autofilled field)
-            // - Boolean.true (at least one manually edited field was an autofilled field)
-            if (EVENT_USER_CHANGED_FIELD_VALUE == event && mUserChangedAutofilledField == null) {
-                mUserChangedAutofilledField = false;
-            } else if (EVENT_USER_CHANGED_AUTOFILLED_FIELD == event) {
-                mUserChangedAutofilledField = true;
+            if (EVENT_USER_CHANGED_AUTOFILLED_FIELD == event) {
                 event |= EVENT_USER_CHANGED_FIELD_VALUE;
             }
             mState |= event;
@@ -200,7 +174,7 @@ public class AutofillProviderUMA {
             }
         }
 
-        public void recordHistogram(boolean autofillDisabled, @Provider int currentProvider) {
+        public void recordHistogram(@Provider int currentProvider) {
             final int sessionValue = toUMAAutofillSessionValue(currentProvider);
             RecordHistogram.recordEnumeratedHistogram(
                     UMA_AUTOFILL_AUTOFILL_SESSION, sessionValue, AUTOFILL_SESSION_HISTOGRAM_COUNT);
@@ -212,11 +186,6 @@ public class AutofillProviderUMA {
                         AUTOFILL_SESSION_HISTOGRAM_COUNT);
             }
             RecordHistogram.recordEnumeratedHistogram(UMA_AUTOFILL_EVENTS, mState, EVENT_MAX);
-            // Only record if the user ever changed the form.
-            if (mUserChangedAutofilledField != null) {
-                RecordHistogram.recordBooleanHistogram(
-                        UMA_AUTOFILL_USER_CHANGED_AUTOFILLED_FIELD, mUserChangedAutofilledField);
-            }
             if (mSuggestionTimeMillis != null) {
                 recordTimesHistogram(UMA_AUTOFILL_SUGGESTION_TIME, mSuggestionTimeMillis);
             }
@@ -225,10 +194,6 @@ public class AutofillProviderUMA {
                         UMA_AUTOFILL_SERVER_PREDICTION_AVAILABILITY,
                         SERVER_PREDICTION_NOT_AVAILABLE,
                         SERVER_PREDICTION_AVAILABLE_COUNT);
-            }
-            if ((mState & EVENT_VIRTUAL_STRUCTURE_PROVIDED) == 0) {
-                RecordHistogram.recordBooleanHistogram(
-                        UMA_AUTOFILL_STATE_NO_VIRTUAL_STRUCTURE_PROVIDED, !autofillDisabled);
             }
         }
 
@@ -336,7 +301,6 @@ public class AutofillProviderUMA {
         }
 
         private int mState;
-        private Boolean mUserChangedAutofilledField;
 
         // Indicates whether the server prediction arrives.
         private boolean mServerPredictionAvailable;
@@ -391,16 +355,12 @@ public class AutofillProviderUMA {
         RecordHistogram.recordBooleanHistogram(
                 UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT,
                 ContextUtils.activityFromContext(context) != null);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            RecordHistogram.recordBooleanHistogram(
-                    UMA_AUTOFILL_AWG_IS_CURRENT_SERVICE, isAwGCurrentAutofillService);
-        }
         mIsAwGCurrentAutofillService = isAwGCurrentAutofillService;
     }
 
-    public void onFormSubmitted(int submissionSource, boolean autofillDisabled) {
+    public void onFormSubmitted(int submissionSource) {
         if (mRecorder != null) mRecorder.record(SessionRecorder.EVENT_FORM_SUBMITTED);
-        recordSession(autofillDisabled);
+        recordSession();
         // TODO(crbug.com/1484985): Consider moving the call to the ServerPredictionRecorder
         // into recordSession. Is it unclear why this is only recorded on form submission.
         if (mServerPredictionRecorder != null) mServerPredictionRecorder.recordHistograms();
@@ -419,7 +379,7 @@ public class AutofillProviderUMA {
             mAutofillDisabledOnSessionStart = autofillDisabled;
         }
 
-        if (mRecorder != null) recordSession(autofillDisabled);
+        if (mRecorder != null) recordSession();
         mRecorder = new SessionRecorder();
         if (mIsAwGCurrentAutofillService) {
             mServerPredictionRecorder = new ServerPredictionRecorder();
@@ -507,11 +467,11 @@ public class AutofillProviderUMA {
      * <p>After recording, it resets the SessionRecorder. Calling it again is a no-op until a new
      * session has been started.
      */
-    public void recordSession(boolean autofillDisabled) {
+    public void recordSession() {
         if (mAutofillDisabledOnSessionStart != null
                 && !mAutofillDisabledOnSessionStart.booleanValue()
                 && mRecorder != null) {
-            mRecorder.recordHistogram(autofillDisabled, mCurrentProvider);
+            mRecorder.recordHistogram(mCurrentProvider);
         }
         mRecorder = null;
     }

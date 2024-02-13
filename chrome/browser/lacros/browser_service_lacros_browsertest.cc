@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 
+#include "base/auto_reset.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -56,6 +61,15 @@ using crosapi::mojom::SessionType;
 
 namespace {
 constexpr char kNavigationUrl[] = "https://www.google.com/";
+
+// Disables `AttemptUserExit` to avoid stopping Ash when the kiosk session
+// is finished. Otherwise all the following tests would be broken because Ash
+// is not running.
+std::unique_ptr<base::AutoReset<base::OnceClosure>> DisableAttemptUserExit() {
+  return KioskSessionServiceLacros::Get()->SetAttemptUserExitCallbackForTesting(
+      base::DoNothing());
+}
+
 }  // namespace
 
 class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
@@ -95,17 +109,6 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
           EXPECT_EQ(result, CreationResult::kSuccess);
         }));
     EXPECT_TRUE(use_callback);
-
-    // Verify `KioskBrowserSession` object is created when `NewFullscreenWindow`
-    // is called in the Web Kiosk session. Then, disable the `AttemptUserExit`
-    // method to do nothing.
-    if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
-        SessionType::kWebKioskSession) {
-      chromeos::KioskBrowserSession* session =
-          KioskSessionServiceLacros::Get()->GetKioskBrowserSessionForTesting();
-      EXPECT_TRUE(session);
-      session->SetAttemptUserExitForTesting(base::DoNothing());
-    }
   }
 
   void CreateNewWindow() {
@@ -281,6 +284,19 @@ class BrowserServiceLacrosKioskBrowserTest
   BrowserServiceLacrosKioskBrowserTest()
       : BrowserServiceLacrosBrowserTest(
             crosapi::mojom::SessionType::kWebKioskSession) {}
+
+  void SetUpOnMainThread() override {
+    BrowserServiceLacrosBrowserTest::SetUpOnMainThread();
+    attempt_user_exit_reset_ = DisableAttemptUserExit();
+  }
+
+  void TearDownOnMainThread() override {
+    attempt_user_exit_reset_.reset();
+    BrowserServiceLacrosBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<base::OnceClosure>> attempt_user_exit_reset_;
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosKioskBrowserTest,
@@ -763,6 +779,19 @@ class BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest
   BrowserServiceLacrosNonSyncingProfilesWebKioskBrowserTest()
       : BrowserServiceLacrosNonSyncingProfilesBrowserTest(
             crosapi::mojom::SessionType::kWebKioskSession) {}
+
+  void SetUpOnMainThread() override {
+    BrowserServiceLacrosNonSyncingProfilesBrowserTest::SetUpOnMainThread();
+    attempt_user_exit_reset_ = DisableAttemptUserExit();
+  }
+
+  void TearDownOnMainThread() override {
+    attempt_user_exit_reset_.reset();
+    BrowserServiceLacrosNonSyncingProfilesBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<base::OnceClosure>> attempt_user_exit_reset_;
 };
 
 IN_PROC_BROWSER_TEST_F(

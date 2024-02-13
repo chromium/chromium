@@ -111,7 +111,7 @@ class Adapter : public mojom::Adapter,
   void OnGattConnect(
       ConnectToDeviceCallback callback,
       std::unique_ptr<device::BluetoothGattConnection> connection,
-      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   void OnRegisterAdvertisement(
       RegisterAdvertisementCallback callback,

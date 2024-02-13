@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {CrLazyRenderElement} from '../cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderElement} from '../cr_lazy_render/cr_lazy_render.js';
 
-import {getTemplate} from './cr_view_manager.html.js';
+import {getCss} from './cr_view_manager.css.js';
+import {getHtml} from './cr_view_manager.html.js';
 
 function getEffectiveView<T extends HTMLElement>(
     element: CrLazyRenderElement<T>|T): HTMLElement {
@@ -72,13 +73,17 @@ viewAnimations.set('slide-in-fade-in-rtl', element => {
   return animation.finished;
 });
 
-export class CrViewManagerElement extends PolymerElement {
+export class CrViewManagerElement extends CrLitElement {
   static get is() {
     return 'cr-view-manager';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
+  }
+
+  override render() {
+    return getHtml.bind(this)();
   }
 
   private exit_(element: HTMLElement, animation: string): Promise<void> {

@@ -28,9 +28,7 @@ RootWebArea
       text
     "
   generic
-
   generic
-
   generic
     StaticText "normal text"
       InlineTextBox

@@ -20,6 +20,7 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {PrefsState} from '../common/types.js';
 import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {equalContainerId} from '../guest_os/guest_os_container_select.js';
+import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, routes} from '../router.js';
 
@@ -186,6 +187,7 @@ export class SettingsCrostiniExportImportElement extends
 
   private onExportClick_(): void {
     this.browserProxy_.exportCrostiniContainer(this.exportContainerId_);
+    recordSettingChange(Setting.kBackupLinuxAppsAndFiles);
   }
 
   private onImportClick_(): void {

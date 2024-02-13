@@ -89,6 +89,7 @@ class WebFrameTestProxy : public RenderFrameImpl,
       bool should_reset_browser_interface_broker,
       const blink::ParsedPermissionsPolicy& permissions_policy_header,
       const blink::DocumentPolicyFeatureState& document_policy_header) override;
+  void HandleAXObjectDetachedForTest(unsigned axid) override;
   void HandleWebAccessibilityEventForTest(
       const blink::WebAXObject& object,
       const char* event_name,

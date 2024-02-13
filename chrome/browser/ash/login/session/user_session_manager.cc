@@ -2543,7 +2543,8 @@ void UserSessionManager::LaunchBrowser(Profile* profile) {
   browser_creator.LaunchBrowser(
       *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
       chrome::startup::IsProcessStartup::kYes, first_run,
-      std::make_unique<OldLaunchModeRecorder>());
+      std::make_unique<OldLaunchModeRecorder>(),
+      /*restore_tabbed_browser=*/true);
 }
 
 // static

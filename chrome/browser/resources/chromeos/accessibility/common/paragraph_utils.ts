@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from './testing/test_import_manager.js';
 import {WordUtils} from './word_utils.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
@@ -676,3 +677,5 @@ export namespace ParagraphUtils {
   }
 
 }
+
+TestImportManager.exportForTesting(ParagraphUtils);

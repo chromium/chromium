@@ -209,7 +209,7 @@ function updateCpuData(cpus, timestamp) {
     initCpuDataSeries(cpus);
   }
   const /** Array<!DataSeries> */ cpuDataSeries = dataSeries.cpus;
-  if (cpus.length != cpuDataSeries.length) {
+  if (cpus.length !== cpuDataSeries.length) {
     console.warn('Cpu Data: Number of processors changed.');
     return;
   }
@@ -218,7 +218,7 @@ function updateCpuData(cpus, timestamp) {
   let allIdle = 0;
   for (let i = 0; i < cpus.length; ++i) {
     /* Check if this cpu is offline */
-    if (cpus[i].total == 0) {
+    if (cpus[i].total === 0) {
       cpuDataSeries[i].addDataPoint(0, timestamp);
       continue;
     }
@@ -232,7 +232,7 @@ function updateCpuData(cpus, timestamp) {
         getDiffAndUpdateCounter(`cpu_${i}_total`, cpus[i].total, timestamp);
     /* Total may be zero at first update. */
     const /** number */ percentage =
-        total == 0 ? 0 : (user + kernel) / total * 100;
+        total === 0 ? 0 : (user + kernel) / total * 100;
     cpuDataSeries[i].addDataPoint(percentage, timestamp);
     allKernel += kernel;
     allUser += user;
@@ -242,10 +242,10 @@ function updateCpuData(cpus, timestamp) {
   const /** !GeneralCpuType */ generalCpu = generalInfo.cpu;
   generalCpu.core = cpus.length;
   const allTotal = allKernel + allUser + allIdle;
-  generalCpu.usage = allTotal == 0 ? 0 : (allKernel + allUser) / allTotal;
-  generalCpu.kernel = allTotal == 0 ? 0 : allKernel / allTotal;
-  generalCpu.user = allTotal == 0 ? 0 : allUser / allTotal;
-  generalCpu.idle = allTotal == 0 ? 0 : allIdle / allTotal;
+  generalCpu.usage = allTotal === 0 ? 0 : (allKernel + allUser) / allTotal;
+  generalCpu.kernel = allTotal === 0 ? 0 : allKernel / allTotal;
+  generalCpu.user = allTotal === 0 ? 0 : allUser / allTotal;
+  generalCpu.idle = allTotal === 0 ? 0 : allIdle / allTotal;
 }
 
 /**
@@ -254,7 +254,7 @@ function updateCpuData(cpus, timestamp) {
  * @param {!Array<!SysInfoApiCpuResult>} cpus
  */
 function initCpuDataSeries(cpus) {
-  if (cpus.length == 0) {
+  if (cpus.length === 0) {
     return;
   }
   dataSeries.cpus = [];
@@ -326,7 +326,7 @@ function updateZramData(zram, timestamp) {
  * @return {number}
  */
 export function getDiffAndUpdateCounter(name, newValue, timestamp) {
-  if (counterDict.get(name) == undefined) {
+  if (counterDict.get(name) === undefined) {
     counterDict.set(name, {value: newValue, timestamp: timestamp});
     return 0;
   }
@@ -360,7 +360,7 @@ export function getDiffPerSecAndUpdateCounter(name, newValue, timestamp) {
 
   /* If oldTimeStamp is -1, it means that this is the first value of the
    * counter. */
-  if (oldTimeStamp == -1) {
+  if (oldTimeStamp === -1) {
     return 0;
   }
 
@@ -370,7 +370,7 @@ export function getDiffPerSecAndUpdateCounter(name, newValue, timestamp) {
    */
   const timeDelta = (timestamp - oldTimeStamp) / 1000;
   const /** number */ deltaPerSec =
-      (timeDelta == 0) ? 0 : valueDelta / timeDelta;
+      (timeDelta === 0) ? 0 : valueDelta / timeDelta;
   return deltaPerSec;
 }
 
@@ -480,7 +480,7 @@ function onHashChange() {
  * @return {boolean}
  */
 export function isInfoPage() {
-  return location.hash == '';
+  return location.hash === '';
 }
 
 /**
@@ -499,7 +499,7 @@ const /** number */ RIGHT = UnitLabelAlign.RIGHT;
  */
 function setupCPUPage() {
   /* This function is async so we need to check the page is still CPU page. */
-  if (location.hash != PAGE_HASH.CPU) {
+  if (location.hash !== PAGE_HASH.CPU) {
     return;
   }
 

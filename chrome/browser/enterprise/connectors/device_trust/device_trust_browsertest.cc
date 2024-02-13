@@ -357,8 +357,9 @@ class DeviceTrustCreateKeyUploadFailedBrowserTest
   }
 };
 
+// TODO(crbug.com/324104311): Fix flaky test.
 IN_PROC_BROWSER_TEST_F(DeviceTrustCreateKeyUploadFailedBrowserTest,
-                       AttestationFullFlowSucceedOnThirdAttempt) {
+                       DISABLED_AttestationFullFlowSucceedOnThirdAttempt) {
   ASSERT_FALSE(device_trust_test_environment_win_->KeyExists());
   TriggerUrlNavigation();
   VerifyAttestationFlowSuccessful(DTAttestationResult::kSuccessNoSignature);
@@ -410,8 +411,15 @@ IN_PROC_BROWSER_TEST_F(DeviceTrustKeyRotationBrowserTest,
             current_key_pair);
 }
 
+// Flaky on Win. See http://crbug.com/324937427.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RemoteCommandKeyRotationFailure \
+  DISABLED_RemoteCommandKeyRotationFailure
+#else
+#define MAYBE_RemoteCommandKeyRotationFailure RemoteCommandKeyRotationFailure
+#endif
 IN_PROC_BROWSER_TEST_F(DeviceTrustKeyRotationBrowserTest,
-                       RemoteCommandKeyRotationFailure) {
+                       MAYBE_RemoteCommandKeyRotationFailure) {
   // Make sure key presents and stores its current value.
   std::vector<uint8_t> current_key_pair =
       device_trust_test_environment_win_->GetWrappedKey();

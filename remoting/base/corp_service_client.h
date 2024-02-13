@@ -12,14 +12,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/buildflags.h"
+#include "remoting/base/internal_headers.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/proto/empty.pb.h"
-
-#if BUILDFLAG(REMOTING_INTERNAL)
-#include "remoting/internal/proto/helpers.h"
-#else
-#include "remoting/proto/internal_stubs.h"  // nogncheck
-#endif
 
 namespace google::protobuf {
 class MessageLite;

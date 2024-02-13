@@ -17,14 +17,18 @@ public class TouchEventFilter {
     // don't know what the value is. This code logs any offending values so that we can decide
     // how best to deal with them. We're using a sparse histogram as we don't know what the
     // values may be.
-    /** @return {@code true} if the motion event has a tool type that Blink cannot handle. */
+    // Update: we want to find out what proportion of tool types are invalid so we now log all tool
+    // type values (both valid and invalid).
+    /**
+     * @return {@code true} if the motion event has a tool type that Blink cannot handle.
+     */
     public static boolean hasInvalidToolType(MotionEvent event) {
         boolean unrecognizedToolType = false;
         for (int pointerIdx = 0; pointerIdx < event.getPointerCount(); pointerIdx++) {
+            RecordHistogram.recordSparseHistogram(
+                    "Input.ToolType.Android", event.getToolType(pointerIdx));
             if (event.getToolType(pointerIdx) < TOOL_TYPE_UNKNOWN
                     || event.getToolType(pointerIdx) > TOOL_TYPE_ERASER) {
-                RecordHistogram.recordSparseHistogram(
-                        "Input.UnrecognizedToolType.Android", event.getToolType(pointerIdx));
                 unrecognizedToolType = true;
             }
         }

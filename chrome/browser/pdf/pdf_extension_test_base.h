@@ -5,13 +5,16 @@
 #ifndef CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_BASE_H_
 #define CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_BASE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 class GURL;
@@ -33,6 +36,8 @@ class Point;
 class PDFExtensionTestBase : public extensions::ExtensionApiTest {
  public:
   PDFExtensionTestBase();
+
+  ~PDFExtensionTestBase() override;
 
   // extensions::ExtensionApiTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -65,9 +70,19 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
 
   content::WebContents* GetActiveWebContents();
 
+  // For OOPIF PDF viewer, returns the active `WebContents`, as there is only a
+  // single `WebContents`. For GuestView PDF viewer, returns the embedder
+  // `WebContents`.
+  content::WebContents* GetEmbedderWebContents();
+
  protected:
   guest_view::TestGuestViewManager* GetGuestViewManager(
       content::BrowserContext* profile = nullptr);
+
+  pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
+      content::WebContents* contents);
+
+  void CreateTestPdfViewerStreamManager();
 
   content::RenderFrameHost* GetPluginFrame(
       extensions::MimeHandlerViewGuest* guest) const;
@@ -103,7 +118,10 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   testing::AssertionResult EnsurePDFHasLoadedWithValidFrameTree();
 
   base::test::ScopedFeatureList feature_list_;
-  guest_view::TestGuestViewManagerFactory factory_;
+  absl::variant<absl::monostate,
+                std::unique_ptr<guest_view::TestGuestViewManagerFactory>,
+                std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>
+      factory_;
 };
 
 #endif  // CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_BASE_H_

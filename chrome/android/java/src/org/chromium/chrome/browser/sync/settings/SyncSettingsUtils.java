@@ -80,7 +80,7 @@ public class SyncSettingsUtils {
         int OTHER_ERRORS = 128;
     }
 
-    /** Returns the type of the sync error. */
+    /** Returns the type of the sync error, for syncing users. */
     public static @SyncError int getSyncError(SyncService syncService) {
         if (syncService == null) {
             return SyncError.NO_ERROR;
@@ -90,36 +90,9 @@ public class SyncSettingsUtils {
             return SyncError.NO_ERROR;
         }
 
-        if (syncService.getAuthError() == GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS) {
-            return SyncError.AUTH_ERROR;
-        }
-
-        if (syncService.requiresClientUpgrade()) {
-            return SyncError.CLIENT_OUT_OF_DATE;
-        }
-
-        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE
-                || syncService.hasUnrecoverableError()) {
-            return SyncError.OTHER_ERRORS;
-        }
-
-        if (syncService.isEngineInitialized()
-                && syncService.isPassphraseRequiredForPreferredDataTypes()) {
-            return SyncError.PASSPHRASE_REQUIRED;
-        }
-
-        if (syncService.isEngineInitialized()
-                && syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
-            return syncService.isEncryptEverythingEnabled()
-                    ? SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING
-                    : SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
-        }
-
-        if (syncService.isEngineInitialized()
-                && syncService.isTrustedVaultRecoverabilityDegraded()) {
-            return syncService.isEncryptEverythingEnabled()
-                    ? SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
-                    : SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
+        @SyncError int error = getSyncErrorFromSyncService(syncService);
+        if (error != SyncError.NO_ERROR) {
+            return error;
         }
 
         if (!syncService.isInitialSyncFeatureSetupComplete()) {
@@ -534,42 +507,58 @@ public class SyncSettingsUtils {
         return canShowFullName ? fullName : accountEmail;
     }
 
-    // Return true if a UI indication should be shown on identity errors for signed in non-syncing
-    // users.
-    // TODO(crbug.com/1503649): Return UI error type so callers can take appropriate action.
-    public static boolean hasIdentityError(SyncService syncService) {
-        // TODO(crbug.com/1503649): Convert this to an assertion instead.
+    /** Returns the type of the sync error/identity error for signed-in non-syncing users. */
+    public static @SyncError int getIdentityError(SyncService syncService) {
+        // TODO(crbug.com/1503649): Consider converting this to an assertion instead.
         if (syncService == null) {
-            return false;
+            return SyncError.NO_ERROR;
         }
 
         // Do not show identity error if sync is enabled.
         if (syncService.isSyncFeatureEnabled()) {
-            return false;
+            return SyncError.NO_ERROR;
+        }
+
+        // TODO(crbug.com/1503649): Re-evaluate if all the errors make sense as identity errors.
+        return getSyncErrorFromSyncService(syncService);
+    }
+
+    /** Returns the type of the sync error from sync service. */
+    private static @SyncError int getSyncErrorFromSyncService(SyncService syncService) {
+        assert syncService != null;
+
+        if (syncService.getAuthError() == GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS) {
+            return SyncError.AUTH_ERROR;
+        }
+
+        if (syncService.requiresClientUpgrade()) {
+            return SyncError.CLIENT_OUT_OF_DATE;
+        }
+
+        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE
+                || syncService.hasUnrecoverableError()) {
+            return SyncError.OTHER_ERRORS;
         }
 
         if (syncService.isEngineInitialized()
-                && (syncService.isPassphraseRequiredForPreferredDataTypes()
-                        || syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()
-                        || syncService.isTrustedVaultRecoverabilityDegraded())) {
-            return true;
+                && syncService.isPassphraseRequiredForPreferredDataTypes()) {
+            return SyncError.PASSPHRASE_REQUIRED;
         }
 
-        // TODO(crbug.com/1503649): Use GetUserActionableError() instead.
-        if (syncService.requiresClientUpgrade()) {
-            return true;
+        if (syncService.isEngineInitialized()
+                && syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
+            return syncService.isEncryptEverythingEnabled()
+                    ? SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING
+                    : SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS;
         }
 
-        // TODO(crbug.com/1503649): Not every auth error might need UI indication.
-        if (syncService.getAuthError() != GoogleServiceAuthError.State.NONE) {
-            return true;
+        if (syncService.isEngineInitialized()
+                && syncService.isTrustedVaultRecoverabilityDegraded()) {
+            return syncService.isEncryptEverythingEnabled()
+                    ? SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
+                    : SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS;
         }
 
-        // TODO(crbug.com/1503649): Not every unrecoverable error might need UI indication.
-        if (syncService.hasUnrecoverableError()) {
-            return true;
-        }
-
-        return false;
+        return SyncError.NO_ERROR;
     }
 }

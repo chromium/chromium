@@ -700,9 +700,10 @@ interface FrameHost {
       => (CreateNewWindowStatus status, CreateNewWindowReply? reply);
 
   // Asynchronously creates a child frame. A blink.mojom.LocalFrameToken must
-  // be allocated first by calling RenderMessageFilter::GenerateFrameRoutingID()
-  // Each of these messages will have a corresponding mojom::FrameHost::Detach
-  // API sent when the frame is detached from the DOM.
+  // be allocated first by calling
+  // `RenderMessageFilter::GenerateSingleFrameRoutingInfo`. Each of these
+  // messages will have a corresponding mojom::FrameHost::Detach API sent when
+  // the frame is detached from the DOM.
   CreateChildFrame(blink.mojom.LocalFrameToken child_frame_token,
                    pending_associated_remote<content.mojom.Frame> frame,
                    pending_receiver<blink.mojom.BrowserInterfaceBroker>

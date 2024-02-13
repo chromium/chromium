@@ -163,7 +163,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   params.force_software_compositing = true;
 #endif
   Init(std::move(params));
-  absl::optional<std::string> show_menu_host_duration_histogram =
+  std::optional<std::string> show_menu_host_duration_histogram =
       menu_controller->TakeShowMenuHostDurationHistogram();
   CHECK(!menu_controller->TakeShowMenuHostDurationHistogram().has_value());
   if (show_menu_host_duration_histogram.has_value()) {

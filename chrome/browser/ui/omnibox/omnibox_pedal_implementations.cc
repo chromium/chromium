@@ -2094,13 +2094,13 @@ GetPedalImplementations(bool incognito, bool guest, bool testing) {
   // platform is different from other desktop platforms.
   add(new OmniboxPedalShareThisPage());
   add(new OmniboxPedalManageChromeAccessibility());
+  add(new OmniboxPedalSetChromeAsDefaultBrowser());
 #else   // !BUILDFLAG(IS_CHROMEOS)
   add(new OmniboxPedalManageChromeOSAccessibility());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   add(new OmniboxPedalCustomizeChromeFonts());
   add(new OmniboxPedalManageChromeThemes());
   add(new OmniboxPedalCustomizeSearchEngines());
-  add(new OmniboxPedalSetChromeAsDefaultBrowser());
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return pedals;

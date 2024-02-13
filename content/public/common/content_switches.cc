@@ -939,13 +939,13 @@ const char kDisableScrollToTextFragment[] = "disable-scroll-to-text-fragment";
 const char kWebXrForceRuntime[] = "force-webxr-runtime";
 
 // Tell WebXr to assume that it does not support any runtimes.
-const char kWebXrRuntimeNone[] = "no-vr-runtime";
+const char kWebXrRuntimeNone[] = "no-xr-runtime";
 
 const char kWebXrRuntimeOrientationSensors[] = "orientation-sensors";
 
 // The following are the runtimes that WebXr supports.
+const char kWebXrRuntimeArCore[] = "arcore";
 const char kWebXrRuntimeCardboard[] = "cardboard";
-const char kWebXrRuntimeGVR[] = "gvr";
 const char kWebXrRuntimeOpenXr[] = "openxr";
 
 #if BUILDFLAG(IS_ANDROID)

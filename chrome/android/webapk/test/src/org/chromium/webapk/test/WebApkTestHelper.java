@@ -101,7 +101,7 @@ public class WebApkTestHelper {
         ShadowPackageManager.resources.put(packageName, res);
     }
 
-    private static PackageInfo newPackageInfo(
+    public static PackageInfo newPackageInfo(
             String webApkPackageName,
             Bundle metaData,
             String[] shareTargetActivityClassNames,

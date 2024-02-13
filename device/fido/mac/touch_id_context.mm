@@ -21,8 +21,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/device_event_log/device_event_log.h"
+#include "crypto/apple_keychain_v2.h"
 #include "device/fido/mac/authenticator_config.h"
-#include "device/fido/mac/keychain.h"
 
 namespace device::fido::mac {
 
@@ -76,8 +76,8 @@ bool CanCreateSecureEnclaveKeyPairBlocking() {
 
   base::apple::ScopedCFTypeRef<CFErrorRef> cferr;
   base::apple::ScopedCFTypeRef<SecKeyRef> private_key(
-      Keychain::GetInstance().KeyCreateRandomKey(params.get(),
-                                                 cferr.InitializeInto()));
+      crypto::AppleKeychainV2::GetInstance().KeyCreateRandomKey(
+          params.get(), cferr.InitializeInto()));
   return !!private_key;
 }
 

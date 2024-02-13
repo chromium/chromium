@@ -7,10 +7,13 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -43,6 +46,19 @@ class FileManagerOfficeFileTasksTest : public testing::Test {
         prefs::kDefaultTasksByMimeType);
     profile()->GetTestingPrefService()->ClearPref(prefs::kDefaultTasksBySuffix);
   }
+
+ protected:
+  std::unique_ptr<ash::cloud_upload::CloudOpenMetrics>
+      cloud_open_metrics_for_drive_ =
+          std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+              ash::cloud_upload::CloudProvider::kGoogleDrive,
+              /*file_count=*/1);
+  std::unique_ptr<ash::cloud_upload::CloudOpenMetrics>
+      cloud_open_metrics_for_one_drive_ =
+          std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
+              ash::cloud_upload::CloudProvider::kOneDrive,
+              /*file_count=*/1);
+  base::HistogramTester histogram_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -267,6 +283,129 @@ TEST_F(FileManagerOfficeFileTasksTest, SetOfficeFileHandlersToFilesSWA) {
       *profile()->GetPrefs(), "application/vnd.ms-powerpoint", ".ppt"));
   EXPECT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), pptx_mime, ".pptx"));
+}
+
+/**
+ * Check Log*MetricsAfterFallback() maps the FallbackReason to the correct
+ * OpenError and logs the TaskResult.
+ */
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogOneDriveMetricsAfterFallback_kOffline) {
+  LogOneDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kOffline,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_one_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveErrorMetricName,
+      ash::cloud_upload::OfficeOneDriveOpenErrors::kOffline, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOneDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kOffline) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kOffline,
+      ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kOffline, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kFallbackQuickOffice, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kDriveDisabled) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kDriveDisabled,
+      ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kDriveDisabled, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kGoogleDriveTaskResultMetricName,
+      ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kNoDriveService) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kNoDriveService,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kNoDriveService, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kDriveAuthenticationNotReady) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kDriveAuthenticationNotReady,
+      1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kDriveFsInterfaceError) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kDriveFsInterfaceError,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kDriveFsInterface, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kMeteredConnection) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kMeteredConnection,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kMeteredConnection, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kDisableDrivePreferenceSet) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kDisableDrivePreferenceSet, 1);
+}
+
+TEST_F(FileManagerOfficeFileTasksTest,
+       LogGoogleDriveMetricsAfterFallback_kDriveDisabledForAccountType) {
+  LogGoogleDriveMetricsAfterFallback(
+      ash::office_fallback::FallbackReason::kDriveDisabledForAccountType,
+      ash::cloud_upload::OfficeTaskResult::kCannotGetFallbackChoice,
+      std::move(cloud_open_metrics_for_drive_));
+
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kDriveErrorMetricName,
+      ash::cloud_upload::OfficeDriveOpenErrors::kDriveDisabledForAccountType,
+      1);
 }
 
 }  // namespace file_manager::file_tasks

@@ -201,8 +201,8 @@ class VIEWS_EXPORT TreeView : public View,
 
   // PrefixDelegate overrides:
   size_t GetRowCount() override;
-  absl::optional<size_t> GetSelectedRow() override;
-  void SetSelectedRow(absl::optional<size_t> row) override;
+  std::optional<size_t> GetSelectedRow() override;
+  void SetSelectedRow(std::optional<size_t> row) override;
   std::u16string GetTextForRow(size_t row) override;
 
  protected:

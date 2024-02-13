@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
@@ -209,6 +210,7 @@ class ContextMenuControllerTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestWebFrameClientImpl web_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
@@ -2043,6 +2045,7 @@ class ContextMenuControllerRemoteParentFrameTest : public testing::Test {
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   TestWebFrameClientImpl child_web_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;

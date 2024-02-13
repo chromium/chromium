@@ -39,8 +39,7 @@ const extensions::Extension* GetEnabledExtension(
     const extensions::ExtensionId& extension_id) {
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser_context);
-  return registry->GetExtensionById(extension_id,
-                                    extensions::ExtensionRegistry::ENABLED);
+  return registry->enabled_extensions().GetByID(extension_id);
 }
 
 // Loads an icon of a single size.

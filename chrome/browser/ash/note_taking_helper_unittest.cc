@@ -411,8 +411,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(prefs), u"Test profile", 1 /*avatar_id*/,
         TestingProfile::TestingFactories());
-    user_manager()->OnUserProfileCreated(AccountId::FromUserEmail(profile_name),
-                                         nullptr /*TODO*/);
+    OnUserProfileCreated(profile_name, profile);
     return profile;
   }
 
@@ -425,8 +424,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondProfileName, std::move(prefs), u"second-profile-username",
         /*avatar_id=*/1, TestingProfile::TestingFactories());
-    user_manager()->OnUserProfileCreated(
-        AccountId::FromUserEmail(kSecondProfileName), nullptr /*TODO*/);
+    OnUserProfileCreated(kSecondProfileName, profile);
 
     InitExtensionService(profile);
     InitWebAppProvider(profile);

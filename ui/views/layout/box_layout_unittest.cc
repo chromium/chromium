@@ -125,16 +125,14 @@ TEST_F(BoxLayoutTest, Overflow) {
   // doesn't fit.
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(gfx::Rect(0, 0, 15, 10), v1->bounds());
-  // BoxLayout will arrange the views in order, but because it exceeds the main
-  // view space. So the width is clipped to 0.
-  EXPECT_EQ(gfx::Rect(20, 0, 0, 10), v2->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), v2->bounds());
 
   // Clipping of children should occur at the opposite end(s) to the main axis
   // alignment position.
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kStart);
   HandleHostLayoutManagerChanges();
   EXPECT_EQ(gfx::Rect(0, 0, 15, 10), v1->bounds());
-  EXPECT_EQ(gfx::Rect(20, 0, 0, 10), v2->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), v2->bounds());
 
   layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
   HandleHostLayoutManagerChanges();
@@ -154,7 +152,7 @@ TEST_F(BoxLayoutTest, NoSpace) {
   host_->AddChildView(childView);
   host_->SetBounds(0, 0, 10, 10);
   test::RunScheduledLayout(host_.get());
-  EXPECT_EQ(gfx::Rect(10, 10, 0, 0), childView->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 0, 0), childView->bounds());
 }
 
 TEST_F(BoxLayoutTest, InvisibleChild) {
@@ -234,11 +232,7 @@ TEST_F(BoxLayoutTest, EmptyPreferredSize) {
 
     EXPECT_EQ(v2->GetPreferredSize().width(), host_->bounds().width()) << i;
     EXPECT_EQ(v2->GetPreferredSize().height(), host_->bounds().height()) << i;
-    // During vertical layout, due to stretching caused by vertical axis
-    // alignment, the width of v1 is 10 instead of 0.
-    if (orientation == BoxLayout::Orientation::kHorizontal) {
-      EXPECT_EQ(v1->GetPreferredSize().width(), v1->bounds().width()) << i;
-    }
+    EXPECT_EQ(v1->GetPreferredSize().width(), v1->bounds().width()) << i;
     EXPECT_EQ(v1->GetPreferredSize().height(), v1->bounds().height()) << i;
     EXPECT_EQ(v2->GetPreferredSize().width(), v2->bounds().width()) << i;
     EXPECT_EQ(v2->GetPreferredSize().height(), v2->bounds().height()) << i;
@@ -659,7 +653,8 @@ TEST_F(BoxLayoutTest, FlexShrinkHorizontal) {
     layout->ClearFlexForView(v3);
     HandleHostLayoutManagerChanges();
     EXPECT_EQ(gfx::Rect(10, 10, 20, 30).ToString(), v1->bounds().ToString());
-    EXPECT_EQ(gfx::Rect(40, 10, 0, 30).ToString(), v2->bounds().ToString());
+    // Conceptually this view is at 10, 40, 0, 0.
+    EXPECT_EQ(gfx::Rect(0, 0, 0, 0).ToString(), v2->bounds().ToString());
     EXPECT_EQ(gfx::Rect(50, 10, 25, 30).ToString(), v3->bounds().ToString());
   }
 }
@@ -853,10 +848,7 @@ TEST_F(BoxLayoutTest, UnbalancedMarginsUncollapsedHorizontal) {
   EXPECT_EQ(gfx::Size(59, 20), layout->GetPreferredSize(host_.get()));
   host_->SizeToPreferredSize();
   layout->Layout(host_.get());
-  // The margin of v1 in the vertical direction is [5, 4], so the view center of
-  // v1 is at 10, the margin of v2 is [6, 3], and v2 is at 11. In order to
-  // ensure alignment. The center line of the entire view is 11.
-  EXPECT_EQ(gfx::Rect(5, 6, 20, 10), v1->bounds());
+  EXPECT_EQ(gfx::Rect(5, 5, 20, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(33, 6, 20, 10), v2->bounds());
 }
 
@@ -876,7 +868,7 @@ TEST_F(BoxLayoutTest, UnbalancedMarginsCollapsedHorizontal) {
   EXPECT_EQ(gfx::Size(55, 20), layout->GetPreferredSize(host_.get()));
   host_->SizeToPreferredSize();
   layout->Layout(host_.get());
-  EXPECT_EQ(gfx::Rect(5, 6, 20, 10), v1->bounds());
+  EXPECT_EQ(gfx::Rect(5, 5, 20, 10), v1->bounds());
   EXPECT_EQ(gfx::Rect(29, 6, 20, 10), v2->bounds());
 }
 

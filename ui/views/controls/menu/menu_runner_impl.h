@@ -53,9 +53,9 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
                  MenuAnchorPosition anchor,
                  int32_t run_types,
                  gfx::NativeView native_view_for_gestures,
-                 absl::optional<gfx::RoundedCornersF> corners = absl::nullopt,
-                 absl::optional<std::string> show_menu_host_duration_histogram =
-                     absl::nullopt) override;
+                 std::optional<gfx::RoundedCornersF> corners = std::nullopt,
+                 std::optional<std::string> show_menu_host_duration_histogram =
+                     std::nullopt) override;
   void Cancel() override;
   base::TimeTicks GetClosingEventTime() const override;
 
@@ -83,7 +83,7 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
   std::unique_ptr<MenuItemView> menu_;
 
   // Any sibling menus. Does not include |menu_|. We own these too.
-  std::set<MenuItemView*> sibling_menus_;
+  std::set<raw_ptr<MenuItemView, SetExperimental>> sibling_menus_;
 
   // Are we in run waiting for it to return?
   bool running_ = false;

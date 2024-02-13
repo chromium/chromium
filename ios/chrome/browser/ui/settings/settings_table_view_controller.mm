@@ -113,8 +113,8 @@
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
@@ -1581,7 +1581,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (BOOL)shouldReplaceSyncSettingsWithAccountSettings {
-  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
+  // TODO(crbug.com/40066949): Remove usage of HasSyncConsent() after kSync
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
   return base::FeatureList::IsEnabled(

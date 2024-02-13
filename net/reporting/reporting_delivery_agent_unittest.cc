@@ -4,6 +4,7 @@
 
 #include "net/reporting/reporting_delivery_agent.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/json/json_reader.h"
@@ -26,7 +27,6 @@
 #include "net/reporting/reporting_test_util.h"
 #include "net/reporting/reporting_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,7 +56,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     UsePolicy(policy);
   }
 
-  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+  void AddReport(const std::optional<base::UnguessableToken>& reporting_source,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& group) {
@@ -78,7 +78,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
         url::Origin::Create(GURL("https://dummy.test")), "dummy");
     ASSERT_TRUE(SetEndpointInCache(
         dummy_group, GURL("https://dummy.test/upload"), kExpires_));
-    AddReport(absl::nullopt, dummy_group.network_anonymization_key,
+    AddReport(std::nullopt, dummy_group.network_anonymization_key,
               dummy_group.origin.GetURL(), dummy_group.group_name);
 
     ASSERT_EQ(1u, pending_uploads().size());
@@ -116,8 +116,8 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const url::Origin kOrigin_ = url::Origin::Create(GURL("https://origin/"));
   const url::Origin kOtherOrigin_ =
       url::Origin::Create(GURL("https://other-origin/"));
-  const absl::optional<base::UnguessableToken> kEmptyReportingSource_ =
-      absl::nullopt;
+  const std::optional<base::UnguessableToken> kEmptyReportingSource_ =
+      std::nullopt;
   const base::UnguessableToken kDocumentReportingSource_ =
       base::UnguessableToken::Create();
   const NetworkAnonymizationKey kNak_ =

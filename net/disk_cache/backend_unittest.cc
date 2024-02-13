@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/queue.h"
 #include "base/files/file.h"
@@ -61,7 +62,6 @@
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using disk_cache::EntryResult;
 using net::test::IsError;
@@ -831,8 +831,7 @@ TEST_F(DiskCacheBackendTest, CreateBackend_MissingFile) {
   net::TestCompletionCallback cb;
 
   // Blocking shouldn't be needed to create the cache.
-  absl::optional<base::ScopedDisallowBlocking> disallow_blocking(
-      absl::in_place);
+  std::optional<base::ScopedDisallowBlocking> disallow_blocking(std::in_place);
   std::unique_ptr<disk_cache::BackendImpl> cache(
       std::make_unique<disk_cache::BackendImpl>(cache_path_, nullptr, nullptr,
                                                 net::DISK_CACHE, nullptr));

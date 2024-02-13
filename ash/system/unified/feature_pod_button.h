@@ -25,8 +25,9 @@ class FeaturePodControllerBase;
 // TODO(crbug/1276545): Remove FeaturePodIconButton after the migration.
 // A toggle button with an icon used by feature pods and in other places.
 class ASH_EXPORT FeaturePodIconButton : public IconButton {
+  METADATA_HEADER(FeaturePodIconButton, IconButton)
+
  public:
-  METADATA_HEADER(FeaturePodIconButton);
   FeaturePodIconButton(PressedCallback callback, bool is_togglable);
   FeaturePodIconButton(const FeaturePodIconButton&) = delete;
   FeaturePodIconButton& operator=(const FeaturePodIconButton&) = delete;
@@ -35,8 +36,9 @@ class ASH_EXPORT FeaturePodIconButton : public IconButton {
 
 // Button internally used in FeaturePodButton. Should not be used directly.
 class ASH_EXPORT FeaturePodLabelButton : public views::Button {
+  METADATA_HEADER(FeaturePodLabelButton, views::Button)
+
  public:
-  METADATA_HEADER(FeaturePodLabelButton);
   explicit FeaturePodLabelButton(PressedCallback callback);
 
   FeaturePodLabelButton(const FeaturePodLabelButton&) = delete;
@@ -85,8 +87,9 @@ class ASH_EXPORT FeaturePodLabelButton : public views::Button {
 // navigates to the appropriate detailed view.
 // See the comment in FeaturePodsView for detail.
 class ASH_EXPORT FeaturePodButton : public views::View {
+  METADATA_HEADER(FeaturePodButton, views::View)
+
  public:
-  METADATA_HEADER(FeaturePodButton);
   explicit FeaturePodButton(FeaturePodControllerBase* controller,
                             bool is_togglable = true);
 

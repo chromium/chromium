@@ -9,21 +9,26 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/component_cloud_policy_updater.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
+#include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/values_util.h"
@@ -52,6 +57,39 @@ bool ToPolicyNamespace(const std::pair<std::string, std::string>& key,
     return false;
   ns->component_id = key.second;
   return true;
+}
+
+base::Value::Dict TranslatePolicyMapEntryToJson(const PolicyMap::Entry& entry) {
+  constexpr const char kValue[] = "Value";
+  constexpr const char kLevel[] = "Level";
+  constexpr const char kRecommended[] = "Recommended";
+
+  base::Value::Dict result;
+  // This is actually safe because this code just copies the value,
+  // not caring about its type.
+  result.Set(kValue, entry.value_unsafe()->Clone());
+  if (entry.level == POLICY_LEVEL_RECOMMENDED) {
+    result.Set(kLevel, std::string_view(kRecommended));
+  }
+  return result;
+}
+
+base::Value::Dict TranslatePolicyMapToJson(const PolicyMap& policy_map) {
+  base::Value::Dict result;
+  for (const auto& [key, entry] : policy_map) {
+    result.Set(key, TranslatePolicyMapEntryToJson(entry));
+  }
+  return result;
+}
+
+// Returns the map of JSON policy value for each namespace.
+ComponentPolicyMap ToComponentPolicyMap(const PolicyBundle& policy_bundle) {
+  ComponentPolicyMap result;
+  for (const auto& [policy_namespace, policy_map] : policy_bundle) {
+    result[policy_namespace] =
+        base::Value(TranslatePolicyMapToJson(policy_map));
+  }
+  return result;
 }
 
 }  // namespace
@@ -204,9 +242,8 @@ void ComponentCloudPolicyService::Backend::InitIfNeeded() {
 
   auto bundle(std::make_unique<PolicyBundle>(store_.policy().Clone()));
   service_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
-                     std::move(bundle), store_.GetJsonPolicyMap()));
+      FROM_HERE, base::BindOnce(&ComponentCloudPolicyService::SetPolicy,
+                                service_, std::move(bundle)));
 
   initialized_ = true;
 
@@ -236,9 +273,8 @@ void ComponentCloudPolicyService::Backend::
   std::unique_ptr<PolicyBundle> bundle(
       std::make_unique<PolicyBundle>(store_.policy().Clone()));
   service_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ComponentCloudPolicyService::SetPolicy, service_,
-                     std::move(bundle), store_.GetJsonPolicyMap()));
+      FROM_HERE, base::BindOnce(&ComponentCloudPolicyService::SetPolicy,
+                                service_, std::move(bundle)));
 }
 
 void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
@@ -504,14 +540,16 @@ void ComponentCloudPolicyService::Disconnect() {
 }
 
 void ComponentCloudPolicyService::SetPolicy(
-    std::unique_ptr<PolicyBundle> policy,
-    const ComponentPolicyMap& component_policy) {
+    std::unique_ptr<PolicyBundle> policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(policy);
+  component_policy_map_ = ToComponentPolicyMap(*policy);
 
   // Store the current unfiltered policies.
   unfiltered_policy_ = std::move(policy);
 
-  NotifyComponentPolicyUpdated(component_policy);
+  NotifyComponentPolicyUpdated();
   FilterAndInstallPolicy();
 }
 
@@ -533,10 +571,9 @@ void ComponentCloudPolicyService::FilterAndInstallPolicy() {
   delegate_->OnComponentCloudPolicyUpdated();
 }
 
-void ComponentCloudPolicyService::NotifyComponentPolicyUpdated(
-    const ComponentPolicyMap& component_policy) {
+void ComponentCloudPolicyService::NotifyComponentPolicyUpdated() {
   for (auto& observer : observers_) {
-    observer.OnComponentPolicyUpdated(component_policy);
+    observer.OnComponentPolicyUpdated(component_policy_map_);
   }
 }
 

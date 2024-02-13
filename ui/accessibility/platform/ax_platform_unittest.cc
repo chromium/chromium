@@ -29,23 +29,6 @@ TEST(AXPlatformTest, GetInstance) {
   [[maybe_unused]] auto& instance = AXPlatform::GetInstance();
 }
 
-// Tests that AXPlatformNode::GetAccessibilityMode returns the value managed
-// by the process-wide AXPlatform.
-TEST(AXPlatformTest, GetAccessibilityMode) {
-  EXPECT_EQ(AXPlatformNode::GetAccessibilityMode(), AXMode());
-  AXPlatform::GetInstance().SetMode(kAXModeBasic);
-  EXPECT_EQ(AXPlatformNode::GetAccessibilityMode(), kAXModeBasic);
-}
-
-// Tests that AXPlatformNode::SetAXMode mutates the value managed by the
-// process-wide AXPlatform.
-TEST(AXPlatformTest, SetAXMode) {
-  AXPlatformNode::SetAXMode(kAXModeBasic);
-  EXPECT_EQ(AXPlatform::GetInstance().GetMode(), kAXModeBasic);
-  AXPlatformNode::SetAXMode(AXMode::kNone);
-  EXPECT_EQ(AXPlatform::GetInstance().GetMode(), AXMode());
-}
-
 // Tests that observers are notified when mode flags are added.
 TEST(AXPlatformTest, Observer) {
   auto& ax_platform = AXPlatform::GetInstance();

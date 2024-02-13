@@ -23,6 +23,7 @@ include_rules = [
   "+gpu/ipc/raster_in_process_context.h",
   "+gpu/ipc/test_gpu_thread_holder.h",
   "+gpu/skia_bindings/grcontext_for_gles2_interface.h",
+  "+media/gpu/buildflags.h",
   "+mojo/public/cpp/bindings",
   "+mojo/public/cpp/system",
   "+services/viz/privileged/mojom",

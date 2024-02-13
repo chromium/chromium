@@ -1309,20 +1309,8 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
     return;
   }
 
-  auto turn_off_notifications_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&MessageView::DisableNotification,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_NOTIFICATION_INLINE_SETTINGS_TURN_OFF_BUTTON_TEXT));
-  turn_off_notifications_button_ = inline_settings_row()->AddChildView(
-      std::move(turn_off_notifications_button));
-  auto inline_settings_cancel_button = GenerateNotificationLabelButton(
-      base::BindRepeating(&AshNotificationView::ToggleInlineSettings,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_NOTIFICATION_INLINE_SETTINGS_CANCEL_BUTTON_TEXT));
-  inline_settings_cancel_button_ = inline_settings_row()->AddChildView(
-      std::move(inline_settings_cancel_button));
+  inline_settings_row()->AddChildView(
+      notification_style_utils::CreateInlineSettingsViewForMessageView(this));
 }
 
 void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
@@ -1870,7 +1858,17 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
     if (needs_layout()) {
       DeprecatedLayoutImmediately();
     }
-    DCHECK(!needs_layout());
+    auto* notification =
+        message_center::MessageCenter::Get()->FindNotificationById(
+            notification_id());
+
+    // When the notification is ArcNotification and not group parent, the view
+    // is rendered in Android then attached to message center. Ash does not
+    // directly control the layout so we should not check `needs_layout()`.
+    if (message_center_utils::IsAshNotification(notification) &&
+        !notification->group_parent()) {
+      DCHECK(!needs_layout());
+    }
 
     expand_button_->AnimateExpandCollapse();
   }

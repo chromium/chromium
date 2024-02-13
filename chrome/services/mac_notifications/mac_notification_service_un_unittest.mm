@@ -75,12 +75,10 @@ class MacNotificationServiceUNTest : public testing::Test {
     // Expect the MacNotificationServiceUN ctor to register a delegate with
     // the UNNotificationCenter and ask for notification permissions.
     ExpectAndUpdateUNUserNotificationCenterDelegate(/*expect_not_nil=*/true);
-    OCMExpect([mock_notification_center_
-        getNotificationSettingsWithCompletionHandler:[OCMArg any]]);
-    OCMExpect([mock_notification_center_
-                  requestAuthorizationWithOptions:0
-                                completionHandler:[OCMArg any]])
-        .ignoringNonObjectArgs();
+    id settings = OCMClassMock([UNNotificationSettings class]);
+    OCMStub([mock_notification_center_
+        getNotificationSettingsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:settings, nil])]);
 
     // We also synchronize displayed notifications and categories.
     OCMExpect([mock_notification_center_
@@ -94,7 +92,6 @@ class MacNotificationServiceUNTest : public testing::Test {
         handler_receiver_.BindNewPipeAndPassRemote(),
         mock_notification_center_);
     service_->Bind(service_remote_.BindNewPipeAndPassReceiver());
-    service_->RequestPermission();
     OCMStub([mock_notification_center_
         setNotificationCategories:[OCMArg checkWithBlock:^BOOL(
                                               NSSet<UNNotificationCategory*>*
@@ -102,6 +99,20 @@ class MacNotificationServiceUNTest : public testing::Test {
           category_count_ = [categories count];
           return YES;
         }]]);
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+    OCMExpect(
+        [mock_notification_center_
+            requestAuthorizationWithOptions:0
+                          completionHandler:
+                              ([OCMArg
+                                  invokeBlockWithArgs:[NSNumber
+                                                          numberWithBool:YES],
+                                                      [NSNull null], nil])])
+        .ignoringNonObjectArgs();
+    base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
+    service_->RequestPermission(permission_result.GetCallback());
+    EXPECT_TRUE(permission_result.Wait());
     EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
 
@@ -261,7 +272,7 @@ class MacNotificationServiceUNTest : public testing::Test {
   // pass in an |on_create| callback to do further checks before the service is
   // destroyed.
   void CreateAndDestroyService(
-      UNNotificationRequestPermissionResult result,
+      mojom::RequestPermissionResult result,
       NSArray<UNNotification*>* notifications = nil,
       NSArray<UNNotificationCategory*>* categories = nil,
       base::OnceCallback<void(MacNotificationServiceUN*)> on_create =
@@ -274,8 +285,17 @@ class MacNotificationServiceUNTest : public testing::Test {
     mojo::Remote<mojom::MacNotificationService> service_remote;
 
     OCMExpect([mock_notification_center setDelegate:[OCMArg any]]);
-    OCMExpect([mock_notification_center
-        getNotificationSettingsWithCompletionHandler:[OCMArg any]]);
+    id settings = OCMClassMock([UNNotificationSettings class]);
+    UNAuthorizationStatus status =
+        result == mojom::RequestPermissionResult::kPermissionPreviouslyDenied
+            ? UNAuthorizationStatusDenied
+        : result == mojom::RequestPermissionResult::kPermissionPreviouslyGranted
+            ? UNAuthorizationStatusAuthorized
+            : UNAuthorizationStatusNotDetermined;
+    OCMStub([settings authorizationStatus]).andReturn(status);
+    OCMStub([mock_notification_center
+        getNotificationSettingsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:settings, nil])]);
     OCMStub([mock_notification_center
         getDeliveredNotificationsWithCompletionHandler:
             ([OCMArg invokeBlockWithArgs:(notifications ? notifications : @[]),
@@ -285,29 +305,35 @@ class MacNotificationServiceUNTest : public testing::Test {
             ([OCMArg
                 invokeBlockWithArgs:(categories ? categories : @[]), nil])]);
 
-    bool granted =
-        result == UNNotificationRequestPermissionResult::kPermissionGranted;
-    id error = result == UNNotificationRequestPermissionResult::kRequestFailed
-                   ? [NSError errorWithDomain:@"" code:0 userInfo:nil]
-                   : NSNull.null;
-    OCMExpect(
-        [mock_notification_center
-            requestAuthorizationWithOptions:0
-                          completionHandler:([OCMArg
-                                                invokeBlockWithArgs:@(granted),
-                                                                    error,
-                                                                    nil])])
-        .ignoringNonObjectArgs();
+    if (result != mojom::RequestPermissionResult::kPermissionPreviouslyDenied &&
+        result !=
+            mojom::RequestPermissionResult::kPermissionPreviouslyGranted) {
+      bool granted =
+          result == mojom::RequestPermissionResult::kPermissionGranted;
+      id error = result == mojom::RequestPermissionResult::kRequestFailed
+                     ? [NSError errorWithDomain:@"" code:0 userInfo:nil]
+                     : NSNull.null;
+      OCMExpect(
+          [mock_notification_center
+              requestAuthorizationWithOptions:0
+                            completionHandler:
+                                ([OCMArg invokeBlockWithArgs:@(granted), error,
+                                                             nil])])
+          .ignoringNonObjectArgs();
+    }
 
     auto service = std::make_unique<MacNotificationServiceUN>(
         handler_receiver.BindNewPipeAndPassRemote(), mock_notification_center);
     service->Bind(service_remote.BindNewPipeAndPassReceiver());
-    service->RequestPermission();
+    base::test::TestFuture<mojom::RequestPermissionResult> permission_result;
+    service->RequestPermission(permission_result.GetCallback());
+    EXPECT_EQ(result, permission_result.Get());
     if (on_create)
       std::move(on_create).Run(service.get());
 
     OCMExpect([mock_notification_center setDelegate:[OCMArg any]]);
     service.reset();
+    EXPECT_OCMOCK_VERIFY(mock_notification_center);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -637,9 +663,11 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForAlerts) {
   });
 
   for (auto result :
-       {UNNotificationRequestPermissionResult::kRequestFailed,
-        UNNotificationRequestPermissionResult::kPermissionDenied,
-        UNNotificationRequestPermissionResult::kPermissionGranted}) {
+       {mojom::RequestPermissionResult::kRequestFailed,
+        mojom::RequestPermissionResult::kPermissionDenied,
+        mojom::RequestPermissionResult::kPermissionGranted,
+        mojom::RequestPermissionResult::kPermissionPreviouslyDenied,
+        mojom::RequestPermissionResult::kPermissionPreviouslyGranted}) {
     CreateAndDestroyService(result);
     histogram_tester.ExpectBucketCount(
         "Notifications.Permissions.UNNotification.Alert.PermissionRequest",
@@ -660,9 +688,11 @@ TEST_F(MacNotificationServiceUNTest, LogsMetricsForBanners) {
   });
 
   for (auto result :
-       {UNNotificationRequestPermissionResult::kRequestFailed,
-        UNNotificationRequestPermissionResult::kPermissionDenied,
-        UNNotificationRequestPermissionResult::kPermissionGranted}) {
+       {mojom::RequestPermissionResult::kRequestFailed,
+        mojom::RequestPermissionResult::kPermissionDenied,
+        mojom::RequestPermissionResult::kPermissionGranted,
+        mojom::RequestPermissionResult::kPermissionPreviouslyDenied,
+        mojom::RequestPermissionResult::kPermissionPreviouslyGranted}) {
     CreateAndDestroyService(result);
     histogram_tester.ExpectBucketCount(
         "Notifications.Permissions.UNNotification.Banner.PermissionRequest",
@@ -687,9 +717,8 @@ TEST_F(MacNotificationServiceUNTest, InitializeDeliveredNotifications) {
   // Expect the service to initialize internal state based on the existing
   // notifications and categories.
   CreateAndDestroyService(
-      UNNotificationRequestPermissionResult::kPermissionGranted,
-      @[ notification_ns ], @[ category_ns ],
-      base::BindOnce([](MacNotificationServiceUN* service) {
+      mojom::RequestPermissionResult::kPermissionGranted, @[ notification_ns ],
+      @[ category_ns ], base::BindOnce([](MacNotificationServiceUN* service) {
         auto notifications =
             GetDisplayedNotificationsSync(service, /*profile=*/nullptr);
         ASSERT_EQ(1u, notifications.size());

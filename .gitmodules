@@ -607,8 +607,8 @@
 	path = chrome/browser/resources/chromeos/quickoffice
 	url = https://chrome-internal.googlesource.com/quickoffice/crx
 	gclient-condition = (checkout_chromeos or checkout_linux) and checkout_src_internal
-[submodule "chrome/browser/resources/settings_internal"]
-	path = chrome/browser/resources/settings_internal
+[submodule "chrome/browser/resources/settings/internal"]
+	path = chrome/browser/resources/settings/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/settings_internal
 	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/spellchecker/internal"]

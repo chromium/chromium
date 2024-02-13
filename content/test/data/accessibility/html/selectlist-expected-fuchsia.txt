@@ -16,7 +16,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN hidden focusable actions='{DEFAULT}'
 ++++++++++++++UNKNOWN hidden focusable actions='{DEFAULT}'
 ++++++++++++++UNKNOWN hidden focusable actions='{DEFAULT}'
-++++++++UNKNOWN hidden
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN focusable actions='{DEFAULT}'
@@ -24,4 +23,3 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN label='Custom selectlist button'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
-++++++++UNKNOWN hidden

@@ -24,6 +24,21 @@ import {getTemplate} from './sync_confirmation_app.html.js';
 import type {SyncBenefit, SyncConfirmationBrowserProxy} from './sync_confirmation_browser_proxy.js';
 import {SyncConfirmationBrowserProxyImpl} from './sync_confirmation_browser_proxy.js';
 
+// LINT.IfChange(screen_mode)
+/**
+ * In PENDING mode, the screen should not show consent buttons and indicate that
+ * some loading is pending. In RESTRICTED mode, the button must not be weighted,
+ * and in UNRESTRICTED mode they can be.
+ *
+ * In UNSUPPORTED mode, the client take any behavior.
+ */
+enum ScreenMode {
+  UNSUPPORTED = 0,
+  PENDING = 1,
+  RESTRICTED = 2,
+  UNRESTRICTED = 3,
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/signin/sync_confirmation_handler.h:screen_mode)
 
 interface AccountInfo {
   src: string;
@@ -86,21 +101,10 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
-      /**
-       * Reflects CanShowHistorySyncOptInsWithoutMinorModeRestrictions
-       * capability value.
-       *
-       * True iff the value of the capability was determined to be true before
-       * this screen was requested.
-       * False otherwise, ie.: the value of the capability was false or it was
-       * impossible to read its value before deadline.
-       *
-       */
-      unrestrictedMode_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('unrestrictedMode');
-        },
+      /** Determines the screen mode. */
+      screenMode_: {
+        type: ScreenMode,
+        value: ScreenMode.PENDING,
       },
     };
   }
@@ -113,7 +117,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
   private useClickableSyncInfoDesc_: boolean;
-  private unrestrictedMode_: boolean;
+  private screenMode_: ScreenMode;
 
 
   override connectedCallback() {
@@ -121,12 +125,9 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
 
     this.addWebUiListener(
         'account-info-changed', this.handleAccountInfoChanged_.bind(this));
+    this.addWebUiListener(
+        'screen-mode-changed', this.handleScreenModeChanged_.bind(this));
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
-
-    if (this.unrestrictedMode_) {
-      this.shadowRoot!.querySelector('#confirmButton')!.classList.add(
-          'action-button');
-    }
   }
 
   private onConfirm_(e: Event) {
@@ -180,10 +181,29 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     return consentDescription;
   }
 
-  // Called when the account image changes.
+  // Called when the account information changes: it might be either the image
+  // or determined mode of screen restriction (derived from the
+  // canShowHistorySyncOptInsWithoutMinorModeRestriction capability).
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {
     this.accountImageSrc_ = accountInfo.src;
     this.showEnterpriseBadge_ = accountInfo.showEnterpriseBadge;
+  }
+
+  private handleScreenModeChanged_(screenMode: ScreenMode) {
+    this.screenMode_ = screenMode;
+  }
+
+  private getConfirmButtonClass_(screenMode: ScreenMode) {
+    return screenMode === ScreenMode.UNRESTRICTED ? 'action-button' : '';
+  }
+
+  private isPending_(screenMode: ScreenMode) {
+    return screenMode === ScreenMode.PENDING;
+  }
+
+  private shouldHideEnterpriseBadge_(
+      screenMode: ScreenMode, showEnterpriseBadge: boolean) {
+    return !showEnterpriseBadge || screenMode === ScreenMode.PENDING;
   }
 
   /**

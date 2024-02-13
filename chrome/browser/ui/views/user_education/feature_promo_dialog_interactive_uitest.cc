@@ -233,12 +233,6 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest,
-                       InvokeUi_IPH_DesktopTabGroupsNewGroup) {
-  set_baseline("4067389");
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
   if (!captions::IsLiveCaptionFeatureSupported())
     return;

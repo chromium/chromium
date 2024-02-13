@@ -22,6 +22,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/idle/idle_polling_service.h"
 #include "ui/base/idle/idle_time_provider.h"
 #include "ui/base/test/idle_test_utils.h"
 
@@ -65,6 +66,9 @@ class IdleBrowserTest : public InProcessBrowserTest {
     https_server()->ServeFilesFromSourceDirectory("content/test/data");
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     ASSERT_TRUE(https_server()->Start());
+    // The default 15s polling interval causes tests to time out.
+    ui::IdlePollingService::GetInstance()->SetPollIntervalForTest(
+        base::Seconds(1));
   }
 
   content::WebContents* web_contents() const {

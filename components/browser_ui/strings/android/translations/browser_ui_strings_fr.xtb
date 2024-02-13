@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Les cookies tiers sont limités</translation>
 <translation id="3008272652534848354">Réinitialiser les autorisations</translation>
 <translation id="301521992641321250">Bloquée automatiquement</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Autorisez la connexion tierce pour un site spécifique.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Vue simplifiée pour les pages Web</translation>
 <translation id="4151930093518524179">Zoom par défaut</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
+<translation id="4169019654293892025">Masquer <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
 <translation id="4194328954146351878">Vous demander avant d'autoriser les sites à consulter et modifier des informations sur des appareils NFC (recommandé)</translation>
 <translation id="4200726100658658164">Accéder aux paramètres de localisation</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> depuis <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">L'appareil vibrera en cas de notifications.</translation>
 <translation id="4259722352634471385">La navigation sur <ph name="URL" /> est bloquée.</translation>
 <translation id="4278390842282768270">Autorisé</translation>
@@ -271,7 +274,7 @@
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquée</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5668404140385795438">Ignore la demande d'un site d'empêcher les zooms avant</translation>
-<translation id="5677928146339483299">Bloqué</translation>
+<translation id="5677928146339483299">Bloqués</translation>
 <translation id="5689516760719285838">Position</translation>
 <translation id="5690795753582697420">L'appareil photo est désactivé dans les paramètres Android</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> peut utiliser vos informations lorsque vous parcourez</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="7087918508125750058">Nombre d'éléments sélectionnés : <ph name="ITEM_COUNT" />. Options disponibles dans la partie supérieure de l'écran</translation>
-<translation id="7137403271056944713">Contrôler/Reprogrammer app. MIDI</translation>
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres pop-up et les redirections par les sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> Ko</translation>
 <translation id="7180611975245234373">Actualiser</translation>
@@ -400,9 +402,9 @@
 <translation id="7667547420449112975">Le Magicien d'Oz</translation>
 <translation id="7684642910516280563">Interdisez à un site d'utiliser des cookies tiers</translation>
 <translation id="7719367874908701697">Zoom de la page</translation>
-<translation id="7770832849480336015">Masquer "<ph name="TITLE_OF_MODULE" />"</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continuer avec cet onglet}one{Continuer avec cet onglet}other{Continuer avec ces onglets}}</translation>
 <translation id="780301667611848630">Non, merci</translation>
 <translation id="7804248752222191302">Un site utilise actuellement votre appareil photo</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>

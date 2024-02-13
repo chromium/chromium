@@ -2067,6 +2067,19 @@ WebAXObjectProxyList::~WebAXObjectProxyList() {
   Clear();
 }
 
+void WebAXObjectProxyList::Remove(unsigned axid) {
+  auto persistent = ax_objects_.find(axid);
+  if (persistent != ax_objects_.end()) {
+    v8::HandleScope handle_scope(isolate_);
+    auto local = v8::Local<v8::Object>::New(isolate_, persistent->second);
+    WebAXObjectProxy* proxy = nullptr;
+    bool ok = gin::ConvertFromV8(isolate_, local, &proxy);
+    DCHECK(ok);
+    proxy->Reset();
+    ax_objects_.erase(axid);
+  }
+}
+
 void WebAXObjectProxyList::Clear() {
   v8::HandleScope handle_scope(isolate_);
 

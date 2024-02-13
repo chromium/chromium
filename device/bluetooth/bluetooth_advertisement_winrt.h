@@ -9,13 +9,13 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "device/bluetooth/bluetooth_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -74,7 +74,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementWinrt
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                              IBluetoothLEAdvertisementPublisher>
       publisher_;
-  absl::optional<EventRegistrationToken> status_changed_token_;
+  std::optional<EventRegistrationToken> status_changed_token_;
   std::unique_ptr<PendingCallbacks> pending_register_callbacks_;
   std::unique_ptr<PendingCallbacks> pending_unregister_callbacks_;
 

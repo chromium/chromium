@@ -9,11 +9,16 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#endif
 
 namespace extensions {
 
@@ -202,6 +207,32 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     }
     return true;
   }
+
+  // Only domain-joined machines are allowed to force-install off-store
+  // extensions. Non-domain-joined machines may still install policy extensions,
+  // but they must be hosted within the web store. If an extension is not from
+  // the web store and indicates it is force-installed, disable it. See
+  // https://b/283274398.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  ExtensionManagement::InstallationMode installation_mode =
+      settings_->GetInstallationMode(extension);
+  if (policy::ManagementServiceFactory::GetForPlatform()
+              ->GetManagementAuthorityTrustworthiness() <
+          policy::ManagementAuthorityTrustworthiness::TRUSTED &&
+      !extension->from_webstore() &&
+      installation_mode == ExtensionManagement::INSTALLATION_FORCED &&
+      Manifest::IsPolicyLocation(extension->location())) {
+    if (reason) {
+      *reason = disable_reason::DISABLE_NOT_VERIFIED;
+    }
+    if (error) {
+      *error = l10n_util::GetStringFUTF16(
+          IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE,
+          l10n_util::GetStringUTF16(IDS_EXTENSION_WEB_STORE_TITLE));
+    }
+    return true;
+  }
+#endif
 
   return false;
 }

@@ -689,16 +689,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, ReorderOnCopy) {
 }
 
 class ClipboardHistoryPasteTypeBrowserTest
-    : public ClipboardHistoryBrowserTest,
-      public ::testing::WithParamInterface<
-          /*web_contents_paste_enabled=*/bool> {
- public:
-  ClipboardHistoryPasteTypeBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kClipboardHistoryWebContentsPaste,
-        /*web_contents_paste_enabled=*/GetParam());
-  }
-
+    : public ClipboardHistoryBrowserTest {
  protected:
   // ClipboardHistoryBrowserTest:
   void SetUpOnMainThread() override {
@@ -787,16 +778,11 @@ class ClipboardHistoryPasteTypeBrowserTest
     return std::move(paste_list_value).TakeList();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
   int paste_num_ = 1;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClipboardHistoryPasteTypeBrowserTest,
-                         /*web_contents_paste_enabled=*/::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryPasteTypeBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest,
                        PlainAndRichTextPastes) {
   using ClipboardHistoryPasteType =
       ash::ClipboardHistoryControllerImpl::ClipboardHistoryPasteType;
@@ -1050,7 +1036,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryPasteTypeBrowserTest,
 
 // Regression test for crbug.com/1363828 --- verifies that
 // `WebContents::Paste()` works, since that's necessary for the html preview.
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryPasteTypeBrowserTest, PasteCommand) {
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest, PasteCommand) {
   SetClipboardTextAndHtml("A", "<span>A</span>");
   web_contents()->Paste();
   WaitForWebContentsPaste("A", /*paste_plain_text=*/false);
@@ -1131,7 +1117,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryMultiProfileBrowserTest,
 // The browser test which creates a widget with a textfield during setting-up
 // to help verify the multipaste menu item's response to the gesture tap and
 // the mouse click.
-class ClipboardHistoryTextfieldBrowserTestBase
+class ClipboardHistoryTextfieldBrowserTest
     : public ClipboardHistoryBrowserTest {
  protected:
   // ClipboardHistoryBrowserTest:
@@ -1168,28 +1154,9 @@ class ClipboardHistoryTextfieldBrowserTestBase
   raw_ptr<views::Textfield> textfield_ = nullptr;
 };
 
-class ClipboardHistoryTextfieldBrowserTest
-    : public ClipboardHistoryTextfieldBrowserTestBase,
-      public ::testing::WithParamInterface<
-          /*web_contents_paste_enabled=*/bool> {
- public:
-  ClipboardHistoryTextfieldBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kClipboardHistoryWebContentsPaste,
-        /*web_contents_paste_enabled=*/GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ClipboardHistoryTextfieldBrowserTest,
-                         /*web_contents_paste_enabled=*/::testing::Bool());
-
 // Verifies that the clipboard history menu responses to the gesture tap
 // correctly (https://crbug.com/1142088).
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        VerifyResponseToGestures) {
   base::HistogramTester histogram_tester;
 
@@ -1217,7 +1184,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
 
 // Verifies that the metric to record the count of the consecutive pastes from
 // the clipboard history menu works as expected.
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        VerifyConsecutivePasteMetric) {
   base::HistogramTester histogram_tester;
 
@@ -1233,7 +1200,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
                                       /*expected_bucket_count=*/1);
 }
 
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        ShouldPasteHistoryViaKeyboard) {
   base::HistogramTester histogram_tester;
   // Write some things to the clipboard.
@@ -1303,7 +1270,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
       "Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted", 4);
 }
 
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        ShouldPasteHistoryWhileHoldingDownCommandKey) {
   // Write some things to the clipboard.
   SetClipboardText("A");
@@ -1336,7 +1303,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
   Release(ui::KeyboardCode::VKEY_COMMAND);
 }
 
-IN_PROC_BROWSER_TEST_P(ClipboardHistoryTextfieldBrowserTest,
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        PasteWithLockedScreen) {
   // Write an item to the clipboard.
   SetClipboardText("A");
@@ -1407,7 +1374,7 @@ class FakeDataTransferPolicyController
 
 // The browser test equipped with the custom policy controller.
 class ClipboardHistoryWithMockDLPBrowserTest
-    : public ClipboardHistoryTextfieldBrowserTestBase {
+    : public ClipboardHistoryTextfieldBrowserTest {
  public:
   ClipboardHistoryWithMockDLPBrowserTest()
       : data_transfer_policy_controller_(
@@ -1927,7 +1894,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryUrlTitleFetcherBrowserTest, UrlTitles) {
 // Base class used to test features that only exist when the Ctrl+V longpress
 // feature is enabled.
 class ClipboardHistoryLongpressEnabledBrowserTest
-    : public ClipboardHistoryTextfieldBrowserTestBase {
+    : public ClipboardHistoryTextfieldBrowserTest {
  public:
   ClipboardHistoryLongpressEnabledBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -1997,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryLongpressEnabledBrowserTest,
 // Base class used to test features that only exist when the UI refresh is
 // enabled.
 class ClipboardHistoryRefreshEnabledBrowserTest
-    : public ClipboardHistoryTextfieldBrowserTestBase {
+    : public ClipboardHistoryTextfieldBrowserTest {
  public:
   ClipboardHistoryRefreshEnabledBrowserTest() {
     scoped_feature_list_.InitWithFeatures(

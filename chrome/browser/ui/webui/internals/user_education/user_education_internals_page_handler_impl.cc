@@ -31,6 +31,7 @@
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/tutorial_description.h"
 #include "components/user_education/common/user_education_features.h"
+#include "components/user_education/common/user_education_metadata.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -145,18 +146,11 @@ std::string GetTitleFromFeaturePromoData(
   return RemovePrefixAndCamelCase(feature->name, "IPH_");
 }
 
-std::string GetDescriptionFromFeaturePromoData(
-    const user_education::FeaturePromoSpecification& spec) {
-  const auto& desc = spec.metadata().triggering_condition_description;
-  return desc.empty() ? desc : "May be triggered when: " + desc;
-}
-
 std::vector<std::string> GetSupportedPlatforms(
-    const user_education::FeaturePromoSpecification& spec) {
+    const user_education::Metadata::PlatformSet& platforms) {
   std::vector<std::string> result;
-  using Platforms =
-      user_education::FeaturePromoSpecification::Metadata::Platforms;
-  for (const auto platform : spec.metadata().platforms) {
+  using Platforms = user_education::Metadata::Platforms;
+  for (const auto platform : platforms) {
     switch (platform) {
       case Platforms::kWindows:
         result.push_back("Windows");
@@ -183,9 +177,8 @@ std::vector<std::string> GetSupportedPlatforms(
 }
 
 std::vector<std::string> GetRequiredFeatures(
-    const user_education::FeaturePromoSpecification& spec) {
+    const user_education::Metadata::FeatureSet& required_features) {
   std::vector<std::string> result;
-  const auto& required_features = spec.metadata().required_features;
   std::transform(required_features.begin(), required_features.end(),
                  std::back_inserter(result),
                  [](const base::Feature* feature) { return feature->name; });
@@ -341,11 +334,6 @@ auto GetPromoData(
   return result;
 }
 
-std::string GetTutorialDescription(
-    const user_education::TutorialDescription& desc) {
-  return std::string();
-}
-
 std::vector<std::string> GetTutorialInstructions(
     const user_education::TutorialDescription& desc) {
   std::vector<std::string> instructions;
@@ -360,15 +348,6 @@ std::vector<std::string> GetTutorialInstructions(
 std::string GetTutorialTypeString(
     const user_education::TutorialDescription& desc) {
   return desc.can_be_restarted ? "Restartable Tutorial" : "Tutorial";
-}
-
-int64_t GetTutorialMilestone(const user_education::TutorialDescription& desc) {
-  return 0;
-}
-
-std::vector<std::string> GetSupportedPlatforms(
-    const user_education::TutorialDescription& desc) {
-  return std::vector<std::string>{"All"};
 }
 
 }  // namespace
@@ -402,10 +381,11 @@ void UserEducationInternalsPageHandlerImpl::GetTutorials(
         tutorial_service->tutorial_registry()->GetTutorialDescription(id);
     if (description) {
       info_list.emplace_back(FeaturePromoDemoPageInfo::New(
-          id, GetTutorialDescription(*description), id,
+          id, description->metadata.additional_description, id,
           GetTutorialTypeString(*description),
-          GetTutorialMilestone(*description),
-          GetSupportedPlatforms(*description), std::vector<std::string>(),
+          description->metadata.launch_milestone,
+          GetSupportedPlatforms(description->metadata.platforms),
+          GetRequiredFeatures(description->metadata.required_features),
           GetTutorialInstructions(*description),
           /*followed_by=*/"", std::vector<FeaturePromoDemoPageDataPtr>()));
     } else {
@@ -470,9 +450,10 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
     for (const auto& [feature, spec] : feature_promo_specifications) {
       info_list.emplace_back(FeaturePromoDemoPageInfo::New(
           GetTitleFromFeaturePromoData(feature, spec),
-          GetDescriptionFromFeaturePromoData(spec), feature->name,
+          spec.metadata().additional_description, feature->name,
           GetPromoTypeString(spec), spec.metadata().launch_milestone,
-          GetSupportedPlatforms(spec), GetRequiredFeatures(spec),
+          GetSupportedPlatforms(spec.metadata().platforms),
+          GetRequiredFeatures(spec.metadata().required_features),
           GetPromoInstructions(spec), GetPromoFollowedBy(spec),
           GetPromoData(spec, storage_service, tracker)));
     }

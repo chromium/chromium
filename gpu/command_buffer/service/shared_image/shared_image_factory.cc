@@ -1100,4 +1100,15 @@ SharedImageRepresentationFactory::ProduceLegacyOverlay(
 }
 #endif
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_OZONE)
+std::unique_ptr<VulkanImageRepresentation>
+SharedImageRepresentationFactory::ProduceVulkan(
+    const gpu::Mailbox& mailbox,
+    gpu::VulkanDeviceQueue* vulkan_device_queue,
+    gpu::VulkanImplementation& vulkan_impl) {
+  return manager_->ProduceVulkan(mailbox, tracker_.get(), vulkan_device_queue,
+                                 vulkan_impl);
+}
+#endif
+
 }  // namespace gpu

@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/animation/css_angle_interpolation_type.h"
 
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 
 namespace blink {
 
@@ -23,16 +23,23 @@ InterpolationValue CSSAngleInterpolationType::MaybeConvertValue(
   if (!primitive_value || !primitive_value->IsAngle()) {
     return nullptr;
   }
+  if (auto* numeric_value =
+          DynamicTo<CSSNumericLiteralValue>(primitive_value)) {
+    return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+        numeric_value->ComputeDegrees(),
+        CSSPrimitiveValue::UnitType::kDegrees));
+  }
   return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
-      primitive_value->ComputeDegrees()));
+      *To<CSSMathFunctionValue>(primitive_value)->ExpressionNode()));
 }
 
 const CSSValue* CSSAngleInterpolationType::CreateCSSValue(
     const InterpolableValue& value,
     const NonInterpolableValue*,
-    const StyleResolverState&) const {
-  return CSSNumericLiteralValue::Create(To<InterpolableNumber>(value).Value(),
-                                        CSSPrimitiveValue::UnitType::kDegrees);
+    const StyleResolverState& state) const {
+  return CSSNumericLiteralValue::Create(
+      To<InterpolableNumber>(value).Value(state.CssToLengthConversionData()),
+      CSSPrimitiveValue::UnitType::kDegrees);
 }
 
 }  // namespace blink

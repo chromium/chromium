@@ -1063,6 +1063,19 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
         seen_body_ = true;
       } else if (Match(tag_impl, html_names::kImgTag)) {
         seen_img_ = true;
+        if (base::FeatureList::IsEnabled(
+                features::kSimplifyLoadingTransparentPlaceholderImage)) {
+          // Skip trying to create a preload request if we know the image is a
+          // data URI, as we do not preload data URIs anyway.
+          const HTMLToken::Attribute* source_attribute =
+              token.GetAttributeItem(html_names::kSrcAttr);
+          if (source_attribute) {
+            String source_attribute_value(source_attribute->Value());
+            if (source_attribute_value.StartsWithIgnoringASCIICase("data:")) {
+              return;
+            }
+          }
+        }
       } else if (Match(tag_impl, html_names::kPictureTag)) {
         in_picture_ = true;
         picture_data_ = PictureData();

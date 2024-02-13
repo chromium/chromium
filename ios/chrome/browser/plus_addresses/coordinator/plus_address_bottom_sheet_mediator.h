@@ -17,7 +17,7 @@ class PlusAddressService;
 }  // namespace plus_addresses
 
 @protocol PlusAddressBottomSheetConsumer;
-
+class UrlLoadingBrowserAgent;
 // Mediator for the plus_addresses bottom sheet. It is responsible for service
 // interactions underlying the UI.
 @interface PlusAddressBottomSheetMediator
@@ -30,7 +30,8 @@ class PlusAddressService;
     initWithPlusAddressService:(plus_addresses::PlusAddressService*)service
                      activeUrl:(GURL)activeUrl
               autofillCallback:(plus_addresses::PlusAddressCallback)callback
-    NS_DESIGNATED_INITIALIZER;
+                     urlLoader:(UrlLoadingBrowserAgent*)urlLoader
+                     incognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

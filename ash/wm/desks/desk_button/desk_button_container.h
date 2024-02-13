@@ -31,9 +31,9 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
                                        public DesksController::Observer,
                                        public SessionObserver,
                                        public views::View {
- public:
-  METADATA_HEADER(DeskButtonContainer);
+  METADATA_HEADER(DeskButtonContainer, views::View)
 
+ public:
   DeskButtonContainer();
   DeskButtonContainer(const DeskButtonContainer&) = delete;
   DeskButtonContainer& operator=(const DeskButtonContainer&) = delete;

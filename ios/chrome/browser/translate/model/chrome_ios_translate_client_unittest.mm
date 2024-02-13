@@ -12,7 +12,6 @@
 #import "base/test/task_environment.h"
 #import "base/values.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/optimization_guide/core/prediction_model_store.h"
 #import "components/translate/core/browser/translate_metrics_logger.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
@@ -20,6 +19,7 @@
 #import "components/translate/ios/browser/translate_java_script_feature.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
+#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
@@ -64,7 +64,8 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
   void TearDown() override {
     // Reinitialize the store, so that tests do not use state from the
     // previous test.
-    optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
+    optimization_guide::IOSChromePredictionModelStore::GetInstance()
+        ->ResetForTesting();
     PlatformTest::TearDown();
   }
 

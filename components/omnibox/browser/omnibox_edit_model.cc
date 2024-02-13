@@ -916,8 +916,9 @@ bool OmniboxEditModel::AcceptKeyword(
   if (view_) {
     view_->OnTemporaryTextMaybeChanged(user_text_, {}, !has_temporary_text_,
                                        true);
-    if (!user_text_.empty())
+    if (!user_text_.empty()) {
       view_->UpdatePopup();
+    }
   }
 
   base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));
@@ -2161,7 +2162,17 @@ void OmniboxEditModel::StepPopupSelection(
     }
   }
 
-  DCHECK(popup_selection_ == new_selection);
+  // `AcceptKeyword()` above updates the popup for the case where we step into
+  // keyword mode with extra user text, e.g. user input is "youtube.com query"
+  // then press tab to enter keyword mode. This is to ensure that the user text
+  // is populated accordingly and the new default suggestion is immediately
+  // clickable. In this case, the current selection (the clickable keyword
+  // suggestion) will not match the expected "next" suggestion (the keyword
+  // button focused).
+  if (new_selection.state != OmniboxPopupSelection::KEYWORD_MODE ||
+      user_text_.empty()) {
+    DCHECK(popup_selection_ == new_selection);
+  }
 
   // Inform the client that a new row is now selected.
   OnNavigationLikely(popup_selection_.line,

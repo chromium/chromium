@@ -24,6 +24,12 @@ class TestAutofillProgressDialogView : public AutofillProgressDialogView {
   void Dismiss(bool show_confirmation_before_closing,
                bool is_canceled_by_user) override {}
   void InvalidateControllerForCallbacks() override {}
+  base::WeakPtr<AutofillProgressDialogView> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestAutofillProgressDialogView> weak_ptr_factory_{this};
 };
 
 class AutofillProgressDialogControllerImplTest : public testing::Test {
@@ -32,11 +38,11 @@ class AutofillProgressDialogControllerImplTest : public testing::Test {
     controller_ = std::make_unique<AutofillProgressDialogControllerImpl>();
   }
 
-  AutofillProgressDialogView* CreateDialogView() {
+  base::WeakPtr<AutofillProgressDialogView> CreateDialogView() {
     if (!view_) {
       view_ = std::make_unique<TestAutofillProgressDialogView>();
     }
-    return view_.get();
+    return view_->GetWeakPtr();
   }
 
   AutofillProgressDialogControllerImpl* controller() {

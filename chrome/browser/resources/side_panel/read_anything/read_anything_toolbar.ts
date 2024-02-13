@@ -700,7 +700,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (this.paused) {
       this.contentPage.playSpeech();
     } else {
-      this.contentPage.stopSpeech();
+      this.contentPage.stopSpeech(/* pausedFromPlayClickButton = */ true);
     }
   }
 

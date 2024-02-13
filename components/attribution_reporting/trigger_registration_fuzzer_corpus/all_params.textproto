@@ -264,7 +264,8 @@ object_value {
           }
         }
       }
-
+    }
+  }
   field {
     name: "not_filters"
     value {

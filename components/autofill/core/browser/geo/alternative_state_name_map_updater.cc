@@ -54,8 +54,9 @@ std::string LoadDataFromFile(const base::FilePath& file) {
 AlternativeStateNameMapUpdater::AlternativeStateNameMapUpdater(
     PrefService* local_state,
     PersonalDataManager* personal_data_manager)
-    : personal_data_manager_(personal_data_manager),
-      local_state_(local_state) {}
+    : personal_data_manager_(personal_data_manager), local_state_(local_state) {
+  pdm_observer_.Observe(personal_data_manager_);
+}
 
 AlternativeStateNameMapUpdater::~AlternativeStateNameMapUpdater() = default;
 

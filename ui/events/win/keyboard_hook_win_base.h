@@ -5,15 +5,15 @@
 #ifndef UI_EVENTS_WIN_KEYBOARD_HOOK_WIN_BASE_H_
 #define UI_EVENTS_WIN_KEYBOARD_HOOK_WIN_BASE_H_
 
-#include <memory>
-
 #include <windows.h>
+
+#include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/keyboard_hook_base.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -27,7 +27,7 @@ namespace ui {
 class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
     : public KeyboardHookBase {
  public:
-  KeyboardHookWinBase(absl::optional<base::flat_set<DomCode>> dom_codes,
+  KeyboardHookWinBase(std::optional<base::flat_set<DomCode>> dom_codes,
                       KeyEventCallback callback,
                       bool enable_hook_registration);
 
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(KEYBOARD_HOOK) KeyboardHookWinBase
   // low-level hook and captures modifier keys.
   static std::unique_ptr<KeyboardHookWinBase>
   CreateModifierKeyboardHookForTesting(
-      absl::optional<base::flat_set<DomCode>> dom_codes,
+      std::optional<base::flat_set<DomCode>> dom_codes,
       KeyEventCallback callback);
 
   // Create a KeyboardHookWinBase instance which does not register a

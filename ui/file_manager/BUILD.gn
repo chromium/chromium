@@ -93,7 +93,10 @@ if (enable_webui_inline_sourcemaps) {
 
     sources =
         filter_include(get_target_outputs(":preprocess_static_image_loader"),
-                       [ "*.js" ])
+                       [
+                         "*.js",
+                         "*.ts",
+                       ])
     originals = []
     outputs = []
 
@@ -173,11 +176,11 @@ ts_library("build_ts") {
 
   deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/cros-components:cros_components_ts",
     "//third_party/material_web_components:bundle_lit_ts",
     "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 
@@ -242,6 +245,7 @@ ts_library("test_build_ts") {
   deps = [
     ":build_ts",
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//third_party/cros-components:cros_components_ts",
@@ -249,7 +253,6 @@ ts_library("test_build_ts") {
     "//third_party/material_web_components:library",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
   extra_deps = [

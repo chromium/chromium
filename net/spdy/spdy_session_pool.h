@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -138,7 +138,7 @@ class NET_EXPORT SpdySessionPool
                   int session_max_queued_capped_frames,
                   const spdy::SettingsMap& initial_settings,
                   bool enable_http2_settings_grease,
-                  const absl::optional<GreasedHttp2Frame>& greased_http2_frame,
+                  const std::optional<GreasedHttp2Frame>& greased_http2_frame,
                   bool http2_end_stream_with_data_frame,
                   bool enable_priority_update,
                   bool go_away_on_ip_change,
@@ -320,14 +320,14 @@ class NET_EXPORT SpdySessionPool
  private:
   friend class SpdySessionPoolPeer;  // For testing.
 
-  using SessionSet = std::set<SpdySession*>;
+  using SessionSet = std::set<raw_ptr<SpdySession, SetExperimental>>;
   using WeakSessionList = std::vector<base::WeakPtr<SpdySession>>;
   using AvailableSessionMap =
       std::map<SpdySessionKey, base::WeakPtr<SpdySession>>;
   using AliasMap = std::multimap<IPEndPoint, SpdySessionKey>;
   using DnsAliasesBySessionKeyMap =
       std::map<SpdySessionKey, std::set<std::string>>;
-  using RequestSet = std::set<SpdySessionRequest*>;
+  using RequestSet = std::set<raw_ptr<SpdySessionRequest, SetExperimental>>;
 
   struct RequestInfoForKey {
     RequestInfoForKey();
@@ -464,7 +464,7 @@ class NET_EXPORT SpdySessionPool
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame. See
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
-  const absl::optional<GreasedHttp2Frame> greased_http2_frame_;
+  const std::optional<GreasedHttp2Frame> greased_http2_frame_;
 
   // If set, the HEADERS frame carrying a request without body will not have the
   // END_STREAM flag set.  The stream will be closed by a subsequent empty DATA

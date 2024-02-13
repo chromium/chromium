@@ -12,12 +12,11 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,24 +80,15 @@ base::CancelableTaskTracker::TaskId RunHistoryEntryFoundCallback(
 
 class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
  public:
-  ClipboardHistoryUrlTitleFetcherTest() {
-    auto fake_user_manager = std::make_unique<FakeChromeUserManager>();
-    fake_user_manager_ = fake_user_manager.get();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-  }
+  ClipboardHistoryUrlTitleFetcherTest() = default;
 
  protected:
   void CreateAndSwitchToSecondaryProfile() {
     const std::string kSecondaryProfileName = "secondary_profile@test";
-    const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    fake_user_manager_->SwitchActiveUser(account_id);
-
-    profile_manager()->CreateTestingProfile(kSecondaryProfileName,
-                                            GetTestingFactories());
+    LogIn(kSecondaryProfileName);
+    CreateProfile(kSecondaryProfileName);
+    user_manager()->SwitchActiveUser(
+        AccountId::FromUserEmail(kSecondaryProfileName));
   }
 
   ClipboardHistoryUrlTitleFetcherImpl& fetcher() { return fetcher_; }
@@ -106,11 +96,17 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
 
  private:
   // BrowserWithTestWindowTest:
+  void SetUp() override {
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
+    BrowserWithTestWindowTest::SetUp();
+  }
+
   void TearDown() override {
     // Reset `history_service_` so that it does not dangle after the keyed
     // service is destroyed during `BrowserWithTestWindowTest::TearDown()`.
     history_service_ = nullptr;
     BrowserWithTestWindowTest::TearDown();
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -118,13 +114,6 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
              base::BindRepeating(
                  &ClipboardHistoryUrlTitleFetcherTest::BuildHistoryService,
                  base::Unretained(this))}};
-  }
-
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
   }
 
   std::unique_ptr<KeyedService> BuildHistoryService(
@@ -136,9 +125,6 @@ class ClipboardHistoryUrlTitleFetcherTest : public BrowserWithTestWindowTest {
   }
 
   ClipboardHistoryUrlTitleFetcherImpl fetcher_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  // Owned by, and therefore must be cleaned up before, `user_manager_enabler_`.
-  raw_ptr<FakeChromeUserManager> fake_user_manager_ = nullptr;
   // Owned by `KeyedServiceFactory`. Must be cleaned up before `TearDown()`.
   raw_ptr<MockHistoryService> history_service_ = nullptr;
 };

@@ -27,9 +27,9 @@ class CaptureModeBehavior;
 // if multiple recording formats are supported, it will display a drop down
 // button which when pressed will open the recording type selection menu.
 class CaptureButtonView : public views::View {
- public:
-  METADATA_HEADER(CaptureButtonView);
+  METADATA_HEADER(CaptureButtonView, views::View)
 
+ public:
   CaptureButtonView(views::Button::PressedCallback on_capture_button_pressed,
                     views::Button::PressedCallback on_drop_down_pressed,
                     CaptureModeBehavior* active_behavior);

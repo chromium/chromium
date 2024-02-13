@@ -221,8 +221,8 @@ class CableMockAdapter : public MockBluetoothAdapter {
     service_data_map.emplace(kGoogleCableUUID128, std::move(service_data));
 
     mock_device->UpdateAdvertisementData(
-        1 /* rssi */, absl::nullopt /* flags */, BluetoothDevice::UUIDList(),
-        absl::nullopt /* tx_power */, std::move(service_data_map),
+        1 /* rssi */, std::nullopt /* flags */, BluetoothDevice::UUIDList(),
+        std::nullopt /* tx_power */, std::move(service_data_map),
         BluetoothDevice::ManufacturerDataMap());
 
     auto* mock_device_ptr = mock_device.get();
@@ -316,7 +316,7 @@ class CableMockAdapter : public MockBluetoothAdapter {
                             delegate) {
               EXPECT_TRUE(filter);
               delegate->OnSessionStarted(/*scan_session=*/nullptr,
-                                         /*error_code=*/absl::nullopt);
+                                         /*error_code=*/std::nullopt);
               auto* device = CreateNewTestBluetoothDevice(eid);
               delegate->OnDeviceFound(/*scan_session=*/nullptr, device);
               return nullptr;

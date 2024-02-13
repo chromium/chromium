@@ -76,10 +76,6 @@ AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityExposeHTMLElement);
 AX_BASE_EXPORT bool IsAccessibilityExposeHTMLElementEnabled();
 
-// Expose all ignored nodes by Blink in the accessibility tree.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityExposeIgnoredNodes);
-AX_BASE_EXPORT bool IsAccessibilityExposeIgnoredNodesEnabled();
-
 // Use language detection to determine the language
 // of text content in page and exposed to the browser process AXTree.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityLanguageDetection);

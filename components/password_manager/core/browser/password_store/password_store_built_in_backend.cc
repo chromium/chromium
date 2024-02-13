@@ -31,7 +31,9 @@ template <typename Result>
 base::OnceCallback<Result(Result)> ReportMetricsForResultCallback(
     MethodName method_name) {
   PasswordStoreBackendMetricsRecorder metrics_reporter(
-      BackendInfix("BuiltInBackend"), method_name);
+      BackendInfix("BuiltInBackend"), method_name,
+      PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType::
+          kNone);
   return base::BindOnce(
       [](PasswordStoreBackendMetricsRecorder reporter,
          Result result) -> Result {

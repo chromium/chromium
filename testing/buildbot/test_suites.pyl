@@ -108,7 +108,11 @@
 
     'android_pie_rel_reduced_capacity_gtests': {
       'android_browsertests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'cc_unittests': {},
       'content_browsertests': {
         'swarming': {
@@ -754,20 +758,6 @@
       'chrome_public_smoke_test': {},
     },
 
-    'chromium_dev_desktop_gtests': {
-      'base_unittests': {},
-      'content_browsertests': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'content_unittests': {},
-      'interactive_ui_tests': {},
-      'net_unittests': {},
-      'rust_gtest_interop_unittests': {},
-      'unit_tests': {},
-    },
-
     'chromium_dev_linux_gtests': {
       'base_unittests': {
         'swarming': {
@@ -824,6 +814,32 @@
       },
     },
 
+    'chromium_dev_mac_gtests': {
+      'base_unittests': {},
+      'content_unittests': {},
+      'net_unittests': {},
+      'rust_gtest_interop_unittests': {},
+      'unit_tests': {},
+    },
+
+    'chromium_dev_win_gtests': {
+      'base_unittests': {},
+      'content_browsertests': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+      'content_unittests': {},
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
+      'net_unittests': {},
+      'rust_gtest_interop_unittests': {},
+      'unit_tests': {},
+    },
+
     'chromium_gtests': {
       'absl_hardening_tests': {},
       'angle_unittests': {
@@ -835,7 +851,11 @@
       'base_unittests': {},
       'blink_common_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'boringssl_crypto_tests': {},
       'boringssl_ssl_tests': {},
       'capture_unittests': {
@@ -951,7 +971,7 @@
         'test': 'interactive_ui_tests',
         'args': [
           '--windows-virtual-display-driver',
-          '--gtest_filter=*MultiScreen*:*VirtualDisplayWinUtil*',
+          '--gtest_filter=*MultiScreen*:*VirtualDisplayUtilWin*',
         ],
         'swarming': {
           'dimensions': {
@@ -1547,11 +1567,63 @@
           'has_native_resultdb_integration',
         ],
         'args': [
+          '--no-retry-failures',
           '--test-type',
           'testharness',
           'reftest',
           'crashtest',
           'print-reftest',
+        ],
+        'swarming': {
+          'shards': 15,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'chrome_wpt_tests_headful': {
+        'test': 'chrome_wpt_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--no-retry-failures',
+          '--exit-after-n-crashes-or-timeouts=500',
+          '--no-headless',
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+        ],
+        'swarming': {
+          'shards': 30,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'chrome_wpt_tests_old_headless': {
+        'test': 'chrome_wpt_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--no-retry-failures',
+          '--test-type',
+          'testharness',
+          'reftest',
+          'crashtest',
+          'print-reftest',
+          '--additional-driver-flag=--headless',
         ],
         'swarming': {
           'shards': 15,
@@ -2185,7 +2257,11 @@
       'blink_common_unittests': {},
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'blink_unittests': {},
       'blink_unittests_v2': {},
       'boringssl_crypto_tests': {},
@@ -2723,7 +2799,7 @@
           'webgpu_telemetry_cts',
         ],
         'args': [
-          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-blink-features=WebGPUExperimentalFeatures',
+          '--extra-browser-args=--use-angle=gl --use-webgpu-adapter=opengles --enable-features=WebGPUExperimentalFeatures',
         ],
         'swarming': {
           'shards': 14,
@@ -4029,6 +4105,9 @@
       'blink_fuzzer_unittests': {},
       'blink_heap_unittests': {},
       'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
         'args': [
           '--test-launcher-bot-mode',
           '--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter',
@@ -4089,7 +4168,12 @@
       'gin_unittests': {},
       'gl_unittests': {},
       'google_apis_unittests': {},
-      'gpu_unittests': {},
+      'gpu_unittests': {
+        'args': [
+          '--test-launcher-bot-mode',
+          '--test-launcher-filter-file=testing/buildbot/filters/ios.gpu_unittests.filter',
+        ],
+      },
       'gwp_asan_unittests': {},
       'ipc_tests': {},
       'latency_unittests': {},
@@ -4537,7 +4621,11 @@
       'app_shell_unittests': {},
       'base_unittests': {},
       'blink_heap_unittests': {},
-      'blink_platform_unittests': {},
+      'blink_platform_unittests': {
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
       'blink_unittests': {},
       'blink_unittests_v2': {},
       'cc_unittests': {},
@@ -4752,6 +4840,32 @@
       'views_examples_unittests': {
         'mixins': [
           'skia_gold_test',
+        ],
+      },
+    },
+
+    'ondevice_stability_tests': {
+      'ondevice_stability_tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'linux_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'chrome',
+        ],
+        'mac_args': [
+          '--chromedriver',
+          'chromedriver',
+          '--binary',
+          'Google Chrome.app/Contents/MacOS/Google Chrome',
+        ],
+        'win_args': [
+          '--chromedriver',
+          'chromedriver.exe',
+          '--binary',
+          'Chrome.exe',
         ],
       },
     },
@@ -5416,6 +5530,17 @@
           '--gtest_filter=UsingRealWebcam*',
           '--run-manual',
           '--test-launcher-jobs=1',
+        ],
+      },
+    },
+
+    'webrtc_chromium_without_baremetal_gtests': {
+      'capture_unittests': {
+        'args': [
+          '--enable-logging',
+          '--v=1',
+          '--test-launcher-jobs=1',
+          '--test-launcher-print-test-stdio=always',
         ],
       },
     },
@@ -6667,6 +6792,11 @@
       'webrtc_chromium_gtests',
     ],
 
+    'webrtc_chromium_tests_without_baremetal_tests': [
+      'webrtc_chromium_gtests',
+      'webrtc_chromium_without_baremetal_gtests',
+    ],
+
     'webview_bot_all_gtests': [
       'system_webview_shell_instrumentation_tests',
       'webview_bot_instrumentation_test_apk_gtest',
@@ -6882,6 +7012,11 @@
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
         ],
       },
+      'chromeos_device_only_gtests': {
+        'variants': [
+          'CROS_JACUZZI_CQ_PUBLIC_LKGM',
+        ],
+      },
     },
 
     'chromeos_jacuzzi_skylab_tests': {
@@ -6917,6 +7052,21 @@
 
     'chromeos_octopus_rel_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'variants': [
+          'CROS_OCTOPUS_PUBLIC_LKGM',
+        ],
+      },
+      'chromeos_chrome_criticalstaging_tast_tests': {
+        'variants': [
+          'CROS_OCTOPUS_PUBLIC_LKGM',
+        ],
+      },
+      'chromeos_chrome_disabled_tast_tests': {
+        'variants': [
+          'CROS_OCTOPUS_PUBLIC_LKGM',
+        ],
+      },
+      'chromeos_device_only_gtests': {
         'variants': [
           'CROS_OCTOPUS_PUBLIC_LKGM',
         ],
@@ -7882,15 +8032,6 @@
       },
     },
 
-    'model_validation_tests_full': {
-      'model_validation_tests': {
-        'variants': [
-          'MODEL_VALIDATION_BASE',
-          'MODEL_VALIDATION_TRUNK',
-        ],
-      },
-    },
-
     'optimization_guide_linux_gtests': {
       'optimization_guide_gpu_gtests': {
         'variants': [
@@ -7900,9 +8041,36 @@
       'optimization_guide_nogpu_gtests': {},
     },
 
+    'optimization_guide_linux_script_tests': {
+      'model_validation_tests': {
+        'mixins': [
+          'gce',
+        ],
+        'variants': [
+          'MODEL_VALIDATION_BASE',
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_stability_tests': {
+        'variants': [
+          'INTEL_UHD_630',
+        ],
+      },
+    },
+
     'optimization_guide_mac_gtests': {
       'optimization_guide_gpu_gtests': {},
       'optimization_guide_nogpu_gtests': {},
+    },
+
+    'optimization_guide_mac_script_tests': {
+      'model_validation_tests': {
+        'variants': [
+          'MODEL_VALIDATION_BASE',
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_stability_tests': {},
     },
 
     'optimization_guide_win_gtests': {
@@ -7912,7 +8080,30 @@
           'INTEL_UHD_630',
         ],
       },
-      'optimization_guide_nogpu_gtests': {},
+      'optimization_guide_nogpu_gtests': {
+        'mixins': [
+          'gce',
+        ],
+      },
+    },
+
+    'optimization_guide_win_script_tests': {
+      'model_validation_tests': {
+        'mixins': [
+          'gce',
+        ],
+        'variants': [
+          'MODEL_VALIDATION_BASE',
+          'MODEL_VALIDATION_TRUNK',
+        ],
+      },
+      'ondevice_stability_tests': {
+        'variants': [
+          'AMD_RADEON_RX_5500_XT',
+          'INTEL_UHD_630',
+          'NVIDIA_GEFORCE_GTX_1660',
+        ],
+      },
     },
 
     'webview_trichrome_10_cts_tests_gtest': {

@@ -108,7 +108,8 @@ class VisitDatabase {
 
   // Fills all visits in the time range [begin, end) to the given vector. Either
   // time can be is_null(), in which case the times in that direction are
-  // unbounded.
+  // unbounded. If app_id is present, restrict the results to those matching
+  // the app_id only.
   //
   // If `max_results` is non-zero, up to that many results will be returned. If
   // there are more results than that, the oldest ones will be returned. (This
@@ -117,6 +118,7 @@ class VisitDatabase {
   // The results will be in increasing order of date.
   bool GetAllVisitsInRange(base::Time begin_time,
                            base::Time end_time,
+                           absl::optional<std::string> app_id,
                            int max_results,
                            VisitVector* visits);
 

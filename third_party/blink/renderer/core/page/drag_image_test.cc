@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/page/drag_image.h"
 
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -103,6 +105,7 @@ class TestImage : public Image {
 };
 
 TEST(DragImageTest, NullHandling) {
+  test::TaskEnvironment task_environment;
   EXPECT_FALSE(DragImage::Create(nullptr));
 
   scoped_refptr<TestImage> null_test_image(TestImage::Create(gfx::Size()));
@@ -110,6 +113,7 @@ TEST(DragImageTest, NullHandling) {
 }
 
 TEST(DragImageTest, NonNullHandling) {
+  test::TaskEnvironment task_environment;
   scoped_refptr<TestImage> test_image(TestImage::Create(gfx::Size(2, 2)));
   std::unique_ptr<DragImage> drag_image = DragImage::Create(test_image.get());
   ASSERT_TRUE(drag_image);
@@ -121,6 +125,7 @@ TEST(DragImageTest, NonNullHandling) {
 }
 
 TEST(DragImageTest, CreateDragImage) {
+  test::TaskEnvironment task_environment;
   // Tests that the DrageImage implementation doesn't choke on null values
   // of imageForCurrentFrame().
   // FIXME: how is this test any different from test NullHandling?
@@ -129,6 +134,7 @@ TEST(DragImageTest, CreateDragImage) {
 }
 
 TEST(DragImageTest, TrimWhitespace) {
+  test::TaskEnvironment task_environment;
   KURL url("http://www.example.com/");
   String test_label = "          Example Example Example      \n    ";
   String expected_label = "Example Example Example";
@@ -152,6 +158,7 @@ TEST(DragImageTest, TrimWhitespace) {
 }
 
 TEST(DragImageTest, InterpolationNone) {
+  test::TaskEnvironment task_environment;
   SkBitmap expected_bitmap;
   expected_bitmap.allocN32Pixels(4, 4);
   expected_bitmap.eraseArea(SkIRect::MakeXYWH(0, 0, 2, 2), 0xFFFFFFFF);

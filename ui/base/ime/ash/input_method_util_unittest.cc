@@ -7,13 +7,13 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/fake_input_method_delegate.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -85,7 +85,7 @@ class InputMethodUtilTest : public testing::Test {
                                  layout, language_codes, is_login_keyboard,
                                  GURL(),  // options page url
                                  GURL(),  // input view page url
-                                 /*handwriting_language=*/absl::nullopt);
+                                 /*handwriting_language=*/std::nullopt);
   }
 
   FakeInputMethodDelegate delegate_;
@@ -206,7 +206,7 @@ TEST_F(InputMethodUtilTest, TestGetInputMethodIdsForLanguageCode) {
 
 InputMethodDescriptor DescWithIdAndHandwritingLanguage(
     const std::string& id,
-    absl::optional<std::string> handwriting_language) {
+    std::optional<std::string> handwriting_language) {
   const std::string input_method_id =
       extension_ime_util::GetInputMethodIDByEngineID(id);
   return InputMethodDescriptor(

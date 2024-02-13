@@ -36,7 +36,7 @@ SELECT
 FROM slice
 WHERE name = "InputLatency::GestureScrollUpdate" AND dur != -1;
 
-CREATE PERFETTO TABLE internal_non_coalesced_gesture_scrolls AS
+CREATE PERFETTO TABLE _non_coalesced_gesture_scrolls AS
 SELECT
   id,
   ts,
@@ -73,7 +73,7 @@ scroll_updates_with_coalesce_info as MATERIALIZED (
     -- presented scroll update they have been coalesced into.
     (
       SELECT id
-      FROM internal_non_coalesced_gesture_scrolls non_coalesced
+      FROM _non_coalesced_gesture_scrolls non_coalesced
       WHERE non_coalesced.ts <= scroll_update.ts
       ORDER BY ts DESC
       LIMIT 1
@@ -91,13 +91,13 @@ SELECT
     FROM scroll_updates_with_coalesce_info coalesce_info
     WHERE
       coalesce_info.coalesced_to_scroll_update_slice_id =
-        internal_non_coalesced_gesture_scrolls.id
+        _non_coalesced_gesture_scrolls.id
     ORDER BY ts DESC
     LIMIT 1
   ) as last_coalesced_input_ts,
   scroll_update_id,
   scroll_id
-FROM internal_non_coalesced_gesture_scrolls;
+FROM _non_coalesced_gesture_scrolls;
 
 -- Associate every trace_id with it's perceived delta_y on the screen after
 -- prediction.
@@ -305,15 +305,26 @@ SELECT
   LAG(event_latency_id, 1, -1) OVER (PARTITION BY scroll_id ORDER BY min_start_ts) AS prev_event_latency_id
 FROM chrome_merged_frame_view;
 
--- Calculate |VSYNC_INTERVAL| as the lowest delay between frames larger than
--- zero.
--- TODO(b/286222128): Emit this data from Chrome instead of calculating it.
+-- Calculate |VSYNC_INTERVAL| as the lowest vsync seen in the trace or the
+-- minimum delay between frames larger than zero.
+--
+-- TODO(~M130): Remove the lowest vsync since we should always have vsync_interval_ms.
 CREATE PERFETTO VIEW chrome_vsyncs(
   -- The lowest delay between frames larger than zero.
   vsync_interval INT
 ) AS
+WITH
+  trace_vsyncs AS (
+    SELECT EXTRACT_ARG(slice.arg_set_id, 'event_latency.vsync_interval_ms') AS vsync_interval_ms
+    FROM
+      slice JOIN chrome_frame_info_with_delay
+        ON chrome_frame_info_with_delay.event_latency_id = slice.id
+    WHERE EXTRACT_ARG(slice.arg_set_id, 'event_latency.vsync_interval_ms') > 0
+  )
 SELECT
-  MIN(delay_since_last_frame) AS vsync_interval
+  COALESCE(
+    (SELECT MIN(vsync_interval_ms) FROM trace_vsyncs),
+    MIN(delay_since_last_frame)) AS vsync_interval
 FROM chrome_frame_info_with_delay
 WHERE delay_since_last_frame > 0;
 

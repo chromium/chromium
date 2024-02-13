@@ -11,7 +11,7 @@ namespace video_capture::features {
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kCameraMonitoringInVideoCaptureService,
              "CameraMonitoringInVideoCaptureService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace video_capture::features

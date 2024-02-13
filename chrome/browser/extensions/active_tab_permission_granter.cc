@@ -25,6 +25,7 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -40,7 +41,7 @@ namespace {
 using RendererMessageFunction =
     base::RepeatingCallback<void(bool, content::RenderProcessHost*)>;
 
-void UpdateTabSpecificPermissions(const std::string& extension_id,
+void UpdateTabSpecificPermissions(const ExtensionId& extension_id,
                                   const extensions::URLPatternSet& new_hosts,
                                   int tab_id,
                                   bool update_origin_allowlist,
@@ -55,7 +56,7 @@ void UpdateTabSpecificPermissions(const std::string& extension_id,
   }
 }
 
-void ClearTabSpecificPermissions(const std::vector<std::string>& extension_ids,
+void ClearTabSpecificPermissions(const std::vector<ExtensionId>& extension_ids,
                                  int tab_id,
                                  bool update_origin_allowlist,
                                  content::RenderProcessHost* process) {
@@ -246,7 +247,7 @@ void ActiveTabPermissionGranter::ClearGrantedExtensionsAndNotify(
   }
 
   std::set<content::RenderFrameHost*> frame_hosts;
-  std::vector<std::string> extension_ids;
+  std::vector<ExtensionId> extension_ids;
   content::BrowserContext* browser_context =
       web_contents()->GetBrowserContext();
   ProcessManager* process_manager = ProcessManager::Get(browser_context);

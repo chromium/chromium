@@ -257,7 +257,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // or an event from a focus action.
   virtual void AddDirtyObjectToSerializationQueue(
       AXObject* obj,
-      bool subtree,
       ax::mojom::blink::EventFrom event_from,
       ax::mojom::blink::Action event_from_action,
       const std::vector<ui::AXEventIntent>& event_intents) = 0;
@@ -277,12 +276,6 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Note that any pending event also causes its corresponding object to
   // become dirty.
   virtual bool HasDirtyObjects() const = 0;
-
-  // Adds the event to a list of pending events that is cleared out by
-  // a subsequent call to  duplicates are not represented.. Returns false if
-  // the event is already pending; duplicates are not represented.
-  virtual bool AddPendingEvent(const ui::AXEvent& event,
-                               bool insert_at_beginning) = 0;
 
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
   virtual void ScheduleAXUpdate() const = 0;

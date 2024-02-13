@@ -107,11 +107,13 @@ void PaintController::RecordScrollHitTestData(
     const DisplayItemClient& client,
     DisplayItem::Type type,
     const TransformPaintPropertyNode* scroll_translation,
-    const gfx::Rect& rect) {
+    const gfx::Rect& rect,
+    cc::HitTestOpaqueness hit_test_opaqueness) {
   PaintChunk::Id id(client.Id(), type, current_fragment_);
   CheckNewChunkId(id);
   ValidateNewChunkClient(client);
-  paint_chunker_.CreateScrollHitTestChunk(id, client, scroll_translation, rect);
+  paint_chunker_.CreateScrollHitTestChunk(id, client, scroll_translation, rect,
+                                          hit_test_opaqueness);
   CheckNewChunk();
 }
 

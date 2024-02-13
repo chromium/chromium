@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -310,6 +311,23 @@ public class AutocompleteController implements Destroyable {
     }
 
     /**
+     * Create a native navigation observser on native side.
+     *
+     * @param navigationHandle The NavigationHandle for the current navigation.
+     * @param match AutocompleteMatch that was selected by the user
+     */
+    void createNavigationObserver(NavigationHandle navigationHandle, AutocompleteMatch match) {
+        if (mNativeController == 0) return;
+        if (!hasValidNativeObjectRef(match, VerificationPoint.SELECT_MATCH)) return;
+
+        AutocompleteControllerJni.get()
+                .createNavigationObserver(
+                        mNativeController,
+                        navigationHandle.nativeNavigationHandlePtr(),
+                        match.getNativeObjectRef());
+    }
+
+    /**
      * Called when the user touches down on a suggestion. Only called for search suggestions.
      *
      * @param match the match that received the touch
@@ -456,5 +474,11 @@ public class AutocompleteController implements Destroyable {
 
         // Create an instance of AutocompleteController associated with the supplied profile.
         long create(AutocompleteController controller, Profile profile, boolean isLowEndDevice);
+
+        // Create a navigation observser.
+        void createNavigationObserver(
+                long nativeAutocompleteControllerAndroid,
+                long mNativeNavigationHandle,
+                long nativeAutocompleteMatch);
     }
 }

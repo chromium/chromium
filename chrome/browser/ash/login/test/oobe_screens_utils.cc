@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
@@ -307,7 +309,7 @@ void OobeUiDestroyedWaiter::OnDestroyingOobeUI() {
 
 // Start observing, tap/click and wait.
 void TapOnPathAndWaitForOobeToBeDestroyed(
-    std::initializer_list<base::StringPiece> element_ids) {
+    std::initializer_list<std::string_view> element_ids) {
   // Get the OOBE WebUI Controller (OobeUI) and start observing.
   content::WebContents* web_contents =
       LoginDisplayHost::default_host()->GetOobeWebContents();

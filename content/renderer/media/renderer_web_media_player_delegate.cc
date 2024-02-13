@@ -258,7 +258,7 @@ void RendererWebMediaPlayerDelegate::ScheduleUpdateTask() {
   if (!pending_update_task_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&RendererWebMediaPlayerDelegate::UpdateTask,
-                                  AsWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr()));
     pending_update_task_ = true;
   }
 }

@@ -4,7 +4,6 @@
 
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
-import {assert} from 'chrome://resources/js/assert.js';
 
 import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getEntryProperties} from '../../common/js/api.js';
@@ -46,58 +45,6 @@ export abstract class Action {
    */
   abstract getEntries(): Array<Entry|FilesAppEntry>;
 }
-
-class DriveShareAction implements Action {
-  constructor(
-      private entry_: Entry|FilesAppEntry,
-      private metadataModel_: MetadataModel,
-      private volumeManager_: VolumeManager) {}
-
-  static create(
-      entries: Array<Entry|FilesAppEntry>, metadataModel: MetadataModel,
-      volumeManager: VolumeManager) {
-    if (entries.length !== 1) {
-      return null;
-    }
-    return new DriveShareAction(entries[0]!, metadataModel, volumeManager);
-  }
-
-  execute() {
-    // Open the Sharing dialog in a new window.
-    const props = [chrome.fileManagerPrivate.EntryPropertyName.SHARE_URL];
-    getEntryProperties([this.entry_], props).then((results) => {
-      if (results.length !== 1) {
-        console.warn(
-            `getEntryProperties for shareUrl should return 1 entry ` +
-            `(returned ${results.length})`);
-        return;
-      }
-      if (results[0]!.shareUrl === undefined) {
-        console.warn('getEntryProperties shareUrl is undefined');
-        return;
-      }
-      visitURL(results[0]!.shareUrl);
-    });
-  }
-
-  canExecute() {
-    const metadata = this.metadataModel_.getCache([this.entry_], ['canShare']);
-    assert(metadata.length === 1);
-    const canShareItem = metadata[0]!.canShare !== false;
-    return this.volumeManager_.getDriveConnectionState().type !==
-        chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
-        canShareItem;
-  }
-
-  getTitle() {
-    return null;
-  }
-
-  getEntries() {
-    return [this.entry_];
-  }
-}
-
 
 class DriveToggleOfflineAction implements Action {
   constructor(
@@ -426,12 +373,6 @@ export class ActionsModel extends EventTarget {
             // For Drive, actions are constructed directly in the Files app
             // code.
             case VolumeType.DRIVE:
-              const shareAction = DriveShareAction.create(
-                  this.entries_, this.metadataModel_, this.volumeManager_);
-              if (shareAction) {
-                actions[CommonActionId.SHARE] = shareAction;
-              }
-
               const saveForOfflineAction = DriveToggleOfflineAction.create(
                   this.entries_, this.metadataModel_, this.ui_, true,
                   this.invalidate_.bind(this));

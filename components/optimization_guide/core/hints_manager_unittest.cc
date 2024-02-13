@@ -510,6 +510,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
   }
 
  protected:
+  OptimizationGuideLogger optimization_guide_logger_;
   std::unique_ptr<HintsManager> hints_manager_;
 
  private:
@@ -529,7 +530,6 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 TEST_F(HintsManagerTest, ProcessHintsWithValidCommandLineOverride) {

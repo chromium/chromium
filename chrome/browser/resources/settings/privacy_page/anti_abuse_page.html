@@ -1,32 +1,6 @@
-<style include="settings-shared">
-  .info-container {
-    color: var(--cr-secondary-text-color);
-    display: flex;
-    padding: 10px;
-  }
-
-  .info-section {
-    flex: 1;
-  }
-
-  .info-header {
-    color: var(--google-blue-600);
-    font-weight: 500;
-    padding-block-end: 0;
-    padding-block-start: 0;
-    padding-inline-start: 10px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .info-header {
-      color: var(--google-blue-300);
-    }
-  }
-
-  .info-text-container {
-    display: flex;
-    gap: 18px;
-    padding: 10px;
+<style include="settings-shared settings-columned-section">
+  .settings-columned-section {
+    padding-top: 4px;
   }
 </style>
 <settings-toggle-button
@@ -38,30 +12,32 @@
     disabled="[[toggleDisabled_]]"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
-<div class="info-container">
-  <div class="info-section">
-    <h2 class="info-header">$i18n{antiAbuseWhenOnHeader}</h2>
-    <div class="info-text-container">
-      <iron-icon icon="settings20:archive" aria-hidden="true"></iron-icon>
-      <div>$i18n{antiAbuseWhenOnSectionOne}</div>
-    </div>
-    <div class="info-text-container">
-      <iron-icon icon="settings20:dashboard" aria-hidden="true">
-      </iron-icon>
-      <div>$i18n{antiAbuseWhenOnSectionTwo}</div>
-    </div>
-    <div class="info-text-container">
-      <iron-icon icon="settings20:timer" aria-hidden="true">
-      </iron-icon>
-      <div>$i18n{antiAbuseWhenOnSectionThree}</div>
-    </div>
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="description-header">$i18n{antiAbuseWhenOnHeader}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <iron-icon icon="settings20:archive" aria-hidden="true"></iron-icon>
+        <div class="secondary">$i18n{antiAbuseWhenOnSectionOne}</div>
+      </li>
+      <li>
+        <iron-icon icon="settings20:dashboard" aria-hidden="true"></iron-icon>
+        <div class="secondary">$i18n{antiAbuseWhenOnSectionTwo}</div>
+      </li>
+      <li>
+        <iron-icon icon="settings20:timer" aria-hidden="true"></iron-icon>
+        <div class="secondary">$i18n{antiAbuseWhenOnSectionThree}</div>
+      </li>
+    </ul>
   </div>
-  <div class="info-section">
-    <h2 class="info-header">$i18n{antiAbuseThingsToConsiderHeader}</h2>
-    <div class="info-text-container">
-      <iron-icon icon="settings20:background-replace" aria-hidden="true">
-      </iron-icon>
-      <div>$i18n{antiAbuseThingsToConsiderSectionOne}</div>
-    </div>
+  <div class="column">
+    <h2 class="description-header">$i18n{antiAbuseThingsToConsiderHeader}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <iron-icon icon="settings20:background-replace" aria-hidden="true">
+        </iron-icon>
+        <div class="secondary">$i18n{antiAbuseThingsToConsiderSectionOne}</div>
+      </li>
+    </ul>
   </div>
 </div>

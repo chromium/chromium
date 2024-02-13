@@ -90,11 +90,12 @@ class WebAutofillClient {
       const WebElement&,
       WebFormRelatedChangeType) {}
   virtual void AjaxSucceeded() {}
-  // Called when |element| is in autofilled state and the value has been changed
-  // by JavaScript. |old_value| contains the value before being changed.
-  virtual void JavaScriptChangedAutofilledValue(
-      const WebFormControlElement& element,
-      const WebString& old_value) {}
+  // Called when the value of `element` has been changed by JavaScript.
+  // `old_value` contains the value before being changed.
+  // `was_autofilled` is the state of the field prior to the JS change.
+  virtual void JavaScriptChangedValue(const WebFormControlElement& element,
+                                      const WebString& old_value,
+                                      bool was_autofilled) {}
 
   // Called when the focused node has changed. This is not called if the focus
   // moves outside the frame.

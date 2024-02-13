@@ -127,15 +127,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   }
 
   // Determines this list contains an object.
-  bool IsQuarantinedForTesting(void* object) {
-    ConditionalScopedGuard guard(lock_required_, lock_);
-    for (const auto& slot : slots_) {
-      if (slot.object == object) {
-        return true;
-      }
-    }
-    return false;
-  }
+  bool IsQuarantinedForTesting(void* object);
 
   Root& GetRoot() { return root_; }
 
@@ -182,7 +174,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
 
   // `slots_` hold quarantined entries.
   struct QuarantineSlot {
-    void* object;
+    uintptr_t slot_start;
     size_t usable_size;
   };
   std::vector<QuarantineSlot, InternalAllocator<QuarantineSlot>> slots_

@@ -152,7 +152,7 @@ class ExpiringCache {
         Compact(now);
 
       // No existing entry. Creating a new one.
-      entries_.insert(std::make_pair(key, Entry(value, expiration)));
+      entries_.insert(std::pair(key, Entry(value, expiration)));
     } else {
       // Update an existing cache entry.
       it->second.first = value;

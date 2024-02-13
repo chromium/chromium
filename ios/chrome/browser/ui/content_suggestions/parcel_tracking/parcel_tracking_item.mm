@@ -13,9 +13,6 @@
 #pragma mark - MagicStackModule
 
 - (ContentSuggestionsModuleType)type {
-  if (self.shouldShowSeeMore) {
-    return ContentSuggestionsModuleType::kParcelTrackingSeeMore;
-  }
   return ContentSuggestionsModuleType::kParcelTracking;
 }
 

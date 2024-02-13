@@ -4,13 +4,13 @@
 
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -174,7 +174,7 @@ TEST(AXGeneratedTreeTest, TestGeneratingTreesWithIgnoredNodes) {
     for (int j = 0; j < ignored_permutation_count; j++) {
       AXTree tree;
       generator.BuildUniqueTreeWithIgnoredNodes(
-          i, j, /* focused_node */ absl::nullopt, &tree);
+          i, j, /* focused_node */ std::nullopt, &tree);
       std::string str = TreeToString(tree);
       EXPECT_EQ(EXPECTED_TREES[expected_index++], str);
     }
@@ -292,7 +292,7 @@ TEST_P(SerializeGeneratedTreesTest, SerializeGeneratedTrees) {
 
           // Mark as dirty the subtree rooted at one of the nodes.
           if (l > 0)
-            serializer.MarkSubtreeDirty(tree1.GetFromId(l));
+            serializer.MarkSubtreeDirty(l);
 
           // Serialize a sequence of updates to |dst_tree| to match.
           for (int k_index = 0; k_index < tree_size; ++k_index) {
@@ -384,7 +384,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
          perm_index0++) {
       AXSerializableTree fat_tree;
       generator.BuildUniqueTreeWithIgnoredNodes(
-          tree_index, perm_index0, /* focused_node */ absl::nullopt, &fat_tree);
+          tree_index, perm_index0, /* focused_node */ std::nullopt, &fat_tree);
       SCOPED_TRACE("fat_tree is " + TreeToString(fat_tree));
 
       // Create a second tree, also with each permutations of nodes other than
@@ -393,7 +393,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
            perm_index1++) {
         AXSerializableTree fat_tree1;
         generator.BuildUniqueTreeWithIgnoredNodes(
-            tree_index, perm_index1, /* focused_node */ absl::nullopt,
+            tree_index, perm_index1, /* focused_node */ std::nullopt,
             &fat_tree1);
         SCOPED_TRACE("fat_tree1 is " + TreeToString(fat_tree1));
 

@@ -78,6 +78,7 @@ class BookmarkToolbarMediator
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
     private final Runnable mEndSearchRunnable;
+    private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
 
     // TODO(crbug.com/1413463): Remove reference to BookmarkDelegate if possible.
     private @Nullable BookmarkDelegate mBookmarkDelegate;
@@ -95,7 +96,8 @@ class BookmarkToolbarMediator
             BookmarkOpener bookmarkOpener,
             BookmarkUiPrefs bookmarkUiPrefs,
             BookmarkAddNewFolderCoordinator bookmarkAddNewFolderCoordinator,
-            Runnable endSearchRunnable) {
+            Runnable endSearchRunnable,
+            BookmarkMoveSnackbarManager bookmarkMoveSnackbarManager) {
         mContext = context;
         mModel = model;
 
@@ -110,6 +112,7 @@ class BookmarkToolbarMediator
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mBookmarkAddNewFolderCoordinator = bookmarkAddNewFolderCoordinator;
         mEndSearchRunnable = endSearchRunnable;
+        mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             mModel.set(BookmarkToolbarProperties.SORT_MENU_IDS, SORT_MENU_IDS);
@@ -208,8 +211,8 @@ class BookmarkToolbarMediator
             List<BookmarkId> list = mSelectionDelegate.getSelectedItemsAsList();
             if (list.size() >= 1) {
                 if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-                    BookmarkUtils.startFolderPickerActivity(
-                            mContext, list.toArray(new BookmarkId[0]));
+                    mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(
+                            list.toArray(new BookmarkId[0]));
                 } else {
                     BookmarkFolderSelectActivity.startFolderSelectActivity(
                             mContext, list.toArray(new BookmarkId[0]));
@@ -438,7 +441,7 @@ class BookmarkToolbarMediator
             mEndSearchRunnable.run();
             return;
         }
-        mBookmarkDelegate.openFolder(
-                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, mCurrentFolder));
+
+        mBookmarkDelegate.openFolder(mBookmarkModel.getBookmarkById(mCurrentFolder).getParentId());
     }
 }

@@ -4,9 +4,11 @@
 
 #include "chrome/browser/nearby_sharing/metrics/discovery_metric_logger.h"
 
+#include <utility>
+
 #include "chrome/browser/nearby_sharing/metrics/metric_common.h"
 #include "components/metrics/structured/structured_events.h"
-#include "components/metrics/structured/structured_metrics_features.h"
+#include "components/metrics/structured/structured_metrics_client.h"
 
 namespace nearby::share::metrics {
 
@@ -34,11 +36,11 @@ void DiscoveryMetricLogger::OnShareTargetAdded(
   auto platform = GetPlatform(share_target);
   auto relationship = GetDeviceRelationship(share_target);
 
-  ::metrics::structured::events::v2::nearby_share::Discovery()
-      .SetPlatform(static_cast<int>(platform))
-      .SetDeviceRelationship(static_cast<int>(relationship))
-      .SetTimeToDiscovery(delta.InMilliseconds())
-      .Record();
+  ::metrics::structured::StructuredMetricsClient::Record(
+      std::move(::metrics::structured::events::v2::nearby_share::Discovery()
+                    .SetPlatform(static_cast<int>(platform))
+                    .SetDeviceRelationship(static_cast<int>(relationship))
+                    .SetTimeToDiscovery(delta.InMilliseconds())));
 }
 
 }  // namespace nearby::share::metrics

@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
-Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] conv2d float32 4D input and filter(non-constant) tensors default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] conv2d float32 4D both input and filter constant tensors default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] conv2d float32 4D input and filter tensors default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -53,6 +55,8 @@ Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] conv2d float32 4D input and filter tensors, both negative input tensor and options.bias / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] conv2d float32 4D input and filter(non-constant) tensors default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] conv2d float32 4D both input and filter constant tensors default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] conv2d float32 4D input and filter tensors default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"

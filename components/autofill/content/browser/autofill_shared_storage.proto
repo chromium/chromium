@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package autofill;
+
+message AutofillCreditCardData {
+  optional string last_four = 1;
+  optional string network = 2;
+  optional uint32 expiration_month = 3;
+  optional uint32 expiration_year = 4;
+}
+
+message AutofillCreditCardList {
+  repeated AutofillCreditCardData server_cards = 1;
+}

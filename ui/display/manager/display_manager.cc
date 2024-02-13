@@ -728,7 +728,7 @@ void DisplayManager::RegisterDisplayProperty(
     float refresh_rate,
     bool is_interlaced,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<float>& vsync_rate_min) {
+    const std::optional<float>& vsync_rate_min) {
   if (display_info_.find(display_id) == display_info_.end()) {
     display_info_[display_id] =
         ManagedDisplayInfo(display_id, std::string(), false);
@@ -1585,7 +1585,7 @@ bool DisplayManager::ShouldSetMirrorModeOn(
 
 void DisplayManager::SetMirrorMode(
     MirrorMode mode,
-    const absl::optional<MixedMirrorModeParams>& mixed_params) {
+    const std::optional<MixedMirrorModeParams>& mixed_params) {
   if (num_connected_displays() < 2) {
     return;
   }
@@ -1604,10 +1604,10 @@ void DisplayManager::SetMirrorMode(
     // 2. Restore the mixed mirror mode when display configuration changes.
     mixed_mirror_mode_params_ = mixed_params;
   } else {
-    DCHECK(mixed_params == absl::nullopt);
+    DCHECK(mixed_params == std::nullopt);
     // Clear mixed mirror mode parameters here to avoid restoring the mode after
     // display configuration changes.
-    mixed_mirror_mode_params_ = absl::nullopt;
+    mixed_mirror_mode_params_ = std::nullopt;
   }
 
   const bool enabled = mode != MirrorMode::kOff;
@@ -1753,7 +1753,7 @@ void DisplayManager::SetTouchCalibrationData(
 
 void DisplayManager::ClearTouchCalibrationData(
     int64_t display_id,
-    absl::optional<ui::TouchscreenDevice> touchdevice) {
+    std::optional<ui::TouchscreenDevice> touchdevice) {
   if (touchdevice) {
     touch_device_manager_->ClearTouchCalibrationData(*touchdevice, display_id);
   } else {

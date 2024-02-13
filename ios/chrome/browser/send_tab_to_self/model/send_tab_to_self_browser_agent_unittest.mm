@@ -109,14 +109,9 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
             ->GetSendTabToSelfModel());
   }
 
-  web::FakeWebState* AppendNewWebState(const GURL& url) {
-    return AppendNewWebState(url, WebStateList::INSERT_ACTIVATE,
-                             /*is_visible=*/true);
-  }
-
   web::FakeWebState* AppendNewWebState(const GURL& url,
-                                       WebStateList::InsertionFlags flags,
-                                       bool is_visible) {
+                                       bool activate = true,
+                                       bool is_visible = true) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     fake_web_state->SetCurrentURL(url);
     // Create a navigation item to match the URL and give it a title.
@@ -133,9 +128,9 @@ class SendTabToSelfBrowserAgentTest : public PlatformTest {
     // Capture a pointer to the created web state to return.
     web::FakeWebState* inserted_web_state = fake_web_state.get();
     InfoBarManagerImpl::CreateForWebState(inserted_web_state);
-    browser_->GetWebStateList()->InsertWebState(WebStateList::kInvalidIndex,
-                                                std::move(fake_web_state),
-                                                flags, WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::Automatic().Activate(activate));
 
     if (is_visible) {
       inserted_web_state->WasShown();
@@ -191,7 +186,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisible) {
   // Add a web state, not visible.
   web::WebState* web_state =
       AppendNewWebState(GURL("http://www.blank.com"),
-                        WebStateList::INSERT_ACTIVATE, /*visible=*/false);
+                        /*activate=*/true, /*is_visible=*/false);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
@@ -216,7 +211,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotActive) {
   // Add a web state, not visible or active.
   web::WebState* web_state =
       AppendNewWebState(GURL("http://www.blank.com"),
-                        WebStateList::INSERT_NO_FLAGS, /*visible=*/false);
+                        /*activate=*/false, /*is_visible=*/false);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
   EXPECT_EQ(0UL, infobar_manager->infobars().size());
@@ -244,7 +239,7 @@ TEST_F(SendTabToSelfBrowserAgentTest, TestRemoteAddTabNotVisibleActivated) {
   // Add a web state, active but not visible.
   web::WebState* web_state =
       AppendNewWebState(GURL("http://www.blank.com"),
-                        WebStateList::INSERT_ACTIVATE, /*visible=*/false);
+                        /*activate=*/true, /*is_visible=*/false);
   InfoBarManagerImpl* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
   EXPECT_EQ(0UL, infobar_manager->infobars().size());

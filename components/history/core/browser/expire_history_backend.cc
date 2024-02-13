@@ -60,7 +60,8 @@ class AllVisitsReader : public ExpiringVisitsReader {
     DCHECK(db) << "must have a database to operate upon";
     DCHECK(visits) << "visit vector has to exist in order to populate it";
 
-    db->GetAllVisitsInRange(base::Time(), end_time, max_visits, visits);
+    db->GetAllVisitsInRange(base::Time(), end_time, kNoAppIdFilter, max_visits,
+                            visits);
     // When we got the maximum number of visits we asked for, we say there could
     // be additional things to expire now.
     return static_cast<int>(visits->size()) == max_visits;
@@ -237,6 +238,7 @@ void ExpireHistoryBackend::DeleteURLs(const std::vector<GURL>& urls,
 
 void ExpireHistoryBackend::ExpireHistoryBetween(
     const std::set<GURL>& restrict_urls,
+    absl::optional<std::string> restrict_app_id,
     base::Time begin_time,
     base::Time end_time,
     bool user_initiated) {
@@ -245,7 +247,8 @@ void ExpireHistoryBackend::ExpireHistoryBetween(
 
   // Find the affected visits and delete them.
   VisitVector visits;
-  main_db_->GetAllVisitsInRange(begin_time, end_time, 0, &visits);
+  main_db_->GetAllVisitsInRange(begin_time, end_time, restrict_app_id, 0,
+                                &visits);
   if (!restrict_urls.empty()) {
     std::set<URLID> url_ids;
     for (const auto& restrict_url : restrict_urls)

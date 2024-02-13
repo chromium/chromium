@@ -18,6 +18,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/manifest_constants.h"
@@ -381,7 +382,7 @@ v8::Local<v8::Object> CreateFullBinding(
 
 std::string GetContextOwner(v8::Local<v8::Context> context) {
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
-  const std::string& extension_id = script_context->GetExtensionID();
+  const ExtensionId& extension_id = script_context->GetExtensionID();
   bool id_is_valid = crx_file::id_util::IdIsValid(extension_id);
   CHECK(id_is_valid || script_context->url().is_valid());
   // Use only origin for URLs to match browser logic in EventListener::ForURL().

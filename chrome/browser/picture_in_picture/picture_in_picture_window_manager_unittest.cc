@@ -217,5 +217,8 @@ TEST_F(PictureInPictureWindowManagerTest, CorrectTypesAreSupported) {
       PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
           GURL("chrome-extension://foocom")));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("chrome://newtab")));
 }
 #endif

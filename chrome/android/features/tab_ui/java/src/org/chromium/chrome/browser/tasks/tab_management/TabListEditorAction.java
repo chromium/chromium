@@ -334,9 +334,7 @@ public abstract class TabListEditorAction {
             // TODO(crbug/1522226): Find out how we can have a tab ID that is no longer
             // in the tab model here.
             if (tab == null) continue;
-            tabCount +=
-                    tabGroupModelFilter.getRelatedTabCountForRootId(
-                            tabGroupModelFilter.getRootId(tab));
+            tabCount += tabGroupModelFilter.getRelatedTabCountForRootId(tab.getRootId());
         }
         return tabCount;
     }

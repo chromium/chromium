@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
@@ -88,11 +89,11 @@ void PersonalizationAppSeaPenProviderImpl::DeleteRecentSeaPenImage(
 
 void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDoneInternal(
     const SeaPenImage& sea_pen_image,
-    const std::string& query_info,
+    const mojom::SeaPenQueryPtr& query,
     base::OnceCallback<void(bool success)> callback) {
   auto* wallpaper_controller = ash::WallpaperController::Get();
   wallpaper_controller->SetSeaPenWallpaper(
-      GetAccountId(profile_), sea_pen_image, query_info, std::move(callback));
+      GetAccountId(profile_), sea_pen_image, query, std::move(callback));
 }
 
 }  // namespace ash::personalization_app

@@ -27,7 +27,7 @@ class ASH_EXPORT RoundedScrollBar : public views::ScrollBar {
   METADATA_HEADER(RoundedScrollBar, views::ScrollBar)
 
  public:
-  explicit RoundedScrollBar(bool horizontal);
+  explicit RoundedScrollBar(Orientation orientation);
   RoundedScrollBar(const RoundedScrollBar&) = delete;
   RoundedScrollBar& operator=(const RoundedScrollBar&) = delete;
   ~RoundedScrollBar() override;

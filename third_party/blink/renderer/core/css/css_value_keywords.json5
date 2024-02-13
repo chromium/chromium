@@ -1114,6 +1114,7 @@
     "browser",
     "window-controls-overlay",
     "tabbed",
+    "picture-in-picture",
 
     // (display-state:) media feature
     // normal
@@ -1465,6 +1466,12 @@
     "max",
     "clamp",
 
+    // proposed math function
+    // https://github.com/w3c/csswg-drafts/issues/626
+    "calc-size",
+    // value that goes within calc-size()
+    "any",
+
     // Trigonometic functions
     "sin",
     "cos",
@@ -1694,8 +1701,6 @@
 
     // anchor positioning
     "anchor",
-    // auto,
-    "auto-same",
     // top,
     // left,
     // right,
@@ -1792,5 +1797,11 @@
     "most-height",
     "most-block-size",
     "most-inline-size",
+
+    // position-try-options
+    // none
+    "flip-block",
+    "flip-inline",
+    "flip-start",
   ],
 }

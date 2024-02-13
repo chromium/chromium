@@ -34,7 +34,10 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   // opportunity for the data to be drained before buffering begins. The
   // |bytes_consumer| is the original BytesConsumer. |bytes_consumer| must
   // not have a client.
-  static BufferingBytesConsumer* CreateWithDelay(
+  static BufferingBytesConsumer* CreateWithDelay(BytesConsumer* bytes_consumer);
+
+  // CreateWithDelay() that allows setting |timer_task_runner| for test.
+  static BufferingBytesConsumer* CreateWithDelayForTest(
       BytesConsumer* bytes_consumer,
       scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner);
 
@@ -100,6 +103,7 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   bool has_seen_end_of_data_ = false;
   bool has_seen_error_ = false;
   Member<BytesConsumer::Client> client_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

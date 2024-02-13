@@ -79,7 +79,6 @@ INSTANTIATE_TEST_SUITE_P(
         {"NativeRequestFreeformRewrite", EditorOpportunityMode::kRewrite,
          EditorTone::kFreeformRewrite, EditorStates::kNativeRequest,
          /*histogram_name=*/"InputMethod.Manta.Orca.States.FreeformRewrite"},
-
     }),
     [](const testing::TestParamInfo<StateCase> info) {
       return info.param.test_name;

@@ -57,9 +57,25 @@ class StubDevToolsClient : public DevToolsClient {
   void SetDetached() override;
   void SetOwner(WebViewImpl* owner) override;
   WebViewImpl* GetOwner() const override;
-  DevToolsClient* GetRootClient() override;
   DevToolsClient* GetParentClient() const override;
   bool IsMainPage() const override;
+  Status SendRaw(const std::string& message) override;
+  bool HasMessageForAnySession() const override;
+
+  Status AttachTo(DevToolsClient* parent) override;
+  void RegisterSessionHandler(const std::string& session_id,
+                              DevToolsClient* client) override;
+  void UnregisterSessionHandler(const std::string& session_id) override;
+  Status OnConnected() override;
+  Status ProcessEvent(const InspectorEvent& event) override;
+  Status ProcessCommandResponse(
+      const InspectorCommandResponse& response) override;
+  int NextMessageId() const override;
+  int AdvanceNextMessageId() override;
+  Status ProcessNextMessage(int expected_id,
+                            bool log_timeout,
+                            const Timeout& timeout,
+                            DevToolsClient* caller) override;
 
  protected:
   const std::string id_;

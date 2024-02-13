@@ -82,8 +82,7 @@
       container.querySelector('.current-read-highlight').textContent,
       sentence2);
   previousHighlights = container.querySelectorAll('.previous-read-highlight');
-  // TODO(b/322827035): The previous highlight should only include sentence 1,
-  // not sentence 3.
+  assertEquals(previousHighlights.length, 1);
   assertEquals(previousHighlights[0].textContent, sentence1);
 
   // Navigating backwards should highlight the 1st sentence.

@@ -1,17 +1,18 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../../../../resources/js-test.js"></script>
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../..//resources/testdriver-vendor.js"></script>
 </head>
 <body>
-<div id="mainFrameText">This test checks that long press to select text focuses the pressed frame.</div>
+<div id="mainFrameText">
+This test checks that long press to select text focuses the pressed frame.
+</div>
 <script>
-
-function longPressElement(el) {
-    x = el.offsetLeft + el.offsetWidth / 2;
-    y = el.offsetTop + el.offsetHeight / 2;
-    eventSender.gestureLongPress(x, y);
-}
 
 var framesLoaded = 0;
 function frameLoaded() {
@@ -20,29 +21,24 @@ function frameLoaded() {
     runTest();
 }
 
-function runTest()
-{
-    if (window.testRunner)
-        testRunner.dumpAsText();
-
-    if (!window.eventSender)
-        return;
-
-    if (eventSender.gestureLongPress) {
-        mainFrameText = document.getElementById("mainFrameText");
-        frame1 = document.getElementById("frame1");
-        frame2 = document.getElementById("frame2");
-
-        longPressElement(frame1);
-        shouldBeTrue("document.activeElement == frame1");
-        longPressElement(frame2);
-        shouldBeTrue("document.activeElement == frame2");
-        longPressElement(mainFrameText);
-        shouldBeTrue("document.activeElement == document.body");
-    } else {
-        debug("gestureLongPress not implemented by this platform");
-    }
+function runTest() {
+  promise_test(async t => {
+    // Text selection requires a longer long-press duration than a context menu
+    // popup.
+    const longPressOptions = { duration: 1200 };
+    preventContextMenu(t);
+    mainFrameText = document.getElementById("mainFrameText");
+    frame1 = document.getElementById("frame1");
+    frame2 = document.getElementById("frame2");
+    await touchLongPressElement(frame1, longPressOptions);
+    assert_equals(document.activeElement, frame1);
+    await touchLongPressElement(frame2, longPressOptions);
+    assert_equals(document.activeElement, frame2);
+    await touchLongPressElement(mainFrameText, longPressOptions);
+    assert_equals(document.activeElement, document.body);
+  }, 'Long press to select text focuses the pressed frame');
 }
+
 </script>
 <iframe id="frame1" onload="frameLoaded()" src="data:text/html,
 <html>

@@ -9,13 +9,13 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -61,10 +61,10 @@ class CrosSettings {
   virtual ~CrosSettings();
 
   // Helper function to test if the given |path| is a valid cros setting.
-  static bool IsCrosSettings(base::StringPiece path);
+  static bool IsCrosSettings(std::string_view path);
 
   // Returns setting value for the given |path|.
-  const base::Value* GetPref(base::StringPiece path) const;
+  const base::Value* GetPref(std::string_view path) const;
 
   // Requests that all providers ensure the values they are serving were read
   // from a trusted store:
@@ -85,13 +85,13 @@ class CrosSettings {
   // These are convenience forms of Get().  The value will be retrieved
   // and the return value will be true if the |path| is valid and the value at
   // the end of the path can be returned in the form specified.
-  bool GetBoolean(base::StringPiece path, bool* out_value) const;
-  bool GetInteger(base::StringPiece path, int* out_value) const;
-  bool GetDouble(base::StringPiece path, double* out_value) const;
-  bool GetString(base::StringPiece path, std::string* out_value) const;
-  bool GetList(base::StringPiece path,
+  bool GetBoolean(std::string_view path, bool* out_value) const;
+  bool GetInteger(std::string_view path, int* out_value) const;
+  bool GetDouble(std::string_view path, double* out_value) const;
+  bool GetString(std::string_view path, std::string* out_value) const;
+  bool GetList(std::string_view path,
                const base::Value::List** out_value) const;
-  bool GetDictionary(base::StringPiece path,
+  bool GetDictionary(std::string_view path,
                      const base::Value::Dict** out_value) const;
 
   // Checks if the given username is on the list of users allowed to sign-in to
@@ -128,7 +128,7 @@ class CrosSettings {
       base::RepeatingClosure callback);
 
   // Returns the provider that handles settings with the |path| or prefix.
-  CrosSettingsProvider* GetProvider(base::StringPiece path) const;
+  CrosSettingsProvider* GetProvider(std::string_view path) const;
 
   const SupervisedUserCrosSettingsProvider*
   supervised_user_cros_settings_provider() const {

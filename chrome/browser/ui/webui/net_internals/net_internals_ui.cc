@@ -45,6 +45,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
@@ -107,6 +108,17 @@ base::Value::List HostResolverEndpointResultsToBaseList(
     endpoint_results_list.Append(std::move(dict));
   }
   return endpoint_results_list;
+}
+
+base::Value::List GetMatchDestList(
+    const std::vector<::network::mojom::RequestDestination>& match_dest) {
+  base::Value::List result =
+      base::Value::List::with_capacity(match_dest.size());
+  for (const auto& item : match_dest) {
+    result.Append(network::RequestDestinationToString(
+        item, network::EmptyRequestDestinationOption::kUseTheEmptyString));
+  }
+  return result;
 }
 
 // This class implements network::mojom::ResolveHostClient.
@@ -503,6 +515,8 @@ void NetInternalsMessageHandler::OnGetSharedDictionaryInfoDone(
   for (const auto& item : dictionaries) {
     base::Value::Dict dict;
     dict.Set("match", item->match);
+    dict.Set("match_dest", GetMatchDestList(item->match_dest));
+    dict.Set("id", item->id);
     dict.Set("dictionary_url", item->dictionary_url.spec());
     dict.Set("response_time", base::TimeFormatHTTP(item->response_time));
     dict.Set("expiration", base::NumberToString(item->expiration.InSeconds()));

@@ -59,8 +59,9 @@ void QuotaTask::DeleteSoon() {
 // QuotaTaskObserver -------------------------------------------------------
 
 QuotaTaskObserver::~QuotaTaskObserver() {
-  for (auto* task : running_quota_tasks_)
+  for (QuotaTask* task : running_quota_tasks_) {
     task->Abort();
+  }
 }
 
 QuotaTaskObserver::QuotaTaskObserver() = default;

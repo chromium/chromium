@@ -79,7 +79,7 @@ void DefaultDeskButton::OnButtonPressed() {
   bar_view_->NudgeDeskName(/*desk_index=*/0);
 }
 
-BEGIN_METADATA(DefaultDeskButton, DeskButtonBase)
+BEGIN_METADATA(DefaultDeskButton)
 END_METADATA
 
 }  // namespace ash

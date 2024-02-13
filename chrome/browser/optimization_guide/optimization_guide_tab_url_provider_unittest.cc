@@ -26,6 +26,7 @@ class OptimizationGuideTabUrlProviderTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    tab_url_provider_.reset();
     // Also destroy |otr_browser_| before the profile. browser()'s destruction
     // is handled in BrowserWithTestWindowTest::TearDown().
     otr_browser_->tab_strip_model()->CloseAllTabs();

@@ -510,7 +510,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 
 // Tests that a pdf that is displayed in the web view can be downloaded.
 // Only valid with "Save to drive" enabled.
-- (void)testDownloadDisplayedPDF {
+- (void)DISABLED_testDownloadDisplayedPDF {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/two_pages.pdf")];
   [ChromeEarlGrey waitForPageToFinishLoading];
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");

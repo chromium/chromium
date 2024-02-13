@@ -40,6 +40,8 @@ class ExtensionsMenuMainPageView : public views::View {
   enum class MessageSectionState {
     // Site is restricted to all extensions.
     kRestrictedAccess,
+    // Site is restricted all non-enterprise extensions by policy.
+    kPolicyBlockedAccess,
     // User can customize each extension's access to the site.
     kUserCustomizedAccess,
     // User can customize each extension's access to the site, but a page

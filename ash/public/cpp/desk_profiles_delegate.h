@@ -26,10 +26,10 @@ struct ASH_PUBLIC_EXPORT LacrosProfileSummary {
   uint64_t profile_id = 0;
 
   // Profile name.
-  std::string name;
+  std::u16string name;
 
   // Profile email, may be empty.
-  std::string email;
+  std::u16string email;
 
   // Profile icon.
   gfx::ImageSkia icon;

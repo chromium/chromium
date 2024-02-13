@@ -74,6 +74,7 @@ export class SetLocalPasswordInputElement extends
        * |validate| method has been called and validation has passed.
        */
       value: {
+        notify: true,
         type: String,
         computed: 'computeValue(firstInputValidity_, confirmInputValidity_)',
       },
@@ -233,7 +234,7 @@ export class SetLocalPasswordInputElement extends
     return this.$.firstInput.value;
   }
 
-  private onInput(ev: Event): void {
+  private async onInput(ev: Event): Promise<void> {
     if (ev.target === this.$.firstInput) {
       this.firstInputValidity_ = null;
       this.confirmInputValidity_ = null;
@@ -242,8 +243,16 @@ export class SetLocalPasswordInputElement extends
 
     if (ev.target === this.$.confirmInput) {
       this.confirmInputValidity_ = null;
+
+      // Catch the moment when both passwords are valid, this is
+      // to allow us to update the state of the Submit Button for
+      // whatever element is hosting.
+      await this.validateFirstInput();
+      this.validateConfirmInput();
+
       return;
     }
+
 
     assertNotReached();
   }

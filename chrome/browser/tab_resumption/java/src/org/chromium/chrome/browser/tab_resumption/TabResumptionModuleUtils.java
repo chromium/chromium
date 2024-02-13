@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -90,7 +93,8 @@ public class TabResumptionModuleUtils {
      * @param profile The profile of the user.
      * @param moduleContainerStubId The id of the tab resumption module on its parent view.
      */
-    public static TabResumptionModuleCoordinator mayCreateTabResumptionModuleCoordinator(
+    public static @Nullable TabResumptionModuleCoordinator mayCreateTabResumptionModuleCoordinator(
+            Context context,
             ViewGroup parent,
             SuggestionClickCallback suggestionClickCallback,
             Profile profile,
@@ -102,11 +106,12 @@ public class TabResumptionModuleUtils {
         UrlImageProvider urlImageProvider = new UrlImageProvider(profile, parent.getContext());
         TabResumptionModuleCoordinator coordinator =
                 new TabResumptionModuleCoordinator(
+                        context,
                         dataProvider,
                         urlImageProvider,
                         suggestionClickCallback,
                         parent.findViewById(moduleContainerStubId));
-        coordinator.reload();
+        coordinator.showModule();
         return coordinator;
     }
 }

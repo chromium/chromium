@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/result_catcher.h"
 
@@ -176,7 +177,7 @@ IN_PROC_BROWSER_TEST_P(NativeMessagingApiTest,
 
 base::CommandLine CreateNativeMessagingConnectCommandLine(
     const std::string& connect_id,
-    const std::string& extension_id =
+    const ExtensionId& extension_id =
         ScopedTestNativeMessagingHost::kExtensionId) {
   base::CommandLine command_line(*base::CommandLine::ForCurrentProcess());
   command_line.AppendSwitchASCII(switches::kNativeMessagingConnectExtension,

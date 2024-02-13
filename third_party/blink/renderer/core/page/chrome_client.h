@@ -518,10 +518,12 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual void SelectOrSelectListFieldOptionsChanged(HTMLFormControlElement&) {}
   virtual void AjaxSucceeded(LocalFrame*) {}
-  // Called when |element| is in autofilled state and the value has been changed
-  // by JavaScript. |old_value| contains the value before being changed.
-  virtual void JavaScriptChangedAutofilledValue(HTMLFormControlElement&,
-                                                const String& old_value) {}
+  // Called when the value of `element` has been changed by JavaScript.
+  // `old_value` contains the value before being changed.
+  // `was_autofilled` is the state of the field prior to the JS change.
+  virtual void JavaScriptChangedValue(HTMLFormControlElement&,
+                                      const String& old_value,
+                                      bool was_autofilled) {}
 
   // Input method editor related functions.
   virtual void ShowVirtualKeyboardOnElementFocus(LocalFrame&) {}

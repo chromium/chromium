@@ -129,18 +129,18 @@ BluetoothDevice* BluetoothTestBase::SimulateClassicDevice() {
 
 bool BluetoothTestBase::ConnectGatt(
     BluetoothDevice* device,
-    absl::optional<BluetoothUUID> service_uuid,
-    absl::optional<base::OnceCallback<void(BluetoothDevice*)>>
+    std::optional<BluetoothUUID> service_uuid,
+    std::optional<base::OnceCallback<void(BluetoothDevice*)>>
         simulate_callback) {
   base::RunLoop run_loop;
-  absl::optional<bool> result;
-  absl::optional<std::unique_ptr<BluetoothGattConnection>> connection;
+  std::optional<bool> result;
+  std::optional<std::unique_ptr<BluetoothGattConnection>> connection;
 
   device->CreateGattConnection(
       base::BindLambdaForTesting(
           [this, &result, &connection, &run_loop](
               std::unique_ptr<BluetoothGattConnection> new_connection,
-              absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+              std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
             if (error_code.has_value()) {
               result = false;
               last_connect_error_code_ = error_code.value();
@@ -170,9 +170,9 @@ bool BluetoothTestBase::ConnectGatt(
   return true;
 }
 
-absl::optional<BluetoothUUID> BluetoothTestBase::GetTargetGattService(
+std::optional<BluetoothUUID> BluetoothTestBase::GetTargetGattService(
     BluetoothDevice* device) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void BluetoothTestBase::SimulateDeviceBreaksConnection(
@@ -265,7 +265,7 @@ void BluetoothTestBase::GattConnectionCallback(
     Call expected,
     Result expected_result,
     std::unique_ptr<BluetoothGattConnection> connection,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   Result actual_result;
   if (error_code) {
     ++error_callback_count_;
@@ -337,7 +337,7 @@ void BluetoothTestBase::StopNotifyCheckForPrecedingCalls(
 void BluetoothTestBase::ReadValueCallback(
     Call expected,
     Result expected_result,
-    absl::optional<BluetoothGattService::GattErrorCode> error_code,
+    std::optional<BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (expected_result == Result::FAILURE) {
     if (error_code.has_value())

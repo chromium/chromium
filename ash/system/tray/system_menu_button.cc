@@ -69,7 +69,7 @@ void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
 
 SystemMenuButton::~SystemMenuButton() = default;
 
-BEGIN_METADATA(SystemMenuButton, views::ImageButton)
+BEGIN_METADATA(SystemMenuButton)
 END_METADATA
 
 }  // namespace ash

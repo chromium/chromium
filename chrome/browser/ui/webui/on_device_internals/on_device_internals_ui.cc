@@ -87,8 +87,9 @@ void OnDeviceInternalsUI::OnModelAssetsLoaded(
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback,
     on_device_model::ModelAssets assets) {
-  auto params = on_device_model::mojom::LoadModelParams::New(
-      std::move(assets), 4096, std::nullopt);
+  auto params = on_device_model::mojom::LoadModelParams::New();
+  params->assets = std::move(assets);
+  params->max_tokens = 4096;
   GetService().LoadModel(std::move(params), std::move(model),
                          std::move(callback));
 }

@@ -37,7 +37,7 @@ TEST_F(CpuProbeWinTest, ProductionDataNoCrash) {
 
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_GE(sample->cpu_utilization, 0.0);
   EXPECT_LE(sample->cpu_utilization, 1.0);

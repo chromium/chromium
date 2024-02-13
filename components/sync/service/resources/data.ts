@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
+import type {WebUiListener} from 'chrome://resources/js/cr.js';
+import {addWebUiListener, removeWebUiListener} from 'chrome://resources/js/cr.js';
 
 import {aboutInfo} from './about.js';
-import {getAllNodes, requestIncludeSpecificsInitialState, requestListOfTypes, SyncNode, SyncNodeMap} from './chrome_sync.js';
+import type {SyncNode, SyncNodeMap} from './chrome_sync.js';
+import {getAllNodes, requestIncludeSpecificsInitialState, requestListOfTypes} from './chrome_sync.js';
 import {log} from './sync_log.js';
 
 const dumpToTextButton = document.querySelector<HTMLElement>('#dump-to-text');

@@ -50,9 +50,9 @@ std::u16string GetAction(int consent_status) {
 // AssistantOptInContainer -----------------------------------------------------
 
 class AssistantOptInContainer : public views::Button {
- public:
-  METADATA_HEADER(AssistantOptInContainer);
+  METADATA_HEADER(AssistantOptInContainer, views::Button)
 
+ public:
   explicit AssistantOptInContainer(views::Button::PressedCallback callback)
       : views::Button(std::move(callback)) {
     constexpr float kHighlightOpacity = 0.06f;
@@ -89,7 +89,7 @@ class AssistantOptInContainer : public views::Button {
   }
 };
 
-BEGIN_METADATA(AssistantOptInContainer, views::Button)
+BEGIN_METADATA(AssistantOptInContainer)
 END_METADATA
 
 }  // namespace
@@ -187,7 +187,7 @@ void AssistantOptInView::OnButtonPressed() {
   delegate_->OnOptInButtonPressed();
 }
 
-BEGIN_METADATA(AssistantOptInView, views::View)
+BEGIN_METADATA(AssistantOptInView)
 END_METADATA
 
 }  // namespace ash

@@ -65,9 +65,9 @@ bool HasLinuxApps(const MediaApps& apps) {
 // other media apps, used to warn users that effects cannot be applied to Linux
 // apps.
 class LinuxAppWarningView : public views::View {
- public:
-  METADATA_HEADER(LinuxAppWarningView);
+  METADATA_HEADER(LinuxAppWarningView, views::View)
 
+ public:
   LinuxAppWarningView() {
     SetID(BubbleViewID::kLinuxAppWarningView);
     SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -100,7 +100,7 @@ class LinuxAppWarningView : public views::View {
   ~LinuxAppWarningView() override = default;
 };
 
-BEGIN_METADATA(LinuxAppWarningView, views::View);
+BEGIN_METADATA(LinuxAppWarningView);
 END_METADATA
 
 }  // namespace
@@ -198,7 +198,7 @@ void BubbleView::SetBackgroundReplaceUiVisible(bool visible) {
   ChildPreferredSizeChanged(set_camera_background_view_);
 }
 
-BEGIN_METADATA(BubbleView, TrayBubbleView)
+BEGIN_METADATA(BubbleView)
 END_METADATA
 
 }  // namespace ash::video_conference

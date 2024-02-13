@@ -73,6 +73,8 @@ generated_callback_function_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_underlying_source_start_callback.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visitor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_visitor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_void_function.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_void_function.h",
 ]

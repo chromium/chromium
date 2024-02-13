@@ -4,7 +4,7 @@
 
 import 'chrome://metrics-internals/app.js';
 
-import {MetricsInternalsAppElement} from 'chrome://metrics-internals/app.js';
+import type {MetricsInternalsAppElement} from 'chrome://metrics-internals/app.js';
 import {getEventsPeekString, sizeToString, timestampToString} from 'chrome://metrics-internals/log_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

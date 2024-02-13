@@ -22,11 +22,16 @@ namespace {
 // Width of the Fallback dialog as found with the inspector tool.
 const int kWidth = 512;
 
-// Height of the Fallback dialogs for different text lengths as found with the
-// inspector tool.
-const int kOfflineHeight = 264;
-const int kDriveUnavailableHeight = 244;
-const int kMeteredHeight = 264;
+// Exact height of the Fallback dialogs required for different texts (in
+// English) as found with the inspector tool.
+const int kOfflineHeight = 244;
+const int kDisableDrivePreferenceSetHeight = 268;
+const int kDriveUnavailableHeight = 268;
+const int kDriveDisabledForAccountType = 268;
+const int kMeteredHeight = 268;
+
+// Height of a line of text as found with the inspector tool.
+const int kLineHeight = 20;
 
 // Return the task title id for the task represented by the `action_id`.
 int GetTaskTitleId(const std::string& action_id) {
@@ -56,34 +61,53 @@ void GetDialogTextIdsAndSize(
     const ash::office_fallback::FallbackReason fallback_reason,
     int& title_id,
     int& reason_message_id,
+    bool& include_task_in_reason_message,
     int& instructions_message_id,
     int& width,
     int& height) {
   width = kWidth;
+  include_task_in_reason_message = false;
   switch (fallback_reason) {
     case ash::office_fallback::FallbackReason::kOffline:
+    case ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady:
       title_id = IDS_OFFICE_FALLBACK_TITLE_OFFLINE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_OFFLINE;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_OFFLINE;
       height = kOfflineHeight;
       break;
-    case ash::office_fallback::FallbackReason::kDriveDisabled:
-    case ash::office_fallback::FallbackReason::kNoDriveService:
-    case ash::office_fallback::FallbackReason::kDriveAuthenticationNotReady:
-    case ash::office_fallback::FallbackReason::kDriveFsInterfaceError:
+    case ash::office_fallback::FallbackReason::kDisableDrivePreferenceSet:
       title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
       instructions_message_id =
-          IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_UNAVAILABLE;
-      height = kDriveUnavailableHeight;
+          IDS_OFFICE_FALLBACK_INSTRUCTIONS_DISABLE_DRIVE_PREFERENCE;
+      height = kDisableDrivePreferenceSetHeight;
+      break;
+    case ash::office_fallback::FallbackReason::kDriveDisabledForAccountType:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_DISABLED_FOR_ACCOUNT;
+      include_task_in_reason_message = true;
+      instructions_message_id =
+          IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT;
+      height = kDriveDisabledForAccountType;
       break;
     case ash::office_fallback::FallbackReason::kMeteredConnection:
       title_id = IDS_OFFICE_FALLBACK_TITLE_METERED;
       reason_message_id = IDS_OFFICE_FALLBACK_REASON_METERED;
+      include_task_in_reason_message = true;
       instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED;
       height = kMeteredHeight;
       break;
+    case ash::office_fallback::FallbackReason::kDriveDisabled:
+    case ash::office_fallback::FallbackReason::kNoDriveService:
+    case ash::office_fallback::FallbackReason::kDriveFsInterfaceError:
+      title_id = IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE;
+      reason_message_id = IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE;
+      instructions_message_id = IDS_OFFICE_FALLBACK_INSTRUCTIONS;
+      height = kDriveUnavailableHeight;
+      break;
   }
+  // Add extra height to account for translations.
+  height += kLineHeight;
 }
 }  // namespace
 
@@ -131,17 +155,18 @@ bool OfficeFallbackDialog::Show(
   // Get failure specific text to display in dialog.
   int title_id;
   int reason_message_id;
+  bool include_task_in_reason_message;
   int instructions_message_id;
   int width;
   int height;
   GetDialogTextIdsAndSize(fallback_reason, title_id, reason_message_id,
+                          include_task_in_reason_message,
                           instructions_message_id, width, height);
   // TODO(cassycc): Figure out how to add the web_drive to the placeholder in
   // IDS_OFFICE_FALLBACK_TITLE_WEB_DRIVE_UNAVAILABLE.
   const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
   const std::string reason_message =
-      fallback_reason ==
-              ash::office_fallback::FallbackReason::kMeteredConnection
+      include_task_in_reason_message
           ? l10n_util::GetStringUTF8(reason_message_id)
           : l10n_util::GetStringFUTF8(reason_message_id, task_title);
   const std::string instructions_message =

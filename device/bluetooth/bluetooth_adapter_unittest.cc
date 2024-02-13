@@ -140,7 +140,7 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
                         AdvertisementErrorCallback error_callback) override {}
   void ConnectDevice(
       const std::string& address,
-      const absl::optional<BluetoothDevice::AddressType>& address_type,
+      const std::optional<BluetoothDevice::AddressType>& address_type,
       ConnectDeviceCallback callback,
       ConnectDeviceErrorCallback error_callback) override {}
 #endif
@@ -165,6 +165,10 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
       base::WeakPtr<BluetoothLowEnergyScanSession::Delegate> delegate)
       override {
     return nullptr;
+  }
+
+  std::vector<BluetoothRole> GetSupportedRoles() override {
+    return std::vector<BluetoothRole>{};
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

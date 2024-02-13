@@ -186,14 +186,14 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   FocusModeController* controller = FocusModeController::Get();
-  controller->SetSelectedTask(std::make_unique<api::Task>(
-                                  /*id=*/base::NumberToString(0),
-                                  "make a travel plan", /*completed=*/false,
-                                  /*due=*/absl::nullopt, /*has_subtasks=*/false,
-                                  /*has_email_link=*/false,
-                                  /*has_notes=*/false,
-                                  /*updated=*/base::Time::Now())
-                                  .get());
+  controller->SetSelectedTask(
+      std::make_unique<api::Task>(
+          /*id=*/base::NumberToString(0), "make a travel plan",
+          /*due=*/absl::nullopt, /*completed=*/false, /*has_subtasks=*/false,
+          /*has_email_link=*/false,
+          /*has_notes=*/false,
+          /*updated=*/base::Time::Now())
+          .get());
 
   //  Start focus mode and click the tray to activate the button.
   controller->ToggleFocusMode();
@@ -296,8 +296,8 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   controller->SetInactiveSessionDuration(session_duration);
   controller->SetSelectedTask(std::make_unique<api::Task>(
                                   /*id=*/base::NumberToString(1), task_name,
-                                  /*completed=*/false,
-                                  /*due=*/absl::nullopt, /*has_subtasks=*/false,
+                                  /*due=*/absl::nullopt, /*completed=*/false,
+                                  /*has_subtasks=*/false,
                                   /*has_email_link=*/false,
                                   /*has_notes=*/false,
                                   /*updated=*/base::Time::Now())

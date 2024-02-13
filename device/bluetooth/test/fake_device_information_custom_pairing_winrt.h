@@ -9,13 +9,13 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -95,7 +95,7 @@ class FakeDeviceInformationCustomPairingWinrt
 
  private:
   Microsoft::WRL::ComPtr<FakeDeviceInformationPairingWinrt> pairing_;
-  const absl::optional<std::string> pin_;
+  const std::optional<std::string> pin_;
   std::string accepted_pin_;
   bool confirmed_ = false;
 

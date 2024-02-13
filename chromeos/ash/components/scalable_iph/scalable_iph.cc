@@ -362,12 +362,10 @@ std::unique_ptr<NotificationParams> ParseNotificationParams(
                             kCustomNotificationTitleParamName);
     return nullptr;
   }
+
+  // Notification body text is an optional field. This can take an empty string.
   param->text = GetParamValue(feature, kCustomNotificationBodyTextParamName);
-  if (param->text.empty()) {
-    LogParamValueParseError(logger, FROM_HERE, feature.name,
-                            kCustomNotificationBodyTextParamName);
-    return nullptr;
-  }
+
   param->button.text =
       GetParamValue(feature, kCustomNotificationButtonTextParamName);
   if (param->button.text.empty()) {
@@ -407,6 +405,8 @@ std::unique_ptr<NotificationParams> ParseNotificationParams(
   param->image_type = ScalableIphDelegate::NotificationImageType::kNoImage;
   if (image_type == kCustomNotificationImageTypeValueWallpaper) {
     param->image_type = ScalableIphDelegate::NotificationImageType::kWallpaper;
+  } else if (image_type == kCustomNotificationImageTypeValueMinecraft) {
+    param->image_type = ScalableIphDelegate::NotificationImageType::kMinecraft;
   }
 
   std::string icon = GetParamValue(feature, kCustomNotificationIconParamName);

@@ -120,7 +120,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /** Unit tests for {@link PageInsightsMediator}. */
 @LooperMode(Mode.PAUSED)
@@ -157,7 +156,7 @@ public class PageInsightsMediatorTest {
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private BackPressManager mBackPressManager;
     @Mock private BackPressHandler mBackPressHandler;
-    @Mock private Function<NavigationHandle, PageInsightsConfig> mPageInsightsConfigProvider;
+    @Mock private PageInsightsCoordinator.ConfigProvider mPageInsightsConfigProvider;
     @Mock private NavigationHandle mNavigationHandle;
     @Mock private ObservableSupplier<Boolean> mInMotionSupplier;
     @Mock private ApplicationViewportInsetSupplier mAppInsetSupplier;
@@ -208,12 +207,11 @@ public class PageInsightsMediatorTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mBottomSheetController.getBottomSheetBackPressHandler()).thenReturn(mBackPressHandler);
-        when(mPageInsightsConfigProvider.apply(any()))
+        when(mPageInsightsConfigProvider.get(any(), any()))
                 .thenReturn(
                         PageInsightsConfig.newBuilder()
                                 .setShouldAutoTrigger(true)
                                 .setShouldXsurfaceLog(true)
-                                .setShouldAttachGaiaToRequest(true)
                                 .build());
         when(mInMotionSupplier.get()).thenReturn(false);
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
@@ -344,7 +342,7 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testAutoTrigger_shouldNotAutoTrigger_doesNotTrigger() {
-        when(mPageInsightsConfigProvider.apply(mNavigationHandle))
+        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
                 .thenReturn(PageInsightsConfig.newBuilder().setShouldAutoTrigger(false).build());
         createMediator(SHORT_TRIGGER_DELAY_MS);
         View feedView = new View(ContextUtils.getApplicationContext());
@@ -478,14 +476,14 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testAutoTrigger_sendsCorrectMetadata() {
-        when(mPageInsightsConfigProvider.apply(mNavigationHandle))
+        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
                 .thenReturn(
                         PageInsightsConfig.newBuilder()
                                 .setShouldAutoTrigger(true)
                                 .setServerShouldNotLogOrPersonalize(true)
                                 .setIsInitialPage(true)
+                                .setNavigationTimestampMs(1234L)
                                 .build());
-        when(mLastCommittedNavigationEntry.getTimestamp()).thenReturn(1234L);
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
@@ -653,13 +651,13 @@ public class PageInsightsMediatorTest {
     @Test
     @MediumTest
     public void testLaunch_sendsCorrectMetadata() throws Exception {
-        when(mPageInsightsConfigProvider.apply(mNavigationHandle))
+        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
                 .thenReturn(
                         PageInsightsConfig.newBuilder()
                                 .setServerShouldNotLogOrPersonalize(true)
                                 .setIsInitialPage(true)
+                                .setNavigationTimestampMs(1234L)
                                 .build());
-        when(mLastCommittedNavigationEntry.getTimestamp()).thenReturn(1234L);
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
@@ -760,7 +758,7 @@ public class PageInsightsMediatorTest {
     @MediumTest
     public void testLaunch_signedIn_shouldNotXSurfaceLog_doesNotCallOnSurfaceCreated()
             throws Exception {
-        when(mPageInsightsConfigProvider.apply(mNavigationHandle))
+        when(mPageInsightsConfigProvider.get(mNavigationHandle, mLastCommittedNavigationEntry))
                 .thenReturn(PageInsightsConfig.newBuilder().setShouldXsurfaceLog(false).build());
         createMediator();
         mMediator.onDidFinishNavigationInPrimaryMainFrame(mTab, mNavigationHandle);

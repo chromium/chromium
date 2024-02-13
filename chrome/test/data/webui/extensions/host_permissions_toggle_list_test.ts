@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ExtensionsHostPermissionsToggleListElement, ExtensionsToggleRowElement, UserAction} from 'chrome://extensions/extensions.js';
+import type {ExtensionsHostPermissionsToggleListElement, ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
+import {UserAction} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

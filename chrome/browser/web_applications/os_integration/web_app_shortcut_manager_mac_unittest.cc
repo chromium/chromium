@@ -163,7 +163,13 @@ TEST_F(WebAppShortcutManagerMacTest, RebuildShortcutsOnVersionChange) {
   // Make sure the updated shortcuts version is not persisted to prefs until
   // after we signal completion of updating.
   EXPECT_EQ(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
-  std::move(done_update_callback_).Run();
+  {
+    base::RunLoop run_loop;
+    WebAppShortcutManager::OnSetCurrentAppShortcutsVersionCallbackForTesting() =
+        run_loop.QuitClosure();
+    std::move(done_update_callback_).Run();
+    run_loop.Run();
+  }
   EXPECT_NE(0, profile()->GetPrefs()->GetInteger(prefs::kAppShortcutsVersion));
 
   // Verify shortcut was rebuild, and shortcuts weren't created for the second

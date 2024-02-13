@@ -174,8 +174,43 @@ TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
 
   content::MockNavigationHandle mock_handle(GURL("https://www.google.com"),
                                             nullptr);
+  mock_handle.set_is_in_primary_main_frame(true);
   mock_handle.set_has_committed(false);
   mock_handle.set_response_headers(GetHeadersForResponseCode(200));
+
+  ChromeOmniboxNavigationObserverAndroid* observer =
+      CreateObserver(&mock_handle);
+
+  EXPECT_CALL(shortcuts_observer_, OnShortcutsChanged()).Times(0);
+  observer->DidFinishNavigation(&mock_handle);
+}
+
+TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
+       NotInPrimaryMainFrameDidFinishNavigation) {
+  CreateBackend();
+
+  content::MockNavigationHandle mock_handle(GURL("https://www.google.com"),
+                                            nullptr);
+  mock_handle.set_is_in_primary_main_frame(false);
+  mock_handle.set_has_committed(true);
+  mock_handle.set_response_headers(GetHeadersForResponseCode(200));
+
+  ChromeOmniboxNavigationObserverAndroid* observer =
+      CreateObserver(&mock_handle);
+
+  EXPECT_CALL(shortcuts_observer_, OnShortcutsChanged()).Times(0);
+  observer->DidFinishNavigation(&mock_handle);
+}
+
+TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
+       NoResponseHeadersDidFinishNavigation) {
+  CreateBackend();
+
+  content::MockNavigationHandle mock_handle(GURL("https://www.google.com"),
+                                            nullptr);
+  mock_handle.set_is_in_primary_main_frame(true);
+  mock_handle.set_has_committed(true);
+  mock_handle.set_response_headers(nullptr);
 
   ChromeOmniboxNavigationObserverAndroid* observer =
       CreateObserver(&mock_handle);

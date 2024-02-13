@@ -455,10 +455,18 @@ class OzonePlatformWayland : public OzonePlatform,
     connection_->SetShutdownCb(std::move(shutdown_cb));
   }
 
+  void PostMainMessageLoopRun() override {
+    // TODO(b/324294360): This will cause a lot of dangling pointers, which
+    // breaks linux wayland bot. Fix them and enable on linux as well.
+#if BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+    connection_.reset();
+#endif
+  }
+
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       PlatformKeyboardHookTypes type,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
-      absl::optional<base::flat_set<DomCode>> dom_codes,
+      std::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget) override {
     DCHECK(connection_);
     auto* seat = connection_->seat();

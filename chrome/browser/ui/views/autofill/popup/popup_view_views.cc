@@ -53,6 +53,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -689,6 +690,7 @@ void PopupViewViews::CreateChildViews() {
   rows_.clear();
   RemoveAllChildViews();
 
+  const int kInterItemsPadding = GetContentsVerticalPadding();
   const std::vector<Suggestion> kSuggestions = controller_->GetSuggestions();
 
   SetBackground(
@@ -699,8 +701,6 @@ void PopupViewViews::CreateChildViews() {
   raw_ptr<views::BoxLayoutView> content_view =
       AddChildView(views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                       .SetInsideBorderInsets(
-                           gfx::Insets::VH(GetContentsVerticalPadding(), 0))
                        .Build());
 
   rows_.reserve(kSuggestions.size());
@@ -711,6 +711,7 @@ void PopupViewViews::CreateChildViews() {
     std::unique_ptr<views::BoxLayoutView> body_container =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetInsideBorderInsets(gfx::Insets::VH(kInterItemsPadding, 0))
             .Build();
 
     for (; current_line_number < kSuggestions.size() &&
@@ -719,7 +720,7 @@ void PopupViewViews::CreateChildViews() {
       switch (kSuggestions[current_line_number].popup_item_id) {
         case PopupItemId::kSeparator:
           rows_.push_back(body_container->AddChildView(
-              std::make_unique<PopupSeparatorView>()));
+              std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
           break;
 
         case PopupItemId::kMixedFormMessage:
@@ -792,7 +793,18 @@ void PopupViewViews::CreateChildViews() {
     footer_container_ =
         body_container_->AddChildView(std::move(footer_container));
   } else {
+    // Add a separator between the main list of suggestions and the footer with
+    // no vertical padding as these elements have their own top/bottom paddings.
+    if (kSuggestions[current_line_number].popup_item_id ==
+        PopupItemId::kSeparator) {
+      rows_.push_back(content_view->AddChildView(
+          std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0)));
+      ++current_line_number;
+    }
+
     footer_container_ = content_view->AddChildView(std::move(footer_container));
+    footer_container_->SetInsideBorderInsets(
+        gfx::Insets::VH(kInterItemsPadding, 0));
     content_view->SetFlexForView(footer_container_, 0);
   }
 
@@ -802,7 +814,7 @@ void PopupViewViews::CreateChildViews() {
     if (kSuggestions[current_line_number].popup_item_id ==
         PopupItemId::kSeparator) {
       rows_.push_back(footer_container_->AddChildView(
-          std::make_unique<PopupSeparatorView>()));
+          std::make_unique<PopupSeparatorView>(kInterItemsPadding)));
     } else {
       rows_.push_back(footer_container_->AddChildView(CreatePopupRowView(
           controller(), /*a11y_selection_delegate=*/*this,
@@ -930,17 +942,13 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup() {
 
   // If `kUiCompositorScrollWithLayers` is enabled, then a ScrollView performs
   // scrolling by using layers. These layers are not affected by the clip path
-  // of the widget. If the corner radius of the popup is larger than the
-  // vertical padding that separates the widget's top border and the
-  // ScrollView, this will cause pixel artifacts.
-  // To avoid these, set a corner radius for the ScrollView's ViewPort if layer
-  // scrolling is enabled.
-  const int kPaddingCornerDelta =
-      GetCornerRadius() - GetContentsVerticalPadding();
-  if (kPaddingCornerDelta > 0 && scroll_view_ &&
+  // of the widget and their corners remain unrounded, thus going beyond
+  // the popup's rounded corners. To avoid these, set a corner radius for
+  // the ScrollView's ViewPort if layer scrolling is enabled.
+  if (scroll_view_ &&
       base::FeatureList::IsEnabled(::features::kUiCompositorScrollWithLayers)) {
     scroll_view_->SetViewportRoundedCornerRadius(
-        gfx::RoundedCornersF(kPaddingCornerDelta));
+        gfx::RoundedCornersF(GetCornerRadius()));
   }
 
   SchedulePaint();

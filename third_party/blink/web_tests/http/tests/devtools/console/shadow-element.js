@@ -21,7 +21,7 @@ import * as Elements from 'devtools/panels/elements/elements.js';
         sr.innerHTML = "<div><div><div id='shadow'><input id='user-agent-host' type='range'></div></div></div>";
     `);
 
-  Common.Settings.settingForTest('showUAShadowDOM').set(true);
+  Common.Settings.settingForTest('show-ua-shadow-dom').set(true);
   ElementsTestRunner.selectNodeWithId('shadow', step1);
 
   function step1() {

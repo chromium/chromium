@@ -288,6 +288,26 @@ void SetCreditCardCloudTokenData(
                                 base::Unretained(wds.get()), cloud_token_data));
 }
 
+void SetServerCardCredentialData(int profile, const CreditCard& credit_card) {
+  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+  wds->AddServerCvc(credit_card.instrument_id(), credit_card.cvc());
+  WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
+}
+
+void RemoveServerCardCredentialData(int profile,
+                                    const CreditCard& credit_card) {
+  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+  wds->RemoveServerCvc(credit_card.instrument_id());
+  WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
+}
+
+void UpdateServerCardCredentialData(int profile,
+                                    const CreditCard& credit_card) {
+  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
+  wds->UpdateServerCvc(credit_card.instrument_id(), credit_card.cvc());
+  WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
+}
+
 void UpdateServerCardMetadata(int profile, const CreditCard& credit_card) {
   scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
   wds->UpdateServerCardMetadata(credit_card);

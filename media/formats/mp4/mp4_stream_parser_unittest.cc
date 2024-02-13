@@ -81,7 +81,7 @@ class MP4StreamParserTest : public testing::Test {
       : configs_received_(false),
         lower_bound_(kMaxDecodeTimestamp),
         verifying_keyframeness_sequence_(false) {
-    std::set<int> audio_object_types;
+    base::flat_set<int> audio_object_types;
     audio_object_types.insert(kISO_14496_3);
     parser_.reset(
         new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -401,7 +401,7 @@ TEST_F(MP4StreamParserTest, AVC_NonKeyframeness_Mismatches_Container) {
 
 TEST_F(MP4StreamParserTest, MPEG2_AAC_LC) {
   InSequence s;
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kISO_13818_7_AAC_LC);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -412,9 +412,19 @@ TEST_F(MP4StreamParserTest, MPEG2_AAC_LC) {
   EXPECT_EQ(audio_decoder_config_.profile(), AudioCodecProfile::kUnknown);
 }
 
+TEST_F(MP4StreamParserTest, ParsingAACLCNoAudioTypeStrictness) {
+  InSequence s;
+  parser_.reset(new MP4StreamParser(std::nullopt, false, false, false, false));
+  auto params = GetDefaultInitParametersExpectations();
+  params.detected_video_track_count = 0;
+  InitializeParserWithInitParametersExpectations(params);
+  ParseMP4File("bear-mpeg2-aac-only_frag.mp4", 512);
+  EXPECT_EQ(audio_decoder_config_.profile(), AudioCodecProfile::kUnknown);
+}
+
 TEST_F(MP4StreamParserTest, MPEG4_XHE_AAC) {
   InSequence s;  // The keyframeness sequence matters for this test.
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kISO_14496_3);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -624,7 +634,7 @@ TEST_F(MP4StreamParserTest, NaturalSizeWithPASP) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithDVMimeTypeSourceBuffer) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, true));
 
@@ -652,7 +662,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithDVMimeTypeSourceBuffer) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithHEVCMimeTypeSourceBuffer) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
 
@@ -680,7 +690,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile5WithHEVCMimeTypeSourceBuffer) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithDVMimeTypeSourceBuffer) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, true));
 
@@ -708,7 +718,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithDVMimeTypeSourceBuffer) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithHEVCMimeTypeSourceBuffer) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
 
@@ -740,7 +750,7 @@ TEST_F(MP4StreamParserTest, DemuxingDVProfile8WithHEVCMimeTypeSourceBuffer) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingAC3) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kAC3);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -765,7 +775,7 @@ TEST_F(MP4StreamParserTest, DemuxingAC3) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingEAC3) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kEAC3);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -790,7 +800,7 @@ TEST_F(MP4StreamParserTest, DemuxingEAC3) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingAc4Ims) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kAC4);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -815,7 +825,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4Ims) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingAc4AJoc) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kAC4);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -840,7 +850,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4AJoc) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingAc4ChannelBasedCoding) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kAC4);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -865,7 +875,7 @@ TEST_F(MP4StreamParserTest, DemuxingAc4ChannelBasedCoding) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDTS) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kDTS);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -889,7 +899,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTS) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDTSE) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kDTSE);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -913,7 +923,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTSE) {
 }
 
 TEST_F(MP4StreamParserTest, DemuxingDTSX) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   audio_object_types.insert(kDTSX);
   parser_.reset(
       new MP4StreamParser(audio_object_types, false, false, false, false));
@@ -938,7 +948,7 @@ TEST_F(MP4StreamParserTest, DemuxingDTSX) {
 
 TEST_F(MP4StreamParserTest, Flac) {
   parser_.reset(
-      new MP4StreamParser(std::set<int>(), false, true, false, false));
+      new MP4StreamParser(base::flat_set<int>(), false, true, false, false));
 
   auto params = GetDefaultInitParametersExpectations();
   params.detected_video_track_count = 0;
@@ -951,7 +961,7 @@ TEST_F(MP4StreamParserTest, Flac) {
 
 TEST_F(MP4StreamParserTest, Flac192kHz) {
   parser_.reset(
-      new MP4StreamParser(std::set<int>(), false, true, false, false));
+      new MP4StreamParser(base::flat_set<int>(), false, true, false, false));
 
   auto params = GetDefaultInitParametersExpectations();
   params.detected_video_track_count = 0;
@@ -1100,7 +1110,7 @@ class MP4StreamParserRotationMatrixEvaluatorTest
     : public ::testing::TestWithParam<MatrixRotationTestCaseParam> {
  public:
   MP4StreamParserRotationMatrixEvaluatorTest() {
-    std::set<int> audio_object_types;
+    base::flat_set<int> audio_object_types;
     audio_object_types.insert(kISO_14496_3);
     parser_.reset(
         new MP4StreamParser(audio_object_types, false, false, false, false));

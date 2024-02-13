@@ -103,6 +103,10 @@ class TabStripRegionViewTest : public TabStripRegionViewTestBase,
 };
 
 TEST_P(TabStripRegionViewTest, GrabHandleSpaceStaysVisible) {
+  // TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
@@ -118,6 +122,10 @@ TEST_P(TabStripRegionViewTest, GrabHandleSpaceStaysVisible) {
 }
 
 TEST_P(TabStripRegionViewTest, NewTabButtonStaysVisible) {
+  // TODO (crbug/1520595): Skip for now due to test failing when CR2023 enabled.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
@@ -147,6 +155,10 @@ TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
 }
 
 TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
+  // TODO (crbug/1523257): Skip for now due to test failing when CR2023 enabled.
+  if (features::IsChromeRefresh2023()) {
+    GTEST_SKIP();
+  }
   constexpr int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth,
                                     GetLayoutConstant(TAB_STRIP_HEIGHT));

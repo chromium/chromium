@@ -20,7 +20,7 @@ namespace autofill {
 
 namespace {
 
-const int kFormDataPickleVersion = 7;
+const int kFormDataPickleVersion = 8;
 
 bool ReadGURL(base::PickleIterator* iter, GURL* url) {
   std::string spec;
@@ -97,9 +97,11 @@ FormData::~FormData() = default;
 bool FormData::SameFormAs(const FormData& form) const {
   if (name != form.name || id_attribute != form.id_attribute ||
       name_attribute != form.name_attribute || url != form.url ||
-      action != form.action || is_form_tag != form.is_form_tag ||
-      fields.size() != form.fields.size())
+      action != form.action ||
+      renderer_id.is_null() != form.renderer_id.is_null() ||
+      fields.size() != form.fields.size()) {
     return false;
+  }
   for (size_t i = 0; i < fields.size(); ++i) {
     if (!fields[i].SameFieldAs(form.fields[i]))
       return false;
@@ -119,7 +121,7 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
 
   if (a.name != b.name || a.id_attribute != b.id_attribute ||
       a.name_attribute != b.name_attribute || a.url != b.url ||
-      a.action != b.action || a.is_form_tag != b.is_form_tag ||
+      a.action != b.action ||
       !base::ranges::equal(a.fields, b.fields, &FormFieldData::DeepEqual)) {
     return false;
   }
@@ -150,8 +152,7 @@ bool FormHasNonEmptyPasswordField(const FormData& form) {
 
 std::ostream& operator<<(std::ostream& os, const FormData& form) {
   os << base::UTF16ToUTF8(form.name) << " " << form.url << " " << form.action
-     << " " << form.main_frame_origin << " " << form.is_form_tag << " "
-     << "Fields:";
+     << " " << form.main_frame_origin << " " << "Fields:";
   for (const FormFieldData& field : form.fields) {
     os << field << ",";
   }
@@ -182,7 +183,6 @@ void SerializeFormData(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   SerializeFormFieldDataVector(form_data.fields, pickle);
-  pickle->WriteBool(form_data.is_form_tag);
   pickle->WriteString(form_data.main_frame_origin.Serialize());
 }
 
@@ -222,13 +222,12 @@ bool DeserializeFormData(base::PickleIterator* iter, FormData* form_data) {
     return false;
   }
 
-  if (version >= 3) {
-    if (!iter->ReadBool(&temp_form_data.is_form_tag)) {
+  if (version >= 3 && version <= 7) {
+    bool temp_bool = false;
+    if (!iter->ReadBool(&temp_bool)) {
       LogDeserializationError(version);
       return false;
     }
-  } else {
-    form_data->is_form_tag = true;
   }
 
   if (version >= 5 && version <= 6) {
@@ -263,7 +262,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormData& form) {
   buffer << Tr{} << "URL:" << form.url;
   buffer << Tr{} << "Action:" << form.action;
   buffer << Tr{} << "Is action empty:" << form.is_action_empty;
-  buffer << Tr{} << "Is <form> tag:" << form.is_form_tag;
   for (size_t i = 0; i < form.fields.size(); ++i) {
     buffer << Tag{"tr"};
     buffer << Tag{"td"} << "Field " << i << ": " << CTag{};

@@ -47,6 +47,10 @@ network::mojom::CookieManager* IOSChromeSigninClient::GetCookieManager() {
   return browser_state_->GetCookieManager();
 }
 
+network::mojom::NetworkContext* IOSChromeSigninClient::GetNetworkContext() {
+  return browser_state_->GetNetworkContext();
+}
+
 void IOSChromeSigninClient::DoFinalInit() {}
 
 bool IOSChromeSigninClient::AreSigninCookiesAllowed() {

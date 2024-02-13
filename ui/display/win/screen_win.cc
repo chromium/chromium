@@ -4,10 +4,11 @@
 
 #include "ui/display/win/screen_win.h"
 
-#include <windows.h>
 #include <shellscalingapi.h>
+#include <windows.h>
 
 #include <algorithm>
+#include <optional>
 
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
@@ -20,7 +21,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/device_event_log/device_event_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
@@ -47,11 +47,11 @@ namespace {
 ScreenWin* g_instance = nullptr;
 
 // Gets the DPI for a particular monitor.
-absl::optional<int> GetPerMonitorDPI(HMONITOR monitor) {
+std::optional<int> GetPerMonitorDPI(HMONITOR monitor) {
   UINT dpi_x, dpi_y;
   if (!SUCCEEDED(
           ::GetDpiForMonitor(monitor, MDT_EFFECTIVE_DPI, &dpi_x, &dpi_y))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DCHECK_EQ(dpi_x, dpi_y);
@@ -84,7 +84,7 @@ float GetMonitorScaleFactor(HMONITOR monitor,
 // empty string if the provided path is unset/nullopt or EDID data is not
 // available for the device.
 std::string GetFriendlyDeviceName(
-    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+    const std::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (!path)
     return std::string();
   DISPLAYCONFIG_TARGET_DEVICE_NAME targetName = {};
@@ -98,7 +98,7 @@ std::string GetFriendlyDeviceName(
   return std::string();
 }
 
-float GetSDRWhiteLevel(const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+float GetSDRWhiteLevel(const std::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (path) {
     DISPLAYCONFIG_SDR_WHITE_LEVEL white_level = {};
     white_level.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL;
@@ -112,7 +112,7 @@ float GetSDRWhiteLevel(const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
 }
 
 DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY GetOutputTechnology(
-    const absl::optional<DISPLAYCONFIG_PATH_INFO>& path) {
+    const std::optional<DISPLAYCONFIG_PATH_INFO>& path) {
   if (path)
     return path->targetInfo.outputTechnology;
   return DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER;
@@ -382,7 +382,7 @@ MONITORINFOEX MonitorInfoFromHMONITOR(HMONITOR monitor) {
   return monitor_info;
 }
 
-absl::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
+std::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
     HANDLE source_device) {
   static const auto get_pointer_device_rects =
       reinterpret_cast<decltype(&::GetPointerDeviceRects)>(
@@ -390,7 +390,7 @@ absl::optional<gfx::Vector2dF> GetPixelsPerInchForPointerDevice(
   RECT device_rect, screen_rect;
   if (!get_pointer_device_rects ||
       !get_pointer_device_rects(source_device, &device_rect, &screen_rect))
-    return absl::nullopt;
+    return std::nullopt;
 
   const gfx::RectF device{gfx::Rect(device_rect)};
   const gfx::RectF screen{gfx::Rect(screen_rect)};
@@ -409,7 +409,7 @@ gfx::Vector2dF GetDefaultMonitorPhysicalPixelsPerInch() {
 
 // Retrieves PPI for |monitor| based on touch pointer device handles.  Returns
 // nullopt if a pointer device for |monitor| can't be found.
-absl::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
+std::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   static const auto get_pointer_devices =
       reinterpret_cast<decltype(&::GetPointerDevices)>(
           base::win::GetUser32FunctionPointer("GetPointerDevices"));
@@ -417,18 +417,18 @@ absl::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   if (!get_pointer_devices ||
       !get_pointer_devices(&pointer_device_count, nullptr) ||
       (pointer_device_count == 0))
-    return absl::nullopt;
+    return std::nullopt;
 
   std::vector<POINTER_DEVICE_INFO> pointer_devices(pointer_device_count);
   if (!get_pointer_devices(&pointer_device_count, pointer_devices.data()))
-    return absl::nullopt;
+    return std::nullopt;
 
   for (const auto& device : pointer_devices) {
     if (device.pointerDeviceType == POINTER_DEVICE_TYPE_TOUCH &&
         device.monitor == monitor)
       return GetPixelsPerInchForPointerDevice(device.device);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,
@@ -706,10 +706,10 @@ bool ScreenWin::IsNativeWindowOccluded(gfx::NativeWindow window) const {
   return false;
 }
 
-absl::optional<bool> ScreenWin::IsWindowOnCurrentVirtualDesktop(
+std::optional<bool> ScreenWin::IsWindowOnCurrentVirtualDesktop(
     gfx::NativeWindow window) const {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ScreenWin::ScreenWin(bool initialize_from_system)

@@ -13,9 +13,12 @@ import static org.chromium.net.CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.ConditionVariable;
 
 import androidx.test.filters.SmallTest;
+
+import com.google.protobuf.ByteString;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +30,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
@@ -38,6 +41,8 @@ import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.NativeTestServer;
 import org.chromium.net.TestUrlRequestCallback;
 import org.chromium.net.UrlRequest;
+import org.chromium.net.httpflags.FlagValue;
+import org.chromium.net.httpflags.Flags;
 import org.chromium.net.impl.CronetEngineBuilderImpl.HttpCacheMode;
 import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
@@ -57,7 +62,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Test logging functionalities. */
-@Batch(Batch.UNIT_TESTS)
+@DoNotBatch(reason = "Some logging is done from one-time static initialization")
 @RunWith(JUnit4.class)
 @RequiresMinAndroidApi(Build.VERSION_CODES.O)
 @IgnoreFor(
@@ -89,7 +94,7 @@ public final class CronetLoggerTest {
     @SmallTest
     public void testCronetEngineInfoCreation() {
         CronetEngineBuilderImpl builder = new NativeCronetEngineBuilderImpl(mContext);
-        CronetEngineBuilderInfo builderInfo = new CronetEngineBuilderInfo(builder);
+        CronetEngineBuilderInfo builderInfo = builder.toLoggerInfo();
         assertThat(builderInfo.isPublicKeyPinningBypassForLocalTrustAnchorsEnabled())
                 .isEqualTo(builder.publicKeyPinningBypassForLocalTrustAnchorsEnabled());
         assertThat(builderInfo.getUserAgent()).isEqualTo(builder.getUserAgent());
@@ -176,6 +181,99 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
+    public void testCronetEngineBuilderInitializedNotLoggedFromImpl() {
+        // The test framework bypasses the logic in CronetEngine.Builder, and the logic in
+        // CronetEngineBuilderImpl should not log anything since it should see the API code is up to
+        // date.
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+        mTestRule
+                .getTestFramework()
+                .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetEngineBuilderInitializedLoggedFromImplIfApiIsTooOld() {
+        var originalApiLevel = CronetEngineBuilderImpl.sApiLevel;
+        try {
+            CronetEngineBuilderImpl.sApiLevel = 29;
+            assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+            var builder =
+                    mTestRule
+                            .getTestFramework()
+                            .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
+            // The test framework bypasses the logic in CronetEngine.Builder, so we know this is
+            // coming from the impl.
+            assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(1);
+            var info = mTestLogger.getLastCronetEngineBuilderInitializedInfo();
+            assertThat(info).isNotNull();
+            assertThat(info.cronetInitializationRef).isNotEqualTo(0);
+            assertThat(info.author)
+                    .isEqualTo(CronetLogger.CronetEngineBuilderInitializedInfo.Author.IMPL);
+            assertThat(info.engineBuilderCreatedLatencyMillis).isAtLeast(0);
+            assertThat(info.source).isNotEqualTo(CronetSource.CRONET_SOURCE_UNSPECIFIED);
+            assertThat(info.creationSuccessful).isTrue();
+            assertThat(info.apiVersion.getMajorVersion()).isGreaterThan(0);
+            assertThat(info.implVersion.getMajorVersion()).isGreaterThan(0);
+            assertThat(info.uid).isGreaterThan(0);
+
+            builder.build();
+            final CronetEngineBuilderInfo builderInfo =
+                    mTestLogger.getLastCronetEngineBuilderInfo();
+            assertThat(builderInfo).isNotNull();
+            assertThat(builderInfo.getCronetInitializationRef())
+                    .isEqualTo(info.cronetInitializationRef);
+
+            mTestLogger.waitForCronetInitializedInfo();
+            var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+            assertThat(cronetInitializedInfo).isNotNull();
+            assertThat(cronetInitializedInfo.cronetInitializationRef)
+                    .isEqualTo(info.cronetInitializationRef);
+        } finally {
+            CronetEngineBuilderImpl.sApiLevel = originalApiLevel;
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetEngineBuilderInitializedLoggedFromApi() {
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+        // The test framework bypasses the logic in CronetEngine.Builder, so we have to call it
+        // directly. We want to use the test framework context though for things like
+        // intercepting manifest reads.
+        // TODO(https://crbug.com/1521393): this is ugly. Ideally the test framework should be
+        // refactored to stop violating the Single Responsibility Principle (e.g. Context
+        // management and implementation selection should be separated)
+        var builder = new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(1);
+        var info = mTestLogger.getLastCronetEngineBuilderInitializedInfo();
+        assertThat(info).isNotNull();
+        assertThat(info.cronetInitializationRef).isNotEqualTo(0);
+        assertThat(info.author)
+                .isEqualTo(CronetLogger.CronetEngineBuilderInitializedInfo.Author.API);
+        assertThat(info.engineBuilderCreatedLatencyMillis).isAtLeast(0);
+        assertThat(info.source).isNotEqualTo(CronetSource.CRONET_SOURCE_UNSPECIFIED);
+        assertThat(info.creationSuccessful).isTrue();
+        assertThat(info.apiVersion.getMajorVersion()).isGreaterThan(0);
+        assertThat(info.implVersion.getMajorVersion()).isGreaterThan(0);
+        assertThat(info.uid).isGreaterThan(0);
+
+        builder.build();
+        final CronetEngineBuilderInfo builderInfo = mTestLogger.getLastCronetEngineBuilderInfo();
+        assertThat(builderInfo).isNotNull();
+        assertThat(builderInfo.getCronetInitializationRef())
+                .isEqualTo(info.cronetInitializationRef);
+
+        mTestLogger.waitForCronetInitializedInfo();
+        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+        assertThat(cronetInitializedInfo).isNotNull();
+        assertThat(cronetInitializedInfo.cronetInitializationRef)
+                .isEqualTo(info.cronetInitializationRef);
+    }
+
+    @Test
+    @SmallTest
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns =
                 new JSONObject()
@@ -239,6 +337,224 @@ public final class CronetLoggerTest {
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetInitializedInfo() {
+        // Creating another builder to ensure the cronet initialization ref allocation goes through
+        // TestLogger.
+        mTestRule
+                .getTestFramework()
+                .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                .build();
+        mTestLogger.waitForCronetInitializedInfo();
+        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+        assertThat(cronetInitializedInfo).isNotNull();
+        assertThat(cronetInitializedInfo.cronetInitializationRef).isNotEqualTo(0);
+        assertThat(cronetInitializedInfo.engineCreationLatencyMillis).isAtLeast(0);
+        assertThat(cronetInitializedInfo.engineAsyncLatencyMillis).isAtLeast(0);
+    }
+
+    private void setReadHttpFlagsInManifest(boolean value) {
+        Bundle metaData = new Bundle();
+        metaData.putBoolean(CronetManifest.READ_HTTP_FLAGS_META_DATA_KEY, value);
+        mTestRule.getTestFramework().interceptContext(new CronetManifestInterceptor(metaData));
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetInitializedInfoHttpFlagsDisabled() {
+        setReadHttpFlagsInManifest(false);
+
+        mTestRule.getTestFramework().startEngine();
+        mTestLogger.waitForCronetInitializedInfo();
+        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+        assertThat(cronetInitializedInfo).isNotNull();
+        assertThat(cronetInitializedInfo.httpFlagsLatencyMillis).isAtLeast(0);
+        assertThat(cronetInitializedInfo.httpFlagsSuccessful).isNull();
+        assertThat(cronetInitializedInfo.httpFlagsNames).isEmpty();
+        assertThat(cronetInitializedInfo.httpFlagsValues).isEmpty();
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetInitializedInfoHttpFlagsEnabled() {
+        setReadHttpFlagsInManifest(true);
+        mTestRule
+                .getTestFramework()
+                .setHttpFlags(
+                        Flags.newBuilder()
+                                .putFlags(
+                                        "true_bool_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setBoolValue(true))
+                                                .build())
+                                .putFlags(
+                                        "false_bool_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setBoolValue(false))
+                                                .build())
+                                .putFlags(
+                                        "int_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setIntValue(42))
+                                                .build())
+                                .putFlags(
+                                        "float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(42.5f))
+                                                .build())
+                                .putFlags(
+                                        "small_float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(0.000_000_001f))
+                                                .build())
+                                .putFlags(
+                                        "large_float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(1_000_000_000f))
+                                                .build())
+                                .putFlags(
+                                        "max_float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(Float.MAX_VALUE))
+                                                .build())
+                                .putFlags(
+                                        "min_float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(Float.MIN_VALUE))
+                                                .build())
+                                .putFlags(
+                                        "negative_infinity_float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(
+                                                                        (Float.NEGATIVE_INFINITY)))
+                                                .build())
+                                .putFlags(
+                                        "positive_infinity_float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(
+                                                                        Float.POSITIVE_INFINITY))
+                                                .build())
+                                .putFlags(
+                                        "nan_float_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setFloatValue(Float.NaN))
+                                                .build())
+                                .putFlags(
+                                        "string_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setStringValue(
+                                                                        "string_flag_value"))
+                                                .build())
+                                .putFlags(
+                                        "bytes_flag_name",
+                                        FlagValue.newBuilder()
+                                                .addConstrainedValues(
+                                                        FlagValue.ConstrainedValue.newBuilder()
+                                                                .setBytesValue(
+                                                                        ByteString.copyFrom(
+                                                                                new byte[] {
+                                                                                    'b', 'y', 't',
+                                                                                    'e', 's'
+                                                                                })))
+                                                .build())
+                                .build());
+
+        mTestRule.getTestFramework().startEngine();
+        mTestLogger.waitForCronetInitializedInfo();
+        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+        assertThat(cronetInitializedInfo).isNotNull();
+        assertThat(cronetInitializedInfo.httpFlagsLatencyMillis).isAtLeast(0);
+        assertThat(cronetInitializedInfo.httpFlagsSuccessful).isTrue();
+        assertThat(cronetInitializedInfo.httpFlagsNames)
+                .containsExactly(
+                        // MD5("negative_infinity_float_flag_name") =
+                        // 9d696a83954fce335d1e8f6a9810492b
+                        0x9d696a83954fce33L, // -7104029823821951437
+                        // MD5("small_float_flag_name") = ab72c47c397f6a43c613537a966219af
+                        0xab72c47c397f6a43L, // -6092591308059219389
+                        // MD5("bytes_flag_name") = ba9a5e9e6b90bfbb81680aa990b634eb
+                        0xba9a5e9e6b90bfbbL, // -5000580401739022405
+                        // MD5("true_bool_flag_name") = c9c07033b6976b0da6db6289170f57cf
+                        0xc9c07033b6976b0dL, // -3909001109148570867
+                        // MD5("min_float_flag_name") = d256444fcdc3c570c80a581c9693b7d1
+                        0xd256444fcdc3c570L, // -3290367368202304144
+                        // MD5("nan_float_flag_name") = d6ab336abb86e1898709bbc0cd39ddf5
+                        0xd6ab336abb86e189L, // -2978230195069722231
+                        // MD5("float_flag_name") = da91d8c7fd76cbad314db23f64d851cc
+                        0xda91d8c7fd76cbadL, // -2697136348355703891
+                        // MD5("false_bool_flag_name") = 054604bfb6c5dda576298f09ae47e27e
+                        0x054604bfb6c5dda5L, // 379996440011070885
+                        // MD5("string_flag_name") = 44c075a1c49b1a409841fd7be863b836
+                        0x44c075a1c49b1a40L, // 4954088927756229184
+                        // MD5("positive_infinity_float_flag_name") =
+                        // 4bfaed6273d43c6f9e0b3bf6cab1ba77
+                        0x4bfaed6273d43c6fL, // 5474949304128126063
+                        // MD5("int_flag_name") = 57c409545ac02037d0251cffc79ac636
+                        0x57c409545ac02037L, // 6324190034639462455
+                        // MD5("max_float_flag_name") = 5e4417deb0623183ba34114388f0633f
+                        0x5e4417deb0623183L, // 6792580383190954371
+                        // MD5("large_float_flag_name") = 6bc0a810fc7df652ff363da9130fc725
+                        0x6bc0a810fc7df652L // 7764390548495791698
+                        )
+                .inOrder();
+        assertThat(cronetInitializedInfo.httpFlagsValues)
+                .containsExactly(
+                        // negative_infinity_float_flag_name
+                        Long.MIN_VALUE,
+                        // small_float_flag_name
+                        1L,
+                        // bytes_flag_name
+                        // MD5("bytes") = 4b3a6218bb3e3a7303e8a171a60fcf92
+                        0x4b3a6218bb3e3a73L,
+                        // true_bool_flag_name
+                        1L,
+                        // min_float_flag_name
+                        0L,
+                        // nan_float_flag_name
+                        0L,
+                        // float_flag_name
+                        42_500_000_000L,
+                        // false_bool_flag_name
+                        0L,
+                        // string_flag_name
+                        // MD5("string_flag_value") = de880cd0cda4184ef97ee4ad3757e5c3
+                        0xde880cd0cda4184eL,
+                        // positive_infinity_float_flag_name
+                        Long.MAX_VALUE,
+                        // int_flag_name
+                        42L,
+                        // max_float_flag_name
+                        Long.MAX_VALUE,
+                        // large_float_flag_name
+                        1_000_000_000_000_000_000L)
+                .inOrder();
     }
 
     @Test
@@ -471,19 +787,40 @@ public final class CronetLoggerTest {
     /** Records the last engine creation (and traffic info) call it has received. */
     public static final class TestLogger extends CronetLogger {
         private AtomicInteger mNextId = new AtomicInteger();
+        private final AtomicInteger mCallsToLogCronetEngineBuilderInitializedInfo =
+                new AtomicInteger();
+        private final AtomicInteger mCallsToCronetInitializedInfo = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
         private AtomicLong mCronetEngineId = new AtomicLong();
         private AtomicLong mCronetRequestId = new AtomicLong();
+        private final AtomicReference<CronetEngineBuilderInitializedInfo>
+                mCronetEngineBuilderInitializedInfo = new AtomicReference<>();
+        private final AtomicReference<CronetInitializedInfo> mCronetInitializedInfo =
+                new AtomicReference<>();
         private AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
         private AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
         private AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
         private AtomicReference<CronetSource> mSource = new AtomicReference<>();
+        private final ConditionVariable mCronetInitializedInfoCalled = new ConditionVariable();
         private final ConditionVariable mBlock = new ConditionVariable();
 
         @Override
         public long generateId() {
             return mNextId.incrementAndGet();
+        }
+
+        @Override
+        public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {
+            mCallsToLogCronetEngineBuilderInitializedInfo.incrementAndGet();
+            mCronetEngineBuilderInitializedInfo.set(info);
+        }
+
+        @Override
+        public void logCronetInitializedInfo(CronetInitializedInfo info) {
+            mCallsToCronetInitializedInfo.incrementAndGet();
+            mCronetInitializedInfo.set(info);
+            mCronetInitializedInfoCalled.open();
         }
 
         @Override
@@ -507,12 +844,21 @@ public final class CronetLoggerTest {
             mBlock.open();
         }
 
+        public int callsToLogCronetEngineBuilderInitializedInfo() {
+            return mCallsToLogCronetEngineBuilderInitializedInfo.get();
+        }
+
         public int callsToLogCronetTrafficInfo() {
             return mCallsToLogCronetTrafficInfo.get();
         }
 
         public int callsToLogCronetEngineCreation() {
             return mCallsToLogCronetEngineCreation.get();
+        }
+
+        public void waitForCronetInitializedInfo() {
+            mCronetInitializedInfoCalled.block();
+            mCronetInitializedInfoCalled.close();
         }
 
         public void waitForLogCronetTrafficInfo() {
@@ -526,6 +872,14 @@ public final class CronetLoggerTest {
 
         public long getLastCronetRequestId() {
             return mCronetRequestId.get();
+        }
+
+        public CronetEngineBuilderInitializedInfo getLastCronetEngineBuilderInitializedInfo() {
+            return mCronetEngineBuilderInitializedInfo.get();
+        }
+
+        public CronetInitializedInfo getLastCronetInitializedInfo() {
+            return mCronetInitializedInfo.get();
         }
 
         public CronetTrafficInfo getLastCronetTrafficInfo() {

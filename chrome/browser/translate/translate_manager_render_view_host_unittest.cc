@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -456,7 +457,8 @@ class TranslateManagerRenderViewHostTest
 
   // The infobars that have been removed.
   // WARNING: the pointers point to deleted objects, use only for comparison.
-  std::set<infobars::InfoBarDelegate*> removed_infobars_;
+  std::set<raw_ptr<infobars::InfoBarDelegate, SetExperimental>>
+      removed_infobars_;
 
   std::unique_ptr<MockTranslateBubbleFactory> bubble_factory_;
   FakeTranslateAgent fake_agent_;

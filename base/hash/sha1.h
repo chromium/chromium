@@ -9,10 +9,10 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_NACL)
 #include "base/hash/sha1_nacl.h"
@@ -32,7 +32,7 @@ using SHA1Digest = std::array<uint8_t, kSHA1Length>;
 BASE_EXPORT SHA1Digest SHA1HashSpan(span<const uint8_t> data);
 // Computes the SHA-1 hash of the input string |str| and returns the full
 // hash.
-BASE_EXPORT std::string SHA1HashString(StringPiece str);
+BASE_EXPORT std::string SHA1HashString(std::string_view str);
 // Computes the SHA-1 hash of the |len| bytes in |data| and puts the hash
 // in |hash|. |hash| must be kSHA1Length bytes long.
 BASE_EXPORT void SHA1HashBytes(const unsigned char* data,
@@ -41,7 +41,7 @@ BASE_EXPORT void SHA1HashBytes(const unsigned char* data,
 
 // These functions allow streaming SHA-1 operations.
 BASE_EXPORT void SHA1Init(SHA1Context& context);
-BASE_EXPORT void SHA1Update(const StringPiece data, SHA1Context& context);
+BASE_EXPORT void SHA1Update(const std::string_view data, SHA1Context& context);
 BASE_EXPORT void SHA1Final(SHA1Context& context, SHA1Digest& digest);
 }  // namespace base
 

@@ -713,7 +713,8 @@ public class NotificationPlatformBridge {
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.NOTIFICATION_ONE_TAP_UNSUBSCRIBE)
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+                && identifyingAttributes.notificationType == NotificationType.WEB_PERSISTENT) {
             appendUnsubscribeButton(notificationBuilder, identifyingAttributes);
         } else {
             appendSiteSettingsButton(
@@ -1206,6 +1207,8 @@ public class NotificationPlatformBridge {
         List<String> notificationIdsToCancel =
                 suspender.storeNotificationResourcesFromOrigins(
                         Collections.singletonList(Uri.parse(identifyingAttributes.origin)));
+        NotificationUmaTracker.getInstance()
+                .recordSuspendedNotificationCountOnUnsubscribe(notificationIdsToCancel.size());
 
         mOriginsWithProvisionallyRevokedPermissions.add(identifyingAttributes.origin);
         displayProvisionallyUnsubscribedNotification(identifyingAttributes);

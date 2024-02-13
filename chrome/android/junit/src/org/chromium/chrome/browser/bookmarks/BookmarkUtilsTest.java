@@ -4,18 +4,17 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.DESKTOP_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.OTHER_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.PARTNER_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
+import android.app.Activity;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,12 +26,34 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.commerce.core.ShoppingService;
+import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.sync.SyncFeatureMap;
+import org.chromium.ui.base.TestActivity;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link BookmarkUtils}. */
 @Batch(Batch.UNIT_TESTS)
@@ -41,86 +62,178 @@ import org.chromium.components.bookmarks.BookmarkType;
 public class BookmarkUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock private BookmarkModel mBookmarkModel;
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Tracker mTracker;
+    @Mock private LargeIconBridge mLargeIconBridge;
+    @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
+    @Mock private Profile mProfile;
+    @Mock private Tab mTab;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Callback<BookmarkId> mBookmarkIdCallback;
+    @Mock private ShoppingService mShoppingService;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+
+    private Activity mActivity;
+    private FakeBookmarkModel mBookmarkModel;
+    private CoreAccountInfo mAccountInfo =
+            CoreAccountInfo.createFromEmailAndGaiaId("test@gmail.com", "testGaiaId");
 
     @Before
     public void setup() {
-        SharedBookmarkModelMocks.initMocks(mBookmarkModel);
+        mBookmarkModel = FakeBookmarkModel.createModel();
+
+        TrackerFactory.setTrackerForTests(mTracker);
+        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+
+        mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeNatives);
+        doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
+        doReturn(mAccountInfo).when(mIdentityManager).getPrimaryAccountInfo(anyInt());
+        doReturn(mProfile).when(mTab).getProfile();
+        doReturn(false).when(mProfile).isOffTheRecord();
+
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    private void onActivity(Activity activity) {
+        mActivity = activity;
     }
 
     @Test
-    public void testCanAddFolderToParent_accountFolders() {
-        BookmarkModel fakeBookmarkModel = FakeBookmarkModel.createModel();
-        assertFalse(
-                BookmarkUtils.canAddFolderToParent(
-                        fakeBookmarkModel, fakeBookmarkModel.getAccountReadingListFolder()));
+    @DisableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
+    public void testAddToReadingList() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.READING_LIST)
+                        .expectIntRecords(
+                                "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
+                        .build();
+
+        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        BookmarkUtils.addToReadingList(
+                mActivity,
+                bookmarkModel,
+                "Test title",
+                new GURL("https://test.com"),
+                mSnackbarManager,
+                mProfile,
+                mBottomSheetController);
+        // Normally, a snackbar is shown.
+        verify(mSnackbarManager).showSnackbar(any());
+        verify(mTracker).notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
+
+        histograms.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures({SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE})
+    public void testAddToReadingList_withAccountBookmarks() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.READING_LIST)
+                        .expectIntRecords(
+                                "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
+                        .build();
+
+        BookmarkModel bookmarkModel = FakeBookmarkModel.createModel();
+        BookmarkUtils.addToReadingList(
+                mActivity,
+                bookmarkModel,
+                "Test title",
+                new GURL("https://test.com"),
+                mSnackbarManager,
+                mProfile,
+                mBottomSheetController);
+        // When account bookmarks are enabled, reading list saves use the regular save flow.
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+        verify(mTracker).notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
+
+        histograms.assertExpected();
+    }
+
+    @Test
+    public void testAddOrEditBookmark() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.NORMAL)
+                        .expectIntRecords(
+                                "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
+                        .build();
+
+        doReturn("test title").when(mTab).getTitle();
+        doReturn(new GURL("https://test.com")).when(mTab).getOriginalUrl();
+        BookmarkUtils.addOrEditBookmark(
+                null,
+                mBookmarkModel,
+                mTab,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.NORMAL,
+                mBookmarkIdCallback,
+                /* fromExplicitTrackUi= */ false);
+
+        histograms.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testAddOrEditBookmark_readingList() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords("Bookmarks.AddBookmarkType", BookmarkType.READING_LIST)
+                        .expectIntRecords(
+                                "Bookmarks.AddedPerProfileType", BrowserProfileType.REGULAR)
+                        .build();
+
+        doReturn("test title").when(mTab).getTitle();
+        doReturn(new GURL("https://test.com")).when(mTab).getOriginalUrl();
+        BookmarkUtils.addOrEditBookmark(
+                null,
+                mBookmarkModel,
+                mTab,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.READING_LIST,
+                mBookmarkIdCallback,
+                /* fromExplicitTrackUi= */ false);
+
+        histograms.assertExpected();
     }
 
     @Test
     public void testCanAddFolderToParent() {
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, ROOT_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
+        assertFalse(
+                BookmarkUtils.canAddFolderToParent(
+                        mBookmarkModel, mBookmarkModel.getRootFolderId()));
+        assertTrue(
+                BookmarkUtils.canAddFolderToParent(
+                        mBookmarkModel, mBookmarkModel.getDesktopFolderId()));
+        assertTrue(
+                BookmarkUtils.canAddFolderToParent(
+                        mBookmarkModel, mBookmarkModel.getMobileFolderId()));
+        assertFalse(
+                BookmarkUtils.canAddFolderToParent(
+                        mBookmarkModel, mBookmarkModel.getLocalOrSyncableReadingListFolder()));
+        assertFalse(
+                BookmarkUtils.canAddFolderToParent(
+                        mBookmarkModel, mBookmarkModel.getAccountReadingListFolder()));
+        assertFalse(
+                BookmarkUtils.canAddFolderToParent(
+                        mBookmarkModel, mBookmarkModel.getPartnerFolderId()));
 
-        BookmarkId managedBookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
-        BookmarkItem managedBookmarkItem =
-                new BookmarkItem(
-                        managedBookmarkId,
-                        "managed",
-                        null,
-                        true,
-                        ROOT_BOOKMARK_ID,
-                        false,
-                        true,
-                        0,
-                        false,
-                        0,
-                        false);
-        doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
-        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, managedBookmarkId));
-    }
+        BookmarkId folder =
+                mBookmarkModel.addFolder(mBookmarkModel.getMobileFolderId(), 0, "folder");
+        assertTrue(BookmarkUtils.canAddFolderToParent(mBookmarkModel, folder));
 
-    @Test
-    public void testCanAddBookmarkToParent() {
-        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, ROOT_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, DESKTOP_BOOKMARK_ID));
-        assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertTrue(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, READING_LIST_BOOKMARK_ID));
-        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
-
-        // Null case
-        BookmarkId nullBookmarkItemId = new BookmarkId(123, BookmarkType.NORMAL);
-        doReturn(null).when(mBookmarkModel).getBookmarkById(nullBookmarkItemId);
-        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, nullBookmarkItemId));
-
-        BookmarkId managedBookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
-        BookmarkItem managedBookmarkItem =
-                new BookmarkItem(
-                        managedBookmarkId,
-                        "managed",
-                        null,
-                        true,
-                        ROOT_BOOKMARK_ID,
-                        false,
-                        true,
-                        0,
-                        false,
-                        0,
-                        false);
-        doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
-        assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, managedBookmarkId));
-    }
-
-    @Test
-    public void testGetParentFolderForViewing() {
-        assertEquals(
-                MOBILE_BOOKMARK_ID,
-                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertEquals(
-                ROOT_BOOKMARK_ID,
-                BookmarkUtils.getParentFolderForViewing(mBookmarkModel, OTHER_BOOKMARK_ID));
+        BookmarkId managedFolder =
+                mBookmarkModel.addManagedFolder(mBookmarkModel.getMobileFolderId(), "managed");
+        assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, managedFolder));
     }
 }

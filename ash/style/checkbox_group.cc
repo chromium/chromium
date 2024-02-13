@@ -42,7 +42,7 @@ void CheckboxGroup::OnButtonClicked(OptionButtonBase* button) {
   button->SetSelected(!button->selected());
 }
 
-BEGIN_METADATA(CheckboxGroup, OptionButtonGroup)
+BEGIN_METADATA(CheckboxGroup)
 END_METADATA
 
 }  // namespace ash

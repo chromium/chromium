@@ -318,9 +318,6 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(features::kPdfOcr));
 #endif
-  html_source->AddBoolean("overscrollHistoryNavigationSettingEnabled",
-                          base::FeatureList::IsEnabled(
-                              features::kOverscrollHistoryNavigationSetting));
 
   AddCaptionSubpageStrings(html_source);
 }
@@ -837,6 +834,8 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
       {"searchLanguages", IDS_SETTINGS_LANGUAGE_SEARCH},
       {"languagesExpandA11yLabel",
        IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL},
+      {"preferredLanguagesHeader",
+       IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_HEADER},
       {"preferredLanguagesDesc",
        IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC},
       {"moveToTop", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_TO_TOP},
@@ -1163,6 +1162,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"plusAddressSettings", IDS_PLUS_ADDRESS_SETTINGS_LABEL},
       {"cvcTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
+      {"benefitsAvailableTagForCreditCardListEntry",
+       IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_AVAILABLE_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
+      {"benefitsTermsTagForCreditCardListEntry",
+       IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
       {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
       {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
@@ -1229,6 +1232,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           CheckDeviceAuthAvailability(web_contents));
 
   html_source->AddBoolean("cvcStorageAvailable", CheckCvcStorageAvailability());
+
+  html_source->AddBoolean("autofillCardBenefitsAvailable",
+                          base::FeatureList::IsEnabled(
+                              autofill::features::kAutofillEnableCardBenefits));
 
   html_source->AddBoolean(
       "autofillEnablePaymentsMandatoryReauth",
@@ -2007,6 +2014,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"topicsPageAllowTopic", IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC},
       {"topicsPageAllowTopicA11yLabel",
        IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC_A11Y_LABEL},
+      {"topicsPageUnblockTopicA11yLabel",
+       IDS_SETTINGS_TOPICS_PAGE_UNBLOCK_TOPIC_A11Y_LABEL},
       {"topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_A11Y_LABEL},
       {"fledgePageTitle", IDS_SETTINGS_FLEDGE_PAGE_TITLE},
@@ -2069,6 +2078,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2},
       {"manageTopicsPageDescription",
        IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION},
+      {"manageTopicsPageLearnMoreLink",
+       IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK},
       {"manageTopicsHeading", IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_HEADING},
       {"manageTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION},
@@ -2110,11 +2121,14 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                                  g_browser_process->GetApplicationLocale())
                                  .spec())));
   html_source->AddString(
-      "manageTopicsPageDescription",
+      "manageTopicsPageLearnMoreLink",
       l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION,
+          IDS_SETTINGS_MANAGE_TOPICS_PAGE_LEARN_MORE_LINK,
           base::ASCIIToUTF16(
-              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL)));
+              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL),
+          l10n_util::GetStringUTF16(
+              IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION_LEARN_MORE_ARIA_LABEL),
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   // Topics and fledge both link to the cookies setting page and cross-link
   // each other in the footers.
   html_source->AddString(

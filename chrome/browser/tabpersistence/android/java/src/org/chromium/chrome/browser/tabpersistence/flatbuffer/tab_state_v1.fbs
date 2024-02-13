@@ -6,6 +6,12 @@ include "tab_state_common.fbs";
 
 namespace org.chromium.chrome.browser.tab.flatbuffer;
 
+// A representation of a Token for TabGroupId.
+struct TabGroupIdToken {
+  high:long;
+  low:long;
+}
+
 // Version 1 places all fields together. The intention
 // is to experiment with different refactorings (e.g. move
 // WebcontentsState to its own Table for delayed acquisition).
@@ -36,5 +42,8 @@ table TabStateFlatBufferV1 {
 
     // Timestamp of the last committed navigation done in the Tab.
     last_navigation_committed_timestamp_millis:long;
+
+    // Tab group ID.
+    tab_group_id:TabGroupIdToken;
 }
 

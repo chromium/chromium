@@ -20,8 +20,9 @@ namespace ash {
 // The rest of the bubble is made up of a customizable view  supplied via
 // `SetContent`.
 class ASH_EXPORT LoginErrorBubble : public LoginBaseBubbleView {
+  METADATA_HEADER(LoginErrorBubble, LoginBaseBubbleView)
+
  public:
-  METADATA_HEADER(LoginErrorBubble);
   LoginErrorBubble();
   explicit LoginErrorBubble(base::WeakPtr<views::View> anchor_view);
 

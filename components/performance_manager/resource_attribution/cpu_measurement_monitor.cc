@@ -33,7 +33,7 @@
 #include "content/public/common/process_type.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
@@ -430,10 +430,12 @@ base::Value::Dict CPUMeasurementMonitor::DescribeContextData(
     const base::TimeDelta measurement_interval =
         result.metadata.measurement_time - result.start_time;
     dict.Set("algorithm", static_cast<int>(result.metadata.algorithm));
-    dict.Set("measurement_time",
-             TimeSinceEpochToValue(result.metadata.measurement_time));
-    dict.Set("measurement_interval", TimeDeltaToValue(measurement_interval));
-    dict.Set("cumulative_cpu", TimeDeltaToValue(result.cumulative_cpu));
+    dict.Set("measurement_time", performance_manager::TimeSinceEpochToValue(
+                                     result.metadata.measurement_time));
+    dict.Set("measurement_interval",
+             performance_manager::TimeDeltaToValue(measurement_interval));
+    dict.Set("cumulative_cpu",
+             performance_manager::TimeDeltaToValue(result.cumulative_cpu));
   }
   return dict;
 }
@@ -631,4 +633,4 @@ void CPUMeasurementMonitor::CPUMeasurement::MeasureAndDistributeCPUUsage(
       });
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

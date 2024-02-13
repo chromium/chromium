@@ -9,9 +9,12 @@
 
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -44,6 +47,12 @@ constexpr size_t kExtensionsSize =
     kFirstKnownExtension + kKnownExtensions.size();
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns the list of holding space metrics observers.
+base::ObserverList<Observer>& GetObserverList() {
+  static base::NoDestructor<base::ObserverList<Observer>> observer_list;
+  return *observer_list;
+}
 
 // Returns the `FilePickerBindingContext` representation of the specified
 // `file_picker_binding_context`. Note that these values are persisted to
@@ -82,26 +91,6 @@ std::string ToString(ItemAction action) {
   }
   NOTREACHED();
   return std::string();
-}
-
-}  // namespace
-
-// Utilities -------------------------------------------------------------------
-
-// Note that these values are persisted to histograms so must remain unchanged.
-size_t FilePathToExtension(const base::FilePath& file_path) {
-  if (file_path.empty())
-    return kEmptyExtension;
-
-  const std::string extension = base::ToLowerASCII(file_path.Extension());
-  if (extension.empty())
-    return kEmptyExtension;
-
-  auto* const* it = base::ranges::find(kKnownExtensions, extension);
-  if (it == kKnownExtensions.end())
-    return kOtherExtension;
-
-  return kFirstKnownExtension + std::distance(kKnownExtensions.begin(), it);
 }
 
 // Records the counts of the specified holding space `items` to the item count
@@ -172,18 +161,40 @@ void RecordItemCounts(const std::string& prefix,
   }
 }
 
+}  // namespace
+
+// Utilities -------------------------------------------------------------------
+
+// Note that these values are persisted to histograms so must remain unchanged.
+size_t FilePathToExtension(const base::FilePath& file_path) {
+  if (file_path.empty()) {
+    return kEmptyExtension;
+  }
+
+  const std::string extension = base::ToLowerASCII(file_path.Extension());
+  if (extension.empty()) {
+    return kEmptyExtension;
+  }
+
+  const char* const* it = base::ranges::find(kKnownExtensions, extension);
+  if (it == kKnownExtensions.end()) {
+    return kOtherExtension;
+  }
+
+  return kFirstKnownExtension + std::distance(kKnownExtensions.begin(), it);
+}
+
 // Metrics ---------------------------------------------------------------------
 
-void RecordPodAction(PodAction action) {
-  base::UmaHistogramEnumeration("HoldingSpace.Pod.Action.All", action);
+void RecordBubbleResizeAnimationSmoothness(int smoothness) {
+  CHECK_GE(smoothness, 0);
+  CHECK_LE(smoothness, 100);
+  base::UmaHistogramPercentage("HoldingSpace.Animation.BubbleResize.Smoothness",
+                               smoothness);
 }
 
 void RecordDownloadsAction(DownloadsAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.Downloads.Action.All", action);
-}
-
-void RecordFilesAppChipAction(FilesAppChipAction action) {
-  base::UmaHistogramEnumeration("HoldingSpace.FilesAppChip.Action.All", action);
 }
 
 void RecordFileCreatedFromShowSaveFilePicker(
@@ -195,6 +206,10 @@ void RecordFileCreatedFromShowSaveFilePicker(
   base::UmaHistogramEnumeration(
       "HoldingSpace.FileCreatedFromShowSaveFilePicker.FilePickerBindingContext",
       ToFilePickerBindingContext(file_picker_binding_context));
+}
+
+void RecordFilesAppChipAction(FilesAppChipAction action) {
+  base::UmaHistogramEnumeration("HoldingSpace.FilesAppChip.Action.All", action);
 }
 
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
@@ -228,7 +243,10 @@ void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,
         item->file().file_system_type);
   }
 
-  // TODO(https://b/311411775): Record metrics pertaining to `event_source`.
+  // Notify observers.
+  for (Observer& observer : GetObserverList()) {
+    observer.OnHoldingSpaceItemActionRecorded(items, action, event_source);
+  }
 }
 
 void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
@@ -249,6 +267,22 @@ void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
       FilePathToExtension(file_path), kExtensionsSize + 1);
   base::UmaHistogramEnumeration(
       "HoldingSpace.Item.Action.Launch.Failure.Reason", reason);
+}
+
+void RecordPodAction(PodAction action) {
+  base::UmaHistogramEnumeration("HoldingSpace.Pod.Action.All", action);
+
+  // Notify observers.
+  for (Observer& observer : GetObserverList()) {
+    observer.OnHoldingSpacePodActionRecorded(action);
+  }
+}
+
+void RecordPodResizeAnimationSmoothness(int smoothness) {
+  CHECK_GE(smoothness, 0);
+  CHECK_LE(smoothness, 100);
+  base::UmaHistogramPercentage("HoldingSpace.Animation.PodResize.Smoothness",
+                               smoothness);
 }
 
 void RecordSuggestionsAction(SuggestionsAction action) {
@@ -281,20 +315,6 @@ void RecordTimeFromFirstEntryToFirstPin(base::TimeDelta time_delta) {
                                 /*buckets=*/50);
 }
 
-void RecordBubbleResizeAnimationSmoothness(int smoothness) {
-  DCHECK_GE(smoothness, 0);
-  DCHECK_LE(smoothness, 100);
-  base::UmaHistogramPercentage("HoldingSpace.Animation.BubbleResize.Smoothness",
-                               smoothness);
-}
-
-void RecordPodResizeAnimationSmoothness(int smoothness) {
-  DCHECK_GE(smoothness, 0);
-  DCHECK_LE(smoothness, 100);
-  base::UmaHistogramPercentage("HoldingSpace.Animation.PodResize.Smoothness",
-                               smoothness);
-}
-
 void RecordTotalItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
   RecordItemCounts("HoldingSpace.Item.TotalCountV2", items);
 }
@@ -309,6 +329,16 @@ void RecordUserPreferences(UserPreferences preferences) {
 void RecordVisibleItemCounts(
     const std::vector<const HoldingSpaceItem*>& items) {
   RecordItemCounts("HoldingSpace.Item.VisibleCount", items);
+}
+
+// Observation -----------------------------------------------------------------
+
+ScopedObservation::ScopedObservation(Observer* observer) : observer_(observer) {
+  GetObserverList().AddObserver(observer_);
+}
+
+ScopedObservation::~ScopedObservation() {
+  GetObserverList().RemoveObserver(observer_);
 }
 
 }  // namespace ash::holding_space_metrics

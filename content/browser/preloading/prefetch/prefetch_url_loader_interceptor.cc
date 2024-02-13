@@ -65,12 +65,33 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
   if (redirect_reader_ && redirect_reader_.DoesCurrentURLToServeMatch(
                               tentative_resource_request.url)) {
-    OnGotPrefetchToServe(
-        frame_tree_node_id_, tentative_resource_request,
-        base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
-                       weak_factory_.GetWeakPtr()),
-        std::move(redirect_reader_));
-    return;
+    if (redirect_reader_.HaveDefaultContextCookiesChanged()) {
+      // Cookies have changed for the next redirect hop's URL since the fetch,
+      // so we cannot use this prefetch anymore.
+      PrefetchContainer* prefetch_container =
+          redirect_reader_.GetPrefetchContainer();
+      CHECK(prefetch_container);
+      // Note: This method can only be called once per PrefetchContainer (we
+      // have a CHECK in the method). This is guaranteed to be the first time
+      // we call this method for |prefetch_container|, as the other callsite
+      // (in PrefetchService::ReturnPrefetchToServe) would have prevented the
+      // prefetch from being used to serve the navigation (making this
+      // unreachable as |redirect_reader_| would never have been set to
+      // |prefetch_container|). This will also never be called for
+      // |prefetch_container| again as we don't use it to serve any subsequent
+      // redirect hops for this navigation (we unset |redirect_reader_| below),
+      // and |PrefetchService::FindPrefetchContainerToServe| ignores any
+      // prefetches with the status kPrefetchNotUsedCookiesChanged (which is
+      // set in |PrefetchContainer::OnCookiesChanged|).
+      prefetch_container->OnCookiesChanged();
+    } else {
+      OnGotPrefetchToServe(
+          frame_tree_node_id_, tentative_resource_request,
+          base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
+                         weak_factory_.GetWeakPtr()),
+          std::move(redirect_reader_));
+      return;
+    }
   }
 
   if (redirect_reader_) {
@@ -89,7 +110,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     // the right partition, or at minimum to use it from that partition if they
     // happen to be the same, i.e., the URL remains within the same site as the
     // top-level document).
-    std::move(loader_callback_).Run({});
+    std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
@@ -145,14 +166,14 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   if (!reader) {
     // Do not intercept the request.
     redirect_reader_ = PrefetchContainer::Reader();
-    std::move(loader_callback_).Run({});
+    std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
   auto request_handler = reader.CreateRequestHandler();
   if (!request_handler) {
     redirect_reader_ = PrefetchContainer::Reader();
-    std::move(loader_callback_).Run({});
+    std::move(loader_callback_).Run(std::nullopt);
     return;
   }
 
@@ -182,17 +203,20 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   // `HeaderClientOption::kAllowed` should be used for `TerminalParams`, and
   // then how to utilize it.
   std::move(loader_callback_)
-      .Run(url_loader_factory::Create(
-          ContentBrowserClient::URLLoaderFactoryType::kNavigation,
-          url_loader_factory::TerminalParams::ForNonNetwork(
-              std::move(single_request_url_loader_factory)),
-          url_loader_factory::ContentClientParams(
-              BrowserContextFromFrameTreeNodeId(frame_tree_node_id_),
-              render_frame_host, render_frame_host->GetProcess()->GetID(),
-              url::Origin(),
-              ukm::SourceIdObj::FromInt64(
-                  navigation_request->GetNextPageUkmSourceId()),
-              &bypass_redirect_checks, navigation_request->GetNavigationId())));
+      .Run(NavigationLoaderInterceptor::Result(
+          url_loader_factory::Create(
+              ContentBrowserClient::URLLoaderFactoryType::kNavigation,
+              url_loader_factory::TerminalParams::ForNonNetwork(
+                  std::move(single_request_url_loader_factory)),
+              url_loader_factory::ContentClientParams(
+                  BrowserContextFromFrameTreeNodeId(frame_tree_node_id_),
+                  render_frame_host, render_frame_host->GetProcess()->GetID(),
+                  url::Origin(),
+                  ukm::SourceIdObj::FromInt64(
+                      navigation_request->GetNextPageUkmSourceId()),
+                  &bypass_redirect_checks,
+                  navigation_request->GetNavigationId())),
+          /*subresource_loader_params=*/{}));
 }
 
 }  // namespace content

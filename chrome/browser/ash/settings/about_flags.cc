@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/settings/about_flags.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -216,7 +217,7 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
           ::prefs::kLacrosLaunchSwitch);
   if (lacros_launch_switch_pref->IsManaged()) {
     // If there's the value, convert it into the feature name.
-    base::StringPiece value =
+    std::string_view value =
         ash::standalone_browser::GetLacrosAvailabilityPolicyName(
             static_cast<ash::standalone_browser::LacrosAvailability>(
                 lacros_launch_switch_pref->GetValue()->GetInt()));

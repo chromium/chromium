@@ -13,7 +13,10 @@
 
 <script>
 test(function(t) {
+    console.log('aaaaaaaaaaaaa');
     var axInput1 = accessibilityController.accessibleElementById("input1");
+    console.log('aaaaaaaaaaaaa 2');
+
     assert_equals(axInput1.name, "A B C");
 }, "Aria-owns is considered in a name computation");
 </script>

@@ -6,10 +6,11 @@
 
 #include <aura-shell-client-protocol.h>
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
@@ -233,9 +234,9 @@ void WaylandPopup::OnSequencePoint(int64_t seq) {
 
 void WaylandPopup::UpdateWindowMask() {
   // Popup doesn't have a shape. Update the opaqueness.
-  auto region = IsOpaqueWindow() ? absl::optional<std::vector<gfx::Rect>>(
+  auto region = IsOpaqueWindow() ? std::optional<std::vector<gfx::Rect>>(
                                        {gfx::Rect(latched_state().size_px)})
-                                 : absl::nullopt;
+                                 : std::nullopt;
   root_surface()->set_opaque_region(region);
 }
 
@@ -290,7 +291,8 @@ bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
   DCHECK(parent_window());
   state->window_scale = parent_window()->applied_state().window_scale;
   state->size_px =
-      gfx::ScaleToEnclosingRect(state->bounds_dip, state->window_scale).size();
+      ScaleToEnclosingRectIgnoringError(state->bounds_dip, state->window_scale)
+          .size();
   set_ui_scale(parent_window()->ui_scale());
   shadow_type_ = properties.shadow_type;
   return true;

@@ -11,6 +11,7 @@
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -69,7 +70,8 @@ gfx::Rect VcBackgroundUISystemAppDelegate::GetDefaultBounds(
 
 bool VcBackgroundUISystemAppDelegate::IsAppEnabled() const {
   return ::ash::features::IsVcBackgroundReplaceEnabled() &&
-         manta::features::IsMantaServiceEnabled();
+         manta::features::IsMantaServiceEnabled() &&
+         personalization_app::IsEligibleForSeaPen(profile());
 }
 
 bool VcBackgroundUISystemAppDelegate::ShouldShowInLauncher() const {

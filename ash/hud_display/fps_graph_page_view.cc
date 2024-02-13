@@ -32,7 +32,7 @@ constexpr float kVerticalTickFrames = 5;
 ////////////////////////////////////////////////////////////////////////////////
 // FPSGraphPageView, public:
 
-BEGIN_METADATA(FPSGraphPageView, GraphPageViewBase)
+BEGIN_METADATA(FPSGraphPageView)
 END_METADATA
 
 FPSGraphPageView::FPSGraphPageView(const base::TimeDelta refresh_interval)

@@ -152,6 +152,41 @@ ci.gpu.linux_builder(
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
+ci.gpu.linux_builder(
+    name = "Dawn Android arm64 DEPS Builder",
+    description_html = "Builds Android arm64 binaries using DEPS-ed in Dawn",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "DEPS|Android|Builder",
+        short_name = "a64",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
 ci.thin_tester(
     name = "Dawn Android arm DEPS Release (Nexus 5X)",
     triggered_by = ["ci/Dawn Android arm DEPS Builder"],
@@ -206,9 +241,11 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Dawn Android arm64 DEPS Release (Pixel 6)",
+    triggered_by = ["ci/Dawn Android arm64 DEPS Builder"],
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -225,20 +262,10 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "arm64",
-            "release_try_builder",
-            "minimal_symbols",
-            "reclient",
-        ],
-    ),
     console_view_entry = consoles.console_view_entry(
         category = "DEPS|Android",
         short_name = "p6",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.thin_tester(
@@ -372,6 +399,42 @@ ci.gpu.linux_builder(
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
+ci.gpu.linux_builder(
+    name = "Dawn Android arm64 Builder",
+    description_html = "Builds Android arm64 binaries using ToT Dawn",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "arm64",
+            "release_try_builder",
+            "minimal_symbols",
+            "reclient",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Android|Builder",
+        short_name = "a64",
+    ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
 ci.thin_tester(
     name = "Dawn Android arm Release (Nexus 5X)",
     triggered_by = ["ci/Dawn Android arm Builder"],
@@ -428,9 +491,11 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Dawn Android arm64 Release (Pixel 6)",
+    triggered_by = ["ci/Dawn Android arm64 Builder"],
     builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
@@ -448,20 +513,41 @@ ci.gpu.linux_builder(
         build_gs_bucket = "chromium-dawn-archive",
         run_tests_serially = True,
     ),
-    gn_args = gn_args.config(
-        configs = [
-            "android_builder",
-            "arm64",
-            "release_try_builder",
-            "minimal_symbols",
-            "reclient",
-        ],
-    ),
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Android",
         short_name = "p6",
     ),
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "Dawn Android arm64 Experimental Release (Pixel 6)",
+    description_html = "Runs ToT Dawn tests on experimental Pixel 6 configs",
+    triggered_by = ["ci/Dawn Android arm64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "dawn_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "arm64_builder_rel_mb",
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Android",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
 )
 
 ci.thin_tester(
@@ -1119,6 +1205,35 @@ ci.thin_tester(
         category = "ToT|Windows|Intel",
         short_name = "x64",
     ),
+)
+
+ci.thin_tester(
+    name = "Dawn Win10 x64 Experimental Release (NVIDIA)",
+    description_html = "Runs ToT Dawn tests on experimental NVIDIA configs",
+    triggered_by = ["Dawn Win10 x64 Builder"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        build_gs_bucket = "chromium-dawn-archive",
+        run_tests_serially = True,
+    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Windows|Nvidia",
+    #     short_name = "ex64",
+    # ),
+    list_view = "chromium.gpu.experimental",
 )
 
 ci.thin_tester(

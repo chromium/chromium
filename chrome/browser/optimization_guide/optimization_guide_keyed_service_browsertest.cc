@@ -793,7 +793,6 @@ class TestSettingsEnabledObserver
   explicit TestSettingsEnabledObserver(
       optimization_guide::proto::ModelExecutionFeature feature)
       : SettingsEnabledObserver(feature) {}
-  void PrepareToEnableOnRestart() override {}
   void OnChangeInFeatureCurrentlyEnabledState(bool is_now_enabled) override {
     count_feature_enabled_state_changes_++;
     is_currently_enabled_ = is_now_enabled;

@@ -305,6 +305,8 @@ class ClipboardHostImplScanTest : public RenderViewHostTestHarness {
 
   ui::Clipboard* system_clipboard() { return clipboard_; }
 
+  RenderFrameHost& rfh() { return clipboard_host_impl()->render_frame_host(); }
+
  private:
   mojo::Remote<blink::mojom::ClipboardHost> remote_;
   const raw_ptr<ui::Clipboard, DanglingUntriaged> clipboard_;
@@ -491,6 +493,34 @@ TEST_F(ClipboardHostImplScanTest, MainFrameURL) {
       clipboard_paste_data);
 
   EXPECT_TRUE(is_policy_callback_called);
+}
+
+TEST_F(ClipboardHostImplScanTest, GetSourceEndpoint) {
+  const std::u16string kText = u"text";
+  clipboard_host_impl()->WriteText(kText);
+  clipboard_host_impl()->CommitWrite();
+
+  // After writing the text to the clipboard with `clipboard_host_impl()`, the
+  // source clipboard endpoint should match the current RFH.
+  ClipboardEndpoint source_endpoint = GetSourceClipboardEndpoint(
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste),
+      ui::ClipboardBuffer::kCopyPaste);
+  EXPECT_TRUE(source_endpoint.data_transfer_endpoint());
+  EXPECT_TRUE(source_endpoint.data_transfer_endpoint()->IsUrlType());
+  EXPECT_EQ(source_endpoint.web_contents(),
+            WebContents::FromRenderFrameHost(&rfh()));
+  EXPECT_EQ(source_endpoint.browser_context(), rfh().GetBrowserContext());
+
+  // Calling `GetSourceClipboardEndpoint` with a different seqno will
+  // return the same DTE, but no WebContents or BrowserContext.
+  ui::ClipboardSequenceNumberToken other_seqno;
+  ClipboardEndpoint empty_endpoint =
+      GetSourceClipboardEndpoint(other_seqno, ui::ClipboardBuffer::kCopyPaste);
+  EXPECT_TRUE(source_endpoint.data_transfer_endpoint());
+  EXPECT_TRUE(source_endpoint.data_transfer_endpoint()->IsUrlType());
+  EXPECT_FALSE(empty_endpoint.web_contents());
+  EXPECT_FALSE(empty_endpoint.browser_context());
 }
 
 }  // namespace content

@@ -601,11 +601,16 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, DroppedFrame) {
   options.frame_size = gfx::Size(640, 480);
   auto pixel_format = PIXEL_FORMAT_I420;
   std::vector<base::TimeDelta> output_timestamps;
+  std::vector<base::TimeDelta> dropped_output_timestamps;
   const gfx::ColorSpace expected_color_space =
       ExpectedColorSpace(pixel_format, pixel_format);
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](VideoEncoderOutput output,
           std::optional<VideoEncoder::CodecDescription>) {
+        if (output.size == 0) {
+          dropped_output_timestamps.push_back(output.timestamp);
+          return;
+        }
         EXPECT_EQ(output.color_space, expected_color_space);
         output_timestamps.push_back(output.timestamp);
       });
@@ -634,6 +639,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, DroppedFrame) {
   ASSERT_EQ(output_timestamps.size(), 2u);
   EXPECT_EQ(output_timestamps[0], base::Milliseconds(1));
   EXPECT_EQ(output_timestamps[1], base::Milliseconds(3));
+  ASSERT_EQ(dropped_output_timestamps.size(), 1u);
+  EXPECT_EQ(dropped_output_timestamps[0], base::Milliseconds(2));
 }
 
 TEST_F(VideoEncodeAcceleratorAdapterTest,

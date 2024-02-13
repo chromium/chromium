@@ -122,12 +122,12 @@ ClipboardMac::~ClipboardMac() {
 
 void ClipboardMac::OnPreShutdown() {}
 
-absl::optional<DataTransferEndpoint> ClipboardMac::GetSource(
+std::optional<DataTransferEndpoint> ClipboardMac::GetSource(
     ClipboardBuffer buffer) const {
   return GetSourceInternal(buffer, GetPasteboard());
 }
 
-absl::optional<DataTransferEndpoint> ClipboardMac::GetSourceInternal(
+std::optional<DataTransferEndpoint> ClipboardMac::GetSourceInternal(
     ClipboardBuffer buffer,
     NSPasteboard* pasteboard) const {
   DCHECK(CalledOnValidThread());
@@ -136,12 +136,12 @@ absl::optional<DataTransferEndpoint> ClipboardMac::GetSourceInternal(
   NSString* source_url = [pasteboard stringForType:kUTTypeChromiumSourceURL];
 
   if (!source_url) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL gurl(base::SysNSStringToUTF8(source_url));
   if (!gurl.is_valid()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return DataTransferEndpoint(std::move(gurl));
@@ -380,7 +380,7 @@ void ClipboardMac::ReadCustomData(ClipboardBuffer buffer,
   if ([[pb types] containsObject:kUTTypeChromiumWebCustomData]) {
     NSData* data = [pb dataForType:kUTTypeChromiumWebCustomData];
     if ([data length]) {
-      if (absl::optional<std::u16string> maybe_result = ReadCustomDataForType(
+      if (std::optional<std::u16string> maybe_result = ReadCustomDataForType(
               base::span(reinterpret_cast<const uint8_t*>([data bytes]),
                          [data length]),
               type);
@@ -478,13 +478,9 @@ void ClipboardMac::WriteText(base::StringPiece text) {
 
 void ClipboardMac::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> /* source_url */) {
-  // We need to mark it as utf-8. (see crbug.com/11957)
-  std::string html_fragment_str("<meta charset='utf-8'>");
-  html_fragment_str.append(markup);
-  NSString* html_fragment = base::SysUTF8ToNSString(html_fragment_str);
-
-  [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
+    std::optional<base::StringPiece> /* source_url */) {
+  [GetPasteboard() setString:base::SysUTF8ToNSString(markup)
+                     forType:NSPasteboardTypeHTML];
 }
 
 void ClipboardMac::WriteSvg(base::StringPiece markup) {

@@ -5,7 +5,111 @@ This is the user manual for
 
 [TOC]
 
-## Command line usage
+## Overview
+
+Chromium Updater is an out-of-process service that finds and applies updates to
+software. Integrating with Chromium Updater requires:
+
+1. Installing Chromium Updater, if it is not present.
+2. Registering your application for updates with Chromium Updater.
+3. Performing any necessary server-side configuration to serve updates.
+
+Additionally, applications should take care to:
+
+1. Invoke the updater command line when they uninstall, if possible.
+
+## Application Identity
+
+Chromium Updater identifies each application by means of an "App ID". An app ID
+can be any ASCII string. For example, the App ID of Google Chrome (Windows) is
+`{8A69D345-D564-463C-AFF1-A69D9E530F96}`, and the App ID of Google Chrome
+(macOS) is `COM.GOOGLE.CHROME`.
+
+Acquiring a unique App ID is the first step to integrating with the updater.
+Consult your organization's update server team to obtain an ID.
+
+App IDs are case-insensitive.
+
+## Installing the Updater
+
+Chromium Updater can be installed in one of two scopes: system wide, or for the
+current OS user only. System installations are appropriate if the software's
+installation requires administrative privileges or should be shared between
+multiple OS users. System installations require the user to have admin
+privileges at the time of the installation, but thereafter silently keep the
+software up to date.
+
+### Windows
+
+On Windows, applications are most commonly distributed by means of
+UpdaterSetup.exe, a "tagged metainstaller" that first installs the updater,
+then registers the application with the updater and asks the updater to "update"
+(install) it. This has the advantage that even if UpdaterSetup.exe is old, the
+newest version of the application is always installed on the system.
+UpdaterSetup.exe also provides UI and manages integration with the updater.
+
+UpdaterSetup.exe can also be used to install the updater alone, by running
+`UpdaterSetup.exe --install --system`. (For user installs, elide `--system`.)
+
+For security reasons, applications that install at system scope must install
+into `C:\Program Files` or a similar path that non-admins don't have write
+access to. System-scope installers are run with system privileges, and writing
+or deleting paths under user control as system creates a privilege escalation
+vulnerability on the system.
+
+When an application installer successfully runs, it should write
+`(HKCU or HKLM)\SOFTWARE\{Company}\Update\Clients\{AppID}` → `pv` to the version
+that was installed.
+
+### macOS
+
+On macOS, applications are most commonly distributed either by means of a PKG
+installer or a "drag-install" experience in a mountable DMG.
+
+Applications installing via a PKG installer should bundle and install
+{Company}Updater.pkg as part of their installation. Such an installation is
+always system-wide. The application should run a postinstall script registering
+itself with the updater by calling
+`/Library/Application Support/{Company}/{Company}Updater/Current/{Company}Updater.app/Contents/Helpers/{Company}SoftwareUpdater.bundle/Contents/Helpers/ksadmin -r -P product_id -v version -x path_to_application_bundle -S`.
+
+Applications installing via a DMG experience must set up the updater during
+first run. These applications should embed the updater in their app bundle as a
+["Helper"](https://developer.apple.com/documentation/bundleresources/placing_content_in_a_bundle),
+and install by running
+`{App Bundle}/Contents/Helpers/{Company}Updater.app/Contents/MacOS/{Company}Updater --install`.
+The application should then register itself with the updater by calling
+`~/Library/Application Support/{Company}/{Company}Updater/Current/{Company}Updater.app/Contents/Helpers/{Company}SoftwareUpdater.bundle/Contents/Helpers/ksadmin -r -P product_id -v version -x path_to_application_bundle -U`.
+
+If the app is running as root, it must add ` --system` to the install command
+above, use `-S` instead of `-U` in the ksadmin command, and use the ksadmin in
+`/Library` instead of `~/Library`.
+
+Additional [registration arguments](functional_spec#keystone-shims) are
+available to register additional data and provide alternative ways to track the
+version of a product.
+
+Repeating the updater installation and app registration is not harmful. To
+make the system more resilient, apps may periodically repeat the installation
+and registration process.
+
+## Uninstalling Applications and the Updater
+
+The updater will uninstall itself automatically when it has no applications to
+manage, but it may need some help to do so in a timely manner.
+
+On Windows, when an application is uninstalled, it should delete the 
+`(HKCU or HKLM)\SOFTWARE\{Company}\Update\Clients\{AppID}` key and then run
+the command line in
+`(HKCU or HKLM)\SOFTWARE\{Company}\Updater` → `UninstallCmdLine`. This will
+notify the updater of the uninstallation.
+
+On macOS, it is assumed that users uninstall software by deleting the app
+bundle. The updater will notice this on its own in a few hours. However, it
+can be notified earlier by running any
+`{Company}Updater.app/Contents/MacOS/{Company}Updater --wake-all` (with 
+`--system` for system-scope installs).
+
+## Additional Updater Command Lines
 
 Command line arguments for the updater client are documented in the [functional spec](functional_spec.md#Command-Line).
 
@@ -16,6 +120,8 @@ The updater setup process can exit with the following error codes:
 updater setup failed to elevate itself when trying to install a system app.
 
 ## Dynamic Install Parameters
+
+Windows tagged metainstallers support a number of dynamic install parameters:
 
 ### `needsadmin`
 
@@ -108,7 +214,10 @@ substituted at runtime.
 For more information, please see the
 [functional spec](functional_spec.md#Application-Commands).
 
-## Logging
+## Logging & Debugging
 
-The updater writes logs to its product directory. See
-[the functional spec](functional_spec.md#logging) for details.
+The updater writes logs to its product directory, whether or not it is
+installed. Note that there are two possible product directories (one for
+system scope and one for user scope), and so there are often two log files.
+
+See [the functional spec](functional_spec.md#logging) for more details.

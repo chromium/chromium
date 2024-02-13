@@ -235,7 +235,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kIbanEntry:
       return FillDataType::kSingleFieldFormFillerIban;
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAddressEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kAutofillOptions:
@@ -262,11 +261,13 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordEntry:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
     case PopupItemId::kScanCreditCard:
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
@@ -987,7 +988,9 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // Check if other suggestion sources should be queried. Manual fallbacks can't
   // trigger different suggestion types.
   const bool should_offer_other_suggestions =
-      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source);
+      suggestions.empty() && !IsAutofillManuallyTriggered(trigger_source) &&
+      trigger_source != AutofillSuggestionTriggerSource::
+                            kShowPromptAfterDialogClosedNonManualFallback;
 
   if (should_offer_other_suggestions &&
       (field.form_control_type == FormControlType::kTextArea ||
@@ -999,7 +1002,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   auto ShouldOfferSingleFieldFormFill = [&] {
-    if (!should_offer_other_suggestions) {
+    if (!suggestions.empty() || !should_offer_other_suggestions) {
       return false;
     }
 
@@ -1150,7 +1153,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     }
   }
 
-  form_filler_->FillOrPreviewDataModelForm(
+  form_filler_->FillOrPreviewForm(
       action_persistence, form, field, &credit_card_,
       /*cvc=*/std::nullopt, form_structure, autofill_field, trigger_details);
 }
@@ -1166,9 +1169,9 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewDataModelForm(
-      action_persistence, form, field, &profile,
-      /*cvc=*/std::nullopt, form_structure, autofill_field, trigger_details);
+  form_filler_->FillOrPreviewForm(action_persistence, form, field, &profile,
+                                  /*cvc=*/std::nullopt, form_structure,
+                                  autofill_field, trigger_details);
 }
 
 void BrowserAutofillManager::FillOrPreviewField(
@@ -1181,9 +1184,9 @@ void BrowserAutofillManager::FillOrPreviewField(
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   GetCachedFormAndField(form, field, &form_structure, &autofill_field);
-  form_filler_->FillOrPreviewFieldImpl(action_persistence, text_replacement,
-                                       form, field, form_structure,
-                                       autofill_field, value, popup_item_id);
+  form_filler_->FillOrPreviewField(action_persistence, text_replacement, form,
+                                   field, form_structure, autofill_field, value,
+                                   popup_item_id);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -1196,7 +1199,7 @@ void BrowserAutofillManager::UndoAutofill(
   }
   // This will apply the undo operation and return information about the
   // operation being undone, for metric purposes.
-  FillingProduct filling_product = form_filler_->UndoAutofillImpl(
+  FillingProduct filling_product = form_filler_->UndoAutofill(
       action_persistence, form, *form_structure, trigger_field);
 
   // The remaining logic is only relevant for filling.
@@ -1223,10 +1226,10 @@ void BrowserAutofillManager::FillCreditCardForm(
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
-  form_filler_->FillOrPreviewDataModelForm(
-      mojom::ActionPersistence::kFill, form, field, &credit_card, &cvc,
-      form_structure, autofill_field, trigger_details,
-      /*is_refill=*/false);
+  form_filler_->FillOrPreviewForm(mojom::ActionPersistence::kFill, form, field,
+                                  &credit_card, &cvc, form_structure,
+                                  autofill_field, trigger_details,
+                                  /*is_refill=*/false);
 }
 
 void BrowserAutofillManager::OnFocusNoLongerOnFormImpl(
@@ -1702,8 +1705,14 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     return;
   }
 
+  const PersonalDataManager* pdm = client().GetPersonalDataManager();
   FieldTypeSet non_empty_types;
-  client().GetPersonalDataManager()->GetNonEmptyTypes(&non_empty_types);
+  for (const AutofillProfile* profile : pdm->GetProfiles()) {
+    profile->GetNonEmptyTypes(app_locale_, &non_empty_types);
+  }
+  for (const CreditCard* card : pdm->GetCreditCards()) {
+    card->GetNonEmptyTypes(app_locale_, &non_empty_types);
+  }
   // As CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc_.empty() ||
       non_empty_types.contains(CREDIT_CARD_NUMBER)) {
@@ -2018,8 +2027,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
       form.fields.size() == form_structure->field_count()
           ? form_filler_->GetFieldFillingSkipReasons(
-                form, *form_structure, trigger_field,
-                trigger_autofill_field->section,
+                form, *form_structure, *trigger_autofill_field,
                 last_address_fields_to_fill_for_section
                     ? GetTargetServerFieldsForTypeAndLastTargetedFields(
                           *last_address_fields_to_fill_for_section,
@@ -2556,10 +2564,16 @@ std::optional<Suggestion> BrowserAutofillManager::MaybeGetPlusAddressSuggestion(
           client().IsOffTheRecord())) {
     return std::nullopt;
   }
+
+  const std::u16string normalized_field_value =
+      RemoveDiacriticsAndConvertToLowerCase(field.value);
   std::optional<std::string> maybe_address =
       plus_address_delegate->GetPlusAddress(
           client().GetLastCommittedPrimaryMainFrameOrigin());
   if (maybe_address == std::nullopt) {
+    if (!normalized_field_value.empty()) {
+      return std::nullopt;
+    }
     Suggestion create_plus_address_suggestion(
         plus_address_delegate->GetCreateSuggestionLabel(),
         PopupItemId::kCreateNewPlusAddress);
@@ -2572,8 +2586,7 @@ std::optional<Suggestion> BrowserAutofillManager::MaybeGetPlusAddressSuggestion(
 
   // Only suggest filling a plus address whose prefix matches the field's value.
   std::u16string address = base::UTF8ToUTF16(*maybe_address);
-  if (!address.starts_with(
-          RemoveDiacriticsAndConvertToLowerCase(field.value))) {
+  if (!address.starts_with(normalized_field_value)) {
     return std::nullopt;
   }
   Suggestion existing_plus_address_suggestion(

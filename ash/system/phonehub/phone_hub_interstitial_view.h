@@ -32,9 +32,9 @@ namespace ash {
 // image, text and buttons in a customized layout. It is reused by the
 // onboarding, loading, disconnected/reconnecting and error state UI.
 class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
- public:
-  METADATA_HEADER(PhoneHubInterstitialView);
+  METADATA_HEADER(PhoneHubInterstitialView, PhoneHubContentView)
 
+ public:
   explicit PhoneHubInterstitialView(bool show_progress, bool show_image = true);
   PhoneHubInterstitialView(const PhoneHubInterstitialView&) = delete;
   PhoneHubInterstitialView& operator=(const PhoneHubInterstitialView&) = delete;

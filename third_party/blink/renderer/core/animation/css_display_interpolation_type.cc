@@ -201,7 +201,8 @@ void CSSDisplayInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   // Display interpolation has been deferred to application time here due to
   // its non-linear behaviour.
-  double fraction = To<InterpolableNumber>(interpolable_value).Value();
+  double fraction = To<InterpolableNumber>(interpolable_value)
+                        .Value(state.CssToLengthConversionData());
   EDisplay display = To<CSSDisplayNonInterpolableValue>(non_interpolable_value)
                          ->Display(fraction);
   state.StyleBuilder().SetDisplay(display);

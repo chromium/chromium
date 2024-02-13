@@ -38,9 +38,9 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
                                        public AccessibilityObserver,
                                        public SessionObserver,
                                        public ui::InputMethodObserver {
- public:
-  METADATA_HEADER(DictationButtonTray);
+  METADATA_HEADER(DictationButtonTray, TrayBackgroundView)
 
+ public:
   DictationButtonTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
   DictationButtonTray(const DictationButtonTray&) = delete;
   DictationButtonTray& operator=(const DictationButtonTray&) = delete;

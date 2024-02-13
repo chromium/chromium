@@ -274,7 +274,7 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
 
 - (void)confirmationAlertPrimaryAction {
   NSInteger index = [self selectedRow];
-  [self.handler primaryButtonTapped:[_creditCardData[index] backendIdentifier]];
+  [self.handler primaryButtonTapped:_creditCardData[index]];
 
   if (_creditCardData.count > 1) {
     base::UmaHistogramCounts100("Autofill.TouchToFill.CreditCard.SelectedIndex",
@@ -557,7 +557,9 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
   // own is no longer a unique identifier, so we include the description.
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableVirtualCards)) {
-    cell.accessibilityIdentifier = [self accessibleCardNameAtRow:indexPath.row];
+    cell.accessibilityIdentifier =
+        [NSString stringWithFormat:@"%@ %@", cell.textLabel.text,
+                                   [self descriptionAtRow:indexPath.row]];
   } else {
     cell.accessibilityIdentifier = cell.textLabel.text;
   }

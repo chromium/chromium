@@ -159,7 +159,8 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
     std::unordered_map<base::UnguessableToken, size_t,
                        base::UnguessableTokenHash>
         id_to_num_details_map;
-    for (const auto* request : active_requests_) {
+    for (const FakePendingConnectionRequest<BleInitiatorFailureType>* request :
+         active_requests_) {
       id_to_num_details_map[request->GetRequestId()] =
           request->handled_failure_details().size();
     }
@@ -169,7 +170,8 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
 
     // Now, ensure that each active request had one additional failure detail
     // added, and verify that it was kAuthenticationError.
-    for (const auto* request : active_requests_) {
+    for (const FakePendingConnectionRequest<BleInitiatorFailureType>* request :
+         active_requests_) {
       EXPECT_EQ(id_to_num_details_map[request->GetRequestId()] + 1,
                 request->handled_failure_details().size());
       EXPECT_EQ(BleInitiatorFailureType::kAuthenticationError,
@@ -228,7 +230,8 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
   std::unique_ptr<FakeConnectionAttemptDelegate> fake_delegate_;
 
   std::unique_ptr<FakeAuthenticatedChannel> fake_authenticated_channel_;
-  std::set<FakePendingConnectionRequest<BleInitiatorFailureType>*>
+  std::set<raw_ptr<FakePendingConnectionRequest<BleInitiatorFailureType>,
+                   SetExperimental>>
       active_requests_;
   bool was_operation_canceled_in_tear_down_ = false;
 

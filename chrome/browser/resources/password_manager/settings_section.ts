@@ -40,6 +40,7 @@ export interface SettingsSectionElement {
     blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
     trustedVaultBanner: CrLinkRowElement,
+    accountStorageToggle: PrefToggleButtonElement,
   };
 }
 
@@ -47,6 +48,8 @@ const PASSWORD_MANAGER_ADD_SHORTCUT_ELEMENT_ID =
     'PasswordManagerUI::kAddShortcutElementId';
 const PASSWORD_MANAGER_ADD_SHORTCUT_CUSTOM_EVENT_ID =
     'PasswordManagerUI::kAddShortcutCustomEventId';
+export const PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID =
+    'PasswordManagerUI::kAccountStoreToggleElementId';
 
 const SettingsSectionElementBase = HelpBubbleMixin(RouteObserverMixin(
     PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))))));
@@ -192,6 +195,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
       this.hasPasskeys_ = hasPasskeys;
     });
     // </if>
+
+    const accountStorageToggleRoot = this.$.accountStorageToggle.shadowRoot;
+    this.registerHelpBubble(
+        PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID,
+        accountStorageToggleRoot!.querySelector('#control')!);
   }
 
   override disconnectedCallback() {
@@ -208,8 +216,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   override currentRouteChanged(route: Route): void {
-    const param = route.queryParameters.get(UrlParam.START_IMPORT) || '';
-    if (param === 'true') {
+    const triggerImportParam =
+        route.queryParameters.get(UrlParam.START_IMPORT) || '';
+    if (triggerImportParam === 'true') {
       const importer = this.shadowRoot!.querySelector('passwords-importer');
       assert(importer);
       importer.launchImport();

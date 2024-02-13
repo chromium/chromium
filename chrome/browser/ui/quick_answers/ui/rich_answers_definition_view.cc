@@ -185,7 +185,7 @@ void RichAnswersDefinitionView::MaybeAddSampleSentence(
     views::View* container_view,
     const Sense& sense,
     int label_width) {
-  if (!sense.sample_sentence.has_value()) {
+  if (!sense.sample_sentence) {
     return;
   }
 
@@ -198,7 +198,7 @@ void RichAnswersDefinitionView::MaybeAddSampleSentence(
 void RichAnswersDefinitionView::MaybeAddSynonyms(views::View* container_view,
                                                  const Sense& sense,
                                                  int label_width) {
-  if (!sense.synonyms_list.has_value()) {
+  if (!sense.synonyms_list) {
     return;
   }
 
@@ -232,7 +232,7 @@ void RichAnswersDefinitionView::MaybeAddSynonyms(views::View* container_view,
 }
 
 void RichAnswersDefinitionView::MaybeAddAdditionalDefinitions() {
-  if (!definition_result_.subsenses_list.has_value()) {
+  if (!definition_result_.subsenses_list) {
     return;
   }
 

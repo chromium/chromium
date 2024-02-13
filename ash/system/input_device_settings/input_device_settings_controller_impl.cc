@@ -1804,6 +1804,9 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
       rewriter->StartObservingMouse(duplicate_id,
                                     mouse->customization_restriction);
     }
+    for (auto& observer : observers_) {
+      observer.OnCustomizableMouseObservingStarted(*mouse);
+    }
     return;
   }
 
@@ -1830,6 +1833,10 @@ void InputDeviceSettingsControllerImpl::StopObservingButtons() {
           ->peripheral_customization_event_rewriter();
   CHECK(rewriter);
   rewriter->StopObserving();
+
+  for (auto& observer : observers_) {
+    observer.OnCustomizableMouseObservingStopped();
+  }
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(

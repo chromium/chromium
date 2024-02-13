@@ -375,9 +375,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   static Range* CreateRangeAdjustedToTreeScope(const TreeScope&,
                                                const Position&);
-  static CaretPosition* CreateCaretPositionAdjustedToTreeScope(
-      const TreeScope& tree_scope,
-      const Position& position);
+  static CaretPosition* CreateCaretPosition(const Position& position);
 
   static const Position PositionAdjustedToTreeScope(const TreeScope&,
                                                     const Position&);
@@ -612,6 +610,8 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetIsViewSource(bool is_view_source) {
     is_view_source_ = is_view_source;
   }
+
+  virtual bool IsJSONDocument() const { return false; }
 
   // WebXR DOM Overlay support, cf https://immersive-web.github.io/dom-overlays/
   // True if there's an ongoing "immersive-ar" WebXR session with a DOM Overlay
@@ -880,7 +880,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool WellFormed() const { return well_formed_; }
 
-  const DocumentToken& Token() const { return token_; }
+  const DocumentToken& Token() const {
+    if (!token_.has_value()) {
+      token_.emplace();
+    }
+    return token_.value();
+  }
 
   // Return the document URL, or an empty URL if it's unavailable.
   // This is not an implementation of web-exposed Document.prototype.URL.
@@ -2286,7 +2291,9 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ResizeObserver& GetLazyLoadedAutoSizedImgObserver();
 
-  const DocumentToken token_;
+  // Mutable because the token is lazily-generated on demand if no token is
+  // explicitly set.
+  mutable std::optional<DocumentToken> token_;
 
   // Bitfield used for tracking UKM sampling of media features such that each
   // media feature is sampled only once per document.

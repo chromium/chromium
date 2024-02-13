@@ -970,7 +970,7 @@ TEST_F(ButtonTest, AnchorHighlightSetsHiglight) {
 TEST_F(ButtonTest, AnchorHighlightDestructionClearsHighlight) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight =
+  std::optional<Button::ScopedAnchorHighlight> highlight =
       button()->AddAnchorHighlight();
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
 
@@ -981,9 +981,9 @@ TEST_F(ButtonTest, AnchorHighlightDestructionClearsHighlight) {
 TEST_F(ButtonTest, NestedAnchorHighlights) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight1 =
+  std::optional<Button::ScopedAnchorHighlight> highlight1 =
       button()->AddAnchorHighlight();
-  absl::optional<Button::ScopedAnchorHighlight> highlight2 =
+  std::optional<Button::ScopedAnchorHighlight> highlight2 =
       button()->AddAnchorHighlight();
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
@@ -998,9 +998,9 @@ TEST_F(ButtonTest, NestedAnchorHighlights) {
 TEST_F(ButtonTest, OverlappingAnchorHighlights) {
   TestInkDrop* ink_drop = CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight1 =
+  std::optional<Button::ScopedAnchorHighlight> highlight1 =
       button()->AddAnchorHighlight();
-  absl::optional<Button::ScopedAnchorHighlight> highlight2 =
+  std::optional<Button::ScopedAnchorHighlight> highlight2 =
       button()->AddAnchorHighlight();
 
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
@@ -1015,7 +1015,7 @@ TEST_F(ButtonTest, OverlappingAnchorHighlights) {
 TEST_F(ButtonTest, AnchorHighlightsCanOutliveButton) {
   CreateButtonWithInkDrop(false);
 
-  absl::optional<Button::ScopedAnchorHighlight> highlight =
+  std::optional<Button::ScopedAnchorHighlight> highlight =
       button()->AddAnchorHighlight();
 
   // Creating a new button will destroy the old one

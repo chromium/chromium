@@ -16,7 +16,7 @@ BioEnroller::BioEnroller(Delegate* delegate,
                          pin::TokenResponse token)
     : delegate_(delegate), authenticator_(authenticator), token_(token) {
   authenticator_->BioEnrollFingerprint(
-      token_, /*template_id=*/absl::nullopt,
+      token_, /*template_id=*/std::nullopt,
       base::BindOnce(&BioEnroller::OnEnrollResponse,
                      weak_factory_.GetWeakPtr()));
 }
@@ -37,14 +37,14 @@ void BioEnroller::FinishWithError(CtapDeviceResponseCode status) {
 }
 
 void BioEnroller::FinishSuccessfully(
-    absl::optional<std::vector<uint8_t>> template_id) {
+    std::optional<std::vector<uint8_t>> template_id) {
   state_ = State::kDone;
   delegate_->OnEnrollmentDone(std::move(template_id));
 }
 
 void BioEnroller::OnEnrollResponse(
     CtapDeviceResponseCode status,
-    absl::optional<BioEnrollmentResponse> response) {
+    std::optional<BioEnrollmentResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
   if (state_ == State::kCancelled) {
@@ -103,9 +103,9 @@ void BioEnroller::OnEnrollResponse(
 
 void BioEnroller::OnEnrollCancelled(
     CtapDeviceResponseCode status,
-    absl::optional<BioEnrollmentResponse> response) {
+    std::optional<BioEnrollmentResponse> response) {
   DCHECK_EQ(state_, State::kCancelled);
-  FinishSuccessfully(/*template_id=*/absl::nullopt);
+  FinishSuccessfully(/*template_id=*/std::nullopt);
 }
 
 }  // namespace device

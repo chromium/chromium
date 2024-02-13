@@ -79,7 +79,7 @@ const Suggestion kSuggestions[] = {
 };
 const Suggestion kExpandableSuggestions[] = {CreateSuggestionWithChildren(
     u"Address_entry",
-    {Suggestion(u"Username", PopupItemId::kUsernameEntry)})};
+    {Suggestion(u"Username", PopupItemId::kPasswordEntry)})};
 
 }  // namespace
 

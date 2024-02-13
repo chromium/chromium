@@ -275,7 +275,7 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
            item.Type() != InlineItem::kBidiControl);
 
     if (item.Type() == InlineItem::kControl ||
-        item_result.has_only_trailing_spaces) {
+        item_result.has_only_pre_wrap_trailing_spaces) {
       trailing_spaces_width += item_result.inline_size;
       continue;
     }
@@ -305,9 +305,8 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
         // not safe-to-break. We avoid reshaping in this case because the cost
         // is high and the difference is subtle for the purpose of this
         // function.
-        // TODO(kojii): This does not compute correctly for RTL. Need to re-work
-        // when we support UAX#9 L1.
         // TODO(kojii): Compute this without |CreateShapeResult|.
+        DCHECK_EQ(item.Direction(), BaseDirection());
         ShapeResult* shape_result =
             item_result.shape_result->CreateShapeResult();
         float end_position = shape_result->PositionForOffset(

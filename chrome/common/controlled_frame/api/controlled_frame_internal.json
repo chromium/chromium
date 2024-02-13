@@ -102,15 +102,15 @@
                 "description": "Whether this context menu item is enabled or disabled. Defaults to true."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the item has been created in the browser. If there were any problems creating the item, details will be available in $(ref:runtime.lastError).",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the item has been created in the browser. If there were any problems creating the item, details will be available in $(ref:runtime.lastError).",
+          "parameters": [],
+          "does_not_support_promises": "Synchronous return and callback crbug.com/1143032"
+        }
       }
     ]
   }

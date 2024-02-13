@@ -5,6 +5,8 @@
 #ifndef NET_NQE_SOCKET_WATCHER_H_
 #define NET_NQE_SOCKET_WATCHER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,7 +17,6 @@
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -32,7 +33,7 @@ namespace {
 typedef base::RepeatingCallback<void(
     SocketPerformanceWatcherFactory::Protocol protocol,
     const base::TimeDelta& rtt,
-    const absl::optional<nqe::internal::IPHash>& host)>
+    const std::optional<nqe::internal::IPHash>& host)>
     OnUpdatedRTTAvailableCallback;
 
 typedef base::RepeatingCallback<bool(base::TimeTicks)> ShouldNotifyRTTCallback;
@@ -111,7 +112,7 @@ class NET_EXPORT_PRIVATE SocketWatcher : public SocketPerformanceWatcher {
   bool first_quic_rtt_notification_received_ = false;
 
   // A unique identifier for the remote host that this socket connects to.
-  const absl::optional<IPHash> host_;
+  const std::optional<IPHash> host_;
 };
 
 }  // namespace nqe::internal

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/location.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -98,11 +97,6 @@ bool IsPaymentsAutofillManuallyTriggered(
 // the Chrome context menu.
 bool IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
-
-// TODO(crbug.com/1522705): Remove.
-void DumpWithoutCrashingForDuplicateIds(
-    const FormData& form,
-    const base::Location& location = FROM_HERE);
 
 }  // namespace autofill
 

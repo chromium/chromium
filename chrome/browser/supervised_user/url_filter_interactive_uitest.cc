@@ -13,6 +13,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_live_test.h"
 #include "chrome/test/supervised_user/family_member.h"
+#include "chrome/test/supervised_user/test_state_seeded_observer.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,12 +27,14 @@ static constexpr std::string_view kPermissionRequestUrl =
 
 // TODO(b/303401498): Use dedicated RPCs in supervised user e2e desktop tests
 // instead of clicking around the pages.
+// All tests in this unit are subject to flakiness because they interact with a
+// system that can be externally modified during execution.
 class UrlFilterUiTest
-    : public InteractiveBrowserTestT<FamilyLiveTest>,
+    : public InteractiveFamilyLiveTest,
       public testing::WithParamInterface<supervised_user::FamilyIdentifier> {
  public:
   UrlFilterUiTest()
-      : InteractiveBrowserTestT<FamilyLiveTest>(
+      : InteractiveFamilyLiveTest(
             /*family_identifier=*/GetParam(),
             /*extra_enabled_hosts=*/std::vector<std::string>(
                 {"example.com", "www.pornhub.com"})) {}
@@ -60,42 +63,6 @@ class UrlFilterUiTest
           }
         )js"),
                  WaitForStateChange(kParentTab, all_url_filters_removed));
-  }
-
-  auto ParentAddsUrlToControlList(ui::ElementIdentifier kParentTab,
-                                  std::string_view url) {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kNewUrlPopupOpened);
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kNewUrlIsBlocked);
-
-    StateChange add_new_url_popup_visible;
-    add_new_url_popup_visible.type = StateChange::Type::kExists;
-    add_new_url_popup_visible.where = {"div[role='dialog']"};
-    add_new_url_popup_visible.event = kNewUrlPopupOpened;
-
-    StateChange new_url_is_blocked;
-    new_url_is_blocked.type = StateChange::Type::kExists;
-    new_url_is_blocked.where = {
-        base::StringPrintf("#view_container li[aria-label='%s']", url.data())};
-    new_url_is_blocked.event = kNewUrlIsBlocked;
-
-    return Steps(ExecuteJsAt(kParentTab, {"#view_container"}, R"js(
-          view_container => {
-            const buttons = view_container.querySelectorAll("div[role='button']");
-            buttons[buttons.length - 1].click();
-          }
-        )js"),
-                 WaitForStateChange(kParentTab, add_new_url_popup_visible),
-
-                 ExecuteJsAt(kParentTab, {"div[role='dialog']"},
-                             base::StringPrintf(R"js(
-          dialog => {
-            const submitButtonIndex = 9;
-            dialog.querySelector("input").value = "%s";
-            dialog.querySelectorAll("div[role='button'] span")[submitButtonIndex].click();
-          }
-        )js",
-                                                url.data())),
-                 WaitForStateChange(kParentTab, new_url_is_blocked));
   }
 
   StateChange RemoteApprovalButtonAppeared() {
@@ -169,82 +136,87 @@ class UrlFilterUiTest
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentBlocksPage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
+                                      kSetSafeSitesStateObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
+                                      kDefineStateObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
+                                      kResetStateObserver);
 
   TurnOnSyncFor(head_of_household());
   TurnOnSyncFor(child());
 
+  // Reset test state.
+  RunTestSequence(ResetChromeTestState(kResetStateObserver));
+  // Set to SAFE_SITES behaviour.
+  RunTestSequence(DefineChromeTestState(kSetSafeSitesStateObserver, {}, {}));
+
   // Child activity is happening in this tab.
   int tab_index = 0;
+  GURL all_audiences_site_url(GetRoutedUrl("https://example.com"));
 
+  // At this point, it's the blocklist control page that stays open.
   RunTestSequence(
-      InstrumentTab(kParentControlsTab, /*tab_index=*/0,
-                    /*in_browser=*/head_of_household().browser()),
-
-      // Clear all existing filters.
-      ParentOpensControlListPage(
-          kParentControlsTab, head_of_household().GetAllowListUrlFor(child())),
-      ParentRemovesUrlsFromControlList(kParentControlsTab),
-
-      ParentOpensControlListPage(
-          kParentControlsTab, head_of_household().GetBlockListUrlFor(child())),
-      ParentRemovesUrlsFromControlList(kParentControlsTab),
-
-      // At this point, it's the blocklist control page that stays open.
-
       // Supervised user navigates to any page.
       InstrumentTab(kChildElementId, tab_index, child().browser()),
-      NavigateWebContents(kChildElementId, GetRoutedUrl("https://example.com")),
+      NavigateWebContents(kChildElementId, all_audiences_site_url),
       WaitForStateChange(kChildElementId,
                          PageWithMatchingTitle("Example Domain")),
-
       // Supervisor blocks that page and supervised user sees interstitial
       // blocked page screen.
-      ParentAddsUrlToControlList(kParentControlsTab, "example.com"),
+      DefineChromeTestState(kDefineStateObserver,
+                            /*allowed_urls=*/{},
+                            /*blocked_urls=*/{all_audiences_site_url}),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()));
+}
+
+// Sanity test, if it fails it means that resetting the test state is not
+// functioning properly.
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ClearFamilyLinkSettings) {
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver, kObserver);
+
+  TurnOnSyncFor(head_of_household());
+  TurnOnSyncFor(child());
+
+  // Clear all existing filters.
+  RunTestSequence(ResetChromeTestState(kObserver));
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest, ParentAllowsPageBlockedBySafeSites) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
+                                      kDefineStateObserver);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
+                                      kResetStateObserver);
 
   TurnOnSyncFor(head_of_household());
   TurnOnSyncFor(child());
 
+  RunTestSequence(ResetChromeTestState(kResetStateObserver));
+
   // Child activity is happening in this tab.
   int tab_index = 0;
+  GURL mature_site_url(GetRoutedUrl("https://www.pornhub.com"));
 
   RunTestSequence(
-      InstrumentTab(kParentControlsTab, /*tab_index=*/0,
-                    /*in_browser=*/head_of_household().browser()),
-
-      // Clear all existing filters.
-      ParentOpensControlListPage(
-          kParentControlsTab, head_of_household().GetBlockListUrlFor(child())),
-      ParentRemovesUrlsFromControlList(kParentControlsTab),
-
-      ParentOpensControlListPage(
-          kParentControlsTab, head_of_household().GetAllowListUrlFor(child())),
-      ParentRemovesUrlsFromControlList(kParentControlsTab),
-
-      // At this point, it's the allowlist control page that stays open.
-
       // Supervised user navigates to inappropriate page and is blocked.
       InstrumentTab(kChildElementId, tab_index, child().browser()),
-      NavigateWebContents(kChildElementId,
-                          GetRoutedUrl("https://www.pornhub.com")),
+      NavigateWebContents(kChildElementId, mature_site_url),
       WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
 
       // Supervisor allows that page and supervised user consumes content.
-      ParentAddsUrlToControlList(kParentControlsTab, "www.pornhub.com"),
+      DefineChromeTestState(kDefineStateObserver,
+                            /*allowed_urls=*/{mature_site_url},
+                            /*blocked_urls=*/{}),
       WaitForStateChange(kChildElementId, PageWithMatchingTitle("Pornhub")));
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
                        ParentAprovesPermissionRequestForBlockedSite) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentControlsTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParentApprovalTab);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChromeTestStateObserver,
+                                      kResetStateObserver);
 
   TurnOnSyncFor(head_of_household());
   TurnOnSyncFor(child());
@@ -253,21 +225,9 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
   int child_tab_index = 0;
   int parent_tab_index = 0;
 
+  RunTestSequence(ResetChromeTestState(kResetStateObserver));
+
   RunTestSequence(
-      InstrumentTab(kParentControlsTab, parent_tab_index,
-                    /*in_browser=*/head_of_household().browser()),
-
-      // Clear all existing filters.
-      ParentOpensControlListPage(
-          kParentControlsTab, head_of_household().GetBlockListUrlFor(child())),
-      ParentRemovesUrlsFromControlList(kParentControlsTab),
-
-      ParentOpensControlListPage(
-          kParentControlsTab, head_of_household().GetAllowListUrlFor(child())),
-      ParentRemovesUrlsFromControlList(kParentControlsTab),
-
-      // At this point, it's the allowlist control page that stays open.
-
       // Supervised user navigates to inappropriate page and is blocked, and
       // makes approval request.
       InstrumentTab(kChildElementId, child_tab_index, child().browser()),

@@ -144,17 +144,6 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-    AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUser(account_id);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
-  }
-
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
     auto* user = user_manager()->FindUserAndModify(
@@ -175,7 +164,11 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     base::StatisticsRecorder::ForgetHistogramForTesting(
         GetStatisticName("CommitDeviation2", category));
     base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("PresentDeviation2", category));
+    base::StatisticsRecorder::ForgetHistogramForTesting(
         GetStatisticName("RenderQuality2", category));
+    base::StatisticsRecorder::ForgetHistogramForTesting(
+        GetStatisticName("JanksPerMinute2", category));
   }
 
   // Ensures that tracing is ready to begin, which means up to the point that
@@ -388,8 +381,11 @@ TEST_F(ArcAppPerformanceTracingTest, StatisticsReported) {
   tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
   tracing_helper().FireTimerForTesting();
   EXPECT_EQ(45L, ReadFocusStatistics("FPS2"));
+  EXPECT_EQ(48L, ReadFocusStatistics("PerceivedFPS2"));
   EXPECT_EQ(216L, ReadFocusStatistics("CommitDeviation2"));
+  EXPECT_EQ(216L, ReadFocusStatistics("PresentDeviation2"));
   EXPECT_EQ(48L, ReadFocusStatistics("RenderQuality2"));
+  EXPECT_EQ(0L, ReadFocusStatistics("JanksPerMinute2"));
   arc_widget->Close();
 
   arc_widget = PrepareArcFocusAppTracing();
@@ -429,8 +425,11 @@ TEST_F(ArcAppPerformanceTracingTest, ApplicationStatisticsReported) {
     tracing_helper().PlayDefaultSequence(shell_root_surface_.get());
     tracing_helper().FireTimerForTesting();
     EXPECT_EQ(45L, ReadStatistics("FPS2", application.name));
+    EXPECT_EQ(48L, ReadStatistics("PerceivedFPS2", application.name));
     EXPECT_EQ(216L, ReadStatistics("CommitDeviation2", application.name));
+    EXPECT_EQ(216L, ReadStatistics("PresentDeviation2", application.name));
     EXPECT_EQ(48L, ReadStatistics("RenderQuality2", application.name));
+    EXPECT_EQ(0L, ReadStatistics("JanksPerMinute2", application.name));
     arc_widget->Close();
   }
 }

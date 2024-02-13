@@ -510,7 +510,7 @@ bool SimpleIndex::InsertInEntrySet(
     const disk_cache::EntryMetadata& entry_metadata,
     EntrySet* entry_set) {
   DCHECK(entry_set);
-  auto result = entry_set->insert(std::make_pair(entry_hash, entry_metadata));
+  auto result = entry_set->emplace(entry_hash, entry_metadata);
   return result.second;
 }
 

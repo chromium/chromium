@@ -448,6 +448,8 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   chrome_extensions_renderer_client->RenderThreadStarted();
   WebSecurityPolicy::RegisterURLSchemeAsExtension(
       WebString::FromASCII(extensions::kExtensionScheme));
+  WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
+      WebString::FromASCII(extensions::kExtensionScheme));
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

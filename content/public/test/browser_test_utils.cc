@@ -22,6 +22,7 @@
 #include "base/process/kill.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -111,6 +112,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
@@ -134,6 +136,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/latency/latency_info.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1246,52 +1249,86 @@ void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point) {
   rwhva->OnGestureEvent(&long_tap);
 }
 
-class BoundingBoxUpdateWaiterImpl : public TextInputManager::Observer {
+// Observer which waits for the selection bounds in a RenderWidgetHostViewAura
+// to meet some desired conditions.
+class SelectionBoundsWaiter : public TextInputManager::Observer {
  public:
-  explicit BoundingBoxUpdateWaiterImpl(RenderWidgetHostViewAura* rwhva)
-      : text_input_manager_(rwhva->GetTextInputManager()),
-        original_bounding_box_(rwhva->GetSelectionBoundingBox()),
-        rwhva_(rwhva) {
-    text_input_manager_->AddObserver(this);
+  using Predicate = base::RepeatingCallback<bool()>;
+
+  SelectionBoundsWaiter(RenderWidgetHostViewAura* rwhva, Predicate predicate)
+      : predicate_(std::move(predicate)) {
+    text_input_manager_observation_.Observe(rwhva->GetTextInputManager());
   }
-  BoundingBoxUpdateWaiterImpl(const BoundingBoxUpdateWaiterImpl&) = delete;
-  BoundingBoxUpdateWaiterImpl& operator=(const BoundingBoxUpdateWaiterImpl&) =
-      delete;
-  virtual ~BoundingBoxUpdateWaiterImpl() {
-    text_input_manager_->RemoveObserver(this);
+  SelectionBoundsWaiter(const SelectionBoundsWaiter&) = delete;
+  SelectionBoundsWaiter& operator=(const SelectionBoundsWaiter&) = delete;
+  virtual ~SelectionBoundsWaiter() = default;
+
+  // TextInputManager::Observer:
+  void OnSelectionBoundsChanged(
+      TextInputManager* text_input_manager,
+      RenderWidgetHostViewBase* updated_view) override {
+    if (predicate_.Run()) {
+      run_loop_.Quit();
+    }
   }
 
   void Wait() { run_loop_.Run(); }
 
  private:
-  // TextInputManager::Observer:
-  void OnSelectionBoundsChanged(
-      TextInputManager* text_input_manager,
-      RenderWidgetHostViewBase* updated_view) override {
-    if (rwhva_->GetSelectionBoundingBox() == original_bounding_box_) {
-      return;
-    }
-
-    run_loop_.Quit();
-  }
-
-  const raw_ptr<TextInputManager> text_input_manager_;
-  const gfx::Rect original_bounding_box_;
-  const raw_ptr<RenderWidgetHostViewAura> rwhva_;
-
   base::RunLoop run_loop_;
+  Predicate predicate_;
+  base::ScopedObservation<TextInputManager, TextInputManager::Observer>
+      text_input_manager_observation_{this};
 };
 
-BoundingBoxUpdateWaiter::BoundingBoxUpdateWaiter(WebContents* web_contents) {
-  impl_ = std::make_unique<BoundingBoxUpdateWaiterImpl>(
+NonZeroCaretSizeWaiter::NonZeroCaretSizeWaiter(WebContents* web_contents) {
+  RenderWidgetHostViewAura* rwhva =
       static_cast<content::RenderWidgetHostViewAura*>(
-          web_contents->GetRenderWidgetHostView()));
+          web_contents->GetRenderWidgetHostView());
+  selection_bounds_waiter_ = std::make_unique<SelectionBoundsWaiter>(
+      rwhva, base::BindLambdaForTesting([rwhva]() {
+        return !rwhva->GetCaretBounds().size().IsZero();
+      }));
+}
+
+NonZeroCaretSizeWaiter::~NonZeroCaretSizeWaiter() = default;
+
+void NonZeroCaretSizeWaiter::Wait() {
+  selection_bounds_waiter_->Wait();
+}
+
+CaretBoundsUpdateWaiter::CaretBoundsUpdateWaiter(WebContents* web_contents) {
+  RenderWidgetHostViewAura* rwhva =
+      static_cast<content::RenderWidgetHostViewAura*>(
+          web_contents->GetRenderWidgetHostView());
+  const gfx::Rect current_caret_bounds = rwhva->GetCaretBounds();
+  selection_bounds_waiter_ = std::make_unique<SelectionBoundsWaiter>(
+      rwhva, base::BindLambdaForTesting([rwhva, current_caret_bounds]() {
+        return rwhva->GetCaretBounds() != current_caret_bounds;
+      }));
+}
+
+CaretBoundsUpdateWaiter::~CaretBoundsUpdateWaiter() = default;
+
+void CaretBoundsUpdateWaiter::Wait() {
+  selection_bounds_waiter_->Wait();
+}
+
+BoundingBoxUpdateWaiter::BoundingBoxUpdateWaiter(WebContents* web_contents) {
+  RenderWidgetHostViewAura* rwhva =
+      static_cast<content::RenderWidgetHostViewAura*>(
+          web_contents->GetRenderWidgetHostView());
+  const gfx::Rect current_bounding_box = rwhva->GetSelectionBoundingBox();
+  selection_bounds_waiter_ = std::make_unique<SelectionBoundsWaiter>(
+      rwhva, base::BindLambdaForTesting([rwhva, current_bounding_box]() {
+        return rwhva->GetSelectionBoundingBox() != current_bounding_box;
+      }));
 }
 
 BoundingBoxUpdateWaiter::~BoundingBoxUpdateWaiter() = default;
 
 void BoundingBoxUpdateWaiter::Wait() {
-  impl_->Wait();
+  selection_bounds_waiter_->Wait();
 }
 #endif
 
@@ -4293,16 +4330,23 @@ void CookieChangeObserver::Wait() {
 void CookieChangeObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  OnCookieAccessed();
+  OnCookieAccessed(details);
 }
 
 void CookieChangeObserver::OnCookiesAccessed(
     content::NavigationHandle* navigation,
     const content::CookieAccessDetails& details) {
-  OnCookieAccessed();
+  OnCookieAccessed(details);
 }
 
-void CookieChangeObserver::OnCookieAccessed() {
+void CookieChangeObserver::OnCookieAccessed(
+    const content::CookieAccessDetails& details) {
+  if (details.type == CookieAccessDetails::Type::kRead) {
+    num_read_seen_++;
+  } else if (details.type == CookieAccessDetails::Type::kChange) {
+    num_write_seen_++;
+  }
+
   if (++num_seen_ == num_expected_calls_) {
     run_loop_.Quit();
   }

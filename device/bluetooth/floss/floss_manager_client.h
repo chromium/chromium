@@ -161,7 +161,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   void SetFlossEnabled(bool enable,
                        int retry,
                        int retry_wait_ms,
-                       absl::optional<ResponseCallback<bool>> cb);
+                       std::optional<ResponseCallback<bool>> cb);
 
   // Make actual D-Bus call to retrieve Floss API version from daemon.
   void DoGetFlossApiVersion();

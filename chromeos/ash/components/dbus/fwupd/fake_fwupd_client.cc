@@ -5,6 +5,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
@@ -18,7 +20,11 @@ const char kFakeDeviceIdForTesting[] = "0123";
 namespace ash {
 
 FakeFwupdClient::FakeFwupdClient() = default;
-FakeFwupdClient::~FakeFwupdClient() = default;
+FakeFwupdClient::~FakeFwupdClient() {
+  if (temp_directory_.IsValid()) {
+    CHECK(temp_directory_.Delete());
+  }
+}
 void FakeFwupdClient::Init(dbus::Bus* bus) {}
 
 void FakeFwupdClient::RequestDevices() {
@@ -43,8 +49,10 @@ void FakeFwupdClient::RequestUpdates(const std::string& device_id) {
   // Add a fake update.
   updates.emplace_back(
       /*version=*/"1.2.3", /*description=*/"Fake update description.",
-      /*priority=*/1, /*filepath=*/base::FilePath("/fake/filepath"),
-      /*checksum=*/"fake-checksum");
+      /*priority=*/1,
+      /*filepath=*/CreateUpdateFilePath(),
+      /*checksum=*/
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
 
   for (auto& observer : observers_)
     observer.OnUpdateListResponse(device_id, &updates);
@@ -58,11 +66,32 @@ void FakeFwupdClient::InstallUpdate(const std::string& device_id,
   if (device_id != kFakeDeviceIdForTesting)
     return;
 
-  for (auto& observer : observers_)
-    observer.OnInstallResponse(install_success_);
+  for (auto& observer : observers_) {
+    observer.OnInstallResponse(/*success=*/true);
+  }
 }
 
 // Implement stub method to satisfy interface.
 void FakeFwupdClient::SetFwupdFeatureFlags() {}
+
+base::FilePath FakeFwupdClient::CreateUpdateFilePath() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  if (!temp_directory_.IsValid()) {
+    CHECK(temp_directory_.CreateUniqueTempDir());
+  }
+
+  const std::string fake_update_filename =
+      base::StrCat({kFakeDeviceIdForTesting, ".cab"});
+
+  // Create the file into the temp directory.
+  base::FilePath full_path_to_fake_update =
+      temp_directory_.GetPath().Append(fake_update_filename);
+  // Write an empty file, since the contents of the cab file are not processed
+  // upstream.
+  base::WriteFile(full_path_to_fake_update, "");
+  base::FilePath fake_update_file_with_URI(
+      base::StrCat({"file://", full_path_to_fake_update.value()}));
+  return fake_update_file_with_URI;
+}
 
 }  // namespace ash

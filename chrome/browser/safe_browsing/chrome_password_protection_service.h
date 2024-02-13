@@ -577,7 +577,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   std::string sync_password_hash_;
   base::ObserverList<Observer>::Unchecked observer_list_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  std::set<content::WebContents*>
+  std::set<raw_ptr<content::WebContents, SetExperimental>>
       web_contents_with_unhandled_enterprise_reuses_;
 
   // Subscription for state changes. When the callback is notified, it means

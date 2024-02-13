@@ -137,9 +137,8 @@ public class ContextualSearchInstrumentationBase {
                     () -> activity.getLastUserInteractionTime(),
                     activity.getEdgeToEdgeControllerSupplierForTesting());
             setSelectionController(new MockCSSelectionController(activity, this));
-            WebContents webContents =
-                    WebContentsFactory.createWebContents(
-                            Profile.getLastUsedRegularProfile(), false, false);
+            Profile profile = Profile.getLastUsedRegularProfile();
+            WebContents webContents = WebContentsFactory.createWebContents(profile, false, false);
             ContentView cv =
                     ContentView.createContentView(
                             activity, /* eventOffsetHandler= */ null, webContents);
@@ -152,10 +151,18 @@ public class ContextualSearchInstrumentationBase {
             SelectionPopupController selectionPopupController =
                     WebContentsUtils.createSelectionPopupController(webContents);
             selectionPopupController.setSelectionClient(this.getContextualSearchSelectionClient());
+
+            // TODO: The ContextualSearchInternalStateController created by the super constructor
+            // holds onto the originally created policy. This results in the originally created
+            // policy and the new policy to be used for different purposes in the underlying
+            // ContextualSearchManager. Updating the InternalStateController to the new policy
+            // breaks the tests relying on this mismatch.
+            getContextualSearchPolicy().setProfile(profile);
+
             MockContextualSearchPolicy policy =
                     new MockContextualSearchPolicy(getSelectionController());
+            policy.setProfile(profile);
             setContextualSearchPolicy(policy);
-            getSelectionController().setPolicy(policy);
         }
 
         @Override
@@ -390,7 +397,6 @@ public class ContextualSearchInstrumentationBase {
         mSelectionController = mManager.getSelectionController();
         mPolicy = mManager.getContextualSearchPolicy();
         mPolicy.overrideDecidedStateForTesting(true);
-        mSelectionController.setPolicy(mPolicy);
 
         mFakeServer =
                 new ContextualSearchFakeServer(

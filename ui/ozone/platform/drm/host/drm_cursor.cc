@@ -40,7 +40,7 @@ class NullProxy : public DrmCursorProxy {
 
   void CursorSet(gfx::AcceleratedWidget window,
                  const std::vector<SkBitmap>& bitmaps,
-                 const absl::optional<gfx::Point>& point,
+                 const std::optional<gfx::Point>& point,
                  base::TimeDelta frame_delay) override {}
   void Move(gfx::AcceleratedWidget window, const gfx::Point& point) override {}
   void InitializeOnEvdevIfNecessary() override {}
@@ -288,7 +288,7 @@ void DrmCursor::SendCursorShowLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
 }
 
 void DrmCursor::SendCursorHideLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-  CursorSetLockTested(window_, std::vector<SkBitmap>(), absl::nullopt,
+  CursorSetLockTested(window_, std::vector<SkBitmap>(), std::nullopt,
                       base::TimeDelta());
 }
 
@@ -302,7 +302,7 @@ void DrmCursor::SendCursorMoveLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_) {
 // Lock-testing helpers.
 void DrmCursor::CursorSetLockTested(gfx::AcceleratedWidget window,
                                     const std::vector<SkBitmap>& bitmaps,
-                                    const absl::optional<gfx::Point>& point,
+                                    const std::optional<gfx::Point>& point,
                                     base::TimeDelta frame_delay) {
   lock_.AssertAcquired();
   proxy_->CursorSet(window, bitmaps, point, frame_delay);

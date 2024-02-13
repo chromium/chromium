@@ -45,6 +45,8 @@ namespace history {
 
 namespace {
 
+const std::string kTestAppId = "org.chromium.dino";
+
 base::Time PretendNow() {
   static constexpr base::Time::Exploded kReferenceTime = {.year = 2015,
                                                           .month = 1,
@@ -80,7 +82,10 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
  protected:
   // Called by individual tests when they want data populated.
-  void AddExampleData(URLID url_ids[3], base::Time visit_times[4]);
+  void AddExampleData(URLID url_ids[3],
+                      base::Time visit_times[4],
+                      bool set_app_id = false);
+
   // Add visits with source information.
   void AddExampleSourceData(const GURL& url, URLID* id);
 
@@ -219,9 +224,11 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 // second visit for the middle URL is typed.
 //
 // The IDs of the added URLs, and the times of the four added visits will be
-// added to the given arrays.
+// added to the given arrays. If set_app_id is true, set the app_id to the
+// 2nd/3rd row for testing.
 void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
-                                       base::Time visit_times[4]) {
+                                       base::Time visit_times[4],
+                                       bool set_app_id) {
   if (!main_db_)
     return;
 
@@ -267,6 +274,9 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   VisitRow visit_row2;
   visit_row2.url_id = url_ids[1];
   visit_row2.visit_time = visit_times[1];
+  if (set_app_id) {
+    visit_row2.app_id = kTestAppId;
+  }
   main_db_->AddVisit(&visit_row2, SOURCE_BROWSED);
 
   VisitRow visit_row3;
@@ -274,6 +284,9 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   visit_row3.visit_time = visit_times[2];
   visit_row3.transition = ui::PAGE_TRANSITION_TYPED;
   visit_row3.incremented_omnibox_typed_score = true;
+  if (set_app_id) {
+    visit_row3.app_id = kTestAppId;
+  }
   main_db_->AddVisit(&visit_row3, SOURCE_BROWSED);
 
   VisitRow visit_row4;
@@ -638,7 +651,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarred) {
 
   // This should delete the last two visits.
   std::set<GURL> restrict_urls;
-  expirer_.ExpireHistoryBetween(restrict_urls, visit_times[2], base::Time(),
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[2],
+                                base::Time(),
                                 /*user_initiated*/ true);
   EXPECT_EQ(GetLastDeletionInfo()->time_range().begin(), visit_times[2]);
   EXPECT_EQ(GetLastDeletionInfo()->time_range().end(), base::Time());
@@ -694,7 +708,8 @@ TEST_F(ExpireHistoryTest, FlushURLsUnstarredBetweenTwoTimestamps) {
 
   // This should delete the two visits of the url_ids[1].
   std::set<GURL> restrict_urls;
-  expirer_.ExpireHistoryBetween(restrict_urls, visit_times[1], visit_times[3],
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[1],
+                                visit_times[3],
                                 /*user_initiated*/ true);
 
   main_db_->GetVisitsForURL(url_ids[0], &visits);
@@ -739,8 +754,9 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredWithMaxTime) {
   // Use base::Time::Max() instead of base::Time().
   // This should delete the last two visits.
   std::set<GURL> restrict_urls;
-  expirer_.ExpireHistoryBetween(restrict_urls, visit_times[2],
-                                base::Time::Max(), /*user_initiated*/ true);
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[2],
+                                base::Time::Max(),
+                                /*user_initiated*/ true);
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -770,6 +786,55 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredWithMaxTime) {
   EXPECT_FALSE(HasFavicon(favicon_id2));
 }
 
+// Expires all URLs with a given app ID, more recent than a given time, with no
+// starred items.
+TEST_F(ExpireHistoryTest, FlushRecentURLsWithAppIdUnstarredWithMaxTime) {
+  URLID url_ids[3];
+  base::Time visit_times[4];
+  AddExampleData(url_ids, visit_times, /*set_app_id=*/true);
+
+  URLRow url_row1, url_row2;
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[1], &url_row1));
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[2], &url_row2));
+
+  VisitVector visits;
+  main_db_->GetVisitsForURL(url_ids[2], &visits);
+  ASSERT_EQ(1U, visits.size());
+
+  // Use base::Time::Max() instead of base::Time().
+  // This should delete the 2nd visit (one with app id) of the last two visits.
+  std::set<GURL> restrict_urls;
+  expirer_.ExpireHistoryBetween(restrict_urls, kTestAppId, visit_times[2],
+                                base::Time::Max(),
+                                /*user_initiated*/ true);
+
+  // Verify that the middle URL had its last visit deleted only.
+  visits.clear();
+  main_db_->GetVisitsForURL(url_ids[1], &visits);
+  EXPECT_EQ(1U, visits.size());
+
+  // Verify that the middle URL visit time and visit counts were updated.
+  EXPECT_TRUE(ModifiedNotificationSentDueToUserAction(url_row1.url()));
+  URLRow temp_row;
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[1], &temp_row));
+  EXPECT_TRUE(visit_times[2] == url_row1.last_visit());  // Previous value.
+  EXPECT_TRUE(visit_times[1] == temp_row.last_visit());  // New value.
+  EXPECT_EQ(2, url_row1.visit_count());
+  EXPECT_EQ(1, temp_row.visit_count());
+  EXPECT_EQ(1, url_row1.typed_count());
+  EXPECT_EQ(0, temp_row.typed_count());
+
+  // Verify that the middle URL's favicon is still there.
+  favicon_base::FaviconID favicon_id =
+      GetFavicon(url_row1.url(), favicon_base::IconType::kFavicon);
+  EXPECT_TRUE(HasFavicon(favicon_id));
+
+  // Verify that the last URL's favicon is still there.
+  favicon_base::FaviconID favicon_id2 =
+      GetFavicon(url_row2.url(), favicon_base::IconType::kFavicon);
+  EXPECT_TRUE(HasFavicon(favicon_id2));
+}
+
 // Expires all URLs with no starred items.
 TEST_F(ExpireHistoryTest, FlushAllURLsUnstarred) {
   URLID url_ids[3];
@@ -786,7 +851,8 @@ TEST_F(ExpireHistoryTest, FlushAllURLsUnstarred) {
 
   // This should delete all URL visits.
   std::set<GURL> restrict_urls;
-  expirer_.ExpireHistoryBetween(restrict_urls, base::Time(), base::Time::Max(),
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, base::Time(),
+                                base::Time::Max(),
                                 /*user_initiated*/ true);
 
   // Verify that all URL visits deleted.
@@ -877,7 +943,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredRestricted) {
 
   // This should delete the last two visits.
   std::set<GURL> restrict_urls = {url_row1.url()};
-  expirer_.ExpireHistoryBetween(restrict_urls, visit_times[2], base::Time(),
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[2],
+                                base::Time(),
                                 /*user_initiated*/ true);
   EXPECT_EQ(GetLastDeletionInfo()->time_range().begin(), visit_times[2]);
   EXPECT_EQ(GetLastDeletionInfo()->time_range().end(), base::Time());
@@ -928,7 +995,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsStarred) {
 
   // This should delete the last two visits.
   std::set<GURL> restrict_urls;
-  expirer_.ExpireHistoryBetween(restrict_urls, visit_times[2], base::Time(),
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[2],
+                                base::Time(),
                                 /*user_initiated*/ true);
 
   // The URL rows should still exist.
@@ -962,13 +1030,15 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPropagatesUserInitiated) {
   AddExampleData(url_ids, visit_times);
   std::set<GURL> restrict_urls;
 
-  expirer_.ExpireHistoryBetween(restrict_urls, visit_times[3], base::Time(),
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[3],
+                                base::Time(),
                                 /*user_initiated*/ true);
   EXPECT_FALSE(GetLastDeletionInfo()->is_from_expiration());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
 
-  expirer_.ExpireHistoryBetween(restrict_urls, visit_times[1], base::Time(),
+  expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[1],
+                                base::Time(),
                                 /*user_initiated*/ false);
   EXPECT_TRUE(GetLastDeletionInfo()->is_from_expiration());
   EXPECT_EQ(DeletionInfo::Reason::kOther,

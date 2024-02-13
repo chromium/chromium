@@ -3,13 +3,3 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++genericContainer
-++++++++++staticText ignored invisible name='<newline>    '
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='child'
-++++++++++staticText ignored invisible name='<newline>    '
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='nested locked element!'
-++++++++++staticText ignored invisible name='<newline>    '
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='activatable locked element'
-++++++++++staticText ignored invisible name='<newline>  '

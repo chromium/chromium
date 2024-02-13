@@ -62,7 +62,8 @@ public class AccessibilityNodeInfoUtils {
      * @param node Object to create a toString for
      * @return String Custom toString result for the given object
      */
-    public static String toString(AccessibilityNodeInfoCompat node) {
+    public static String toString(
+            AccessibilityNodeInfoCompat node, boolean includeScreenSizeDependentAttributes) {
         if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
@@ -144,7 +145,7 @@ public class AccessibilityNodeInfoUtils {
         if (node.isPassword()) {
             builder.append(" password");
         }
-        if (node.isScrollable()) {
+        if (node.isScrollable() && includeScreenSizeDependentAttributes) {
             builder.append(" scrollable");
         }
         if (node.isSelected()) {
@@ -180,8 +181,10 @@ public class AccessibilityNodeInfoUtils {
         }
 
         // Actions and Bundle extras - Always print.
-        builder.append(" actions:").append(toString(node.getActionList()));
-        builder.append(" bundle:").append(toString(node.getExtras()));
+        builder.append(" actions:")
+                .append(toString(node.getActionList(), includeScreenSizeDependentAttributes));
+        builder.append(" bundle:")
+                .append(toString(node.getExtras(), includeScreenSizeDependentAttributes));
 
         return builder.toString();
     }
@@ -225,7 +228,8 @@ public class AccessibilityNodeInfoUtils {
     }
 
     private static String toString(
-            List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList) {
+            List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList,
+            boolean includeScreenSizeDependentAttributes) {
         // Sort actions list to ensure consistent output of tests.
         Collections.sort(actionList, (a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
 
@@ -241,6 +245,14 @@ public class AccessibilityNodeInfoUtils {
                     || action.equals(ACTION_LONG_CLICK)) {
                 continue;
             }
+
+            // When |includeScreenSizeDependentAttributes| is true, we include all other actions,
+            // so append and return early, otherwise continue to checks below.
+            if (includeScreenSizeDependentAttributes) {
+                actionStrings.add(toString(action.getId()));
+                continue;
+            }
+
             // Scroll actions are dependent on screen size, so ignore them to reduce flakiness
             if (action.equals(ACTION_SCROLL_FORWARD)
                     || action.equals(ACTION_SCROLL_BACKWARD)
@@ -331,7 +343,7 @@ public class AccessibilityNodeInfoUtils {
          */
     }
 
-    private static String toString(Bundle extras) {
+    private static String toString(Bundle extras, boolean includeScreenSizeDependentAttributes) {
         // Sort keys to ensure consistent output of tests.
         List<String> sortedKeySet = new ArrayList<String>(extras.keySet());
         Collections.sort(sortedKeySet, CASE_INSENSITIVE_ORDER);
@@ -341,8 +353,11 @@ public class AccessibilityNodeInfoUtils {
         builder.append("[");
         for (String key : sortedKeySet) {
             // Two Bundle extras are related to bounding boxes, these should be ignored so the
-            // tests can safely run on varying devices and not be screen-dependent.
-            if (key.equals(EXTRAS_KEY_UNCLIPPED_TOP) || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM)) {
+            // tests can safely run on varying devices and not be screen-dependent, unless
+            // explicitly allowed for this instance.
+            if (!includeScreenSizeDependentAttributes
+                    && (key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM))) {
                 continue;
             }
 
@@ -359,8 +374,8 @@ public class AccessibilityNodeInfoUtils {
             }
 
             // To prevent flakiness or dependency on screensize/form factor, drop the "offscreen"
-            // Bundle extra.
-            if (key.equals(EXTRAS_KEY_OFFSCREEN)) {
+            // Bundle extra, unless explicitly allowed for this instance.
+            if (!includeScreenSizeDependentAttributes && key.equals(EXTRAS_KEY_OFFSCREEN)) {
                 continue;
             }
 

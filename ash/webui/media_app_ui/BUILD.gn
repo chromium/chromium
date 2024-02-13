@@ -109,7 +109,7 @@ ts_library("build_ts") {
   root_dir = ts_root_dir
 
   in_files = media_app_converted_ts_sources + media_app_unconverted_js_sources +
-             [ "piex_loader.js" ]
+             [ "piex_loader.ts" ]
 
   # Add all Mojo TS as inputs to the TS compiler.
   target_outputs = get_target_outputs(":copy_mojo")

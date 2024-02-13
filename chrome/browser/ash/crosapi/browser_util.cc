@@ -41,6 +41,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/channel.h"
@@ -139,25 +140,51 @@ LacrosAvailability GetCachedLacrosAvailability() {
 }
 
 // Returns appropriate LacrosAvailability.
-LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
-                                         PolicyInitState policy_init_state) {
+std::optional<LacrosAvailability> GetLacrosAvailability(
+    const user_manager::User* user,
+    PolicyInitState policy_init_state) {
+  auto* user_manager = user_manager::UserManager::Get();
+  auto* primary_user = user_manager->GetPrimaryUser();
+
   switch (policy_init_state) {
-    case PolicyInitState::kBeforeInit:
+    case PolicyInitState::kBeforeInit: {
       // If the value is needed before policy initialization, actually,
       // this should be the case where ash process was restarted, and so
       // the calculated value in the previous session should be carried
       // via command line flag.
       // See also LacrosAvailabilityPolicyObserver how it will be propergated.
+
+      // Check whether given `user` is the one for kLoginUser.
+      CHECK(!primary_user);
+      const user_manager::CryptohomeId cryptohome_id(
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              ash::switches::kLoginUser));
+      user_manager::KnownUser known_user(user_manager->GetLocalState());
+      const AccountId login_account_id(
+          known_user.GetAccountIdByCryptohomeId(cryptohome_id));
+      if (user->GetAccountId() != login_account_id) {
+        // TODO(b/40286020): Record log once the number of this call is
+        // reduced.
+        return std::nullopt;
+      }
+
       return ash::standalone_browser::
           DetermineLacrosAvailabilityFromPolicyValue(
               user,
               base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
                   ash::standalone_browser::kLacrosAvailabilityPolicySwitch));
-
-    case PolicyInitState::kAfterInit:
+    }
+    case PolicyInitState::kAfterInit: {
       // If policy initialization is done, the calculated value should be
       // cached.
+      CHECK(primary_user);
+      if (primary_user != user) {
+        // TODO(b/40286020): Record log once the number of this call is
+        // reduced.
+        return std::nullopt;
+      }
       return GetCachedLacrosAvailability();
+    }
   }
 }
 
@@ -313,8 +340,12 @@ bool IsLacrosEnabled() {
 
 bool IsLacrosEnabledForMigration(const User* user,
                                  PolicyInitState policy_init_state) {
-  return IsLacrosEnabledInternal(user,
-                                 GetLacrosAvailability(user, policy_init_state),
+  std::optional<LacrosAvailability> lacros_availability =
+      GetLacrosAvailability(user, policy_init_state);
+  if (!lacros_availability.has_value()) {
+    return false;
+  }
+  return IsLacrosEnabledInternal(user, *lacros_availability,
                                  /*check_migration_status=*/false);
 }
 

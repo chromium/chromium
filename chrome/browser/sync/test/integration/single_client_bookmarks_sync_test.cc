@@ -1748,7 +1748,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                   .Wait());
 
   // Mimic the user being offline (until the next restart), to make sure the
-  // entity is unsync-ed upon brower startup (next test).
+  // entity is unsync-ed upon browser startup (next test).
   fake_server::FakeServerHttpPostProvider::DisableNetwork();
 
   SetTitle(kSingleProfileIndex, bookmark, new_title);
@@ -2305,6 +2305,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   EXPECT_THAT(model->bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithTitle(kLocalOnlyTitle)));
 
+  ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
   EXPECT_THAT(model->account_bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithTitle(kAccountOnlyTitle)));
 
@@ -2322,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
                        ShouldHandleMovesAcrossStorageBoundaries) {
   const std::string kInitiallyLocalTitle = "Initially Local";
-  const std::string kInitiallyAccountTitle = "Initiall Account";
+  const std::string kInitiallyAccountTitle = "Initially Account";
 
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
@@ -2357,6 +2358,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
 
   ASSERT_THAT(model->bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithTitle(kInitiallyLocalTitle)));
+  ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
   ASSERT_THAT(model->account_bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithTitle(kInitiallyAccountTitle)));
 
@@ -2385,6 +2387,83 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
   EXPECT_THAT(model->bookmark_bar_node()->children(),
               ElementsAre(IsFolderWithTitle(kInitiallyAccountTitle)));
 }
+
+// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
+                       PRE_PersistAccountBookmarksAcrossRestarts) {
+  const std::string kInitiallyLocalTitle = "Initially Local";
+  const std::string kInitiallyAccountTitle = "Initially Account";
+
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder(kInitiallyAccountTitle);
+  fake_server_->InjectEntity(bookmark_builder.BuildFolder());
+
+  ASSERT_TRUE(SetupClients());
+
+  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
+
+  model->AddFolder(/*parent=*/model->bookmark_bar_node(), /*index=*/0,
+                   base::UTF8ToUTF16(kInitiallyLocalTitle));
+
+  // Setup a primary account, but don't actually enable Sync-the-feature (so
+  // that Sync will start in transport mode).
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SignInPrimaryAccount());
+  // Note: Depending on the state of feature flags (specifically
+  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
+  // selected by default.
+  GetSyncService(kSingleProfileIndex)
+      ->GetUserSettings()
+      ->SetSelectedType(syncer::UserSelectableType::kBookmarks, true);
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+  ASSERT_FALSE(GetSyncService(kSingleProfileIndex)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetActiveDataTypes()
+                  .Has(syncer::BOOKMARKS));
+
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kInitiallyLocalTitle)));
+  ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
+  ASSERT_THAT(model->account_bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kInitiallyAccountTitle)));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksWithAccountStorageSyncTest,
+                       PersistAccountBookmarksAcrossRestarts) {
+  // Same values as in the PRE_ test.
+  const std::string kInitiallyLocalTitle = "Initially Local";
+  const std::string kInitiallyAccountTitle = "Initially Account";
+
+  // Mimic the user being offline to verify that account bookmarks are loaded
+  // from disk instead of being redownloaded.
+  fake_server::FakeServerHttpPostProvider::DisableNetwork();
+
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
+  ASSERT_FALSE(GetSyncService(kSingleProfileIndex)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetSyncService(kSingleProfileIndex)
+                  ->GetUserSettings()
+                  ->GetSelectedTypes()
+                  .Has(syncer::UserSelectableType::kBookmarks));
+
+  BookmarkModel* model = GetBookmarkModel(kSingleProfileIndex);
+
+  // Local bookmarks should continue to exist (sanity-checking fixture).
+  ASSERT_THAT(model->bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kInitiallyLocalTitle)));
+
+  // Account bookmarks should continue existing even while offline.
+  ASSERT_THAT(model->account_bookmark_bar_node(), NotNull());
+  EXPECT_THAT(model->account_bookmark_bar_node()->children(),
+              ElementsAre(IsFolderWithTitle(kInitiallyAccountTitle)));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace

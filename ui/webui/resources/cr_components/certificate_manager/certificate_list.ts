@@ -18,7 +18,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './certificate_list.html.js';
 import {CertificateAction, CertificateActionEvent} from './certificate_manager_types.js';
-import {CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import type {CertificatesError, CertificatesImportError, CertificatesOrgGroup, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import {CertificatesBrowserProxyImpl, CertificateType} from './certificates_browser_proxy.js';
 
 export interface CertificateListElement {
   $: {

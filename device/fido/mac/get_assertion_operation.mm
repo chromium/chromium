@@ -42,7 +42,7 @@ GetAssertionOperation::~GetAssertionOperation() = default;
 
 void GetAssertionOperation::Run() {
   const bool empty_allow_list = request_.allow_list.empty();
-  absl::optional<std::list<Credential>> credentials =
+  std::optional<std::list<Credential>> credentials =
       empty_allow_list
           ? credential_store_->FindResidentCredentials(request_.rp_id)
           : credential_store_->FindCredentialsFromCredentialDescriptorList(
@@ -96,7 +96,7 @@ void GetAssertionOperation::PromptTouchIdDone(bool success) {
   credential_store_->SetAuthenticationContext(
       touch_id_context_->authentication_context());
 
-  absl::optional<std::list<Credential>> credentials =
+  std::optional<std::list<Credential>> credentials =
       request_.allow_list.empty()
           ? credential_store_->FindResidentCredentials(request_.rp_id)
           : credential_store_->FindCredentialsFromCredentialDescriptorList(
@@ -121,7 +121,7 @@ void GetAssertionOperation::GenerateResponses(std::list<Credential> credentials,
 
   std::vector<AuthenticatorGetAssertionResponse> responses;
   for (const Credential& credential : credentials) {
-    absl::optional<AuthenticatorGetAssertionResponse> response =
+    std::optional<AuthenticatorGetAssertionResponse> response =
         ResponseForCredential(credential, has_uv);
     if (!response) {
       FIDO_LOG(ERROR) << "Could not generate response for credential, skipping";
@@ -139,18 +139,18 @@ void GetAssertionOperation::GenerateResponses(std::list<Credential> credentials,
                            std::move(responses));
 }
 
-absl::optional<AuthenticatorGetAssertionResponse>
+std::optional<AuthenticatorGetAssertionResponse>
 GetAssertionOperation::ResponseForCredential(const Credential& credential,
                                              bool has_uv) {
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
       credential.metadata.sign_counter_type, request_.rp_id,
-      /*attested_credential_data=*/absl::nullopt, has_uv);
-  absl::optional<std::vector<uint8_t>> signature =
+      /*attested_credential_data=*/std::nullopt, has_uv);
+  std::optional<std::vector<uint8_t>> signature =
       GenerateSignature(authenticator_data, request_.client_data_hash,
                         credential.private_key.get());
   if (!signature) {
     FIDO_LOG(ERROR) << "GenerateSignature failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
   AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
                                              std::move(*signature),

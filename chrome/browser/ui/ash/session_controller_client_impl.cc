@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -49,6 +48,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -134,7 +135,8 @@ void OnAcceptMultiprofilesIntroDialog(bool accept, bool never_show_again) {
     return;
 
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  prefs->SetBoolean(prefs::kMultiProfileNeverShowIntro, never_show_again);
+  prefs->SetBoolean(user_manager::prefs::kMultiProfileNeverShowIntro,
+                    never_show_again);
   ash::UserAddingScreen::Get()->Start();
 }
 
@@ -296,7 +298,7 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
     show_intro &=
         !multi_user_util::GetProfileFromAccountId(user->GetAccountId())
              ->GetPrefs()
-             ->GetBoolean(prefs::kMultiProfileNeverShowIntro);
+             ->GetBoolean(user_manager::prefs::kMultiProfileNeverShowIntro);
     if (!show_intro)
       break;
   }
@@ -441,9 +443,9 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
     return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
 
   if (static_cast<ash::ChromeUserManager*>(user_manager)
-          ->GetMultiProfileUserController()
-          ->GetPrimaryUserPolicy() !=
-      ash::MultiProfileUserController::ALLOWED) {
+          ->GetMultiUserSignInPolicyController()
+          ->GetPrimaryUserPolicy() ==
+      user_manager::MultiUserSignInPolicy::kNotAllowed) {
     return ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER;
   }
 

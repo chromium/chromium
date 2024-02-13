@@ -59,7 +59,7 @@ public class SigninBridgeTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfileMock);
+        when(mProfileMock.getOriginalProfile()).thenReturn(mProfileMock);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         when(mIdentityServicesProviderMock.getSigninManager(mProfileMock))
                 .thenReturn(mSigninManagerMock);
@@ -75,7 +75,7 @@ public class SigninBridgeTest {
     @SmallTest
     public void testAccountPickerSuppressedWhenSigninNotAllowed() {
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(false);
-        SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mProfileMock, mWindowAndroidMock, CONTINUE_URL);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
@@ -86,7 +86,7 @@ public class SigninBridgeTest {
     @SmallTest
     public void testAccountPickerSuppressedWhenNoAccountsOnDevice() {
         when(mSigninManagerMock.isSyncOptInAllowed()).thenReturn(true);
-        SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mProfileMock, mWindowAndroidMock, CONTINUE_URL);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
@@ -102,7 +102,7 @@ public class SigninBridgeTest {
                 .writeInt(
                         ChromePreferenceKeys.WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                         SigninBridge.ACCOUNT_PICKER_BOTTOM_SHEET_DISMISS_LIMIT);
-        SigninBridge.openAccountPickerBottomSheet(mWindowAndroidMock, CONTINUE_URL);
+        SigninBridge.openAccountPickerBottomSheet(mProfileMock, mWindowAndroidMock, CONTINUE_URL);
         verify(mSigninMetricsUtilsJniMock)
                 .logAccountConsistencyPromoAction(
                         AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,

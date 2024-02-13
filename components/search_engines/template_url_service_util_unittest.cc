@@ -307,6 +307,9 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 
   TemplateURLServiceUtilLoadTest() {
     TemplateURLPrepopulateData::RegisterProfilePrefs(prefs_.registry());
+    TemplateURLService::RegisterProfilePrefs(prefs_.registry());
+    search_engine_choice_service_ =
+        std::make_unique<search_engines::SearchEngineChoiceService>(prefs_);
   }
 
   // Simulates how the search providers are loaded during Chrome init by
@@ -330,9 +333,9 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
     resource_metadata.builtin_keyword_data_version = initial_state.data_version;
     resource_metadata.builtin_keyword_milestone = initial_state.milestone;
     resource_metadata.builtin_keyword_country = initial_state.country;
-    CallGetSearchProvidersUsingLoadedEngines(&prefs_,
-                                             &search_engine_choice_service,
-                                             &template_urls, resource_metadata);
+    CallGetSearchProvidersUsingLoadedEngines(
+        &prefs_, search_engine_choice_service_.get(), &template_urls,
+        resource_metadata);
 
     std::optional<bool> use_extended_list_output =
         prefs().HasPrefPath(
@@ -355,8 +358,8 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  search_engines::SearchEngineChoiceService search_engine_choice_service{
-      prefs_};
+  std::unique_ptr<search_engines::SearchEngineChoiceService>
+      search_engine_choice_service_;
 };
 
 TEST_F(TemplateURLServiceUtilLoadTest,

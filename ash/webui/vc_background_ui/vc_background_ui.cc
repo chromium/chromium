@@ -11,6 +11,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/sea_pen_provider.h"
 #include "ash/webui/common/sea_pen_resources.h"
+#include "ash/webui/common/sea_pen_resources_generated.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_vc_background_resources.h"
 #include "ash/webui/grit/ash_vc_background_resources_map.h"
@@ -36,19 +37,10 @@ void AddStrings(content::WebUIDataSource* source) {
   // TODO(b/311416410) real translated title.
   source->AddString("vcBackgroundTitle", u"VC Background");
   ::ash::common::AddSeaPenStrings(source);
+  ::ash::common::AddSeaPenVcBackgroundTemplateStrings(source);
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
-}
-
-void AddBooleans(content::WebUIDataSource* source) {
-  source->AddBoolean("isSeaPenEnabled",
-                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
-                         manta::features::IsMantaServiceEnabled());
-  source->AddBoolean("isSeaPenTextInputEnabled",
-                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
-                         ::ash::features::IsSeaPenTextInputEnabled() &&
-                         manta::features::IsMantaServiceEnabled());
 }
 
 void AddResources(content::WebUIDataSource* source) {
@@ -112,6 +104,20 @@ void VcBackgroundUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));
+}
+
+void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
+  const bool common_sea_pen_requirements =
+      sea_pen_provider_->IsEligibleForSeaPen();
+  source->AddBoolean("isSeaPenEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         manta::features::IsMantaServiceEnabled() &&
+                         common_sea_pen_requirements);
+  source->AddBoolean("isSeaPenTextInputEnabled",
+                     ::ash::features::IsVcBackgroundReplaceEnabled() &&
+                         ::ash::features::IsSeaPenTextInputEnabled() &&
+                         manta::features::IsMantaServiceEnabled() &&
+                         common_sea_pen_requirements);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VcBackgroundUI)

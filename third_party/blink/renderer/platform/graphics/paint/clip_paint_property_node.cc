@@ -68,15 +68,6 @@ bool ClipPaintPropertyNodeOrAlias::Changed(
       change, relative_to_state, transform_not_to_check);
 }
 
-bool ClipPaintPropertyNodeOrAlias::ChangedExceptScroll(
-    PaintPropertyChangeType change,
-    const PropertyTreeState& relative_to_state,
-    const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const {
-  return ChangedInternal<
-      &TransformPaintPropertyNodeOrAlias::ChangedExceptScroll>(
-      change, relative_to_state, transform_not_to_check);
-}
-
 void ClipPaintPropertyNodeOrAlias::ClearChangedToRoot(
     int sequence_number) const {
   for (auto* n = this; n && n->ChangedSequenceNumber() != sequence_number;

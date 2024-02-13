@@ -32,9 +32,7 @@ void RecordModuleFreshnessSignal(ContentSuggestionsModuleType module_type) {
           base::UserMetricsAction("IOSMagicStackShortcutsFreshSignal"));
       break;
     }
-    case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
+    case ContentSuggestionsModuleType::kSafetyCheck: {
       PrefService* local_state = GetApplicationContext()->GetLocalState();
       local_state->SetInteger(
           prefs::kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness,

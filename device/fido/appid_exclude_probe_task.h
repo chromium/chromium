@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_APPID_EXCLUDE_PROBE_TASK_H_
 #define DEVICE_FIDO_APPID_EXCLUDE_PROBE_TASK_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -15,7 +16,6 @@
 #include "device/fido/device_operation.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_task.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -26,7 +26,7 @@ namespace device {
 class AppIdExcludeProbeTask : public FidoTask {
  public:
   using Callback =
-      base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>;
+      base::OnceCallback<void(CtapDeviceResponseCode, std::optional<bool>)>;
 
   AppIdExcludeProbeTask(FidoDevice* device,
                         CtapMakeCredentialRequest request,
@@ -42,7 +42,7 @@ class AppIdExcludeProbeTask : public FidoTask {
   void NextSilentSignOperation();
   void HandleResponseToSilentSignRequest(
       CtapDeviceResponseCode response_code,
-      absl::optional<AuthenticatorGetAssertionResponse> response_data);
+      std::optional<AuthenticatorGetAssertionResponse> response_data);
 
   const CtapMakeCredentialRequest request_;
   const MakeCredentialOptions options_;

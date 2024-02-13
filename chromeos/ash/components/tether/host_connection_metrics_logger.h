@@ -43,6 +43,7 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     CLIENT_CONNECTION_INTERNAL_ERROR,
     CLIENT_CONNECTION_NETWORK_CONNECTION_HANDLER_FAILED,
     CLIENT_CONNECTION_NETWORK_STATE_WAS_NULL,
+    CLIENT_CONNECTION_WIFI_FAILED_TO_ENABLE,
     TETHERING_TIMED_OUT_FIRST_TIME_SETUP_REQUIRED,
     TETHERING_TIMED_OUT_FIRST_TIME_SETUP_NOT_REQUIRED,
     ENABLING_HOTSPOT_FAILED,
@@ -129,6 +130,9 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
   FRIEND_TEST_ALL_PREFIXES(
       HostConnectionMetricsLoggerTest,
       RecordConnectionResultFailureShutDownDuringConnectionAttempt);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostConnectionMetricsLoggerTest,
+      RecordConnectionResultFailureClientConnection_WifiFailedToEnable);
   FRIEND_TEST_ALL_PREFIXES(
       HostConnectionMetricsLoggerTest,
       RecordConnectionResultFailureClientConnection_NetworkConnectionHandlerFailed);
@@ -219,6 +223,7 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     INTERNAL_ERROR = 2,
     NETWORK_CONNECTION_HANDLER_FAILED = 3,
     NETWORK_STATE_WAS_NULL = 4,
+    WIFI_FAILED_TO_ENABLED = 5,
     FAILURE_CLIENT_CONNECTION_MAX
   };
 

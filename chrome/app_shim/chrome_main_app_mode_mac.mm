@@ -22,6 +22,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/mac/scoped_sending_event.h"
+#include "base/message_loop/message_pump_apple.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -46,12 +48,26 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-// The NSApplication for app shims is a vanilla NSApplication, but sub-class it
-// so that we can DCHECK that we know precisely when it is initialized.
-@interface AppShimApplication : NSApplication
+// The NSApplication for app shims is a vanilla NSApplication, but implements
+// the CrAppProtocol and CrAppControlPrototocol protocols to skip creating
+// an autorelease pool in nested event loops, for example when displaying a
+// context menu.
+@interface AppShimApplication
+    : NSApplication <CrAppProtocol, CrAppControlProtocol>
 @end
 
-@implementation AppShimApplication
+@implementation AppShimApplication {
+  BOOL _handlingSendEvent;
+}
+
+- (BOOL)isHandlingSendEvent {
+  return _handlingSendEvent;
+}
+
+- (void)setHandlingSendEvent:(BOOL)handlingSendEvent {
+  _handlingSendEvent = handlingSendEvent;
+}
+
 @end
 
 extern "C" {

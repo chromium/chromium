@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Güvenli değil</translation>
 <translation id="1075079914415273530">Tarım ve ormancılık</translation>
 <translation id="1075364221219156102">Geçiş Anahtarı Kullanın</translation>
-<translation id="1078033282564106222">Bina numarası seçeneği belirlendi</translation>
 <translation id="1080116354587839789">Genişliğe sığdır</translation>
 <translation id="1081061862829655580">Tepsi 19</translation>
 <translation id="1082026381988252344">Paylaşılan sekmenizin içeriğini kaydırıp yakınlaştırın</translation>
@@ -247,6 +246,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1428729058023778569">Bu site HTTPS'yi desteklemediği için bu uyarıyı görüyorsunuz. <ph name="BEGIN_LEARN_MORE_LINK" />Daha fazla bilgi<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Kendinden Yapışkanlı Film</translation>
 <translation id="1430915738399379752">Yazdır</translation>
+<translation id="1431021750861456539">Otomatik tam ekran</translation>
 <translation id="1432187715652018471">sayfa bir servis işleyici yüklemek istiyor.</translation>
 <translation id="1432581352905426595">Arama motorlarını yönet</translation>
 <translation id="1433225466058025572">Dosyalarınızı tekrar taşımayı deneyin</translation>
@@ -586,6 +586,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2075497153347571252">Yöneticiniz <ph name="ORIGIN" /> sitesinde <ph name="PERMISSION" /> iznini engelledi</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="2080021694978766903">Bu politikada en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir.</translation>
+<translation id="2081482239432306393">Bina numarası seçeneği belirlendi</translation>
 <translation id="20817612488360358">Sistem proxy ayarları kullanılmak üzere ayarlandı, ancak açık bir proxy yapılandırması da belirtildi.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> sonuçtan <ph name="RESULT_NUMBER" /> numaralı sonuç</translation>
 <translation id="2083256696566019397">Her ziyarette izin ver</translation>
@@ -613,7 +614,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2126374524350484896">PDF üreticisi:</translation>
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" /> dil paketi indiriliyor...%<ph name="PERCENT" /></translation>
 <translation id="2135799067377889518">Erkek giyim</translation>
 <translation id="2137891579555018930">İzin bekleniyor...</translation>
 <translation id="213826338245044447">Mobil Yer İşaretleri</translation>
@@ -1387,7 +1387,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3681007416295224113">Sertifika bilgileri</translation>
 <translation id="3681421644246505351">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder.</translation>
 <translation id="3682094733650754138">Adresi doldur seçeneği belirlendi</translation>
-<translation id="3689867156802445220">Bina numarası</translation>
 <translation id="3693327506115126094">Kimliğinizi nasıl doğrulayacağınızı seçin</translation>
 <translation id="3698629142018988477">Site oluştur düğmesi, Google Sites'ta hızlıca yeni bir site oluşturmak için etkinleştirin</translation>
 <translation id="3701325639446035885">Etkinlik Bileti Satışı</translation>
@@ -1412,6 +1411,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3723663469265383848">Güncelleme sırasında cihazınızı 10 dakika kadar kullanamayacaksınız.</translation>
 <translation id="372429172604983730">Bu hataya neden olabilecek uygulamalar arasında virüsten korunma programları, güvenlik duvarları ve web filtreleme veya proxy yazılımları sayılabilir.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slaytlar'da hızlıca yeni bir Google sunusu oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="3727309136762649052">Ad alanı</translation>
 <translation id="3727850735097852673">Google Şifre Yöneticisi'ni macOS Anahtar Zinciri ile kullanmak için Chrome'u yeniden başlatıp Anahtar Zinciri'ne erişim izni verin. Chrome yeniden başlatıldıktan sonra sekmeleriniz tekrar açılır.</translation>
 <translation id="3733139489341305600">Otonom araçlar</translation>
 <translation id="3736520371357197498">Güvenliğinizle ilgili riskleri anlıyorsanız tehlikeli programlar kaldırılmadan önce <ph name="BEGIN_LINK" />güvenli olmayan bu siteyi ziyaret edebilirsiniz<ph name="END_LINK" />.</translation>
@@ -1576,6 +1576,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4089152113577680600">Tepsi 14</translation>
 <translation id="4092349052316400070">Adresi doldur</translation>
 <translation id="4096237801206588987">11 x 15 inç</translation>
+<translation id="4098306082496067348">Ödeme sırasında kullanılmak üzere eklemek için sanal kart ayrıntılarına dokunun.</translation>
 <translation id="4098354747657067197">Yanıltıcı bir siteye girmek üzeresiniz</translation>
 <translation id="4099048595830172239">Yönetici politikası, gizli içerik görünür durumdayken ekranınızı <ph name="APPLICATION_TITLE" /> ile paylaşmanızı önermez:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'daki yazı tipi boyutlarını ve yazı tiplerini özelleştirmek için Sekme'ye, ardından Enter'a basın</translation>
@@ -1899,6 +1900,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4729147136006144950">Hayır Kurumları ve Hayırseverlik</translation>
 <translation id="4730977633786878901">Yorumlar</translation>
 <translation id="4731638775147756694">Bu uygulama, yöneticiniz tarafından engellendi</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> dil paketi indiriliyor... %<ph name="PERCENT" /></translation>
 <translation id="4733082559415072992"><ph name="URL" />, cihazınızın konumunu kullanmak istiyor</translation>
 <translation id="4736491186715342415">Motorlu taşıtlar</translation>
 <translation id="4736825316280949806">Chromium'u yeniden başlatın</translation>
@@ -1920,7 +1922,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4757022425116568383">Chrome Profilinizden geçiş anahtarı</translation>
 <translation id="4757993714154412917">Az önce şifrenizi yanıltıcı bir sitede girdiniz. Chromium, hesaplarınızın güvenliğini sağlamak için kayıtlı şifrelerinizi kontrol etmenizi öneriyor.</translation>
 <translation id="4758311279753947758">İletişim bilgilerinizi ekleyin</translation>
-<translation id="4761104368405085019">Mikrofonunuzu kullanma</translation>
 <translation id="4761326898079498987">Daha ayrıntılı bilgi için inceleyin</translation>
 <translation id="4761869838909035636">Chrome Güvenlik Kontrolü Yürüt</translation>
 <translation id="4763196677855776703">Hükümler ve Koşullar, <ph name="URL" /> tarafından sağlanmıştır</translation>
@@ -2258,7 +2259,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
             <ph name="LIST_ITEM" />Çerezler ve site verileri
             <ph name="LIST_ITEM" />Formlara girilen bilgiler
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" />, MIDI cihazlarınızı kontrol etmek ve yeniden programlamak istiyor (SysEx)</translation>
 <translation id="5443468954631487277">Ters sırada ön yüz yukarı bakacak şekilde</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> sitesinin sizinle ilgili kaydettiği bilgileri kullanmasına izin verin</translation>
 <translation id="5447765697759493033">Bu site çevrilmeyecek</translation>
@@ -2285,6 +2285,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
     <ph name="LINE_BREAK" />
     Sistem yöneticinize başvurmayı deneyin.</translation>
 <translation id="549333378215107354">Boyut 3</translation>
+<translation id="5501712702042287009">otomatik tam ekran</translation>
 <translation id="550365051221576010">Tüm alanları doldur</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Yönetilen yer işaretleri</translation>
@@ -2471,7 +2472,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5877831137320480913">Güzellik ve form koruma</translation>
 <translation id="5879989559903563723">Misafir Modu'nda izin verilmez</translation>
 <translation id="5880050725127890683">Chrome güvenlik kontrolüne gidin</translation>
-<translation id="5883861433316751031">MIDI cihazları kontrol edilip yeniden programlansın mı?</translation>
 <translation id="5884465125445718607">Zarf Chinese #6</translation>
 <translation id="5887400589839399685">Kart kaydedildi</translation>
 <translation id="5887687176710214216">En son dün ziyaret edildi</translation>
@@ -2822,7 +2822,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6556866813142980365">Yeniden Yap</translation>
 <translation id="6557715786897013164">14 x 17 inç</translation>
 <translation id="6560786330438719938">Yüklü ya da kaldırılan uygulamalar ve ne sıklıkla kullanıldıkları</translation>
-<translation id="6567084950885568327">MIDI cihaz kontrolü ve yeniden programlama</translation>
 <translation id="6568793038316600992">Ödeme yöntemlerini yönet düğmesi, Chrome ayarlarında ödemelerinizi ve kredi kartı bilgilerinizi yönetmek için etkinleştirin</translation>
 <translation id="6569060085658103619">Bir uzantı sayfası görüntülüyorsunuz</translation>
 <translation id="6569366777234823130">Drama filmleri</translation>
@@ -3205,6 +3204,7 @@ Ek ayrıntılar:
 <translation id="733354035281974745">Cihaz yerel hesabını geçersiz kıl</translation>
 <translation id="7334320624316649418">Sıralama değişikliğini &amp;yeniden yap</translation>
 <translation id="7335157162773372339">Kameranızı kullanmak isteyebilir</translation>
+<translation id="7336636595549675416">Bina numarası</translation>
 <translation id="7337248890521463931">Daha fazla satır göster</translation>
 <translation id="7337706099755338005">Platformunuzda kullanılamıyor.</translation>
 <translation id="733923710415886693">Sunucunun sertifikası, Sertifika Şeffaflığı aracılığıyla açıklanmadı.</translation>
@@ -3912,7 +3912,6 @@ Ek ayrıntılar:
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> değeri, boyut şartlarını karşılamıyor.</translation>
 <translation id="867224526087042813">İmza</translation>
 <translation id="8672264262457010862">İş ve endüstri</translation>
-<translation id="8673776281896298303">MIDI cihazlarınızı kontrol etme ve yeniden programlama (SysEx)</translation>
 <translation id="8676424191133491403">Gecikme yok</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, yanıt, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> adresindeki web sayfası şu nedenle yüklenemedi:</translation>
@@ -4152,7 +4151,6 @@ Ek ayrıntılar:
 <translation id="9148507642005240123">Düzenlemeyi &amp;geri al</translation>
 <translation id="9148599396704355100">Düşük Fiyatlı</translation>
 <translation id="9150025764986957246">Aşağıdaki gibi bilgileri girebilirsiniz:</translation>
-<translation id="9150045010208374699">Kameranızı kullanma</translation>
 <translation id="9150685862434908345">Yöneticiniz, tarayıcınızın kurulumunu uzaktan değiştirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Güncellendi</translation>
 <translation id="9155211586651734179">Takılı durumdaki ses çevre birimleri</translation>

@@ -42,7 +42,7 @@ public final class PwaUniversalInstallBottomSheetContentTest {
                 Mockito.mock(
                         PwaUniversalInstallBottomSheetView.class,
                         Mockito.withSettings()
-                                .useConstructor(mActivity)
+                                .useConstructor()
                                 .defaultAnswer(Mockito.RETURNS_MOCKS));
         PwaUniversalInstallBottomSheetContent pwaUniversalInstallBottomSheetContent =
                 new PwaUniversalInstallBottomSheetContent(

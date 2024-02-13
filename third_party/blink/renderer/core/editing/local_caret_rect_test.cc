@@ -1535,6 +1535,25 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableWithDifferentFontSizes) {
       LocalCaretRectOf(position, kCannotCrossEditingBoundary));
 }
 
+TEST_F(LocalCaretRectTest, LocalCaretInSvgTextWithFontScaling) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0 }"
+      "svg { width: 100% }"
+      "text { font: 10px/10px Ahem }");
+  SetBodyContent(
+      "<svg viewBox='0 0 160 120'><text x='10' y='10'>Text</text></svg>");
+
+  const Text& text = To<Text>(
+      *GetDocument().QuerySelector(AtomicString("text"))->firstChild());
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(10, 2, 1, 10)),
+            LocalCaretRectOf(Position(text, 0)));
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(20, 2, 1, 10)),
+            LocalCaretRectOf(Position(text, 1)));
+  EXPECT_EQ(LocalCaretRect(text.GetLayoutObject(), PhysicalRect(30, 2, 1, 10)),
+            LocalCaretRectOf(Position(text, 2)));
+}
+
 TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidi) {
   LoadAhem();
   InsertStyleElement(

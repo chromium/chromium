@@ -1342,13 +1342,6 @@ void NativeInputMethodEngineObserver::FinishComposition() {
   TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
 
   input_context->ConfirmComposition(/*reset_engine=*/false);
-
-  auto* manager = InputMethodManager::Get();
-  if (!manager ||
-      !extension_ime_util::IsExperimentalMultilingual(
-          manager->GetActiveIMEState()->GetCurrentInputMethod().id())) {
-    return;
-  }
 }
 
 void NativeInputMethodEngineObserver::DeleteSurroundingText(

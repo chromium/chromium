@@ -28,6 +28,7 @@ MockHistoryClustersModuleService::MockHistoryClustersModuleService()
                                    nullptr,
                                    nullptr,
                                    nullptr,
+                                   nullptr,
                                    nullptr) {}
 
 MockHistoryClustersModuleService::~MockHistoryClustersModuleService() = default;

@@ -15,7 +15,11 @@
 #include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
+#include "components/compose/buildflags.h"
 #include "components/lens/buildflags.h"
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/ui/webui/lens/lens_untrusted_ui_config.h"
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -47,6 +51,10 @@ void RegisterChromeUntrustedWebUIConfigs() {
   map.AddUntrustedWebUIConfig(
       std::make_unique<ReadAnythingUIUntrustedConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<HatsUIConfig>());
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  map.AddUntrustedWebUIConfig(std::make_unique<ComposeUIUntrustedConfig>());
+#endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   map.AddUntrustedWebUIConfig(std::make_unique<lens::LensUntrustedUIConfig>());

@@ -17,6 +17,16 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('PaymentsSectionCardRows', function() {
+  interface BenefitsTestCase {
+    benefitsAvailable: boolean;
+    productTermsUrlAvailable: boolean;
+  }
+
+  function cleanUpWhitespace(sublabelElement: HTMLElement) {
+    return sublabelElement!.textContent!.trim()
+        .replace(/\s+/g, ' ')
+        .replace(/\n/g, '');
+  }
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -485,7 +495,7 @@ suite('PaymentsSectionCardRows', function() {
                     '#summarySublabel')!.textContent!.trim());
       });
 
-  // Test to verify the correct sublabel is displayed for Virtual card when its
+  // Test to verify the correct sublabel is displayed for virtual card when its
   // FPAN(Real card) has CVC saved.
   test('verifyVirtualCardSummarySublabelWhenFpanHasCvc', async function() {
     loadTimeData.overrideValues({
@@ -514,8 +524,285 @@ suite('PaymentsSectionCardRows', function() {
                 '#summarySublabel')!.textContent!.trim());
   });
 
-  // Test to verify the cvc tag is visible when cvc is present on a
-  // server/local cards.
+  const benefitsStatus: BenefitsTestCase[] = [
+    {
+      benefitsAvailable: true,
+      productTermsUrlAvailable: true,
+    },
+    {
+      benefitsAvailable: true,
+      productTermsUrlAvailable: false,
+    },
+    {
+      benefitsAvailable: false,
+      productTermsUrlAvailable: true,
+    },
+  ];
+
+  // Test to verify the existence of the benefits tag based on the existence of
+  // the benefits and the product terms URL on a virtual card without a CVC.
+  benefitsStatus.forEach(({
+                           benefitsAvailable,
+                           productTermsUrlAvailable,
+                         }) => {
+    const benefitsStatus = benefitsAvailable ? 'Available' : 'NotAvailable';
+    const termUrlStatus =
+        productTermsUrlAvailable ? 'Available' : 'NotAvailable';
+    const testName = `VirtualCardSummarySublabel_Benefits${
+        benefitsStatus}_ProductTermsUrl${termUrlStatus}`;
+    test(testName, async () => {
+      loadTimeData.overrideValues({
+        autofillCardBenefitsAvailable: benefitsAvailable,
+      });
+      const creditCard = createCreditCardEntry();
+      assertTrue(!!creditCard.metadata);
+      creditCard.metadata.isLocal = false;
+      creditCard.metadata.isVirtualCardEnrollmentEligible = false;
+      creditCard.metadata.isVirtualCardEnrolled = true;
+      if (productTermsUrlAvailable) {
+        creditCard.productTermsUrl = 'https://google.com/';
+      }
+      await createPaymentsSection(
+          [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+      const paymentsList = getLocalAndServerCreditCardListItems();
+
+      assertTrue(!!paymentsList);
+      assertEquals(1, paymentsList.length);
+      assertTrue(
+          isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+              '#summarySublabel')));
+
+      // Build the expected resulting sublabel based on which features are
+      // enabled.
+      let benefitExpectedSublabel =
+          loadTimeData.getString('virtualCardTurnedOn');
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        benefitExpectedSublabel += ' | ' +
+            loadTimeData.getString(
+                'benefitsAvailableTagForCreditCardListEntry') +
+            ' (' +
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
+            ')';
+      }
+
+      assertEquals(
+          benefitExpectedSublabel,
+          cleanUpWhitespace(
+              paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                  '#summarySublabel')!));
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        const termsLink =
+            paymentsList[0]!.shadowRoot!.querySelector<HTMLAnchorElement>(
+                '#summaryTermsLink');
+        assertTrue(!!termsLink);
+        assertEquals(creditCard.productTermsUrl, termsLink.href);
+      } else {
+        assertFalse(
+            isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                '#summaryTermsLink')));
+      }
+    });
+  });
+
+  // Test to verify the existence of the benefits tag based on the existence of
+  // the benefits and the product terms URL on a virtual card with a CVC saved.
+  benefitsStatus.forEach(({
+                           benefitsAvailable,
+                           productTermsUrlAvailable,
+                         }) => {
+    const benefitsStatus = benefitsAvailable ? 'Available' : 'NotAvailable';
+    const termUrlStatus =
+        productTermsUrlAvailable ? 'Available' : 'NotAvailable';
+    const testName = `VirtualCardWithCvcSummarySublabel_Benefits${
+        benefitsStatus}_ProductTermsUrl${termUrlStatus}`;
+    test(testName, async () => {
+      loadTimeData.overrideValues({
+        cvcStorageAvailable: true,
+        autofillCardBenefitsAvailable: benefitsAvailable,
+      });
+      const creditCard = createCreditCardEntry();
+      assertTrue(!!creditCard.metadata);
+      creditCard.metadata.isLocal = false;
+      creditCard.metadata.isVirtualCardEnrollmentEligible = false;
+      creditCard.metadata.isVirtualCardEnrolled = true;
+      creditCard.cvc = '***';
+      if (productTermsUrlAvailable) {
+        creditCard.productTermsUrl = 'https://google.com/';
+      }
+      await createPaymentsSection(
+          [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+      const paymentsList = getLocalAndServerCreditCardListItems();
+
+      assertTrue(!!paymentsList);
+      assertEquals(1, paymentsList.length);
+      assertTrue(
+          isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+              '#summarySublabel')));
+
+      // Build the expected resulting sublabel based on which features are
+      // enabled.
+      let benefitExpectedSublabel =
+          loadTimeData.getString('virtualCardTurnedOn') + ' | ' +
+          loadTimeData.getString('cvcTagForCreditCardListEntry');
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        benefitExpectedSublabel += ' | ' +
+            loadTimeData.getString(
+                'benefitsAvailableTagForCreditCardListEntry') +
+            ' (' +
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
+            ')';
+      }
+
+      assertEquals(
+          benefitExpectedSublabel,
+          cleanUpWhitespace(
+              paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                  '#summarySublabel')!));
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        const termsLink =
+            paymentsList[0]!.shadowRoot!.querySelector<HTMLAnchorElement>(
+                '#summaryTermsLink');
+        assertTrue(!!termsLink);
+        assertEquals(creditCard.productTermsUrl, termsLink.href);
+      } else {
+        assertFalse(
+            isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                '#summaryTermsLink')));
+      }
+    });
+  });
+
+  // Test to verify the existence of the benefits tag based on the existence of
+  // the benefits and the product terms URL on a server card without a CVC.
+  benefitsStatus.forEach(({
+                           benefitsAvailable,
+                           productTermsUrlAvailable,
+                         }) => {
+    const benefitsStatus = benefitsAvailable ? 'Available' : 'NotAvailable';
+    const termUrlStatus =
+        productTermsUrlAvailable ? 'Available' : 'NotAvailable';
+    const testName = `ServerCardSummarySublabel_Benefits${
+        benefitsStatus}_ProductTermsUrl${termUrlStatus}`;
+    test(testName, async () => {
+      loadTimeData.overrideValues({
+        autofillCardBenefitsAvailable: benefitsAvailable,
+      });
+      const serverCreditCard = createCreditCardEntry();
+      assertTrue(!!serverCreditCard.metadata);
+      serverCreditCard.metadata.isLocal = false;
+      if (productTermsUrlAvailable) {
+        serverCreditCard.productTermsUrl = 'https://google.com/';
+      }
+      await createPaymentsSection(
+          [serverCreditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+      const paymentsList = getLocalAndServerCreditCardListItems();
+
+      assertTrue(!!paymentsList);
+      assertEquals(1, paymentsList.length);
+      assertTrue(
+          isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+              '#summarySublabel')));
+
+      // Build the expected resulting sublabel based on which features are
+      // enabled.
+      let benefitExpectedSublabel = serverCreditCard.expirationMonth + '/' +
+          serverCreditCard.expirationYear!.toString().substring(2);
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        benefitExpectedSublabel += ' | ' +
+            loadTimeData.getString(
+                'benefitsAvailableTagForCreditCardListEntry') +
+            ' (' +
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
+            ')';
+      }
+
+      assertEquals(
+          benefitExpectedSublabel,
+          cleanUpWhitespace(
+              paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                  '#summarySublabel')!));
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        const termsLink =
+            paymentsList[0]!.shadowRoot!.querySelector<HTMLAnchorElement>(
+                '#summaryTermsLink');
+        assertTrue(!!termsLink);
+        assertEquals(serverCreditCard.productTermsUrl, termsLink.href);
+      } else {
+        assertFalse(
+            isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                '#summaryTermsLink')));
+      }
+    });
+  });
+
+  // Test to verify the existence of the benefits tag based on the existence of
+  // the benefits and the product terms URL on a server card with a CVC saved.
+  benefitsStatus.forEach(({
+                           benefitsAvailable,
+                           productTermsUrlAvailable,
+                         }) => {
+    const benefitsStatus = benefitsAvailable ? 'Available' : 'NotAvailable';
+    const termUrlStatus =
+        productTermsUrlAvailable ? 'Available' : 'NotAvailable';
+    const testName = `ServerCardWithCvcSummarySublabel_Benefits${
+        benefitsStatus}_ProductTermsUrl${termUrlStatus}`;
+    test(testName, async () => {
+      loadTimeData.overrideValues({
+        cvcStorageAvailable: true,
+        autofillCardBenefitsAvailable: benefitsAvailable,
+      });
+      const serverCreditCard = createCreditCardEntry();
+      assertTrue(!!serverCreditCard.metadata);
+      serverCreditCard.metadata.isLocal = false;
+      serverCreditCard.cvc = '***';
+      if (productTermsUrlAvailable) {
+        serverCreditCard.productTermsUrl = 'https://google.com/';
+      }
+      await createPaymentsSection(
+          [serverCreditCard], /*ibans=*/[], /*prefValues=*/ {});
+
+      const paymentsList = getLocalAndServerCreditCardListItems();
+
+      assertTrue(!!paymentsList);
+      assertEquals(1, paymentsList.length);
+      assertTrue(
+          isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+              '#summarySublabel')));
+      let benefitExpectedSublabel = serverCreditCard.expirationMonth + '/' +
+          serverCreditCard.expirationYear!.toString().substring(2) + ' | ' +
+          loadTimeData.getString('cvcTagForCreditCardListEntry');
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        benefitExpectedSublabel += ' | ' +
+            loadTimeData.getString(
+                'benefitsAvailableTagForCreditCardListEntry') +
+            ' (' +
+            loadTimeData.getString('benefitsTermsTagForCreditCardListEntry') +
+            ')';
+      }
+      assertEquals(
+          benefitExpectedSublabel,
+          cleanUpWhitespace(
+              paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                  '#summarySublabel')!));
+      if (benefitsAvailable && productTermsUrlAvailable) {
+        const termsLink =
+            paymentsList[0]!.shadowRoot!.querySelector<HTMLAnchorElement>(
+                '#summaryTermsLink');
+        assertTrue(!!termsLink);
+        assertEquals(serverCreditCard.productTermsUrl, termsLink.href);
+      } else {
+        assertFalse(
+            isVisible(paymentsList[0]!.shadowRoot!.querySelector<HTMLElement>(
+                '#summaryTermsLink')));
+      }
+    });
+  });
+
+  // Test to verify the cvc tag is visible when cvc is present on a server/local
+  // cards.
   [true, false].forEach(cvcOnServerCard => {
     test(
         'verifyCvcTagPresentFor_' +

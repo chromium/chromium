@@ -255,33 +255,28 @@ class TouchToFillMediator {
                 UrlFormatter.formatUrlForSecurityDisplay(url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
         List<Credential> sharedCredentials = getSharedPasswordsThatRequireNotification(credentials);
         if (sharedCredentials.size() == 1) {
-            return String.format(
-                    mContext.getString(
-                            R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle),
+            return mContext.getString(
+                    R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle,
                     "<b>" + sharedCredentials.get(0).getSenderName() + "</b>",
                     formattedUrl);
         }
         if (sharedCredentials.size() > 1) {
-            return String.format(
-                    mContext.getString(
-                            R.string
-                                    .touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle),
+            return mContext.getString(
+                    R.string.touch_to_fill_sheet_shared_passwords_multiple_passwords_subtitle,
                     formattedUrl);
         }
 
         if (triggerSubmission) {
-            return String.format(
-                    mContext.getString(
-                            isOriginSecure
-                                    ? R.string.touch_to_fill_sheet_subtitle_submission
-                                    : R.string.touch_to_fill_sheet_subtitle_insecure_submission),
+            return mContext.getString(
+                    isOriginSecure
+                            ? R.string.touch_to_fill_sheet_subtitle_submission
+                            : R.string.touch_to_fill_sheet_subtitle_insecure_submission,
                     formattedUrl);
         } else {
             return isOriginSecure
                     ? formattedUrl
-                    : String.format(
-                            mContext.getString(R.string.touch_to_fill_sheet_subtitle_not_secure),
-                            formattedUrl);
+                    : mContext.getString(
+                            R.string.touch_to_fill_sheet_subtitle_not_secure, formattedUrl);
         }
     }
 

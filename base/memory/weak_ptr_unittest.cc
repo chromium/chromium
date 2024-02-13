@@ -18,6 +18,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
+
+namespace subtle {
+
+class BindWeakPtrFactoryForTesting {
+ public:
+  template <typename T>
+  static void BindToCurrentSequence(WeakPtrFactory<T>& factory) {
+    factory.BindToCurrentSequence(BindWeakPtrFactoryPassKey());
+  }
+};
+
+}  // namespace subtle
+
 namespace {
 
 WeakPtr<int> PassThru(WeakPtr<int> ptr) {
@@ -156,6 +169,15 @@ class BackgroundThread : public Thread {
     return result;
   }
 
+  void BindToCurrentSequence(TargetWithFactory* target_with_factory) {
+    WaitableEvent completion(WaitableEvent::ResetPolicy::MANUAL,
+                             WaitableEvent::InitialState::NOT_SIGNALED);
+    task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&BackgroundThread::DoBindToCurrentSequence,
+                                  target_with_factory, &completion));
+    completion.Wait();
+  }
+
  protected:
   static void DoCreateArrowFromArrow(Arrow** arrow,
                                      const Arrow* other,
@@ -206,6 +228,13 @@ class BackgroundThread : public Thread {
 
   static void DoDeleteArrow(Arrow* object, WaitableEvent* completion) {
     delete object;
+    completion->Signal();
+  }
+
+  static void DoBindToCurrentSequence(TargetWithFactory* target_with_factory,
+                                      WaitableEvent* completion) {
+    subtle::BindWeakPtrFactoryForTesting::BindToCurrentSequence(
+        target_with_factory->factory);
     completion->Signal();
   }
 };
@@ -769,6 +798,27 @@ TEST(WeakPtrTest, GetMutableWeakPtr) {
       const_test_struct.weak_ptr_factory.GetMutableWeakPtr();
   weak_ptr->member = 1;
   EXPECT_EQ(test_struct.member, 1);
+}
+
+TEST(WeakPtrDeathTest, BindToCurrentSequence) {
+  BackgroundThread background;
+  background.Start();
+
+  TargetWithFactory target_with_factory;
+  Arrow arrow{
+      .target = target_with_factory.factory.GetWeakPtr(),
+  };
+
+  // WeakPtr can be accessed on main thread.
+  EXPECT_TRUE(arrow.target.get());
+
+  background.BindToCurrentSequence(&target_with_factory);
+
+  // Now WeakPtr can be accessed on background thread.
+  EXPECT_TRUE(background.DeRef(&arrow));
+
+  // WeakPtr can no longer be accessed on main thread.
+  EXPECT_DCHECK_DEATH(arrow.target.get());
 }
 
 TEST(WeakPtrDeathTest, WeakPtrCopyDoesNotChangeThreadBinding) {

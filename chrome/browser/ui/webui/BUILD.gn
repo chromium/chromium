@@ -16,6 +16,7 @@ source_set("configs") {
 
   deps = [
     "//chrome/browser/ui:ui",
+    "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//content/public/browser",
     "//extensions/buildflags:buildflags",
@@ -48,6 +49,7 @@ source_set("configs") {
       "//ash/webui/help_app_ui",
       "//ash/webui/os_feedback_ui",
       "//ash/webui/print_management",
+      "//ash/webui/print_preview_cros",
       "//ash/webui/scanning",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",

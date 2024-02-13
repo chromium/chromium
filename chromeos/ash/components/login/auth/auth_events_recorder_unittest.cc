@@ -56,6 +56,7 @@ cryptohome::AuthFactor MakeLegacyAuthFactor(int legacy_key_index) {
                                 cryptohome::AuthFactorCommonMetadata());
 }
 
+#if !defined(COMPONENT_BUILD)
 std::string GetSessionStateCrashKeyValue() {
   return crash_reporter::GetCrashKeyValue("session-state");
 }
@@ -78,6 +79,7 @@ std::string GetAuthEventsCrashKeyValue() {
   } while (chunk.length() > 0);
   return result;
 }
+#endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace
 
@@ -367,6 +369,10 @@ TEST_F(AuthEventsRecorderTest, OnRecoveryDone) {
       "Login.CryptohomeRecoveryDuration.Failure", two_seconds, 1);
 }
 
+// These tests fail on the component build because
+// GetSessionStateCrashKeyValue() doesn't pull from the same crashpad instance
+// that is used by AuthEventsRecorder.
+#if !defined(COMPONENT_BUILD)
 TEST_F(AuthEventsRecorderTest, SessionStateCrashKey) {
   session_manager_->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
@@ -458,5 +464,7 @@ TEST_F(AuthEventsRecorderTest, AuthEventsCrashKeyOnFailureUnlock) {
             "auth_surface_change_Lock,update_lock_screen_view,auth_submit,"
             "auth_complete_failure,");
 }
+
+#endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace ash

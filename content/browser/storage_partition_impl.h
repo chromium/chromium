@@ -41,8 +41,8 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
-#include "services/network/public/mojom/cert_verifier_service.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
+#include "services/network/public/mojom/network_context_client.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_settings.h"
@@ -471,6 +471,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   class ServiceWorkerCookieAccessObserver;
   class ServiceWorkerTrustTokenAccessObserver;
   class ServiceWorkerSharedDictionaryAccessObserver;
+  struct NetworkContextOwner;
 
   friend class BackgroundSyncManagerTest;
   friend class BackgroundSyncServiceImplTestHarness;
@@ -741,13 +742,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::map<mojo::ReceiverId, mojo::Remote<blink::mojom::DomStorageClient>>
       dom_storage_clients_;
 
-  // This is the NetworkContext used to
-  // make requests for the StoragePartition. When the network service is
-  // enabled, the underlying NetworkContext will be owned by the network
-  // service. When it's disabled, the underlying NetworkContext may either be
-  // provided by the embedder, or is created by the StoragePartition and owned
-  // by `network_context_owner_`.
-  mojo::Remote<network::mojom::NetworkContext> network_context_;
+  // Owns the NetworkContext used to make requests for the StoragePartition.
+  // Forward declared so we don't need to include network_context.mojom.h here.
+  std::unique_ptr<NetworkContextOwner> network_context_owner_;
 
   mojo::Receiver<network::mojom::NetworkContextClient>
       network_context_client_receiver_{this};

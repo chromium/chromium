@@ -91,5 +91,14 @@ void RenderViewHostTestHarnessAdapter::SetUp() {
 void RenderViewHostTestHarnessAdapter::TearDown() {
   RenderViewHostTestHarness::TearDown();
 }
+
+BrowserTaskEnvironment* RenderViewHostTestHarnessAdapter::task_environment() {
+  return RenderViewHostTestHarness::task_environment();
+}
+
+BrowserContext* RenderViewHostTestHarnessAdapter::browser_context() {
+  return RenderViewHostTestHarness::browser_context();
+}
+
 }  // namespace mojolpm
 }  // namespace content

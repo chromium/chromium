@@ -309,7 +309,7 @@ void SimpleIndexFile::SyncWriteToDisk(
   // flush delay. This simple approach will be reconsidered if it does not allow
   // for maintaining freshness.
   base::Time cache_dir_mtime;
-  absl::optional<base::File::Info> file_info =
+  std::optional<base::File::Info> file_info =
       file_operations->GetFileInfo(cache_directory);
   if (!file_info) {
     LOG(ERROR) << "Could not obtain information about cache age";
@@ -605,7 +605,7 @@ void SimpleIndexFile::SyncRestoreFromDisk(
   SimpleIndex::EntrySet* entries = &out_result->entries;
 
   auto enumerator = file_operations->EnumerateFiles(cache_directory);
-  while (absl::optional<SimpleFileEnumerator::Entry> entry =
+  while (std::optional<SimpleFileEnumerator::Entry> entry =
              enumerator->Next()) {
     ProcessEntryFile(file_operations, cache_type, entries, entry->path,
                      entry->last_accessed, entry->last_modified, entry->size);

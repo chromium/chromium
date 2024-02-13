@@ -1636,12 +1636,12 @@ TEST_F(ModelTypeWorkerTest, CommitOnly) {
   const SyncEntity entity =
       server()->GetNthCommitMessage(0).commit().entries(0);
 
-  EXPECT_FALSE(entity.has_ctime());
-  EXPECT_FALSE(entity.has_deleted());
   EXPECT_FALSE(entity.has_folder());
-  EXPECT_FALSE(entity.has_mtime());
-  EXPECT_FALSE(entity.has_version());
-  EXPECT_FALSE(entity.has_name());
+  EXPECT_TRUE(entity.has_ctime());
+  EXPECT_TRUE(entity.has_deleted());
+  EXPECT_TRUE(entity.has_mtime());
+  EXPECT_TRUE(entity.has_version());
+  EXPECT_TRUE(entity.has_name());
   EXPECT_TRUE(entity.has_id_string());
   EXPECT_TRUE(entity.specifics().has_user_event());
   EXPECT_EQ(id, entity.specifics().user_event().event_time_usec());

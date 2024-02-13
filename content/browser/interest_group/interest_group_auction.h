@@ -355,11 +355,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // duplicates auction_worklet::mojom::BidderWorkletBid, with additional
   // information about the bidder.
   struct CONTENT_EXPORT Bid {
-    // Which auctions the bid is appropriate for, based on whether the auction
-    // enforces k-anonymity or not.
-    enum class BidRole { kUnenforcedKAnon, kEnforcedKAnon, kBothKAnonModes };
-
-    Bid(BidRole bid_role,
+    Bid(auction_worklet::mojom::BidRole bid_role,
         std::string ad_metadata,
         double bid,
         std::optional<blink::AdCurrency> bid_currency,
@@ -379,7 +375,7 @@ class CONTENT_EXPORT InterestGroupAuction
 
     // This considers the bid_role to pick proper trace id.
     uint64_t TraceId() {
-      return (bid_role == BidRole::kEnforcedKAnon)
+      return (bid_role == auction_worklet::mojom::BidRole::kEnforcedKAnon)
                  ? *bid_state->trace_id_for_kanon_scoring
                  : *bid_state->trace_id;
     }
@@ -390,7 +386,7 @@ class CONTENT_EXPORT InterestGroupAuction
     std::vector<GURL> GetAdComponentUrls() const;
 
     // Which auctions the bid participates in.
-    BidRole bid_role;
+    auction_worklet::mojom::BidRole bid_role;
 
     // These are taken directly from the
     // auction_worklet::mojom::BidderWorkletBid.
@@ -972,7 +968,7 @@ class CONTENT_EXPORT InterestGroupAuction
 
   static std::unique_ptr<Bid> CreateBidFromComponentAuctionWinner(
       const ScoredBid* scored_bid,
-      Bid::BidRole bid_role);
+      auction_worklet::mojom::BidRole bid_role);
 
   // Called when a potential source of bids or other scoring dependency has
   // finished. This could be a component auction completing (with or without

@@ -14,10 +14,6 @@
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/policy/cr_policy_pref_indicator.js';
-// <if expr='chromeos_ash'>
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
-
-// </if>
 
 import {assert} from '//resources/js/assert.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -83,6 +79,16 @@ export class SettingsDropdownMenuElement extends
       },
 
       /**
+       * If true, do not automatically set the preference value. This allows the
+       * container to confirm the change first then call either sendPrefChange
+       * or resetToPrefValue accordingly.
+       */
+      noSetPref: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * The value of the "custom" item.
        */
       notFoundValue: {
@@ -105,6 +111,7 @@ export class SettingsDropdownMenuElement extends
   menuOptions: DropdownMenuOptionList;
   disabled: boolean;
   prefKey: string|null;
+  noSetPref: boolean;
   notFoundValue: string;
   label: string;
 
@@ -112,17 +119,11 @@ export class SettingsDropdownMenuElement extends
     this.$.dropdownMenu.focus();
   }
 
-  /**
-   * Pass the selection change to the pref value.
-   */
-  private onChange_() {
-    const selected = this.$.dropdownMenu.value;
-
-    if (selected === this.notFoundValue) {
-      return;
-    }
-
+  /** Update the pref to the current selected value. */
+  sendPrefChange() {
     assert(this.pref);
+
+    const selected = this.$.dropdownMenu.value;
     if (this.prefKey) {
       this.set(`pref.value.${this.prefKey}`, selected);
     } else {
@@ -130,6 +131,19 @@ export class SettingsDropdownMenuElement extends
       if (prefValue !== undefined) {
         this.set('pref.value', prefValue);
       }
+    }
+  }
+
+  /**
+   * Pass the selection change to the pref value.
+   */
+  private onChange_() {
+    if (this.$.dropdownMenu.value === this.notFoundValue) {
+      return;
+    }
+
+    if (!this.noSetPref) {
+      this.sendPrefChange();
     }
 
     // settings-control-change only fires when the selection is changed to

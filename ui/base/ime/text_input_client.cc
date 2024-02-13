@@ -23,9 +23,9 @@ void TextInputClient::ExtendSelectionAndReplace(
              InsertTextCursorBehavior::kMoveCursorAfterText);
 }
 
-absl::optional<GrammarFragment> TextInputClient::GetGrammarFragmentAtCursor()
+std::optional<GrammarFragment> TextInputClient::GetGrammarFragmentAtCursor()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool TextInputClient::ClearGrammarFragments(const gfx::Range& range) {

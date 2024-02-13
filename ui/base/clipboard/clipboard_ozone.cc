@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "base/types/variant_util.h"
 #include "build/build_config.h"
 #include "clipboard_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -51,7 +51,7 @@ namespace {
 constexpr base::TimeDelta kRequestTimeout = base::Seconds(1);
 
 // Checks if DLP rules allow the clipboard read.
-bool IsReadAllowed(absl::optional<DataTransferEndpoint> data_src,
+bool IsReadAllowed(std::optional<DataTransferEndpoint> data_src,
                    const DataTransferEndpoint* data_dst,
                    const base::span<uint8_t> data) {
   DataTransferPolicyController* policy_controller =
@@ -132,6 +132,8 @@ class ClipboardOzone::AsyncClipboardOzone {
   AsyncClipboardOzone(const AsyncClipboardOzone&) = delete;
   AsyncClipboardOzone& operator=(const AsyncClipboardOzone&) = delete;
   ~AsyncClipboardOzone() = default;
+
+  void OnPreShutdown() { platform_clipboard_ = nullptr; }
 
   bool IsSelectionBufferAvailable() const {
     return platform_clipboard_->IsSelectionBufferAvailable();
@@ -348,7 +350,7 @@ class ClipboardOzone::AsyncClipboardOzone {
   base::flat_map<ClipboardBuffer, PlatformClipboard::DataMap> offered_data_;
 
   // Provides communication to a system clipboard under ozone level.
-  const raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
+  raw_ptr<PlatformClipboard> platform_clipboard_ = nullptr;
 
   // Reference to the ClipboardOzone object instantiating this
   // ClipboardOzone::AsyncClipboardOzone object. It is used to set
@@ -380,9 +382,11 @@ ClipboardOzone::ClipboardOzone() {
 
 ClipboardOzone::~ClipboardOzone() = default;
 
-void ClipboardOzone::OnPreShutdown() {}
+void ClipboardOzone::OnPreShutdown() {
+  async_clipboard_ozone_->OnPreShutdown();
+}
 
-absl::optional<DataTransferEndpoint> ClipboardOzone::GetSource(
+std::optional<DataTransferEndpoint> ClipboardOzone::GetSource(
     ClipboardBuffer buffer) const {
   return base::OptionalFromPtr(base::FindPtrOrNull(data_src_, buffer));
 }
@@ -589,7 +593,7 @@ void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
     return;
 
   RecordRead(ClipboardFormatMetric::kCustomData);
-  if (absl::optional<std::u16string> maybe_data =
+  if (std::optional<std::u16string> maybe_data =
           ReadCustomDataForType(custom_data, type);
       maybe_data) {
     *result = std::move(*maybe_data);
@@ -697,7 +701,7 @@ void ClipboardOzone::WriteText(base::StringPiece text) {
 
 void ClipboardOzone::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> /* source_url */) {
+    std::optional<base::StringPiece> /* source_url */) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
 }
@@ -758,7 +762,7 @@ void ClipboardOzone::WriteData(const ClipboardFormatType& format,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ClipboardOzone::AddClipboardSourceToDataOffer(
     const ClipboardBuffer buffer) {
-  absl::optional<DataTransferEndpoint> data_src = GetSource(buffer);
+  std::optional<DataTransferEndpoint> data_src = GetSource(buffer);
 
   if (!data_src)
     return;

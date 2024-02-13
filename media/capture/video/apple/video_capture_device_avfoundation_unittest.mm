@@ -30,9 +30,9 @@ using testing::Return;
 
 namespace media {
 
-// TODO(https://crbug.com/1383901): Fix and re-enable these tests.
+// TODO: https://crbug.com/40253946 - Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     OutputsNv12WithoutScalingByDefault) {
+     DISABLED_OutputsNv12WithoutScalingByDefault) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -71,7 +71,8 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
+// TODO: https://crbug.com/40253946 - Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest, DISABLED_TakePhoto) {
   RunTestCase(
       base::BindOnce([] {
         NSString* deviceId = GetFirstDeviceId();
@@ -107,7 +108,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, TakePhoto) {
       }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
+// TODO: https://crbug.com/40253946 - Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_StopCaptureWhileTakingPhoto) {
   RunTestCase(
       base::BindOnce([] {
         NSString* deviceId = GetFirstDeviceId();
@@ -139,7 +142,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, StopCaptureWhileTakingPhoto) {
       }));
 }
 
-TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
+// TODO: https://crbug.com/40253946 - Fix and re-enable these tests.
+TEST(VideoCaptureDeviceAVFoundationMacTest,
+     DISABLED_MultiplePendingTakePhotos) {
   RunTestCase(
       base::BindOnce([] {
         NSString* deviceId = GetFirstDeviceId();
@@ -171,8 +176,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, MultiplePendingTakePhotos) {
       }));
 }
 
+// TODO: https://crbug.com/40253946 - Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     StopCaptureWhileMultiplePendingTakePhotos) {
+     DISABLED_StopCaptureWhileMultiplePendingTakePhotos) {
   RunTestCase(
       base::BindOnce([] {
         NSString* deviceId = GetFirstDeviceId();
@@ -208,8 +214,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
       }));
 }
 
+// TODO: https://crbug.com/40253946 - Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     StopPhotoOutputWhenNoLongerTakingPhotos) {
+     DISABLED_StopPhotoOutputWhenNoLongerTakingPhotos) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {
@@ -243,8 +250,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
   }));
 }
 
+// TODO: https://crbug.com/40253946 - Fix and re-enable these tests.
 TEST(VideoCaptureDeviceAVFoundationMacTest,
-     TakePhotoAndShutDownWithoutWaiting) {
+     DISABLED_TakePhotoAndShutDownWithoutWaiting) {
   RunTestCase(base::BindOnce([] {
     NSString* deviceId = GetFirstDeviceId();
     if (!deviceId) {

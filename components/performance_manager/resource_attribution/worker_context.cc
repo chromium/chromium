@@ -13,10 +13,11 @@
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 WorkerContext::WorkerContext(const blink::WorkerToken& token,
                              base::WeakPtr<WorkerNode> weak_node)
@@ -86,4 +87,4 @@ std::string WorkerContext::ToString() const {
   return base::StrCat({"WorkerContext:", token_.ToString()});
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

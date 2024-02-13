@@ -99,6 +99,9 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // base::Version used in {min,max}_os_version filtering.
   static base::Version GetOSVersion();
 
+  // Returns the hardware class string used for hardware_class filtering.
+  static std::string GetHardwareClass();
+
  private:
   // Evaluating enterprise status negatively affects performance, so we only
   // evaluate it if needed (i.e. if a study is filtering by enterprise) and at

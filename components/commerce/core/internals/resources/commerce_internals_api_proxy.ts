@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {ProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CommerceInternalsHandlerFactory, CommerceInternalsHandlerRemote, CommerceInternalsPageCallbackRouter, ShoppingListEligibleDetail, Subscription} from './commerce_internals.mojom-webui.js';
+import type {ShoppingListEligibleDetail, Subscription} from './commerce_internals.mojom-webui.js';
+import {CommerceInternalsHandlerFactory, CommerceInternalsHandlerRemote, CommerceInternalsPageCallbackRouter} from './commerce_internals.mojom-webui.js';
 
 export class CommerceInternalsApiProxy {
   private callbackRouter: CommerceInternalsPageCallbackRouter;

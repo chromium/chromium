@@ -13,17 +13,16 @@
 namespace user_manager {
 
 enum class MultiUserSignInPolicy {
+  // The user is allowed to be either a primary user or secondary user in
+  // multi user sign-in sessions.
   kUnrestricted = 0,
+
+  // The user can be only be a primary user in multi user sign-in sessions.
   kPrimaryOnly = 1,
+
+  // The user cannot be a part of multi user sign-in sessions.
   kNotAllowed = 2,
 };
-
-// A string pref that holds string enum values of how the user should behave
-// in a multi-user sign-in session. See ChromeOsMultiProfileUserBehavior policy
-// for more details of the valid values.
-// Named MultiProfile for historical reasons.
-inline constexpr char kMultiProfileUserBehaviorPref[] =
-    "settings.multiprofile_user_behavior";
 
 // Stringifies the policy to store in the pref.
 USER_MANAGER_EXPORT std::string_view MultiUserSignInPolicyToPrefValue(

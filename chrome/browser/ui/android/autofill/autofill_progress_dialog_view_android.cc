@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillProgressDialogBridge_jni.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
@@ -26,7 +27,7 @@ using base::android::ConvertUTF16ToJavaString;
 namespace autofill {
 
 AutofillProgressDialogViewAndroid::AutofillProgressDialogViewAndroid(
-    AutofillProgressDialogController* controller)
+    base::WeakPtr<AutofillProgressDialogController> controller)
     : controller_(controller) {}
 
 AutofillProgressDialogViewAndroid::~AutofillProgressDialogViewAndroid() =
@@ -35,11 +36,10 @@ AutofillProgressDialogViewAndroid::~AutofillProgressDialogViewAndroid() =
 void AutofillProgressDialogViewAndroid::Dismiss(
     bool show_confirmation_before_closing,
     bool is_canceled_by_user) {
-  if (show_confirmation_before_closing) {
+  if (controller_ && show_confirmation_before_closing) {
     // If the confirmation is shown, the dialog must have been dismissed
     // automatically without user actions.
     DCHECK(!is_canceled_by_user);
-    DCHECK(controller_);
     std::u16string confirmation_message = controller_->GetConfirmationMessage();
     controller_->OnDismissed(/*is_canceled_by_user=*/false);
     controller_ = nullptr;
@@ -63,6 +63,11 @@ void AutofillProgressDialogViewAndroid::InvalidateControllerForCallbacks() {
   controller_ = nullptr;
 }
 
+base::WeakPtr<AutofillProgressDialogView>
+AutofillProgressDialogViewAndroid::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
   if (controller_) {
     controller_->OnDismissed(/*is_canceled_by_user=*/true);
@@ -73,25 +78,30 @@ void AutofillProgressDialogViewAndroid::OnDismissed(JNIEnv* env) {
   delete this;
 }
 
-void AutofillProgressDialogViewAndroid::ShowDialog(
+bool AutofillProgressDialogViewAndroid::ShowDialog(
     content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents->GetNativeView();
   DCHECK(view_android);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
-  if (!window_android)
-    return;
+  if (!window_android) {
+    return false;
+  }
 
   java_object_.Reset(Java_AutofillProgressDialogBridge_create(
       env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
 
-  Java_AutofillProgressDialogBridge_showDialog(
-      env, java_object_,
-      ConvertUTF16ToJavaString(env, controller_->GetLoadingTitle()),
-      ConvertUTF16ToJavaString(env, controller_->GetLoadingMessage()),
-      ConvertUTF16ToJavaString(env, controller_->GetCancelButtonLabel()),
-      ResourceMapper::MapToJavaDrawableId(
-          IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
+  if (controller_) {
+    Java_AutofillProgressDialogBridge_showDialog(
+        env, java_object_,
+        ConvertUTF16ToJavaString(env, controller_->GetLoadingTitle()),
+        ConvertUTF16ToJavaString(env, controller_->GetLoadingMessage()),
+        ConvertUTF16ToJavaString(env, controller_->GetCancelButtonLabel()),
+        ResourceMapper::MapToJavaDrawableId(
+            IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
+    return true;
+  }
+  return false;
 }
 
 void AutofillProgressDialogViewAndroid::ShowConfirmation(
@@ -103,13 +113,17 @@ void AutofillProgressDialogViewAndroid::ShowConfirmation(
   }
 }
 
-AutofillProgressDialogView* CreateAndShowProgressDialog(
-    AutofillProgressDialogController* controller,
+base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
+    base::WeakPtr<AutofillProgressDialogController> controller,
     content::WebContents* web_contents) {
   AutofillProgressDialogViewAndroid* dialog_view =
       new AutofillProgressDialogViewAndroid(controller);
-  dialog_view->ShowDialog(web_contents);
-  return dialog_view;
+  if (dialog_view->ShowDialog(web_contents)) {
+    return dialog_view->GetWeakPtr();
+  }
+
+  delete dialog_view;
+  return nullptr;
 }
 
 }  // namespace autofill

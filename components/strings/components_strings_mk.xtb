@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Не е безбедно</translation>
 <translation id="1075079914415273530">Земјоделство и шумарство</translation>
 <translation id="1075364221219156102">Користете криптографски клуч</translation>
-<translation id="1078033282564106222">Избрана е опцијата за број на зграда</translation>
 <translation id="1080116354587839789">Приспособете на ширината</translation>
 <translation id="1081061862829655580">Фиока 19</translation>
 <translation id="1082026381988252344">Лизгајте и зумирајте ги содржините на вашата споделена картичка</translation>
@@ -247,6 +246,7 @@
 <translation id="1428729058023778569">Ја гледате опоменава бидејќи сајтов не поддржува HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Дознајте повеќе<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Самолеплива фолија</translation>
 <translation id="1430915738399379752">Печати</translation>
+<translation id="1431021750861456539">Автоматско отворање на цел екран</translation>
 <translation id="1432187715652018471">страница сака да инсталира ракувач на услуги.</translation>
 <translation id="1432581352905426595">Управувајте со пребарувачи</translation>
 <translation id="1433225466058025572">Обидете се да ги преместите датотеките повторно</translation>
@@ -586,6 +586,7 @@
 <translation id="2075497153347571252">Вашиот администратор блокирал <ph name="PERMISSION" /> на <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2080021694978766903">Правилово не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> записи.</translation>
+<translation id="2081482239432306393">Избрана е опцијата за број на куќа</translation>
 <translation id="20817612488360358">Поставките на прокси на системот се поставени да се користат, но назначена е и јасна конфигурација на прокси.</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> од <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Дозволувај при секое отворање</translation>
@@ -613,7 +614,6 @@
 <translation id="2126374524350484896">Приказ во PDF:</translation>
 <translation id="2130448033692577677">Шаблоните што ги назначивте не може да се применат бидејќи правилото DnsOverHttpsMode не е поставено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Се презема јазичен пакет за <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Облека за мажи</translation>
 <translation id="2137891579555018930">Се чека дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележувачи</translation>
@@ -1387,7 +1387,6 @@
 <translation id="3681007416295224113">Информации за сертификат</translation>
 <translation id="3681421644246505351">Chrome ги утврдува темите од интерес според вашата неодамнешна историја на прелистувањето.</translation>
 <translation id="3682094733650754138">Избрана е опцијата за пополнување адреса</translation>
-<translation id="3689867156802445220">Број на зграда</translation>
 <translation id="3693327506115126094">Изберете како ќе потврдите дека сте вие</translation>
 <translation id="3698629142018988477">Копче за создавање сајт, активирајте го за да набрзина создадете нов сајт во Google Sites</translation>
 <translation id="3701325639446035885">Продажба на билети за настани</translation>
@@ -1412,6 +1411,7 @@
 <translation id="3723663469265383848">Во текот на ажурирањето нема да може да го користите вашиот уред најмногу 10 минути.</translation>
 <translation id="372429172604983730">Апликациите што може да ја предизвикаат грешкава опфаќаат антивируси, заштитни ѕидови и веб-филтри или прокси-софтвери.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да набрзина создадете нова презентација на Google Slides</translation>
+<translation id="3727309136762649052">Поле за име</translation>
 <translation id="3727850735097852673">За да користите Google Password Manager со macOS Keychain, рестартирајте го Chrome и дозволете пристап до Keychain. Вашите картички ќе се отворат повторно по рестартирањето.</translation>
 <translation id="3733139489341305600">Автономни возила</translation>
 <translation id="3736520371357197498">Доколку ги разбирате ризиците за вашата безбедност, може <ph name="BEGIN_LINK" />да ја посетите небезбеднава локација<ph name="END_LINK" /> пред да се отстранат опасните програми.</translation>
@@ -1576,6 +1576,7 @@
 <translation id="4089152113577680600">Фиока 14</translation>
 <translation id="4092349052316400070">Пополнете ја адресата</translation>
 <translation id="4096237801206588987">11 x 15 инчи</translation>
+<translation id="4098306082496067348">Допрете ги деталите за виртуелната картичка за да ги додадете при плаќањето.</translation>
 <translation id="4098354747657067197">Пред вас е страница за измама</translation>
 <translation id="4099048595830172239">Правилото за администратор не препорачува споделување на екранот со <ph name="APPLICATION_TITLE" /> кога се видливи доверливи содржини:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да ги приспособите голимините и типовите на фонтовите во Chrome</translation>
@@ -1899,6 +1900,7 @@
 <translation id="4729147136006144950">Добротворност и филантропија</translation>
 <translation id="4730977633786878901">Рецензии</translation>
 <translation id="4731638775147756694">Администраторот ја блокирал апликацијата</translation>
+<translation id="4732860731866514038">Се презема јазичен пакет за <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> сака да ја користи локацијата на вашиот уред</translation>
 <translation id="4736491186715342415">Моторни возила</translation>
 <translation id="4736825316280949806">Рестартирајте го Chromium</translation>
@@ -1920,7 +1922,6 @@
 <translation id="4757022425116568383">Криптографски клуч од профилот на Chrome</translation>
 <translation id="4757993714154412917">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chromium ви препорачува да ги проверите зачуваните лозинки.</translation>
 <translation id="4758311279753947758">Додај информации за контакт</translation>
-<translation id="4761104368405085019">Користете го микрофонот</translation>
 <translation id="4761326898079498987">Прегледајте за повеќе детали</translation>
 <translation id="4761869838909035636">Изврши безбедносна проверка во Chrome</translation>
 <translation id="4763196677855776703">„Условите и одредбите“ ги овозможи <ph name="URL" /></translation>
@@ -2258,7 +2259,6 @@
             <ph name="LIST_ITEM" />колачињата и податоците од сајтовите
             <ph name="LIST_ITEM" />податоците внесени во формулари
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> сака да ги контролира и репрограмира вашите MIDI-уреди (SysEx)</translation>
 <translation id="5443468954631487277">Обратен редослед со лицето нагоре</translation>
 <translation id="5447235695608032700">Дозволете сајтот <ph name="SITE" /> да ги користи податоците што ги зачувал за вас</translation>
 <translation id="5447765697759493033">Сајтов нема да се преведе</translation>
@@ -2285,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     Обидете се да го контактирате вашиот системски администратор.</translation>
 <translation id="549333378215107354">Големина 3</translation>
+<translation id="5501712702042287009">автоматско отворање на цел екран</translation>
 <translation id="550365051221576010">Пополнување сѐ</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управувани обележувачи</translation>
@@ -2471,7 +2472,6 @@
 <translation id="5877831137320480913">Убавина и фитнес</translation>
 <translation id="5879989559903563723">Не е дозволено во „Режим на гостин“</translation>
 <translation id="5880050725127890683">Одете на „Безбедносна проверка“ на Chrome</translation>
-<translation id="5883861433316751031">Да се дозволи контролирање и репрограмирање на MIDI-уредите?</translation>
 <translation id="5884465125445718607">Плик Chinese #6</translation>
 <translation id="5887400589839399685">Картичката е зачувана</translation>
 <translation id="5887687176710214216">Последно посетено вчера</translation>
@@ -2822,7 +2822,6 @@
 <translation id="6556866813142980365">Повтори</translation>
 <translation id="6557715786897013164">14 x 17 инчи</translation>
 <translation id="6560786330438719938">Инсталирани или деинсталирани апликации и колку често се користат</translation>
-<translation id="6567084950885568327">Контролирање и репрограмирање на MIDI-уреди</translation>
 <translation id="6568793038316600992">Копче за управување со начините на плаќање, активирајте го за да управувате со податоците за плаќањата и кредитната картичка во поставките за Chrome</translation>
 <translation id="6569060085658103619">Гледате страница со екстензии</translation>
 <translation id="6569366777234823130">Драми</translation>
@@ -3205,6 +3204,7 @@
 <translation id="733354035281974745">Отфрлање на локалната сметка на уредот</translation>
 <translation id="7334320624316649418">&amp;Повтори преуредување</translation>
 <translation id="7335157162773372339">Може да прашува за да ја користи камерата</translation>
+<translation id="7336636595549675416">Број на куќа</translation>
 <translation id="7337248890521463931">Прикажи повеќе редови</translation>
 <translation id="7337706099755338005">Не е достапен на вашата платформа.</translation>
 <translation id="733923710415886693">Сертификатот на серверот не е откриен преку Транспарентност на сертификати.</translation>
@@ -3911,7 +3911,6 @@
 <translation id="8671519637524426245">Вредноста <ph name="SECURE_DNS_SALT" /> не ги исполнува барањата за големина.</translation>
 <translation id="867224526087042813">Потпис</translation>
 <translation id="8672264262457010862">Бизнис и индустрија</translation>
-<translation id="8673776281896298303">да ги контролира и репрограмира вашите MIDI-уреди (SysEx)</translation>
 <translation id="8676424191133491403">Без одложување</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, одговор, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Веб-страницата на <ph name="PAGE" /> не може да се вчита бидејќи:</translation>
@@ -4152,7 +4151,6 @@
 <translation id="9148507642005240123">&amp;Врати уредување</translation>
 <translation id="9148599396704355100">Цената е ниска</translation>
 <translation id="9150025764986957246">Може да внесувате работи како следниве:</translation>
-<translation id="9150045010208374699">Користи ја камерата</translation>
 <translation id="9150685862434908345">Администраторот може да го промени поставувањето на прелистувачот далечински. Активноста на уредов може да се управува и надвор од Chrome. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Ажурно</translation>
 <translation id="9155211586651734179">Поврзани периферни уреди за аудио</translation>

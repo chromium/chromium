@@ -49,7 +49,7 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
   // applicable must be inside a form tag, must not run heuristics normally
   // (i.e., their field count is below `kMinRequiredFieldsForHeuristics`), but
   // must be eligible for single field form heuristics.
-  if (!form.is_form_tag() || form.ShouldRunHeuristics() ||
+  if (!form.is_form_element() || form.ShouldRunHeuristics() ||
       !form.ShouldRunHeuristicsForSingleFieldForms()) {
     return false;
   }

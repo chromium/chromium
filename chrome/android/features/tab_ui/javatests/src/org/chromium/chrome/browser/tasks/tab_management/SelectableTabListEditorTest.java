@@ -1044,7 +1044,8 @@ public class SelectableTabListEditorTest {
                     Snackbar currentSnackbar = mSnackbarManager.getCurrentSnackbarForTesting();
                     Assert.assertEquals(
                             Snackbar.UMA_BOOKMARK_ADDED, currentSnackbar.getIdentifierForTesting());
-                    Assert.assertEquals("Bookmarked", currentSnackbar.getTextForTesting());
+                    Assert.assertEquals(
+                            "Bookmarked to Mobile bookmarks", currentSnackbar.getTextForTesting());
                     currentSnackbar.getController().onAction(null);
                 });
         BookmarkEditActivity activity = BookmarkTestUtil.waitForEditActivity();

@@ -219,7 +219,7 @@ class SESSIONS_EXPORT TabRestoreServiceHelper
   // Set of contexts that we've received a BrowserClosing method for but no
   // corresponding BrowserClosed. We cache the set of contexts closing to
   // avoid creating historical tabs for them.
-  std::set<LiveTabContext*> closing_contexts_;
+  std::set<raw_ptr<LiveTabContext, SetExperimental>> closing_contexts_;
 
   // Set of groups that we've received a CreateHistoricalGroup method for but no
   // corresponding GroupClosed. We cache the set of groups closing to avoid

@@ -5,6 +5,7 @@
 #ifndef ASH_SHELF_TEST_SHELF_TEST_BASE_H_
 #define ASH_SHELF_TEST_SHELF_TEST_BASE_H_
 
+#include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_color_generator.h"
@@ -44,6 +45,9 @@ class ShelfTestBase : public AshTestBase {
   // If `use_alternative_color` is true, the neighboring shelf app icons are of
   // different colors.
   void AddAppShortcutsUntilOverflow(bool use_alternative_color = false);
+
+  // Adds a shelf item that is a webapp shortcut.
+  ShelfItem AddWebAppShortcut();
 
   // Adds a shelf item of the specified type and color.
   ShelfID AddAppShortcutWithIconColor(ShelfItemType item_type, SkColor color);

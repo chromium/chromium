@@ -39,13 +39,24 @@ void ReportPerceivedFPS(const std::string& category_name,
                               static_cast<int>(std::round(perceived_fps)));
 }
 
-void ReportCommitDeviation(const std::string& category_name, double error_mcs) {
+void ReportCommitDeviation(const std::string& category_name,
+                           double commit_deviation) {
   DCHECK(!category_name.empty());
-  DCHECK_GE(error_mcs, 0);
+  DCHECK_GE(commit_deviation, 0);
   base::UmaHistogramCustomCounts(
       GetHistogramName(category_name, "CommitDeviation2"),
-      static_cast<int>(std::round(error_mcs)), 100 /* min */, 5000 /* max */,
-      50 /* buckets */);
+      static_cast<int>(std::round(commit_deviation)), 100 /* min */,
+      5000 /* max */, 50 /* buckets */);
+}
+
+void ReportPresentDeviation(const std::string& category_name,
+                            double present_deviation) {
+  DCHECK(!category_name.empty());
+  DCHECK_GE(present_deviation, 0);
+  base::UmaHistogramCustomCounts(
+      GetHistogramName(category_name, "PresentDeviation2"),
+      static_cast<int>(std::round(present_deviation)), 100 /* min */,
+      5000 /* max */, 50 /* buckets */);
 }
 
 void ReportQuality(const std::string& category_name, double quality) {
@@ -55,6 +66,15 @@ void ReportQuality(const std::string& category_name, double quality) {
   const int sample = (int)(quality * 100.0);
   base::UmaHistogramPercentageObsoleteDoNotUse(
       GetHistogramName(category_name, "RenderQuality2"), sample);
+}
+
+void ReportJanksPerMinute(const std::string& category_name,
+                          double janks_per_minute) {
+  DCHECK(!category_name.empty());
+  DCHECK_GE(janks_per_minute, 0);
+  base::UmaHistogramCounts100(
+      GetHistogramName(category_name, "JanksPerMinute2"),
+      static_cast<int>(std::round(janks_per_minute)));
 }
 
 }  // namespace
@@ -85,14 +105,19 @@ void UmaPerfReporting::OnDone(ArcAppPerformanceTracingSession* session,
                               const std::optional<PerfTraceResult>& result) {
   if (result.has_value()) {
     VLOG(1) << "Analyzing is done for " << category << " "
-            << " FPS: " << result->fps
-            << ", quality: " << result->render_quality
-            << ", present_deviation: " << result->present_deviation;
+            << " fps: " << result->fps
+            << ", perceived_fps: " << result->perceived_fps
+            << ", commit_deviation: " << result->commit_deviation
+            << ", present_deviation: " << result->present_deviation
+            << ", render_quality: " << result->render_quality
+            << ", janks_per_minute: " << result->janks_per_minute;
 
     ReportFPS(category, result->fps);
     ReportPerceivedFPS(category, result->perceived_fps);
-    ReportCommitDeviation(category, result->present_deviation);
+    ReportCommitDeviation(category, result->commit_deviation);
+    ReportPresentDeviation(category, result->present_deviation);
     ReportQuality(category, result->render_quality);
+    ReportJanksPerMinute(category, result->janks_per_minute);
 
     reported_categories_.insert(category);
   }

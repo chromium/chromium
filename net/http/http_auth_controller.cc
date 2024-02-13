@@ -401,7 +401,7 @@ void HttpAuthController::ResetAuth(const AuthCredentials& credentials) {
     identity_.credentials = credentials;
 
     // auth_info_ is no longer necessary.
-    auth_info_ = absl::nullopt;
+    auth_info_ = std::nullopt;
   }
 
   DCHECK(identity_.source != HttpAuth::IDENT_SRC_PATH_LOOKUP);
@@ -636,8 +636,7 @@ void HttpAuthController::OnGenerateAuthTokenDone(int result) {
   }
 }
 
-void HttpAuthController::TakeAuthInfo(
-    absl::optional<AuthChallengeInfo>* other) {
+void HttpAuthController::TakeAuthInfo(std::optional<AuthChallengeInfo>* other) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auth_info_.swap(*other);
 }

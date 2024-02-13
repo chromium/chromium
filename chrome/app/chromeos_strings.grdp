@@ -1457,7 +1457,7 @@
     Get started
   </message>
   <message name="IDS_LOGIN_QUICK_START_SETUP" desc="A label on the button. Used on multiple screens in OOBE to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
-    Set up with Android phone
+    Quick setup with Android phone
   </message>
   <message name="IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT" desc="A label of the first item of the list of available networks. Used on OOBE's network screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
     Automatically transfer WiFi from your Android phone
@@ -4756,10 +4756,10 @@
     Print
   </message>
   <message name="IDS_PRINT_JOB_PRINTING_NOTIFICATION_TITLE" desc="Title of the printing-in-progress notification.">
-    Printing started
+    Printing...
   </message>
   <message name="IDS_PRINT_JOB_DONE_NOTIFICATION_TITLE" desc="Title of the successful printing notification.">
-    Printing complete
+    Done
   </message>
   <message name="IDS_PRINT_JOB_ERROR_NOTIFICATION_TITLE" desc="Title of the error printing notification.">
     Couldn't print. Check printer and try again.
@@ -4794,17 +4794,29 @@
   <message name="IDS_PRINT_JOB_STOPPED_NOTIFICATION_TITLE" desc="Title of the error printing notification.">
     Printer has stopped
   </message>
-  <message name="IDS_PRINT_JOB_NOTIFICATION_MESSAGE" desc="Message of the print job notification.">
-    <ph name="PAGE_NUMBER">$1<ex>5</ex></ph> pages to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>
-  </message>
   <message name="IDS_PRINT_JOB_NOTIFICATION_CLIENT_UNAUTHORIZED_MESSAGE" desc="Message of the print job notification when client is unauthorized.">
     <ph name="PROFILE_USERNAME">$1</ph> is not authorized to print to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>. Please contact your administrator.
   </message>
   <message name="IDS_PRINT_JOB_NOTIFICATION_IDENTIFICATION_REQUIRED_MESSAGE" desc="Message of the print job notification when credentials is not sent to the printer.">
     Identification required to print to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>. Please contact your administrator.
   </message>
-  <message name="IDS_PRINT_JOB_NOTIFICATION_SINGLE_PAGE_MESSAGE" desc="Message of the print job notification for a single page.">
-    1 page to <ph name="PRINTER_NAME">$1<ex>printer</ex></ph>
+  <message name="IDS_PRINT_JOB_PRINTING_CONTENT_SETTINGS_PAGE" desc="Caption of the button in the printing notification that brings the user to the content settings page for Web Printing.">
+    Permissions
+  </message>
+  <message name="IDS_PRINT_JOB_PRINTING_PRINT_MANAGEMENT_PAGE" desc="Caption of the button in the printing notification that brings the user to the print management page.">
+    Print jobs
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_IN_PROGRESS" desc="Message of the print job notification while printing is in progress.">
+    <ph name="APP_NAME">$1<ex>Application</ex></ph> is printing <ph name="PAGE_NUMBER">$2<ex>5</ex></ph> pages to <ph name="PRINTER_NAME">$3<ex>printer</ex></ph>
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_IN_PROGRESS_SINGLE_PAGE" desc="Message of the print job notification while printing is in progress when there's only one page to print.">
+    <ph name="APP_NAME">$1<ex>Application</ex></ph> is printing 1 page to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_DONE" desc="Message of the print job notification when printing is finished.">
+    <ph name="APP_NAME">$1<ex>Application</ex></ph> has finished printing to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>
+  </message>
+  <message name="IDS_PRINT_JOB_NOTIFICATION_APP_PRINTING_INTERRUPTED" desc="Message of the print job notification when printing is interrupted.">
+    <ph name="APP_NAME">$1<ex>Application</ex></ph> is trying to print to <ph name="PRINTER_NAME">$2<ex>printer</ex></ph>
   </message>
 
   <!-- USB Printer Installation Notification -->
@@ -7072,19 +7084,25 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Can't upload files while on a metered connection.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_METERED" desc="Office Fallback dialog instructions for the choices (and buttons) the user has available to open the office file when the system is on a metered network (network where bandwidth usage incurs cost to the user).">
-    Check your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+    Change your internet connection and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE" desc="Title for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">
-    Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when Drive is not available
+    Can't open <ph name="FILE_NAMES">$1<ex>file.docx</ex></ph> when Google Drive is not available
   </message>
   <message name="IDS_OFFICE_FALLBACK_REASON_DRIVE_UNAVAILABLE" desc="Explanation for a dialog that appears when an office file is unable to be opened due to Google Drive not being available.">
-    The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> requires Drive to be available.
+    The application <ph name="APPLICATION_NAME">$1<ex>Google Docs</ex></ph> requires Google Drive to be available.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DISABLE_DRIVE_PREFERENCE" desc="Office Fallback dialog instructions for the choices (buttons) the user has available when Google Drive is disabled in settings.">
+    Try enabling Google Drive in Settings and choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_REASON_DRIVE_DISABLED_FOR_ACCOUNT" desc="Explanation for a dialog that appears when Google Drive is not available for the account type.">
+    Google Drive is disabled for this account type.
+  </message>
+  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT" desc="Office Fallback dialog instructions for the choices (buttons) the user has available when Google Drive is not available for the account type.">
+    Choose "Open in offline editor" to use limited view and editing options.
   </message>
   <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS" desc="Office Fallback dialog instructions for the choices (buttons) the user has available to open the office file.">
     Choose "Try again", or choose "Open in offline editor" to use limited view and editing options.
-  </message>
-  <message name="IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_UNAVAILABLE" desc="Office Fallback dialog instructions for when Google Drive is not available in Files app and the user should try to enable it." translateable="false">
-    Try enabling Google Drive in Settings.
   </message>
 
   <!-- Office file handler selection dialog -->

@@ -46,6 +46,8 @@ class TestBrowserContext : public BrowserContext {
       std::unique_ptr<PlatformNotificationService> service);
   void SetOriginTrialsControllerDelegate(
       OriginTrialsControllerDelegate* delegate);
+  void SetClientHintsControllerDelegate(
+      ClientHintsControllerDelegate* delegate);
 
   // Allow clients to make this an incognito context.
   void set_is_off_the_record(bool is_off_the_record) {
@@ -85,6 +87,8 @@ class TestBrowserContext : public BrowserContext {
   std::unique_ptr<MockReduceAcceptLanguageControllerDelegate>
       reduce_accept_language_controller_delegate_;
   raw_ptr<OriginTrialsControllerDelegate> origin_trials_controller_delegate_ =
+      nullptr;
+  raw_ptr<ClientHintsControllerDelegate> client_hints_controller_delegate_ =
       nullptr;
   bool is_off_the_record_ = false;
 };

@@ -22,6 +22,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/infobars:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
     "//ios/web/public/test:element_selector",
     "//net:test_support",
   ]

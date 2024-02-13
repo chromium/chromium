@@ -21,6 +21,11 @@ class ExtensionsToolbarCoordinator final {
       const ExtensionsToolbarCoordinator&) = delete;
   ~ExtensionsToolbarCoordinator();
 
+  ExtensionsToolbarContainerViewController*
+  GetExtensionsContainerViewController() {
+    return extensions_container_controller_.get();
+  }
+
  private:
   void ResetCoordinatorState();
 

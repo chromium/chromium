@@ -91,7 +91,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
   }
 
   std::pair<SocketPoolMap::iterator, bool> ret =
-      socket_pools_.insert(std::make_pair(proxy_chain, std::move(new_pool)));
+      socket_pools_.emplace(proxy_chain, std::move(new_pool));
   return ret.first->second.get();
 }
 

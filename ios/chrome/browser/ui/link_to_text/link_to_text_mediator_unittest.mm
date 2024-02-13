@@ -95,9 +95,9 @@ class LinkToTextMediatorTest : public PlatformTest {
 
     auto web_state = std::make_unique<FakeWebState>();
     web_state_ = web_state.get();
-    web_state_list_.InsertWebState(0, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list_.InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = web_frames_manager.get();

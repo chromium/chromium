@@ -8,6 +8,7 @@
     "enable_base_tracing": false,
     "enable_reporting": true,
     "enable_resource_allowlist_generation": false,
+    "enable_rust": false,
     "enable_websockets": false,
     "ffmpeg_branding": "Chrome",
     "include_transport_security_state_preload_list": false,

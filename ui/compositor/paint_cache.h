@@ -5,8 +5,9 @@
 #ifndef UI_COMPOSITOR_PAINT_CACHE_H_
 #define UI_COMPOSITOR_PAINT_CACHE_H_
 
+#include <optional>
+
 #include "cc/paint/paint_record.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -39,7 +40,7 @@ class COMPOSITOR_EXPORT PaintCache {
 
   // Stored in an sk_sp because PaintOpBuffer requires this to append the cached
   // items into it.
-  absl::optional<cc::PaintRecord> record_;
+  std::optional<cc::PaintRecord> record_;
 
   // This allows paint cache to be device scale factor aware. If a request for
   // a cache entry is made that does not match the stored cache entry's DSF,

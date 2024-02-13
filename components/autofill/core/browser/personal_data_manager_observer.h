@@ -26,10 +26,6 @@ class PersonalDataManagerObserver {
   // handle.
   virtual void OnPersonalDataFinishedProfileTasks() {}
 
-  // Called when (part of) the browsing history is cleared.
-  virtual void OnBrowsingHistoryCleared(
-      const history::DeletionInfo& deletion_info) {}
-
  protected:
   virtual ~PersonalDataManagerObserver() {}
 };

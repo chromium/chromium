@@ -65,7 +65,7 @@ void CallbackDelayer::StartTimer() {
   stopwatch_->Start();
   repeating_timer_.Start(FROM_HERE, base::Seconds(1) / kRefreshRateHz,
                          base::BindRepeating(&CallbackDelayer::OnTimerTick,
-                                             base::Unretained(this)));
+                                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CallbackDelayer::OnTimerTick() {

@@ -370,7 +370,7 @@ void CalendarEventListView::UpdateListItems() {
   empty_list_view->InvalidateLayout();
 }
 
-BEGIN_METADATA(CalendarEventListView, views::View);
+BEGIN_METADATA(CalendarEventListView);
 END_METADATA
 
 }  // namespace ash

@@ -144,7 +144,7 @@ void FakeFlossSocketManager::ConnectUsingL2cap(
     const int psm,
     const Security security_level,
     ConnectionCompleted callback) {
-  std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+  std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
 }
 
 void FakeFlossSocketManager::ConnectUsingL2capLe(
@@ -152,7 +152,7 @@ void FakeFlossSocketManager::ConnectUsingL2capLe(
     const int psm,
     const Security security_level,
     ConnectionCompleted callback) {
-  std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+  std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
 }
 
 void FakeFlossSocketManager::ConnectUsingRfcomm(
@@ -163,7 +163,7 @@ void FakeFlossSocketManager::ConnectUsingRfcomm(
   // Check for the supported uuid or return error.
   if (uuid.canonical_value() !=
       device::BluetoothUUID(kRfcommUuid).canonical_value()) {
-    std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+    std::move(callback).Run(BtifStatus::kFail, /*socket=*/std::nullopt);
     return;
   }
 
@@ -175,12 +175,12 @@ void FakeFlossSocketManager::ConnectUsingRfcomm(
   socket.uuid = uuid;
   socket.fd = base::ScopedFD(SimulateSocket());
 
-  absl::optional<FlossSocket> sockout(std::move(socket));
+  std::optional<FlossSocket> sockout(std::move(socket));
   std::move(callback).Run(BtifStatus::kSuccess, std::move(sockout));
 }
 
 void FakeFlossSocketManager::Accept(const SocketId id,
-                                    absl::optional<uint32_t> timeout_ms,
+                                    std::optional<uint32_t> timeout_ms,
                                     ResponseCallback<BtifStatus> callback) {
   auto found = listening_sockets_to_callbacks_.find(id);
   if (found != listening_sockets_to_callbacks_.end()) {

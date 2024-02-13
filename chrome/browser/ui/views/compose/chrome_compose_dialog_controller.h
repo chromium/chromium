@@ -7,10 +7,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
-#include "chrome/browser/ui/webui/compose/compose_ui.h"
+#include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/zoom/zoom_controller.h"
@@ -39,7 +39,7 @@ class ChromeComposeDialogController : public compose::ComposeDialogController,
 
   // Returns the currently shown compose dialog. Returns nullptr if the dialog
   // is not currently shown.
-  BubbleContentsWrapperT<ComposeUI>* GetBubbleWrapper() const;
+  WebUIContentsWrapperT<ComposeUntrustedUI>* GetBubbleWrapper() const;
 
   // Shows the current dialog view, if there is one.
   void ShowUI() override;

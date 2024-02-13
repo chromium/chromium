@@ -73,6 +73,10 @@ class AuthenticatedChannelImpl : public AuthenticatedChannel,
                          const std::string& payload) override;
   void OnMessageSent(SecureChannel* secure_channel,
                      int sequence_number) override;
+  void OnNearbyConnectionStateChanged(
+      SecureChannel* secure_channel,
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
 
   void OnRssiFetched(
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback,

@@ -117,10 +117,6 @@ void ReleaseNotesStorage::MarkNotificationShown() {
 }
 
 bool ReleaseNotesStorage::ShouldShowSuggestionChip() {
-  if (!base::FeatureList::IsEnabled(features::kReleaseNotesSuggestionChip)) {
-    return false;
-  }
-
   const int times_left_to_show = profile_->GetPrefs()->GetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
   return times_left_to_show > 0;

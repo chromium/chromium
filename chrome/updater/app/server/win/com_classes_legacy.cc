@@ -44,6 +44,7 @@
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
+#include "chrome/updater/util/progress_sampler.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/app_command_runner.h"
@@ -341,7 +342,9 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   AppWebImpl()
       : IDispatchImpl<IAppWeb>(IID_MAPS_USERSYSTEM(IAppWeb)),
         task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::WithBaseSyncPrimitives()})) {}
+            {base::MayBlock(), base::WithBaseSyncPrimitives()})),
+        download_progress_sampler_(base::Seconds(5), base::Seconds(1)),
+        install_progress_sampler_(base::Seconds(5), base::Seconds(1)) {}
   AppWebImpl(const AppWebImpl&) = delete;
   AppWebImpl& operator=(const AppWebImpl&) = delete;
 
@@ -375,31 +378,32 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
 
     auto result = base::MakeRefCounted<RegisterAppResult>();
     AppServerWin::PostRpcTask(base::BindOnce(
-        [](AppWebImplPtr obj, const std::wstring& brand_code,
-           const std::wstring& ap, scoped_refptr<RegisterAppResult> result) {
+        [](AppWebImplPtr obj, scoped_refptr<RegisterAppResult> result) {
           const base::ScopedClosureRunner signal_event(base::BindOnce(
               [](scoped_refptr<RegisterAppResult> result) {
                 result->completion_event.Signal();
               },
               result));
 
-          scoped_refptr<PersistedData> persisted_data =
-              GetAppServerWinInstance()->config()->GetUpdaterPersistedData();
-          if (persisted_data->GetProductVersion(obj->app_id_).IsValid()) {
-            return;
-          }
-
-          // Pre-register the app if there is no registration for it. This app
-          // registration is removed later if the app install does not happen.
-          result->new_install = true;
+          // Always update ap.
           RegistrationRequest request;
           request.app_id = obj->app_id_;
-          request.version = base::Version(kNullVersion);
-          request.brand_code = base::WideToASCII(brand_code);
-          request.ap = base::WideToASCII(ap);
+          request.ap = obj->ap_;
+
+          // Pre-register the app with a version of "0.0.0.0" if there is no
+          // registration for it. This app registration is removed later if
+          // the app install does not happen.
+          scoped_refptr<PersistedData> persisted_data =
+              GetAppServerWinInstance()->config()->GetUpdaterPersistedData();
+          if (!persisted_data->GetProductVersion(obj->app_id_).IsValid()) {
+            result->new_install = true;
+            request.brand_code = obj->brand_code_;
+            request.version = base::Version(kNullVersion);
+          }
+
           persisted_data->RegisterApp(request);
         },
-        AppWebImplPtr(this), brand_code, ap, result));
+        AppWebImplPtr(this), result));
 
     if (!result->completion_event.TimedWait(base::Seconds(60))) {
       return E_FAIL;
@@ -630,7 +634,9 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     std::wstring available_version;
     ULONG bytes_downloaded = -1;
     ULONG total_bytes_to_download = -1;
+    std::optional<base::TimeDelta> remaining_download_time;
     LONG install_progress_percentage = -1;
+    std::optional<base::TimeDelta> remaining_install_time;
     LONG error_code = 0;
     LONG extra_code1 = 0;
     std::wstring installer_text;
@@ -682,6 +688,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       total_bytes_to_download = state_update_->total_bytes;
       install_progress_percentage = state_update_->install_progress;
 
+      download_progress_sampler_.AddSample(bytes_downloaded);
+      remaining_download_time =
+          download_progress_sampler_.GetRemainingTime(total_bytes_to_download);
+      install_progress_sampler_.AddSample(install_progress_percentage);
+      remaining_install_time = install_progress_sampler_.GetRemainingTime(100);
+
       error_code = state_update_->error_code;
       extra_code1 = state_update_->extra_code1;
       installer_text = base::UTF8ToWide(state_update_->installer_text);
@@ -696,9 +708,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
     return MakeAndInitializeComObject<CurrentStateImpl>(
         current_state, state_value, available_version, bytes_downloaded,
         total_bytes_to_download,
-        /*download_time_remaining_ms=*/-1,
+        remaining_download_time ? remaining_download_time->InMilliseconds()
+                                : -1,
         /*next_retry_time=*/-1, install_progress_percentage,
-        /*install_time_remaining_ms=*/-1,
+        remaining_install_time ? remaining_install_time->InMilliseconds() : -1,
         /*is_canceled=*/VARIANT_FALSE, error_code, extra_code1,
         /*completion_message=*/installer_text,
         /*installer_result_code=*/error_code,
@@ -801,6 +814,8 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   UpdateService::PolicySameVersionUpdate policy_same_version_update_ =
       UpdateService::PolicySameVersionUpdate::kNotAllowed;
   bool set_ready_to_install_ = false;
+  ProgressSampler download_progress_sampler_;
+  ProgressSampler install_progress_sampler_;
 
   // Access to `state_update_` and `result_` must be serialized by using the
   // lock.

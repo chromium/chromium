@@ -532,7 +532,7 @@ delta = "1.0.108 -> 1.0.111"
 
 [[audits.skrifa]]
 who = "drott@chromium.org"
-criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]
+criteria = ["ub-risk-1", "safe-to-deploy", "does-not-implement-crypto"]
 delta = "0.15.2 -> 0.15.4"
 
 [[audits.small_ctor]]

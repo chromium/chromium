@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/user_education_metadata.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -561,6 +562,9 @@ struct TutorialDescription {
 
   // The text ID to use for the complete button at the end of the tutorial.
   int complete_button_text_id = IDS_TUTORIAL_CLOSE_TUTORIAL;
+
+  // Holds metadata about the tutorial.
+  Metadata metadata;
 
  private:
   static void AddStep(std::vector<Step>& dest, Step step) {

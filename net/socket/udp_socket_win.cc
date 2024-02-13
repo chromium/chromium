@@ -589,7 +589,7 @@ int UDPSocketWin::SetDoNotFragment() {
   return rv == 0 ? OK : MapSystemError(WSAGetLastError());
 }
 
-int UDPSocketWin::SetRecvEcn() {
+int UDPSocketWin::SetRecvTos() {
   DCHECK_NE(socket_, INVALID_SOCKET);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -1210,6 +1210,11 @@ int UDPSocketWin::SetDiffServCodePoint(DiffServCodePoint dscp) {
     return dscp_manager_->PrepareForSend(*remote_address_.get());
 
   return OK;
+}
+
+// TODO(crbug.com/1521435): a stub for future ECN support in Windows.
+int UDPSocketWin::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
+  return SetDiffServCodePoint(dscp);
 }
 
 int UDPSocketWin::SetIPv6Only(bool ipv6_only) {

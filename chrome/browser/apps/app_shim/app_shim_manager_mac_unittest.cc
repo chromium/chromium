@@ -19,6 +19,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/code_signature_mac.h"
@@ -286,6 +287,10 @@ class TestAppShim : public chrome::mojom::AppShim,
           provider) override {
     notification_provider_receiver_.Bind(std::move(provider));
   }
+  void RequestNotificationPermission(
+      RequestNotificationPermissionCallback callback) override {
+    request_notification_permission_callback_.SetValue(std::move(callback));
+  }
 
   // mac_notifications::mojom::MacNotificationProvider:
   void BindNotificationService(
@@ -300,6 +305,8 @@ class TestAppShim : public chrome::mojom::AppShim,
   std::string badge_label_;
   mojo::Receiver<mac_notifications::mojom::MacNotificationProvider>
       notification_provider_receiver_{this};
+  base::test::TestFuture<RequestNotificationPermissionCallback>
+      request_notification_permission_callback_;
 };
 
 class TestHost : public AppShimHost {
@@ -1933,6 +1940,147 @@ TEST_F(AppShimManagerTest, LaunchNotificationProviderWithoutAppRunning) {
       host_aa_->test_app_shim_->notification_provider_receiver_.is_bound());
   provider.FlushForTesting();
   EXPECT_TRUE(provider.is_connected());
+}
+
+TEST_F(AppShimManagerTest, LaunchNotificationProviderWithAppNotInstalled) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
+      .WillOnce(Return(nullptr));
+
+  mojo::Remote<mac_notifications::mojom::MacNotificationProvider> provider =
+      manager_->LaunchNotificationProvider(kTestAppIdA);
+  // AppShimManager binds `provider` to a dummy implementation if an app can't
+  // be found, since notifications code expects to always get a bound provider.
+  EXPECT_TRUE(provider.is_bound());
+  provider.FlushForTesting();
+  EXPECT_TRUE(provider.is_connected());
+
+  // Attempting to bind a notification service on the dummy provider should
+  // immediately disconnect.
+  mojo::Remote<mac_notifications::mojom::MacNotificationService> service;
+  mojo::PendingReceiver<mac_notifications::mojom::MacNotificationActionHandler>
+      handler;
+  provider->BindNotificationService(service.BindNewPipeAndPassReceiver(),
+                                    handler.InitWithNewPipeAndPassRemote());
+  EXPECT_TRUE(service.is_connected());
+  service.FlushForTesting();
+  EXPECT_FALSE(service.is_connected());
+  EXPECT_TRUE(provider.is_connected());
+}
+
+TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppRunning) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  // This app is installed for profile A throughout this test.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+
+  // Launch the app shim.
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kNormal));
+  manager_->OnAppActivated(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  // Trigger a notification permission request.
+  base::test::TestFuture<mac_notifications::mojom::RequestPermissionResult>
+      result;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result.GetCallback());
+  EXPECT_TRUE(host_aa_->test_app_shim_
+                  ->request_notification_permission_callback_.Wait());
+  host_aa_->test_app_shim_->request_notification_permission_callback_.Take()
+      .Run(mac_notifications::mojom::RequestPermissionResult::
+               kPermissionPreviouslyGranted);
+  EXPECT_EQ(mac_notifications::mojom::RequestPermissionResult::
+                kPermissionPreviouslyGranted,
+            result.Get());
+}
+
+TEST_F(AppShimManagerTest, RequestNotificationPermissionWithoutAppRunning) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  // This app is installed for profile A throughout this test.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
+      .WillOnce(Return(&profile_a_));
+
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kBackground));
+
+  // Trigger a notification permission request.
+  base::test::TestFuture<mac_notifications::mojom::RequestPermissionResult>
+      result;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result.GetCallback());
+  EXPECT_TRUE(host_aa_->test_app_shim_
+                  ->request_notification_permission_callback_.Wait());
+  host_aa_->test_app_shim_->request_notification_permission_callback_.Take()
+      .Run(mac_notifications::mojom::RequestPermissionResult::
+               kPermissionPreviouslyDenied);
+  EXPECT_EQ(mac_notifications::mojom::RequestPermissionResult::
+                kPermissionPreviouslyDenied,
+            result.Get());
+}
+
+TEST_F(AppShimManagerTest,
+       RequestNotificationPermissionWithAppShimFailingToLaunch) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  // This app is installed for profile A throughout this test.
+  AppShimRegistry::Get()->OnAppInstalledForProfile(kTestAppIdA,
+                                                   profile_path_a_);
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
+      .WillOnce(Return(&profile_a_));
+
+  manager_->SetHostForCreate(std::move(host_aa_unique_));
+  EXPECT_CALL(*delegate_,
+              DoLaunchShim(&profile_a_, kTestAppIdA,
+                           web_app::LaunchShimUpdateBehavior::kDoNotRecreate,
+                           web_app::ShimLaunchMode::kBackground));
+
+  // Trigger a notification permission request.
+  base::test::TestFuture<mac_notifications::mojom::RequestPermissionResult>
+      result;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result.GetCallback());
+  EXPECT_TRUE(host_aa_->test_app_shim_
+                  ->request_notification_permission_callback_.Wait());
+
+  // Simulate the app shim failing to launch (or otherwise terminating) by
+  // dropping the callback.
+  host_aa_->test_app_shim_->request_notification_permission_callback_.Take()
+      .Reset();
+
+  EXPECT_EQ(mac_notifications::mojom::RequestPermissionResult::kRequestFailed,
+            result.Get());
+}
+
+TEST_F(AppShimManagerTest, RequestNotificationPermissionWithAppNotInstalled) {
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAppShimNotificationAttribution}, {});
+
+  EXPECT_CALL(*manager_, ProfileForBackgroundShimLaunch(kTestAppIdA))
+      .WillOnce(Return(nullptr));
+
+  // Trigger a notification permission request.
+  base::test::TestFuture<mac_notifications::mojom::RequestPermissionResult>
+      result;
+  manager_->ShowNotificationPermissionRequest(kTestAppIdA,
+                                              result.GetCallback());
+  EXPECT_EQ(mac_notifications::mojom::RequestPermissionResult::kRequestFailed,
+            result.Get());
 }
 
 }  // namespace apps

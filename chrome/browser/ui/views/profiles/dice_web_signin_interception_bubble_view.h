@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_DICE_WEB_SIGNIN_INTERCEPTION_BUBBLE_VIEW_H_
 
+#include "base/functional/callback_helpers.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #include "base/functional/callback.h"
@@ -59,22 +60,16 @@ class DiceWebSigninInterceptionBubbleView
   // Returns true if the user has accepted the interception.
   bool GetAccepted() const;
 
-  // content::WebContentsDelegate:
-  void AddNewContents(content::WebContents* source,
-                      std::unique_ptr<content::WebContents> new_contents,
-                      const GURL& target_url,
-                      WindowOpenDisposition disposition,
-                      const blink::mojom::WindowFeatures& window_features,
-                      bool user_gesture,
-                      bool* was_blocked) override;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
-                           BubbleClosed);
+                           BubbleIgnored);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleDeclined);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAccepted);
+  FRIEND_TEST_ALL_PREFIXES(
+      DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
+      BubbleDismissed);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            BubbleAcceptedGuestMode);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
@@ -85,6 +80,10 @@ class DiceWebSigninInterceptionBubbleView
                            ChromeSigninAccepted);
   FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
                            ChromeSigninDeclined);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleBrowserTest,
+                           ChromeSigninDismissed);
+  FRIEND_TEST_ALL_PREFIXES(DiceWebSigninInterceptionBubbleWithParamBrowserTest,
+                           AvatarEffectWithInterceptType);
   FRIEND_TEST_ALL_PREFIXES(ProfileBubbleInteractiveUiTest,
                            InterceptionBubbleFocus);
 
@@ -118,15 +117,30 @@ class DiceWebSigninInterceptionBubbleView
   // alive until the bubble should be closed.
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> GetHandle();
 
-  // This bubble has no native buttons. The user accepts or cancels or selects
-  // Guest profile through this method, which is called by the inner web UI.
+  // This bubble has no native buttons. The user accepts or cancels, which is
+  // called by the inner web UI.
   void OnWebUIUserChoice(SigninInterceptionUserChoice user_choice);
+
+  // Treats the response based on the interception result.
+  void OnInterceptionResult(SigninInterceptionResult result);
 
   content::WebContents* GetBubbleWebContentsForTesting();
 
   // Callback to set the final height of the bubble based on its content, after
   // the page is loaded and the height is sent by DiceWebSigninInterceptHandler.
   void SetHeightAndShowWidget(int height);
+
+  // content::WebContentsDelegate:
+  void AddNewContents(content::WebContents* source,
+                      std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const blink::mojom::WindowFeatures& window_features,
+                      bool user_gesture,
+                      bool* was_blocked) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
 
   // This bubble can outlive the Browser, in particular on Mac (see
   // https://crbug.com/1302729). Retain the profile to prevent use-after-free.
@@ -140,6 +154,8 @@ class DiceWebSigninInterceptionBubbleView
   raw_ptr<views::WebView> web_view_;
 
   base::TimeTicks chrome_signin_bubble_shown_time_;
+
+  base::ScopedClosureRunner hide_avatar_text_callback_;
 
   // Last member in the class: pointers are invalidated before other fields.
   base::WeakPtrFactory<DiceWebSigninInterceptionBubbleView> weak_factory_{this};

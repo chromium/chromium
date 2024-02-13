@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
+import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {BucketTableEntry, QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
+import type {BucketTableEntry} from './quota_internals.mojom-webui.js';
+import {QuotaInternalsHandler} from './quota_internals.mojom-webui.js';
 
 export enum StorageType {
   TEMPORARY = 0,

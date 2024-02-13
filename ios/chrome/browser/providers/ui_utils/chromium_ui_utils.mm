@@ -15,11 +15,6 @@ void InitializeUI() {
   // Chromium does not have global UI state.
 }
 
-UITextField* CreateStyledTextField() {
-  // Chromium uses default style for UITextField.
-  return [[UITextField alloc] initWithFrame:CGRectZero];
-}
-
 id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state) {
   return [[ChromiumLogoController alloc] init];
 }

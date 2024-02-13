@@ -288,8 +288,9 @@ class PLATFORM_EXPORT FrameWidget {
   virtual float GetCompositingScaleFactor() = 0;
 
   // Get and set the configuration for the debugging overlay managed by the
-  // underlaying LayerTreeHost.
-  virtual const cc::LayerTreeDebugState& GetLayerTreeDebugState() = 0;
+  // underlying LayerTreeHost. This may return null if the widget does not
+  // composite.
+  virtual const cc::LayerTreeDebugState* GetLayerTreeDebugState() = 0;
   virtual void SetLayerTreeDebugState(const cc::LayerTreeDebugState& state) = 0;
 
   // Set whether or not this widget should be throttled if it sends

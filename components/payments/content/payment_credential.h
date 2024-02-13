@@ -33,9 +33,6 @@ class PaymentCredential
     : public content::DocumentService<mojom::PaymentCredential>,
       public WebDataServiceConsumer {
  public:
-  static bool IsFrameAllowedToUseSecurePaymentConfirmation(
-      content::RenderFrameHost* rfh);
-
   PaymentCredential(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<mojom::PaymentCredential> receiver,

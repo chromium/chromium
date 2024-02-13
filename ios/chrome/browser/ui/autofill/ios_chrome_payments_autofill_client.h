@@ -24,6 +24,9 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   // RiskDataLoader:
   void LoadRiskData(
       base::OnceCallback<void(const std::string&)> callback) override;
+
+  // PaymentsAutofillClient:
+  void CreditCardUploadCompleted(bool card_saved) override;
 };
 
 }  // namespace autofill::payments

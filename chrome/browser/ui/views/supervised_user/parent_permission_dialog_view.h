@@ -46,8 +46,6 @@ class ParentPermissionDialogView : public views::DialogDelegateView,
   METADATA_HEADER(ParentPermissionDialogView, views::DialogDelegateView)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDialogViewIdForTesting);
-
   class Observer {
    public:
     // Tells observers that their references to the view are becoming invalid.

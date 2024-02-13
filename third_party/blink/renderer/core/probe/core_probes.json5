@@ -207,6 +207,7 @@
         "WebTransportCreated",
         "WebTransportConnectionEstablished",
         "WebTransportClosed",
+        "WillCreateP2PSocketUdp",
         "WillCreateWebSocket",
         "WillDispatchEventSourceEvent",
         "WillLoadXHR",

@@ -35,8 +35,9 @@ class KSVSearchBoxView;
 
 // The UI container for Ash and Chrome keyboard shortcuts.
 class KeyboardShortcutView : public views::WidgetDelegateView {
+  METADATA_HEADER(KeyboardShortcutView, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(KeyboardShortcutView);
   KeyboardShortcutView(const KeyboardShortcutView&) = delete;
   KeyboardShortcutView& operator=(const KeyboardShortcutView&) = delete;
 

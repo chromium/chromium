@@ -146,7 +146,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPullToRefreshFeature,
     &kIPHiOSReplaceSyncPromosWithSignInPromos,
     &kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
-    &kIPHiOSInlinePromoEnhancedSafeBrowsingFeature,
     &kIPHiOSTabGridSwipeLeftForIncognito,
     &kIPHiOSDockingPromoFeature,
     &kIPHiOSDockingPromoRemindMeLaterFeature,
@@ -154,6 +153,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoMadeForIOSFeature,
     &kIPHiOSPromoStaySafeFeature,
     &kIPHiOSSwipeBackForwardFeature,
+    &kIPHiOSPostDefaultAbandonmentPromoFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -163,7 +163,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHComposeMenuNewBadgeFeature,
     &kIPHComposeMSBBSettingsFeature,
     &kIPHComposeNewBadgeFeature,
-    &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDesktopCustomizeChromeRefreshFeature,
     &kIPHDesktopNewTabPageModulesCustomizeFeature,

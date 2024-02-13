@@ -5,11 +5,12 @@
 #ifndef DEVICE_FIDO_CROS_CREDENTIAL_STORE_H_
 #define DEVICE_FIDO_CROS_CREDENTIAL_STORE_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/platform_credential_store.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace u2f {
 class DeleteCredentialsInTimeRangeResponse;
@@ -56,10 +57,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PlatformAuthenticatorCredentialStore
 
   void OnDeleteCredentialsFinished(
       base::OnceClosure callback,
-      absl::optional<u2f::DeleteCredentialsInTimeRangeResponse> response);
+      std::optional<u2f::DeleteCredentialsInTimeRangeResponse> response);
   void OnCountCredentialsFinished(
       base::OnceCallback<void(size_t)> callback,
-      absl::optional<u2f::CountCredentialsInTimeRangeResponse> response);
+      std::optional<u2f::CountCredentialsInTimeRangeResponse> response);
 
   base::WeakPtrFactory<PlatformAuthenticatorCredentialStore> weak_factory_{
       this};

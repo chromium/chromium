@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {WelcomeBrowserProxy} from 'chrome://welcome/welcome_browser_proxy.js';
+import type {WelcomeBrowserProxy} from 'chrome://welcome/welcome_browser_proxy.js';
 
 export class TestWelcomeBrowserProxy extends TestBrowserProxy implements
     WelcomeBrowserProxy {

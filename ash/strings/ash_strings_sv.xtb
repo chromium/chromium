@@ -26,6 +26,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1087110696012418426">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242">Sök efter <ph name="CATEGORY" />, filer, appar med mera. Navigera mellan appar med piltangenterna.</translation>
 <translation id="1093645050124056515">ctrl + alt + nedåtpil</translation>
+<translation id="1094756674036064790">Vill du inaktivera Bluetooth?</translation>
 <translation id="109942774857561566">Jag har tråkigt</translation>
 <translation id="1104084341931202936">Visa tillgänglighetsinställningar</translation>
 <translation id="1104621072296271835">Dina enheter fungerar ännu bättre tillsammans</translation>
@@ -65,7 +66,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1217633719248931900">Öppna app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app från Play Butik</translation>
 <translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">inaktivt skrivbord</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
 <translation id="1235458158152011030">Kända nätverk</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> har anslutits.</translation>
@@ -159,7 +159,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1586324912145647027">Öppna skrivbord 1 till 8</translation>
 <translation id="158838227375272121">Webbplats för Google Classroom</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
-<translation id="1592682369233288537">Nästa skrivbord: <ph name="NEXT_DESK_NAME" />. Aktivera med Sök + Blanksteg.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />+ nedåtpil</translation>
 <translation id="1604857178818051494">Pausa media</translation>
 <translation id="1607312127821884567">Ignorera att ställa in visning av appar på telefonen</translation>
@@ -374,7 +373,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2575685495496069081">Multiinloggning har inaktiverats</translation>
 <translation id="2579264398927991698">Firmware-uppdateringar</translation>
 <translation id="2582112259361606227">Starta om för att uppdatera</translation>
-<translation id="2586561057878260610">Tryck på Ctrl + W för att kombinera med <ph name="DESK_NAME" />. Tryck på Ctrl + Skift + W för att stänga skrivbord och fönster.</translation>
 <translation id="2586657967955657006">Urklipp</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
@@ -511,7 +509,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3154351730702813399">Enhetsadministratören kan övervaka din webbaktivitet.</translation>
 <translation id="316086887565479535">Appar som inte stöds i mallen</translation>
 <translation id="3160929076476941240">2 tim</translation>
-<translation id="3161500364292033097">Stäng skrivbord och fönster</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> återställer din <ph name="DEVICE_TYPE" /> till en tidigare version. Enheten återställs och all data raderas.</translation>
 <translation id="3170769098533255179">Inga enheter är anslutna. Wifi förblir inaktiverat när surfzonen används.</translation>
 <translation id="3171170659304083361">Inmatningsinställningar</translation>
@@ -660,6 +657,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3660860940251915011">Aktivera och inaktivera hög synlighet för <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Hanterad användare</translation>
 <translation id="3666266999138159418">Svep för att dölja det flytande fönstret</translation>
+<translation id="3673898235958558034">När du inaktiverar Bluetooth kopplas <ph name="DEVICE_NAME_1" /> och <ph name="DEVICE_NAME_2" /> från din Chromebook.</translation>
 <translation id="367531336287639526">Välj den första ikonen till vänster om adressfältet</translation>
 <translation id="3677931086890821290">Det gör att alla appar och webbplatser med platsbehörighet och ChromeOS kan använda wifi- och mobilnätverkens plats.</translation>
 <translation id="3679827876008292680">Öppna den sista fliken i ett fönster</translation>
@@ -671,6 +669,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3702846122927433391">Befolkning i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Tidigare anslutna enheter</translation>
+<translation id="3712143870407382523">Välj ett fönster för den här sidan</translation>
 <translation id="371370241367527062">Mikrofonen på framsidan</translation>
 <translation id="3713734891607377840">Öppna när nedladdningen är klar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> och <ph name="UNAVAILABLE_APPS_COUNT" /> till finns inte på enheten.</translation>
@@ -846,7 +845,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4389184120735010762">Du tryckte på kortkommandot för dockad skärmförstoring. Vill du aktivera funktionen?</translation>
 <translation id="439598569299422042">Pausad, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Det gick inte att spara screencast</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> har anslutits och är redo att användas. Du kan anpassa musen i inställningarna.</translation>
 <translation id="4405151984121254935">Typen av kringutrustning som är ansluten stöds inte</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> är av.</translation>
@@ -872,7 +870,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4491109536499578614">Bild</translation>
 <translation id="450584155212756404">Kanal för utvecklare</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4516212064498225455">Aktuellt skrivbord: <ph name="CURRENT_DESK_NAME" />. Öppna menyn för alla skrivbord med Sök + Blanksteg.</translation>
 <translation id="4518404433291145981">Du måste först låsa upp telefonen om du vill låsa upp Chromebook</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
 <translation id="4533343294786968049">Förlänger batteritiden. Batteriet laddas färdigt till <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -915,6 +912,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4666911709726371538">Fler appar</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
 <translation id="4672539464599646374">Batterisparläget har aktiverats</translation>
+<translation id="4673427585974421255">Behåll på</translation>
 <translation id="468293128311738995">Appar från telefonen</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
@@ -1047,13 +1045,11 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> händelser</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombinerades med <ph name="IN_PLACE_APP" /> för att skapa en ny mapp.</translation>
-<translation id="5203299837691351876">aktivt skrivbord</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 avisering till}other{# aviseringar till}}</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
 <translation id="5208059991603368177">På</translation>
 <translation id="5216991270656129561">Av till <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Nästa skrivbord: <ph name="NEXT_DESK_NAME" />. Aktivera med Sök + Blanksteg eller kortkommandot Skift + Sök + <ph name="NEXT_DESK_INDEX" />.</translation>
 <translation id="5218064144558110424">Markera som ej slutförd</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="5229343007215035173">Aktivera/inaktivera integritetsskärmen</translation>
@@ -1066,7 +1062,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5258528442992323769">Det finns inga sparade skrivbord</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
 <translation id="5268819379131021772">Google Tasks-lista</translation>
-<translation id="5275923704957843041">Förhandsgranskning av skrivbord</translation>
 <translation id="5277869901083657836">Aktivera eller inaktivera verktyg för e-penna</translation>
 <translation id="5278086053818066789">Aktivera/inaktivera ChromeVox (talad feedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> begär din uppmärksamhet.</translation>
@@ -1215,6 +1210,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="5802516411616338943">Öppna Snabbinställningar</translation>
 <translation id="5804651031882187592">Inaktivera inställningen Lås SIM</translation>
 <translation id="5805809050170488595">Klicka för att aktivera <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">När du inaktiverar Bluetooth kopplas <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> och <ph name="DEVICE_COUNT" /> andra enheter från din Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks på webben</translation>
 <translation id="5825969630400862129">Inställningar för anslutna enheter</translation>
 <translation id="5837036133683224804">Sluta casta <ph name="ROUTE_TITLE" /> till <ph name="RECEIVER_NAME" /></translation>
@@ -1319,7 +1315,6 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="6199775032047436064">Hämta aktuell sida igen</translation>
 <translation id="6200515304866777730">Stöds inte av appen</translation>
 <translation id="6210042900243040400">Anslut <ph name="NAME" /> som tidigare sparats i <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Anpassa <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Ta en skärmbild eller skärminspelning av en del av skärmen</translation>
 <translation id="6220928844947387476">Nu kan du spela in dig själv och skärmen på samma gång</translation>
 <translation id="622484624075952240">Ner</translation>
@@ -1395,6 +1390,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="6539852571005954999">Genomsökning av filen <ph name="FILENAME" /> som laddas ned</translation>
 <translation id="6542521951477560771">Castar till <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Bildsökning efter innehåll och förhandsgranskningar av bilder</translation>
+<translation id="6547795021703527064">När du inaktiverar Bluetooth kopplas <ph name="DEVICE_NAME" /> från din Chromebook.</translation>
 <translation id="6555373427270923730">Ange en webbadress i adressfältet och tryck sedan på <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nyligen installerad</translation>
@@ -1414,6 +1410,7 @@ Nyligen installerad</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> lagringsutrymme används | <ph name="STORAGE_TOTAL_SIZE" /> totalt</translation>
 <translation id="6614169507485700968">Integritetsskärmen är aktiverad</translation>
 <translation id="6622679827379792051">Ställ in visning av telefonens appar</translation>
+<translation id="6624493541160101248">Aktuellt skrivbord: <ph name="DESK_NAME" /> Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Aviseringar från <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> och andra appar har dolts eftersom skyddet mot smygtittare har aktiverats</translation>
 <translation id="6627638273713273709">Söktangenten + Skift + K</translation>
 <translation id="662830937908749204">Flytta fokus till nästa ruta</translation>
@@ -1468,7 +1465,6 @@ Nyligen installerad</translation>
 <translation id="6819327813400217281">Kameran har fästs i det nedre vänstra hörnet</translation>
 <translation id="6820676911989879663">Ta en paus!</translation>
 <translation id="6827049576281411231">Stäng händelsepanelen</translation>
-<translation id="6831561626108366035">Öppna knappen <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Skadlig fil</translation>
 <translation id="6837621009301897464">Ta en skärmbild genom att trycka på</translation>
 <translation id="6852052252232534364">Aktivera</translation>
@@ -1507,6 +1503,7 @@ Nyligen installerad</translation>
 <translation id="698231206551913481">Alla filer inklusive lokal data som tillhör den här användaren tas bort permanent när användaren tas bort.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Upplösningen har ändrats till <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Ta en snabbtitt på hur du navigerar på Chromebook. Kom igång i sex steg.</translation>
+<translation id="7000027735917578303">Inställningar för fönster och skrivbord</translation>
 <translation id="7004910047186208204">Anslut till mobildata</translation>
 <translation id="7005239792648594238">Öppna en app för att komma igång</translation>
 <translation id="7007983414944123363">Det gick inte att verifiera pinkoden eller lösenordet. Försök igen.</translation>
@@ -1758,6 +1755,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8001755249288974029">Markera text från markören till början av raden</translation>
 <translation id="8004512796067398576">Öka</translation>
 <translation id="8026334261755873520">Rensa webbinformation</translation>
+<translation id="802782383769312836">Tidigare skrivbord: <ph name="DESK_NAME" />. Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Anslutning via surfzon misslyckades</translation>
 <translation id="8029629653277878342">Pinkod eller lösenord krävs för större säkerhet</translation>
 <translation id="8030169304546394654">Frånkopplad</translation>
@@ -1805,6 +1803,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8219451629189078428">Chromebook måste vara på och ansluten till en strömkälla under den tiden. Se till att kabeln på laddaren eller adaptern är ordentligt ansluten till Chromebook och eluttaget. Stäng inte av Chromebook.</translation>
 <translation id="8230305195727960608">Läge för inverterade färger</translation>
 <translation id="8236042855478648955">Dags för en paus</translation>
+<translation id="8237964652943995219">Nästa skrivbord: <ph name="DESK_NAME" />. Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Aktivera skrivbordet till höger</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, telefonens batterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
@@ -1869,7 +1868,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> laddas eventuellt inte så länge den är på.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofoningången styrs av <ph name="APP_NAME" />}other{Mikrofoningången styrs av # appar}}</translation>
 <translation id="8535393432370007982">Ångra sortering efter färg</translation>
-<translation id="853768060447955562">Föregående skrivbord: <ph name="PREVIOUS_DESK_NAME" />. Aktivera med Sök + Blanksteg eller kortkommandot Skift + Sök + <ph name="PREVIOUS_DESK_INDEX" />.</translation>
 <translation id="8541078764854166027">Inramning</translation>
 <translation id="8542053257095774575">Det finns inga sparade skrivbord eller mallar</translation>
 <translation id="8546059259582788728">Sorteringen har ångrats.</translation>
@@ -1956,7 +1954,6 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="888982883502837004">Det finns firmware-uppdateringar för enheten. Klicka här om du vill granska dem och uppdatera.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> raderas permanent</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" /> % av batteriet återstår (ungefär <ph name="TIME_LEFT" />). Anslut enheten till en strömkälla.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> har anslutits och är redo att användas. Du kan anpassa grafiksurfplattan i inställningarna.</translation>
 <translation id="88986195241502842">Nedåt en sida</translation>
 <translation id="8905919797434099235">(Ingen titel)</translation>
 <translation id="890616557918890486">Ändra källa</translation>
@@ -2033,8 +2030,8 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="92580429198593979">Du tryckte på kortkommandot för inverterade färger. Vill du aktivera det?</translation>
 <translation id="925832987464884575">Dölj förhandsgranskningar</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> kräver att du uppdaterar din <ph name="DEVICE_TYPE" /> omedelbart</translation>
+<translation id="938407504481277932">Aktuellt skrivbord: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Skrivbord <ph name="DESK_INDEX" /> av <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Vad står det i min kalender?</translation>
-<translation id="943067377221312471">Föregående skrivbord: <ph name="PREVIOUS_DESK_NAME" />. Aktivera med Sök + Blanksteg.</translation>
 <translation id="945383118875625837">Dra länken till bokmärkesfältet</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="951991426597076286">Godkänn inte</translation>

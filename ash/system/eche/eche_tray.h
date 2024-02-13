@@ -77,9 +77,9 @@ class ASH_EXPORT EcheTray
       public KeyboardControllerObserver,
       public ShellObserver,
       public eche_app::EcheConnectionStatusHandler::Observer {
- public:
-  METADATA_HEADER(EcheTray);
+  METADATA_HEADER(EcheTray, TrayBackgroundView)
 
+ public:
   // TODO(b/226687249): Move to ash/webui/eche_app_ui if dependency cycle error
   // is fixed. Enum representing the connection fail reason. These values are
   // persisted to logs. Entries should not be renumbered and numeric values

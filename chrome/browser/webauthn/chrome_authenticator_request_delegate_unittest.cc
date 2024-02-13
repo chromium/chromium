@@ -406,7 +406,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
           url::Origin::Create(GURL(test.origin)), test.origin,
           content::AuthenticatorRequestClientDelegate::RequestSource::
               kWebAuthentication,
-          test.request_type, test.resident_key_requirement, test.extensions,
+          test.request_type, test.resident_key_requirement,
+          device::UserVerificationRequirement::kRequired, test.extensions,
           /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
       switch (windows_has_hybrid == kWinHybridNoPasskeySyncing
@@ -467,7 +468,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
         content::AuthenticatorRequestClientDelegate::RequestSource::
             kWebAuthentication,
         device::FidoRequestType::kMakeCredential,
-        device::ResidentKeyRequirement::kPreferred, {},
+        device::ResidentKeyRequirement::kPreferred,
+        device::UserVerificationRequirement::kRequired, {},
         /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
     EXPECT_EQ(discovery_factory.qr_key.has_value(), !disable_ui);
@@ -737,6 +739,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
           kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
+      device::UserVerificationRequirement::kRequired,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
@@ -799,6 +802,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
           kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
+      device::UserVerificationRequirement::kRequired,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 
@@ -852,6 +856,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
           kWebAuthentication,
       device::FidoRequestType::kGetAssertion,
       /*resident_key_requirement=*/std::nullopt,
+      device::UserVerificationRequirement::kRequired,
       /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
       /*is_enclave_authenticator_available=*/false, &discovery_factory);
 

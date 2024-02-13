@@ -17,8 +17,9 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {getTemplate} from './app.html.js';
-import {FlagsExperimentElement} from './experiment.js';
-import {ExperimentalFeaturesData, Feature, FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
+import type {FlagsExperimentElement} from './experiment.js';
+import type {ExperimentalFeaturesData, Feature} from './flags_browser_proxy.js';
+import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
 interface Tab {
   tabEl: HTMLElement;

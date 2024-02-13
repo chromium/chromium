@@ -109,7 +109,8 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   DownloadMap resumable_downloads_;
 
   // A temporary list of downloads which are being retried immediately.
-  std::set<download::DownloadItem*> downloads_to_retry_;
+  std::set<raw_ptr<download::DownloadItem, SetExperimental>>
+      downloads_to_retry_;
 
   bool recompute_task_params_scheduled_ = false;
 

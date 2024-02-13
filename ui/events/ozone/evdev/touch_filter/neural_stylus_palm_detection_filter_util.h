@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(EVDEV) PalmFilterStroke {
 
   const uint64_t max_sample_count_;
   base::TimeTicks first_sample_time_;
-  const absl::optional<base::TimeDelta> resample_period_;
+  const std::optional<base::TimeDelta> resample_period_;
 
   gfx::PointF unscaled_centroid_ = gfx::PointF(0., 0.);
   // Used in part of the kahan summation.

@@ -175,7 +175,7 @@ class NET_EXPORT UDPSocketPosix {
 
   // Requests that packets received by this socket have the ECN bit set. Returns
   // a network error code if there was a problem.
-  int SetRecvEcn();
+  int SetRecvTos();
 
   // If |confirm| is true, then the MSG_CONFIRM flag will be passed to
   // subsequent writes if it's supported by the platform.
@@ -258,6 +258,14 @@ class NET_EXPORT UDPSocketPosix {
   // Returns a net error code.
   int SetDiffServCodePoint(DiffServCodePoint dscp);
 
+  // Requests that packets sent by this socket have the DSCP and/or ECN
+  // bits set. Returns a network error code if there was a problem. If
+  // DSCP_NO_CHANGE or ECN_NO_CHANGE are set, will preserve those parts of
+  // the original setting.
+  // ECN values other than ECN_DEFAULT must not be used outside of tests,
+  // without appropriate congestion control.
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn);
+
   // Sets IPV6_V6ONLY on the socket. If this flag is true, the socket will be
   // restricted to only IPv6; false allows both IPv4 and IPv6 traffic.
   int SetIPv6Only(bool ipv6_only);
@@ -294,6 +302,8 @@ class NET_EXPORT UDPSocketPosix {
   bool get_experimental_recv_optimization_enabled_for_testing() {
     return experimental_recv_optimization_enabled_;
   }
+
+  DscpAndEcn GetLastTos() const { return TosToDscpAndEcn(last_tos_); }
 
  private:
   enum SocketOptions {
@@ -476,6 +486,9 @@ class NET_EXPORT UDPSocketPosix {
   // Manages decrementing the global open UDP socket counter when this
   // UDPSocket is destroyed.
   OwnedUDPSocketCount owned_socket_count_;
+
+  // The last TOS byte received on the socket.
+  uint8_t last_tos_ = 0;
 
   THREAD_CHECKER(thread_checker_);
 };

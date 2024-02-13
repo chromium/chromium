@@ -499,6 +499,8 @@ class TwentyEightDayImplDirectCheckMembership : public TwentyEightDayImplBase {
         prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp);
     GetLocalState()->ClearPref(prefs::kDeviceActiveLastKnownChurnActiveStatus);
     GetLocalState()->ClearPref(
+        prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata);
+    GetLocalState()->ClearPref(
         prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0);
     GetLocalState()->ClearPref(
         prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1);

@@ -17,7 +17,7 @@
 
 // UICollectionViewCell that contains a Tab title with a leading imageView
 // and a close tab button.
-@interface TabStripCell : UICollectionViewCell
+@interface TabStripCell : UICollectionViewCell <UIPointerInteractionDelegate>
 
 // Delegate to inform the TabStrip on the cell.
 @property(nonatomic, weak) id<TabStripCellDelegate> delegate;

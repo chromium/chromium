@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {RemoteCallFilesApp} from '../../remote_call.js';
-import {sendTestMessage} from '../../test_util.js';
+import {getCaller, pending, repeatUntil, sendTestMessage} from '../../test_util.js';
 
 
 const FAKE_ENTRY_PATH_PREFIX = 'fake-entry:';
@@ -811,13 +811,20 @@ export class DirectoryTreePageObject {
   async waitForItemExpandIconToShowByLabel(label) {
     const expandIcon =
         this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
-    const element = await this.remoteCall_.waitForElementStyles(
-        this.appId_,
-        expandIcon,
-        ['visibility'],
-    );
-    // @ts-ignore: error TS18048: 'element.styles' is possibly 'undefined'.
-    chrome.test.assertEq('visible', element.styles['visibility']);
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const element = await this.remoteCall_.waitForElementStyles(
+          this.appId_,
+          expandIcon,
+          ['visibility'],
+      );
+      // @ts-ignore: error TS18048: 'element.styles' is possibly 'undefined'.
+      if (element.styles['visibility'] !== 'visible') {
+        return pending(
+            caller, `Expand icon for tree item ${label} is still hidden.`);
+      }
+      return undefined;
+    });
   }
 
   /**
@@ -829,13 +836,20 @@ export class DirectoryTreePageObject {
   async waitForItemExpandIconToHideByLabel(label) {
     const expandIcon =
         this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
-    const element = await this.remoteCall_.waitForElementStyles(
-        this.appId_,
-        expandIcon,
-        ['visibility'],
-    );
-    // @ts-ignore: error TS18048: 'element.styles' is possibly 'undefined'.
-    chrome.test.assertEq('hidden', element.styles['visibility']);
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const element = await this.remoteCall_.waitForElementStyles(
+          this.appId_,
+          expandIcon,
+          ['visibility'],
+      );
+      // @ts-ignore: error TS18048: 'element.styles' is possibly 'undefined'.
+      if (element.styles['visibility'] !== 'hidden') {
+        return pending(
+            caller, `Expand icon for tree item ${label} is still showing.`);
+      }
+      return undefined;
+    });
   }
 
   /**

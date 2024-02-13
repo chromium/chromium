@@ -958,7 +958,8 @@ IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
-        ->PreconnectSockets(1, worker_url.DeprecatedGetOriginAsURL(), true,
+        ->PreconnectSockets(1, worker_url.DeprecatedGetOriginAsURL(),
+                            network::mojom::CredentialsMode::kInclude,
                             main_rfh->GetIsolationInfoForSubresources()
                                 .network_anonymization_key());
 

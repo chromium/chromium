@@ -13,8 +13,9 @@ const minify =
         '../../third_party/node/node_modules/html-minifier/src/htmlminifier.js')
         .minify;
 
-const path = require('path');
+const assert = require('assert');
 const fs = require('fs/promises');
+const path = require('path');
 
 // Regex to extract the CSS contents out of the HTML string. It matches anything
 // that is wrapped by a '<style>...</style>' pair.
@@ -40,7 +41,15 @@ async function processFile(inputFile, outputFile) {
     // If this is a CSS file, remove the <style>...</style> wrapper that was
     // added above.
     const match = result.match(REGEX);
-    result = match.groups['content'];
+
+    if (match === null) {
+      // If this is a '_lit.css' file, allow it to be an empty file, since it is
+      // handled specially by the parent script, css_to_wrapper.py.
+      assert.ok(inputFile.endsWith('_lit.css'));
+      result = '';
+    } else {
+      result = match.groups['content'];
+    }
   }
 
   // Save result.

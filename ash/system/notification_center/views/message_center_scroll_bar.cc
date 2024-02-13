@@ -42,11 +42,11 @@ void CollectScrollActionReason(ScrollActionReason reason) {
 
 namespace ash {
 
-BEGIN_METADATA(MessageCenterScrollBar, RoundedScrollBar)
+BEGIN_METADATA(MessageCenterScrollBar)
 END_METADATA
 
 MessageCenterScrollBar::MessageCenterScrollBar()
-    : RoundedScrollBar(/*horizontal=*/false) {
+    : RoundedScrollBar(views::ScrollBar::Orientation::kVertical) {
   GetThumb()->layer()->SetVisible(features::IsNotificationScrollBarEnabled());
   GetThumb()->layer()->CompleteAllAnimations();
 }

@@ -108,6 +108,9 @@ BASE_DECLARE_FEATURE(kImprovedDownloadPageWarnings);
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 
+// If enabled, do not run Maldoca over downloaded office documents.
+BASE_DECLARE_FEATURE(kMaldocaSkipCheck);
+
 // If enabled, the Safe Browsing database will be stored in a separate file and
 // mapped into memory.
 BASE_DECLARE_FEATURE(kMmapSafeBrowsingDatabase);

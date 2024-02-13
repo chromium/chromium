@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 /**
  * The wrapper for Select-to-speak's text-to-speech features.
  */
@@ -254,3 +256,5 @@ export namespace TtsManager {
     RESUME_WITH_EMPTY_CONTENT = 'Cannot resume with empty content.',
   }
 }
+
+TestImportManager.exportForTesting(TtsManager);

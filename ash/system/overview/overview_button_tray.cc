@@ -250,7 +250,7 @@ gfx::ImageSkia OverviewButtonTray::GetIconImage() {
   return gfx::CreateVectorIcon(kShelfOverviewIcon, color);
 }
 
-BEGIN_METADATA(OverviewButtonTray, TrayBackgroundView)
+BEGIN_METADATA(OverviewButtonTray)
 END_METADATA
 
 }  // namespace ash

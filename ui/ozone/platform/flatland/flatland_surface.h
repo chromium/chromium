@@ -8,13 +8,14 @@
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <vulkan/vulkan.h>
 
+#include <optional>
+
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_widget_types.h"
@@ -140,8 +141,8 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
 
   fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;
   fuchsia::ui::composition::ChildViewWatcherPtr main_plane_view_watcher_;
-  absl::optional<gfx::Size> logical_size_;
-  absl::optional<float> device_pixel_ratio_;
+  std::optional<gfx::Size> logical_size_;
+  std::optional<float> device_pixel_ratio_;
 
   // FlatlandSurface might receive a Present() call before OnGetLayout(),
   // because the present loop is tied to the parent Flatland instance in

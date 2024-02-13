@@ -118,10 +118,18 @@ class DiversionBackendDelegate : public FileSystemBackendDelegate,
 
   void OverrideTmpfileDirForTesting(const base::FilePath& tmpfile_dir);
   static bool ShouldDivertForTesting(const storage::FileSystemURL& url);
+  static base::TimeDelta IdleTimeoutForTesting();
 
  private:
+  enum class OnDiversionFinishedCallSite {
+    kEnsureFileExists,
+    kCopyFileLocal,
+    kMoveFileLocal,
+  };
+
   static void OnDiversionFinished(
       base::WeakPtr<DiversionBackendDelegate> weak_ptr,
+      OnDiversionFinishedCallSite call_site,
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& dest_url,
       storage::AsyncFileUtil::StatusCallback callback,

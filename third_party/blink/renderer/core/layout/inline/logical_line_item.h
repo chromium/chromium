@@ -67,7 +67,8 @@ struct LogicalLineItem {
         rect(LayoutUnit(), block_offset, LayoutUnit(), text_height),
         inline_size(inline_size),
         bidi_level(bidi_level),
-        has_only_trailing_spaces(item_result.has_only_trailing_spaces) {}
+        has_only_bidi_trailing_spaces(
+            item_result.has_only_bidi_trailing_spaces) {}
   LogicalLineItem(const InlineItem& inline_item,
                   const ShapeResultView* shape_result,
                   const TextOffsetRange& text_offset,
@@ -260,7 +261,7 @@ struct LogicalLineItem {
   TextDirection container_direction = TextDirection::kLtr;
   // When an item contains only trailing spaces, the original bidi level needs
   // to be ignored, and just use paragraph direction (UAX#9 L1)
-  bool has_only_trailing_spaces = false;
+  bool has_only_bidi_trailing_spaces = false;
 
   bool is_hidden_for_paint = false;
 };

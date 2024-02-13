@@ -353,6 +353,16 @@ void TestSyncService::RecordReasonIfWaitingForUpdates(
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
+bool TestSyncService::SupportsExplicitPassphrasePlatformClient() {
+  return !!send_passphrase_to_platform_client_cb_;
+}
+
+void TestSyncService::SendExplicitPassphraseToPlatformClient() {
+  if (SupportsExplicitPassphrasePlatformClient()) {
+    send_passphrase_to_platform_client_cb_.Run();
+  }
+}
+
 void TestSyncService::Shutdown() {
   for (SyncServiceObserver& observer : observers_)
     observer.OnSyncShutdown(this);
@@ -371,6 +381,12 @@ void TestSyncService::GetTypesWithUnsyncedData(
 void TestSyncService::SetLocalDataDescriptions(
     const std::map<ModelType, LocalDataDescription>& local_data_descriptions) {
   local_data_descriptions_ = local_data_descriptions;
+}
+
+void TestSyncService::SetPassphrasePlatformClientCallback(
+    const base::RepeatingClosure& send_passphrase_to_platform_client_cb) {
+  send_passphrase_to_platform_client_cb_ =
+      send_passphrase_to_platform_client_cb;
 }
 
 void TestSyncService::GetLocalDataDescriptions(

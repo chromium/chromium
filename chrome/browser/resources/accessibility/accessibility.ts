@@ -19,7 +19,7 @@ enum AxMode {
   HTML = 1 << 4,
   HTML_METADATA = 1 << 5,
   LABEL_IMAGES = 1 << 6,
-  PDF = 1 << 7,
+  PDF_PRINTING = 1 << 7,
   PDF_OCR = 1 << 8,
 }
 
@@ -46,7 +46,7 @@ type PageData = Data&{
   // chrome/browser/accessibility/accessibility_ui.cc.
   metadata: boolean,
   native: boolean,
-  pdf: boolean,
+  pdfPrinting: boolean,
   screenreader: boolean,
   web: boolean,
 
@@ -71,7 +71,7 @@ interface InitData {
   html: EnabledStatus;
   internal: EnabledStatus;
   native: EnabledStatus;
-  pdf: EnabledStatus;
+  pdfPrinting: EnabledStatus;
   screenreader: EnabledStatus;
   text: EnabledStatus;
   web: EnabledStatus;
@@ -79,7 +79,7 @@ interface InitData {
 
 type RequestType = 'showOrRefreshTree';
 
-type GlobalStateName = 'native'|'web'|'metadata'|'pdf'|'screenreader';
+type GlobalStateName = 'native'|'web'|'metadata'|'pdfPrinting'|'screenreader';
 
 class BrowserProxy {
   toggleAccessibility(
@@ -364,7 +364,8 @@ function formatRow(
     row.appendChild(createModeElement(AxMode.HTML, pageData, 'web'));
     row.appendChild(
         createModeElement(AxMode.HTML_METADATA, pageData, 'metadata'));
-    row.appendChild(createModeElement(AxMode.PDF, pageData, 'pdf'));
+    row.appendChild(
+        createModeElement(AxMode.PDF_PRINTING, pageData, 'pdfPrinting'));
     row.appendChild(createModeElement(
         AxMode.LABEL_IMAGES, pageData, 'screenreader',
         /*readonly=*/ true));
@@ -467,8 +468,8 @@ function getNameForAccessibilityMode(mode: AxMode): string {
       return 'HTML Metadata';
     case AxMode.LABEL_IMAGES:
       return 'Label images';
-    case AxMode.PDF:
-      return 'PDF';
+    case AxMode.PDF_PRINTING:
+      return 'PDF printing';
     case AxMode.PDF_OCR:
       return 'PDF OCR';
     default:

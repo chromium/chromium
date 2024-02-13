@@ -58,7 +58,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   class Observer : public GarbageCollectedMixin {
    public:
-    virtual void OnCreateTaskScope(TaskAttributionInfo&, ScriptState*) = 0;
+    virtual void OnCreateTaskScope(TaskAttributionInfo&) = 0;
     virtual ExecutionContext* GetExecutionContext() = 0;
   };
 
@@ -79,9 +79,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* RunningTask(v8::Isolate*) const = 0;
-  // TODO(crbug.com/1351643): Remove this overload once converting everything to
-  // the Isolate version.
-  virtual TaskAttributionInfo* RunningTask(ScriptState*) const = 0;
 
   // Returns true iff `task` has an ancestor task with `ancestor_id`.
   virtual bool IsAncestor(const TaskAttributionInfo& task,

@@ -281,7 +281,7 @@ void RenderFrameObserver::OnDestruct() {
 
 void RenderFrameObserver::DidStartNavigation(
     const GURL& url,
-    absl::optional<blink::WebNavigationType> navigation_type) {
+    std::optional<blink::WebNavigationType> navigation_type) {
   if (!url.SchemeIs("chrome") || url.host() != "browser") {
     this_instance_.reset();
     return;

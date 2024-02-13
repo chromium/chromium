@@ -144,7 +144,8 @@ class ManualFillingMediator
             new FullscreenManager.Observer() {
                 @Override
                 public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
-                    mModel.set(IS_FULLSCREEN, true);
+                    // Only if a navbar exists, fullscreen mode behaves like regular chrome. Ignore.
+                    mModel.set(IS_FULLSCREEN, !options.showNavigationBar);
                 }
 
                 @Override

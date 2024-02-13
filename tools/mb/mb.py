@@ -1442,6 +1442,7 @@ class MetaBuildWrapper:
           (is_cros and f in (  # https://crbug.com/1002509
               'chromevox_test_data/',
               'gen/ui/file_manager/file_manager/',
+              'lacros_clang_x64/resources/accessibility/',
               'resources/chromeos/',
               'resources/chromeos/accessibility/accessibility_common/',
               'resources/chromeos/accessibility/chromevox/',

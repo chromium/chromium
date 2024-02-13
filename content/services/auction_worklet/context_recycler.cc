@@ -19,38 +19,17 @@
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
-#include "gin/converter.h"
-#include "v8/include/v8-external.h"
-#include "v8/include/v8-template.h"
+#include "v8/include/v8-context.h"
 
 namespace auction_worklet {
 
 Bindings::Bindings() = default;
 Bindings::~Bindings() = default;
 
-LazyFiller::~LazyFiller() = default;
+PersistedLazyFiller::~PersistedLazyFiller() = default;
 
-LazyFiller::LazyFiller(AuctionV8Helper* v8_helper) : v8_helper_(v8_helper) {}
-
-// static
-void LazyFiller::SetResult(const v8::PropertyCallbackInfo<v8::Value>& info,
-                           v8::Local<v8::Value> result) {
-  info.GetReturnValue().Set(result);
-}
-
-bool LazyFiller::DefineLazyAttribute(v8::Local<v8::Object> object,
-                                     base::StringPiece name,
-                                     v8::AccessorNameGetterCallback getter) {
-  v8::Isolate* isolate = v8_helper_->isolate();
-
-  v8::Maybe<bool> success = object->SetLazyDataProperty(
-      isolate->GetCurrentContext(), gin::StringToSymbol(isolate, name), getter,
-      v8::External::New(isolate, this),
-      /*attributes=*/v8::None,
-      /*getter_side_effect_type=*/v8::SideEffectType::kHasNoSideEffect,
-      /*setter_side_effect_type=*/v8::SideEffectType::kHasSideEffect);
-  return success.IsJust() && success.FromJust();
-}
+PersistedLazyFiller::PersistedLazyFiller(AuctionV8Helper* v8_helper)
+    : LazyFiller(v8_helper) {}
 
 ContextRecycler::ContextRecycler(AuctionV8Helper* v8_helper)
     : v8_helper_(v8_helper) {}

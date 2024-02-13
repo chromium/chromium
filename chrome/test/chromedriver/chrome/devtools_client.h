@@ -16,6 +16,21 @@ class Timeout;
 class Status;
 class WebViewImpl;
 
+struct InspectorEvent {
+  InspectorEvent();
+  ~InspectorEvent();
+  std::string method;
+  std::optional<base::Value::Dict> params;
+};
+
+struct InspectorCommandResponse {
+  InspectorCommandResponse();
+  ~InspectorCommandResponse();
+  int id;
+  std::string error;
+  std::optional<base::Value::Dict> result;
+};
+
 // A DevTools client of a single DevTools debugger.
 class DevToolsClient {
  public:
@@ -103,11 +118,36 @@ class DevToolsClient {
 
   virtual WebViewImpl* GetOwner() const = 0;
 
-  virtual DevToolsClient* GetRootClient() = 0;
-
   virtual DevToolsClient* GetParentClient() const = 0;
 
   virtual bool IsMainPage() const = 0;
+
+  virtual Status SendRaw(const std::string& message) = 0;
+
+  virtual bool HasMessageForAnySession() const = 0;
+
+  virtual Status AttachTo(DevToolsClient* parent) = 0;
+
+  virtual void RegisterSessionHandler(const std::string& session_id,
+                                      DevToolsClient* client) = 0;
+
+  virtual void UnregisterSessionHandler(const std::string& session_id) = 0;
+
+  virtual Status OnConnected() = 0;
+
+  virtual Status ProcessEvent(const InspectorEvent& event) = 0;
+
+  virtual Status ProcessCommandResponse(
+      const InspectorCommandResponse& response) = 0;
+
+  virtual int NextMessageId() const = 0;
+
+  virtual int AdvanceNextMessageId() = 0;
+
+  virtual Status ProcessNextMessage(int expected_id,
+                                    bool log_timeout,
+                                    const Timeout& timeout,
+                                    DevToolsClient* caller) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVTOOLS_CLIENT_H_

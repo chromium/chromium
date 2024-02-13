@@ -5,12 +5,13 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "builders", "cpu", "os", "reclient", "xcode")
+load("//lib/builders.star", "builders", "cpu", "os", "reclient")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
 load("//lib/builder_health_indicators.star", "health_spec")
+load("//lib/xcode.star", "xcode")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -1978,129 +1979,6 @@ fyi_mac_builder(
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
-)
-
-ci.builder(
-    name = "chromeos-amd64-generic-rel (reclient)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            cros_boards_with_qemu_images = [
-                "amd64-generic",
-                "amd64-generic-vm",
-            ],
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "chromeos_device",
-            "dcheck_off",
-            "reclient",
-            "amd64-generic-vm",
-            "ozone_headless",
-            "use_fake_dbus_clients",
-            "also_build_lacros_chrome_for_architecture_amd64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "cros x64",
-    ),
-    reclient_jobs = None,
-    reclient_rewrapper_env = {"RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"},
-)
-
-ci.builder(
-    name = "chromeos-amd64-generic-rel (reclient compare)",
-    description_html = "Verifies whether local and remote build artifacts are identical.",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = ["chromeos"],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            cros_boards_with_qemu_images = [
-                "amd64-generic",
-                "amd64-generic-vm",
-            ],
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "chromeos_device",
-            "dcheck_off",
-            "reclient",
-            "amd64-generic-vm",
-            "ozone_headless",
-            "use_fake_dbus_clients",
-            "also_build_lacros_chrome_for_architecture_amd64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "cros x64",
-        short_name = "cmp",
-    ),
-    execution_timeout = 14 * time.hour,
-    reclient_ensure_verified = True,
-    reclient_jobs = None,
-    reclient_rewrapper_env = {
-        "RBE_compare": "true",
-        "RBE_num_local_reruns": "1",
-        "RBE_num_remote_reruns": "1",
-    },
-)
-
-ci.builder(
-    name = "lacros-amd64-generic-rel (reclient)",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "chromeos",
-                "checkout_lacros_sdk",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.INTEL,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.CHROMEOS,
-            target_cros_boards = ["amd64-generic"],
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "chromeos_device",
-            "dcheck_off",
-            "reclient",
-            "amd64-generic-vm",
-            "ozone_headless",
-            "lacros",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "lacros x64",
-    ),
-    reclient_jobs = None,
-    reclient_rewrapper_env = {"RBE_cache_silo": "lacros-amd64-generic-rel (reclient)"},
 )
 
 ci.builder(

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 124 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Setting protocol with leading U+0009 (https:)
   assert_equals: property expected "http:" but got "https:"
 [FAIL] Setting protocol with U+0009 before inserted colon (https:)
@@ -12,18 +12,6 @@ Found 124 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property expected "http:" but got "https:"
 [FAIL] Setting protocol with U+000D before inserted colon (https:)
   assert_equals: property expected "http:" but got "https:"
-[FAIL] Setting username with leading U+0000 (wpt++:)
-  assert_equals: property expected "%00test" but got ""
-[FAIL] Setting username with middle U+0000 (wpt++:)
-  assert_equals: property expected "te%00st" but got ""
-[FAIL] Setting username with trailing U+0000 (wpt++:)
-  assert_equals: property expected "test%00" but got ""
-[FAIL] Setting password with leading U+0000 (wpt++:)
-  assert_equals: property expected "%00test" but got ""
-[FAIL] Setting password with middle U+0000 (wpt++:)
-  assert_equals: property expected "te%00st" but got ""
-[FAIL] Setting password with trailing U+0000 (wpt++:)
-  assert_equals: property expected "test%00" but got ""
 [FAIL] Setting port with middle U+0000 (wpt++:)
   assert_equals: property expected "90" but got "8000"
 [FAIL] Setting port with trailing U+0000 (wpt++:)
@@ -34,34 +22,10 @@ Found 124 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property expected "/te%00st" but got "/path"
 [FAIL] Setting pathname with trailing U+0000 (wpt++:)
   assert_equals: property expected "/test%00" but got "/path"
-[FAIL] Setting search with leading U+0000 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?%00test#fragment" but got "wpt++:/path?%00test#fragment"
-[FAIL] Setting search with middle U+0000 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?te%00st#fragment" but got "wpt++:/path?te%00st#fragment"
-[FAIL] Setting search with trailing U+0000 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test%00#fragment" but got "wpt++:/path?test%00#fragment"
-[FAIL] Setting hash with leading U+0000 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#%00test" but got "wpt++:/path?query#%00test"
-[FAIL] Setting hash with middle U+0000 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#te%00st" but got "wpt++:/path?query#te%00st"
-[FAIL] Setting hash with trailing U+0000 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test%00" but got "wpt++:/path?query#test%00"
 [FAIL] Setting protocol with leading U+0009 (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+0009 before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
-[FAIL] Setting username with leading U+0009 (wpt++:)
-  assert_equals: property expected "%09test" but got ""
-[FAIL] Setting username with middle U+0009 (wpt++:)
-  assert_equals: property expected "te%09st" but got ""
-[FAIL] Setting username with trailing U+0009 (wpt++:)
-  assert_equals: property expected "test%09" but got ""
-[FAIL] Setting password with leading U+0009 (wpt++:)
-  assert_equals: property expected "%09test" but got ""
-[FAIL] Setting password with middle U+0009 (wpt++:)
-  assert_equals: property expected "te%09st" but got ""
-[FAIL] Setting password with trailing U+0009 (wpt++:)
-  assert_equals: property expected "test%09" but got ""
 [FAIL] Setting host with leading U+0009 (wpt++:)
   assert_equals: property expected "test:8000" but got "host:8000"
 [FAIL] Setting hostname with leading U+0009 (wpt++:)
@@ -86,34 +50,10 @@ Found 124 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property expected "/test" but got "/path"
 [FAIL] Setting pathname with trailing U+0009 (wpt++:)
   assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting search with leading U+0009 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting search with middle U+0009 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting search with trailing U+0009 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting hash with leading U+0009 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
-[FAIL] Setting hash with middle U+0009 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
-[FAIL] Setting hash with trailing U+0009 (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
 [FAIL] Setting protocol with leading U+000A (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+000A before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
-[FAIL] Setting username with leading U+000A (wpt++:)
-  assert_equals: property expected "%0Atest" but got ""
-[FAIL] Setting username with middle U+000A (wpt++:)
-  assert_equals: property expected "te%0Ast" but got ""
-[FAIL] Setting username with trailing U+000A (wpt++:)
-  assert_equals: property expected "test%0A" but got ""
-[FAIL] Setting password with leading U+000A (wpt++:)
-  assert_equals: property expected "%0Atest" but got ""
-[FAIL] Setting password with middle U+000A (wpt++:)
-  assert_equals: property expected "te%0Ast" but got ""
-[FAIL] Setting password with trailing U+000A (wpt++:)
-  assert_equals: property expected "test%0A" but got ""
 [FAIL] Setting host with leading U+000A (wpt++:)
   assert_equals: property expected "test:8000" but got "host:8000"
 [FAIL] Setting hostname with leading U+000A (wpt++:)
@@ -138,34 +78,10 @@ Found 124 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property expected "/test" but got "/path"
 [FAIL] Setting pathname with trailing U+000A (wpt++:)
   assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting search with leading U+000A (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting search with middle U+000A (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting search with trailing U+000A (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting hash with leading U+000A (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
-[FAIL] Setting hash with middle U+000A (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
-[FAIL] Setting hash with trailing U+000A (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
 [FAIL] Setting protocol with leading U+000D (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
 [FAIL] Setting protocol with U+000D before inserted colon (wpt++:)
   assert_equals: property expected "wpt--:" but got "wpt++:"
-[FAIL] Setting username with leading U+000D (wpt++:)
-  assert_equals: property expected "%0Dtest" but got ""
-[FAIL] Setting username with middle U+000D (wpt++:)
-  assert_equals: property expected "te%0Dst" but got ""
-[FAIL] Setting username with trailing U+000D (wpt++:)
-  assert_equals: property expected "test%0D" but got ""
-[FAIL] Setting password with leading U+000D (wpt++:)
-  assert_equals: property expected "%0Dtest" but got ""
-[FAIL] Setting password with middle U+000D (wpt++:)
-  assert_equals: property expected "te%0Dst" but got ""
-[FAIL] Setting password with trailing U+000D (wpt++:)
-  assert_equals: property expected "test%0D" but got ""
 [FAIL] Setting host with leading U+000D (wpt++:)
   assert_equals: property expected "test:8000" but got "host:8000"
 [FAIL] Setting hostname with leading U+000D (wpt++:)
@@ -190,30 +106,6 @@ Found 124 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property expected "/test" but got "/path"
 [FAIL] Setting pathname with trailing U+000D (wpt++:)
   assert_equals: property expected "/test" but got "/path"
-[FAIL] Setting search with leading U+000D (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting search with middle U+000D (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting search with trailing U+000D (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test#fragment" but got "wpt++:/path?test#fragment"
-[FAIL] Setting hash with leading U+000D (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
-[FAIL] Setting hash with middle U+000D (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
-[FAIL] Setting hash with trailing U+000D (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test" but got "wpt++:/path?query#test"
-[FAIL] Setting username with leading U+001F (wpt++:)
-  assert_equals: property expected "%1Ftest" but got ""
-[FAIL] Setting username with middle U+001F (wpt++:)
-  assert_equals: property expected "te%1Fst" but got ""
-[FAIL] Setting username with trailing U+001F (wpt++:)
-  assert_equals: property expected "test%1F" but got ""
-[FAIL] Setting password with leading U+001F (wpt++:)
-  assert_equals: property expected "%1Ftest" but got ""
-[FAIL] Setting password with middle U+001F (wpt++:)
-  assert_equals: property expected "te%1Fst" but got ""
-[FAIL] Setting password with trailing U+001F (wpt++:)
-  assert_equals: property expected "test%1F" but got ""
 [FAIL] Setting host with leading U+001F (wpt++:)
   assert_equals: property expected "%1Ftest:8000" but got "host:8000"
 [FAIL] Setting hostname with leading U+001F (wpt++:)
@@ -236,17 +128,5 @@ Found 124 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: property expected "/te%1Fst" but got "/path"
 [FAIL] Setting pathname with trailing U+001F (wpt++:)
   assert_equals: property expected "/test%1F" but got "/path"
-[FAIL] Setting search with leading U+001F (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?%1Ftest#fragment" but got "wpt++:/path?%1Ftest#fragment"
-[FAIL] Setting search with middle U+001F (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?te%1Fst#fragment" but got "wpt++:/path?te%1Fst#fragment"
-[FAIL] Setting search with trailing U+001F (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?test%1F#fragment" but got "wpt++:/path?test%1F#fragment"
-[FAIL] Setting hash with leading U+001F (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#%1Ftest" but got "wpt++:/path?query#%1Ftest"
-[FAIL] Setting hash with middle U+001F (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#te%1Fst" but got "wpt++:/path?query#te%1Fst"
-[FAIL] Setting hash with trailing U+001F (wpt++:)
-  assert_equals: href expected "wpt++://username:password@host:8000/path?query#test%1F" but got "wpt++:/path?query#test%1F"
 Harness: the test ran to completion.
 

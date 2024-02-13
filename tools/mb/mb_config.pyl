@@ -73,6 +73,13 @@
       'win64-pgo': 'official_x64_pgo',
     },
 
+    'chromium.chromiumos': {
+      # This builder builds against multiple branches, so it can't use GN args
+      # in starlark because the args.gn file will be deleted on branches where
+      # projects are setup.
+      'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',
+    },
+
     'chromium.clang': {
       'ToTLinuxOfficial': 'clang_tot_official',
       'ToTMacOfficial': 'mac_clang_tot_official',
@@ -584,6 +591,10 @@
     'chromeos_volteer_include_unwind_tables_official_skylab_reclient': [
       'chromeos_device_reclient', 'volteer', 'include_unwind_tables', 'official', 'is_skylab', 'ozone_headless',
       'also_build_lacros_chrome_for_architecture_amd64',
+    ],
+
+    'chromeos_with_codecs_release_bot_reclient': [
+      'chromeos_with_codecs', 'release_bot_reclient', 'use_cups',
     ],
 
     'clang_tot_official': [
@@ -1109,6 +1120,10 @@
       'mixins': ['chromeos_device_reclient', 'arm64-generic-crostoolchain', 'ozone_headless']
     },
 
+    'chromeos_codecs': {
+      'mixins': ['ffmpeg_branding_chromeos', 'proprietary_codecs'],
+    },
+
     'chromeos_device': {
       'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
       'mixins': ['dcheck_off', 'reclient'],
@@ -1125,6 +1140,10 @@
 
     'chromeos_kevin_reclient': {
       'mixins': ['chromeos_device_reclient', 'kevin', 'ozone_headless']
+    },
+
+    'chromeos_with_codecs': {
+      'mixins': ['chromeos', 'chromeos_codecs'],
     },
 
     'clang': {
@@ -1221,6 +1240,10 @@
 
     'ffmpeg_branding_chrome': {
       'gn_args': 'ffmpeg_branding="Chrome"',
+    },
+
+    'ffmpeg_branding_chromeos': {
+      'gn_args': 'ffmpeg_branding="ChromeOS"',
     },
 
     'fuchsia': {

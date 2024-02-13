@@ -366,8 +366,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       base::RecordAction(base::UserMetricsAction("ClearBrowsingData_History"));
       history_service->DeleteLocalAndRemoteHistoryBetween(
           ios::WebHistoryServiceFactory::GetForBrowserState(browser_state_),
-          delete_begin, delete_end, CreatePendingTaskCompletionClosure(),
-          &history_task_tracker_);
+          delete_begin, delete_end, history::kNoAppIdFilter,
+          CreatePendingTaskCompletionClosure(), &history_task_tracker_);
     }
 
     // Need to clear the host cache and accumulated speculative data, as it also

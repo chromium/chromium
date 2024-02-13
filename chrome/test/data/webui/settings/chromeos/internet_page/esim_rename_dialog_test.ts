@@ -182,7 +182,7 @@ suite('<esim-rename-dialog>', () => {
     assertTrue(doneBtn.disabled);
     assertTrue(cancelBtn.disabled);
     assertTrue(inputBox.disabled);
-    (profile as unknown as FakeProfile)['resolveSetProfileNicknamePromise_']();
+    (profile as unknown as FakeProfile)['resolveSetProfileNicknamePromise']();
     await flushTasks();
     assertFalse(doneBtn.disabled);
     assertFalse(cancelBtn.disabled);

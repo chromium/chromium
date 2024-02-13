@@ -43,13 +43,6 @@ NoStatePrefetchURLLoaderThrottle::~NoStatePrefetchURLLoaderThrottle() {
     std::move(destruction_closure_).Run();
 }
 
-void NoStatePrefetchURLLoaderThrottle::PrerenderUsed() {
-  if (original_request_priority_)
-    delegate_->SetPriority(original_request_priority_.value());
-  if (deferred_)
-    delegate_->Resume();
-}
-
 void NoStatePrefetchURLLoaderThrottle::DetachFromCurrentSequence() {
   if (destruction_closure_) {
     destruction_closure_ = base::BindOnce(
@@ -109,7 +102,6 @@ void NoStatePrefetchURLLoaderThrottle::WillStartRequest(
   if (request->load_flags & net::LOAD_IGNORE_LIMITS) {
     DCHECK_EQ(request->priority, net::MAXIMUM_PRIORITY);
   } else if (request->priority != net::IDLE) {
-    original_request_priority_ = request->priority;
     request->priority = net::IDLE;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -75,8 +75,8 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void LoadExtensions(
       std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override {
     for (const auto& param : loaded_extensions) {
-      const std::set<content::RenderProcessHost*>& process_set =
-          extension_process_map_[param->id];
+      const std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>&
+          process_set = extension_process_map_[param->id];
       for (content::RenderProcessHost* process : process_set) {
         // Count the invocation of the LoadExtensions method on the normal
         // renderer or the incognito renderer.

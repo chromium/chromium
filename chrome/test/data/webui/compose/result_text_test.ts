@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compose/result_text.js';
+import 'chrome-untrusted://compose/result_text.js';
 
-import {ComposeResultTextElement} from 'chrome://compose/result_text.js';
-// import {assertEquals, assertFalse, assertStringEquals, assertTrue} from
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import type {ComposeResultTextElement} from 'chrome-untrusted://compose/result_text.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 suite('ResultText', () => {
   let resultText: ComposeResultTextElement;

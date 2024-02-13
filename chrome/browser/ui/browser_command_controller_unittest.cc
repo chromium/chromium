@@ -220,25 +220,18 @@ TEST_F(BrowserCommandControllerTest, AvatarAcceleratorEnabledOnDesktop) {
   chrome::BrowserCommandController command_controller(browser());
   const CommandUpdater* command_updater = &command_controller;
 
-  bool enabled = true;
-  size_t profiles_count = 1U;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS uses system tray menu to handle multi-profiles.
-  enabled = false;
-  profiles_count = 2U;
-#endif
+  bool enabled = !BUILDFLAG(IS_CHROMEOS_ASH);
 
-  ASSERT_EQ(profiles_count, profile_manager->GetNumberOfProfiles());
+  ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
   EXPECT_EQ(enabled, command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 
   testing_profile_manager->CreateTestingProfile("p2");
-  profiles_count++;
-  ASSERT_EQ(profiles_count, profile_manager->GetNumberOfProfiles());
+  ASSERT_EQ(2u, profile_manager->GetNumberOfProfiles());
   EXPECT_EQ(enabled, command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 
   testing_profile_manager->DeleteTestingProfile("p2");
-  profiles_count--;
-  ASSERT_EQ(profiles_count, profile_manager->GetNumberOfProfiles());
+  ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
   EXPECT_EQ(enabled, command_updater->IsCommandEnabled(IDC_SHOW_AVATAR_MENU));
 }
 

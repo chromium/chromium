@@ -289,7 +289,7 @@ std::unique_ptr<PillButton> CastDetailedView::CreateFreezeButton(
   return freeze_button;
 }
 
-BEGIN_METADATA(CastDetailedView, TrayDetailedView)
+BEGIN_METADATA(CastDetailedView)
 END_METADATA
 
 }  // namespace ash

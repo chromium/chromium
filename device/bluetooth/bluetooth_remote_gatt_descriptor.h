@@ -6,6 +6,8 @@
 #define DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -13,7 +15,6 @@
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_descriptor.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -42,7 +43,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptor
   // will contain a value and |value| should be ignored. When successful
   // |error_code| will have no value and |value| may be used.
   using ValueCallback = base::OnceCallback<void(
-      absl::optional<BluetoothGattService::GattErrorCode> error_code,
+      std::optional<BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value)>;
 
   // Returns the value of the descriptor. For remote descriptors, this is the

@@ -1947,7 +1947,7 @@ NavigationRequest::NavigationRequest(
       auto* storage_partition =
           frame_tree_node_->current_frame_host()->GetStoragePartition();
       storage_partition->GetNetworkContext()->PreconnectSockets(
-          1, common_params_->url, true,
+          1, common_params_->url, network::mojom::CredentialsMode::kInclude,
           GetIsolationInfo().network_anonymization_key());
     }
   }
@@ -4090,7 +4090,7 @@ void NavigationRequest::OnResponseStarted(
     GlobalRequestID request_id,
     bool is_download,
     net::NetworkAnonymizationKey network_anonymization_key,
-    std::optional<SubresourceLoaderParams> subresource_loader_params,
+    SubresourceLoaderParams subresource_loader_params,
     EarlyHints early_hints) {
   receive_response_time_ = base::TimeTicks::Now();
   TRACE_EVENT_WITH_FLOW0("navigation", "NavigationRequest::OnResponseStarted",
@@ -4355,7 +4355,7 @@ void NavigationRequest::OnResponseStarted(
 void NavigationRequest::SelectFrameHostForOnResponseStarted(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     bool is_download,
-    std::optional<SubresourceLoaderParams> subresource_loader_params) {
+    SubresourceLoaderParams subresource_loader_params) {
   TRACE_EVENT_WITH_FLOW0(
       "navigation", "NavigationRequest::SelectFrameHostForOnResponseStarted",
       TRACE_ID_WITH_SCOPE(kNavigationRequestScope,
@@ -6007,10 +6007,9 @@ void NavigationRequest::CommitNavigation() {
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();
   auto response_head = response_head_.Clone();
-  if (subresource_loader_params_ &&
-      !subresource_loader_params_->prefetched_signed_exchanges.empty()) {
+  if (!subresource_loader_params_.prefetched_signed_exchanges.empty()) {
     commit_params->prefetched_signed_exchanges =
-        std::move(subresource_loader_params_->prefetched_signed_exchanges);
+        std::move(subresource_loader_params_.prefetched_signed_exchanges);
   }
 
   GetRenderFrameHost()->CommitNavigation(

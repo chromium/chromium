@@ -55,7 +55,7 @@ namespace web_app::integration_tests {
 // Enumerations used by the integration tests framework actions. These are C++
 // versions of the enumerations in the file chrome/test/webapps/data/enums.md.
 
-enum class Site {
+enum class Site : int {
   kStandalone,
   kStandaloneNestedA,
   kStandaloneNestedB,
@@ -91,9 +91,6 @@ enum class InstallableSite {
   kNoServiceWorker,
   kNotInstalled,
   kScreenshots,
-  kHasSubApps,
-  kSubApp1,
-  kSubApp2,
   kChromeUrl,
 };
 
@@ -286,10 +283,11 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // TODO(b/240449120): Standardize behavior to install preinstalled apps when
   // CUJs for that are added.
   void InstallPreinstalledApp(Site site);
-  void InstallSubApp(Site parentapp,
-                     Site subapp,
+  void InstallIsolatedApp(Site site);
+  void InstallSubApp(Site parent_app,
+                     Site sub_app,
                      SubAppInstallDialogOptions option);
-  void RemoveSubApp(Site parentapp, Site subapp);
+  void RemoveSubApp(Site parent_app, Site sub_app);
   // These functions install apps which are tabbed and creates shortcuts.
   void ApplyRunOnOsLoginPolicyAllowed(Site site);
   void ApplyRunOnOsLoginPolicyBlocked(Site site);
@@ -501,7 +499,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
       content::TestWebUI* web_ui);
 #endif
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::ScopedTempDir scoped_temp_dir_;
 
   base::flat_set<webapps::AppId> previous_manifest_updates_;
 

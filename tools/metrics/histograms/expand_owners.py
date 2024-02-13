@@ -201,17 +201,20 @@ def _ExtractEmailAddressesFromOWNERS(path, depth=0):
 def _ComponentFromDirmd(json_data, subpath):
   """Returns the component for a subpath based on dirmd output.
 
-  Returns an empty string if no component can be extracted
+  Returns an empty string if no component can be extracted.
 
   Args:
     json_data: json object output from dirmd.
     subpath: The subpath for the directory being queried, e.g. src/storage'.
   """
+  dirmd = json_data.get('dirs', {}).get(subpath, {})
+  # If a public Buganizer component is listed, return its component ID.
+  if buganizer_component := dirmd.get('buganizerPublic',
+                                      {}).get('componentId', ''):
+    return buganizer_component
   # If no component exists for the directory, or if METADATA migration is
   # incomplete there will be no component information.
-  return json_data.get('dirs', {}).get(subpath,
-                                       {}).get('monorail',
-                                               {}).get('component', '')
+  return dirmd.get('monorail', {}).get('component', '')
 
 
 # Memoize decorator from: https://stackoverflow.com/a/1988826
@@ -229,12 +232,14 @@ class Memoize:
 
 @Memoize
 def _ExtractComponentViaDirmd(path):
-  """Returns the component for monorail issues at the given path.
+  """Returns the component for Buganizer issues at the given path.
 
-  Examples are 'Blink>Storage>FileAPI' and 'UI'.
+  Examples are '1287811' for Buganizer and 'UI>Shell>Launcher' for Monorail.
 
   Uses dirmd in third_party/depot_tools to parse metadata and walk parent
   directories up to the top level of the repo.
+
+  Returns a Monorail component if no Buganizer component can be extracted.
 
   Returns an empty string if no component can be extracted.
 
@@ -358,9 +363,9 @@ def ExpandHistogramsOWNERS(histograms):
 
   If the text of an owner node is an OWNERS file path, then this node is
   replaced by owner nodes for the emails derived from the OWNERS file. If a
-  component, e.g. UI>GFX, can be derived from the OWNERS file or an OWNERS file
+  component, e.g. 1287811, can be derived from the OWNERS file or an OWNERS file
   in a higher-level directory, then a component tag will be added to the
-  histogram, e.g. <component>UI&gt;GFX</component>.
+  histogram, e.g. <component>1287811</component>.
 
   Args:
     histograms: The DOM Element whose descendants may be updated.

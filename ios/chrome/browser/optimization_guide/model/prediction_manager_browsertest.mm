@@ -15,11 +15,11 @@
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/optimization_guide/core/optimization_target_model_observer.h"
-#import "components/optimization_guide/core/prediction_model_store.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/variations/hashing.h"
 #import "components/variations/scoped_variations_ids_provider.h"
+#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
@@ -163,7 +163,8 @@ class PredictionManagerTestBase : public PlatformTest {
         false);
     // Reinitialize the store, so that tests do not use state from the
     // previous test.
-    optimization_guide::PredictionModelStore::GetInstance()->ResetForTesting();
+    optimization_guide::IOSChromePredictionModelStore::GetInstance()
+        ->ResetForTesting();
     PlatformTest::TearDown();
   }
 

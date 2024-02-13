@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
@@ -309,7 +309,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Set extra spacing placed between glyphs; used for obscured text styling.
   void SetObscuredGlyphSpacing(int spacing);
 
-  absl::optional<size_t> GetPasswordCharRevealIndex() const {
+  std::optional<size_t> GetPasswordCharRevealIndex() const {
     return password_char_reveal_index_;
   }
 
@@ -470,8 +470,8 @@ class VIEWS_EXPORT Textfield : public View,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
-      absl::optional<gfx::Rect>* control_bounds,
-      absl::optional<gfx::Rect>* selection_bounds) override;
+      std::optional<gfx::Rect>* control_bounds,
+      std::optional<gfx::Rect>* selection_bounds) override;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -591,7 +591,7 @@ class VIEWS_EXPORT Textfield : public View,
   void UpdateAfterChange(
       TextChangeType text_change_type,
       bool cursor_changed,
-      absl::optional<bool> notify_caret_bounds_changed = absl::nullopt);
+      std::optional<bool> notify_caret_bounds_changed = std::nullopt);
 
   // Updates cursor visibility and blinks the cursor if needed.
   void ShowCursor();
@@ -635,7 +635,7 @@ class VIEWS_EXPORT Textfield : public View,
   // Reveals the password character at |index| for a set duration.
   // If |index| is nullopt, the existing revealed character will be reset.
   // |duration| is the time to remain the password char to be visible.
-  void RevealPasswordChar(absl::optional<size_t> index,
+  void RevealPasswordChar(std::optional<size_t> index,
                           base::TimeDelta duration);
 
   void CreateTouchSelectionControllerAndNotifyIt();
@@ -728,10 +728,10 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Colors which override default system colors.
   // TODO(tluk): These should be updated to be ColorIds instead of SkColors.
-  absl::optional<SkColor> text_color_;
-  absl::optional<SkColor> background_color_;
-  absl::optional<SkColor> selection_text_color_;
-  absl::optional<SkColor> selection_background_color_;
+  std::optional<SkColor> text_color_;
+  std::optional<SkColor> background_color_;
+  std::optional<SkColor> selection_text_color_;
+  std::optional<SkColor> selection_background_color_;
 
   // Text to display when empty.
   std::u16string placeholder_text_;
@@ -740,14 +740,14 @@ class VIEWS_EXPORT Textfield : public View,
   // TODO(newcomer): Use NativeTheme to define different default placeholder
   // text colors for chrome/CrOS when harmony is enabled by default
   // (https://crbug.com/803279).
-  absl::optional<SkColor> placeholder_text_color_;
+  std::optional<SkColor> placeholder_text_color_;
 
   // The draw flags specified for |placeholder_text_|.
   int placeholder_text_draw_flags_;
 
   // The font used for the placeholder text. If this value is null, the
   // placeholder text uses the same font list as the underlying RenderText.
-  absl::optional<gfx::FontList> placeholder_font_list_;
+  std::optional<gfx::FontList> placeholder_font_list_;
 
   // True when the contents are deemed unacceptable and should be indicated as
   // such.
@@ -809,7 +809,7 @@ class VIEWS_EXPORT Textfield : public View,
       SelectionDraggingState::kNone;
 
   // Tracks the type of the current or pending selection drag gesture.
-  absl::optional<ui::TouchSelectionDragType> selection_drag_type_;
+  std::optional<ui::TouchSelectionDragType> selection_drag_type_;
 
   // The offset applied to the touch drag location when determining selection
   // updates.
@@ -847,7 +847,7 @@ class VIEWS_EXPORT Textfield : public View,
   bool show_rejection_ui_if_any_ = false;
 
   // Whether the text should be used to improve typing suggestions.
-  absl::optional<bool> should_do_learning_;
+  std::optional<bool> should_do_learning_;
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
   // The string used to compute the text offsets for accessibility. This is used
@@ -873,7 +873,7 @@ class VIEWS_EXPORT Textfield : public View,
       ui::TextInputClient::FOCUS_REASON_NONE;
 
   // The password char reveal index, for testing only.
-  absl::optional<size_t> password_char_reveal_index_;
+  std::optional<size_t> password_char_reveal_index_;
 
   // Extra insets, useful to make room for a button for example.
   gfx::Insets extra_insets_ = gfx::Insets();

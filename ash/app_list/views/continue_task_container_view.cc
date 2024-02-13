@@ -33,6 +33,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/view_class_properties.h"
 
 using views::BoxLayout;
 using views::FlexLayout;
@@ -125,10 +126,10 @@ ContinueTaskContainerView::ContinueTaskContainerView(
   DCHECK(!update_callback_.is_null());
 
   if (tablet_mode_) {
-    InitializeFlexLayout();
+    InitializeTabletLayout();
   } else {
     columns_ = columns;
-    InitializeTableLayout();
+    InitializeClamshellLayout();
   }
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kList);
   GetViewAccessibility().OverrideName(
@@ -481,11 +482,7 @@ void ContinueTaskContainerView::AnimateSlideInSuggestions(
 
 void ContinueTaskContainerView::RemoveViewFromLayout(ContinueTaskView* view) {
   view->SetEnabled(false);
-  if (table_layout_) {
-    table_layout_->SetChildViewIgnoredByLayout(view, true);
-  } else if (flex_layout_) {
-    flex_layout_->SetChildViewIgnoredByLayout(view, true);
-  }
+  view->SetProperty(views::kViewIgnoredByLayoutKey, true);
 }
 
 void ContinueTaskContainerView::ScheduleUpdate() {
@@ -498,13 +495,12 @@ void ContinueTaskContainerView::ScheduleUpdate() {
   }
 }
 
-void ContinueTaskContainerView::InitializeFlexLayout() {
+void ContinueTaskContainerView::InitializeTabletLayout() {
   DCHECK(tablet_mode_);
-  DCHECK(!table_layout_);
   DCHECK(!columns_);
 
-  flex_layout_ = SetLayoutManager(std::make_unique<FlexLayout>());
-  flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
+  SetLayoutManager(std::make_unique<FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, kColumnSpacingTablet, 0, 0))
@@ -514,36 +510,36 @@ void ContinueTaskContainerView::InitializeFlexLayout() {
                       views::MaximumFlexSizeRule::kScaleToMaximum));
 }
 
-void ContinueTaskContainerView::InitializeTableLayout() {
+void ContinueTaskContainerView::InitializeClamshellLayout() {
   DCHECK(!tablet_mode_);
-  DCHECK(!flex_layout_);
   DCHECK_GT(columns_, 0);
 
-  table_layout_ = SetLayoutManager(std::make_unique<views::TableLayout>());
+  auto* const table_layout =
+      SetLayoutManager(std::make_unique<views::TableLayout>());
   std::vector<size_t> linked_columns;
   for (int i = 0; i < columns_; i++) {
     if (i == 0) {
-      table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                      kColumnOuterSpacingClamshell);
+      table_layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                     kColumnOuterSpacingClamshell);
     } else {
-      table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                      kColumnInnerSpacingClamshell);
+      table_layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                     kColumnInnerSpacingClamshell);
     }
-    table_layout_->AddColumn(
+    table_layout->AddColumn(
         views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter,
         /*horizontal_resize=*/1.0f, views::TableLayout::ColumnSize::kFixed,
         /*fixed_width=*/0, /*min_width=*/0);
     linked_columns.push_back(2 * i + 1);
   }
-  table_layout_->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                  kColumnOuterSpacingClamshell);
+  table_layout->AddPaddingColumn(views::TableLayout::kFixedSize,
+                                 kColumnOuterSpacingClamshell);
 
-  table_layout_->LinkColumnSizes(linked_columns);
+  table_layout->LinkColumnSizes(linked_columns);
   // Continue section only shows if there are 3 or more suggestions, so there
   // are always 2 rows.
-  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
-  table_layout_->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
-  table_layout_->AddRows(1, views::TableLayout::kFixedSize);
+  table_layout->AddRows(1, views::TableLayout::kFixedSize);
+  table_layout->AddPaddingRow(views::TableLayout::kFixedSize, kRowSpacing);
+  table_layout->AddRows(1, views::TableLayout::kFixedSize);
 }
 
 void ContinueTaskContainerView::MoveFocusUp() {

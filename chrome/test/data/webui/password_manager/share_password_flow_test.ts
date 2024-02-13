@@ -4,7 +4,8 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {PasswordManagerImpl, ShareFlowState, SharePasswordFlowElement} from 'chrome://password-manager/password_manager.js';
+import type {SharePasswordFlowElement} from 'chrome://password-manager/password_manager.js';
+import {PasswordManagerImpl, ShareFlowState} from 'chrome://password-manager/password_manager.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

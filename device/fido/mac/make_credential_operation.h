@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
  public:
   using Callback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      absl::optional<AuthenticatorMakeCredentialResponse>)>;
+      std::optional<AuthenticatorMakeCredentialResponse>)>;
 
   MakeCredentialOperation(CtapMakeCredentialRequest request,
                           TouchIdCredentialStore* credential_store,

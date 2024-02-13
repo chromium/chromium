@@ -20,7 +20,7 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
 // </if>
 
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceNameValidationResult, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
@@ -29,7 +29,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getOnboardingEntryPoint, NearbyShareOnboardingEntryPoint, NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
 import {getTemplate} from './nearby_onboarding_one_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
-import {NearbySettings} from './nearby_share_settings_mixin.js';
+import type {NearbySettings} from './nearby_share_settings_mixin.js';
 
 const ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON =
     'nearby-images:nearby-onboarding-splash-light';

@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -26,7 +27,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,7 +48,6 @@
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/url_formatter/elide_url.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -69,7 +68,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/session/connection_holder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -204,29 +202,6 @@ std::vector<std::string> GetSupportedLinks(Profile* profile,
 }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-std::vector<std::string> GetSupportedLinksForPWAs(
-    const std::string& app_id,
-    web_app::WebAppProvider& provider) {
-  GURL app_scope = provider.registrar_unsafe().GetAppScope(app_id);
-  if (!web_app::IsValidScopeForLinkCapturing(app_scope)) {
-    return std::vector<std::string>();
-  }
-
-  std::string scope_str(app_scope.host());
-  if (app_scope.has_port()) {
-    scope_str += ":" + app_scope.port();
-  }
-  scope_str += app_scope.path();
-  if (scope_str.back() == '/') {
-    scope_str = scope_str + "*";
-  } else {
-    scope_str = scope_str + "/*";
-  }
-  return {scope_str};
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
   if (bytes.has_value()) {
     // ui::FormatBytes requires a non-negative signed integer. In general, we
@@ -246,80 +221,14 @@ std::optional<std::string> MaybeFormatBytes(std::optional<uint64_t> bytes) {
 
   return std::nullopt;
 }
-#if !BUILDFLAG(IS_CHROMEOS)
-std::string GetFormattedOrigin(const webapps::AppId& app_id,
-                               web_app::WebAppProvider& provider) {
-  GURL origin_url = provider.registrar_unsafe().GetAppStartUrl(app_id);
-  // Format origin URL to not show the scheme and default port numbers.
-  std::u16string origin_url_formatted =
-      url_formatter::FormatOriginForSecurityDisplay(
-          url::Origin::Create(origin_url),
-          url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-  return base::UTF16ToUTF8(origin_url_formatted);
-}
-
-// Returns a list of origin URLs from scope_extensions of an app's Manifest.
-std::vector<std::string> GetScopeExtensions(const webapps::AppId& app_id,
-                                            web_app::WebAppProvider& provider) {
-  std::vector<std::string> scope_extensions_vector;
-
-  for (const auto& scope_extension :
-       provider.registrar_unsafe().GetScopeExtensions(app_id)) {
-    url::Origin origin = scope_extension.origin;
-    // Format origin URL to not show the scheme and default port numbers.
-    std::u16string origin_formatted =
-        url_formatter::FormatOriginForSecurityDisplay(
-            origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
-    if (scope_extension.has_origin_wildcard) {
-      origin_formatted = u"*." + origin_formatted;
-    }
-    scope_extensions_vector.push_back(base::UTF16ToUTF8(origin_formatted));
-  }
-  return scope_extensions_vector;
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
-
-AppManagementPageHandlerBase::AppManagementPageHandlerBase(
-    mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
-    mojo::PendingRemote<app_management::mojom::Page> page,
-    Profile* profile,
-    Delegate& delegate)
-    : receiver_(this, std::move(receiver)),
-      page_(std::move(page)),
-      profile_(profile),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      shelf_delegate_(this, profile),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-      delegate_(delegate) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
-  app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
-  preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
-
-  // On Chrome OS, file handler updates are already plumbed through
-  // App Service since the change will also affect the intent filters.
-  // There's no need to update twice.
-#if !BUILDFLAG(IS_CHROMEOS)
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  registrar_observation_.Observe(&provider->registrar_unsafe());
-#endif
-}
 
 AppManagementPageHandlerBase::~AppManagementPageHandlerBase() {}
 
 void AppManagementPageHandlerBase::OnPinnedChanged(const std::string& app_id,
                                                    bool pinned) {
-  app_management::mojom::AppPtr app;
-
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady) {
-          app = CreateUIAppPtr(update);
-        }
-      });
+  app_management::mojom::AppPtr app = CreateApp(app_id);
 
   // If an app with this id is not already installed, do nothing.
   if (!app) {
@@ -333,39 +242,23 @@ void AppManagementPageHandlerBase::OnPinnedChanged(const std::string& app_id,
 
 void AppManagementPageHandlerBase::GetApps(GetAppsCallback callback) {
   std::vector<app_management::mojom::AppPtr> app_management_apps;
-  std::vector<apps::AppPtr> apps =
-      apps::AppServiceProxyFactory::GetForProfile(profile_)
-          ->AppRegistryCache()
-          .GetAllApps();
 
-  // TODO(crbug/1315958): A speculative fix for crbug/1315958. If the crashes go
-  // away, there is some other bugs in CreateUIAppPtr, and we need to track down
-  // here so that the ForEachApps call works.
-  for (auto& app : apps) {
-    if (app->show_in_management.value_or(false) &&
-        apps_util::IsInstalled(app->readiness)) {
-      app_management_apps.push_back(
-          CreateUIAppPtr(apps::AppUpdate(app.get(),
-                                         /*delta=*/nullptr, AccountId())));
-    }
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForEachApp([this, &app_management_apps](const apps::AppUpdate& update) {
+        app_management::mojom::AppPtr app = CreateApp(update.AppId());
+
+        if (app) {
+          app_management_apps.push_back(std::move(app));
+        }
+      });
 
   std::move(callback).Run(std::move(app_management_apps));
 }
 
 void AppManagementPageHandlerBase::GetApp(const std::string& app_id,
                                           GetAppCallback callback) {
-  app_management::mojom::AppPtr app;
-
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady) {
-          app = CreateUIAppPtr(update);
-        }
-      });
-
-  std::move(callback).Run(std::move(app));
+  std::move(callback).Run(CreateApp(app_id));
 }
 
 void AppManagementPageHandlerBase::GetSubAppToParentMap(
@@ -439,16 +332,6 @@ void AppManagementPageHandlerBase::SetPermission(
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandlerBase::SetResizeLocked(const std::string& app_id,
-                                                   bool locked) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetResizeLocked(
-      app_id, locked);
-#else
-  NOTIMPLEMENTED();
-#endif
-}
-
 void AppManagementPageHandlerBase::Uninstall(const std::string& app_id) {
   apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
       app_id, apps::UninstallSource::kAppManagement,
@@ -461,96 +344,9 @@ void AppManagementPageHandlerBase::OpenNativeSettings(
       app_id);
 }
 
-void AppManagementPageHandlerBase::SetPreferredApp(const std::string& app_id,
-                                                   bool is_preferred_app) {
-#if BUILDFLAG(IS_CHROMEOS)
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  bool is_preferred_app_for_supported_links =
-      proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);
-
-  if (is_preferred_app && !is_preferred_app_for_supported_links) {
-    proxy->SetSupportedLinksPreference(app_id);
-  } else if (!is_preferred_app && is_preferred_app_for_supported_links) {
-    proxy->RemoveSupportedLinksPreference(app_id);
-  }
-#else
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile_);
-
-  provider->scheduler().SetAppCapturesSupportedLinksDisableOverlapping(
-      app_id, is_preferred_app, base::DoNothing());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
-void AppManagementPageHandlerBase::GetOverlappingPreferredApps(
-    const std::string& app_id,
-    GetOverlappingPreferredAppsCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS)
-  auto intent_filters = GetSupportedLinkIntentFilters(profile_, app_id);
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  base::flat_set<std::string> app_ids =
-      proxy->PreferredAppsList().FindPreferredAppsForFilters(intent_filters);
-  app_ids.erase(app_id);
-
-  // Erase all IDs that do not correspond to installed apps in App Service. Such
-  // IDs could be apps that have been uninstalled but did not have their
-  // preference updated correctly, or the legacy "use_browser" preference. This
-  // prevents attempting to show an overlapping app dialog for an app that
-  // doesn't currently exist.
-  base::EraseIf(app_ids, [proxy](const std::string& app_id) {
-    return !proxy->AppRegistryCache().IsAppInstalled(app_id);
-  });
-  std::move(callback).Run(std::move(app_ids).extract());
-#else
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile_);
-  provider->scheduler().ScheduleCallbackWithResult(
-      "AppManagementPageHandlerBase::GetOverlappingPreferredApps",
-      web_app::AllAppsLockDescription(),
-      base::BindOnce(
-          [](const webapps::AppId& app_id, web_app::AllAppsLock& all_apps_lock,
-             base::Value::Dict& debug_value) {
-            return all_apps_lock.registrar().GetOverlappingAppsMatchingScope(
-                app_id);
-          },
-          app_id),
-      std::move(callback), /*arg_for_shutdown=*/std::vector<std::string>());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-}
-
 void AppManagementPageHandlerBase::UpdateAppSize(const std::string& app_id) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->UpdateAppSize(app_id);
-}
-
-void AppManagementPageHandlerBase::SetWindowMode(const std::string& app_id,
-                                                 apps::WindowMode window_mode) {
-  // On ChromeOS, apps should always open in a new window,
-  // hence window mode changes are not allowed.
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTIMPLEMENTED();
-#else
-  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
-
-  // Changing window mode is not allowed for isolated web apps.
-  if (provider->registrar_unsafe().IsIsolated(app_id)) {
-    return;
-  }
-
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
-      app_id, window_mode);
-#endif
-}
-
-void AppManagementPageHandlerBase::SetRunOnOsLoginMode(
-    const std::string& app_id,
-    apps::RunOnOsLoginMode run_on_os_login_mode) {
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTIMPLEMENTED();
-#else
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetRunOnOsLoginMode(
-      app_id, run_on_os_login_mode);
-#endif
 }
 
 void AppManagementPageHandlerBase::SetFileHandlingEnabled(
@@ -563,27 +359,41 @@ void AppManagementPageHandlerBase::SetFileHandlingEnabled(
       app_id, std::move(permission));
 }
 
-void AppManagementPageHandlerBase::ShowDefaultAppAssociationsUi() {
-  DCHECK(CanShowDefaultAppAssociationsUi());
-#if BUILDFLAG(IS_WIN)
-  base::win::LaunchDefaultAppsSettingsModernDialog({});
-#endif
+AppManagementPageHandlerBase::AppManagementPageHandlerBase(
+    mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
+    mojo::PendingRemote<app_management::mojom::Page> page,
+    Profile* profile,
+    Delegate& delegate)
+    : receiver_(this, std::move(receiver)),
+      page_(std::move(page)),
+      profile_(profile),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      shelf_delegate_(this, profile),
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+      delegate_(delegate) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+  app_registry_cache_observer_.Observe(&proxy->AppRegistryCache());
 }
 
-void AppManagementPageHandlerBase::OnWebAppFileHandlerApprovalStateChanged(
-    const webapps::AppId& app_id) {
-#if BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED();
-#endif
+app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateApp(
+    const std::string& app_id) {
   app_management::mojom::AppPtr app;
 
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
       .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady) {
-          app = CreateUIAppPtr(update);
+        if (update.ShowInManagement().value_or(false) &&
+            apps_util::IsInstalled(update.Readiness())) {
+          app = CreateAppFromAppUpdate(update);
         }
       });
+
+  return app;
+}
+
+void AppManagementPageHandlerBase::NotifyAppChanged(const std::string& app_id) {
+  app_management::mojom::AppPtr app = CreateApp(app_id);
 
   if (!app) {
     return;
@@ -592,19 +402,8 @@ void AppManagementPageHandlerBase::OnWebAppFileHandlerApprovalStateChanged(
   page_->OnAppChanged(std::move(app));
 }
 
-void AppManagementPageHandlerBase::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-void AppManagementPageHandlerBase::OnWebAppUserLinkCapturingPreferencesChanged(
-    const webapps::AppId& app_id,
-    bool is_preferred) {
-  OnPreferredAppChanged(app_id, is_preferred);
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
-app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(
+app_management::mojom::AppPtr
+AppManagementPageHandlerBase::CreateAppFromAppUpdate(
     const apps::AppUpdate& update) {
   auto app = app_management::mojom::App::New();
   app->id = update.AppId();
@@ -656,12 +455,6 @@ app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(
   app->is_preferred_app = apps::AppServiceProxyFactory::GetForProfile(profile_)
                               ->PreferredAppsList()
                               .IsPreferredAppForSupportedLinks(update.AppId());
-#else
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile_);
-  CHECK(provider);
-  app->is_preferred_app =
-      provider->registrar_unsafe().CapturesLinksInScope(update.AppId());
 #endif  // BUILDFLAG(IS_CHROMEOS)
   app->hide_more_settings = ShouldHideMoreSettings(app->id);
   app->hide_pin_to_shelf =
@@ -670,14 +463,6 @@ app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(
 
 #if BUILDFLAG(IS_CHROMEOS)
   app->supported_links = GetSupportedLinks(profile_, app->id);
-#else
-  // This allows us to bypass showing the supported links item on the PWA app
-  // settings page on Windows, Mac and Linux platforms.
-  if (apps::features::ShouldShowLinkCapturingUX()) {
-    app->supported_links = GetSupportedLinksForPWAs(app->id, *provider);
-  } else {
-    app->supported_links = std::vector<std::string>();
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   auto run_on_os_login = update.RunOnOsLogin();
   if (run_on_os_login.has_value()) {
@@ -764,104 +549,29 @@ app_management::mojom::AppPtr AppManagementPageHandlerBase::CreateUIAppPtr(
     }
   }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  app->hide_window_mode = provider->registrar_unsafe().IsIsolated(app->id);
-#endif
-
   app->publisher_id = update.PublisherId();
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (!provider->registrar_unsafe().GetScopeExtensions(app->id).empty()) {
-    app->formatted_origin = GetFormattedOrigin(app->id, *provider);
-    app->scope_extensions = GetScopeExtensions(app->id, *provider);
-  }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return app;
 }
 
-void AppManagementPageHandlerBase::OpenStorePage(const std::string& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-  auto* apk_service = ash::ApkWebAppService::Get(profile_);
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [&proxy, &apk_service](const apps::AppUpdate& update) {
-        if (update.InstallSource() == apps::InstallSource::kPlayStore) {
-          std::string package_name = update.PublisherId();
-          if (apk_service->IsWebAppInstalledFromArc(update.AppId())) {
-            package_name =
-                apk_service->GetPackageNameForWebApp(update.AppId()).value();
-          }
-          GURL url("https://play.google.com/store/apps/details?id=" +
-                   package_name);
-          proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE, url,
-                                  apps::LaunchSource::kFromChromeInternal);
-        } else if (update.InstallSource() ==
-                   apps::InstallSource::kChromeWebStore) {
-          GURL url("https://chrome.google.com/webstore/detail/" +
-                   update.AppId());
-          proxy->LaunchAppWithUrl(extensions::kWebStoreAppId, ui::EF_NONE, url,
-                                  apps::LaunchSource::kFromChromeInternal);
-        }
-      });
-#endif
-}
-
-void AppManagementPageHandlerBase::SetAppLocale(const std::string& app_id,
-                                                const std::string& locale_tag) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetAppLocale(
-      app_id, locale_tag);
-#else
-  NOTIMPLEMENTED();
-#endif
-}
-
 void AppManagementPageHandlerBase::OnAppUpdate(const apps::AppUpdate& update) {
+  app_management::mojom::AppPtr app = CreateApp(update.AppId());
   if (update.ShowInManagementChanged() || update.ReadinessChanged()) {
     if (update.ShowInManagement().value_or(false) &&
         update.Readiness() == apps::Readiness::kReady) {
-      page_->OnAppAdded(CreateUIAppPtr(update));
+      page_->OnAppAdded(std::move(app));
     }
 
     if (!update.ShowInManagement().value_or(true) ||
         !apps_util::IsInstalled(update.Readiness())) {
       page_->OnAppRemoved(update.AppId());
     }
-  } else {
-    page_->OnAppChanged(CreateUIAppPtr(update));
+  } else if (app) {
+    page_->OnAppChanged(std::move(app));
   }
 }
 
 void AppManagementPageHandlerBase::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   cache->RemoveObserver(this);
-}
-
-void AppManagementPageHandlerBase::OnPreferredAppChanged(
-    const std::string& app_id,
-    bool is_preferred_app) {
-  app_management::mojom::AppPtr app;
-
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
-        if (update.Readiness() == apps::Readiness::kReady) {
-          app = CreateUIAppPtr(update);
-        }
-      });
-
-  // If an app with this id is not already installed, do nothing.
-  if (!app) {
-    return;
-  }
-
-  app->is_preferred_app = is_preferred_app;
-
-  page_->OnAppChanged(std::move(app));
-}
-
-void AppManagementPageHandlerBase::OnPreferredAppsListWillBeDestroyed(
-    apps::PreferredAppsListHandle* handle) {
-  preferred_apps_list_handle_observer_.Reset();
 }

@@ -10,13 +10,13 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_result.h"
-#include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/async_api_interface.h"
 #include "gpu/command_buffer/service/gl_context_virtual_delegate.h"
 #include "gpu/gpu_gles2_export.h"
@@ -32,6 +32,7 @@ class TextureBase;
 struct ContextCreationAttribs;
 
 namespace gles2 {
+class AbstractTexture;
 class ContextGroup;
 class ErrorState;
 class FeatureInfo;

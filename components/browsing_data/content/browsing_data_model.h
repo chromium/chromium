@@ -163,6 +163,10 @@ class BrowsingDataModel {
         const DataKey& data_key,
         StorageType storage_type) const = 0;
 
+    // Returns true if storage type is Cookie-like i.e. non kAPI type.
+    virtual std::optional<bool> IsStorageTypeCookieLike(
+        StorageType storage_type) const = 0;
+
     // Returns whether the delegate considers `storage_type` to be blocked by
     // third party cookie blocking, utilizing `data_key` to exclude partitioned
     // data. Returns nullopt if the delegate does not manage the storage type.
@@ -282,6 +286,10 @@ class BrowsingDataModel {
   // Virtual to allow an in-memory only fake to be created.
   virtual void RemoveUnpartitionedBrowsingData(const DataOwner& data_owner,
                                                base::OnceClosure completed);
+
+  // Returns true if storage type is Cookie-like i.e. non kAPI type.
+  // This can't be static as it requires to consult the delegate.
+  bool IsStorageTypeCookieLike(StorageType storage_type) const;
 
   // Returns whether the provided `storage_type` is blocked when third party
   // cookies are blocked, utilizing `data_key` to exclude partitioned data.

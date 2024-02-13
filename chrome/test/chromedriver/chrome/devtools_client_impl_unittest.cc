@@ -535,7 +535,6 @@ TEST_F(DevToolsClientImplTest, Ctor) {
   EXPECT_EQ(1, client.NextMessageId());
   EXPECT_EQ(nullptr, client.GetOwner());
   EXPECT_EQ(nullptr, client.GetParentClient());
-  EXPECT_EQ(&client, client.GetRootClient());
 }
 
 TEST_F(DevToolsClientImplTest, SendCommand) {
@@ -762,8 +761,8 @@ bool ReturnCommand(const std::string& message,
                    int expected_id,
                    std::string* session_id,
                    internal::InspectorMessageType* type,
-                   internal::InspectorEvent* event,
-                   internal::InspectorCommandResponse* command_response) {
+                   InspectorEvent* event,
+                   InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
   session_id->clear();
   command_response->id = expected_id;
@@ -775,8 +774,8 @@ bool ReturnBadResponse(const std::string& message,
                        int expected_id,
                        std::string* session_id,
                        internal::InspectorMessageType* type,
-                       internal::InspectorEvent* event,
-                       internal::InspectorCommandResponse* command_response) {
+                       InspectorEvent* event,
+                       InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
   session_id->clear();
   command_response->id = expected_id;
@@ -788,8 +787,8 @@ bool ReturnCommandBadId(const std::string& message,
                         int expected_id,
                         std::string* session_id,
                         internal::InspectorMessageType* type,
-                        internal::InspectorEvent* event,
-                        internal::InspectorCommandResponse* command_response) {
+                        InspectorEvent* event,
+                        InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
   session_id->clear();
   command_response->id = expected_id + 100;
@@ -803,8 +802,8 @@ bool ReturnUnexpectedIdThenResponse(
     int expected_id,
     std::string* session_id,
     internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+    InspectorEvent* event,
+    InspectorCommandResponse* command_response) {
   session_id->clear();
   if (*first) {
     *type = internal::kCommandResponseMessageType;
@@ -824,8 +823,8 @@ bool ReturnCommandError(const std::string& message,
                         int expected_id,
                         std::string* session_id,
                         internal::InspectorMessageType* type,
-                        internal::InspectorEvent* event,
-                        internal::InspectorCommandResponse* command_response) {
+                        InspectorEvent* event,
+                        InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
   session_id->clear();
   command_response->id = expected_id;
@@ -853,14 +852,13 @@ class MockListener : public DevToolsEventListener {
   bool called_ = false;
 };
 
-bool ReturnEventThenResponse(
-    bool* first,
-    const std::string& message,
-    int expected_id,
-    std::string* session_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnEventThenResponse(bool* first,
+                             const std::string& message,
+                             int expected_id,
+                             std::string* session_id,
+                             internal::InspectorMessageType* type,
+                             InspectorEvent* event,
+                             InspectorCommandResponse* command_response) {
   session_id->clear();
   if (*first) {
     *type = internal::kEventMessageType;
@@ -881,8 +879,8 @@ bool ReturnEvent(const std::string& message,
                  int expected_id,
                  std::string* session_id,
                  internal::InspectorMessageType* type,
-                 internal::InspectorEvent* event,
-                 internal::InspectorCommandResponse* command_response) {
+                 InspectorEvent* event,
+                 InspectorCommandResponse* command_response) {
   *type = internal::kEventMessageType;
   event->method = "method";
   event->params = base::Value::Dict();
@@ -890,15 +888,14 @@ bool ReturnEvent(const std::string& message,
   return true;
 }
 
-bool ReturnOutOfOrderResponses(
-    int* recurse_count,
-    DevToolsClient* client,
-    const std::string& message,
-    int expected_id,
-    std::string* session_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnOutOfOrderResponses(int* recurse_count,
+                               DevToolsClient* client,
+                               const std::string& message,
+                               int expected_id,
+                               std::string* session_id,
+                               internal::InspectorMessageType* type,
+                               InspectorEvent* event,
+                               InspectorCommandResponse* command_response) {
   int key = 0;
   base::Value::Dict params;
   params.Set("param", 1);
@@ -929,8 +926,8 @@ bool ReturnError(const std::string& message,
                  int expected_id,
                  std::string* session_id,
                  internal::InspectorMessageType* type,
-                 internal::InspectorEvent* event,
-                 internal::InspectorCommandResponse* command_response) {
+                 InspectorEvent* event,
+                 InspectorCommandResponse* command_response) {
   return false;
 }
 
@@ -1018,8 +1015,8 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
 
 TEST(ParseInspectorMessage, NonJson) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage("hi", 0, &session_id, &type,
                                                &event, &response));
@@ -1027,8 +1024,8 @@ TEST(ParseInspectorMessage, NonJson) {
 
 TEST(ParseInspectorMessage, NeitherCommandNorEvent) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage("{}", 0, &session_id, &type,
                                                &event, &response));
@@ -1036,8 +1033,8 @@ TEST(ParseInspectorMessage, NeitherCommandNorEvent) {
 
 TEST(ParseInspectorMessage, EventNoParams) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
       "{\"method\":\"method\"}", 0, &session_id, &type, &event, &response));
@@ -1047,8 +1044,8 @@ TEST(ParseInspectorMessage, EventNoParams) {
 
 TEST(ParseInspectorMessage, EventNoParamsWithSessionId) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
       "{\"method\":\"method\",\"sessionId\":\"B221AF2\"}", 0, &session_id,
@@ -1060,8 +1057,8 @@ TEST(ParseInspectorMessage, EventNoParamsWithSessionId) {
 
 TEST(ParseInspectorMessage, EventWithParams) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
       "{\"method\":\"method\",\"params\":{\"key\":100},\"sessionId\":\"AB3A\"}",
@@ -1075,8 +1072,8 @@ TEST(ParseInspectorMessage, EventWithParams) {
 
 TEST(ParseInspectorMessage, CommandNoErrorOrResult) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   // As per Chromium issue 392577, DevTools does not necessarily return a
   // "result" dictionary for every valid response. If neither "error" nor
@@ -1090,8 +1087,8 @@ TEST(ParseInspectorMessage, CommandNoErrorOrResult) {
 
 TEST(ParseInspectorMessage, CommandError) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
       "{\"id\":1,\"error\":{}}", 0, &session_id, &type, &event, &response));
@@ -1103,8 +1100,8 @@ TEST(ParseInspectorMessage, CommandError) {
 
 TEST(ParseInspectorMessage, Command) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(
       internal::ParseInspectorMessage("{\"id\":1,\"result\":{\"key\":1}}", 0,
@@ -1118,8 +1115,8 @@ TEST(ParseInspectorMessage, Command) {
 
 TEST(ParseInspectorMessage, NoBindingName) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage(
       "{\"method\":\"Runtime.bindingCalled\","
@@ -1130,8 +1127,8 @@ TEST(ParseInspectorMessage, NoBindingName) {
 
 TEST(ParseInspectorMessage, UnknownBindingName) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
       "{\"method\":\"Runtime.bindingCalled\","
@@ -1143,8 +1140,8 @@ TEST(ParseInspectorMessage, UnknownBindingName) {
 
 TEST(ParseInspectorMessage, BidiMessageNoPayload) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage(
       "{\"method\":\"Runtime.bindingCalled\","
@@ -1155,8 +1152,8 @@ TEST(ParseInspectorMessage, BidiMessageNoPayload) {
 
 TEST(ParseInspectorMessage, BidiMessagePayloadNotADict) {
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage(
       "{\"method\":\"Runtime.bindingCalled\","
@@ -1183,8 +1180,8 @@ TEST(ParseInspectorMessage, TunneledCdpEvent) {
   std::string message;
   SerializeAsJson(evt, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                               &event, &response));
@@ -1212,8 +1209,8 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpSession) {
   std::string message;
   SerializeAsJson(evt, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                               &event, &response));
@@ -1239,8 +1236,8 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpParams) {
   std::string message;
   SerializeAsJson(evt, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                               &event, &response));
@@ -1264,8 +1261,8 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoCdpMethod) {
   std::string message;
   SerializeAsJson(evt, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                                &event, &response));
@@ -1281,8 +1278,8 @@ TEST(ParseInspectorMessage, TunneledCdpEventNoPayloadParams) {
   std::string message;
   SerializeAsJson(evt, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                                &event, &response));
@@ -1302,8 +1299,8 @@ TEST(ParseInspectorMessage, TunneledCdpResponse) {
   std::string message;
   SerializeAsJson(resp, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                               &event, &response));
@@ -1327,8 +1324,8 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoSession) {
   std::string message;
   SerializeAsJson(resp, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                               &event, &response));
@@ -1352,8 +1349,8 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoId) {
   std::string message;
   SerializeAsJson(resp, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_FALSE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                                &event, &response));
@@ -1370,8 +1367,8 @@ TEST(ParseInspectorMessage, TunneledCdpResponseNoResult) {
   std::string message;
   SerializeAsJson(resp, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                               &event, &response));
@@ -1395,8 +1392,8 @@ TEST(ParseInspectorMessage, TunneledCdpResponseError) {
   std::string message;
   SerializeAsJson(resp, &message);
   internal::InspectorMessageType type;
-  internal::InspectorEvent event;
-  internal::InspectorCommandResponse response;
+  InspectorEvent event;
+  InspectorCommandResponse response;
   std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(message, -1, &session_id, &type,
                                               &event, &response));

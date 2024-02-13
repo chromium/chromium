@@ -8,17 +8,17 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/numerics/clamped_math.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
@@ -71,7 +71,7 @@ const DuplexMap kDuplexList[]{
     {CUPS_SIDES_TWO_SIDED_LANDSCAPE, mojom::DuplexMode::kShortEdge},
 };
 
-mojom::ColorModel ColorModelFromIppColor(base::StringPiece ippColor) {
+mojom::ColorModel ColorModelFromIppColor(std::string_view ippColor) {
   for (const ColorMap& color : kColorList) {
     if (ippColor.compare(color.color) == 0) {
       return color.model;
@@ -81,7 +81,7 @@ mojom::ColorModel ColorModelFromIppColor(base::StringPiece ippColor) {
   return mojom::ColorModel::kUnknownColorModel;
 }
 
-mojom::DuplexMode DuplexModeFromIpp(base::StringPiece ipp_duplex) {
+mojom::DuplexMode DuplexModeFromIpp(std::string_view ipp_duplex) {
   for (const DuplexMap& entry : kDuplexList) {
     if (base::EqualsCaseInsensitiveASCII(ipp_duplex, entry.name))
       return entry.mode;
@@ -104,9 +104,9 @@ std::vector<mojom::ColorModel> SupportedColorModels(
     const CupsOptionProvider& printer) {
   std::vector<mojom::ColorModel> colors;
 
-  std::vector<base::StringPiece> color_modes =
+  std::vector<std::string_view> color_modes =
       printer.GetSupportedOptionValueStrings(kIppColor);
-  for (base::StringPiece color : color_modes) {
+  for (std::string_view color : color_modes) {
     mojom::ColorModel color_model = ColorModelFromIppColor(color);
     if (color_model != mojom::ColorModel::kUnknownColorModel) {
       colors.push_back(color_model);
@@ -149,9 +149,9 @@ void ExtractColor(const CupsOptionProvider& printer,
 
 void ExtractDuplexModes(const CupsOptionProvider& printer,
                         PrinterSemanticCapsAndDefaults* printer_info) {
-  std::vector<base::StringPiece> duplex_modes =
+  std::vector<std::string_view> duplex_modes =
       printer.GetSupportedOptionValueStrings(kIppDuplex);
-  for (base::StringPiece duplex : duplex_modes) {
+  for (std::string_view duplex : duplex_modes) {
     mojom::DuplexMode duplex_mode = DuplexModeFromIpp(duplex);
     if (duplex_mode != mojom::DuplexMode::kUnknownDuplexMode)
       printer_info->duplex_modes.push_back(duplex_mode);
@@ -382,14 +382,14 @@ void CorrectDefaultMediaType(PrinterSemanticCapsAndDefaults*& printer_info) {
 
 void ExtractMediaTypes(const CupsOptionProvider& printer,
                        PrinterSemanticCapsAndDefaults* printer_info) {
-  std::vector<base::StringPiece> names =
+  std::vector<std::string_view> names =
       printer.GetSupportedOptionValueStrings(kIppMediaType);
   if (names.empty()) {
     return;
   }
   printer_info->media_types.reserve(names.size());
 
-  for (base::StringPiece vendor_id : names) {
+  for (std::string_view vendor_id : names) {
     PrinterSemanticCapsAndDefaults::MediaType type;
     type.vendor_id = std::string(vendor_id);
 
@@ -430,7 +430,7 @@ void ExtractMediaTypes(const CupsOptionProvider& printer,
 }
 
 bool CollateCapable(const CupsOptionProvider& printer) {
-  std::vector<base::StringPiece> values =
+  std::vector<std::string_view> values =
       printer.GetSupportedOptionValueStrings(kIppCollate);
   return base::Contains(values, kCollated) &&
          base::Contains(values, kUncollated);
@@ -442,7 +442,7 @@ bool CollateDefault(const CupsOptionProvider& printer) {
     return false;
 
   const char* const name = ippGetString(attr, 0, nullptr);
-  return name && !base::StringPiece(name).compare(kCollated);
+  return name && !std::string_view(name).compare(kCollated);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -454,7 +454,7 @@ bool PinSupported(const CupsOptionProvider& printer) {
   if (password_maximum_length_supported < kPinMinimumLength)
     return false;
 
-  std::vector<base::StringPiece> values =
+  std::vector<std::string_view> values =
       printer.GetSupportedOptionValueStrings(kIppPinEncryption);
   return base::Contains(values, kPinEncryptionNone);
 }
@@ -472,7 +472,7 @@ size_t AddAttributes(const CupsOptionProvider& printer,
   static const base::NoDestructor<HandlerMap> handlers(GenerateHandlers());
   // The names of attributes that we know are not supported (b/266573545).
   static constexpr auto kOptionsToIgnore =
-      base::MakeFixedFlatSet<base::StringPiece>(
+      base::MakeFixedFlatSet<std::string_view>(
           {"finishings-col", "ipp-attribute-fidelity", "job-name",
            "number-up-layout"});
   std::vector<std::string> unknown_options;

@@ -8,7 +8,7 @@
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/context_collection.h"
 
-namespace performance_manager::resource_attribution::internal {
+namespace resource_attribution::internal {
 
 struct QueryParams {
   QueryParams();
@@ -27,6 +27,6 @@ struct QueryParams {
   ContextCollection contexts;
 };
 
-}  // namespace performance_manager::resource_attribution::internal
+}  // namespace resource_attribution::internal
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_PARAMS_H_

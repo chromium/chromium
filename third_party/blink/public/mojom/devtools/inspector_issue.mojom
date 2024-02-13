@@ -91,6 +91,7 @@ enum AttributionReportingIssueType {
   kInvalidRegisterOsTriggerHeader,
   kWebAndOsHeaders,
   kNoWebOrOsSupport,
+  kNavigationRegistrationWithoutTransientUserActivation,
 };
 
 struct AttributionReportingIssueDetails {

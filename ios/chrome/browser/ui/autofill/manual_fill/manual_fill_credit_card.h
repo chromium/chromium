@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_MANUAL_FILL_CREDIT_CARD_H_
 
 #import <Foundation/Foundation.h>
+#import "components/autofill/core/browser/data_model/credit_card.h"
 
 // This represents a credit card to use with manual fill.
 @interface ManualFillCreditCard : NSObject
@@ -38,6 +39,9 @@
 // The credit card icon id.
 @property(nonatomic, readonly) int issuerNetworkIconID;
 
+// The type of card: masked, local, virtual, etc.
+@property(nonatomic, readonly) autofill::CreditCard::RecordType recordType;
+
 // Default init. `GUID` and `number` are the only fields considered for
 // equality, so we can differentiate between an obfuscated and a complete one.
 - (instancetype)initWithGUID:(NSString*)GUID
@@ -49,6 +53,7 @@
             obfuscatedNumber:(NSString*)obfuscatedNumber
               expirationYear:(NSString*)expirationYear
              expirationMonth:(NSString*)expirationMonth
+                  recordType:(autofill::CreditCard::RecordType)recordType
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Please use `initWithGuid:network:bankName:cardholder:number:

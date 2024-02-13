@@ -29,16 +29,15 @@ found in the LICENSE file.
             android:layout_marginTop="16dp"
             android:layout_marginBottom="12dp"
             android:layout_marginHorizontal="20dp"
-            android:height="20dp"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:layout_marginBottom="20dp"
             android:layout_marginHorizontal="20dp">
             <RelativeLayout
+                android:id="@+id/image_layout"
                 android:layout_height="@dimen/price_change_module_product_image_size"
                 android:layout_width="@dimen/price_change_module_product_image_size">
                 <org.chromium.components.browser_ui.widget.RoundedCornerImageView
@@ -62,14 +61,15 @@ found in the LICENSE file.
                     android:layout_marginEnd="8dp"
                     android:padding="4dp" />
             </RelativeLayout>
-            <LinearLayout
-                android:layout_height="@dimen/price_change_module_product_image_size"
+            <RelativeLayout
+                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/image_layout"
                 android:orientation="vertical">
                 <LinearLayout
                     android:id="@+id/price_info_box"
-                    android:background="@drawable/price_card_background"
+                    android:background="@drawable/price_change_module_price_drop_background"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:orientation="horizontal">
@@ -82,7 +82,7 @@ found in the LICENSE file.
                         android:layout_marginEnd="4dp"
                         android:layout_marginBottom="2dp"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.ShoppingPriceDropText"
+                        android:textAppearance="@style/TextAppearance.ShoppingPriceDropSmallText"
                         android:textAlignment="viewStart" />
                     <TextView
                         android:id="@+id/previous_price"
@@ -92,7 +92,7 @@ found in the LICENSE file.
                         android:layout_marginEnd="8dp"
                         android:layout_marginBottom="2dp"
                         android:singleLine="true"
-                        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                         android:textAlignment="viewStart" />
                 </LinearLayout>
                 <TextView
@@ -101,23 +101,24 @@ found in the LICENSE file.
                     android:layout_height="wrap_content"
                     android:textAlignment="viewStart"
                     android:layout_marginTop="8dp"
+                    android:layout_below="@+id/price_info_box"
                     android:textAppearance="@style/TextAppearance.Headline2Thick.Secondary"
                     android:maxLines="2"
                     android:ellipsize="end" />
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-                    <TextView
-                        android:id="@+id/price_drop_domain"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-                        android:maxLines="1"
-                        android:ellipsize="end" />
-                </RelativeLayout>
-            </LinearLayout>
-        </LinearLayout>
+            </RelativeLayout>
+            <TextView
+                android:id="@+id/price_drop_domain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@+id/image_layout"
+                android:gravity="start"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </RelativeLayout>
     </LinearLayout>
 </org.chromium.chrome.browser.price_change.PriceChangeModuleView>

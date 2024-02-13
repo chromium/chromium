@@ -222,7 +222,7 @@ class VmCameraMicManagerTest : public testing::Test {
   // indicators notifications.
   void ExpectNotificationsExist(std::set<std::string> notification_ids) {
     std::set<std::string> all_privacy_indicators_notifications;
-    for (auto* notification :
+    for (message_center::Notification* notification :
          message_center::MessageCenter::Get()->GetVisibleNotifications()) {
       // Leaves out any parent container.
       if (!notification || notification->group_parent()) {

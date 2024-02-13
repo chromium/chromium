@@ -18,7 +18,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrInputElement} from '../cr_input/cr_input.js';
+import type {CrInputElement} from '../cr_input/cr_input.js';
 
 import {getTemplate} from './cr_search_field.html.js';
 import {CrSearchFieldMixin} from './cr_search_field_mixin.js';

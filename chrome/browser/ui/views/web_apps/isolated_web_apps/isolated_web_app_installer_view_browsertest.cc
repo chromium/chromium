@@ -74,11 +74,6 @@ const TestParam kTestParam[] = {
      .dialog =
          IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog{
              u"Test IWA", base::Version("1.0")}},
-    {.test_suffix = "Outdated",
-     .step = Step::kGetMetadata,
-     .dialog =
-         IsolatedWebAppInstallerModel::BundleOutdatedDialog{
-             u"Test IWA", base::Version("1.0"), base::Version("2.0")}},
     {.test_suffix = "ConfirmInstall",
      .step = Step::kShowMetadata,
      .dialog =

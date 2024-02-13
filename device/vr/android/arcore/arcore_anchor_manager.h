@@ -6,6 +6,7 @@
 #define DEVICE_VR_ANDROID_ARCORE_ARCORE_ANCHOR_MANAGER_H_
 
 #include <map>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/id_type.h"
@@ -15,7 +16,6 @@
 #include "device/vr/android/arcore/arcore_sdk.h"
 #include "device/vr/android/arcore/scoped_arcore_objects.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -37,16 +37,16 @@ class ArCoreAnchorManager {
 
   bool AnchorExists(AnchorId id) const;
 
-  // Returns absl::nullopt if anchor with the given id does not exist.
-  absl::optional<gfx::Transform> GetMojoFromAnchor(AnchorId id) const;
+  // Returns std::nullopt if anchor with the given id does not exist.
+  std::optional<gfx::Transform> GetMojoFromAnchor(AnchorId id) const;
 
   // Creates Anchor object given a plane ID.
-  absl::optional<AnchorId> CreateAnchor(ArCorePlaneManager* plane_manager,
-                                        const device::mojom::Pose& pose,
-                                        PlaneId plane_id);
+  std::optional<AnchorId> CreateAnchor(ArCorePlaneManager* plane_manager,
+                                       const device::mojom::Pose& pose,
+                                       PlaneId plane_id);
 
   // Creates free-floating Anchor.
-  absl::optional<AnchorId> CreateAnchor(const device::mojom::Pose& pose);
+  std::optional<AnchorId> CreateAnchor(const device::mojom::Pose& pose);
 
   void DetachAnchor(AnchorId anchor_id);
 

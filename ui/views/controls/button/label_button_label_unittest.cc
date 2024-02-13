@@ -22,7 +22,7 @@ namespace {
 class TestLabel : public internal::LabelButtonLabel {
  public:
   explicit TestLabel(SkColor* last_color,
-                     absl::optional<ui::ColorId>* last_color_id)
+                     std::optional<ui::ColorId>* last_color_id)
       : LabelButtonLabel(std::u16string(), views::style::CONTEXT_BUTTON),
         last_color_(last_color),
         last_color_id_(last_color_id) {}
@@ -39,7 +39,7 @@ class TestLabel : public internal::LabelButtonLabel {
 
  private:
   raw_ptr<SkColor> last_color_;
-  raw_ptr<absl::optional<ui::ColorId>> last_color_id_;
+  raw_ptr<std::optional<ui::ColorId>> last_color_id_;
 };
 
 }  // namespace
@@ -79,7 +79,7 @@ class LabelButtonLabelTest : public ViewsTestBase {
 
  protected:
   SkColor last_color_ = gfx::kPlaceholderColor;
-  absl::optional<ui::ColorId> last_color_id_;
+  std::optional<ui::ColorId> last_color_id_;
   std::unique_ptr<views::Widget> widget_;
 };
 

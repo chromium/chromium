@@ -36,6 +36,8 @@ component("kcer") {
     "kcer_token.h",
     "kcer_token_impl.cc",
     "kcer_token_impl.h",
+    "kcer_token_utils.cc",
+    "kcer_token_utils.h",
     "kcer_utils.cc",
     "kcer_utils.h",
     "token_key_finder.cc",

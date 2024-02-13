@@ -13,6 +13,9 @@ enum QRCodeGeneratorError {
   NONE,
 
   // Input string was too long.
+  //
+  // TODO(https://crbug.com/1431991): Plumb input-too-long errors from the
+  // third-party Rust crate.
   INPUT_TOO_LONG,
 
   // Unknown error.
@@ -65,15 +68,4 @@ struct GenerateQRCodeResponse {
   // Size of the generated QR code in elements. Note that |bitmap| will be
   // upscaled, so this does not represent the returned image size.
   gfx.mojom.Size data_size;
-};
-
-// Interface for generating QR codes for a given string of input data.
-// This is usually run outside the browser process if the data is untrusted.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
-interface QRCodeGeneratorService {
-  // Tries to generate a QR code for |request.data|.
-  // Populates |response.error| on error; if kNone then |response.bitmap|
-  // should be considered valid.
-  GenerateQRCode(GenerateQRCodeRequest request)
-      => (GenerateQRCodeResponse response);
 };

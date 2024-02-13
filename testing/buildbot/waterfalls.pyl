@@ -2420,6 +2420,22 @@
           'isolated_scripts': 'gpu_dawn_android_isolated_scripts',
         },
       },
+      'Dawn Android arm64 Experimental Release (Pixel 6)': {
+        'os_type': 'android',
+        'browser_config': 'android-chromium',
+        'mixins': [
+          'android_t',
+          'has_native_resultdb_integration',
+          'oriole',
+          'gpu-swarming-pool',
+        ],
+        # When the experimental OS version is identical to the stable version,
+        # the gpu_noop_sleep_telemetry_test test should be used. Otherwise, this
+        # should have the same test_suites as 'Dawn Android arm64 Release (Pixel 6)'.
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Dawn Android arm64 Release (Pixel 6)': {
         'os_type': 'android',
         'browser_config': 'android-chromium',
@@ -2673,6 +2689,21 @@
           'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
+      'Dawn Win10 x64 Experimental Release (NVIDIA)': {
+        'os_type': 'win',
+        'browser_config': 'release_x64',
+        'mixins': [
+          'limited_capacity_bot',
+          'win10_nvidia_gtx_1660_experimental',
+        ],
+        # When the experimental driver is identical to the stable driver, this
+        # should be running the gpu_noop_sleep_telemetry_test. Otherwise, it
+        # should be running the same test_suites as
+        # 'Dawn Win10 x64 Release (NVIDIA)'
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Dawn Win10 x64 Release (Intel)': {
         'os_type': 'win',
         'browser_config': 'release_x64',
@@ -2802,7 +2833,7 @@
           'mac_default_arm64',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_mac_gtests',
         },
       },
       'mac-rel-dev': {
@@ -2810,7 +2841,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_mac_gtests',
         },
       },
       'win-rel-dev': {
@@ -2818,7 +2849,7 @@
           'win10',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_win_gtests',
         },
       },
       'win11-rel-dev': {
@@ -2826,7 +2857,7 @@
           'win11',
         ],
         'test_suites': {
-           'gtest_tests': 'chromium_dev_desktop_gtests',
+           'gtest_tests': 'chromium_dev_win_gtests',
         },
       },
     },
@@ -3266,32 +3297,6 @@
         },
       },
 
-      # TODO(crbug.com/1235218): remove after the migration.
-      'chromeos-amd64-generic-rel (reclient compare)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'mixins': [
-          'chromeos-amd64-generic',
-        ],
-        'os_type': 'chromeos',
-      },
-      'chromeos-amd64-generic-rel (reclient)': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'browser_config': 'cros-chrome',
-        'mixins': [
-          'chromeos-amd64-generic',
-        ],
-        'os_type': 'chromeos',
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_chromeos_telemetry_tests',
-          'gtest_tests': 'chromeos_vm_gtests_and_tast',
-          'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-      },
       'chromeos-jacuzzi-rel-skylab-fyi': {
         'additional_compile_targets': [
           'chrome',
@@ -3470,12 +3475,6 @@
         'test_suites': {
           'isolated_scripts': 'ios17_sdk_simulator_tests'
         },
-      },
-      'lacros-amd64-generic-rel (reclient)': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos'
       },
       'linux-annotator-rel': {
         'test_suites': {
@@ -5901,8 +5900,7 @@
           'mac_default_x64',
         ],
         'test_suites': {
-          # TODO(crbug.com/1409418): Reenable baremetal_tests.
-          'gtest_tests': 'webrtc_chromium_gtests',
+          'gtest_tests': 'webrtc_chromium_tests_without_baremetal_tests',
         },
       },
       'WebRTC Chromium Win Builder': {
@@ -5917,7 +5915,7 @@
           },
         },
         'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
+          'gtest_tests': 'webrtc_chromium_tests_without_baremetal_tests',
         },
       },
     },
@@ -6636,7 +6634,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_linux_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_linux_script_tests',
         },
         'os_type': 'linux',
       },
@@ -6651,7 +6649,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_mac_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_mac_script_tests',
         },
         'os_type': 'mac',
       },
@@ -6666,7 +6664,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_mac_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_mac_script_tests',
         },
         'os_type': 'mac',
       },
@@ -6681,7 +6679,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_win_script_tests',
         },
         'os_type': 'win',
       },
@@ -6697,7 +6695,7 @@
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
-           'isolated_scripts': 'model_validation_tests_full',
+           'isolated_scripts': 'optimization_guide_win_script_tests',
 
         },
         'os_type': 'win',
@@ -6802,11 +6800,13 @@
       },
       'win11-arm64-blink-rel': {
         'mixins': [
-            'win11',
             'arm64'
         ],
         'swarming': {
           'hard_timeout': 900,
+          'dimensions': {
+            'os': 'Windows-11',
+          },
         },
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',

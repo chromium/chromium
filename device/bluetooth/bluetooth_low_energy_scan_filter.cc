@@ -4,9 +4,10 @@
 
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -97,7 +98,7 @@ BluetoothLowEnergyScanFilter::Create(
     base::TimeDelta device_found_timeout,
     base::TimeDelta device_lost_timeout,
     const std::vector<Pattern>& patterns,
-    absl::optional<base::TimeDelta> rssi_sampling_period) {
+    std::optional<base::TimeDelta> rssi_sampling_period) {
   return Create(GetDeviceFoundRSSIThreshold(device_range),
                 GetDeviceLostRSSIThreshold(device_range), device_found_timeout,
                 device_lost_timeout, patterns, rssi_sampling_period);
@@ -111,7 +112,7 @@ BluetoothLowEnergyScanFilter::Create(
     base::TimeDelta device_found_timeout,
     base::TimeDelta device_lost_timeout,
     const std::vector<BluetoothLowEnergyScanFilter::Pattern>& patterns,
-    absl::optional<base::TimeDelta> rssi_sampling_period) {
+    std::optional<base::TimeDelta> rssi_sampling_period) {
   // We use WrapUnique() here so that we can call the private constructor.
   auto filter = base::WrapUnique(new BluetoothLowEnergyScanFilter(
       device_found_rssi_threshold, device_lost_rssi_threshold,
@@ -130,7 +131,7 @@ BluetoothLowEnergyScanFilter::BluetoothLowEnergyScanFilter(
     base::TimeDelta device_found_timeout,
     base::TimeDelta device_lost_timeout,
     std::vector<Pattern> patterns,
-    absl::optional<base::TimeDelta> rssi_sampling_period)
+    std::optional<base::TimeDelta> rssi_sampling_period)
     : device_found_rssi_threshold_(device_found_rssi_threshold),
       device_lost_rssi_threshold_(device_lost_rssi_threshold),
       device_found_timeout_(device_found_timeout),

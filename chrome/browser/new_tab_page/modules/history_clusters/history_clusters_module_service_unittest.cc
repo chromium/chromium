@@ -85,7 +85,8 @@ class HistoryClustersModuleServiceTest : public testing::Test {
         kTemplateURLData, std::size(kTemplateURLData));
     history_clusters_module_service_ =
         std::make_unique<HistoryClustersModuleService>(
-            test_history_clusters_service_.get(), mock_cart_service_.get(),
+            test_history_clusters_service_.get(),
+            /*history_service=*/nullptr, mock_cart_service_.get(),
             template_url_service_.get(),
             /*optimization_guide_keyed_service=*/nullptr,
             /*segmentation_platform_service=*/nullptr);

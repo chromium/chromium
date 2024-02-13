@@ -4,61 +4,29 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Contains the logic to set the state of the model and react to color change clicks. */
 public class ColorPickerMediator {
     private final @NonNull List<PropertyModel> mColorItems;
-    private final @NonNull List<Integer> mColors;
-    private int mSelectedColor;
-
-    public ColorPickerMediator(List<Integer> colors) {
-        this(colors, new ArrayList<>());
-    }
-
-    protected ColorPickerMediator(List<Integer> colors, List<PropertyModel> colorItems) {
-        mColors = colors;
-        mColorItems = colorItems;
-    }
+    private ObservableSupplierImpl<Integer> mSelectedColorSupplier = new ObservableSupplierImpl<>();
 
     /**
-     * Sets the color items and creates the corresponding models for the color item entries on the
-     * color picker UI. The default color is selected from all colors in the list.
+     * Contains the logic to set the state of the model and react to color change clicks. This
+     * constructor is used with the coordinator to facilitate color picker backend logic.
      *
-     * @param containerView The parent container for all color items inflated by this component.
+     * @param colorItems The list of property models representing the color items in this color
+     *     picker.
      */
-    public void setColorListItems(ColorPickerContainer containerView) {
-        // The default selected color, which is the 0th item in the list.
-        List<FrameLayout> colorViews = new ArrayList<>();
-        Context context = containerView.getContext();
-
-        for (int color : mColors) {
-            FrameLayout view = (FrameLayout) ColorPickerItemViewBinder.createItemView(context);
-            colorViews.add(view);
-
-            PropertyModel model =
-                    ColorPickerItemProperties.create(
-                            /* color= */ color,
-                            /* isSelected= */ false,
-                            /* onClickListener= */ () -> {
-                                setSelectedColorItem(color);
-                            });
-            mColorItems.add(model);
-
-            PropertyModelChangeProcessor.create(model, view, ColorPickerItemViewBinder::bind);
-        }
-
-        // Set all color item views on the parent container view.
-        containerView.setColorViews(colorViews);
+    public ColorPickerMediator(List<PropertyModel> colorItems) {
+        mColorItems = colorItems;
     }
 
     void setSelectedColorItem(int selectedColor) {
@@ -67,10 +35,10 @@ public class ColorPickerMediator {
             model.set(ColorPickerItemProperties.IS_SELECTED, isSelected);
         }
 
-        mSelectedColor = selectedColor;
+        mSelectedColorSupplier.set(selectedColor);
     }
 
-    int getSelectedColor() {
-        return mSelectedColor;
+    ObservableSupplier<Integer> getSelectedColorSupplier() {
+        return mSelectedColorSupplier;
     }
 }

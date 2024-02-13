@@ -104,8 +104,9 @@ const std::optional<base::TimeDelta>& GetMinIntervalOverride() {
 }  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  if (features::AreContextualNudgesEnabled())
+  if (features::IsHideShelfControlsInTabletModeEnabled()) {
     registry->RegisterDictionaryPref(prefs::kContextualTooltips);
+  }
 }
 
 bool ShouldShowNudge(PrefService* prefs,
@@ -116,7 +117,7 @@ bool ShouldShowNudge(PrefService* prefs,
       *recheck_delay = delay;
   };
 
-  if (!features::AreContextualNudgesEnabled()) {
+  if (!features::IsHideShelfControlsInTabletModeEnabled()) {
     set_recheck_delay(base::TimeDelta());
     return false;
   }

@@ -202,6 +202,7 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   void OnLoginToIdP(const GURL& idp_config_url,
                     const GURL& idp_login_url) override {}
   void OnMoreDetails() override {}
+  void OnAccountsDisplayed() override {}
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
   content::WebContents* GetWebContents() override { return web_contents_; }

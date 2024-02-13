@@ -286,6 +286,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   blink::mojom::OriginTrialsSettingsPtr GetOriginTrialsSettings() override;
   network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy() override;
+  bool WillProvidePublicFirstPartySets() override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

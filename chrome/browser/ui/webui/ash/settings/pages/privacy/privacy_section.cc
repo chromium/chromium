@@ -638,6 +638,9 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
+  html_source->AddBoolean(
+      "isDeprecateDnsDialogEnabled",
+      ash::features::IsOsSettingsDeprecateDnsDialogEnabled());
 
   ::settings::AddSecureDnsStrings(html_source);
 

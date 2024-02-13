@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -26,6 +27,7 @@ namespace blink {
 // Tests that when a resource with certificate errors is loaded from the memory
 // cache, the embedder is notified.
 TEST(ResourceLoadObserverForFrameTest, MemoryCacheCertificateError) {
+  test::TaskEnvironment task_environment;
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
       gfx::Size(), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   LocalFrame& frame = dummy_page_holder->GetFrame();

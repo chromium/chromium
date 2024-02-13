@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "url/gurl.h"
@@ -57,8 +57,8 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   // trust relationship has been established, and it is appropriate to display
   // this instead of the |url|'s origin for attribution.
   NotifierId(const GURL& url,
-             absl::optional<std::u16string> title,
-             absl::optional<std::string> web_app_id);
+             std::optional<std::u16string> title,
+             std::optional<std::string> web_app_id);
 
   NotifierId(const NotifierId& other);
   ~NotifierId();
@@ -70,7 +70,7 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
   NotifierType type;
 
   // Identifier in ARC notifications to assign notification groups.
-  absl::optional<std::string> group_key;
+  std::optional<std::string> group_key;
 
   // The identifier of the app notifier. Empty if it's WEB_PAGE.
   std::string id;
@@ -85,10 +85,10 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
 
   // The title provided by the app identifier. This is used by desktop web
   // applications.
-  absl::optional<std::u16string> title;
+  std::optional<std::u16string> title;
 
   // Optional web app identifier for type WEB_PAGE.
-  absl::optional<std::string> web_app_id;
+  std::optional<std::string> web_app_id;
 
   // The identifier of the profile where the notification is created. This is
   // used for ChromeOS multi-profile support and can be empty.

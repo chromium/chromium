@@ -59,8 +59,7 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
 
   ~CalculationValue();
 
-  float Evaluate(float max_value,
-                 const Length::AnchorEvaluator* = nullptr) const;
+  float Evaluate(float max_value, const Length::EvaluationInput& = {}) const;
   bool operator==(const CalculationValue& o) const;
   bool IsExpression() const { return is_expression_; }
   bool IsNonNegative() const { return is_non_negative_; }
@@ -69,7 +68,7 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
                             : Length::ValueRange::kAll;
   }
   bool HasAnchorQueries() const;
-  bool HasAutoAnchorPositioning() const;
+  bool HasContentOrIntrinsicSize() const;
 
   float Pixels() const {
     DCHECK(!IsExpression());

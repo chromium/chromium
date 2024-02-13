@@ -103,12 +103,17 @@
   }
 </style>
 <div role="cell" class="name-cell">
+  <label>$i18n{testTableNamespace}</label>
+  <select class="namespace" value="chrome">
+    <option value="chrome">Chrome</option>
+  </select>
+</div>
+<div role="cell" class="name-cell">
   <label>$i18n{testTableName}</label>
   <input class='name' list="policy-name-list" autocomplete="off"
     placeholder="$i18n{testNameSelect}">
   </input>
-  <datalist id="policy-name-list">
-</datalist>
+  <datalist id="policy-name-list"></datalist>
 </div>
 <div role="cell">
   <label>$i18n{testTableValue}</label>

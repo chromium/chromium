@@ -56,9 +56,9 @@ class WebUsageEnablerBrowserAgentTest : public PlatformTest {
   }
 
   void AppendNewWebState(const char* url, WebStateOpener opener) {
-    web_state_list_->InsertWebState(WebStateList::kInvalidIndex,
-                                    CreateWebState(url),
-                                    WebStateList::INSERT_NO_FLAGS, opener);
+    web_state_list_->InsertWebState(
+        CreateWebState(url),
+        WebStateList::InsertionParams::Automatic().WithOpener(opener));
   }
 
   bool InitialLoadTriggeredForLastWebState() {
@@ -105,14 +105,15 @@ TEST_F(WebUsageEnablerBrowserAgentTest, EnableWebUsage) {
 TEST_F(WebUsageEnablerBrowserAgentTest, DisableInitialLoad) {
   enabler_->SetWebUsageEnabled(true);
 
-  // Insert with FORCE_INDEX to not activate and not trigger a load.
-  web_state_list_->InsertWebState(0, CreateWebState(kURL),
-                                  WebStateList::INSERT_FORCE_INDEX,
-                                  WebStateOpener());
+  // Insert with AtIndex and without activating to not trigger a load.
+  web_state_list_->InsertWebState(
+      CreateWebState(kURL),
+      WebStateList::InsertionParams::AtIndex(0).Activate(false));
   EXPECT_FALSE(InitialLoadTriggeredForLastWebState());
 
-  // Insert without FORCE_INDEX and verify LoadIfNecessary() was called.
+  // Insert with activating and verify LoadIfNecessary() was called.
   web_state_list_->InsertWebState(
-      0, CreateWebState(kURL), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      CreateWebState(kURL),
+      WebStateList::InsertionParams::Automatic().Activate());
   EXPECT_TRUE(InitialLoadTriggeredForLastWebState());
 }

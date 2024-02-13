@@ -14,13 +14,10 @@ namespace password_manager_util {
 bool IsSavingPasswordsToAccountWithNormalEncryption(
     const syncer::SyncService* sync_service) {
   switch (password_manager::sync_util::GetPasswordSyncState(sync_service)) {
-    case password_manager::SyncState::kSyncingNormalEncryption:
-    case password_manager::SyncState::kAccountPasswordsActiveNormalEncryption:
+    case password_manager::sync_util::SyncState::kActiveWithNormalEncryption:
       return true;
-    case password_manager::SyncState::kNotSyncing:
-    case password_manager::SyncState::kSyncingWithCustomPassphrase:
-    case password_manager::SyncState::
-        kAccountPasswordsActiveWithCustomPassphrase:
+    case password_manager::sync_util::SyncState::kNotActive:
+    case password_manager::sync_util::SyncState::kActiveWithCustomPassphrase:
       return false;
   }
   NOTREACHED_NORETURN();

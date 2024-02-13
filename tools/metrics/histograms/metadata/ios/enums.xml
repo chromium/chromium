@@ -319,11 +319,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Set Up List Compacted"/>
   <int value="6" label="Set Up List All Set"/>
   <int value="7" label="Safety Check"/>
-  <int value="8" label="Safety Check Multi Row"/>
-  <int value="9" label="Safety Check Multi Row Overflow"/>
+  <int value="8" label="Obsolete in M123 - Safety Check Multi Row"/>
+  <int value="9" label="Obsolete in M123 - Safety Check Multi Row Overflow"/>
   <int value="10" label="Tab Resumption"/>
   <int value="11" label="Parcel Tracking"/>
-  <int value="12" label="Parcel Tracking See More"/>
+  <int value="12" label="Obsolete in M123 - Parcel Tracking See More"/>
   <int value="13" label="Set Up List Notifications"/>
   <int value="14" label="Placeholder"/>
 </enum>

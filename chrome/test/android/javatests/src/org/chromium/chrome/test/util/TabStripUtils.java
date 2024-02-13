@@ -94,8 +94,8 @@ public class TabStripUtils {
             Instrumentation instrumentation,
             ChromeTabbedActivity activity) {
         final StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
-        final float x = button.getX() + button.getWidth() / 2;
-        final float y = button.getY() + button.getHeight() / 2;
+        final float x = button.getDrawX() + button.getWidth() / 2;
+        final float y = button.getDrawY() + button.getHeight() / 2;
         instrumentation.runOnMainSync(
                 new Runnable() {
                     @Override
@@ -115,8 +115,8 @@ public class TabStripUtils {
             Instrumentation instrumentation,
             ChromeTabbedActivity activity) {
         final StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
-        final float x = button.getX() + button.getWidth() / 2;
-        final float y = button.getY() + button.getHeight() / 2;
+        final float x = button.getDrawX() + button.getWidth() / 2;
+        final float y = button.getDrawY() + button.getHeight() / 2;
         instrumentation.runOnMainSync(
                 new Runnable() {
                     @Override

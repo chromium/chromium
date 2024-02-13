@@ -40,12 +40,11 @@ void MoveSnapshot(SnapshotID snapshot_id,
 void MoveTabFromBrowserToBrowser(Browser* source_browser,
                                  int source_tab_index,
                                  Browser* destination_browser,
-                                 int destination_tab_index,
-                                 WebStateList::InsertionFlags flags) {
+                                 WebStateList::InsertionParams params) {
   if (source_browser == destination_browser) {
     // This is a reorder operation within the same WebStateList.
     destination_browser->GetWebStateList()->MoveWebStateAt(
-        source_tab_index, destination_tab_index);
+        source_tab_index, params.desired_index);
     return;
   }
   std::unique_ptr<web::WebState> web_state =
@@ -55,34 +54,28 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
   MoveSnapshot(snapshot_tab_helper->GetSnapshotID(), source_browser,
                destination_browser);
 
-  int insertion_flags = flags;
-  if (insertion_flags == WebStateList::InsertionFlags::INSERT_NO_FLAGS) {
-    insertion_flags = WebStateList::INSERT_FORCE_INDEX;
-    // TODO(crbug.com/1264451): Remove this workaround when it will not be
-    // longer required to have an active WebState in the WebStateList.
-    if (destination_browser->GetWebStateList()->empty()) {
-      insertion_flags = WebStateList::INSERT_ACTIVATE;
-    }
+  // TODO(crbug.com/1264451): Remove this workaround when it will no longer be
+  // required to have an active WebState in the WebStateList.
+  if (destination_browser->GetWebStateList()->empty()) {
+    params.Activate();
   }
 
-  destination_browser->GetWebStateList()->InsertWebState(
-      destination_tab_index, std::move(web_state), insertion_flags,
-      WebStateOpener());
+  destination_browser->GetWebStateList()->InsertWebState(std::move(web_state),
+                                                         params);
 }
 
 void MoveTabFromBrowserToBrowser(Browser* source_browser,
                                  int source_tab_index,
                                  Browser* destination_browser,
                                  int destination_tab_index) {
-  MoveTabFromBrowserToBrowser(source_browser, source_tab_index,
-                              destination_browser, destination_tab_index,
-                              WebStateList::InsertionFlags::INSERT_NO_FLAGS);
+  MoveTabFromBrowserToBrowser(
+      source_browser, source_tab_index, destination_browser,
+      WebStateList::InsertionParams::AtIndex(destination_tab_index));
 }
 
 void MoveTabToBrowser(web::WebStateID tab_id,
                       Browser* destination_browser,
-                      int destination_tab_index,
-                      WebStateList::InsertionFlags flags) {
+                      WebStateList::InsertionParams params) {
   DCHECK(tab_id.valid());
   ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
   BrowserList* browser_list =
@@ -99,15 +92,15 @@ void MoveTabToBrowser(web::WebStateID tab_id,
     return;
   }
   MoveTabFromBrowserToBrowser(tab_info.browser, tab_info.tab_index,
-                              destination_browser, destination_tab_index,
-                              flags);
+                              destination_browser, params);
 }
 
 void MoveTabToBrowser(web::WebStateID tab_id,
                       Browser* destination_browser,
                       int destination_tab_index) {
-  MoveTabToBrowser(tab_id, destination_browser, destination_tab_index,
-                   WebStateList::InsertionFlags::INSERT_NO_FLAGS);
+  MoveTabToBrowser(
+      tab_id, destination_browser,
+      WebStateList::InsertionParams::AtIndex(destination_tab_index));
 }
 
 BrowserAndIndex FindBrowserAndIndex(web::WebStateID tab_id,

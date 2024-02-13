@@ -46,7 +46,7 @@ BASE_FEATURE(kEnforceSHA256Checking,
 // overrides kEnforceRevocationChecking.
 BASE_FEATURE(kEnforceFallbackCRLRevocationChecking,
              "CastFallbackCRLRevocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enforce certificate revocation when enabled.
 // If disabled, any revocation failures are ignored.

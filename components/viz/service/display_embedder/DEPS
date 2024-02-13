@@ -31,6 +31,8 @@ include_rules = [
   "+gpu/ipc",
   "+gpu/skia_bindings",
   "+gpu/vulkan",
+  "+media/gpu/chromeos/vulkan_image_processor.h",
+  "+media/gpu/buildflags.h",
   "+mojo/public/cpp/bindings",
   "+mojo/public/cpp/system",
   "+skia",

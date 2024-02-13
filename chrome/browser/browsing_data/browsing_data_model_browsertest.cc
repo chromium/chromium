@@ -389,8 +389,12 @@ void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
 }
 
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return model->size() == expected_size; }));
+  while (model->size() != expected_size) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
 }
 
 void RemoveBrowsingDataForDataOwner(BrowsingDataModel* model,
@@ -1452,16 +1456,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 }
 
-// TODO(crbug.com/1524052): Flaky on at least Mac11 and Mac13.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SharedDictionaryAccessReportedCorrectly \
-  DISABLED_SharedDictionaryAccessReportedCorrectly
-#else
-#define MAYBE_SharedDictionaryAccessReportedCorrectly \
-  SharedDictionaryAccessReportedCorrectly
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
-                       MAYBE_SharedDictionaryAccessReportedCorrectly) {
+                       SharedDictionaryAccessReportedCorrectly) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
@@ -1510,8 +1506,9 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
   // Need this polling because the shared dictionary is used only if the
   // metadata database has been read when sending the HTTP request.
-  EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return HasDataForType("SharedDictionary", web_contents()); }));
+  while (!HasDataForType("SharedDictionary", web_contents())) {
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  }
 
   // Checking HasDataForType("SharedDictionary") accesses the registered
   // shared dictionary. This must be reported to the data model.
@@ -1694,6 +1691,50 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest, CookiesHandledCorrectly) {
   browsing_data_model = BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
   ASSERT_EQ(browsing_data_model->size(), 0u);
+  ASSERT_FALSE(HasDataForType("Cookie", web_contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
+                       CookiesAccessReportedCorrectly) {
+  if (!IsDeprecateCookiesTreeModelEnabled()) {
+    return;
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_test_server()->GetURL(kTestHost, "/browsing_data/site_data.html")));
+
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  // Validate that the allowed browsing data model is empty.
+  auto* allowed_browsing_data_model =
+      content_settings->allowed_browsing_data_model();
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
+
+  SetDataForType("Cookie", web_contents());
+  WaitForModelUpdate(allowed_browsing_data_model, /*expected_size=*/1);
+
+  // Validate that cookie is fetched to browsing data model.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  std::unique_ptr<net::CanonicalCookie> data_key = net::CanonicalCookie::Create(
+      testOrigin.GetURL(), "foo=bar; Path=/browsing_data", base::Time::Now(),
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
+  ValidateBrowsingDataEntries(allowed_browsing_data_model,
+                              {{kTestHost,
+                                *(data_key.get()),
+                                {{BrowsingDataModel::StorageType::kCookie},
+                                 /*storage_size=*/0,
+                                 /*cookie_count=*/1}}});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 1u);
+
+  // Remove cookie entry.
+  RemoveBrowsingDataForDataOwner(allowed_browsing_data_model, kTestHost);
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(allowed_browsing_data_model, {});
+  ASSERT_EQ(allowed_browsing_data_model->size(), 0u);
   ASSERT_FALSE(HasDataForType("Cookie", web_contents()));
 }
 

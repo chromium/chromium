@@ -48,13 +48,13 @@ enum ChannelLayout {
   // Front L, Front R, Front C, LFE, Back L, Back R
   CHANNEL_LAYOUT_5_1_BACK = 12,
 
-  // Front L, Front R, Front C, Side L, Side R, Back L, Back R
+  // Front L, Front R, Front C, Back L, Back R, Side L, Side R
   CHANNEL_LAYOUT_7_0 = 13,
 
-  // Front L, Front R, Front C, LFE, Side L, Side R, Back L, Back R
+  // Front L, Front R, Front C, LFE, Back L, Back R, Side L, Side R
   CHANNEL_LAYOUT_7_1 = 14,
 
-  // Front L, Front R, Front C, LFE, Side L, Side R, Front LofC, Front RofC
+  // Front L, Front R, Front C, LFE, Front LofC, Front RofC, Side L, Side R
   CHANNEL_LAYOUT_7_1_WIDE = 15,
 
   // Front L, Front R
@@ -66,34 +66,34 @@ enum ChannelLayout {
   // Front L, Front R, Front C, LFE
   CHANNEL_LAYOUT_3_1 = 18,
 
-  // Front L, Front R, Front C, Rear C, LFE
+  // Front L, Front R, Front C, LFE, Back C
   CHANNEL_LAYOUT_4_1 = 19,
 
-  // Front L, Front R, Front C, Side L, Side R, Back C
+  // Front L, Front R, Front C, Back C, Side L, Side R
   CHANNEL_LAYOUT_6_0 = 20,
 
-  // Front L, Front R, Side L, Side R, Front LofC, Front RofC
+  // Front L, Front R, Front LofC, Front RofC, Side L, Side R
   CHANNEL_LAYOUT_6_0_FRONT = 21,
 
-  // Front L, Front R, Front C, Rear L, Rear R, Rear C
+  // Front L, Front R, Front C, Back L, Back R, Back C
   CHANNEL_LAYOUT_HEXAGONAL = 22,
 
-  // Front L, Front R, Front C, LFE, Side L, Side R, Rear Center
+  // Front L, Front R, Front C, LFE, Back C, Side L, Side R
   CHANNEL_LAYOUT_6_1 = 23,
 
-  // Front L, Front R, Front C, LFE, Back L, Back R, Rear Center
+  // Front L, Front R, Front C, LFE, Back L, Back R, Back C
   CHANNEL_LAYOUT_6_1_BACK = 24,
 
-  // Front L, Front R, Side L, Side R, Front LofC, Front RofC, LFE
+  // Front L, Front R, LFE, Front LofC, Front RofC, Side L, Side R
   CHANNEL_LAYOUT_6_1_FRONT = 25,
 
-  // Front L, Front R, Front C, Side L, Side R, Front LofC, Front RofC
+  // Front L, Front R, Front C, Front LofC, Front RofC, Side L, Side R
   CHANNEL_LAYOUT_7_0_FRONT = 26,
 
   // Front L, Front R, Front C, LFE, Back L, Back R, Front LofC, Front RofC
   CHANNEL_LAYOUT_7_1_WIDE_BACK = 27,
 
-  // Front L, Front R, Front C, Side L, Side R, Rear L, Back R, Back C.
+  // Front L, Front R, Front C, Back L, Back R, Back C, Side L, Side R
   CHANNEL_LAYOUT_OCTAGONAL = 28,
 
   // Channels are not explicitly mapped to speakers.
@@ -106,7 +106,7 @@ enum ChannelLayout {
   // of that.
   CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC = 30,
 
-  // Front L, Front R, Side L, Side R, LFE
+  // Front L, Front R, LFE, Side L, Side R
   CHANNEL_LAYOUT_4_1_QUAD_SIDE = 31,
 
   // Actual channel layout is specified in the bitstream and the actual channel

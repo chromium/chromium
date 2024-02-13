@@ -287,10 +287,12 @@ void EventRouter::DispatchEventToSender(
         WorkerId{GenerateExtensionIdFromHostId(host_id), rph->GetID(),
                  service_worker_version_id, worker_thread_id},
         event_id);
-  } else if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+  } else if (BackgroundInfo::HasBackgroundPage(extension)) {
     // TODO(crbug.com/1441221): When creating dispatch time metrics for the
     // DispatchEventToSender event flow, ensure this also handles persistent
     // background pages.
+    // Although it's unnecessary to decrement in-flight events for non-lazy
+    // background pages, we use the logic for event tracking/metrics purposes.
     callback = base::BindOnce(
         &EventRouter::DecrementInFlightEventsForRenderFrameHost,
         weak_factory_.GetWeakPtr(), rph->GetID(), host_id.id, event_id);
@@ -346,8 +348,9 @@ EventRouter::EventRouter(BrowserContext* browser_context,
 }
 
 EventRouter::~EventRouter() {
-  for (auto* process : observed_process_set_)
+  for (content::RenderProcessHost* process : observed_process_set_) {
     process->RemoveObserver(this);
+  }
 }
 
 content::RenderProcessHost*
@@ -1194,6 +1197,8 @@ void EventRouter::DispatchEventToProcess(
                                 service_worker_version_id, worker_thread_id},
                        event_id);
   } else if (BackgroundInfo::HasBackgroundPage(extension)) {
+    // Although it's unnecessary to decrement in-flight events for non-lazy
+    // background pages, we use the logic for event tracking/metrics purposes.
     callback = base::BindOnce(
         &EventRouter::DecrementInFlightEventsForRenderFrameHost,
         weak_factory_.GetWeakPtr(), process->GetID(), extension_id, event_id);

@@ -14,7 +14,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {CrPolicyIndicatorMixin, CrPolicyIndicatorType} from './cr_policy_indicator_mixin.js';
 import {getTemplate} from './cr_policy_pref_indicator.html.js';
-import {CrTooltipIconElement} from './cr_tooltip_icon.js';
+import type {CrTooltipIconElement} from './cr_tooltip_icon.js';
 
 const CrPolicyPrefIndicatorElementBase = CrPolicyIndicatorMixin(PolymerElement);
 

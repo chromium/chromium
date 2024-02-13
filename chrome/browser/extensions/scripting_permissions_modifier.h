@@ -7,10 +7,13 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "extensions/common/url_pattern_set.h"
 
 class GURL;
+class URLPattern;
 
 namespace content {
 class BrowserContext;
@@ -21,6 +24,7 @@ class Extension;
 class ExtensionPrefs;
 class PermissionSet;
 class PermissionsManager;
+class URLPatternSet;
 
 // Responsible for managing the majority of click-to-script features, including
 // granting, withholding, and querying host permissions, and determining if an
@@ -43,16 +47,29 @@ class ScriptingPermissionsModifier {
 
   // Grants the extension permission to run on the origin of |url|.
   // This may only be called for extensions that can be affected (i.e., for
-  // which CanAffectExtension() returns true). Anything else will DCHECK.
+  // which CanAffectExtension() returns true). Anything else will CHECK.
   void GrantHostPermission(const GURL& url);
+
+  // Grants the extension permission to run on `pattern`.
+  // This may only be called for extensions that can be affected (i.e., for
+  // which CanAffectExtension() returns true). Anything else will CHECK.
+  void GrantHostPermission(const URLPattern& site,
+                           base::OnceClosure done_callback);
 
   // Revokes permission to run on the origin of |url|, including any permissions
   // that match or overlap with the origin. For instance, removing access to
   // https://google.com will remove access to *://*.com/* as well.
   // DCHECKs if |url| has not been granted.
   // This may only be called for extensions that can be affected (i.e., for
-  // which CanAffectExtension() returns true). Anything else will DCHECK.
+  // which CanAffectExtension() returns true). Anything else will CHECK.
   void RemoveGrantedHostPermission(const GURL& url);
+
+  // Revokes permission to run on all sites that have some intersection with
+  // `pattern`. This may only be called for extensions that can be affected
+  // (i.e., for which CanAffectExtension() returns true). Anything else will
+  // CHECK.
+  void RemoveHostPermissions(const URLPattern& pattern,
+                             base::OnceClosure done_callback);
 
   // Revokes host permission patterns granted to the extension that effectively
   // grant access to all urls.
@@ -75,11 +92,20 @@ class ScriptingPermissionsModifier {
       const PermissionSet& permissions);
 
  private:
+  // Grants `explicit_hosts` and `scriptable_hosts` permissions. Calls
+  // `done_callback` on completion.
+  void GrantHostPermission(URLPatternSet explicit_hosts,
+                           URLPatternSet scriptable_hosts,
+                           base::OnceClosure done_callback);
+
   // Grants any withheld host permissions.
   void GrantWithheldHostPermissions();
 
-  // Revokes any granted host permissions.
-  void WithholdHostPermissions();
+  // Revokes `explicit_hosts` and `scriptable_hosts` permissions. Calls
+  // `done_callback` on completion.
+  void WithholdHostPermissions(URLPatternSet explicit_hosts,
+                               URLPatternSet scriptable_hosts,
+                               base::OnceClosure done_callback);
 
   raw_ptr<content::BrowserContext> browser_context_;
 

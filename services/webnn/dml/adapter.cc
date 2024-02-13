@@ -59,28 +59,32 @@ Adapter::GetInstanceForTesting() {
 base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
     ComPtr<IDXGIAdapter> dxgi_adapter,
     DML_FEATURE_LEVEL min_feature_level_required) {
-  PlatformFunctions* platformFunctions = PlatformFunctions::GetInstance();
-  if (!platformFunctions) {
+  PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
+  if (!platform_functions) {
     return base::unexpected(
         CreateError(mojom::Error::Code::kUnknownError,
                     "Failed to load all required libraries or functions "
                     "on this platform."));
   }
 
-  if (is_debug_layer_enabled_) {
+  bool is_d3d12_debug_layer_enabled = false;
+  // Enable the d3d12 debug layer mainly for services_unittests.exe.
+  if (enable_d3d12_debug_layer_for_testing_) {
     // Enable the D3D12 debug layer.
     // Must be called before the D3D12 device is created.
     auto d3d12_get_debug_interface_proc =
-        platformFunctions->d3d12_get_debug_interface_proc();
+        platform_functions->d3d12_get_debug_interface_proc();
     ComPtr<ID3D12Debug> d3d12_debug;
     if (SUCCEEDED(d3d12_get_debug_interface_proc(IID_PPV_ARGS(&d3d12_debug)))) {
       d3d12_debug->EnableDebugLayer();
+      is_d3d12_debug_layer_enabled = true;
     }
   }
 
   // Create d3d12 device.
   ComPtr<ID3D12Device> d3d12_device;
-  auto d3d12_create_device_proc = platformFunctions->d3d12_create_device_proc();
+  auto d3d12_create_device_proc =
+      platform_functions->d3d12_create_device_proc();
   HRESULT hr = d3d12_create_device_proc(
       dxgi_adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&d3d12_device));
   if (FAILED(hr)) {
@@ -90,26 +94,47 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
                                         "Failed to create D3D12 device."));
   };
 
-  DML_CREATE_DEVICE_FLAGS flags = DML_CREATE_DEVICE_FLAG_NONE;
+  // The d3d12 debug layer can also be enabled via Microsoft (R) DirectX Control
+  // Panel (dxcpl.exe) for any executable apps by users.
+  if (!is_d3d12_debug_layer_enabled) {
+    ComPtr<ID3D12DebugDevice> debug_device;
+    // Ignore failure.
+    d3d12_device->QueryInterface(IID_PPV_ARGS(&debug_device));
+    is_d3d12_debug_layer_enabled = (debug_device != nullptr);
+  }
 
   // Enable the DML debug layer if the D3D12 debug layer was enabled.
-  if (is_debug_layer_enabled_) {
-    ComPtr<ID3D12DebugDevice> debug_device;
-    if (SUCCEEDED(d3d12_device->QueryInterface(IID_PPV_ARGS(&debug_device)))) {
-      flags |= DML_CREATE_DEVICE_FLAG_DEBUG;
-    }
+  DML_CREATE_DEVICE_FLAGS flags = DML_CREATE_DEVICE_FLAG_NONE;
+  if (is_d3d12_debug_layer_enabled) {
+    flags |= DML_CREATE_DEVICE_FLAG_DEBUG;
   }
 
   // Create dml device.
   ComPtr<IDMLDevice> dml_device;
-  auto dml_create_device_proc = platformFunctions->dml_create_device_proc();
+  auto dml_create_device_proc = platform_functions->dml_create_device_proc();
   hr = dml_create_device_proc(d3d12_device.Get(), flags,
                               IID_PPV_ARGS(&dml_device));
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create DirectML device: " +
-                       logging::SystemErrorCodeToString(hr);
-    return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
-                                        "Failed to create DirectML device."));
+    if (hr == DXGI_ERROR_SDK_COMPONENT_MISSING) {
+      // DirectML debug layer can fail to load even when it has been installed
+      // on the system. Try again without the debug flag and see if we're
+      // successful.
+      flags = flags & ~DML_CREATE_DEVICE_FLAG_DEBUG;
+      hr = dml_create_device_proc(d3d12_device.Get(), flags,
+                                  IID_PPV_ARGS(&dml_device));
+      if (FAILED(hr)) {
+        DLOG(ERROR) << "Failed to create DirectML device without debug flag: " +
+                           logging::SystemErrorCodeToString(hr);
+        return base::unexpected(
+            CreateError(mojom::Error::Code::kUnknownError,
+                        "Failed to create DirectML device."));
+      }
+    } else {
+      DLOG(ERROR) << "Failed to create DirectML device: " +
+                         logging::SystemErrorCodeToString(hr);
+      return base::unexpected(CreateError(mojom::Error::Code::kUnknownError,
+                                          "Failed to create DirectML device."));
+    }
   };
 
   const DML_FEATURE_LEVEL max_feature_level_supported =
@@ -137,7 +162,7 @@ base::expected<scoped_refptr<Adapter>, mojom::ErrorPtr> Adapter::Create(
 // static
 void Adapter::EnableDebugLayerForTesting() {
   CHECK_IS_TEST();
-  is_debug_layer_enabled_ = true;
+  enable_d3d12_debug_layer_for_testing_ = true;
 }
 
 Adapter::Adapter(ComPtr<IDXGIAdapter> dxgi_adapter,
@@ -174,6 +199,6 @@ bool Adapter::IsDMLDeviceCompileGraphSupportedForTesting() const {
 
 Adapter* Adapter::instance_ = nullptr;
 
-bool Adapter::is_debug_layer_enabled_ = false;
+bool Adapter::enable_d3d12_debug_layer_for_testing_ = false;
 
 }  // namespace webnn::dml

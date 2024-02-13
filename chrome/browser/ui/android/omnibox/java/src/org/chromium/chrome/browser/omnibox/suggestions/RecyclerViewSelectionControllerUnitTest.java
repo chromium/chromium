@@ -67,7 +67,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectNextItem_fromPrevious() {
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
         mSelectionController.selectNextItem();
@@ -77,7 +77,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectNextItem_fromLast() {
-        mSelectionController.setSelectedItem(2, false);
+        mSelectionController.setSelectedItem(2);
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
         mSelectionController.selectNextItem();
@@ -104,7 +104,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectPreviousItem_fromPrevious() {
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
         mSelectionController.selectPreviousItem();
@@ -114,7 +114,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectPreviousItem_fromFirst() {
-        mSelectionController.setSelectedItem(0, false);
+        mSelectionController.setSelectedItem(0);
         Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
         mSelectionController.selectPreviousItem();
@@ -131,7 +131,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectPreviousItem_skipNonFocusableItems_noCycling() {
-        mSelectionController.setSelectedItem(2, false);
+        mSelectionController.setSelectedItem(2);
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
 
@@ -146,7 +146,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectPreviousItem_ignoreHeadNonFocusableViews() {
-        mSelectionController.setSelectedItem(2, false);
+        mSelectionController.setSelectedItem(2);
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView3, mSelectionController.getSelectedView());
 
@@ -163,7 +163,7 @@ public class RecyclerViewSelectionControllerUnitTest {
     @Test
     public void selectPreviousItem_skipNonFocusableItems_withCycling() {
         mSelectionController.setCycleThroughNoSelection(true);
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
 
@@ -198,7 +198,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectNextItem_skipNonFocusableItems_noCycling() {
-        mSelectionController.setSelectedItem(0, false);
+        mSelectionController.setSelectedItem(0);
         Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
 
@@ -213,7 +213,7 @@ public class RecyclerViewSelectionControllerUnitTest {
 
     @Test
     public void selectNextItem_ignoreTailNonFocusableViews() {
-        mSelectionController.setSelectedItem(0, false);
+        mSelectionController.setSelectedItem(0);
         Assert.assertEquals(0, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView1, mSelectionController.getSelectedView());
 
@@ -230,7 +230,7 @@ public class RecyclerViewSelectionControllerUnitTest {
     @Test
     public void selectNextItem_skipNonFocusableItems_withCycling() {
         mSelectionController.setCycleThroughNoSelection(true);
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
         Assert.assertEquals(mChildView2, mSelectionController.getSelectedView());
 
@@ -267,7 +267,7 @@ public class RecyclerViewSelectionControllerUnitTest {
     public void setSelectedItem_moveSelectionFromNone() {
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
 
         verify(mChildView1, times(0)).setSelected(anyBoolean());
         verify(mChildView3, times(0)).setSelected(anyBoolean());
@@ -279,10 +279,10 @@ public class RecyclerViewSelectionControllerUnitTest {
     public void setSelectedItem_moveSelectionFromAnotherItem() {
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         reset(mChildView2);
 
-        mSelectionController.setSelectedItem(2, false);
+        mSelectionController.setSelectedItem(2);
         Assert.assertEquals(2, mSelectionController.getSelectedItemForTest());
 
         verify(mChildView1, times(0)).setSelected(anyBoolean());
@@ -296,10 +296,10 @@ public class RecyclerViewSelectionControllerUnitTest {
     public void setSelectedItem_moveSelectionToNone() {
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         reset(mChildView2);
 
-        mSelectionController.setSelectedItem(RecyclerView.NO_POSITION, false);
+        mSelectionController.setSelectedItem(RecyclerView.NO_POSITION);
         Assert.assertEquals(
                 RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
 
@@ -310,37 +310,21 @@ public class RecyclerViewSelectionControllerUnitTest {
     }
 
     @Test
-    public void setSelectedItem_moveFromSameIndexIsNoop() {
-        Assert.assertEquals(
-                RecyclerView.NO_POSITION, mSelectionController.getSelectedItemForTest());
-        mSelectionController.setSelectedItem(1, false);
-        Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
-        reset(mChildView2);
-
-        mSelectionController.setSelectedItem(1, false);
-        Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
-
-        verify(mChildView1, times(0)).setSelected(anyBoolean());
-        verify(mChildView2, times(0)).setSelected(anyBoolean());
-        verify(mChildView3, times(0)).setSelected(anyBoolean());
-    }
-
-    @Test
     public void setSelectedItem_indexNegative() {
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
         // This call should be rejected, leaving selected item as it was.
         // Note that (-1) is reserved value: RecyclerView.NO_POSITION.
-        mSelectionController.setSelectedItem(-2, false);
+        mSelectionController.setSelectedItem(-2);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
     }
 
     @Test
     public void setSelectedItem_indexTooLarge() {
-        mSelectionController.setSelectedItem(1, false);
+        mSelectionController.setSelectedItem(1);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
         // This call should be rejected, leaving selected item as it was.
-        mSelectionController.setSelectedItem(3, false);
+        mSelectionController.setSelectedItem(3);
         Assert.assertEquals(1, mSelectionController.getSelectedItemForTest());
     }
 
@@ -350,7 +334,7 @@ public class RecyclerViewSelectionControllerUnitTest {
         when(mLayoutManager.getItemCount()).thenReturn(4);
 
         // Select View at position 0.
-        mSelectionController.setSelectedItem(0, false);
+        mSelectionController.setSelectedItem(0);
         verify(mChildView1, times(1)).setSelected(true);
         verifyNoMoreInteractions(mChildView1);
         verifyNoMoreInteractions(mChildView2);

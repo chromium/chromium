@@ -10,6 +10,7 @@
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -43,7 +44,7 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_test_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_util.h"
 #include "chrome/browser/ash/file_suggest/mock_file_suggest_keyed_service.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
@@ -63,7 +64,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
 #include "components/sync_preferences/pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/mock_download_manager.h"
@@ -543,9 +544,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   HoldingSpaceKeyedServiceTest()
       : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        fake_user_manager_(new FakeChromeUserManager),
-        user_manager_enabler_(base::WrapUnique(fake_user_manager_.get())) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     HoldingSpaceImage::SetUseZeroInvalidationDelayForTesting(true);
   }
 
@@ -559,6 +558,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 
   // BrowserWithTestWindowTest:
   void SetUp() override {
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
+
     // The test's task environment starts with a mock time close to the Unix
     // epoch, but the files that back holding space items are created with
     // accurate timestamps. Advance the clock so that the test's mock time and
@@ -582,6 +583,8 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     BrowserWithTestWindowTest::TearDown();
     disks::DiskMountManager::Shutdown();
+
+    ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {
@@ -595,15 +598,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
                  temp_dir_.GetPath())}};
   }
 
-  // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    GetSessionControllerClient()->AddUserSession(email);
-    GetSessionControllerClient()->SwitchActiveUser(account_id);
-  }
-
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
     SetUpDownloadManager(profile);
@@ -612,14 +606,12 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 
   TestingProfile* CreateSecondaryProfile(
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs = nullptr) {
-    const std::string kSecondaryProfileName = "secondary_profile";
-    const AccountId account_id(AccountId::FromUserEmail(kSecondaryProfileName));
-    fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->LoginUser(account_id);
-    TestingProfile* profile = profile_manager()->CreateTestingProfile(
-        kSecondaryProfileName, std::move(prefs), u"Test profile",
-        1 /*avatar_id*/, GetTestingFactories());
-    SetUpDownloadManager(profile);
+    constexpr char kSecondaryProfileName[] = "secondary_profile";
+    LogIn(kSecondaryProfileName);
+    auto* profile = profile_manager()->CreateTestingProfile(
+        kSecondaryProfileName, std::move(prefs), /*user_name=*/std::u16string(),
+        /*avatar_id=*/0, GetTestingFactories());
+    OnUserProfileCreated(kSecondaryProfileName, profile);
     return profile;
   }
 
@@ -734,8 +726,6 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
   std::map<Profile*, testing::NiceMock<MockDownloadManager>*>
       download_managers_;
   arc::ArcServiceManager arc_service_manager_;
@@ -769,28 +759,90 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
     testing::Combine(/*enable_camera_app_integration=*/testing::Bool(),
-                     /*enable_predictability*/ testing::Bool(),
+                     /*enable_predictability=*/testing::Bool(),
                      /*enabled_suggestions=*/testing::Bool()));
 
-TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, GuestUserProfile) {
-  // Construct a guest session profile.
-  TestingProfile::Builder guest_profile_builder;
-  guest_profile_builder.SetGuestSession();
-  guest_profile_builder.SetProfileName("guest_profile");
-  guest_profile_builder.AddTestingFactories(
-      {{arc::ArcFileSystemBridge::GetFactory(),
-        base::BindRepeating(&BuildArcFileSystemBridge)},
-       {file_manager::VolumeManagerFactory::GetInstance(),
-        base::BindRepeating(&BuildVolumeManager)}});
-  std::unique_ptr<TestingProfile> guest_profile = guest_profile_builder.Build();
+class HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest
+    : public HoldingSpaceKeyedServiceWithExperimentalFeatureTest {
+ public:
+  HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest() {
+    // To let ProfileHelper::GetUserByProfile() directly return
+    // the created guest user, without faking directory paths.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kIgnoreUserProfileMappingForTests);
+  }
+
+  void TearDown() override {
+    profile_.reset();
+    HoldingSpaceKeyedServiceWithExperimentalFeatureTest::TearDown();
+  }
+
+  std::string GetDefaultProfileName() override {
+    return user_manager::kGuestUserName;
+  }
+
+  void LogIn(const std::string& email) override {
+    CHECK_EQ(email, user_manager::kGuestUserName);
+    auto account_id = user_manager::GuestAccountId();
+
+    user_manager()->AddGuestUser(account_id);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
+  }
+
+  TestingProfile* CreateProfile(const std::string& profile_name) override {
+    CHECK_EQ(profile_name, user_manager::kGuestUserName);
+    CHECK(!profile_);
+
+    // Construct a guest session profile.
+    // Profile is created outside of TestingProfileManager management
+    // to inject more factories.
+    TestingProfile::Builder guest_profile_builder;
+    guest_profile_builder.SetGuestSession();
+    guest_profile_builder.SetProfileName(profile_name);
+    guest_profile_builder.AddTestingFactories(
+        {{arc::ArcFileSystemBridge::GetFactory(),
+          base::BindRepeating(&BuildArcFileSystemBridge)},
+         {file_manager::VolumeManagerFactory::GetInstance(),
+          base::BindRepeating(&BuildVolumeManager)}});
+    profile_ = guest_profile_builder.Build();
+    OnUserProfileCreated(profile_name, profile_.get());
+    return profile_.get();
+  }
+
+  std::unique_ptr<Browser> CreateBrowser(
+      Profile* profile,
+      Browser::Type browser_type,
+      bool hosted_app,
+      BrowserWindow* browser_window) override {
+    // Do not create browser.
+    return nullptr;
+  }
+
+ private:
+  std::unique_ptr<TestingProfile> profile_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest,
+    testing::Combine(/*enable_camera_app_integration=*/testing::Bool(),
+                     /*enable_predictability=*/testing::Bool(),
+                     /*enabled_suggestions=*/testing::Bool()));
+
+TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureForGuestTest,
+       GuestUserProfile) {
+  auto* guest_profile = profile();
 
   // Service instances should be created for guest sessions but note that the
   // service factory will redirect to use the primary OTR profile.
   ASSERT_TRUE(guest_profile);
   ASSERT_FALSE(guest_profile->IsOffTheRecord());
   HoldingSpaceKeyedService* const guest_profile_service =
-      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
-          guest_profile.get());
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(guest_profile);
   ASSERT_TRUE(guest_profile_service);
 
   // Since the service factory redirects to use the primary OTR profile in the
@@ -810,7 +862,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, GuestUserProfile) {
       guest_profile->GetProfileUserName());
   TestingProfile* const secondary_otr_guest_profile =
       secondary_otr_guest_profile_builder.BuildOffTheRecord(
-          guest_profile.get(), Profile::OTRProfileID::CreateUniqueForTesting());
+          guest_profile, Profile::OTRProfileID::CreateUniqueForTesting());
   ASSERT_TRUE(secondary_otr_guest_profile);
   ASSERT_TRUE(secondary_otr_guest_profile->IsOffTheRecord());
 

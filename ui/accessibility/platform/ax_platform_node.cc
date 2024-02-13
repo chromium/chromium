@@ -77,11 +77,6 @@ std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node) {
 }
 
 // static
-AXMode AXPlatformNode::GetAccessibilityMode() {
-  return AXPlatform::GetInstance().GetMode();
-}
-
-// static
 void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
   if (disallow_ax_mode_changes_) {
     return;
@@ -95,11 +90,6 @@ void AXPlatformNode::NotifyAddAXModeFlags(AXMode mode_flags) {
   }
 
   ax_platform.SetMode(new_ax_mode);
-}
-
-// static
-void AXPlatformNode::SetAXMode(AXMode new_mode) {
-  AXPlatform::GetInstance().SetMode(new_mode);
 }
 
 // static

@@ -147,6 +147,7 @@ public class ChromeNativePasswordCheckControllerTest {
     public void getBreachedCredentialsCountTest() throws ExecutionException, InterruptedException {
         // Set fake to return 1 breached credential.
         final int breachedCount = 1;
+        when(mPasswordCheck.hasAccountForRequest()).thenReturn(true);
         when(mPasswordCheck.getCompromisedCredentialsCount()).thenReturn(breachedCount);
         when(mPasswordCheck.getSavedPasswordsCount()).thenReturn(10);
 
@@ -170,5 +171,20 @@ public class ChromeNativePasswordCheckControllerTest {
         mController.destroy();
         verify(mPasswordCheck).stopCheck();
         verify(mPasswordCheck).removeObserver(mController);
+    }
+
+    @Test
+    public void getBreachedCredentialsCountReturnsSignedOutError()
+            throws ExecutionException, InterruptedException {
+        when(mPasswordCheck.hasAccountForRequest()).thenReturn(false);
+
+        PasswordCheckResult passwordCheckResult =
+                mController.getBreachedCredentialsCount(PasswordStorageType.LOCAL_STORAGE).get();
+
+        assertEquals(OptionalInt.empty(), passwordCheckResult.getBreachedCount());
+        assertEquals(OptionalInt.empty(), passwordCheckResult.getTotalPasswordsCount());
+        assertEquals(
+                PasswordCheckUIStatus.ERROR_SIGNED_OUT,
+                ((PasswordCheckNativeException) passwordCheckResult.getError()).errorCode);
     }
 }

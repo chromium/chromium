@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Не защищено</translation>
 <translation id="1075079914415273530">Сельское и лесное хозяйство</translation>
 <translation id="1075364221219156102">Использовать ключ доступа</translation>
-<translation id="1078033282564106222">Выбран вариант "Номер дома"</translation>
 <translation id="1080116354587839789">Выровнять по ширине окна</translation>
 <translation id="1081061862829655580">Лоток 19</translation>
 <translation id="1082026381988252344">Прокрутка и изменение масштаба содержимого демонстрируемой вкладки</translation>
@@ -172,6 +171,7 @@
 <translation id="1296930489679394997">Продажи</translation>
 <translation id="1301227606947843452">Legal Extra</translation>
 <translation id="1301324364792935241">Проверьте настройки безопасного DNS-сервера</translation>
+<translation id="1302418742166945866"><ph name="URL" /> запрашивает разрешение на управление вашими MIDI-устройствами и их перепрограммирование.</translation>
 <translation id="1307966114820526988">Устаревшие функции</translation>
 <translation id="1308113895091915999">Есть предложение</translation>
 <translation id="1309375166585231290">Твои родители пока не одобрили этот сайт</translation>
@@ -247,6 +247,7 @@
 <translation id="1428729058023778569">Вы видите это предупреждение, потому что сайт не поддерживает HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Самоклеящаяся пленка</translation>
 <translation id="1430915738399379752">Печать</translation>
+<translation id="1431021750861456539">Автоматически открывать в полноэкранном режиме</translation>
 <translation id="1432187715652018471">Страница пытается установить обработчик службы</translation>
 <translation id="1432581352905426595">Управление поисковыми системами</translation>
 <translation id="1433225466058025572">Попробуйте перенести файлы ещё раз.</translation>
@@ -574,6 +575,7 @@
 <translation id="2056658168519009885">Сайты могут запрашивать у Chrome информацию, чтобы персонализировать рекламу для вас.</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2059202684901022309">22 x 34 дюйма</translation>
+<translation id="2062723461792528824">действуют условия</translation>
 <translation id="2064568741209980952">Кредиты и займы</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 вариант}one{# вариант}few{# варианта}many{# вариантов}other{# варианта}}</translation>
 <translation id="2066915425250589881">запросить ее удаление</translation>
@@ -586,6 +588,7 @@
 <translation id="2075497153347571252">Администратор запретил использовать разрешение "<ph name="PERMISSION" />" на сайте <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080021694978766903">Максимальное число записей для этого правила: <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2081482239432306393">Выбран вариант "Номер дома"</translation>
 <translation id="20817612488360358">Включены системные настройки прокси-сервера, но при этом его конфигурация задана явным образом.</translation>
 <translation id="2082238445998314030">Результат <ph name="RESULT_NUMBER" />, всего <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Разрешать при каждом посещении</translation>
@@ -613,7 +616,6 @@
 <translation id="2126374524350484896">Производитель PDF:</translation>
 <translation id="2130448033692577677">Указанные вами шаблоны нельзя применить, поскольку правило DnsOverHttpsMode не настроено.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Скачивание языкового пакета: <ph name="LANGUAGE" />… <ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Одежда для мужчин</translation>
 <translation id="2137891579555018930">Ожидание разрешения…</translation>
 <translation id="213826338245044447">Закладки на мобильном</translation>
@@ -1291,6 +1293,7 @@
 <translation id="3515972145999192222">Домен <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> был заблокирован вашей организацией, так как нарушает правила. <ph name="BEGIN_LEARN_MORE_LINK" />Подробнее…<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Обработка нескольких объектов</translation>
 <translation id="3525130752944427905">10 x 14 дюймов</translation>
+<translation id="3525435918300186947">Разрешить управлять MIDI-устройствами и перепрограммировать их?</translation>
 <translation id="3528171143076753409">Сертификат сервера не является доверенным.</translation>
 <translation id="3528485271872257980">Темно-коричневый</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{Как минимум 1 запись на синхронизируемых устройствах}=1{1 запись (не считая данных на синхронизируемых устройствах)}one{# запись (не считая данных на синхронизируемых устройствах)}few{# записи (не считая данных на синхронизируемых устройствах)}many{# записей (не считая данных на синхронизируемых устройствах)}other{# записей (не считая данных на синхронизируемых устройствах)}}</translation>
@@ -1386,7 +1389,6 @@
 <translation id="3681007416295224113">Данные сертификата</translation>
 <translation id="3681421644246505351">Chrome определяет интересующие вас темы на основе недавней истории браузера.</translation>
 <translation id="3682094733650754138">Выбран вариант "Подставить адрес"</translation>
-<translation id="3689867156802445220">Номер дома</translation>
 <translation id="3693327506115126094">Выберите способ подтверждения личности</translation>
 <translation id="3698629142018988477">Кнопка "Создать сайт". Нажмите ее, чтобы быстро создать сайт на платформе Google.</translation>
 <translation id="3701325639446035885">Продажа билетов на мероприятия</translation>
@@ -1411,6 +1413,7 @@
 <translation id="3723663469265383848">Во время обновления вы не сможете использовать устройство до 10 минут.</translation>
 <translation id="372429172604983730">Эта ошибка может возникать из-за антивирусных приложений, брандмауэра, программ для веб-фильтрации или прокси-сервера.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать презентацию Google, нажмите Tab, а затем Ввод.</translation>
+<translation id="3727309136762649052">Пространство имен</translation>
 <translation id="3727850735097852673">Чтобы использовать Google Менеджер паролей со Связкой ключей macOS, перезапустите Chrome и предоставьте доступ к Связке ключей. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="3733139489341305600">Беспилотные автомобили</translation>
 <translation id="3736520371357197498">Если вы готовы подвергнуть риску ваши личные данные, вы можете <ph name="BEGIN_LINK" />перейти на зараженный сайт<ph name="END_LINK" />, не дожидаясь удаления вредоносного ПО.</translation>
@@ -1575,6 +1578,7 @@
 <translation id="4089152113577680600">Лоток 14</translation>
 <translation id="4092349052316400070">Указать этот адрес</translation>
 <translation id="4096237801206588987">11 x 15 дюймов</translation>
+<translation id="4098306082496067348">Нажмите на реквизиты виртуальной карты, чтобы добавить их при оформлении покупки.</translation>
 <translation id="4098354747657067197">Осторожно, поддельный сайт!</translation>
 <translation id="4099048595830172239">Администратор не рекомендует предоставлять доступ к экрану для приложения "<ph name="APPLICATION_TITLE" />", когда видны конфиденциальные данные:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы настроить шрифты и их размеры в Chrome.</translation>
@@ -1611,7 +1615,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}one{Страница {COUNT}}few{Страница {COUNT}}many{Страница {COUNT}}other{Страница {COUNT}}}</translation>
 <translation id="4154277373259957087">Теперь Chrome будет заполнять платежные данные только после подтверждения личности. Чтобы изменить это, перейдите в <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Фиолетовый</translation>
-<translation id="4165986682804962316">Настройки сайтов</translation>
+<translation id="4165986682804962316">Настройки сайта</translation>
 <translation id="4169535189173047238">Запретить</translation>
 <translation id="4171400957073367226">Подтверждающая подпись недействительна</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
@@ -1688,7 +1692,7 @@
 <translation id="4277028893293644418">Сбросить пароль</translation>
 <translation id="4277529130885813215">Использовать другое устройство</translation>
 <translation id="4277937682389409325">Местный адрес</translation>
-<translation id="4278390842282768270">Разрешено</translation>
+<translation id="4278390842282768270">Разрешены</translation>
 <translation id="4281998142035485137">{0,plural, =1{Открыть конфиденциальный файл?}one{Открыть конфиденциальные файлы?}few{Открыть конфиденциальные файлы?}many{Открыть конфиденциальные файлы?}other{Открыть конфиденциальные файлы?}}</translation>
 <translation id="4282346679996504092">Оповещения об этом товаре отключены, а закладка удалена.</translation>
 <translation id="4285498937028063278">Открепить</translation>
@@ -1898,6 +1902,7 @@
 <translation id="4729147136006144950">Благотворительность</translation>
 <translation id="4730977633786878901">Отзывы</translation>
 <translation id="4731638775147756694">Приложение заблокировано администратором.</translation>
+<translation id="4732860731866514038">Скачивание языкового пакета (<ph name="LANGUAGE" />)… <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992">Сайт <ph name="URL" /> запрашивает данные о местоположении вашего устройства.</translation>
 <translation id="4736491186715342415">Автотранспорт</translation>
 <translation id="4736825316280949806">Перезапустите Chromium.</translation>
@@ -1919,7 +1924,6 @@
 <translation id="4757022425116568383">Ключ доступа из профиля Chrome</translation>
 <translation id="4757993714154412917">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chromium.</translation>
 <translation id="4758311279753947758">Добавить контактные данные</translation>
-<translation id="4761104368405085019">Использование микрофона</translation>
 <translation id="4761326898079498987">Подробнее</translation>
 <translation id="4761869838909035636">Запустить проверку безопасности</translation>
 <translation id="4763196677855776703">Условия использования предоставлены продавцом (<ph name="URL" />).</translation>
@@ -2257,7 +2261,6 @@
             <ph name="LIST_ITEM" />файлы cookie и данные сайтов;
             <ph name="LIST_ITEM" />сведения, указанные в формах.
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> запрашивает разрешение на управление вашими MIDI-устройствами (SysEx) и их перепрограммирование.</translation>
 <translation id="5443468954631487277">В обратном порядке лицевой стороной вверх</translation>
 <translation id="5447235695608032700">Разрешить сайту <ph name="SITE" /> использовать сохраненную информацию о вас</translation>
 <translation id="5447765697759493033">Этот сайт не будет переводиться автоматически</translation>
@@ -2284,6 +2287,7 @@
     <ph name="LINE_BREAK" />
     Обратитесь к системному администратору.</translation>
 <translation id="549333378215107354">Размер: 3</translation>
+<translation id="5501712702042287009">автоматически открывать в полноэкранном режиме</translation>
 <translation id="550365051221576010">Заполнить все поля</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Управляемые закладки</translation>
@@ -2378,7 +2382,7 @@
 <translation id="5666606186680807225">Пляжи и острова</translation>
 <translation id="5667827081946850877">Аудиокниги</translation>
 <translation id="5675650730144413517">Страница недоступна</translation>
-<translation id="5677928146339483299">Заблокировано</translation>
+<translation id="5677928146339483299">Заблокированы</translation>
 <translation id="5678007133659493065">Фольга</translation>
 <translation id="568292603005599551">Положение изображения по оси X</translation>
 <translation id="5684277895745049190">Список</translation>
@@ -2401,6 +2405,7 @@
 <translation id="5720705177508910913">Текущий пользователь</translation>
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5723287205918986743">Военная промышленность</translation>
+<translation id="5723873695528696965">Управление MIDI-устройствами и их перепрограммирование.</translation>
 <translation id="5725297205162868298">Быстрая команда "<ph name="SHORTCUT_NAME" />" не должна начинаться с символа @.</translation>
 <translation id="5730040223043577876">Chrome рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="5732392974455271431">Для разблокировки обратитесь к родителям.</translation>
@@ -2470,7 +2475,6 @@
 <translation id="5877831137320480913">Красота и фитнес</translation>
 <translation id="5879989559903563723">Недоступно в гостевом режиме</translation>
 <translation id="5880050725127890683">Проверка безопасности Chrome</translation>
-<translation id="5883861433316751031">Разрешить управлять MIDI-устройствами и перепрограммировать их?</translation>
 <translation id="5884465125445718607">Конверт Chinese 6</translation>
 <translation id="5887400589839399685">Карта сохранена</translation>
 <translation id="5887687176710214216">Последнее посещение: вчера</translation>
@@ -2508,6 +2512,7 @@
 <translation id="5953516610448771166">Автоматические субтитры недоступны для этого медиафайла. Чтобы получить их, заблокируйте <ph name="CONTENT_SETTINGS" /> для этого сайта.</translation>
 <translation id="5955063559762970069">Гостиницы и другие места размещения</translation>
 <translation id="595873925609605681">Если функции сайта не работают, <ph name="BEGIN_LINK" />попробуйте временно разрешить сторонние файлы cookie<ph name="END_LINK" />.</translation>
+<translation id="5960795367348889467">Проверка</translation>
 <translation id="5963413905009737549">Раздел</translation>
 <translation id="5964247741333118902">Встроенный контент</translation>
 <translation id="5967260682280773804">36 x 48 дюймов</translation>
@@ -2821,7 +2826,6 @@
 <translation id="6556866813142980365">Повторить</translation>
 <translation id="6557715786897013164">14 x 17 дюймов</translation>
 <translation id="6560786330438719938">Установленные и удаленные приложения и частота их использования.</translation>
-<translation id="6567084950885568327">управление MIDI-устройством и его перепрограммирование</translation>
 <translation id="6568793038316600992">Кнопка "Настроить способы оплаты". Нажмите ее, чтобы изменить данные о способах оплаты и банковских картах в настройках Chrome.</translation>
 <translation id="6569060085658103619">Вы просматриваете страницу расширения</translation>
 <translation id="6569366777234823130">Драмы</translation>
@@ -3204,6 +3208,7 @@
 <translation id="733354035281974745">Приоритет локального аккаунта на устройстве</translation>
 <translation id="7334320624316649418">&amp;Повторить изменение порядка</translation>
 <translation id="7335157162773372339">Разрешено отправлять запрос на использование камеры</translation>
+<translation id="7336636595549675416">Номер дома</translation>
 <translation id="7337248890521463931">Показать больше строк</translation>
 <translation id="7337706099755338005">Недоступно на вашей платформе.</translation>
 <translation id="733923710415886693">Сертификат сервера не проходил проверку.</translation>
@@ -3461,6 +3466,7 @@
 <translation id="7755287808199759310">Для разблокировки обратитесь к родителю.</translation>
 <translation id="7755624218968747854">Основной рулон</translation>
 <translation id="7758069387465995638">Возможно, подключение заблокировано брандмауэром или антивирусным ПО.</translation>
+<translation id="7759147511335618829">Управление/программирование MIDI</translation>
 <translation id="7759809451544302770">Необязательно</translation>
 <translation id="7760497246331667482">Регги и карибская музыка</translation>
 <translation id="776110834126722255">Устаревшее правило</translation>
@@ -3632,6 +3638,7 @@
 <translation id="8103161714697287722">Способ оплаты</translation>
 <translation id="8103643211515685474">Все равно распечатать</translation>
 <translation id="8105368624971345109">Отключить</translation>
+<translation id="8107664017913103177">У карты есть преимущества</translation>
 <translation id="810875025413331850">Устройства поблизости не найдены.</translation>
 <translation id="8116925261070264013">Сайты с отключенным звуком</translation>
 <translation id="8118489163946903409">Способ оплаты</translation>
@@ -3910,7 +3917,6 @@
 <translation id="8671519637524426245">Значение правила <ph name="SECURE_DNS_SALT" /> не соответствует требованиям по длине.</translation>
 <translation id="867224526087042813">Подпись</translation>
 <translation id="8672264262457010862">Бизнес и промышленность</translation>
-<translation id="8673776281896298303">Управление и перепрограммирование MIDI-устройств (SysEx).</translation>
 <translation id="8676424191133491403">Без задержки</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ответ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">При загрузке веб-страницы <ph name="PAGE" /> произошла ошибка по следующим причинам:</translation>
@@ -4049,7 +4055,7 @@
 <translation id="8956124158020778855">Включите параметр и вернитесь на эту вкладку, чтобы начать писать.</translation>
 <translation id="8957210676456822347">Авторизация через адаптивный портал</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
-<translation id="8963117664422609631">Перейти в настройки сайтов</translation>
+<translation id="8963117664422609631">Перейти в настройки сайта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Что делать?<ph name="MARKUP_2" />Убедитесь, что вы подключены к Интернету.<ph name="MARKUP_3" />Через некоторое время обновите страницу.<ph name="MARKUP_4" />Проверьте, правильно ли указан веб-адрес.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Сохранить карту</translation>
 <translation id="8970887620466824814">Произошла ошибка</translation>
@@ -4151,7 +4157,6 @@
 <translation id="9148507642005240123">&amp;Отменить изменения</translation>
 <translation id="9148599396704355100">Низкие цены</translation>
 <translation id="9150025764986957246">Что вы можете ввести</translation>
-<translation id="9150045010208374699">Использование камеры</translation>
 <translation id="9150685862434908345">Администратор может удаленно менять настройки браузера и управлять действиями вне браузера Chrome на этом устройстве. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Обновлено</translation>
 <translation id="9155211586651734179">Какие периферийные аудиоустройства подключены.</translation>

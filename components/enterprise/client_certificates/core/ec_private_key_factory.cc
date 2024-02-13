@@ -30,7 +30,7 @@ scoped_refptr<ECPrivateKey> CreateKey() {
 }
 
 scoped_refptr<ECPrivateKey> LoadKeyFromWrapped(
-    const std::vector<const uint8_t>& wrapped_key) {
+    const std::vector<uint8_t>& wrapped_key) {
   auto key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(wrapped_key);
   if (!key) {
     return nullptr;
@@ -61,9 +61,9 @@ void ECPrivateKeyFactory::LoadPrivateKey(
   const auto& wrapped_key_str = serialized_private_key.wrapped_key();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(LoadKeyFromWrapped,
-                     std::vector<const uint8_t>(wrapped_key_str.begin(),
-                                                wrapped_key_str.end())),
+      base::BindOnce(
+          LoadKeyFromWrapped,
+          std::vector<uint8_t>(wrapped_key_str.begin(), wrapped_key_str.end())),
       std::move(callback));
 }
 

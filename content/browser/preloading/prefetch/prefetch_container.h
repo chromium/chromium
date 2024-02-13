@@ -33,6 +33,7 @@ class CookieManager;
 
 namespace content {
 
+class BrowserContext;
 class PrefetchCookieListener;
 class PrefetchDocumentManager;
 class PrefetchNetworkContext;
@@ -43,6 +44,7 @@ class PrefetchStreamingURLLoader;
 class PreloadingAttempt;
 class ProxyLookupClientImpl;
 class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // Holds the relevant size information of the prefetched response. The struct is
 // installed onto `PrefetchContainer`, and gets passed into
@@ -94,7 +96,7 @@ class CONTENT_EXPORT PrefetchContainer {
   // When `matcher` is null (only in unit tests),
   // `PreloadingData::GetSameURLMatcher` is used.
   PrefetchContainer(
-      const GlobalRenderFrameHostId& referring_render_frame_host_id,
+      RenderFrameHostImpl& referring_render_frame_host,
       const blink::DocumentToken& referring_document_token,
       const GURL& url,
       const PrefetchType& prefetch_type,
@@ -157,6 +159,7 @@ class CONTENT_EXPORT PrefetchContainer {
   GlobalRenderFrameHostId GetReferringRenderFrameHostId() const {
     return referring_render_frame_host_id_;
   }
+  bool HasSameReferringURLForMetrics(const PrefetchContainer& other) const;
 
   // The initial URL that was requested to be prefetched.
   const GURL& GetURL() const { return key_.prefetch_url(); }
@@ -184,8 +187,6 @@ class CONTENT_EXPORT PrefetchContainer {
   // based on |prefetch_type_|.
   bool IsProxyRequiredForURL(const GURL& url) const;
 
-  const blink::mojom::Referrer& GetReferrer() const { return referrer_; }
-
   const network::ResourceRequest* GetResourceRequest() const {
     return resource_request_.get();
   }
@@ -195,8 +196,6 @@ class CONTENT_EXPORT PrefetchContainer {
   void UpdateReferrer(
       const GURL& new_referrer_url,
       const network::mojom::ReferrerPolicy& new_referrer_policy);
-
-  const net::SchemefulSite& GetReferringSite() const { return referring_site_; }
 
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const {
     return no_vary_search_hint_;
@@ -542,6 +541,10 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
       PrefetchStatus prefetch_status);
 
+  // Add client hints headers to a request bound for |origin|.
+  void AddClientHintsHeaders(const url::Origin& origin,
+                             net::HttpRequestHeaders* request_headers);
+
   // Returns the `SinglePrefetch` to be prefetched next. This is the last
   // element in `redirect_chain_`, because, during prefetching from the network,
   // we push back `SinglePrefetch`s to `redirect_chain_` and access the latest
@@ -555,6 +558,11 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
+  // The origin of the page that requested the prefetch.
+  const url::Origin referring_origin_;
+  // The URL of the page that requested the prefetch, stored as a hash as we
+  // just need it for equality checks for metrics.
+  const size_t referring_url_hash_;
 
   // The key used to match this PrefetchContainer, including the URL that was
   // requested to prefetch.
@@ -569,10 +577,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The referrer to use for the request.
   blink::mojom::Referrer referrer_;
-
-  // The origin and site of the page that requested the prefetched.
-  url::Origin referring_origin_;
-  net::SchemefulSite referring_site_;
 
   // Information about the current prefetch request. Updated when a redirect is
   // encountered, whether or not the direct can be processed by the same URL
@@ -591,6 +595,9 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The |PrefetchDocumentManager| that requested |this|.
   base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager_;
+
+  // The |BrowserContext| in which this is being run.
+  base::WeakPtr<BrowserContext> browser_context_;
 
   // The current status, if any, of the prefetch.
   // TODO(crbug.com/1494771): Use `load_state_` instead for non-metrics purpose.
@@ -681,6 +688,12 @@ class CONTENT_EXPORT PrefetchContainer {
   base::OnceClosure on_received_head_callback_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
+
+  // Whether JavaScript is on in this contents (or was, when this prefetch
+  // started). This affects Client Hints behavior. Per-origin settings are
+  // handled later, according to
+  // |ClientHintsControllerDelegate::IsJavaScriptAllowed|.
+  bool is_javascript_enabled_ = false;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

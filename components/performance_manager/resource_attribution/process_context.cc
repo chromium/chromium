@@ -17,13 +17,14 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 ProcessContext::ProcessContext(AnyProcessHostId id,
                                base::WeakPtr<ProcessNode> weak_node)
@@ -189,4 +190,4 @@ std::string ProcessContext::ToString() const {
       id_);
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

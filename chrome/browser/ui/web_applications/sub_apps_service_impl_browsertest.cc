@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
+
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
-
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -278,6 +281,8 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
         .has_value();
   }
 
+  base::SimpleTestClock* clock() { return &clock_; }
+
  protected:
   base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
   webapps::AppId parent_app_id_;
@@ -289,6 +294,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   std::unique_ptr<net::EmbeddedTestServer> iwa_dev_server_;
   std::unique_ptr<NotificationDisplayServiceTester>
       notification_display_service_;
+  base::SimpleTestClock clock_;
 };
 
 /********** End-to-end test (one is enough!). **********/
@@ -693,6 +699,111 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
+                       DialogEmbargoedIfDeclinedThreeTimes) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+
+  auto dialog_override =
+      SubAppsInstallDialogController::SetAutomaticActionForTesting(
+          SubAppsInstallDialogController::DialogActionForTesting::kCancel);
+
+  std::vector<std::pair<std::string, std::string>> subapps = {
+      {kSubAppPath, kSubAppPath},
+      {kSubAppPath2, kSubAppPath2},
+      {kSubAppPath3, kSubAppPath3},
+  };
+  base::flat_set<std::pair<webapps::ManifestId, SubAppsServiceResultCode>>
+      expected_result = {
+          {GetURLFromPath(kSubAppPath), SubAppsServiceResultCode::kFailure},
+          {GetURLFromPath(kSubAppPath2), SubAppsServiceResultCode::kFailure},
+          {GetURLFromPath(kSubAppPath3), SubAppsServiceResultCode::kFailure}};
+
+  // Dismiss dialog three times.
+  for (int i = 0; i < 3; i++) {
+    ExpectCallAdd(expected_result, subapps);
+    EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+  }
+
+  EXPECT_TRUE(
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile())
+          ->IsEmbargoed(iwa_frame->GetLastCommittedOrigin().GetURL(),
+                        ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+
+  dialog_override =
+      SubAppsInstallDialogController::SetAutomaticActionForTesting(
+          SubAppsInstallDialogController::DialogActionForTesting::kAccept);
+
+  // Add call fails now even though we would accept because the dialog was
+  // embargoed.
+  ExpectCallAdd(expected_result, subapps);
+
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, DialogEmbargoTiming) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+
+  // Always hit "Cancel" in the dialog.
+  auto dialog_override =
+      SubAppsInstallDialogController::SetAutomaticActionForTesting(
+          SubAppsInstallDialogController::DialogActionForTesting::kCancel);
+
+  auto* auto_blocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
+  auto_blocker->SetClockForTesting(clock());
+
+  std::vector<std::pair<std::string, std::string>> subapps = {
+      {kSubAppPath, kSubAppPath},
+      {kSubAppPath2, kSubAppPath2},
+      {kSubAppPath3, kSubAppPath3}};
+  base::flat_set<std::pair<webapps::ManifestId, SubAppsServiceResultCode>>
+      expected_result = {
+          {GetURLFromPath(kSubAppPath), SubAppsServiceResultCode::kFailure},
+          {GetURLFromPath(kSubAppPath2), SubAppsServiceResultCode::kFailure},
+          {GetURLFromPath(kSubAppPath3), SubAppsServiceResultCode::kFailure}};
+
+  // Dismiss dialog three times.
+  for (int i = 0; i < 3; i++) {
+    ExpectCallAdd(expected_result, subapps);
+    EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+  }
+
+  // Check that embargo lasts for 10 minutes.
+  EXPECT_TRUE(auto_blocker->IsEmbargoed(
+      iwa_frame->GetLastCommittedOrigin().GetURL(),
+      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+
+  clock()->Advance(base::Minutes(9));
+  EXPECT_TRUE(auto_blocker->IsEmbargoed(
+      iwa_frame->GetLastCommittedOrigin().GetURL(),
+      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+
+  clock()->Advance(base::Minutes(1));
+  EXPECT_FALSE(auto_blocker->IsEmbargoed(
+      iwa_frame->GetLastCommittedOrigin().GetURL(),
+      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+
+  // Dismiss forth time.
+  ExpectCallAdd(expected_result, subapps);
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+
+  // Check that embargo now lasts for 7 days.
+  EXPECT_TRUE(auto_blocker->IsEmbargoed(
+      iwa_frame->GetLastCommittedOrigin().GetURL(),
+      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+
+  clock()->Advance(base::Days(6));
+  EXPECT_TRUE(auto_blocker->IsEmbargoed(
+      iwa_frame->GetLastCommittedOrigin().GetURL(),
+      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+
+  clock()->Advance(base::Days(7));
+  EXPECT_FALSE(auto_blocker->IsEmbargoed(
+      iwa_frame->GetLastCommittedOrigin().GetURL(),
+      ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS));
+}
 /********** Tests for uninstallation behaviour. **********/
 
 // Verify that uninstalling an app with sub-apps causes sub-apps to be

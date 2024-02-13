@@ -19,6 +19,8 @@
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
@@ -54,7 +56,10 @@ class NearbyConnectionBrokerImpl
             file_payload_handler_receiver,
         mojo::PendingRemote<mojom::NearbyMessageReceiver>
             message_receiver_remote,
-        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
+        mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+            nearby_connection_state_listener,
+        const mojo::SharedRemote<
+            ::nearby::connections::mojom::NearbyConnections>&
             nearby_connections,
         base::OnceClosure on_connected_callback,
         base::OnceClosure on_disconnected_callback,
@@ -74,7 +79,10 @@ class NearbyConnectionBrokerImpl
             file_payload_handler_receiver,
         mojo::PendingRemote<mojom::NearbyMessageReceiver>
             message_receiver_remote,
-        const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
+        mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+            nearby_connection_state_listener,
+        const mojo::SharedRemote<
+            ::nearby::connections::mojom::NearbyConnections>&
             nearby_connections,
         base::OnceClosure on_connected_callback,
         base::OnceClosure on_disconnected_callback,
@@ -106,6 +114,8 @@ class NearbyConnectionBrokerImpl
       mojo::PendingReceiver<mojom::NearbyFilePayloadHandler>
           file_payload_handler_receiver,
       mojo::PendingRemote<mojom::NearbyMessageReceiver> message_receiver_remote,
+      mojo::PendingRemote<mojom::NearbyConnectionStateListener>
+          nearby_connection_state_listener,
       const mojo::SharedRemote<::nearby::connections::mojom::NearbyConnections>&
           nearby_connections,
       base::OnceClosure on_connected_callback,
@@ -119,7 +129,7 @@ class NearbyConnectionBrokerImpl
   void OnEndpointDiscovered(
       const std::string& endpoint_id,
       ::nearby::connections::mojom::DiscoveredEndpointInfoPtr info);
-  void OnDiscoveryFailure();
+  void OnDiscoveryFailure(::nearby::connections::mojom::Status status);
 
   void OnRequestConnectionResult(::nearby::connections::mojom::Status status);
   void OnAcceptConnectionResult(::nearby::connections::mojom::Status status);

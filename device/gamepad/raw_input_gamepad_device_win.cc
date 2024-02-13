@@ -16,6 +16,7 @@ extern "C" {
 // clang-format on
 
 #include <algorithm>
+#include <optional>
 
 #include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
@@ -25,7 +26,6 @@ extern "C" {
 #include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/hid_writer_win.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -91,7 +91,7 @@ RawInputGamepadDeviceWin::RawInputGamepadDeviceWin(HANDLE device_handle,
     : handle_(device_handle),
       source_id_(source_id),
       last_update_timestamp_(GamepadDataFetcher::CurrentTimeInMicroseconds()),
-      button_report_id_(Gamepad::kButtonsLengthCap, absl::nullopt) {
+      button_report_id_(Gamepad::kButtonsLengthCap, std::nullopt) {
   ::ZeroMemory(buttons_, sizeof(buttons_));
   ::ZeroMemory(axes_, sizeof(axes_));
 

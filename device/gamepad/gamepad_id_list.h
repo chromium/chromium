@@ -148,6 +148,10 @@ class DEVICE_GAMEPAD_EXPORT GamepadIdList {
   // device is not XInput or the XInput flavor is unknown.
   XInputType GetXInputType(uint16_t vendor_id, uint16_t product_id) const;
 
+  // Returns true if the gamepad device identified by |gamepad_id| has haptic
+  // actuators on its triggers. Returns false otherwise.
+  bool HasTriggerRumbleSupport(GamepadId gamepad_id) const;
+
   // Returns the internal list of gamepad info for testing purposes.
   std::vector<std::tuple<uint16_t, uint16_t, XInputType>>
   GetGamepadListForTesting() const;

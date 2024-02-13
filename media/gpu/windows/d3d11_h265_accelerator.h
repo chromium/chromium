@@ -134,6 +134,8 @@ class D3D11H265Accelerator : public D3DAccelerator,
   Status SubmitDecode(scoped_refptr<H265Picture> pic) override;
   void Reset() override;
   bool OutputPicture(scoped_refptr<H265Picture> pic) override;
+  Status SetStream(base::span<const uint8_t> stream,
+                   const DecryptConfig* decrypt_config) override;
   bool IsChromaSamplingSupported(VideoChromaSampling chroma_sampling) override;
 
  private:
@@ -177,6 +179,8 @@ class D3D11H265Accelerator : public D3DAccelerator,
   // For HEVC this number needs to be larger than 1 and different
   // in each call to Execute().
   int current_status_report_feedback_num_ = 1;
+
+  uint32_t current_frame_size_ = 0;
 };
 
 }  // namespace media

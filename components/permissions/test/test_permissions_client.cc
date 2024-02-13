@@ -81,6 +81,7 @@ ObjectPermissionContextBase* TestPermissionsClient::GetChooserContext(
 }
 
 void TestPermissionsClient::GetUkmSourceId(
+    ContentSettingsType permission_type,
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     const GURL& requesting_origin,

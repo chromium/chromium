@@ -11,14 +11,27 @@
 #include "components/user_manager/user_type.h"
 
 namespace ash {
+namespace {
+UserImageManagerRegistry* g_instance = nullptr;
+}  // namespace
+
+// static
+UserImageManagerRegistry* UserImageManagerRegistry::Get() {
+  return g_instance;
+}
 
 UserImageManagerRegistry::UserImageManagerRegistry(
     user_manager::UserManager* user_manager)
     : user_manager_(user_manager) {
+  CHECK(!g_instance);
+  g_instance = this;
   observation_.Observe(user_manager);
 }
 
-UserImageManagerRegistry::~UserImageManagerRegistry() = default;
+UserImageManagerRegistry::~UserImageManagerRegistry() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 UserImageManager* UserImageManagerRegistry::GetManager(
     const AccountId& account_id) {

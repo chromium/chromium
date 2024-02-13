@@ -226,14 +226,6 @@ void MemorySystem::Impl::InitializeGwpASan(
     const GwpAsanParameters& gwp_asan_parameters,
     InitializationData& initialization_data) {
 #if BUILDFLAG(ENABLE_GWP_ASAN)
-  // GWP-ASAN requires crashpad to gather alloc/dealloc stack traces, which is
-  // not always enabled on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!crash_reporter::IsCrashpadEnabled()) {
-    return;
-  }
-#endif
-
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
   gwp_asan::EnableForMalloc(gwp_asan_parameters.boost_sampling,
                             gwp_asan_parameters.process_type.c_str());

@@ -58,6 +58,7 @@
 #include "chrome/browser/ash/crosapi/browser_action.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
+#include "chrome/browser/ash/crosapi/browser_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -96,6 +97,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -1055,7 +1057,8 @@ void BrowserManager::Start(bool launching_at_login_screen) {
 void BrowserManager::StartWithLogFile(
     bool launching_at_login_screen,
     BrowserLauncher::LaunchParamsFromBackground params) {
-  CHECK_EQ(state_, State::WAITING_OWNER_FETCH);
+  CHECK((!launching_at_login_screen && state_ == State::WAITING_OWNER_FETCH) ||
+        (launching_at_login_screen && state_ == State::PREPARING_FOR_LAUNCH));
 
   // Shutdown() might have been called after Start() posted the StartWithLogFile
   // task, so we need to check `shutdown_requested_` again.
@@ -1336,8 +1339,6 @@ void BrowserManager::OnStoreDestruction(policy::CloudPolicyStore* store) {
 
 void BrowserManager::OnComponentPolicyUpdated(
     const policy::ComponentPolicyMap& component_policy) {
-  browser_launcher_.SetDeviceAccountComponentPolicy(
-      policy::CopyComponentPolicyMap(component_policy));
   if (browser_service_.has_value()) {
     browser_service_->service->UpdateComponentPolicy(
         policy::CopyComponentPolicyMap(component_policy));
@@ -1459,13 +1460,10 @@ void BrowserManager::ResumeLaunch() {
   // the following action will be executed.
   pending_actions_.Push(BrowserAction::GetActionForSessionStart());
 
-  WaitForDeviceOwnerFetchedAndThen(
-      base::BindOnce(
-          &BrowserManager::WaitForProfileAddedAndThen,
-          weak_factory_.GetWeakPtr(),
-          base::BindOnce(&BrowserManager::ResumeLaunchAfterProfileAdded,
-                         weak_factory_.GetWeakPtr())),
-      /*launching_at_login_screen=*/false);
+  WaitForDeviceOwnerFetchedAndThen(base::BindOnce(
+      &BrowserManager::WaitForProfileAddedAndThen, weak_factory_.GetWeakPtr(),
+      base::BindOnce(&BrowserManager::ResumeLaunchAfterProfileAdded,
+                     weak_factory_.GetWeakPtr())));
 }
 
 void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
@@ -1475,9 +1473,7 @@ void BrowserManager::WaitForProfileAddedAndThen(base::OnceClosure cb) {
       g_browser_process->profile_manager(), std::move(cb));
 }
 
-void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
-    base::OnceClosure cb,
-    bool launching_at_login_screen) {
+void BrowserManager::WaitForDeviceOwnerFetchedAndThen(base::OnceClosure cb) {
   CHECK(state_ == State::PRE_LAUNCHED || state_ == State::PREPARING_FOR_LAUNCH);
   SetState(State::WAITING_OWNER_FETCH);
   if (g_skip_device_ownership_wait_for_testing) {
@@ -1486,9 +1482,9 @@ void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
                                                              std::move(cb));
     return;
   }
+
   device_ownership_waiter_called_ = true;
-  device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb),
-                                                    launching_at_login_screen);
+  device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb));
 }
 
 void BrowserManager::OnLaunchParamsFetched(
@@ -1496,11 +1492,16 @@ void BrowserManager::OnLaunchParamsFetched(
     BrowserLauncher::LaunchParamsFromBackground params) {
   CHECK_EQ(state_, State::PREPARING_FOR_LAUNCH);
 
-  WaitForDeviceOwnerFetchedAndThen(
-      base::BindOnce(&BrowserManager::StartWithLogFile,
-                     weak_factory_.GetWeakPtr(), launching_at_login_screen,
-                     std::move(params)),
-      launching_at_login_screen);
+  // On launching at login screen, the device ownership data is not ready yet
+  // and will be fetched on resuming launch.
+  if (launching_at_login_screen) {
+    StartWithLogFile(launching_at_login_screen, std::move(params));
+    return;
+  }
+
+  WaitForDeviceOwnerFetchedAndThen(base::BindOnce(
+      &BrowserManager::StartWithLogFile, weak_factory_.GetWeakPtr(),
+      launching_at_login_screen, std::move(params)));
 }
 
 void BrowserManager::ResumeLaunchAfterProfileAdded() {
@@ -1545,52 +1546,17 @@ void BrowserManager::HandleGoToFiles() {
 void BrowserManager::PrepareLacrosPolicies() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-
-  policy::CloudPolicyCore* core = nullptr;
-  policy::ComponentCloudPolicyService* component_policy_service = nullptr;
-  switch (user->GetType()) {
-    case user_manager::UserType::kRegular:
-    case user_manager::UserType::kChild: {
-      Profile* profile = Profile::FromBrowserContext(
-          ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
-      DCHECK(profile);
-      policy::CloudPolicyManager* user_cloud_policy_manager =
-          profile->GetUserCloudPolicyManagerAsh();
-      if (user_cloud_policy_manager) {
-        core = user_cloud_policy_manager->core();
-        component_policy_service =
-            user_cloud_policy_manager->component_policy_service();
-      }
-      break;
-    }
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kPublicAccount:
-    case user_manager::UserType::kWebKioskApp: {
-      policy::DeviceLocalAccountPolicyService* policy_service =
-          g_browser_process->platform_part()
-              ->browser_policy_connector_ash()
-              ->GetDeviceLocalAccountPolicyService();
-      // `policy_service` can be nullptr, e.g. in unit tests.
-      if (policy_service) {
-        policy::DeviceLocalAccountPolicyBroker* broker =
-            policy_service->GetBrokerForUser(
-                user->GetAccountId().GetUserEmail());
-        if (broker) {
-          core = broker->core();
-          component_policy_service = broker->component_policy_service();
-        }
-      }
-      break;
-    }
-    case user_manager::UserType::kGuest:
-    case user_manager::UserType::kArcKioskApp:
-      break;
+  if (!user) {
+    LOG(ERROR) << "No primary user.";
+    return;
   }
 
   // The lifetime of `BrowserManager` is longer than lifetime of various
   // classes, for which we register as an observer below. The RemoveObserver
   // function is therefore called in various handlers invoked by those classes
   // and not in the destructor.
+  policy::CloudPolicyCore* core =
+      browser_util::GetCloudPolicyCoreForUser(*user);
   if (core) {
     core->AddObserver(this);
     if (core->refresh_scheduler()) {
@@ -1599,20 +1565,18 @@ void BrowserManager::PrepareLacrosPolicies() {
 
     policy::CloudPolicyStore* store = core->store();
     if (store && store->policy_fetch_response()) {
-      const std::string policy_blob =
-          store->policy_fetch_response()->SerializeAsString();
-      SetDeviceAccountPolicy(policy_blob);
       store->AddObserver(this);
     }
   }
 
+  policy::ComponentCloudPolicyService* component_policy_service =
+      browser_util::GetComponentCloudPolicyServiceForUser(*user);
   if (component_policy_service) {
     component_policy_service->AddObserver(this);
   }
 }
 
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
-  browser_launcher_.SetDeviceAccountPolicy(policy_blob);
   if (browser_service_.has_value()) {
     browser_service_->service->UpdateDeviceAccountPolicy(
         std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));

@@ -122,6 +122,12 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('restartingBodyText'));
+    // Body text should not have an aria-live value for non-requests.
+    assertEquals(
+        strictQuery(
+            '#updateDialogBody', updateDialogElement.shadowRoot, HTMLDivElement)
+            .ariaLive,
+        '');
     assertEquals(
         getTextContent('#progress'),
         loadTimeData.getString('restartingFooterText'));
@@ -221,6 +227,12 @@ suite('FirmwareUpdateDialogTest', () => {
     assertEquals(
         getTextContent('#updateDialogBody'),
         loadTimeData.getString('restartingBodyText'));
+    // Body text should not have an aria-live value for non-requests.
+    assertEquals(
+        strictQuery(
+            '#updateDialogBody', updateDialogElement.shadowRoot, HTMLDivElement)
+            .ariaLive,
+        '');
     assertEquals(
         getTextContent('#progress'),
         loadTimeData.getString('restartingFooterText'));
@@ -375,6 +387,15 @@ suite('FirmwareUpdateDialogTest', () => {
       assertEquals(
           getTextContent('#updateDialogBody'),
           loadTimeData.getString(expectedString));
+      assert(updateDialogElement?.shadowRoot);
+      // For user requests, the dialog body should be an assertive aria-live
+      // region.
+      assertEquals(
+          strictQuery(
+              '#updateDialogBody', updateDialogElement.shadowRoot,
+              HTMLDivElement)
+              .ariaLive,
+          'assertive');
       assertEquals(
           getTextContent('#progress'),
           loadTimeData.getStringF('waitingFooterText', 70));

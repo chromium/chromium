@@ -247,12 +247,16 @@ public class MediaNotificationController {
     public static boolean finishStartingForegroundServiceOnO(
             Service service, NotificationWrapper notification) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
-        ForegroundServiceUtils.getInstance()
-                .startForeground(
-                        service,
-                        notification.getMetadata().id,
-                        notification.getNotification(),
-                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+        try {
+            ForegroundServiceUtils.getInstance()
+                    .startForeground(
+                            service,
+                            notification.getMetadata().id,
+                            notification.getNotification(),
+                            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Unable to start media foreground service", e);
+        }
         return true;
     }
 

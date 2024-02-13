@@ -17,8 +17,9 @@ class ViewClickListener;
 // This class encapsulates the logic of configuring the view shown for a single
 // device in the detailed Bluetooth page within the quick settings.
 class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
+  METADATA_HEADER(BluetoothDeviceListItemView, HoverHighlightView)
+
  public:
-  METADATA_HEADER(BluetoothDeviceListItemView);
   explicit BluetoothDeviceListItemView(ViewClickListener* listener);
   BluetoothDeviceListItemView(const BluetoothDeviceListItemView&) = delete;
   BluetoothDeviceListItemView& operator=(const BluetoothDeviceListItemView&) =

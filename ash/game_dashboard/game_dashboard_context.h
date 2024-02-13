@@ -105,12 +105,6 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // TODO(b/316141148): Remove this test function once it's possible to set
-  // `show_welcome_dialog_` via a property.
-  void SetShowWelcomeDialogForTesting(bool show_dialog) {
-    show_welcome_dialog_ = show_dialog;
-  }
-
  private:
   friend class GameDashboardContextTestApi;
 
@@ -151,6 +145,10 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Closes and deletes the Game Dashboard welcome dialog once it's no longer
   // needed.
   void CloseWelcomeDialog();
+
+  // Checks whether the welcome dialog should be displayed when the game window
+  // opens.
+  bool ShouldShowWelcomeDialog() const;
 
   const raw_ptr<aura::Window> game_window_;
 

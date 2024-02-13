@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/modals/modals_api.h"
@@ -73,6 +74,8 @@ NSString* const kGridOpenTabsSectionIdentifier = @"OpenTabsSectionIdentifier";
 namespace {
 NSString* const kSuggestedActionsSectionIdentifier =
     @"SuggestedActionsSectionIdentifier";
+NSString* const kGridTabGroupsSectionIdentifier =
+    @"GridTabGroupsSectionIdentifier";
 NSString* const kCellIdentifier = @"GridCellIdentifier";
 NSString* const kGroupCellIdentifier = @"GroupGridCellIdentifier";
 
@@ -99,7 +102,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 @interface BaseGridViewController () <GridCellDelegate,
                                       GroupGridCellDelegate,
                                       SuggestedActionsViewControllerDelegate,
-                                      UICollectionViewDragDelegate,
                                       UICollectionViewDropDelegate,
                                       UIPointerInteractionDelegate>
 // A collection view of items in a grid format.
@@ -560,6 +562,14 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     gridHeader.value =
         l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                                 base::SysNSStringToUTF16(resultsCount));
+  } else if (base::FeatureList::IsEnabled(kTabGroupsInGrid) &&
+             [sectionIdentifier
+                 isEqualToString:kGridTabGroupsSectionIdentifier]) {
+    gridHeader.title = l10n_util::GetNSString(
+        IDS_IOS_TABS_SEARCH_TAB_GROUPS_SECTION_HEADER_TITLE);
+    // TODO(crbug.com/1501837): Add the right number of found tabs.
+    gridHeader.value = l10n_util::GetNSStringF(
+        IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT, base::SysNSStringToUTF16(@"0"));
   } else if ([sectionIdentifier
                  isEqualToString:kSuggestedActionsSectionIdentifier]) {
     gridHeader.title =
@@ -1080,6 +1090,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Optional Suggested Actions section.
   if (self.showingSuggestedActions) {
+    if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+      [snapshot
+          appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
+    }
+
     [snapshot
         appendSectionsWithIdentifiers:@[ kSuggestedActionsSectionIdentifier ]];
     GridItemIdentifier* itemIdentifier =
@@ -1284,16 +1299,25 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   if (self.mode == TabGridModeSearch && self.searchText.length) {
     if (!self.showingSuggestedActions) {
+      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+        [snapshot
+            appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
+      }
       [snapshot appendSectionsWithIdentifiers:@[
         kSuggestedActionsSectionIdentifier
       ]];
       GridItemIdentifier* itemIdentifier =
           [GridItemIdentifier suggestedActionsIdentifier];
       [snapshot appendItemsWithIdentifiers:@[ itemIdentifier ]];
+
       self.showingSuggestedActions = YES;
     }
   } else {
     if (self.showingSuggestedActions) {
+      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+        [snapshot
+            deleteSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
+      }
       [snapshot deleteSectionsWithIdentifiers:@[
         kSuggestedActionsSectionIdentifier
       ]];
@@ -1628,7 +1652,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   cell.delegate = self;
   cell.theme = self.theme;
   cell.itemIdentifier = item.identifier;
-  cell.title = item.title;
+  // TODO(crbug.com/1501837): Add the right title when the model is available.
+  cell.title = @"Temporary Title";
   cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
   if (self.mode == TabGridModeSelection) {
@@ -1640,30 +1665,29 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   } else {
     cell.state = GridCellStateNotEditing;
   }
-  [item fetchFavicon:^(TabSwitcherItem* innerItem, UIImage* icon) {
-    // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
-      // TODO(crbug.com/1501837): Remove once the group color is available
-      // throught the group model. Keep for now for testing purposes.
-      cell.icon = icon;
-    }
-  }];
-
-  [item fetchSnapshot:^(TabSwitcherItem* innerItem, UIImage* snapshot) {
-    // Only update the icon if the cell is not already reused for another item.
-    if (cell.itemIdentifier == innerItem.identifier) {
-      GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
-      snapshotFavicon.snapshot = snapshot;
-      snapshotFavicon.favicon = snapshot;
-      // The `snapshotFavicon` is for demo purposes only, it will be replaced
-      // when the group tab model is available, the objects in `groupTabInfos`
-      // can be updated manually to view the different group tab configurations.
-      NSArray<GroupTabInfo*>* groupTabInfos = @[
-        snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
-        snapshotFavicon, snapshotFavicon, snapshotFavicon
-      ];
-      [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
-    }
+  [item fetchFavicon:^(TabSwitcherItem* itemForFavicon, UIImage* favicon) {
+    [item fetchSnapshot:^(TabSwitcherItem* itemForSnapshot, UIImage* snapshot) {
+      // Only update the icon if the cell is not already reused for another
+      // item.
+      if (cell.itemIdentifier == itemForFavicon.identifier and
+          cell.itemIdentifier == itemForSnapshot.identifier) {
+        // TODO(crbug.com/1501837): Remove once the group color is available
+        // throught the group model. Keep for now for testing purposes.
+        cell.groupColorName = kYellow500Color;
+        GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
+        snapshotFavicon.snapshot = snapshot;
+        snapshotFavicon.favicon = favicon;
+        // The `snapshotFavicon` is for demo purposes only, it will be replaced
+        // when the group tab model is available, the objects in `groupTabInfos`
+        // can be updated manually to view the different group tab
+        // configurations.
+        NSArray<GroupTabInfo*>* groupTabInfos = @[
+          snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
+          snapshotFavicon, snapshotFavicon
+        ];
+        [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
+      }
+    }];
   }];
 
   cell.opacity = 1.0f;

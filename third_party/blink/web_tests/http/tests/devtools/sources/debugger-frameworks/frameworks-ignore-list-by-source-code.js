@@ -25,7 +25,7 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
   function step1() {
     TestRunner.addSniffer(BindingsModule.IgnoreListManager.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step2);
     var frameworkRegexString = '^framework\\.js$';
-    Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+    Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
   }
 
   function step2() {

@@ -182,19 +182,6 @@ void IntersectionObserverController::RemoveTrackedObservation(
   tracked_implicit_root_observations_.erase(&observation);
 }
 
-void IntersectionObserverController::
-    InvalidateCachedRectsIfPaintPropertiesChanged() {
-  DCHECK(RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  for (auto& observer : tracked_explicit_root_observers_) {
-    for (auto& observation : observer->Observations()) {
-      observation->InvalidateCachedRectsIfPaintPropertiesChanged();
-    }
-  }
-  for (auto& observation : tracked_implicit_root_observations_) {
-    observation->InvalidateCachedRectsIfPaintPropertiesChanged();
-  }
-}
-
 void IntersectionObserverController::Trace(Visitor* visitor) const {
   visitor->Trace(tracked_explicit_root_observers_);
   visitor->Trace(tracked_implicit_root_observations_);

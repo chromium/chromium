@@ -187,7 +187,8 @@ InterestGroupManagerImpl::InterestGroupManagerImpl(
       max_active_report_requests_(kMaxActiveReportRequests),
       max_report_queue_length_(kMaxReportQueueLength),
       reporting_interval_(kReportingInterval),
-      max_reporting_round_duration_(kMaxReportingRoundDuration) {}
+      max_reporting_round_duration_(kMaxReportingRoundDuration),
+      ba_key_fetcher_(this) {}
 
 InterestGroupManagerImpl::~InterestGroupManagerImpl() = default;
 
@@ -217,7 +218,7 @@ void InterestGroupManagerImpl::CheckPermissionsAndJoinInterestGroup(
     const net::NetworkIsolationKey& network_isolation_key,
     bool report_result_only,
     network::mojom::URLLoaderFactory& url_loader_factory,
-    scoped_refptr<network::WrapperSharedURLLoaderFactory>
+    scoped_refptr<network::SharedURLLoaderFactory>
         url_loader_factory_for_keyfetch,
     AreReportingOriginsAttestedCallback attestation_callback,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback) {
@@ -490,6 +491,22 @@ void InterestGroupManagerImpl::UpdateInterestGroupPriorityOverrides(
       group_key, std::move(update_priority_signals_overrides));
 }
 
+void InterestGroupManagerImpl::SetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator,
+    const std::vector<BiddingAndAuctionServerKey>& keys,
+    base::Time expiration) {
+  caching_storage_.SetBiddingAndAuctionServerKeys(coordinator, keys,
+                                                  expiration);
+}
+void InterestGroupManagerImpl::GetBiddingAndAuctionServerKeys(
+    const url::Origin& coordinator,
+    base::OnceCallback<
+        void(std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>)>
+        callback) {
+  caching_storage_.GetBiddingAndAuctionServerKeys(coordinator,
+                                                  std::move(callback));
+}
+
 void InterestGroupManagerImpl::ClearPermissionsCache() {
   permissions_checker_.ClearCache();
 }
@@ -567,11 +584,11 @@ void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
 }
 
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(
-    network::mojom::URLLoaderFactory* loader,
+    scoped_refptr<network::SharedURLLoaderFactory> loader,
     std::optional<url::Origin> coordinator,
     base::OnceCallback<void(
         base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
-  ba_key_fetcher_.GetOrFetchKey(loader, std::move(coordinator),
+  ba_key_fetcher_.GetOrFetchKey(std::move(loader), std::move(coordinator),
                                 std::move(callback));
 }
 
@@ -579,7 +596,7 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
     blink::InterestGroup group,
     const GURL& joining_url,
     bool report_result_only,
-    scoped_refptr<network::WrapperSharedURLLoaderFactory>
+    scoped_refptr<network::SharedURLLoaderFactory>
         url_loader_factory_for_keyfetch,
     AreReportingOriginsAttestedCallback attestation_callback,
     blink::mojom::AdAuctionService::JoinInterestGroupCallback callback,
@@ -612,7 +629,7 @@ void InterestGroupManagerImpl::OnJoinInterestGroupPermissionsChecked(
     }
     JoinInterestGroup(std::move(group), joining_url);
   }
-  ba_key_fetcher_.MaybePrefetchKeys(url_loader_factory_for_keyfetch.get());
+  ba_key_fetcher_.MaybePrefetchKeys(url_loader_factory_for_keyfetch);
 }
 
 void InterestGroupManagerImpl::OnLeaveInterestGroupPermissionsChecked(

@@ -8,6 +8,10 @@ assert(is_chromeos_ash)
 
 source_set("mahi") {
   sources = [
+    "mahi_browser_client_wrapper.cc",
+    "mahi_browser_client_wrapper.h",
+    "mahi_browser_delegate_ash.cc",
+    "mahi_browser_delegate_ash.h",
     "mahi_manager_impl.cc",
     "mahi_manager_impl.h",
   ]
@@ -15,5 +19,19 @@ source_set("mahi") {
     "//ash",
     "//base",
     "//chromeos/components/mahi/public/cpp",
+    "//chromeos/crosapi/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "mahi_browser_delegate_ash_unittest.cc" ]
+  deps = [
+    ":mahi",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

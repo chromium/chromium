@@ -99,9 +99,11 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
     RegisterUserProfilePrefs(registry.get());
-    return profile_manager()->CreateTestingProfile(
+    auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(prefs), std::u16string(), 0,
         TestingProfile::TestingFactories());
+    OnUserProfileCreated(profile_name, profile);
+    return profile;
   }
 
   void TearDown() override {

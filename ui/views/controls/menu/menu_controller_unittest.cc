@@ -25,6 +25,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -2921,8 +2922,8 @@ TEST_F(MenuControllerTest, SetSelectionIndices_ChildrenChanged) {
   GET_CHILD_BUTTON(button3, item5, 2);
   OpenMenu(menu_item());
 
-  const auto expect_coordinates = [](const View* v, absl::optional<int> pos,
-                                     absl::optional<int> size) {
+  const auto expect_coordinates = [](const View* v, std::optional<int> pos,
+                                     std::optional<int> size) {
     ui::AXNodeData data;
     v->GetViewAccessibility().GetAccessibleNodeData(&data);
     const auto check_attribute = [&](const auto& expected, auto attribute) {
@@ -2951,8 +2952,8 @@ TEST_F(MenuControllerTest, SetSelectionIndices_ChildrenChanged) {
   MenuChildrenChanged(menu_item());
 
   // Verify that disabled menu items no longer have PosInSet or SetSize.
-  expect_coordinates(item1, absl::nullopt, absl::nullopt);
-  expect_coordinates(button1, absl::nullopt, absl::nullopt);
+  expect_coordinates(item1, std::nullopt, std::nullopt);
+  expect_coordinates(button1, std::nullopt, std::nullopt);
   expect_coordinates(item3, 1, 5);
   expect_coordinates(item4, 2, 5);
   expect_coordinates(button2, 3, 5);
@@ -3000,7 +3001,7 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
 // Test that in accessibility mode disabled menu items are taken into account
 // during items indices assignment.
 TEST_F(MenuControllerTest, AccessibilityDisabledItemsIndices) {
-  const ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
 
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const MenuItemView* const item1 = submenu->GetMenuItemAt(0);

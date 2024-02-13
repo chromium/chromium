@@ -77,7 +77,8 @@ class WebAppDataRetriever : content::WebContentsObserver {
   virtual void GetWebAppInstallInfo(content::WebContents* web_contents,
                                     GetWebAppInstallInfoCallback callback);
 
-  // Performs installability check and invokes |callback| with manifest.
+  // Performs installability checks and invokes `callback` with the contents of
+  // the first manifest linked in the document.
   virtual void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
       CheckInstallabilityCallback callback,

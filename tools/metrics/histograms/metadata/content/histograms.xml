@@ -316,7 +316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSettings.RegularProfile.DefaultBackgroundSyncSetting"
-    enum="ContentSetting" expires_after="2024-04-28">
+    enum="ContentSetting" expires_after="2024-08-11">
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -560,7 +560,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContentSettings.{RegularProfileFiltered}DefaultRequestDesktopSiteSetting"
-    enum="ContentSetting" expires_after="2024-06-09">
+    enum="ContentSetting" expires_after="2024-08-11">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -734,7 +734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ActivityLoggingEnabled" enum="Boolean"
-    expires_after="2024-06-09">
+    expires_after="2024-08-11">
   <owner>dewittj@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1473,21 +1473,6 @@ chromium-metrics-reviews@google.com.
     Android: The result of following a WebFeed when the Web Feed ID is known.
     Reported when the follow is attempted, once per request. Triggered by a
     user's request to follow a Web Feed.
-  </summary>
-</histogram>
-
-<histogram name="ContentSuggestions.Feed.WebFeed.FollowCount.Engaged"
-    units="follows" expires_after="2024-06-30">
-  <owner>harringtond@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Replaced with the ContentSuggestions.{FeedType}.FollowCount.Engaged2
-    histogram pattern because this one had a misleading name. It will be
-    effectively obsoleted in the future.
-
-    Android: The number of web feeds the user is following. Reported at most
-    once per feed visit, when the user engages (FeedEngagementType.Engaged) with
-    either the For-You or Following Feeds.
   </summary>
 </histogram>
 

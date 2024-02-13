@@ -48,7 +48,8 @@ class IdentityDialogController
       bool show_auto_reauthn_checkbox,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,
-      DismissCallback dismiss_callback) override;
+      DismissCallback dismiss_callback,
+      AccountsDisplayedCallback accounts_displayed_callback) override;
   void ShowFailureDialog(const std::string& top_frame_for_display,
                          const std::optional<std::string>& iframe_for_display,
                          const std::string& idp_for_display,
@@ -85,6 +86,7 @@ class IdentityDialogController
   void OnLoginToIdP(const GURL& idp_config_url,
                     const GURL& idp_login_url) override;
   void OnMoreDetails() override;
+  void OnAccountsDisplayed() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
 
@@ -94,6 +96,7 @@ class IdentityDialogController
   DismissCallback on_dismiss_;
   LoginToIdPCallback on_login_;
   MoreDetailsCallback on_more_details_;
+  AccountsDisplayedCallback on_accounts_displayed_;
   raw_ptr<content::WebContents> rp_web_contents_;
 };
 

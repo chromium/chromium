@@ -350,7 +350,7 @@ class TermsOfServicePage {
 
   /** Called when the TermsOfService page is shown. */
   onShow() {
-    if (this.isManaged_ || this.state_ == LoadState.LOADED) {
+    if (this.isManaged_ || this.state_ === LoadState.LOADED) {
       // Note: in managed case, because it does not show the contents of terms
       // of service, it is ok to show the content container immediately.
       this.showContent_();
@@ -382,7 +382,7 @@ class TermsOfServicePage {
 
   /** Callback for getDropDown in showContext_. */
   focusOnLangZoneSelect_(results) {
-    if (results.length != 1) {
+    if (results.length !== 1) {
       console.error('unexpected return value of the script');
       return;
     }
@@ -425,7 +425,7 @@ class TermsOfServicePage {
 
   /** Starts to load the terms of service webview content. */
   startTermsViewLoading_() {
-    if (this.state_ == LoadState.LOADING) {
+    if (this.state_ === LoadState.LOADING) {
       // If there already is inflight loading task, do nothing.
       return;
     }
@@ -434,7 +434,7 @@ class TermsOfServicePage {
     if (this.termsView_.src) {
       // This is reloading the page, typically clicked RETRY on error page.
       this.fastLocation_ = undefined;
-      if (this.termsView_.src == defaultLocation) {
+      if (this.termsView_.src === defaultLocation) {
         this.termsView_.reload();
       } else {
         this.termsView_.src = defaultLocation;
@@ -478,7 +478,7 @@ class TermsOfServicePage {
     // In such a case, onTermsViewLoadAborted_() is called in advance, and
     // state_ is set to ABORTED. Here, switch the view only for the
     // successful loading case.
-    if (this.state_ == LoadState.LOADING) {
+    if (this.state_ === LoadState.LOADING) {
       const getToSContent = {code: 'getToSContent();'};
       termsPage.termsView_.executeScript(
           getToSContent, this.onGetToSContent_.bind(this));
@@ -487,8 +487,8 @@ class TermsOfServicePage {
 
   /** Callback for getToSContent. */
   onGetToSContent_(results) {
-    if (this.state_ == LoadState.LOADING) {
-      if (!results || results.length != 1 || typeof results[0] !== 'string') {
+    if (this.state_ === LoadState.LOADING) {
+      if (!results || results.length !== 1 || typeof results[0] !== 'string') {
         this.onTermsViewLoadAborted_('unable to get ToS content');
         return;
       }
@@ -524,7 +524,7 @@ class TermsOfServicePage {
 
   /** Called when the terms-view's load request is completed. */
   onTermsViewRequestCompleted_(details) {
-    if (this.state_ != LoadState.LOADING || details.statusCode == 200) {
+    if (this.state_ !== LoadState.LOADING || details.statusCode === 200) {
       return;
     }
 
@@ -636,25 +636,25 @@ function onNativeMessage(message) {
     return;
   }
 
-  if (message.action == 'initialize') {
+  if (message.action === 'initialize') {
     initialize(message.data, message.deviceId);
-  } else if (message.action == 'setMetricsMode') {
+  } else if (message.action === 'setMetricsMode') {
     termsPage.onMetricsPreferenceChanged(message.enabled, message.managed);
-  } else if (message.action == 'setBackupAndRestoreMode') {
+  } else if (message.action === 'setBackupAndRestoreMode') {
     termsPage.onBackupRestorePreferenceChanged(
         message.enabled, message.managed);
-  } else if (message.action == 'setLocationServiceMode') {
+  } else if (message.action === 'setLocationServiceMode') {
     termsPage.onLocationServicePreferenceChanged(
         message.enabled, message.managed);
-  } else if (message.action == 'showPage') {
+  } else if (message.action === 'showPage') {
     showPage(message.page);
-  } else if (message.action == 'showErrorPage') {
+  } else if (message.action === 'showErrorPage') {
     showErrorPage(
         message.errorMessage, message.shouldShowSendFeedback,
         message.shouldShowNetworkTests);
-  } else if (message.action == 'closeWindow') {
+  } else if (message.action === 'closeWindow') {
     closeWindow();
-  } else if (message.action == 'setWindowBounds') {
+  } else if (message.action === 'setWindowBounds') {
     setWindowBounds(
         message.displayWorkareaX, message.displayWorkareaY,
         message.displayWorkareaWidth, message.displayWorkareaHeight);
@@ -686,17 +686,17 @@ function showPage(pageDivId) {
 
   const pages = doc.getElementsByClassName('section');
   for (let i = 0; i < pages.length; i++) {
-    pages[i].hidden = pages[i].id != pageDivId;
+    pages[i].hidden = pages[i].id !== pageDivId;
   }
 
   appWindow.show();
-  if (pageDivId == 'terms') {
+  if (pageDivId === 'terms') {
     termsPage.onShow();
   }
 
   // Start progress bar animation for the page that has the dynamic progress
   // bar. 'error' page has the static progress bar that no need to be animated.
-  if (pageDivId == 'terms' || pageDivId == 'arc-loading') {
+  if (pageDivId === 'terms' || pageDivId === 'arc-loading') {
     appWindow.contentWindow.startProgressAnimation(pageDivId);
   }
 }
@@ -802,7 +802,7 @@ function showPrivacyPolicyOverlay() {
   }
   const details = {code: 'getPrivacyPolicyLink();'};
   termsPage.termsView_.executeScript(details, function(results) {
-    if (results && results.length == 1 && typeof results[0] == 'string') {
+    if (results && results.length === 1 && typeof results[0] === 'string') {
       showURLOverlay(results[0]);
     } else {
       showURLOverlay(defaultLink);

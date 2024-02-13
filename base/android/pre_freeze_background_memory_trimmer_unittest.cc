@@ -9,7 +9,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
+namespace base::android {
 
 namespace {
 
@@ -209,4 +209,4 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, AddDuringPreFreeze) {
   EXPECT_EQ(s_counter, 1);
 }
 
-}  // namespace base
+}  // namespace base::android

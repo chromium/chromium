@@ -1,0 +1,55 @@
+<!doctype html>
+<p>Verifies that an identity drawMesh() renders the same as direct canvas draw commands.</p>
+<canvas id='canvas' width='256' height='256'></canvas>
+
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+
+  function createSourceImage() {
+    const srcCanvas = document.createElement('canvas'); 
+    srcCanvas.width = srcCanvas.height = 256;
+
+    const srcCtx = srcCanvas.getContext('2d', {alpha: false});
+    srcCtx.fillStyle = 'green';
+    srcCtx.fillRect( 0, 0, 256, 256 );
+    srcCtx.fillStyle = 'red';
+    srcCtx.fillRect( 0, 0, 256, 128 );
+    srcCtx.fillStyle = 'blue';
+    srcCtx.fillRect( 128, 0, 128, 128 );
+    srcCtx.fillStyle = 'yellow';
+    srcCtx.fillRect( 128, 128, 128, 128 );
+
+    return createImageBitmap(srcCanvas);
+  }
+
+  window.onload = function() {
+    createSourceImage().then((image) => {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d', {alpha: false});
+      const vbuf = ctx.createMesh2DVertexBuffer(new Float32Array([
+          0,   0,
+        256,   0,
+        256, 256,
+          0, 256
+      ]));
+      const uvbuf = ctx.createMesh2DUVBuffer(new Float32Array([
+        0, 0,
+        1, 0,
+        1, 1,
+        0, 1
+      ]));
+      const ibuf = ctx.createMesh2DIndexBuffer(new Uint16Array([
+        0, 2, 1,
+        0, 2, 3
+      ]));
+
+      ctx.drawMesh(vbuf, uvbuf, ibuf, image);
+
+      if (window.testRunner) {
+        testRunner.notifyDone();
+      }
+    });
+  }
+</script>

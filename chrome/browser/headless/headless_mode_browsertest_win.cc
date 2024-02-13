@@ -8,6 +8,7 @@
 #include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/gfx/geometry/rect.h"
@@ -93,13 +94,13 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify fullscreen state.
-  test::ToggleFullscreenModeSync(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_TRUE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 
   // Verify back to normal state.
-  test::ToggleFullscreenModeSync(browser());
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_FALSE(browser()->window()->IsFullscreen());
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));

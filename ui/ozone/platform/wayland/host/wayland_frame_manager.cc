@@ -83,7 +83,7 @@ uint32_t GetPresentationKindFlags(uint32_t flags) {
 
 WaylandFrame::WaylandFrame(
     uint32_t frame_id,
-    int64_t seq,
+    const gfx::FrameData& data,
     WaylandSurface* root_surface,
     wl::WaylandOverlayConfig root_config,
     base::circular_deque<
@@ -95,7 +95,8 @@ WaylandFrame::WaylandFrame(
       subsurfaces_to_overlays(std::move(subsurfaces_to_overlays)),
       submission_acked(false),
       presentation_acked(false),
-      seq(seq) {}
+      seq(data.seq),
+      trace_id(data.swap_trace_id) {}
 
 WaylandFrame::WaylandFrame(
     WaylandSurface* root_surface,
@@ -370,12 +371,14 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
       config.priority_hint == gfx::OverlayPriorityHint::kVideo);
   surface->set_color_space(
       config.color_space.value_or(gfx::ColorSpace::CreateSRGB()));
+  surface->set_frame_trace_id(frame->trace_id);
   if (set_opaque_region) {
     auto region_px =
         config.enable_blend
-            ? absl::nullopt
-            : absl::optional<std::vector<gfx::Rect>>(
-                  {gfx::Rect(gfx::ToRoundedSize(config.bounds_rect.size()))});
+            ? std::nullopt
+            : std::optional<std::vector<gfx::Rect>>({gfx::Rect(
+                  gfx::ToEnclosingRectIgnoringError(config.bounds_rect)
+                      .size())});
     surface->set_opaque_region(region_px);
   }
 
@@ -401,7 +404,8 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
   // `bounds_rect` origin.
   gfx::RectF surface_damage = gfx::RectF(config.damage_region);
   surface_damage -= config.bounds_rect.OffsetFromOrigin();
-  surface->UpdateBufferDamageRegion(ToEnclosingRect(surface_damage));
+  surface->UpdateBufferDamageRegion(
+      gfx::ToEnclosingRectIgnoringError(surface_damage));
   if (config.rounded_clip_bounds) {
     // The deprecated implementation uses root surface coordinates, so do not
     // offset if the local coordinates rounded corners is not supported.
@@ -422,7 +426,7 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
     surface->set_clip_rect(clip_rect);
   } else {
     // Reset clip rect value when `config.clip_rect` is not set.
-    surface->set_clip_rect(absl::nullopt);
+    surface->set_clip_rect(std::nullopt);
   }
 
   if (!config.access_fence_handle.is_null())

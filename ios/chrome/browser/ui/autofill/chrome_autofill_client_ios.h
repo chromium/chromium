@@ -71,6 +71,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
+  CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
@@ -111,7 +112,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved) override;
   void ConfirmCreditCardFillAssist(const CreditCard& card,
                                    base::OnceClosure callback) override;
   void ConfirmSaveAddressProfile(
@@ -196,6 +196,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   CardExpirationDateFixFlowControllerImpl
       card_expiration_date_fix_flow_controller_;
   std::unique_ptr<payments::MandatoryReauthManager> payments_reauth_manager_;
+  std::unique_ptr<CreditCardRiskBasedAuthenticator> risk_based_authenticator_;
 
   // A weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;

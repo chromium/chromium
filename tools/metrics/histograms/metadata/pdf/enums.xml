@@ -1,0 +1,138 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ChromePDFViewerActions">
+  <int value="0" label="DocumentOpened"/>
+  <int value="1" label="RotateFirst"/>
+  <int value="2" label="Rotate"/>
+  <int value="3" label="FitToWidthFirst"/>
+  <int value="4" label="FitToWidth"/>
+  <int value="5" label="FitToPageFirst"/>
+  <int value="6" label="FitToPage"/>
+  <int value="7" label="OpenBookmarksPanelFirst (deprecated)"/>
+  <int value="8" label="OpenBookmarksPanel (deprecated)"/>
+  <int value="9" label="FollowBookmarkFirst"/>
+  <int value="10" label="FollowBookmark"/>
+  <int value="11" label="PageSelectorNavigateFirst"/>
+  <int value="12" label="PageSelectorNavigate"/>
+  <int value="13" label="SaveFirst"/>
+  <int value="14" label="Save"/>
+  <int value="15" label="SaveWithAnnotationFirst"/>
+  <int value="16" label="SaveWithAnnotation"/>
+  <int value="17" label="PrintFirst"/>
+  <int value="18" label="Print"/>
+  <int value="19" label="EnterAnnotationModeFirst"/>
+  <int value="20" label="EnterAnnotationMode"/>
+  <int value="21" label="ExitAnnotationModeFirst"/>
+  <int value="22" label="ExitAnnotationMode"/>
+  <int value="23" label="AnnotateStrokeToolPenFirst"/>
+  <int value="24" label="AnnotateStrokeToolPen"/>
+  <int value="25" label="AnnotateStrokeToolEraserFirst"/>
+  <int value="26" label="AnnotateStrokeToolEraser"/>
+  <int value="27" label="AnnotateStrokeToolHighlighterFirst"/>
+  <int value="28" label="AnnotateStrokeToolHighlighter"/>
+  <int value="29" label="AnnotateStrokeDeviceTouchFirst"/>
+  <int value="30" label="AnnotateStrokeDeviceTouch"/>
+  <int value="31" label="AnnotateStrokeDeviceMouseFirst"/>
+  <int value="32" label="AnnotateStrokeDeviceMouse"/>
+  <int value="33" label="AnnotateStrokeDevicePenFirst"/>
+  <int value="34" label="AnnotateStrokeDevicePen"/>
+  <int value="35" label="TwoUpViewEnableFirst"/>
+  <int value="36" label="TwoUpViewEnable"/>
+  <int value="37" label="TwoUpViewDisableFirst"/>
+  <int value="38" label="TwoUpViewDisable"/>
+  <int value="39" label="ZoomInFirst"/>
+  <int value="40" label="ZoomIn"/>
+  <int value="41" label="ZoomOutFirst"/>
+  <int value="42" label="ZoomOut"/>
+  <int value="43" label="ZoomCustomFirst"/>
+  <int value="44" label="ZoomCustom"/>
+  <int value="45" label="ThumbnailNavigateFirst"/>
+  <int value="46" label="ThumbnailNavigate"/>
+  <int value="47" label="SaveOriginalOnlyFirst"/>
+  <int value="48" label="SaveOriginalOnly"/>
+  <int value="49" label="SaveOriginalFirst"/>
+  <int value="50" label="SaveOriginal"/>
+  <int value="51" label="SaveEditedFirst"/>
+  <int value="52" label="SaveEdited"/>
+  <int value="53" label="ToggleSidenavFirst"/>
+  <int value="54" label="ToggleSidenav"/>
+  <int value="55" label="SelectSidenavThumbnailsFirst"/>
+  <int value="56" label="SelectSidenavThumbnails"/>
+  <int value="57" label="SelectSidenavOutlineFirst"/>
+  <int value="58" label="SelectSidenavOutline"/>
+  <int value="59" label="ToggleDisplayAnnotationsFirst"/>
+  <int value="60" label="ToggleDisplayAnnotations"/>
+  <int value="61" label="PresentFirst"/>
+  <int value="62" label="Present"/>
+  <int value="63" label="PropertiesFirst"/>
+  <int value="64" label="Properties"/>
+</enum>
+
+<enum name="ChromePDFViewerLoadStatus">
+  <int value="0" label="Loaded a full-page PDF with Chrome PDF Viewer"/>
+  <int value="1" label="Loaded an embedded PDF with Chrome PDF Viewer"/>
+  <int value="2" label="Showed disabled plugin placeholder for embedded PDF"/>
+  <int value="3" label="Triggered a drive-by download without user gesture"/>
+  <int value="4" label="Loaded iframe PDF with no PDF viewer available"/>
+  <int value="5" label="View PDF button clicked in the PDF plugin placeholder"/>
+</enum>
+
+<enum name="PDFFormTypes">
+  <int value="0" label="None"/>
+  <int value="1" label="AcroForm"/>
+  <int value="2" label="Full XFA"/>
+  <int value="3" label="Foreground XFA (XFAF)"/>
+</enum>
+
+<enum name="PDFPostMessageDataType">
+<!-- This must be kept current with PostMessageDataType in
+     chrome/browser/resources/pdf/pdf_viewer.ts. -->
+
+  <int value="0" label="getSelectedText"/>
+  <int value="1" label="print"/>
+  <int value="2" label="selectAll"/>
+</enum>
+
+<enum name="PDFVersion">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="PDF 1.0"/>
+  <int value="2" label="PDF 1.1"/>
+  <int value="3" label="PDF 1.2"/>
+  <int value="4" label="PDF 1.3"/>
+  <int value="5" label="PDF 1.4"/>
+  <int value="6" label="PDF 1.5"/>
+  <int value="7" label="PDF 1.6"/>
+  <int value="8" label="PDF 1.7"/>
+  <int value="9" label="PDF 1.8"/>
+  <int value="10" label="PDF 2.0"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

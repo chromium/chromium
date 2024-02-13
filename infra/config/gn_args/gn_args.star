@@ -107,13 +107,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "android_low_end",
-    args = {
-        "is_high_end_android": False,
-    },
-)
-
-gn_args.config(
     name = "android_low_end_secondary_toolchain",
     args = {
         "is_high_end_android_secondary_toolchain": False,
@@ -415,6 +408,7 @@ gn_args.config(
         "include_transport_security_state_preload_list": False,
         "is_cronet_build": True,
         "use_platform_icu_alternatives": True,
+        "enable_rust": False,
     },
 )
 

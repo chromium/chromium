@@ -5,8 +5,9 @@
 #ifndef UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 #define UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_ENDPOINT_H_
 
+#include <optional>
+
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -83,7 +84,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY) DataTransferEndpoint {
 
   // The URL of the data endpoint. It always has a value if `type_` ==
   // EndpointType::kUrl, otherwise it's empty.
-  absl::optional<GURL> url_;
+  std::optional<GURL> url_;
 
   // Whether the endpoint corresponds to an OTR browser context. This should
   // only be set to true for `EndpointType::kUrl` endpoints.

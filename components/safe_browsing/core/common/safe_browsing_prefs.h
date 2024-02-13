@@ -230,20 +230,14 @@ inline constexpr char kExtensionTelemetryFileData[] =
 inline constexpr char kHashPrefixRealTimeChecksAllowedByPolicy[] =
     "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
 
-// A boolean indicating if the user has previously seen a deep
-// scanning prompt.
-inline constexpr char kSafeBrowsingDeepScanPromptSeen[] =
-    "safebrowsing.deep_scan_prompt_seen";
-
-// A timestamp indicating when the user most recently enrolled in
-// Enhanced Safe Browsing. For users who enrolled in Enhanced Safe
-// Browsing before this pref was added, the timestamp is the first
-// Chrome startup with the pref, so the timestamp should be considered
-// a lower bound on the amount of time a user has been
-// enrolled. Contains a null time for users not enrolled in Enhanced
-// Safe Browsing.
-inline constexpr char kSafeBrowsingEsbEnabledTimestamp[] =
-    "safebrowsing.esb_enabled_timestamp";
+// A preference indicating if the user has opted in to Enhanced Safe
+// Browsing before or after the friendlier settings launch. This pref
+// was added after the launch, so a value of `true` indicates that the
+// user is opted in to ESB, and definitely opted in with friendlier
+// settings, but a value of `false` is not definitive. If the user is
+// not opted in to ESB at all, this preference will be `false`.
+inline constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
+    "safebrowsing.esb_opt_in_with_friendlier_settings";
 
 }  // namespace prefs
 

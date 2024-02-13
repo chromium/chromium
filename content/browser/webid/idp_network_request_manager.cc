@@ -315,16 +315,8 @@ void ParseIdentityProviderMetadata(const base::Value::Dict& idp_metadata_value,
                                    IdentityProviderMetadata& idp_metadata) {
   idp_metadata.brand_background_color =
       ParseCssColor(idp_metadata_value.FindString(kIdpBrandingBackgroundColor));
-  if (idp_metadata.brand_background_color) {
-    idp_metadata.brand_text_color = ParseCssColor(
-        idp_metadata_value.FindString(kIdpBrandingForegroundColor));
-    if (idp_metadata.brand_text_color) {
-      float text_contrast_ratio = color_utils::GetContrastRatio(
-          *idp_metadata.brand_background_color, *idp_metadata.brand_text_color);
-      if (text_contrast_ratio < color_utils::kMinimumReadableContrastRatio)
-        idp_metadata.brand_text_color = std::nullopt;
-    }
-  }
+  idp_metadata.brand_text_color =
+      ParseCssColor(idp_metadata_value.FindString(kIdpBrandingForegroundColor));
 
   const base::Value::List* icons_value =
       idp_metadata_value.FindList(kIdpBrandingIcons);

@@ -19,6 +19,9 @@ class SeaPenProvider {
   virtual void BindInterface(
       mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
           receiver) = 0;
+
+  // Determines if the current active profile is eligible to see the SeaPen UI.
+  virtual bool IsEligibleForSeaPen() = 0;
 };
 
 }  // namespace ash::common

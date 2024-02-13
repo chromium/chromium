@@ -1405,7 +1405,7 @@ NextProto MockSSLClientSocket::GetNegotiatedProtocol() const {
   return data_->next_proto;
 }
 
-absl::optional<base::StringPiece>
+std::optional<base::StringPiece>
 MockSSLClientSocket::GetPeerApplicationSettings() const {
   return data_->peer_application_settings;
 }
@@ -1531,6 +1531,7 @@ int MockUDPClientSocket::Read(IOBuffer* buf,
 
   if (need_read_data_) {
     read_data_ = data_->OnRead();
+    last_tos_ = read_data_.tos;
     // ERR_IO_PENDING means that the SocketDataProvider is taking responsibility
     // to complete the async IO manually later (via OnReadComplete).
     if (read_data_.result == ERR_IO_PENDING) {
@@ -1585,7 +1586,11 @@ int MockUDPClientSocket::SetDoNotFragment() {
   return OK;
 }
 
-int MockUDPClientSocket::SetRecvEcn() {
+int MockUDPClientSocket::SetRecvTos() {
+  return OK;
+}
+
+int MockUDPClientSocket::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
   return OK;
 }
 
@@ -1712,6 +1717,10 @@ void MockUDPClientSocket::ApplySocketTag(const SocketTag& tag) {
   tag_ = tag;
 }
 
+DscpAndEcn MockUDPClientSocket::GetLastTos() const {
+  return TosToDscpAndEcn(last_tos_);
+}
+
 void MockUDPClientSocket::OnReadComplete(const MockRead& data) {
   if (!data_)
     return;
@@ -1725,6 +1734,7 @@ void MockUDPClientSocket::OnReadComplete(const MockRead& data) {
   DCHECK(need_read_data_);
 
   read_data_ = data;
+  last_tos_ = data.tos;
   need_read_data_ = false;
 
   // The caller is simulating that this IO completes right now.  Don't
@@ -1944,7 +1954,7 @@ MockTransportClientSocketPool::~MockTransportClientSocketPool() = default;
 int MockTransportClientSocketPool::RequestSocket(
     const ClientSocketPool::GroupId& group_id,
     scoped_refptr<ClientSocketPool::SocketParams> socket_params,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority priority,
     const SocketTag& socket_tag,
     RespectLimits respect_limits,

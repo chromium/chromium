@@ -14,12 +14,23 @@ class PrefService;
 @class SafetyCheckState;
 @class AppState;
 
+// Handles Safety Check Module events.
+@protocol SafetyCheckMagicStackMediatorDelegate
+
+// Indicates to receiver that the Safety Check module should be removed.
+- (void)removeSafetyCheckModule;
+
+@end
+
 // Mediator for managing the state of the Safety Check Magic Stack module
 @interface SafetyCheckMagicStackMediator : NSObject
 
 // Used by the Safety Check (Magic Stack) module for the current Safety Check
 // state.
 @property(nonatomic, strong, readonly) SafetyCheckState* safetyCheckState;
+
+// Delegate.
+@property(nonatomic, weak) id<SafetyCheckMagicStackMediatorDelegate> delegate;
 
 // Delegate for presentation actions.
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
@@ -37,6 +48,9 @@ class PrefService;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)disconnect;
+
+// Disables and hides the Safety Check module in the Magic Stack.
+- (void)disableModule;
 
 @end
 

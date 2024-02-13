@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -178,26 +179,6 @@ bool FullscreenControllerStateTest::IsWindowFullscreenStateChangedReentrant() {
 #endif
 }
 
-// static
-bool FullscreenControllerStateTest::IsPersistentState(State state) {
-  switch (state) {
-    case STATE_NORMAL:
-    case STATE_BROWSER_FULLSCREEN:
-    case STATE_TAB_FULLSCREEN:
-    case STATE_TAB_BROWSER_FULLSCREEN:
-      return true;
-
-    case STATE_TO_NORMAL:
-    case STATE_TO_BROWSER_FULLSCREEN:
-    case STATE_TO_TAB_FULLSCREEN:
-      return false;
-
-    default:
-      NOTREACHED();
-      return false;
-  }
-}
-
 void FullscreenControllerStateTest::TransitionToState(State final_state) {
   int max_steps = NUM_STATES;
   while (max_steps-- && TransitionAStepTowardState(final_state))
@@ -236,15 +217,6 @@ const char* FullscreenControllerStateTest::GetWindowStateString() {
 }
 
 bool FullscreenControllerStateTest::InvokeEvent(Event event) {
-  if (!fullscreen_notification_observer_.get()) {
-    // Start observing fullscreen changes. Construct the notification observer
-    // here instead of in
-    // FullscreenControllerStateTest::FullscreenControllerStateTest() so that we
-    // listen to notifications on the proper thread.
-    fullscreen_notification_observer_ =
-        std::make_unique<FullscreenNotificationObserver>(GetBrowser());
-  }
-
   State source_state = state_;
   State next_state = transition_table_[source_state][event];
 
@@ -255,6 +227,38 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
   // automatically.
   if (IsWindowFullscreenStateChangedReentrant())
     next_state = transition_table_[next_state][WINDOW_CHANGE];
+
+  // Figure out the fullscreen mode expectation.
+  ui_test_utils::FullscreenWaiter::Expectation expectation;
+  content::WebContents* const active_tab =
+      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  // If event is {ENTER,EXIT}_TAB_FULLSCREEN and `active_tab` is
+  // being captured, fullscreen mode won't be updated.
+  if ((event != ENTER_TAB_FULLSCREEN && event != EXIT_TAB_FULLSCREEN) ||
+      !active_tab->IsBeingVisiblyCaptured()) {
+    switch (next_state) {
+      case STATE_NORMAL:
+        expectation.browser_fullscreen = false;
+        expectation.tab_fullscreen = false;
+        break;
+      case STATE_BROWSER_FULLSCREEN:
+        expectation.browser_fullscreen = true;
+        expectation.tab_fullscreen = false;
+        break;
+      case STATE_TAB_FULLSCREEN:
+        expectation.browser_fullscreen = false;
+        expectation.tab_fullscreen = true;
+        break;
+      case STATE_TAB_BROWSER_FULLSCREEN:
+        expectation.browser_fullscreen = true;
+        expectation.tab_fullscreen = true;
+        break;
+      default:
+        // Do nothing.
+        break;
+    }
+  }
+  ui_test_utils::FullscreenWaiter waiter(GetBrowser(), expectation);
 
   debugging_log_ << "  InvokeEvent(" << std::left
       << std::setw(kMaxStateNameLength) << GetEventString(event)
@@ -269,8 +273,6 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
       break;
     case ENTER_TAB_FULLSCREEN:
     case EXIT_TAB_FULLSCREEN: {
-      content::WebContents* const active_tab =
-          GetBrowser()->tab_strip_model()->GetActiveWebContents();
       if (event == ENTER_TAB_FULLSCREEN) {
         if (GetFullscreenController()->CanEnterFullscreenModeForTab(
                 active_tab->GetPrimaryMainFrame())) {
@@ -307,7 +309,7 @@ bool FullscreenControllerStateTest::InvokeEvent(Event event) {
   else
     debugging_log_ << "\n";
 
-  MaybeWaitForNotification();
+  waiter.Wait();
   VerifyWindowState();
 
   return true;
@@ -352,19 +354,6 @@ void FullscreenControllerStateTest::VerifyWindowState() {
 
     default:
       NOTREACHED() << GetAndClearDebugLog();
-  }
-}
-
-void FullscreenControllerStateTest::MaybeWaitForNotification() {
-  // We should get a fullscreen notification each time we get to a new
-  // persistent state. If we don't get a notification, the test will
-  // fail by timing out.
-  if (state_ != last_notification_received_state_ &&
-      IsPersistentState(state_)) {
-    fullscreen_notification_observer_->Wait();
-    last_notification_received_state_ = state_;
-    fullscreen_notification_observer_ =
-        std::make_unique<FullscreenNotificationObserver>(GetBrowser());
   }
 }
 
@@ -531,9 +520,7 @@ void FullscreenControllerStateTest::VerifyWindowStateExpectations(
   }
 }
 
-void FullscreenControllerStateTest::TearDown() {
-  fullscreen_notification_observer_.reset();
-}
+void FullscreenControllerStateTest::TearDown() {}
 
 FullscreenController* FullscreenControllerStateTest::GetFullscreenController() {
   return GetBrowser()->exclusive_access_manager()->fullscreen_controller();

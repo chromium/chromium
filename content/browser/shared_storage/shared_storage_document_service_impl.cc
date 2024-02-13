@@ -108,16 +108,21 @@ void SharedStorageDocumentServiceImpl::Bind(
 
 void SharedStorageDocumentServiceImpl::CreateWorklet(
     const GURL& script_source_url,
+    network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
     CreateWorkletCallback callback) {
-  if (create_worklet_called_) {
-    // This could indicate a compromised renderer, so let's terminate it.
-    receiver_.ReportBadMessage("Attempted to create multiple worklets.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisible);
-    return;
+  // A document can only create multiple worklets with `kSharedStorageAPIM123`
+  // enabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM123)) {
+    if (create_worklet_called_) {
+      // This could indicate a compromised renderer, so let's terminate it.
+      receiver_.ReportBadMessage("Attempted to create multiple worklets.");
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisible);
+      return;
+    }
   }
 
   create_worklet_called_ = true;
@@ -143,7 +148,8 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
 
   GetSharedStorageWorkletHostManager()->CreateWorkletHost(
       this, render_frame_host().GetLastCommittedOrigin(), script_source_url,
-      origin_trial_features, std::move(worklet_host), std::move(callback));
+      credentials_mode, origin_trial_features, std::move(worklet_host),
+      std::move(callback));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageSet(

@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] linear float32 1D constant tensor default options / sync
+  Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] linear float32 1D tensor default options / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] linear float32 2D tensor default options / sync
@@ -21,6 +23,8 @@ This is a testharness.js-based test.
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 [FAIL] linear float32 negative 4D tensor all options (positive options.alpha and negative options.beta) / sync
   Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+[FAIL] linear float32 1D constant tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] linear float32 1D tensor default options / async
   promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 [FAIL] linear float32 2D tensor default options / async

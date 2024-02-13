@@ -6,6 +6,9 @@ package org.chromium.components.webapps.pwa_universal_install;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
+import android.os.Build;
+import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +18,9 @@ import android.widget.LinearLayout.LayoutParams;
 
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.webapps.R;
+import org.chromium.content_public.browser.WebContents;
+
+import java.util.concurrent.Callable;
 
 /** The view portion of the PWA Universal Install bottom sheet. */
 public class PwaUniversalInstallBottomSheetView {
@@ -22,19 +28,18 @@ public class PwaUniversalInstallBottomSheetView {
     private static final int APP_ICON_CORNER_RADIUS_DP = 20;
     private static final int APP_ICON_TEXT_SIZE_DP = 24;
 
-    // The current context.
-    private final Context mContext;
-
     // The details of the bottom sheet.
     private View mContentView;
 
-    public PwaUniversalInstallBottomSheetView(Context context) {
-        mContext = context;
-    }
+    public PwaUniversalInstallBottomSheetView() {}
 
-    public void initialize(int arrowId) {
+    public void initialize(
+            Context context,
+            WebContents webContents,
+            Callable<Pair<Bitmap, Boolean>> iconCall,
+            int arrowId) {
         mContentView =
-                LayoutInflater.from(mContext)
+                LayoutInflater.from(context)
                         .inflate(
                                 R.layout.pwa_universal_install_bottom_sheet_content,
                                 /* root= */ null);
@@ -57,21 +62,42 @@ public class PwaUniversalInstallBottomSheetView {
                                 TypedValue.applyDimension(
                                         TypedValue.COMPLEX_UNIT_DIP,
                                         4,
-                                        mContext.getResources().getDisplayMetrics())));
+                                        context.getResources().getDisplayMetrics())));
 
-        // TODO(finnur): Replace with the actual app icon.
-        int iconColor = mContext.getColor(R.color.default_favicon_background_color);
-        RoundedIconGenerator iconGenerator =
-                new RoundedIconGenerator(
-                        mContext.getResources(),
-                        APP_ICON_SIZE_DP,
-                        APP_ICON_SIZE_DP,
-                        APP_ICON_CORNER_RADIUS_DP,
-                        iconColor,
-                        APP_ICON_TEXT_SIZE_DP);
-        Bitmap placeholder = iconGenerator.generateIconForText("AppName");
-        ((ImageView) mContentView.findViewById(R.id.app_icon_install)).setImageBitmap(placeholder);
-        ((ImageView) mContentView.findViewById(R.id.app_icon_shortcut)).setImageBitmap(placeholder);
+        // Setup the app icon, with a placeholder as fallback in case of an error.
+        Pair<Bitmap, Boolean> iconWithMetadata;
+        try {
+            iconWithMetadata = iconCall.call();
+        } catch (Exception exception) {
+            iconWithMetadata = null;
+        }
+        Bitmap appIcon = iconWithMetadata != null ? iconWithMetadata.first : null;
+        boolean isAdaptive = iconWithMetadata != null ? iconWithMetadata.second : false;
+        assert (!isAdaptive || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                : "Adaptive icons should not be provided pre-Android O.";
+
+        if (appIcon == null) {
+            int iconColor = context.getColor(R.color.default_favicon_background_color);
+            RoundedIconGenerator iconGenerator =
+                    new RoundedIconGenerator(
+                            context.getResources(),
+                            APP_ICON_SIZE_DP,
+                            APP_ICON_SIZE_DP,
+                            APP_ICON_CORNER_RADIUS_DP,
+                            iconColor,
+                            APP_ICON_TEXT_SIZE_DP);
+            appIcon = iconGenerator.generateIconForText("?");
+        }
+
+        ImageView app_icon_install = mContentView.findViewById(R.id.app_icon_install);
+        ImageView app_icon_shortcut = mContentView.findViewById(R.id.app_icon_shortcut);
+        if (isAdaptive) {
+            app_icon_install.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
+            app_icon_shortcut.setImageIcon(Icon.createWithAdaptiveBitmap(appIcon));
+        } else {
+            app_icon_install.setImageBitmap(appIcon);
+            app_icon_shortcut.setImageBitmap(appIcon);
+        }
 
         if (arrowId != 0) {
             ((ImageView) mContentView.findViewById(R.id.arrow_install))

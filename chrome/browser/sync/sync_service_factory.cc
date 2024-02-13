@@ -97,6 +97,10 @@
 #include "chrome/browser/sync/android/jni_headers/SyncServiceFactory_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 std::unique_ptr<KeyedService> BuildSyncService(
@@ -278,6 +282,11 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(ThemeServiceFactory::GetInstance());
 #endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(TrustedVaultServiceFactory::GetInstance());
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)) {
+    DependsOn(webapk::WebApkSyncServiceFactory::GetInstance());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   DependsOn(WebDataServiceFactory::GetInstance());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

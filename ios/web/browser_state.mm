@@ -125,6 +125,11 @@ network::mojom::CookieManager* BrowserState::GetCookieManager() {
   return cookie_manager_.get();
 }
 
+network::mojom::NetworkContext* BrowserState::GetNetworkContext() {
+  CreateNetworkContextIfNecessary();
+  return network_context_.get();
+}
+
 leveldb_proto::ProtoDatabaseProvider* BrowserState::GetProtoDatabaseProvider() {
   if (!proto_database_provider_) {
     proto_database_provider_ =

@@ -6,8 +6,7 @@
 #define UI_EVENTS_OZONE_EVDEV_MOUSE_BUTTON_PROPERTY_H_
 
 #include <cstdint>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 namespace ui {
 
@@ -15,7 +14,7 @@ class Event;
 
 // Retrieves the Forward/Back Mouse button property from the given event.
 // Returns nullopt if the property does not exist on the given event.
-absl::optional<uint32_t> GetForwardBackMouseButtonProperty(const Event& event);
+std::optional<uint32_t> GetForwardBackMouseButtonProperty(const Event& event);
 
 // Sets the Forward/Back Mouse button property on the given event to be used to
 // differentiate between the different forward/back buttons on devices.

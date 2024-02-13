@@ -15,12 +15,6 @@ namespace mac_notifications {
 // with variants of MacOSNotificationStyle in .../notifications/histograms.xml.
 std::string MacNotificationStyleSuffix(NotificationStyle notification_style);
 
-// Called when a user performed an action on a notification on macOS.
-// |notification_style| determines if the notification was an alert or a banner.
-// |is_valid| determines if the action data was valid and we passed it along.
-void LogMacNotificationActionReceived(NotificationStyle notification_style,
-                                      bool is_valid);
-
 }  // namespace mac_notifications
 
 #endif  // CHROME_SERVICES_MAC_NOTIFICATIONS_PUBLIC_CPP_MAC_NOTIFICATION_METRICS_H_

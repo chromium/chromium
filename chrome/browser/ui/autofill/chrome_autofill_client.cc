@@ -30,6 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -82,6 +82,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_view.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -375,8 +376,13 @@ signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {
 
 FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
   if (!form_data_importer_) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this, GetPersonalDataManager(), GetPersonalDataManager()->app_locale());
+        this, GetPersonalDataManager(),
+        HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        GetPersonalDataManager()->app_locale());
   }
   return form_data_importer_.get();
 }
@@ -638,19 +644,25 @@ void ChromeAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
     base::OnceCallback<void(const std::string&)>
         confirm_unmask_challenge_option_callback,
     base::OnceClosure cancel_unmasking_closure) {
-  CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOrCreate(
-      web_contents())
-      ->ShowDialog(challenge_options,
-                   std::move(confirm_unmask_challenge_option_callback),
-                   std::move(cancel_unmasking_closure));
+  if (!card_unmask_authentication_selection_controller_) {
+    card_unmask_authentication_selection_controller_ = std::make_unique<
+        CardUnmaskAuthenticationSelectionDialogControllerImpl>();
+  }
+  card_unmask_authentication_selection_controller_->ShowDialog(
+      challenge_options, std::move(confirm_unmask_challenge_option_callback),
+      std::move(cancel_unmasking_closure),
+      base::BindOnce(&CreateAndShowCardUnmaskAuthenticationSelectionDialog,
+                     &GetWebContents()));
 }
 
 void ChromeAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
     bool server_success) {
-  CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOrCreate(
-      web_contents())
-      ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
-          server_success);
+  if (card_unmask_authentication_selection_controller_) {
+    card_unmask_authentication_selection_controller_
+        ->DismissDialogUponServerProcessedAuthenticationMethodRequest(
+            server_success);
+    card_unmask_authentication_selection_controller_.reset();
+  }
 }
 
 VirtualCardEnrollmentManager*
@@ -903,15 +915,6 @@ void ChromeAutofillClient::ConfirmUploadIbanToCloud(
   IbanBubbleControllerImpl::FromWebContents(web_contents())
       ->OfferUploadSave(iban, std::move(legal_message_lines),
                         should_show_prompt, std::move(callback));
-#endif
-}
-
-void ChromeAutofillClient::CreditCardUploadCompleted(bool card_saved) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (SaveCardBubbleControllerImpl* controller =
-          SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
-    controller->ShowConfirmationBubbleView();
-  }
 #endif
 }
 
@@ -1219,10 +1222,9 @@ void ChromeAutofillClient::ShowAutofillProgressDialog(
     base::OnceClosure cancel_callback) {
   autofill_progress_dialog_controller_->ShowDialog(
       autofill_progress_dialog_type,
-      base::BindOnce(
-          &CreateAndShowProgressDialog,
-          base::Unretained(autofill_progress_dialog_controller_.get()),
-          base::Unretained(web_contents())),
+      base::BindOnce(&CreateAndShowProgressDialog,
+                     autofill_progress_dialog_controller_->GetWeakPtr(),
+                     base::Unretained(web_contents())),
       std::move(cancel_callback));
 }
 

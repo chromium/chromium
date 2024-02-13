@@ -31,10 +31,6 @@ bool Presenter::SupportsPlaneGpuFences() const {
   return false;
 }
 
-bool Presenter::SupportsGpuVSync() const {
-  return false;
-}
-
 bool Presenter::ScheduleOverlayPlane(
     OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,

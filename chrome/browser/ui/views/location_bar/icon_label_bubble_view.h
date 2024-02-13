@@ -127,6 +127,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // through in the code but is short enough that it is essentially skipped.
   void ReduceAnimationTimeForTesting();
 
+  // Enables tests to reset slide animation to a state where the label is not
+  // showing.
+  void ResetSlideAnimationForTesting() { ResetSlideAnimation(false); }
+
  protected:
   static constexpr int kOpenTimeMS = 150;
 

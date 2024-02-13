@@ -668,7 +668,7 @@ ColorSpace ColorSpace::GetWithSdrWhiteLevel(float sdr_white_level) const {
 }
 
 sk_sp<SkColorSpace> ColorSpace::ToSkColorSpace(
-    absl::optional<float> sdr_white_level) const {
+    std::optional<float> sdr_white_level) const {
   // Handle only valid, full-range RGB spaces.
   if (!IsValid() || matrix_ != MatrixID::RGB || range_ != RangeID::FULL)
     return nullptr;
@@ -974,7 +974,7 @@ bool ColorSpace::GetTransferFunction(TransferID transfer,
 
 bool ColorSpace::GetTransferFunction(
     skcms_TransferFunction* fn,
-    absl::optional<float> sdr_white_level) const {
+    std::optional<float> sdr_white_level) const {
   switch (transfer_) {
     case TransferID::CUSTOM:
     case TransferID::CUSTOM_HDR:
@@ -1008,7 +1008,7 @@ bool ColorSpace::GetTransferFunction(
 
 bool ColorSpace::GetInverseTransferFunction(
     skcms_TransferFunction* fn,
-    absl::optional<float> sdr_white_level) const {
+    std::optional<float> sdr_white_level) const {
   if (!GetTransferFunction(fn, sdr_white_level))
     return false;
   *fn = SkTransferFnInverse(*fn);

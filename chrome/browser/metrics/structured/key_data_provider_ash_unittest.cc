@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/metrics/structured/key_data_provider.h"
+#include "components/metrics/structured/lib/key_data_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

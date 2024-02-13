@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -1032,6 +1033,12 @@ size_t AutocompleteResult::CalculateNumMatchesPerUrlCount(
 }
 
 void AutocompleteResult::Reset() {
+  ClearMatches();
+  zero_prefix_enabled_in_session_ = false;
+  num_zero_prefix_suggestions_shown_in_session_ = 0u;
+}
+
+void AutocompleteResult::ClearMatches() {
   matches_.clear();
   suggestion_groups_map_.clear();
   MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
@@ -1043,6 +1050,10 @@ void AutocompleteResult::Reset() {
 void AutocompleteResult::Swap(AutocompleteResult* other) {
   matches_.swap(other->matches_);
   suggestion_groups_map_.swap(other->suggestion_groups_map_);
+  std::swap(zero_prefix_enabled_in_session_,
+            other->zero_prefix_enabled_in_session_);
+  std::swap(num_zero_prefix_suggestions_shown_in_session_,
+            other->num_zero_prefix_suggestions_shown_in_session_);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
   other->DestroyJavaObject();
@@ -1055,6 +1066,10 @@ void AutocompleteResult::CopyFrom(const AutocompleteResult& other) {
 
   matches_ = other.matches_;
   suggestion_groups_map_ = other.suggestion_groups_map_;
+  zero_prefix_enabled_in_session_ = other.zero_prefix_enabled_in_session_;
+  num_zero_prefix_suggestions_shown_in_session_ =
+      other.num_zero_prefix_suggestions_shown_in_session_;
+
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
 #endif

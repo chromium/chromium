@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import {SeaPenActionName, SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
 import {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
 import {SeaPenStoreInterface, setSeaPenStore} from 'chrome://resources/ash/common/sea_pen/sea_pen_store.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {DeferredAction, StoreObserver} from 'chrome://resources/js/store.js';
 
+import {beginLoadSelectedImageAction} from './personalization_app.js';
 import {PersonalizationState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
 
@@ -71,7 +72,19 @@ export class SeaPenStoreAdapter implements SeaPenStoreInterface,
   }
 
   dispatch(action: SeaPenActions|null) {
-    return PersonalizationStore.getInstance().dispatch(action);
+    const store = PersonalizationStore.getInstance();
+    this.beginBatchUpdate();
+    // Dispatch additional actions to set proper wallpaper state when necessary.
+    switch (action?.name) {
+      // Dispatch action to set wallpaper loading state to true when Sea Pen
+      // image is selected.
+      case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
+      case SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE:
+        store.dispatch(beginLoadSelectedImageAction());
+        break;
+    }
+    store.dispatch(action);
+    store.endBatchUpdate();
   }
 
   onStateChanged({wallpaper: {seaPen}}: PersonalizationState) {

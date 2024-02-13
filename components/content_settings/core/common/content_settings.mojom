@@ -66,6 +66,19 @@ enum SessionModel {
   ONE_TIME,
 };
 
+// TODO(http://b/324406007): The impl is currently specific to the TPCD
+// Metadata Source and is expected to be cleaned up with the mitigation cleanup.
+enum TpcdMetadataRuleSource {
+ SOURCE_UNSPECIFIED = 0,
+ SOURCE_TEST,
+ SOURCE_1P_DT,
+ SOURCE_3P_DT,
+ SOURCE_DOGFOOD,
+ SOURCE_CRITICAL_SECTOR,
+ SOURCE_CUJ,
+ SOURCE_GOV_EDU_TLD,
+};
+
 // This mirrors the C++ type in content_settings_metadata.h.
 struct RuleMetaData {
   mojo_base.mojom.Time last_modified;
@@ -74,6 +87,7 @@ struct RuleMetaData {
   mojo_base.mojom.Time expiration;
   SessionModel session_model;
   mojo_base.mojom.TimeDelta lifetime;
+  TpcdMetadataRuleSource tpcd_metadata_rule_source;
 };
 
 // This mirrors the C++ type in content_settings.h.

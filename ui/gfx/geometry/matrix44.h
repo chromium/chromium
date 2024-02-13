@@ -5,8 +5,9 @@
 #ifndef UI_GFX_GEOMETRY_MATRIX44_H_
 #define UI_GFX_GEOMETRY_MATRIX44_H_
 
+#include <optional>
+
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/double4.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 
@@ -186,10 +187,10 @@ class GEOMETRY_SKIA_EXPORT Matrix44 {
 
   void Flatten();
 
-  absl::optional<DecomposedTransform> Decompose() const;
+  std::optional<DecomposedTransform> Decompose() const;
 
  private:
-  absl::optional<DecomposedTransform> Decompose2d() const;
+  std::optional<DecomposedTransform> Decompose2d() const;
 
   ALWAYS_INLINE Double4 Col(int i) const { return LoadDouble4(matrix_[i]); }
   ALWAYS_INLINE void SetCol(int i, Double4 v) { StoreDouble4(v, matrix_[i]); }

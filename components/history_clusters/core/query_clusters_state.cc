@@ -5,8 +5,6 @@
 #include "components/history_clusters/core/query_clusters_state.h"
 
 #include <set>
-#include <string>
-#include <unordered_set>
 
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
@@ -24,7 +22,6 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_util.h"
-#include "components/history_clusters/core/similar_visit.h"
 #include "url/gurl.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -171,12 +168,10 @@ void QueryClustersState::OnGotUngroupedVisits(
     std::vector<history::Cluster> clusters,
     QueryClustersContinuationParams new_continuation_params,
     std::vector<history::AnnotatedVisit> ungrouped_visits) {
-  std::unordered_set<SimilarVisit, SimilarVisit::Hash, SimilarVisit::Equals>
-      seen_visits;
   // Load all the visits in `clusters` into `seen_visits` using similarity key.
   for (auto& cluster : clusters) {
     for (auto& visit : cluster.visits) {
-      seen_visits.insert(SimilarVisit(visit));
+      seen_visits_for_deduping_ungrouped_visits_.insert(SimilarVisit(visit));
     }
   }
 
@@ -195,7 +190,8 @@ void QueryClustersState::OnGotUngroupedVisits(
     }
 
     auto [ignored_iterator, inserted] =
-        seen_visits.insert(SimilarVisit(cluster_visit));
+        seen_visits_for_deduping_ungrouped_visits_.insert(
+            SimilarVisit(cluster_visit));
     if (inserted) {
       // Fill in these fields here to avoid doing so unless we're inserting this
       // visit.

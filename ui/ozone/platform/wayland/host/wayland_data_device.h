@@ -86,6 +86,8 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
                            DestroyWindowWhileFetchingForeignData);
+  FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest,
+                           LeaveWindowWhileFetchingData);
 
   // wl_data_device_listener callbacks:
   static void OnDataOffer(void* data,

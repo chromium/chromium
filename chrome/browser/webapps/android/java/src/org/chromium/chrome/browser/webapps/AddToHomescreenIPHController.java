@@ -49,19 +49,21 @@ public class AddToHomescreenIPHController {
      *
      * @param activity The associated activity.
      * @param windowAndroid The associated {@link WindowAndroid}.
+     * @param profile The {@link Profile} associated with the current session.
      * @param modalDialogManager The {@link ModalDialogManager} for showing the dialog.
      * @param messageDispatcher The {@link MessageDispatcher} for displaying messages.
      */
     public AddToHomescreenIPHController(
             Activity activity,
             WindowAndroid windowAndroid,
+            Profile profile,
             ModalDialogManager modalDialogManager,
             MessageDispatcher messageDispatcher) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
         mMessageDispatcher = messageDispatcher;
-        mTracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        mTracker = TrackerFactory.getTrackerForProfile(profile);
     }
 
     /**

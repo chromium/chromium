@@ -12,7 +12,7 @@ import org.chromium.base.Log;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
-import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
+import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.webapk.lib.common.WebApkConstants;
 
@@ -116,7 +116,7 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
                     && packageName.startsWith(WebApkConstants.WEBAPK_PACKAGE_PREFIX)) {
                 // Native is likely not loaded. Defer recording UMA and UKM till the next browser
                 // launch.
-                WebApkUninstallUmaTracker.deferRecordWebApkUninstalled(packageName);
+                WebApkUninstallTracker.deferRecordWebApkUninstalled(packageName);
             }
         }
 

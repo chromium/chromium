@@ -88,16 +88,6 @@ To be updated.
 
 ## Debugging Support
 
-### Headful Mode
-
-Passing the `--no-headless` flag to `run_wpt_tests.py` will pause execution
-after running each test headfully.
-You can interact with the paused test page afterwards, including with DevTools:
-
-![Testharness paused](images/web-tests/wptrunner-paused.jpg)
-
-Closing the tab or window will unpause the testharness and run the next test.
-
 ### Text-Based Debuggers
 
 To interactively debug WPTs, prefix the `run_wpt_tests.py` command with

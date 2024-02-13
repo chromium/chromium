@@ -185,7 +185,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ResourceScheduler final {
   };
 
   using ClientMap = std::map<ClientId, std::unique_ptr<Client>>;
-  using RequestSet = std::set<ScheduledResourceRequestImpl*>;
+  using RequestSet =
+      std::set<raw_ptr<ScheduledResourceRequestImpl, SetExperimental>>;
 
   // Called when a ScheduledResourceRequest is destroyed.
   void RemoveRequest(ScheduledResourceRequestImpl* request);

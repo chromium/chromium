@@ -28,6 +28,10 @@ void RegistryHandler(void* data,
                      uint32_t version) {
   Globals* globals = static_cast<Globals*>(data);
 
+  if (globals->observer_for_testing_) {
+    globals->observer_for_testing_->OnRegistryGlobal(id, interface, version);
+  }
+
 #define BIND(interface_type, global_member)                        \
   if (strcmp(interface, #interface_type) == 0) {                   \
     globals->global_member.reset(                                  \
@@ -57,6 +61,7 @@ void RegistryHandler(void* data,
   BIND(wp_presentation, presentation)
   BIND(zaura_shell, aura_shell)
   BIND(zaura_output_manager, aura_output_manager)
+  BIND(zaura_output_manager_v2, aura_output_manager_v2)
   BIND(zwp_linux_dmabuf_v1, linux_dmabuf)
   BIND(wl_subcompositor, subcompositor)
   BIND(zcr_color_manager_v1, color_manager)
@@ -81,6 +86,11 @@ void RegistryHandler(void* data,
 
 void RegistryRemover(void* data, wl_registry* registry, uint32_t id) {
   LOG(WARNING) << "Got a registry losing event for " << id;
+
+  Globals* globals = static_cast<Globals*>(data);
+  if (globals->observer_for_testing_) {
+    globals->observer_for_testing_->OnRegistryGlobalRemove(id);
+  }
 }
 
 wl_registry_listener registry_listener = {RegistryHandler, RegistryRemover};

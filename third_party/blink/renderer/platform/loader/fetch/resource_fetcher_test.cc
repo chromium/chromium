@@ -109,8 +109,9 @@ class PartialResourceRequest {
 
 class ResourceFetcherTest : public testing::Test {
  public:
-  ResourceFetcherTest() {
-    Resource::SetClockForTesting(platform_->test_task_runner()->GetMockClock());
+  ResourceFetcherTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    Resource::SetClockForTesting(task_environment_.GetMockClock());
   }
   ~ResourceFetcherTest() override {
     MemoryCache::Get()->EvictResources();
@@ -204,10 +205,8 @@ class ResourceFetcherTest : public testing::Test {
         kTestResourceMimeType, platform_->GetURLLoaderMockFactory());
   }
 
-  ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
-
- private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
 };
 
 TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {
@@ -1240,7 +1239,7 @@ TEST_F(ResourceFetcherTest, StaleWhileRevalidate) {
 
   // Advance the clock, make sure the original resource gets removed from the
   // memory cache after the revalidation completes.
-  platform_->AdvanceClockSeconds(1);
+  task_environment_.AdvanceClock(base::Seconds(1));
   ResourceResponse revalidate_response(url);
   revalidate_response.SetHttpStatusCode(200);
   platform_->GetURLLoaderMockFactory()->UnregisterURL(url);

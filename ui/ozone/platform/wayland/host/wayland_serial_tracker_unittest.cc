@@ -13,7 +13,7 @@ namespace wl {
 
 TEST(WaylandSerialTrackerTest, Basics) {
   SerialTracker serial_tracker;
-  absl::optional<Serial> serial;
+  std::optional<Serial> serial;
 
   // Ensure it is initialized as expected.
   EXPECT_FALSE(serial_tracker.GetSerial(SerialType::kMouseEnter));
@@ -65,7 +65,7 @@ TEST(WaylandSerialTrackerTest, Queries) {
   base::test::TaskEnvironment env{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   SerialTracker serial_tracker;
-  absl::optional<Serial> serial;
+  std::optional<Serial> serial;
 
   serial_tracker.UpdateSerial(SerialType::kMouseEnter, 1u);
   env.FastForwardBy(base::Milliseconds(100));

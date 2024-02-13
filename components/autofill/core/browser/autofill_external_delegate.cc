@@ -47,7 +47,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -133,7 +133,6 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kVirtualCreditCardEntry:
       return true;
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kAutofillOptions:
@@ -160,9 +159,11 @@ bool AutofillExternalDelegate::IsAutofillAndFirstLayerSuggestionId(
     case PopupItemId::kSeePromoCodeDetails:
     case PopupItemId::kSeparator:
     case PopupItemId::kShowAccountCards:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
       return false;
   }
 }
@@ -189,16 +190,6 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     return;
   }
 
-  bool has_autofill_suggestions = base::ranges::any_of(
-      input_suggestions, IsAutofillAndFirstLayerSuggestionId,
-      &Suggestion::popup_item_id);
-  if (trigger_source_ == AutofillSuggestionTriggerSource::
-                             kShowPromptAfterDialogClosedNonManualFallback &&
-      !has_autofill_suggestions) {
-    // User changed or deleted the only Autofill profile shown in the popup,
-    // avoid showing any other suggestions in this case.
-    return;
-  }
 #if BUILDFLAG(IS_IOS)
   if (!manager_->client().IsLastQueriedField(field_id)) {
     return;
@@ -263,9 +254,10 @@ AutofillExternalDelegate::GetLastFieldTypesToFillForSection(
 }
 
 bool AutofillExternalDelegate::HasActiveScreenReader() const {
-  // Note: This always returns false if ChromeVox is in use because
-  // AXPlatformNodes are not used on the ChromeOS platform.
-  return ui::AXPlatformNode::GetAccessibilityMode().has_mode(
+  // Note: This always returns false if ChromeVox is in use because the
+  // process-wide AXMode is not updated in that case; except for Lacros, where
+  // kScreenReader mirrors the spoken feedback preference.
+  return ui::AXPlatform::GetInstance().GetMode().has_mode(
       ui::AXMode::kScreenReader);
 }
 
@@ -416,9 +408,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       break;
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kGeneratePasswordEntry:
@@ -427,6 +417,9 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
       NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }
 }
@@ -710,9 +703,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     case PopupItemId::kSeparator:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kGeneratePasswordEntry:
@@ -721,6 +712,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kWebauthnCredential:
     case PopupItemId::kWebauthnSignInWithAnotherDevice:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
       NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }
 
@@ -780,14 +774,12 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case PopupItemId::kVirtualCreditCardEntry:
     case PopupItemId::kIbanEntry:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kPasswordAccountStorageOptIn:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kAccountStoragePasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordAccountStorageEmpty:
     case PopupItemId::kCompose:
@@ -801,6 +793,9 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kPasswordFieldByFieldFilling:
+    case PopupItemId::kFillPassword:
+    case PopupItemId::kViewPasswordDetails:
       return false;
   }
 }

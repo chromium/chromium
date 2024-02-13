@@ -20,7 +20,9 @@ enum class StoreError {
   kInvalidCertificateInput = 7,
   kCertificateCommitFailed = 8,
   kLoadKeyFailed = 9,
-  kMaxValue = kLoadKeyFailed
+  kInvalidFinalIdentityName = 10,
+  kIdentityNotFound = 11,
+  kMaxValue = kIdentityNotFound
 };
 
 template <class T>

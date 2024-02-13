@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/ash_element_identifiers.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/ash/shortcut_customization/shortcut_customization_test_base.h"
+#include "chrome/browser/ui/webui/ash/shortcut_customization/integration_tests/shortcut_customization_test_base.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -22,9 +19,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
   ui::Accelerator feedback_accel =
       GetDefaultAcceleratorForAction(AcceleratorAction::kOpenFeedbackPage);
 
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShortcutAppWebContentsId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackWebContentsId);
-  webcontents_id_ = kShortcutAppWebContentsId;
 
   const DeepQuery kErrorMessageConflictQuery{
       "shortcut-customization-app",
@@ -38,10 +33,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
                                      "#cancelButton"};
 
   RunTestSequence(
-      InstrumentNextTab(kShortcutAppWebContentsId, AnyBrowser()),
       LaunchShortcutCustomizationApp(),
-      WaitForWebContentsReady(kShortcutAppWebContentsId,
-                              GURL("chrome://shortcut-customization")),
       InAnyContext(Steps(
           OpenCalendarShortcutDialog(), ClickAddShortcutButton(),
           Log("Attempting to Add Alt + Shift + I as a custom open/close "
@@ -50,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
           Log("Verifying the error message for a locked accelerator is shown"),
           EnsurePresent(webcontents_id_, kErrorMessageConflictQuery),
           Log("Clicking cancel button to reset edit dialog state"),
-          ExecuteJsAt(kShortcutAppWebContentsId, kCancelButtonQuery, kClickFn),
+          ExecuteJsAt(webcontents_id_, kCancelButtonQuery, kClickFn),
           Log("Closing dialog"), ClickDoneButton(),
           InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
           SendShortcutAccelerator(feedback_accel),

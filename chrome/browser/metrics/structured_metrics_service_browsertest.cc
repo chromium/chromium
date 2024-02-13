@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include "build/build_config.h"
+#include <utility>
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
@@ -167,14 +168,14 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   WaitUntilKeysReady();
 
   // Record a couple of events and verify that they are recorded.
-  structured::events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne("metric one")
-      .SetTestMetricTwo(10)
-      .Record();
+  structured::StructuredMetricsClient::Record(
+      std::move(structured::events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne("metric one")
+                    .SetTestMetricTwo(10)));
 
-  structured::events::v2::test_project_five::TestEventSix()
-      .SetTestMetricSix("metric six")
-      .Record();
+  structured::StructuredMetricsClient::Record(
+      std::move(structured::events::v2::test_project_five::TestEventSix()
+                    .SetTestMetricSix("metric six")));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -218,14 +219,14 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   WaitUntilKeysReady();
 
   // Record a couple of events and verify that they are recorded.
-  structured::events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne("metric one")
-      .SetTestMetricTwo(10)
-      .Record();
+  structured::StructuredMetricsClient::Record(
+      std::move(structured::events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne("metric one")
+                    .SetTestMetricTwo(10)));
 
-  structured::events::v2::test_project_five::TestEventSix()
-      .SetTestMetricSix("metric six")
-      .Record();
+  structured::StructuredMetricsClient::Record(
+      std::move(structured::events::v2::test_project_five::TestEventSix()
+                    .SetTestMetricSix("metric six")));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -263,10 +264,10 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
   WaitUntilKeysReady();
 
   // Record an event inorder to build a log.
-  structured::events::v2::test_project_one::TestEventOne()
-      .SetTestMetricOne("metric one")
-      .SetTestMetricTwo(10)
-      .Record();
+  structured::StructuredMetricsClient::Record(
+      std::move(structured::events::v2::test_project_one::TestEventOne()
+                    .SetTestMetricOne("metric one")
+                    .SetTestMetricTwo(10)));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.

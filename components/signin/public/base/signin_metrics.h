@@ -133,7 +133,7 @@ enum class AccessPoint : int {
   ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN = 10,
   ACCESS_POINT_USER_MANAGER = 11,
   ACCESS_POINT_DEVICES_PAGE = 12,
-  ACCESS_POINT_CLOUD_PRINT = 13,
+  // ACCESS_POINT_CLOUD_PRINT = 13, no longer used.
   // ACCESS_POINT_CONTENT_AREA = 14, no longer used.
   ACCESS_POINT_SIGNIN_PROMO = 15,
   ACCESS_POINT_RECENT_TABS = 16,
@@ -194,6 +194,10 @@ enum class AccessPoint : int {
   ACCESS_POINT_TAB_ORGANIZATION = 56,
   // Access point for the Save to Drive feature on iOS.
   ACCESS_POINT_SAVE_TO_DRIVE_IOS = 57,
+  // Access point for the Tips Notification on iOS.
+  ACCESS_POINT_TIPS_NOTIFICATION = 58,
+  // Access point for the Notifications Opt-In Screen.
+  ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE = 59,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
@@ -436,8 +440,9 @@ enum class SourceForRefreshTokenOperation {
   // kAccountReconcilor_RevokeTokensNotInCookies = 18,
   kLogoutTabHelper_PrimaryPageChanged = 19,
   kForceSigninReauthWithDifferentAccount = 20,
+  kAccountReconcilor_RevokeTokensNotInCookies = 21,
 
-  kMaxValue = kForceSigninReauthWithDifferentAccount,
+  kMaxValue = kAccountReconcilor_RevokeTokensNotInCookies,
 };
 
 // Different types of reporting. This is used as a histogram suffix.

@@ -20,6 +20,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/service/abstract_texture.h"
+#endif
+
 namespace gl {
 class GLContext;
 class GLSurface;

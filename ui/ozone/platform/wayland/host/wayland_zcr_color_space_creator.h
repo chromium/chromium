@@ -6,10 +6,10 @@
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_ZCR_COLOR_SPACE_CREATOR_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_space.h"
@@ -22,7 +22,7 @@ class WaylandZcrColorSpaceCreator {
  public:
   using CreatorResultCallback =
       base::OnceCallback<void(scoped_refptr<WaylandZcrColorSpace>,
-                              absl::optional<uint32_t>)>;
+                              std::optional<uint32_t>)>;
   WaylandZcrColorSpaceCreator(wl::Object<zcr_color_space_creator_v1> creator,
                               CreatorResultCallback on_creation);
   WaylandZcrColorSpaceCreator(const WaylandZcrColorSpaceCreator&) = delete;

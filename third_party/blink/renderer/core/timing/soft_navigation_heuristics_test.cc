@@ -141,7 +141,7 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
         /*is_new_interaction=*/true);
     std::unique_ptr<TaskScope> task_scope = tracker->CreateTaskScope(
         script_state, /*parent_task=*/nullptr, TaskScopeType::kCallback);
-    root_task = tracker->RunningTask(script_state);
+    root_task = tracker->RunningTask(script_state->GetIsolate());
   }
   EXPECT_TRUE(root_task);
   EXPECT_GT(heuristics->GetLastInteractionTaskIdForTest(), 0u);
@@ -151,7 +151,7 @@ TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
   {
     std::unique_ptr<TaskScope> task_scope = tracker->CreateTaskScope(
         script_state, root_task, TaskScopeType::kCallback);
-    descendant_task = tracker->RunningTask(script_state);
+    descendant_task = tracker->RunningTask(script_state->GetIsolate());
   }
   EXPECT_TRUE(descendant_task);
 

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -54,7 +55,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -218,7 +218,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
              const URLRequestContext* context,
              NetworkTrafficAnnotationTag traffic_annotation,
              bool is_for_websockets,
-             absl::optional<net::NetLogSource> net_log_source);
+             std::optional<net::NetLogSource> net_log_source);
 
   URLRequest(const URLRequest&) = delete;
   URLRequest& operator=(const URLRequest&) = delete;
@@ -302,7 +302,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   const IsolationInfo& isolation_info() const { return isolation_info_; }
 
-  const absl::optional<CookiePartitionKey>& cookie_partition_key() const {
+  const std::optional<CookiePartitionKey>& cookie_partition_key() const {
     return cookie_partition_key_;
   }
 
@@ -362,9 +362,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Note: the initiator can be null for browser-initiated top level
   // navigations. This is different from a unique Origin (e.g. in sandboxed
   // iframes).
-  const absl::optional<url::Origin>& initiator() const { return initiator_; }
+  const std::optional<url::Origin>& initiator() const { return initiator_; }
   // This method may only be called before Start().
-  void set_initiator(const absl::optional<url::Origin>& initiator);
+  void set_initiator(const std::optional<url::Origin>& initiator);
 
   // The request method.  "GET" is the default value. The request method may
   // only be changed before Start() is called. Request methods are
@@ -525,7 +525,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Get the SSL connection info.
   const SSLInfo& ssl_info() const { return response_info_.ssl_info; }
 
-  const absl::optional<AuthChallengeInfo>& auth_challenge_info() const;
+  const std::optional<AuthChallengeInfo>& auth_challenge_info() const;
 
   // Gets timing information related to the request.  Events that have not yet
   // occurred are left uninitialized.  After a second request starts, due to
@@ -663,8 +663,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // |modified_headers| are changes applied to the request headers after
   // updating them for the redirect.
   void FollowDeferredRedirect(
-      const absl::optional<std::vector<std::string>>& removed_headers,
-      const absl::optional<net::HttpRequestHeaders>& modified_headers);
+      const std::optional<std::vector<std::string>>& removed_headers,
+      const std::optional<net::HttpRequestHeaders>& modified_headers);
 
   // One of the following two methods should be called in response to an
   // OnAuthRequired() callback (and only then).
@@ -750,13 +750,13 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return traffic_annotation_;
   }
 
-  const absl::optional<base::flat_set<net::SourceStream::SourceType>>&
+  const std::optional<base::flat_set<net::SourceStream::SourceType>>&
   accepted_stream_types() const {
     return accepted_stream_types_;
   }
 
   void set_accepted_stream_types(
-      const absl::optional<base::flat_set<net::SourceStream::SourceType>>&
+      const std::optional<base::flat_set<net::SourceStream::SourceType>>&
           types) {
     if (types) {
       DCHECK(!types->contains(net::SourceStream::SourceType::TYPE_NONE));
@@ -860,10 +860,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Allow the URLRequestJob to redirect this request. If non-null,
   // |removed_headers| and |modified_headers| are changes
   // applied to the request headers after updating them for the redirect.
-  void Redirect(
-      const RedirectInfo& redirect_info,
-      const absl::optional<std::vector<std::string>>& removed_headers,
-      const absl::optional<net::HttpRequestHeaders>& modified_headers);
+  void Redirect(const RedirectInfo& redirect_info,
+                const std::optional<std::vector<std::string>>& removed_headers,
+                const std::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Called by URLRequestJob to allow interception when a redirect occurs.
   void NotifyReceivedRedirect(const RedirectInfo& redirect_info,
@@ -968,13 +967,13 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // partitioning is not enabled, or if the NIK has no top-frame site.
   //
   // Unpartitioned cookies are unaffected by this field.
-  absl::optional<CookiePartitionKey> cookie_partition_key_ = absl::nullopt;
+  std::optional<CookiePartitionKey> cookie_partition_key_ = std::nullopt;
 
   bool force_ignore_site_for_cookies_ = false;
   bool force_main_frame_for_same_site_cookies_ = false;
   CookieSettingOverrides cookie_setting_overrides_;
 
-  absl::optional<url::Origin> initiator_;
+  std::optional<url::Origin> initiator_;
   GURL delegate_redirect_url_;
   std::string method_;  // "GET", "POST", etc. Case-sensitive.
   std::string referrer_;
@@ -1087,7 +1086,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  absl::optional<base::flat_set<net::SourceStream::SourceType>>
+  std::optional<base::flat_set<net::SourceStream::SourceType>>
       accepted_stream_types_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;

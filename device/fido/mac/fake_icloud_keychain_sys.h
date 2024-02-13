@@ -9,12 +9,12 @@
 #error "This header is only for Objective C++ compilation units"
 #endif
 
+#include <optional>
 #include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class NSWindow;
 
@@ -94,18 +94,17 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   ~FakeSystemInterface() override;
 
   AuthState auth_state_ = kAuthAuthorized;
-  absl::optional<AuthState> next_auth_state_;
+  std::optional<AuthState> next_auth_state_;
 
-  absl::optional<int> make_credential_error_code_;
-  absl::optional<std::vector<uint8_t>>
-      make_credential_attestation_object_bytes_;
-  absl::optional<std::vector<uint8_t>> make_credential_credential_id_;
+  std::optional<int> make_credential_error_code_;
+  std::optional<std::vector<uint8_t>> make_credential_attestation_object_bytes_;
+  std::optional<std::vector<uint8_t>> make_credential_credential_id_;
 
-  absl::optional<std::pair<int, std::string>> get_assertion_error_;
-  absl::optional<std::vector<uint8_t>> get_assertion_authenticator_data_;
-  absl::optional<std::vector<uint8_t>> get_assertion_signature_;
-  absl::optional<std::vector<uint8_t>> get_assertion_user_id_;
-  absl::optional<std::vector<uint8_t>> get_assertion_credential_id_;
+  std::optional<std::pair<int, std::string>> get_assertion_error_;
+  std::optional<std::vector<uint8_t>> get_assertion_authenticator_data_;
+  std::optional<std::vector<uint8_t>> get_assertion_signature_;
+  std::optional<std::vector<uint8_t>> get_assertion_user_id_;
+  std::optional<std::vector<uint8_t>> get_assertion_credential_id_;
 
   unsigned cancel_count_ = 0;
 

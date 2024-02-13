@@ -5,14 +5,18 @@
 package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -21,6 +25,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Predicate;
 
 /** Attributes related to {@link TabState} */
 public class TabStateAttributes extends TabWebContentsUserData {
@@ -161,7 +166,13 @@ public class TabStateAttributes extends TabWebContentsUserData {
                     @Override
                     public void onRootIdChanged(Tab tab, int newRootId) {
                         if (!tab.isInitialized()) return;
-                        updateIsDirty(DirtinessState.DIRTY);
+                        updateIsDirtyNotCheckingNtp(DirtinessState.DIRTY);
+                    }
+
+                    @Override
+                    public void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {
+                        if (!tab.isInitialized()) return;
+                        updateIsDirtyNotCheckingNtp(DirtinessState.DIRTY);
                     }
                 });
     }
@@ -204,6 +215,27 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
     @VisibleForTesting
     void updateIsDirty(@DirtinessState int dirtiness) {
+        updateIsDirtyInternal(
+                dirtiness, tab -> isTabUrlContentScheme(tab) || isNtpWithoutNavigationState(tab));
+    }
+
+    /**
+     * Same as {@link updateIsDirty} but does not check whether the tab is an NTP with navigation
+     * state.
+     */
+    @VisibleForTesting
+    void updateIsDirtyNotCheckingNtp(@DirtinessState int dirtiness) {
+        updateIsDirtyInternal(dirtiness, TabStateAttributes::isTabUrlContentScheme);
+    }
+
+    /**
+     * Tries to update {@link DirtinessState} if applicable and notifies observers of any changes.
+     *
+     * @param dirtiness The new {@link DirtinessState} to set.
+     * @param shouldSetToClean A predicate determining whether to set the dirtiness to clean.
+     */
+    private void updateIsDirtyInternal(
+            @DirtinessState int dirtiness, @NonNull Predicate<Tab> shouldSetToClean) {
         if (mTab.isDestroyed()) return;
         if (dirtiness == mDirtinessState) return;
         if (mTab.isBeingRestored()) return;
@@ -212,10 +244,27 @@ public class TabStateAttributes extends TabWebContentsUserData {
         if (dirtiness == DirtinessState.UNTIDY && mDirtinessState == DirtinessState.DIRTY) {
             return;
         }
-        mDirtinessState = dirtiness;
+
+        if (shouldSetToClean.test(mTab)) {
+            if (mDirtinessState == DirtinessState.CLEAN) return;
+
+            mDirtinessState = DirtinessState.CLEAN;
+        } else {
+            mDirtinessState = dirtiness;
+        }
+
         for (Observer observer : mObservers) {
             observer.onTabStateDirtinessChanged(mTab, mDirtinessState);
         }
+    }
+
+    private static boolean isTabUrlContentScheme(@NonNull Tab tab) {
+        GURL url = tab.getUrl();
+        return url != null && url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
+    }
+
+    private static boolean isNtpWithoutNavigationState(@NonNull Tab tab) {
+        return UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.canGoBack() && !tab.canGoForward();
     }
 
     /**

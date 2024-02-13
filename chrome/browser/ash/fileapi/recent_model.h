@@ -10,7 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -31,9 +33,32 @@ class FileSystemContext;
 
 namespace ash {
 
-// Provides a list of recently modified files.
+// Implements a service that returns files matching a given query, type, with
+// the given modification date. A typical use is shown below:
 //
-// All member functions must be called on the UI thread.
+// RecentModel* model = RecentModelFactory::GetForProfile(user_profile);
+// GetRecentFilesCallback callback = base:Bind(...);
+// FileSystemContext* context = GetFileSystemContextForRenderFrameHost(
+//     user_profile, render_frame_host());
+//
+// // Requests files with names containing "foo", modified within the last
+// // 30 days, classified as image (jpg, png, etc.), without deleting cache
+// // from the previous call.
+// model->GetRecentFiles(
+//     context,
+//     GURL("chrome://file-manager/"),
+//     "foobar",
+//     base::Days(30),
+//     ash::RecentModel::FileType::kImage,
+//     false,
+//     std::move(callback));
+//
+// In addition to the above flow, one can set the maximum duration for the
+// GetRecentCall to take. Once that maximum duration is reached, whatever
+// partial results are available, are returned.
+//
+// All member functions must be called on the UI thread.  However, this class
+// supports multiple calls with varying parameters being issued in parallel.
 class RecentModel : public KeyedService {
  public:
   // The name of the histogram used to record user metrics about total time
@@ -67,7 +92,6 @@ class RecentModel : public KeyedService {
   RecentModel(const RecentModel&) = delete;
   RecentModel& operator=(const RecentModel&) = delete;
 
-
   // Creates an instance with given sources. Only for testing.
   static std::unique_ptr<RecentModel> CreateForTest(
       std::vector<std::unique_ptr<RecentSource>> sources,
@@ -100,28 +124,58 @@ class RecentModel : public KeyedService {
   explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources,
                        size_t max_files);
 
+  // Context for a single GetRecentFiles call.
+  struct CallContext {
+    CallContext(size_t max_files,
+                const SearchCriteria& search_criteria,
+                GetRecentFilesCallback callback);
+    CallContext(CallContext&& context);
+    ~CallContext();
+
+    // The parameters of the last query. These are used to check if the
+    // cached content can be re-used.
+    SearchCriteria search_criteria;
+
+    // The callback to call once the results are collected.
+    GetRecentFilesCallback callback;
+
+    // Time when the build started.
+    base::TimeTicks build_start_time;
+
+    // The accumulator of files found by various recent sources.
+    FileAccumulator accumulator;
+
+    // The set of recent sources processing the current request.
+    std::set<raw_ptr<RecentSource>> active_sources;
+  };
+
   // The method called by each of the recent source workers, once they complete
   // their task. This method monitors the number of calls and once it is equal
   // to the number of started recent source workers, it calls
-  // OnGetRecentFilesCompleted method.
-  void OnGetRecentFiles(uint32_t run_on_sequence_id,
+  // OnSearchCompleted method.
+  void OnGotRecentFiles(RecentSource* source,
                         const base::Time& cutoff_time,
-                        const SearchCriteria& search_criteria,
+                        const int32_t call_id,
                         std::vector<RecentFile> files);
 
   // This method is called by OnGetRecentFiles once all started recent source
   // workers complete their tasks.
-  void OnGetRecentFilesCompleted(const SearchCriteria& search_criteria);
+  void OnSearchCompleted(const int32_t call_id);
 
   void ClearCache();
 
   // The callback invoked by the deadline timer.
-  void OnScanTimeout(const SearchCriteria& search_criteria);
+  void OnScanTimeout(const base::Time& cutoff_time, const int32_t call_id);
 
+  // A map that stores a context for each call to GetRecentFiles. The context
+  // exists only from the start of the call until it is completed or times out.
+  base::IDMap<std::unique_ptr<CallContext>> context_map_;
+
+  // A map from call ID to a timer that terminates the call.
+  base::IDMap<std::unique_ptr<base::DeadlineTimer>> deadline_map_;
+
+  // All known recent sources.
   std::vector<std::unique_ptr<RecentSource>> sources_;
-
-  // The accumulator of files found by various recent sources.
-  FileAccumulator accumulator_;
 
   // Cached GetRecentFiles() response.
   std::optional<std::vector<RecentFile>> cached_files_ = std::nullopt;
@@ -133,30 +187,16 @@ class RecentModel : public KeyedService {
   // Timer to clear the cache.
   base::OneShotTimer cache_clear_timer_;
 
-  // Time when the build started.
-  base::TimeTicks build_start_time_;
+  // The counter used to enumerate GetRecentFiles calls. This is used to stop
+  // calls that take too long.
+  int32_t call_id_ = 0;
 
-  // While a recent file list is built, this vector contains callbacks to be
-  // invoked with the new list.
-  std::vector<GetRecentFilesCallback> pending_callbacks_;
-
-  // Number of in-flight sources building recent file lists.
-  int num_inflight_sources_ = 0;
-
-  // The deadline timer started when recent files are requested, if
-  // scan_timeout_duration_ is set. This timer enforces the maximum time limit
-  // the fetching of recent files can take. Once the timer goes off no more
-  // results are accepted from any source. Whatever recent files were collected
-  // so far are returned to the caller of the GetRecentFiles method.
-  base::DeadlineTimer deadline_timer_;
+  // The maximum files to be returned by a single GetRecentFiles call.
+  const size_t max_files_;
 
   // If set, limits the length of time the GetRecentFiles method can take before
   // returning results, if any, in the callback.
   std::optional<base::TimeDelta> scan_timeout_duration_;
-
-  // The monotically increasing sequence number. Used to distinguish between
-  // current and timed out calls.
-  uint32_t current_sequence_id_ = 0;
 
   base::WeakPtrFactory<RecentModel> weak_ptr_factory_{this};
 };

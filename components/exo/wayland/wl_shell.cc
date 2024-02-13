@@ -135,6 +135,7 @@ uint32_t HandleShellSurfaceConfigureCallback(
     bool activated,
     const gfx::Vector2d& origin_offset,
     float raster_scale,
+    aura::Window::OcclusionState occlusion_state,
     std::optional<chromeos::WindowStateType> restore_state_type) {
   wl_shell_surface_send_configure(resource, WL_SHELL_SURFACE_RESIZE_NONE,
                                   bounds.width(), bounds.height());

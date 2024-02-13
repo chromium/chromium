@@ -96,7 +96,7 @@ TEST(SharedImageManagerTest, MemoryDumps) {
 
   auto* dump = pmd.GetAllocatorDump("gpu/shared_images");
   ASSERT_NE(nullptr, dump);
-  ASSERT_EQ(dump->entries().size(), 2u);
+  ASSERT_EQ(dump->entries().size(), 3u);
 
   for (const auto& entry : dump->entries()) {
     if (entry.name == "size") {
@@ -106,14 +106,22 @@ TEST(SharedImageManagerTest, MemoryDumps) {
       EXPECT_EQ(entry.entry_type,
                 base::trace_event::MemoryAllocatorDump::Entry::kUint64);
       EXPECT_EQ(entry.value_uint64, kSizeBytes1 + kSizeBytes2);
-    } else {
-      EXPECT_EQ(entry.name, "purgeable_size");
+    } else if (entry.name == "purgeable_size") {
       EXPECT_EQ(entry.units,
                 base::trace_event::MemoryAllocatorDump::kUnitsBytes);
       EXPECT_EQ(entry.entry_type,
                 base::trace_event::MemoryAllocatorDump::Entry::kUint64);
       // Nothing is purgeable.
       EXPECT_EQ(entry.value_uint64, 0u);
+    } else if (entry.name == "non_exo_size") {
+      EXPECT_EQ(entry.units,
+                base::trace_event::MemoryAllocatorDump::kUnitsBytes);
+      EXPECT_EQ(entry.entry_type,
+                base::trace_event::MemoryAllocatorDump::Entry::kUint64);
+      // Nothing is purgeable.
+      EXPECT_EQ(entry.value_uint64, kSizeBytes1 + kSizeBytes2);
+    } else {
+      FAIL() << "Unexpected memory dump entry name: " << entry.name;
     }
   }
 }
@@ -268,6 +276,24 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
   EXPECT_EQ(0u, memory_type_tracker2->GetMemRepresented());
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_EQ(0u, memory_tracker2.GetSize());
+}
+
+TEST(SharedImageManagerTest, GetUsageForMailbox) {
+  const size_t kSizeBytes = 1024;
+
+  auto backing = CreateImageBacking(kSizeBytes);
+  const gpu::Mailbox mailbox = backing->mailbox();
+  const uint32_t usage = backing->usage();
+
+  SharedImageManager manager;
+  EXPECT_EQ(std::nullopt, manager.GetUsageForMailbox(mailbox));
+
+  auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
+  auto factory_ref = manager.Register(std::move(backing), tracker.get());
+  EXPECT_EQ(std::make_optional(usage), manager.GetUsageForMailbox(mailbox));
+
+  factory_ref.reset();
+  EXPECT_EQ(std::nullopt, manager.GetUsageForMailbox(mailbox));
 }
 
 }  // anonymous namespace

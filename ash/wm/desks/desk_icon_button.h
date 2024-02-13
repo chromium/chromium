@@ -23,9 +23,9 @@ class DeskBarViewBase;
 // A button view in the desks bar with an icon. The button have three different
 // states, and the three states are interchangeable.
 class ASH_EXPORT DeskIconButton : public DeskButtonBase {
- public:
-  METADATA_HEADER(DeskIconButton);
+  METADATA_HEADER(DeskIconButton, DeskButtonBase)
 
+ public:
   // The enum class defines three states for the button. The button at different
   // states has different sizes. Any state could be transformed into another
   // state under certain conditions.

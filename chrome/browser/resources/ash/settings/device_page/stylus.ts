@@ -201,10 +201,12 @@ export class SettingsStylusElement extends SettingsStylusElementBase {
       return;
     }
 
+    const isSupported = this.selectedApp_.lockScreenSupport ===
+        NoteAppLockScreenSupport.SUPPORTED;
     this.browserProxy_.setPreferredNoteTakingAppEnabledOnLockScreen(
-        this.selectedApp_.lockScreenSupport ===
-        NoteAppLockScreenSupport.SUPPORTED);
-    recordSettingChange();
+        isSupported);
+    recordSettingChange(
+        Setting.kStylusNoteTakingFromLockScreen, {boolValue: isSupported});
   }
 
   private onSelectedAppChanged_(): void {
@@ -213,7 +215,7 @@ export class SettingsStylusElement extends SettingsStylusElementBase {
 
     if (app && !app.preferred) {
       this.browserProxy_.setPreferredNoteTakingApp(app.value);
-      recordSettingChange();
+      recordSettingChange(Setting.kStylusNoteTakingApp);
     }
   }
 

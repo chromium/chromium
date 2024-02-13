@@ -13,14 +13,19 @@
 namespace blink {
 
 WebScopedPagePauser::WebScopedPagePauser(WebLocalFrameImpl& frame) {
+  Page* page = WebFrame::ToCoreFrame(frame)->GetPage();
+  CHECK(page);
   if (base::FeatureList::IsEnabled(
           features::kPausePagesPerBrowsingContextGroup)) {
-    Page* page = WebFrame::ToCoreFrame(frame)->GetPage();
-    CHECK(page);
     browsing_context_group_pauser_ =
         std::make_unique<ScopedBrowsingContextGroupPauser>(*page);
   } else {
-    page_pauser_ = std::make_unique<ScopedPagePauser>();
+    // Clear the page if we aren't showing the hud display.
+    if (!base::FeatureList::IsEnabled(
+            features::kShowHudDisplayForPausedPages)) {
+      page = nullptr;
+    }
+    page_pauser_ = std::make_unique<ScopedPagePauser>(page);
   }
 }
 

@@ -251,4 +251,7 @@ public interface TabSwitcher {
      *     animation is complete.
      */
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs);
+
+    /** Refresh the tab switcher's tab list to display any out-of-band updates properly. */
+    void refreshTabList();
 }

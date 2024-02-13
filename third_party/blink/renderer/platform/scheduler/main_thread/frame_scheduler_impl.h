@@ -88,9 +88,7 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
   void SetFrameVisible(bool frame_visible) override;
   bool IsFrameVisible() const override;
   void SetVisibleAreaLarge(bool is_large) override;
-  bool IsVisibleAreaLarge() const override;
   void SetHadUserActivation(bool had_user_activation) override;
-  bool HadUserActivation() const override;
 
   bool IsPageVisible() const override;
 
@@ -286,6 +284,9 @@ class PLATFORM_EXPORT FrameSchedulerImpl : public FrameScheduler,
 
   // Reset the state which should not persist across navigations.
   void ResetForNavigation();
+
+  // Whether the frame is considered important.
+  bool IsImportant() const;
 
   base::WeakPtr<FrameOrWorkerScheduler> GetFrameOrWorkerSchedulerWeakPtr()
       override;

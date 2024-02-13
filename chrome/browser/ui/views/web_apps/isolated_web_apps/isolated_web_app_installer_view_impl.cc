@@ -538,6 +538,10 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
           [this](
               const IsolatedWebAppInstallerModel::BundleAlreadyInstalledDialog&
                   already_installed_dialog) {
+            std::u16string title = l10n_util::GetStringFUTF16(
+                IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE,
+                already_installed_dialog.bundle_name);
+
             std::string installed_version =
                 already_installed_dialog.installed_version.GetString();
             auto subtitle = ui::DialogModelLabel::CreateWithReplacements(
@@ -549,25 +553,7 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                         base::UTF8ToUTF16(installed_version)),
                 });
             return ShowChildDialog(
-                IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE, subtitle,
-                CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
-                                           ui::kColorAlertMediumSeverityIcon),
-                /*ok_label=*/std::nullopt);
-          },
-          [this](const IsolatedWebAppInstallerModel::BundleOutdatedDialog&
-                     bundle_outdated_dialog) {
-            std::string installed_version =
-                bundle_outdated_dialog.installed_version.GetString();
-            auto subtitle = ui::DialogModelLabel::CreateWithReplacements(
-                IDS_IWA_INSTALLER_BUNDLE_OUTDATED_SUBTITLE,
-                {
-                    ui::DialogModelLabel::CreatePlainText(
-                        bundle_outdated_dialog.bundle_name),
-                    ui::DialogModelLabel::CreatePlainText(
-                        base::UTF8ToUTF16(installed_version)),
-                });
-            return ShowChildDialog(
-                IDS_IWA_INSTALLER_BUNDLE_OUTDATED_TITLE, subtitle,
+                title, subtitle,
                 CreateImageModelFromVector(vector_icons::kErrorOutlineIcon,
                                            ui::kColorAlertMediumSeverityIcon),
                 /*ok_label=*/std::nullopt);
@@ -610,13 +596,22 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
     const ui::DialogModelLabel& subtitle,
     const ui::ImageModel& icon_model,
     std::optional<int> ok_label) {
+  return ShowChildDialog(l10n_util::GetStringUTF16(title), subtitle, icon_model,
+                         ok_label);
+}
+
+views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
+    const std::u16string& title,
+    const ui::DialogModelLabel& subtitle,
+    const ui::ImageModel& icon_model,
+    std::optional<int> ok_label) {
   CHECK(!dialog_visible_);
   dialog_visible_ = true;
 
   ui::DialogModel::Builder dialog_model_builder;
   dialog_model_builder
       .SetInternalName(IsolatedWebAppInstallerView::kNestedDialogWidgetName)
-      .SetTitle(l10n_util::GetStringUTF16(title))
+      .SetTitle(title)
       .AddParagraph(ui::DialogModelLabel(subtitle).set_is_secondary())
       .DisableCloseOnDeactivate()
       .AddCancelButton(base::BindOnce(&Delegate::OnChildDialogCanceled,

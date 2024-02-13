@@ -616,6 +616,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gce",
+    swarming = targets.swarming(
+        dimensions = {
+            "gce": "1",
+        },
+    ),
+)
+
+targets.mixin(
     name = "gpu-swarming-pool",
     swarming = targets.swarming(
         dimensions = {
@@ -1233,6 +1242,15 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "nvidia_geforce_gtx_1660",
+    swarming = targets.swarming(
+        dimensions = {
+            "gpu": "10de:2184-31.0.15.4601",
+        },
+    ),
+)
+
+targets.mixin(
     name = "nougat-x86-emulator",
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android24.textpb",
@@ -1679,12 +1697,12 @@ targets.mixin(
     name = "xcode_15_beta",
     args = [
         "--xcode-build-version",
-        "15e5178i",
+        "15e5188j",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_15e5178i",
+                name = "xcode_ios_15e5188j",
                 path = "Xcode.app",
             ),
         ],

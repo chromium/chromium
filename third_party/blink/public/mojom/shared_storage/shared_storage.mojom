@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom";
@@ -97,6 +98,7 @@ interface SharedStorageDocumentService {
   // current context. The worklet will be initialized with
   // `origin_trial_features` (i.e. inherit the creator document's OT features).
   CreateWorklet(url.mojom.Url script_source_url,
+                network.mojom.CredentialsMode credentials_mode,
                 array<OriginTrialFeature> origin_trial_features,
                 pending_associated_receiver<SharedStorageWorkletHost> worklet_host)
       => (bool success,

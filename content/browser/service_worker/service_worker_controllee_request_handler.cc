@@ -23,6 +23,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
+#include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/browser/allow_service_worker_result.h"
@@ -664,10 +665,14 @@ void ServiceWorkerControlleeRequestHandler::CreateLoaderAndStartRequest(
       std::make_unique<ServiceWorkerMainResourceLoader>(
           std::move(fallback_callback_), container_host_, frame_tree_node_id_,
           std::move(find_registration_start_time)));
+  loader_wrapper_->get()->set_worker_parent_client_uuid(parent_client_uuid_);
   std::move(loader_callback_)
-      .Run(base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-          base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
-                         loader_wrapper_->get()->AsWeakPtr())));
+      .Run(NavigationLoaderInterceptor::Result(
+          base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+              base::BindOnce(&ServiceWorkerMainResourceLoader::StartRequest,
+                             loader_wrapper_->get()->AsWeakPtr())),
+          ServiceWorkerContainerHost::MaybeCreateSubresourceLoaderParams(
+              container_host_)));
 }
 
 void ServiceWorkerControlleeRequestHandler::DidStartWorker(
@@ -774,7 +779,8 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
 
 void ServiceWorkerControlleeRequestHandler::CompleteWithoutLoader() {
   fallback_callback_.Reset();
-  std::move(loader_callback_).Run({});
+  ServiceWorkerMainResourceLoaderInterceptor::CompleteWithoutLoader(
+      std::move(loader_callback_), container_host_);
 }
 
 void ServiceWorkerControlleeRequestHandler::MaybeStartServiceWorker(

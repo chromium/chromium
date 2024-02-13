@@ -5,12 +5,12 @@
 #include "ui/views/controls/native/native_view_host_aura.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
@@ -122,7 +122,7 @@ void NativeViewHostAura::NativeViewDetaching(bool destroyed) {
   // This method causes a succession of window tree changes. ScopedPause ensures
   // that occlusion is recomputed at the end of the method instead of after each
   // change.
-  absl::optional<aura::WindowOcclusionTracker::ScopedPause> pause_occlusion;
+  std::optional<aura::WindowOcclusionTracker::ScopedPause> pause_occlusion;
   if (clipping_window_)
     pause_occlusion.emplace();
 

@@ -905,48 +905,6 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
   }
 }
 
-DownloadItemModel::BubbleUIInfo
-DownloadItemModel::GetBubbleUIInfoForTailoredWarning(
-    TailoredWarningType tailored_warning_type) const {
-  switch (tailored_warning_type) {
-    case TailoredWarningType::kSuspiciousArchive:
-      return DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_ARCHIVE_MALWARE),
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_CONTINUE_SUSPICIOUS_FILE));
-    case TailoredWarningType::kCookieTheft:
-      return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
-    case TailoredWarningType::kCookieTheftWithAccountInfo: {
-      auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
-      std::string email =
-          identity_manager
-              ? identity_manager
-                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                    .email
-              : "";
-      base::UmaHistogramBoolean(
-          "SBClientDownload.TailoredWarning.HasVaidEmailForAccountInfo",
-          !email.empty());
-      if (!email.empty()) {
-        return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
-            l10n_util::GetStringFUTF16(
-                IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT_AND_ACCOUNT,
-                base::ASCIIToUTF16(email)));
-      }
-      return DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
-          l10n_util::GetStringUTF16(
-              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_COOKIE_THEFT));
-    }
-    case TailoredWarningType::kNoTailoredWarning: {
-      NOTREACHED();
-      return DownloadUIModel::BubbleUIInfo();
-    }
-  }
-}
-
 TailoredWarningType DownloadItemModel::GetTailoredWarningType() const {
   if (!base::FeatureList::IsEnabled(safe_browsing::kDownloadTailoredWarnings)) {
     return TailoredWarningType::kNoTailoredWarning;
@@ -1095,7 +1053,7 @@ void DownloadItemModel::ReviewScanningVerdict(
       };
   enterprise_connectors::ShowDownloadReviewDialog(
       GetFileNameToReportUser().LossyDisplayName(), profile(), download_,
-      web_contents, download_->GetDangerType(),
+      web_contents,
       base::BindOnce(
           command_callback, std::make_unique<DownloadItemModel>(download_),
           std::make_unique<DownloadCommands>(DownloadUIModel::GetWeakPtr()),

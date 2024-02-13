@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">保護されていない通信</translation>
 <translation id="1075079914415273530">農林業</translation>
 <translation id="1075364221219156102">パスキーを使用する</translation>
-<translation id="1078033282564106222">建物番号のオプションが選択されました</translation>
 <translation id="1080116354587839789">ウィンドウ幅に合わせる</translation>
 <translation id="1081061862829655580">トレイ 19</translation>
 <translation id="1082026381988252344">共有タブの内容をスクロールしてズームする</translation>
@@ -152,7 +151,7 @@
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
 <translation id="1266469291454105242">デバイスのロック解除</translation>
-<translation id="126728463333482584">トラッキング保護機能をいち早くお試しいただけます。この機能により、ブラウジング中のユーザーをトラッキングできないようサイトに対してサードパーティ Cookie の使用が制限されます。</translation>
+<translation id="126728463333482584">トラッキング防止機能をいち早くお試しいただけます。この機能により、ブラウジング中のユーザーをトラッキングできないようサイトに対してサードパーティ Cookie の使用が制限されます。</translation>
 <translation id="1268480293435976622">中国 #7 封筒</translation>
 <translation id="1269516672602708785">Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="1270328905573953738">引越し、移転</translation>
@@ -247,6 +246,7 @@
 <translation id="1428729058023778569">この警告は、サイトが HTTPS に対応していない場合に表示されます。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">粘着フィルム</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1431021750861456539">自動全画面表示</translation>
 <translation id="1432187715652018471">このページはサービス ハンドラのインストールを求めています。</translation>
 <translation id="1432581352905426595">検索エンジンを管理</translation>
 <translation id="1433225466058025572">ファイルをもう一度移動してみてください</translation>
@@ -586,6 +586,7 @@
 <translation id="2075497153347571252">管理者が <ph name="ORIGIN" /> で <ph name="PERMISSION" /> をブロックしました</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2080021694978766903">このポリシーで指定できるエントリは <ph name="MAX_ITEMS_LIMIT" /> 件までです。</translation>
+<translation id="2081482239432306393">番地のオプションが選択されました</translation>
 <translation id="20817612488360358">システム プロキシ設定を使用するように設定されていますが、明示的なプロキシの設定も指定されています。</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
 <translation id="2083256696566019397">すべてのアクセスで許可</translation>
@@ -613,7 +614,6 @@
 <translation id="2126374524350484896">PDF 変換アプリケーション:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ポリシーが設定されていないため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178"><ph name="LANGUAGE" />の言語パックをダウンロードしています...<ph name="PERCENT" />% 完了</translation>
 <translation id="2135799067377889518">紳士服</translation>
 <translation id="2137891579555018930">承認待ち...</translation>
 <translation id="213826338245044447">モバイルのブックマーク</translation>
@@ -1387,7 +1387,6 @@
 <translation id="3681007416295224113">証明書情報</translation>
 <translation id="3681421644246505351">Chrome では、ユーザーの最近の閲覧履歴に基づいて興味 / 関心のあるトピックを記録します。</translation>
 <translation id="3682094733650754138">住所を入力するオプションが選択されました</translation>
-<translation id="3689867156802445220">建物番号</translation>
 <translation id="3693327506115126094">本人確認の方法を選択してください</translation>
 <translation id="3698629142018988477">[サイトを作成] ボタンです。実行すると、Google サイトで新しいサイトをすばやく作成できます</translation>
 <translation id="3701325639446035885">イベント チケット販売</translation>
@@ -1412,6 +1411,7 @@
 <translation id="3723663469265383848">更新中は、デバイスを最大 10 分間使用できなくなります。</translation>
 <translation id="372429172604983730">このエラーの原因としては、ウィルス対策ソフトウェア、ファイアウォール ソフトウェア、ウェブ フィルタリング ソフトウェア、プロキシ ソフトウェアなどが考えられます。</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
+<translation id="3727309136762649052">名前空間</translation>
 <translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="3733139489341305600">自律走行車</translation>
 <translation id="3736520371357197498">危険なプログラムが削除されるより前に<ph name="BEGIN_LINK" />この安全でないサイトにアクセスする<ph name="END_LINK" />場合は、セキュリティ上のリスクについてご承知おきください。</translation>
@@ -1576,6 +1576,7 @@
 <translation id="4089152113577680600">トレイ 14</translation>
 <translation id="4092349052316400070">住所を入力してください</translation>
 <translation id="4096237801206588987">11x15 インチ</translation>
+<translation id="4098306082496067348">購入手続きに追加するには、仮想カード情報をタップします。</translation>
 <translation id="4098354747657067197">偽のサイトにアクセスしようとしています</translation>
 <translation id="4099048595830172239">機密コンテンツが表示されているときに <ph name="APPLICATION_TITLE" /> で画面を共有することは、管理者が設定したポリシーで推奨されていません。</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome のフォントサイズと書体をカスタマイズします</translation>
@@ -1899,6 +1900,7 @@
 <translation id="4729147136006144950">チャリティ、慈善活動</translation>
 <translation id="4730977633786878901">レビュー</translation>
 <translation id="4731638775147756694">このアプリケーションは管理者によってブロックされています</translation>
+<translation id="4732860731866514038"><ph name="LANGUAGE" /> の言語パックをダウンロードしています... <ph name="PERCENT" />% 完了</translation>
 <translation id="4733082559415072992">デバイスの現在地情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="4736491186715342415">自動車</translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
@@ -1920,7 +1922,6 @@
 <translation id="4757022425116568383">Chrome プロフィールのパスキー</translation>
 <translation id="4757993714154412917">偽のサイトでパスワードを入力しました。アカウントを保護するため、保存したパスワードをすぐに確認することをおすすめします。</translation>
 <translation id="4758311279753947758">連絡先情報を追加</translation>
-<translation id="4761104368405085019">マイクを使用する</translation>
 <translation id="4761326898079498987">詳細をご確認ください</translation>
 <translation id="4761869838909035636">Chrome の安全チェックを実行</translation>
 <translation id="4763196677855776703">利用規約は <ph name="URL" /> でご確認いただけます</translation>
@@ -2258,7 +2259,6 @@
             <ph name="LIST_ITEM" />Cookie とサイトデータ
             <ph name="LIST_ITEM" />フォームに入力した情報
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> が MIDI デバイスの操作と再プログラム（SysEx）をリクエストしています</translation>
 <translation id="5443468954631487277">逆の順序（上向き）</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> があなたに関する保存済みの情報を使用することを許可する</translation>
 <translation id="5447765697759493033">このサイトは翻訳されません</translation>
@@ -2285,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     システム管理者にお問い合わせください。</translation>
 <translation id="549333378215107354">サイズ 3</translation>
+<translation id="5501712702042287009">自動全画面表示</translation>
 <translation id="550365051221576010">すべて入力</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">管理対象のブックマーク</translation>
@@ -2471,7 +2472,6 @@
 <translation id="5877831137320480913">美容、フィットネス</translation>
 <translation id="5879989559903563723">ゲストモードで許可しないサイト</translation>
 <translation id="5880050725127890683">Chrome の安全チェックに移動</translation>
-<translation id="5883861433316751031">MIDI デバイスの操作と再プログラムを行いますか？</translation>
 <translation id="5884465125445718607">中国 #6 封筒</translation>
 <translation id="5887400589839399685">カードが保存されました</translation>
 <translation id="5887687176710214216">最終アクセス日: 昨日</translation>
@@ -2703,7 +2703,7 @@
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> の値は無効なため、使用されません。</translation>
 <translation id="6340739886198108203">管理者のポリシー設定では、機密コンテンツが表示されている画面の撮影や録画は推奨されていません。</translation>
 <translation id="6341434961864773665">{0,plural, =1{管理者のポリシーでは、このファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}other{管理者のポリシーでは、これらのファイルを <ph name="DESTINATION_NAME" /> にアップロードすることは推奨されていません}}</translation>
-<translation id="6344622098450209924">トラッキング保護</translation>
+<translation id="6344622098450209924">トラッキング防止</translation>
 <translation id="634500758737709758">経路案内</translation>
 <translation id="6348220984832452017">バリエーションを有効にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
@@ -2822,7 +2822,6 @@
 <translation id="6556866813142980365">やり直す</translation>
 <translation id="6557715786897013164">14x17 インチ</translation>
 <translation id="6560786330438719938">インストールまたはアンインストールしたアプリと使用頻度</translation>
-<translation id="6567084950885568327">MIDI デバイス コントロールと再プログラミング</translation>
 <translation id="6568793038316600992">[お支払い方法を管理] ボタンです。実行すると、Chrome の設定でお支払いとクレジット カードの情報を管理できます</translation>
 <translation id="6569060085658103619">拡張機能のページを表示しています</translation>
 <translation id="6569366777234823130">ドラマ映画</translation>
@@ -3205,6 +3204,7 @@
 <translation id="733354035281974745">デバイスのローカル アカウントのオーバーライド</translation>
 <translation id="7334320624316649418">順序変更のやり直し（&amp;R）</translation>
 <translation id="7335157162773372339">カメラの使用を要求できる</translation>
+<translation id="7336636595549675416">番地</translation>
 <translation id="7337248890521463931">表示する行数を増やす</translation>
 <translation id="7337706099755338005">現在のプラットフォームではご利用いただけません。</translation>
 <translation id="733923710415886693">サーバーの証明書は、証明書の透明性ポリシーを介して公開されていません。</translation>
@@ -3824,7 +3824,7 @@
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
 <translation id="8479754468255770962">ステープル（左下）</translation>
-<translation id="8479926481822108747">トラッキング保護を管理</translation>
+<translation id="8479926481822108747">トラッキング防止機能を管理</translation>
 <translation id="8483229036294884935">この住所は Google アカウント（<ph name="ACCOUNT" />）から削除されます</translation>
 <translation id="8488350697529856933">適用先</translation>
 <translation id="8490137692873530638">スタッカー 10</translation>
@@ -3913,7 +3913,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> の値がサイズ要件を満たしていません。</translation>
 <translation id="867224526087042813">署名</translation>
 <translation id="8672264262457010862">ビジネス、産業</translation>
-<translation id="8673776281896298303">MIDI デバイスの操作と再プログラム（SysEx）</translation>
 <translation id="8676424191133491403">今すぐ</translation>
 <translation id="8680536109547170164">「<ph name="QUERY" />」に対する答え: 「<ph name="ANSWER" />」</translation>
 <translation id="8681531050781943054">ウェブページ（<ph name="PAGE" />）は次の理由で読み込めませんでした:</translation>
@@ -4153,7 +4152,6 @@
 <translation id="9148507642005240123">編集の取り消し（&amp;U）</translation>
 <translation id="9148599396704355100">低価格</translation>
 <translation id="9150025764986957246">次のような内容を入力できます。</translation>
-<translation id="9150045010208374699">カメラを使用する</translation>
 <translation id="9150685862434908345">管理者はブラウザの設定をリモートで変更できます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">更新完了</translation>
 <translation id="9155211586651734179">接続されたオーディオ周辺機器</translation>

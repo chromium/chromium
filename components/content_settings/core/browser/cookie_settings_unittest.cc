@@ -60,15 +60,30 @@ constexpr char kAllowedRequestsHistogram[] =
     "API.StorageAccess.AllowedRequests2";
 #endif
 
-// NOTE: Consider modifying services/network/cookie_settings_unittest.cc if
-// applicable.
-enum TestVariables {
-  kTopLevelStorageAccessGrantEligible = 0,
+// To avoid an explosion of test cases, please don't just add a boolean to
+// the test features. Consider whether features can interact with each other and
+// whether you really need all combinations.
+
+// Controls features that can unblock 3p cookies.
+enum GrantSource {
+  // Not eligible for additional grants.
+  kNoneGranted,
+  // Eligible for StorageAccess grants.
   kStorageAccessGrantsEligible,
+  // Eligible for TopLevelStorageAccess grants.
+  kTopLevelStorageAccessGrantsEligible,
   // Whether `net::features::kTpcdTrialSettings` is enabled.
   k3pcdTrialEligible,
   // Whether `net::features::kTpcdMetadataGrants` is enabled.
   kTpcdMetadataGrantsEligible,
+
+  kGrantSourceCount
+};
+
+// NOTE: Consider modifying services/network/cookie_settings_unittest.cc if
+// applicable.
+enum TestVariables {
+  kGrantSource,
   // Whether `content_settings_features::kHostIndexedMetadataGrants` is enabled
   kIndexedContentSettings,
 };
@@ -207,10 +222,7 @@ class CookieSettingsTestBase {
 class CookieSettingsTest
     : public CookieSettingsTestBase,
       public testing::TestWithParam<
-          std::tuple</*kStorageAccessGrantsEligible*/ bool,
-                     /*kTopLevelStorageAccessGrantEligible*/ bool,
-                     /*k3pcdTrialEligible*/ bool,
-                     /*kTpcdMetadataGrantsEligible*/ bool,
+          std::tuple</*kGrantSource*/ GrantSource,
                      /*kHostIndexedMetadataGrantsEnabled*/ bool>> {
  public:
   CookieSettingsTest() {
@@ -252,20 +264,23 @@ class CookieSettingsTest
   void SetUp() override { CookieSettingsTestBase::SetUp(); }
 
   bool IsStorageAccessGrantEligible() const {
-    return std::get<TestVariables::kStorageAccessGrantsEligible>(GetParam());
+    return std::get<TestVariables::kGrantSource>(GetParam()) ==
+           GrantSource::kStorageAccessGrantsEligible;
   }
 
   bool IsTopLevelStorageAccessGrantEligible() const {
-    return std::get<TestVariables::kTopLevelStorageAccessGrantEligible>(
-        GetParam());
+    return std::get<TestVariables::kGrantSource>(GetParam()) ==
+           GrantSource::kTopLevelStorageAccessGrantsEligible;
   }
 
   bool Is3pcdTrialEligible() const {
-    return std::get<TestVariables::k3pcdTrialEligible>(GetParam());
+    return std::get<TestVariables::kGrantSource>(GetParam()) ==
+           GrantSource::k3pcdTrialEligible;
   }
 
   bool Is3pcdMetadataGrantEligible() const {
-    return std::get<TestVariables::kTpcdMetadataGrantsEligible>(GetParam());
+    return std::get<TestVariables::kGrantSource>(GetParam()) ==
+           GrantSource::kTpcdMetadataGrantsEligible;
   }
 
   bool IsIndexedContentSettingsEnabled() const {
@@ -1888,15 +1903,9 @@ std::string CustomTestName(
   std::stringstream custom_test_name;
   // clang-format off
   custom_test_name
-      << "TopLevelStorageAccessGrantEligible_"
-      << std::get<TestVariables::kTopLevelStorageAccessGrantEligible>(
+      << "GrantSource_"
+      << std::get<TestVariables::kGrantSource>(
              info.param)
-      << "_StorageAccessGrantsEligible_"
-      << std::get<TestVariables::kStorageAccessGrantsEligible>(info.param)
-      << "_3pcdTrialEligible_"
-      << std::get<TestVariables::k3pcdTrialEligible>(info.param)
-      << "_TpcdMetadataGrantsEligible_"
-      << std::get<TestVariables::kTpcdMetadataGrantsEligible>(info.param)
       << "_HostIndexedMetadataGrantsEnabled_"
       << std::get<TestVariables::kIndexedContentSettings>(info.param);
   // clang-format on
@@ -1906,37 +1915,27 @@ std::string CustomTestName(
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTest,
-    testing::Combine(testing::Bool(),
+    testing::Combine(
 #if BUILDFLAG(IS_IOS)
-                     testing::Values(false),
-                     testing::Values(false),
-                     testing::Values(false),
-                     testing::Values(false)
+        testing::Values(GrantSource::kNoneGranted),
 #else
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool()
+        testing::Range(GrantSource::kNoneGranted,
+                       GrantSource::kGrantSourceCount),
 #endif
-                         ),
+        testing::Bool()),
     CustomTestName);
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CookieSettingsTestUserBypass,
-    testing::Combine(testing::Bool(),
+    testing::Combine(
 #if BUILDFLAG(IS_IOS)
-                     testing::Values(false),
-                     testing::Values(false),
-                     testing::Values(false),
-                     testing::Values(false)
+        testing::Values(GrantSource::kNoneGranted),
 #else
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool()
+        testing::Range(GrantSource::kNoneGranted,
+                       GrantSource::kGrantSourceCount),
 #endif
-                         ),
+        testing::Bool()),
     CustomTestName);
 
 #if !BUILDFLAG(IS_IOS)

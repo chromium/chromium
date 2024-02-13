@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
 
@@ -1394,6 +1396,33 @@ TEST_F(FrameSelectionTest, SelectionBounds) {
   GetPage().SetPageScaleFactor(page_scale_factor);
   EXPECT_EQ(PhysicalRect(0, node_margin_top, node_width, node_height),
             frame_view->FrameToDocument(Selection().AbsoluteUnclippedBounds()));
+}
+
+TEST_F(FrameSelectionTest, AbosluteSelectionBoundsAfterScroll) {
+  SetBodyContent(
+      "<style>"
+      "  html, body { height: 2000px; }"
+      "</style>"
+      "<div style='height:1000px;'>"
+      "  <p style='margin-top:100px; font-size:30px'>text</p>"
+      "</div>");
+  Selection().SelectAll();
+
+  gfx::Rect initial_anchor, initial_focus;
+  Selection().ComputeAbsoluteBounds(initial_anchor, initial_focus);
+
+  // Scroll 50px down.
+  const int scroll_offset = 50;
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
+
+  // Check absolute selection bounds are updated.
+  gfx::Rect anchor_after_scroll, focus_after_scroll;
+  Selection().ComputeAbsoluteBounds(anchor_after_scroll, focus_after_scroll);
+  EXPECT_EQ(anchor_after_scroll,
+            initial_anchor - gfx::Vector2d(0, scroll_offset));
+  EXPECT_EQ(focus_after_scroll,
+            initial_focus - gfx::Vector2d(0, scroll_offset));
 }
 
 TEST_F(FrameSelectionTest, SelectionContainsBidiBoundary) {

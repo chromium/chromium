@@ -6,12 +6,16 @@ package org.chromium.net;
 
 import android.content.Context;
 import android.net.http.HttpResponseCache;
+import android.os.Process;
+import android.os.SystemClock;
 import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.net.impl.CronetLogger;
+import org.chromium.net.impl.CronetLoggerFactory;
+
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandlerFactory;
@@ -454,7 +458,7 @@ public abstract class CronetEngine {
         }
 
         protected ExperimentalCronetEngine buildExperimental() {
-            int implLevel = getImplementationApiLevel();
+            int implLevel = getImplApiLevel(mBuilderDelegate);
             if (implLevel != -1 && implLevel < getMaximumApiLevel()) {
                 Log.w(
                         TAG,
@@ -486,17 +490,40 @@ public abstract class CronetEngine {
          * @return the created {@code ICronetEngineBuilder}.
          */
         private static ICronetEngineBuilder createBuilderDelegate(Context context) {
-            List<CronetProvider> providers =
-                    new ArrayList<>(CronetProvider.getAllProviders(context));
-            CronetProvider provider = getEnabledCronetProviders(context, providers).get(0);
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Log.d(
-                        TAG,
-                        String.format(
-                                "Using '%s' provider for creating CronetEngine.Builder.",
-                                provider));
+            var startUptimeMillis = SystemClock.uptimeMillis();
+            CronetProvider.ProviderInfo providerInfo =
+                    getEnabledCronetProviders(
+                                    context,
+                                    new ArrayList<>(CronetProvider.getAllProviderInfos(context)))
+                            .get(0);
+            var logger = CronetLoggerFactory.createLogger(context, providerInfo.logSource);
+            var logInfo = new CronetLogger.CronetEngineBuilderInitializedInfo();
+            try {
+                logInfo.creationSuccessful = false;
+                logInfo.author = CronetLogger.CronetEngineBuilderInitializedInfo.Author.API;
+                logInfo.source = providerInfo.logSource;
+                logInfo.uid = Process.myUid();
+                logInfo.apiVersion = new CronetLogger.CronetVersion(ApiVersion.getCronetVersion());
+                if (Log.isLoggable(TAG, Log.DEBUG)) {
+                    Log.d(
+                            TAG,
+                            String.format(
+                                    "Using '%s' provider for creating CronetEngine.Builder.",
+                                    providerInfo.provider));
+                }
+                var builderDelegate = providerInfo.provider.createBuilder().mBuilderDelegate;
+                var implCronetVersion = getImplCronetVersion(builderDelegate);
+                if (implCronetVersion != null) {
+                    logInfo.implVersion = new CronetLogger.CronetVersion(implCronetVersion);
+                }
+                logInfo.cronetInitializationRef = builderDelegate.getLogCronetInitializationRef();
+                logInfo.creationSuccessful = true;
+                return builderDelegate;
+            } finally {
+                logInfo.engineBuilderCreatedLatencyMillis =
+                        (int) (SystemClock.uptimeMillis() - startUptimeMillis);
+                logger.logCronetEngineBuilderInitializedInfo(logInfo);
             }
-            return provider.createBuilder().mBuilderDelegate;
         }
 
         /**
@@ -507,11 +534,11 @@ public abstract class CronetEngine {
          * @param providers the list of enabled and disabled providers to filter out and sort.
          * @return the sorted list of enabled providers. The list contains at least one provider.
          * @throws RuntimeException is the list of providers is empty or all of the providers are
-         * disabled.
+         *     disabled.
          */
         @VisibleForTesting
-        static List<CronetProvider> getEnabledCronetProviders(
-                Context context, List<CronetProvider> providers) {
+        static List<CronetProvider.ProviderInfo> getEnabledCronetProviders(
+                Context context, List<CronetProvider.ProviderInfo> providers) {
             // Check that there is at least one available provider.
             if (providers.isEmpty()) {
                 throw new RuntimeException(
@@ -520,9 +547,9 @@ public abstract class CronetEngine {
             }
 
             // Exclude disabled providers from the list.
-            for (Iterator<CronetProvider> i = providers.iterator(); i.hasNext(); ) {
-                CronetProvider provider = i.next();
-                if (!provider.isEnabled()) {
+            for (Iterator<CronetProvider.ProviderInfo> i = providers.iterator(); i.hasNext(); ) {
+                CronetProvider.ProviderInfo providerInfo = i.next();
+                if (!providerInfo.provider.isEnabled()) {
                     i.remove();
                 }
             }
@@ -537,18 +564,22 @@ public abstract class CronetEngine {
             // Sort providers based on version and type.
             Collections.sort(
                     providers,
-                    new Comparator<CronetProvider>() {
+                    new Comparator<CronetProvider.ProviderInfo>() {
                         @Override
-                        public int compare(CronetProvider p1, CronetProvider p2) {
+                        public int compare(
+                                CronetProvider.ProviderInfo p1, CronetProvider.ProviderInfo p2) {
                             // The fallback provider should always be at the end of the list.
-                            if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(p1.getName())) {
+                            if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(
+                                    p1.provider.getName())) {
                                 return 1;
                             }
-                            if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(p2.getName())) {
+                            if (CronetProvider.PROVIDER_NAME_FALLBACK.equals(
+                                    p2.provider.getName())) {
                                 return -1;
                             }
                             // A provider with higher version should go first.
-                            return -compareVersions(p1.getVersion(), p2.getVersion());
+                            return -compareVersions(
+                                    p1.provider.getVersion(), p2.provider.getVersion());
                         }
                     });
             return providers;
@@ -598,21 +629,57 @@ public abstract class CronetEngine {
         }
 
         /**
-         * Returns the implementation version, the implementation being represented by the delegate
-         * builder, or {@code -1} if the version couldn't be retrieved.
+         * Returns the ImplVersion class from the impl.
+         *
+         * <p>NOTE: this functionality is not available if the impl was built before
+         * https://crrev.com/c/5190726, in which case this function will return null.
+         *
+         * @see org.chromium.net.impl.ImplVersion
          */
-        private int getImplementationApiLevel() {
+        private static Class<?> getImplVersionClass(ICronetEngineBuilder builderDelegate) {
             try {
-                ClassLoader implClassLoader = mBuilderDelegate.getClass().getClassLoader();
-                Class<?> implVersionClass =
-                        implClassLoader.loadClass("org.chromium.net.impl.ImplVersion");
-                Method getApiLevel = implVersionClass.getMethod("getApiLevel");
-                int implementationApiLevel = (Integer) getApiLevel.invoke(null);
+                return builderDelegate
+                        .getClass()
+                        .getClassLoader()
+                        .loadClass("org.chromium.net.impl.ImplVersion");
+            } catch (ClassNotFoundException exception) {
+                return null;
+            }
+        }
 
-                return implementationApiLevel;
-            } catch (Exception e) {
-                // Any exception in the block above isn't critical, don't bother the app about it.
-                return -1;
+        /**
+         * Returns the API level that the impl was built against.
+         *
+         * <p>NOTE: this functionality is not available if the impl was built before
+         * https://crrev.com/c/5190726, in which case this function will return -1.
+         *
+         * @see org.chromium.net.impl.ImplVersion#getApiLevel
+         */
+        private static int getImplApiLevel(ICronetEngineBuilder builderDelegate) {
+            try {
+                var implVersionClass = getImplVersionClass(builderDelegate);
+                if (implVersionClass == null) return -1;
+                return (Integer) implVersionClass.getMethod("getApiLevel").invoke(null);
+            } catch (ReflectiveOperationException exception) {
+                throw new RuntimeException("Failed to retrieve Cronet impl API level", exception);
+            }
+        }
+
+        /**
+         * Returns the Cronet version that the impl was built from.
+         *
+         * <p>NOTE: this functionality is not available if the impl was built before
+         * https://crrev.com/c/5190726, in which case this function will return null.
+         *
+         * @see org.chromium.net.impl.ImplVersion#getCronetVersion
+         */
+        private static String getImplCronetVersion(ICronetEngineBuilder builderDelegate) {
+            try {
+                var implVersionClass = getImplVersionClass(builderDelegate);
+                if (implVersionClass == null) return null;
+                return (String) implVersionClass.getMethod("getCronetVersion").invoke(null);
+            } catch (ReflectiveOperationException exception) {
+                throw new RuntimeException("Failed to retrieve Cronet impl version", exception);
             }
         }
     }

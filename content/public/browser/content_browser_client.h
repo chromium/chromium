@@ -230,7 +230,7 @@ class FontAccessDelegate;
 class HidDelegate;
 class IdentityRequestDialogController;
 class LoginDelegate;
-class DigitalCredentialProvider;
+class DigitalIdentityProvider;
 class MediaObserver;
 class NavigationHandle;
 class NavigationThrottle;
@@ -297,10 +297,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::optional<ClipboardPasteData> clipboard_paste_data)>;
 
   // Callback used with the `IsClipboardCopyAllowedByPolicy()` method.
-  // If the copy is allowed, nullopt is passed to the callback. Otherwise, the
-  // data that should be put in the clipboard instead is passed to the callback.
+  // If the copy is allowed, nullopt is passed to the callback and `data` is
+  // expected to be copied. Otherwise, `replacement_data` should be written in
+  // plaintext to the clipboard.
   using IsClipboardCopyAllowedCallback =
-      base::OnceCallback<void(std::optional<std::u16string> replacement_data)>;
+      base::OnceCallback<void(const std::u16string& data,
+                              std::optional<std::u16string> replacement_data)>;
 
   virtual ~ContentBrowserClient() = default;
 
@@ -2473,9 +2475,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // implementation might show UX to the user and call `callback`
   // asynchronously.
   virtual void IsClipboardCopyAllowedByPolicy(
-      content::BrowserContext* browser_context,
-      const GURL& url,
-      size_t data_size_in_bytes,
+      const ClipboardEndpoint& source,
+      const ClipboardMetadata& metadata,
+      const std::u16string& data,
       IsClipboardCopyAllowedCallback callback);
 
 #if BUILDFLAG(ENABLE_VR)
@@ -2564,8 +2566,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   CreateIdentityRequestDialogController(WebContents* web_contents);
 
   // Creates a digital credential provider to fetch from native apps.
-  virtual std::unique_ptr<DigitalCredentialProvider>
-  CreateDigitalCredentialProvider();
+  virtual std::unique_ptr<DigitalIdentityProvider>
+  CreateDigitalIdentityProvider();
 
   // Returns true if JS dialogs from an iframe with different origin from the
   // main frame should be disallowed.
@@ -2703,6 +2705,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
       WebContents* web_contents);
 
+  // Return whether entering fullscreen requires transient activation.
+  // The embedder may waive that requirement for user settings or tests.
+  virtual bool IsTransientActivationRequiredForHtmlFullscreen(
+      content::RenderFrameHost* render_frame_host);
+
   // Checks if `origin` should always receive a first-party StorageKey
   // in RenderFrameHostImpl. Currently in Chrome, this is true for all
   // extension origins.
@@ -2788,6 +2795,15 @@ class CONTENT_EXPORT ContentBrowserClient {
   // subresources if possible.
   virtual void MaybePrewarmHttpDiskCache(BrowserContext& browser_context,
                                          const GURL& navigation_url);
+
+  enum class MultiCaptureChanged { kStarted, kStopped };
+
+  // Notifies embedders that a the `state` of a multi capture with `label`
+  // changed for a certain `capturer_rfh_id`.
+  virtual void NotifyMultiCaptureStateChanged(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const std::string& label,
+      MultiCaptureChanged state);
 };
 
 }  // namespace content

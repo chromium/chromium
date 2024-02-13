@@ -2871,6 +2871,9 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
 class IntegrationInstallerResultsTestNewInstalls : public IntegrationTestMsi {};
 
 TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
+  // Delay download a bit to allow cancellation.
+  test_server_->set_download_delay(base::Seconds(1));
+
   const base::FilePath crx_relative_path = GetInstallerPath(kMsiCrx);
 
   ASSERT_NO_FATAL_FAILURE(Install());

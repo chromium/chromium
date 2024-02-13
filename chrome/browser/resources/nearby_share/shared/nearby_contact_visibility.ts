@@ -27,12 +27,13 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {ContactManagerInterface, ContactRecord, DownloadContactsObserverReceiver, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import type {ContactManagerInterface, ContactRecord, DownloadContactsObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
 import {getTemplate} from './nearby_contact_visibility.html.js';
-import {NearbySettings} from './nearby_share_settings_mixin.js';
+import type {NearbySettings} from './nearby_share_settings_mixin.js';
 
 enum ContactsState {
   PENDING = 'pending',

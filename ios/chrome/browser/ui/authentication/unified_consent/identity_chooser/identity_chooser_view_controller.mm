@@ -39,8 +39,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation IdentityChooserViewController
 
-@synthesize presentationDelegate = _presentationDelegate;
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 

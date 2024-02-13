@@ -32,8 +32,8 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -289,7 +289,7 @@ class UserImageManagerTestBase : public LoginManagerTest,
         user_manager::UserManager::Get()->GetActiveUser();
     ASSERT_TRUE(user);
     UserImageManagerImpl* uim = static_cast<UserImageManagerImpl*>(
-        ChromeUserManager::Get()->GetUserImageManager(user->GetAccountId()));
+        UserImageManagerRegistry::Get()->GetManager(user->GetAccountId()));
     if (uim->job_.get()) {
       run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, PRE_SaveAndLoadUserImage) {
   run_loop_ = std::make_unique<base::RunLoop>();
   const gfx::ImageSkia& image = default_user_image::GetStubDefaultImage();
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
+      UserImageManagerRegistry::Get()->GetManager(test_account_id1_);
   user_image_manager->SaveUserImage(user_manager::UserImage::CreateAndEncode(
       image, user_manager::UserImage::FORMAT_JPEG));
   run_loop_->Run();
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserDefaultImageIndex) {
   UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
 
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
+      UserImageManagerRegistry::Get()->GetManager(test_account_id1_);
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
 
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImage) {
 
   run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
+      UserImageManagerRegistry::Get()->GetManager(test_account_id1_);
   user_image_manager->SaveUserImage(user_manager::UserImage::CreateAndEncode(
       custom_image, user_manager::UserImage::FORMAT_JPEG));
   run_loop_->Run();
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromFile) {
 
   run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
+      UserImageManagerRegistry::Get()->GetManager(test_account_id1_);
   user_image_manager->SaveUserImageFromFile(custom_image_path);
   run_loop_->Run();
 
@@ -506,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromProfileImage) {
 
   run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
+      UserImageManagerRegistry::Get()->GetManager(test_account_id1_);
   user_image_manager->SaveUserImageFromProfileImage();
   run_loop_->Run();
 
@@ -702,7 +702,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   EXPECT_TRUE(default_user_image::IsInCurrentImageSet(user_image_index));
 
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
+      UserImageManagerRegistry::Get()->GetManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(user_image_index);
 
   EXPECT_TRUE(user->HasDefaultImage());
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   // Choose a user image. Verify that the chosen user image is set and
   // persisted.
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
+      UserImageManagerRegistry::Get()->GetManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
 
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, UserDoesNotOverridePolicy) {
   // Choose a different user image. Verify that the user image does not change
   // as policy takes precedence.
   UserImageManager* user_image_manager =
-      ChromeUserManager::Get()->GetUserImageManager(enterprise_account_id_);
+      UserImageManagerRegistry::Get()->GetManager(enterprise_account_id_);
   user_image_manager->SaveUserDefaultImageIndex(
       default_user_image::kFirstDefaultImageIndex);
 

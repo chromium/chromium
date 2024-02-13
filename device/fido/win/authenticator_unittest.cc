@@ -32,7 +32,7 @@ namespace {
 
 using MakeCredentialCallbackReceiver = test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    absl::optional<AuthenticatorMakeCredentialResponse>>;
+    std::optional<AuthenticatorMakeCredentialResponse>>;
 
 using GetAssertionCallbackReceiver = test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,

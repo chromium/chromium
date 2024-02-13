@@ -16,9 +16,9 @@ class Button;
 
 // This class is used to notify the view's theme changes to its delegates.
 class ASH_EXPORT NetworkFeatureTile : public FeatureTile {
- public:
-  METADATA_HEADER(NetworkFeatureTile);
+  METADATA_HEADER(NetworkFeatureTile, FeatureTile)
 
+ public:
   class Delegate {
    public:
     virtual void OnFeatureTileThemeChanged() = 0;

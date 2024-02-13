@@ -6,6 +6,7 @@
 #define UI_VIEWS_BUBBLE_BUBBLE_DIALOG_DELEGATE_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -86,7 +86,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // TODO(ellyjones): Remove overrides of GetAnchorRect() and make this not
   // virtual.
   virtual gfx::Rect GetAnchorRect() const;
-  const absl::optional<gfx::Rect>& anchor_rect() const { return anchor_rect_; }
+  const std::optional<gfx::Rect>& anchor_rect() const { return anchor_rect_; }
   void SetAnchorRect(const gfx::Rect& rect);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -341,7 +341,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
       allowed_class_names_for_testing_ = value;
     }
 
-    absl::optional<std::string> GetBubbleName() const;
+    std::optional<std::string> GetBubbleName() const;
 
     base::WeakPtr<BubbleUmaLogger> GetWeakPtr();
 
@@ -355,9 +355,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
                    Value value) const;
 
    private:
-    absl::optional<raw_ptr<views::View>> bubble_view_;
-    absl::optional<raw_ptr<views::BubbleDialogDelegate>> delegate_;
-    absl::optional<base::span<const char*>> allowed_class_names_for_testing_;
+    std::optional<raw_ptr<views::View>> bubble_view_;
+    std::optional<raw_ptr<views::BubbleDialogDelegate>> delegate_;
+    std::optional<base::span<const char*>> allowed_class_names_for_testing_;
     base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
   };
 
@@ -472,7 +472,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // provided) should be highlighted when this bubble is shown.
   bool highlight_button_when_shown_ = true;
 
-  mutable absl::optional<gfx::Rect> anchor_rect_;
+  mutable std::optional<gfx::Rect> anchor_rect_;
 
   bool accept_events_ = true;
   gfx::NativeView parent_window_ = gfx::NativeView();
@@ -506,15 +506,15 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 #endif
 
   // Used to ensure the button remains anchored while this dialog is open.
-  absl::optional<Button::ScopedAnchorHighlight> button_anchor_higlight_;
+  std::optional<Button::ScopedAnchorHighlight> button_anchor_higlight_;
 
   // The helper class that logs common bubble metrics.
   BubbleUmaLogger bubble_uma_logger_;
 
-  absl::optional<base::TimeTicks> bubble_created_time_;
+  std::optional<base::TimeTicks> bubble_created_time_;
 
   // Timestamp when the bubble turns visible.
-  absl::optional<base::TimeTicks> bubble_shown_time_;
+  std::optional<base::TimeTicks> bubble_shown_time_;
 
   // Cumulated time of bubble being visible.
   base::TimeDelta bubble_shown_duration_;

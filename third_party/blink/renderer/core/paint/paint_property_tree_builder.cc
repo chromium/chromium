@@ -116,8 +116,7 @@ PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
       was_layout_shift_root(false),
       global_main_thread_scrolling_reasons(0),
       composited_scrolling_preference(
-          static_cast<unsigned>(CompositedScrollingPreference::kDefault)),
-      transform_or_clip_added_or_removed(false) {}
+          static_cast<unsigned>(CompositedScrollingPreference::kDefault)) {}
 
 void VisualViewportPaintPropertyTreeBuilder::Update(
     LocalFrameView& main_frame_view,
@@ -348,11 +347,17 @@ class FragmentPaintPropertyTreeBuilder {
   void OnUpdateTransform(PaintPropertyChangeType change) {
     properties_changed_.transform_changed =
         std::max(properties_changed_.transform_changed, change);
+    properties_changed_.transform_change_is_scroll_translation_only = false;
+  }
+  void OnUpdateScrollTranslation(PaintPropertyChangeType change) {
+    properties_changed_.transform_changed =
+        std::max(properties_changed_.transform_changed, change);
   }
   void OnClearTransform(bool cleared) {
     if (cleared) {
       properties_changed_.transform_changed =
           PaintPropertyChangeType::kNodeAddedOrRemoved;
+      properties_changed_.transform_change_is_scroll_translation_only = false;
     }
   }
 
@@ -2115,6 +2120,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
   if (old_transform != new_transform) {
     properties_changed_.transform_changed =
         PaintPropertyChangeType::kNodeAddedOrRemoved;
+    properties_changed_.transform_change_is_scroll_translation_only = false;
   }
   if (old_clip != new_clip) {
     properties_changed_.clip_changed =
@@ -2705,7 +2711,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
           }
         }
       }
-      OnUpdateTransform(effective_change_type);
+      OnUpdateScrollTranslation(effective_change_type);
     } else {
       OnClearTransform(properties_->ClearScrollTranslation());
     }
@@ -3241,6 +3247,7 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
     if (properties->HasTransformNode()) {
       properties_changed_.transform_changed =
           PaintPropertyChangeType::kNodeAddedOrRemoved;
+      properties_changed_.transform_change_is_scroll_translation_only = false;
     }
     if (properties->HasClipNode()) {
       properties_changed_.clip_changed =
@@ -3378,21 +3385,10 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
                                            GetFragmentData());
   builder.UpdateForSelf();
   properties_changed_.Merge(builder.PropertiesChanged());
-  context_.transform_or_clip_added_or_removed |=
-      properties_changed_.TransformOrClipAddedOrRemoved();
 
   if (!PrePaintDisableSideEffectsScope::IsDisabled()) {
     object_.GetMutableForPainting()
         .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(false);
-
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-        context_.transform_or_clip_added_or_removed) {
-      // Some of such changes can't be captured by IntersectionObservation::
-      // InvalidateCachedRectsIfNeeded(), e.g. when if LocalBorderBoxProperties
-      // now points to the parent of a removed paint property.
-      object_.GetMutableForPainting()
-          .InvalidateIntersectionObserverCachedRects();
-    }
   }
 }
 
@@ -3474,13 +3470,22 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
           PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationBlocked;
     }
   }
+
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+      (properties_changed_.transform_changed >
+           (properties_changed_.transform_change_is_scroll_translation_only
+                ? PaintPropertyChangeType::kChangedOnlySimpleValues
+                : PaintPropertyChangeType::kUnchanged) ||
+       properties_changed_.clip_changed > PaintPropertyChangeType::kUnchanged ||
+       properties_changed_.scroll_changed >
+           PaintPropertyChangeType::kUnchanged)) {
+    object_.GetFrameView()->SetIntersectionObservationState(
+        LocalFrameView::kDesired);
+  }
+
   if (is_isolated) {
     context_.force_subtree_update_reasons &=
         ~PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationBlocked;
-    context_.transform_or_clip_added_or_removed = false;
-  } else {
-    context_.transform_or_clip_added_or_removed |=
-        properties_changed_.TransformOrClipAddedOrRemoved();
   }
 }
 
@@ -3533,14 +3538,21 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
       std::move(transform_and_origin), animation_state);
   DirectlyUpdateCcTransform(*transform, object, effective_change_type);
 
+  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
+      effective_change_type > PaintPropertyChangeType::kUnchanged) {
+    object.GetFrameView()->SetIntersectionObservationState(
+        LocalFrameView::kDesired);
+  }
+
   if (effective_change_type >=
       PaintPropertyChangeType::kChangedOnlySimpleValues) {
     object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
   }
 
-  PaintPropertiesChangeInfo properties_changed;
-  properties_changed.transform_changed = effective_change_type;
-
+  PaintPropertiesChangeInfo properties_changed{
+      .transform_changed = effective_change_type,
+      .transform_change_is_scroll_translation_only = false,
+  };
   CullRectUpdater::PaintPropertiesChanged(object, properties_changed);
 }
 

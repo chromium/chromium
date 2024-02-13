@@ -22,7 +22,8 @@
 <div id="timezoneRadioContainer" class="settings-box first">
   <settings-radio-group id="timeZoneRadioGroup"
       pref="{{prefs.generated.resolve_timezone_by_geolocation_on_off}}"
-      deep-link-focus-id$="[[Setting.kChangeTimeZone]]">
+      deep-link-focus-id$="[[Setting.kChangeTimeZone]]"
+      disabled="[[isGuest_]]">
     <controlled-radio-button
         id="timeZoneAutoDetectOn"
         name="true"

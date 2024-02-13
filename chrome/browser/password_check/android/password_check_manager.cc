@@ -8,9 +8,11 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_check/android/password_check_bridge.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/leak_detection/leak_detection_check_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -27,7 +29,7 @@
 using password_manager::PasswordForm;
 using PasswordCheckUIStatus = password_manager::PasswordCheckUIStatus;
 using State = password_manager::BulkLeakCheckService::State;
-using SyncState = password_manager::SyncState;
+using SyncState = password_manager::sync_util::SyncState;
 using CredentialUIEntry = password_manager::CredentialUIEntry;
 using CredentialFacet = password_manager::CredentialFacet;
 using CompromisedCredentialForUI =
@@ -316,16 +318,12 @@ bool PasswordCheckManager::CanUseAccountCheck() const {
   SyncState sync_state = password_manager::sync_util::GetPasswordSyncState(
       SyncServiceFactory::GetForProfile(profile_));
   switch (sync_state) {
-    case SyncState::kNotSyncing:
+    case SyncState::kNotActive:
       ABSL_FALLTHROUGH_INTENDED;
-    case SyncState::kSyncingWithCustomPassphrase:
-      ABSL_FALLTHROUGH_INTENDED;
-    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
+    case SyncState::kActiveWithCustomPassphrase:
       return false;
 
-    case SyncState::kSyncingNormalEncryption:
-      ABSL_FALLTHROUGH_INTENDED;
-    case SyncState::kAccountPasswordsActiveNormalEncryption:
+    case SyncState::kActiveWithNormalEncryption:
       return true;
   }
 }
@@ -347,4 +345,11 @@ void PasswordCheckManager::ResetPrecondition(CheckPreconditions condition) {
 
 void PasswordCheckManager::OnEditUIDismissed() {
   credential_edit_bridge_.reset();
+}
+
+bool PasswordCheckManager::HasAccountForRequest() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  return password_manager::LeakDetectionCheckImpl::HasAccountForRequest(
+      identity_manager);
 }

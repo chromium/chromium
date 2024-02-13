@@ -10,7 +10,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
-#include "services/network/public/mojom/cert_verifier_service.mojom-forward.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace content {

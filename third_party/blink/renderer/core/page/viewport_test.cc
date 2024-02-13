@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
@@ -91,6 +92,7 @@ class ViewportTest : public testing::Test {
     blink::test::RunPendingTasks();
   }
 
+  test::TaskEnvironment task_environment_;
   std::string base_url_;
   std::string chrome_url_;
 

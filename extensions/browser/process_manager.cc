@@ -607,7 +607,7 @@ void ProcessManager::CloseBackgroundHosts() {
   // Delete from a copy because deletion of the ExtensionHosts will trigger
   // callbacks to modify the |background_hosts_| set.
   ExtensionHostSet hosts_copy = background_hosts_;
-  for (auto* host : hosts_copy) {
+  for (ExtensionHost* host : hosts_copy) {
     // Deleting the host will cause a OnExtensionHostDestroyed which will cause
     // the removal of the host from the |background_hosts_| set in the
     // OnExtensionHostDestroyed() method below.

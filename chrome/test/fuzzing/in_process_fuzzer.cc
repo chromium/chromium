@@ -27,6 +27,28 @@ extern "C" int LLVMFuzzerRunDriver(int* argc,
                                    int (*UserCb)(const uint8_t* Data,
                                                  size_t Size));
 
+namespace {
+
+std::string_view RunLoopTimeoutBehaviorToString(
+    RunLoopTimeoutBehavior behavior) {
+  switch (behavior) {
+    case RunLoopTimeoutBehavior::kDefault:
+      return "kDefault";
+    case RunLoopTimeoutBehavior::kContinue:
+      return "kContinue";
+    case RunLoopTimeoutBehavior::kDeclareInfiniteLoop:
+      return "kDeclareInfiniteLoop";
+  }
+  return "kUnknown";
+}
+
+void LogRunLoopTimeoutCallback(RunLoopTimeoutBehavior behavior) {
+  LOG(INFO) << "Custom RunLoop timeout callback triggered ("
+            << RunLoopTimeoutBehaviorToString(behavior) << ").";
+}
+
+}  // namespace
+
 InProcessFuzzerFactoryBase* g_in_process_fuzzer_factory;
 
 InProcessFuzzer::InProcessFuzzer(InProcessFuzzerOptions options)
@@ -65,7 +87,10 @@ void InProcessFuzzer::SetUp() {
 void InProcessFuzzer::KeepRunningOnTimeout() {
   base::test::ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
       std::make_unique<base::test::ScopedRunLoopTimeout::TimeoutCallback>(
-          base::DoNothing()));
+          base::IgnoreArgs<const base::Location&,
+                           base::RepeatingCallback<std::string()>,
+                           const base::Location&>(base::BindRepeating(
+              &LogRunLoopTimeoutCallback, RunLoopTimeoutBehavior::kContinue))));
 }
 
 void InProcessFuzzer::DeclareInfiniteLoopOnTimeout() {
@@ -73,8 +98,12 @@ void InProcessFuzzer::DeclareInfiniteLoopOnTimeout() {
       std::make_unique<base::test::ScopedRunLoopTimeout::TimeoutCallback>(
           base::IgnoreArgs<const base::Location&,
                            base::RepeatingCallback<std::string()>,
-                           const base::Location&>(base::BindRepeating(
-              &InProcessFuzzer::DeclareInfiniteLoop, base::Unretained(this)))));
+                           const base::Location&>(
+              base::BindRepeating(&InProcessFuzzer::DeclareInfiniteLoop,
+                                  base::Unretained(this)))
+              .Then(base::BindRepeating(
+                  &LogRunLoopTimeoutCallback,
+                  RunLoopTimeoutBehavior::kDeclareInfiniteLoop))));
 }
 
 void InProcessFuzzer::Run(

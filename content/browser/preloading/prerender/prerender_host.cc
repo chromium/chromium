@@ -364,10 +364,6 @@ bool PrerenderHost::ShouldPreserveAbortedURLs() {
   return false;
 }
 
-WebContents* PrerenderHost::DeprecatedGetWebContents() {
-  return &*web_contents_;
-}
-
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.

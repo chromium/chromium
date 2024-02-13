@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/supports_user_data.h"
@@ -64,7 +65,8 @@ struct AgentSchedulingGroupHostUserData : public base::SupportsUserData::Data {
   // This is used solely to DCHECK the invariant that a SiteInstanceGroup cannot
   // request an AgentSchedulingGroup twice from the same RenderProcessHost.
 #if DCHECK_IS_ON()
-  std::set<const SiteInstanceGroup*> site_instance_groups;
+  std::set<raw_ptr<const SiteInstanceGroup, SetExperimental>>
+      site_instance_groups;
 #endif
 };
 
@@ -175,15 +177,20 @@ void AgentSchedulingGroupHost::RenderProcessExited(
   // interface are reinitialized.
   ResetIPC();
 
-  // RenderProcessHostImpl will attempt to call this method later if it has not
-  // already been called. We call it now since `SetUpIPC()` relies on it being
-  // called, thus setting up the IPC channel and mojom::Renderer interface.
-  process_->EnableSendQueue();
+  // We don't want to reinitialize the RenderProcessHost's IPC channel when
+  // we are going to immediately get a call to RenderProcessHostDestroyed.
+  if (!process_->IsDeletingSoon()) {
+    // RenderProcessHostImpl will attempt to call this method later if it has
+    // not already been called. We call it now since `SetUpIPC()` relies on it
+    // being called, thus setting up the IPC channel and mojom::Renderer
+    // interface.
+    process_->EnableSendQueue();
 
-  // We call this so that we can immediately queue IPC and mojo messages on the
-  // new channel/interfaces that are bound for the next renderer process, should
-  // one eventually be spun up.
-  SetUpIPC();
+    // We call this so that we can immediately queue IPC and mojo messages on
+    // the new channel/interfaces that are bound for the next renderer process,
+    // should one eventually be spun up.
+    SetUpIPC();
+  }
 }
 
 void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
@@ -194,7 +201,8 @@ void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
       RenderProcessExited(host, ChildProcessTerminationInfo());
     }
   }
-  DCHECK_EQ(state_, LifecycleState::kBound);
+  DCHECK(state_ == LifecycleState::kBound ||
+         state_ == LifecycleState::kRenderProcessExited);
 
   DCHECK_EQ(host, &*process_);
   process_->RemoveObserver(this);
@@ -471,12 +479,13 @@ void AgentSchedulingGroupHost::SetState(
           {LifecycleState::kNewborn, {LifecycleState::kBound}},
           {LifecycleState::kBound,
            {LifecycleState::kRenderProcessExited,
-            // Note: kRenderProcessHostDestroyed is only reached through kBound
-            //       state. Upon kRenderProcessExited, we immediately setup a
-            //       unclaimed mojo endpoint to be consumed by the next
-            //       renderer process.
+            // Note: If a renderer process is never spawned to claim the
+            //       mojo endpoint created at initialization, then we will
+            //       skip straight to the destroyed state.
             LifecycleState::kRenderProcessHostDestroyed}},
-          {LifecycleState::kRenderProcessExited, {LifecycleState::kBound}},
+          {LifecycleState::kRenderProcessExited,
+           {LifecycleState::kBound,
+            LifecycleState::kRenderProcessHostDestroyed}},
       }));
 
   DCHECK_STATE_TRANSITION(transitions, state_, state);

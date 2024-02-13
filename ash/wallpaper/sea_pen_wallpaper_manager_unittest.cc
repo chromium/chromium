@@ -88,7 +88,8 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   ASSERT_FALSE(base::PathExists(file_path));
   sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
       {CreateJpgBytes(), /*id=*/111}, GetTempFileDirectory(),
-      /*query_info=*/"test query", decode_sea_pen_image_future.GetCallback());
+      personalization_app::mojom::SeaPenQuery::NewTextQuery("search query"),
+      decode_sea_pen_image_future.GetCallback());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
@@ -119,7 +120,8 @@ TEST_F(SeaPenWallpaperManagerTest, StoresOnlyTenLatestImages) {
   // Decode and save the 11th sea pen image in the temp directory.
   sea_pen_wallpaper_manager().DecodeAndSaveSeaPenImage(
       {CreateJpgBytes(), /*id=*/11}, GetTempFileDirectory(),
-      /*query_info=*/"test query", decode_sea_pen_image_future.GetCallback());
+      personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
+      decode_sea_pen_image_future.GetCallback());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.

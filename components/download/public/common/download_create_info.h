@@ -188,6 +188,12 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadCreateInfo {
 
   // Isolation info for the download request, mainly for same site cookies.
   std::optional<net::IsolationInfo> isolation_info;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Whether the original URL must be downloaded, e.g. from context menu
+  // or download service, or has "attachment" in content-disposition.
+  bool is_must_download = true;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace download

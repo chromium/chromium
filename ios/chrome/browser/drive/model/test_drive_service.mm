@@ -11,6 +11,13 @@ namespace drive {
 TestDriveService::TestDriveService() = default;
 TestDriveService::~TestDriveService() = default;
 
+#pragma mark - Public
+
+void TestDriveService::SetFileUploader(
+    std::unique_ptr<DriveFileUploader> uploader) {
+  file_uploader_ = std::move(uploader);
+}
+
 #pragma mark - DriveService
 
 bool TestDriveService::IsSupported() const {
@@ -19,7 +26,11 @@ bool TestDriveService::IsSupported() const {
 
 std::unique_ptr<DriveFileUploader> TestDriveService::CreateFileUploader(
     id<SystemIdentity> identity) {
-  return std::make_unique<TestDriveFileUploader>(identity);
+  std::unique_ptr<DriveFileUploader> result = std::move(file_uploader_);
+  if (!result) {
+    result = std::make_unique<TestDriveFileUploader>(identity);
+  }
+  return result;
 }
 
 std::string TestDriveService::GetSuggestedFolderName() const {

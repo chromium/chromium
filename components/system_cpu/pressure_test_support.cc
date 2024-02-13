@@ -33,12 +33,12 @@ base::WeakPtr<CpuProbe> FakeCpuProbe::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void FakeCpuProbe::SetLastSample(std::optional<PressureSample> sample) {
+void FakeCpuProbe::SetLastSample(std::optional<CpuSample> sample) {
   base::AutoLock auto_lock(lock_);
   last_sample_ = sample;
 }
 
-StreamingCpuProbe::StreamingCpuProbe(std::vector<PressureSample> samples,
+StreamingCpuProbe::StreamingCpuProbe(std::vector<CpuSample> samples,
                                      base::OnceClosure callback)
     : samples_(std::move(samples)), done_callback_(std::move(callback)) {
   CHECK_GT(samples_.size(), 0u);

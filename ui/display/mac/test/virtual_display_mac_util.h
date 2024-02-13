@@ -11,35 +11,33 @@
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/test/virtual_display_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace display {
 class Display;
+class Screen;
 
 namespace test {
-struct DisplayParams;
 
 // This interface creates system-level virtual displays to support the automated
 // integration testing of display information and window management APIs in
 // multi-screen device environments. It updates the displays that the normal mac
 // screen impl sees, but not `TestScreenMac`.
-class VirtualDisplayMacUtil : public display::DisplayObserver {
+class VirtualDisplayUtilMac : public VirtualDisplayUtil,
+                              public display::DisplayObserver {
  public:
-  VirtualDisplayMacUtil();
-  ~VirtualDisplayMacUtil() override;
+  explicit VirtualDisplayUtilMac(Screen* screen);
+  ~VirtualDisplayUtilMac() override;
 
-  VirtualDisplayMacUtil(const VirtualDisplayMacUtil&) = delete;
-  VirtualDisplayMacUtil& operator=(const VirtualDisplayMacUtil&) = delete;
+  VirtualDisplayUtilMac(const VirtualDisplayUtilMac&) = delete;
+  VirtualDisplayUtilMac& operator=(const VirtualDisplayUtilMac&) = delete;
 
-  // `display_id` is only used to label the virtual display. This function
-  // returns the generated display::Display id, which can be used with the
-  // Screen instance or passed to `RemoveDisplay`.
-  int64_t AddDisplay(int64_t display_id, const DisplayParams& display_params);
-  // `RemoveDisplay()` may add and remove another temporary virtual display as a
-  // workaround for known flaky timeouts awaiting the first removal of a single
-  // display.
-  // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
-  void RemoveDisplay(int64_t display_id);
+  // VirtualDisplayUtil overrides:
+  int64_t AddDisplay(uint8_t display_id,
+                     const DisplayParams& display_params) override;
+  void RemoveDisplay(int64_t display_id) override;
+  void ResetDisplays() override;
 
   // Check whether the related CoreGraphics APIs are available in the current
   // system version.
@@ -93,10 +91,6 @@ class VirtualDisplayMacUtil : public display::DisplayObserver {
 
   void OnDisplayAddedOrRemoved(int64_t id);
 
-  // Remove all virtual displays before leaving the scope of
-  // VirtualDisplayMacUtil.
-  void RemoveAllDisplays();
-
   // Wait for the display with the given `id` to be added.
   // Return immediately if the display is already available.
   void WaitForDisplay(int64_t id, bool added);
@@ -104,6 +98,7 @@ class VirtualDisplayMacUtil : public display::DisplayObserver {
   void StartWaiting();
   void StopWaiting();
 
+  raw_ptr<Screen> screen_;
   base::flat_set<int64_t> waiting_for_ids_;
   std::unique_ptr<base::RunLoop> run_loop_;
 

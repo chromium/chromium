@@ -21,6 +21,7 @@ class ASH_EXPORT PickerCategoryView : public views::View {
 
  public:
   explicit PickerCategoryView(
+      int picker_view_width,
       PickerSearchResultsView::SelectSearchResultCallback
           select_search_result_callback,
       PickerAssetFetcher* asset_fetcher);

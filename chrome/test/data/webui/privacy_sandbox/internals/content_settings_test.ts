@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 import 'chrome://privacy-sandbox-internals/content_setting_pattern_source.js';
 
-import {ContentSettingPatternSourceElement} from 'chrome://privacy-sandbox-internals/content_setting_pattern_source.js';
-import {ContentSettingPatternSource, RuleMetaData, SessionModel} from 'chrome://privacy-sandbox-internals/content_settings.mojom-webui.js';
-import {PageHandler, PageHandlerInterface} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
-import {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+import type {ContentSettingPatternSourceElement} from 'chrome://privacy-sandbox-internals/content_setting_pattern_source.js';
+import type {ContentSettingPatternSource, RuleMetaData} from 'chrome://privacy-sandbox-internals/content_settings.mojom-webui.js';
+import {SessionModel} from 'chrome://privacy-sandbox-internals/content_settings.mojom-webui.js';
+import type {PageHandlerInterface} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
+import {PageHandler} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
+import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('ContentSettingsElementTest', function() {

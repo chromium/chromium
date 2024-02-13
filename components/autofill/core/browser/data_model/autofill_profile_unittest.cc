@@ -1623,6 +1623,11 @@ TEST(AutofillProfileTest, ConvertToAccountProfile) {
 }
 
 TEST(AutofillProfileTest, RemoveInaccessibleProfileValues) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAutofillUseI18nAddressModel,
+                                 features::kAutofillUseDEAddressModel,
+                                 features::kAutofillUseINAddressModel},
+                                {});
   // Returns true if at least one field was removed.
   auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile) {
     const FieldTypeSet inaccessible_fields =
@@ -1650,9 +1655,19 @@ TEST(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   EXPECT_TRUE(RemoveInaccessibleProfileValues(actual_profile));
   EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
 
+  // Dependent locality exist in India as part of the street address, which is a
+  // settings visible node. These should be preserved despite not being
+  // recognized by libaddressinput.
+  actual_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"IN");
+  actual_profile.SetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Locality");
+  expected_profile = actual_profile;
+  EXPECT_FALSE(RemoveInaccessibleProfileValues(actual_profile));
+  EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
+
   // If no country is set, the US requirements are used.
   // The US uses both ZIP codes and states.
-  actual_profile.ClearFields({ADDRESS_HOME_COUNTRY});
+  actual_profile.ClearFields(
+      {ADDRESS_HOME_COUNTRY, ADDRESS_HOME_DEPENDENT_LOCALITY});
   actual_profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
   actual_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
   expected_profile = actual_profile;

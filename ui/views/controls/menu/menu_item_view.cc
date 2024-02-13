@@ -24,7 +24,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -339,9 +339,9 @@ MenuItemView* MenuItemView::AddMenuItemAt(
     const ui::ImageModel& icon,
     Type type,
     ui::MenuSeparatorType separator_style,
-    absl::optional<ui::ColorId> submenu_background_color,
-    absl::optional<ui::ColorId> foreground_color,
-    absl::optional<ui::ColorId> selected_color_id) {
+    std::optional<ui::ColorId> submenu_background_color,
+    std::optional<ui::ColorId> foreground_color,
+    std::optional<ui::ColorId> selected_color_id) {
   DCHECK_NE(type, Type::kEmpty);
   if (!submenu_) {
     CreateSubmenu();
@@ -823,8 +823,8 @@ bool MenuItemView::ShouldShowNewBadge() const {
 }
 
 bool MenuItemView::IsTraversableByKeyboard() const {
-  bool ignore_enabled = ui::AXPlatformNode::GetAccessibilityMode().has_mode(
-      ui::AXMode::kNativeAPIs);
+  bool ignore_enabled =
+      ui::AXPlatform::GetInstance().GetMode().has_mode(ui::AXMode::kNativeAPIs);
   return GetVisible() && (ignore_enabled || GetEnabled());
 }
 
@@ -918,12 +918,12 @@ const gfx::FontList MenuItemView::GetFontList() const {
              : MenuConfig::instance().font_list;
 }
 
-const absl::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
+const std::optional<SkColor> MenuItemView::GetMenuLabelColor() const {
   if (const MenuDelegate* delegate = GetDelegate()) {
     if (const auto& label_color = delegate->GetLabelColor(GetCommand()))
       return label_color;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void MenuItemView::UpdateEmptyMenusAndMetrics() {
@@ -1172,7 +1172,7 @@ SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {
 
 MenuItemView::Colors MenuItemView::CalculateColors(
     bool paint_as_selected) const {
-  const absl::optional<SkColor> label_color_from_delegate = GetMenuLabelColor();
+  const std::optional<SkColor> label_color_from_delegate = GetMenuLabelColor();
   Colors colors;
   colors.fg_color = label_color_from_delegate
                         ? *label_color_from_delegate

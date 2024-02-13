@@ -15,7 +15,7 @@ namespace blink {
 using OutlinePainterTest = RenderingTest;
 
 TEST_F(OutlinePainterTest, FocusRingOutset) {
-  const auto* initial_style = ComputedStyle::CreateInitialStyleSingleton();
+  const auto* initial_style = ComputedStyle::GetInitialStyleSingleton();
   ComputedStyleBuilder builder(*initial_style);
   builder.SetOutlineStyle(EBorderStyle::kSolid);
   builder.SetOutlineStyleIsAuto(true);

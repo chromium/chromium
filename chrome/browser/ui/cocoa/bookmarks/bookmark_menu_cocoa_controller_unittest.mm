@@ -148,8 +148,7 @@ TEST_F(BookmarkMenuCocoaControllerTest, TestOpenItemWhileModelLoading) {
                                          -> std::unique_ptr<KeyedService> {
         auto model = std::make_unique<BookmarkModel>(
             std::make_unique<bookmarks::TestBookmarkClient>());
-        model->Load(context->GetPath(),
-                    bookmarks::StorageType::kLocalOrSyncable);
+        model->Load(context->GetPath());
         return model;
       }));
 

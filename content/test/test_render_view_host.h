@@ -90,6 +90,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
       const std::string& url,
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) override;
+  uint64_t GetNSViewId() const override;
 #endif  // BUILDFLAG(IS_MAC)
 
   // Notified in response to a CommitPending where there is no content for

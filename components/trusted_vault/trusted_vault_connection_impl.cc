@@ -235,7 +235,7 @@ void ProcessDownloadKeysResponse(
   DownloadKeysResponseHandler::ProcessedResponse processed_response =
       response_handler->ProcessResponse(http_status, response_body);
   std::move(callback).Run(processed_response.status,
-                          processed_response.new_keys,
+                          processed_response.downloaded_keys,
                           processed_response.last_key_version);
 }
 

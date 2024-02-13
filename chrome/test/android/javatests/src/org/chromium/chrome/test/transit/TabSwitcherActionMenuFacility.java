@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -12,14 +11,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
-import android.view.View;
-
-import org.hamcrest.Matcher;
+import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -28,14 +26,23 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
  * The action menu opened when long pressing the tab switcher button in a {@link BasePageStation}.
  */
 public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStation> {
-    public static final Matcher<View> APP_MENU_LIST = withId(R.id.app_menu_list);
+    public static final ViewElement APP_MENU_LIST = sharedViewElement(withId(R.id.app_menu_list));
     // withId() cannot differentiate items because android:id is id/menu_item_text for all items.
-    public static final Matcher<View> CLOSE_TAB_MENU_ITEM =
-            allOf(withText(R.string.close_tab), isDescendantOfA(APP_MENU_LIST));
-    public static final Matcher<View> NEW_TAB_MENU_ITEM =
-            allOf(withText(R.string.menu_new_tab), isDescendantOfA(APP_MENU_LIST));
-    public static final Matcher<View> NEW_INCOGNITO_TAB_MENU_ITEM =
-            allOf(withText(R.string.menu_new_incognito_tab), isDescendantOfA(APP_MENU_LIST));
+    public static final ViewElement CLOSE_TAB_MENU_ITEM =
+            sharedViewElement(
+                    allOf(
+                            withText(R.string.close_tab),
+                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
+    public static final ViewElement NEW_TAB_MENU_ITEM =
+            sharedViewElement(
+                    allOf(
+                            withText(R.string.menu_new_tab),
+                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
+    public static final ViewElement NEW_INCOGNITO_TAB_MENU_ITEM =
+            sharedViewElement(
+                    allOf(
+                            withText(R.string.menu_new_incognito_tab),
+                            isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
     private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
     public TabSwitcherActionMenuFacility(
@@ -90,8 +97,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                                     /* isOpeningTab= */ false));
         }
 
-        return Trip.travelSync(
-                mStation, destination, (t) -> onView(CLOSE_TAB_MENU_ITEM).perform(click()));
+        return Trip.travelSync(mStation, destination, (t) -> CLOSE_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Select the "New tab" menu option to open a new Tab. */
@@ -101,8 +107,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                         mChromeTabbedActivityTestRule,
                         /* incognito= */ false,
                         /* isOpeningTab= */ true);
-        return Trip.travelSync(
-                mStation, destination, (t) -> onView(NEW_TAB_MENU_ITEM).perform(click()));
+        return Trip.travelSync(mStation, destination, (t) -> NEW_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Select the "New Incognito tab" menu option to open a new incognito Tab. */
@@ -113,6 +118,6 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                         /* incognito= */ true,
                         /* isOpeningTab= */ true);
         return Trip.travelSync(
-                mStation, destination, (t) -> onView(NEW_INCOGNITO_TAB_MENU_ITEM).perform(click()));
+                mStation, destination, (t) -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
     }
 }

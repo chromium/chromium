@@ -42,7 +42,11 @@ class OnDeviceModelExecutor
                    on_device_model::mojom::LoadModelParamsPtr params);
 
   // on_device_model::OnDeviceModel:
-  std::unique_ptr<Session> CreateSession() override;
+  std::unique_ptr<Session> CreateSession(
+      std::optional<uint32_t> adaptation_id) override;
+  base::expected<uint32_t, on_device_model::mojom::LoadModelResult>
+  LoadAdaptation(
+      on_device_model::mojom::LoadAdaptationParamsPtr params) override;
 
  private:
   on_device_model::mojom::LoadModelResult Init(
@@ -62,6 +66,9 @@ class OnDeviceModelExecutor
   base::MemoryMappedFile ts_data_;
   base::MemoryMappedFile ts_sp_model_;
   scoped_refptr<LanguageDetector> language_detector_;
+
+  // TODO(b/323572952): Allow disposing of adaptation weights.
+  std::vector<std::unique_ptr<base::MemoryMappedFile>> adaptation_data_;
 
   ChromeMLModel model_ = 0;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

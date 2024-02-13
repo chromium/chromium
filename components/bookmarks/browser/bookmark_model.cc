@@ -108,17 +108,6 @@ class SortComparator {
   raw_ptr<icu::Collator> collator_;
 };
 
-// Builds the path of the bookmark file from the profile path.
-base::FilePath GetStorageFilePath(const base::FilePath& profile_path,
-                                  StorageType storage_type) {
-  switch (storage_type) {
-    case StorageType::kLocalOrSyncable:
-      return profile_path.Append(kLocalOrSyncableBookmarksFileName);
-    case StorageType::kAccount:
-      return profile_path.Append(kAccountBookmarksFileName);
-  }
-}
-
 }  // namespace
 
 // BookmarkModel --------------------------------------------------------------
@@ -165,51 +154,32 @@ BookmarkModel::~BookmarkModel() {
   account_mobile_node_ = nullptr;
 }
 
-void BookmarkModel::Load(const base::FilePath& profile_path,
-                         StorageType storage_type) {
+void BookmarkModel::Load(const base::FilePath& profile_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the stores are non-null, it means Load was already invoked. Load should
   // only be invoked once.
   CHECK(!local_or_syncable_store_);
   CHECK(!account_store_);
 
-  base::FilePath local_or_syncable_file_path;
-  base::FilePath account_file_path;
+  const base::FilePath local_or_syncable_file_path =
+      profile_path.Append(kLocalOrSyncableBookmarksFileName);
 
-  if (AreFoldersForAccountStorageAllowed()) {
-    // TODO(crbug.com/1520418): `storage_type` doesn't fit well in this case and
-    // it is ignored. Consider alternatives such as adding another Load()
-    // overload or adding a third value to StorageType (which would likely
-    // require forking the enum to
-    // ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h.
-    local_or_syncable_file_path =
-        GetStorageFilePath(profile_path, StorageType::kLocalOrSyncable);
-    account_file_path = GetStorageFilePath(profile_path, StorageType::kAccount);
+  const base::FilePath account_file_path =
+      AreFoldersForAccountStorageAllowed()
+          ? profile_path.Append(kAccountBookmarksFileName)
+          : base::FilePath();
 
-    CHECK(!local_or_syncable_file_path.empty());
-    CHECK(!account_file_path.empty());
-  } else {
-    local_or_syncable_file_path =
-        GetStorageFilePath(profile_path, storage_type);
+  LoadImpl(local_or_syncable_file_path, account_file_path);
+}
 
-    CHECK(!local_or_syncable_file_path.empty());
-    CHECK(account_file_path.empty());
-  }
+void BookmarkModel::LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
+    const base::FilePath& profile_path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!AreFoldersForAccountStorageAllowed());
 
-  local_or_syncable_store_ = std::make_unique<BookmarkStorage>(
-      this, BookmarkStorage::kSelectLocalOrSyncableNodes,
-      local_or_syncable_file_path);
-
-  if (!account_file_path.empty()) {
-    account_store_ = std::make_unique<BookmarkStorage>(
-        this, BookmarkStorage::kSelectAccountNodes, account_file_path);
-  }
-
-  // Creating ModelLoader schedules the load on a backend task runner.
-  model_loader_ = ModelLoader::Create(
-      local_or_syncable_file_path, account_file_path,
-      client_->GetLoadManagedNodeCallback(),
-      base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
+  LoadImpl(/*local_or_syncable_file_path=*/profile_path.Append(
+               kAccountBookmarksFileName),
+           /*account_file_path=*/base::FilePath());
 }
 
 scoped_refptr<ModelLoader> BookmarkModel::model_loader() {
@@ -945,8 +915,6 @@ const BookmarkNode* BookmarkModel::AddURL(
     std::optional<base::Time> creation_time,
     std::optional<base::Uuid> uuid,
     bool added_by_user) {
-  // TODO(b/294100289): We should ensure that the specified UUID does not
-  //                    conflict with a reserved folder ID.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(url.is_valid());
@@ -1111,6 +1079,24 @@ void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
   NotifyNodeAddedForAllDescendants(node_ptr, /*added_by_user=*/false);
 }
 
+void BookmarkModel::LoadImpl(const base::FilePath& local_or_syncable_file_path,
+                             const base::FilePath& account_file_path) {
+  local_or_syncable_store_ = std::make_unique<BookmarkStorage>(
+      this, BookmarkStorage::kSelectLocalOrSyncableNodes,
+      local_or_syncable_file_path);
+
+  if (!account_file_path.empty()) {
+    account_store_ = std::make_unique<BookmarkStorage>(
+        this, BookmarkStorage::kSelectAccountNodes, account_file_path);
+  }
+
+  // Creating ModelLoader schedules the load on a backend task runner.
+  model_loader_ = ModelLoader::Create(
+      local_or_syncable_file_path, account_file_path,
+      client_->GetLoadManagedNodeCallback(),
+      base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
+}
+
 BookmarkModel::NodeTypeForUuidLookup
 BookmarkModel::DetermineTypeForUuidLookupForExistingNode(
     const BookmarkNode* node) const {
@@ -1183,16 +1169,28 @@ void BookmarkModel::DoneLoading(std::unique_ptr<BookmarkLoadDetails> details) {
   // here, after loading completes.
   root_->SortChildren(VisibilityComparator(client_.get()));
 
+  // Decoding of sync metadata may invoke `RemoveAccountPermanentFolders()`,
+  // which can lead to dangling raw_ptr members.
+  details->ResetPermanentNodePointers();
+
   loaded_ = true;
-  // TODO(crbug.com/1520418): Plumb account sync metadata too as well as
-  // ScheduleSave() for `account_store_`.
-  client_->DecodeBookmarkSyncMetadata(
+
+  client_->DecodeLocalOrSyncableBookmarkSyncMetadata(
       details->local_or_syncable_sync_metadata_str(),
       local_or_syncable_store_
           ? base::BindRepeating(
                 &BookmarkStorage::ScheduleSave,
                 base::Unretained(local_or_syncable_store_.get()))
           : base::DoNothing());
+
+  if (AreFoldersForAccountStorageAllowed()) {
+    client_->DecodeAccountBookmarkSyncMetadata(
+        details->account_sync_metadata_str(),
+        account_store_
+            ? base::BindRepeating(&BookmarkStorage::ScheduleSave,
+                                  base::Unretained(account_store_.get()))
+            : base::DoNothing());
+  }
 
   const base::TimeDelta load_duration =
       base::TimeTicks::Now() - details->load_start();
@@ -1434,8 +1432,8 @@ void BookmarkModel::RemoveAccountPermanentFolders() {
 void BookmarkModel::ScheduleSave() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/1520418): Consider optimizing the save here if only one of
-  // the two stores has changed.
+  // TODO(b/41493391): Consider optimizing the save here if only one of the two
+  // stores has changed.
 
   if (local_or_syncable_store_) {
     local_or_syncable_store_->ScheduleSave();

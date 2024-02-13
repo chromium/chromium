@@ -16,37 +16,36 @@
 #include "chromeos/components/kcer/attributes.pb.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
+#include "chromeos/components/kcer/helpers/key_helper.h"
+#include "chromeos/components/kcer/helpers/pkcs12_reader.h"
+#include "chromeos/components/kcer/kcer_token_utils.h"
 #include "chromeos/components/kcer/kcer_utils.h"
 #include "chromeos/constants/pkcs11_definitions.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/openssl_util.h"
+#include "net/cert/asn1_util.h"
 #include "net/cert/cert_database.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
+#include "third_party/boringssl/src/include/openssl/x509.h"
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
 
 using AttributeId = kcer::HighLevelChapsClient::AttributeId;
 
+// Needed for bssl::UniquePtr<PKCS8_PRIV_KEY_INFO>.
+BSSL_NAMESPACE_BEGIN
+BORINGSSL_MAKE_DELETER(PKCS8_PRIV_KEY_INFO, PKCS8_PRIV_KEY_INFO_free)
+BSSL_NAMESPACE_END
+
 namespace kcer::internal {
 namespace {
 
-void AddAttribute(chaps::AttributeList& attr_list,
-                  chromeos::PKCS11_CK_ATTRIBUTE_TYPE type,
-                  base::span<const uint8_t> data) {
-  chaps::Attribute* new_attr = attr_list.add_attributes();
-  new_attr->set_type(type);
-  new_attr->set_value(std::string(data.begin(), data.end()));
-  new_attr->set_length(data.size());
-}
-
-// `T` must be a simple type, i.e. no internal pointers, etc.
-// `value` must outlive the returned span.
-template <typename T>
-base::span<const uint8_t> MakeSpan(T* value) {
-  return base::as_bytes(base::span<T>(value, /*count=*/1u));
+std::string_view AsString(base::span<const uint8_t> bytes) {
+  return std::string_view(reinterpret_cast<const char*>(bytes.data()),
+                          bytes.size());
 }
 
 const chaps::Attribute* GetAttribute(const chaps::AttributeList& attr_list,
@@ -132,18 +131,6 @@ bssl::UniquePtr<ASN1_OCTET_STRING> UnwrapEcPoint(
   bssl::UniquePtr<ASN1_OCTET_STRING> result(
       d2i_ASN1_OCTET_STRING(nullptr, &data, ec_point.size()));
   return result;
-}
-
-// The result should be the same as the one from NSS for backwards compatibility
-// (at least until it's removed).
-Pkcs11Id MakePkcs11Id(base::span<const uint8_t> public_key_data) {
-  if (public_key_data.size() <= base::kSHA1Length) {
-    return Pkcs11Id(
-        std::vector<uint8_t>(public_key_data.begin(), public_key_data.end()));
-  }
-
-  base::SHA1Digest hash = base::SHA1HashSpan(public_key_data);
-  return Pkcs11Id(std::vector<uint8_t>(hash.begin(), hash.end()));
 }
 
 // Backwards compatible with how NSS generated CKA_ID for RSA keys.
@@ -234,78 +221,6 @@ bool EnsurePkcs11IdIsSet(PrivateKeyHandle& key) {
 
   key.SetPkcs11IdInternal(GetPkcs11IdFromSpki(key.GetSpkiInternal()));
   return !key.GetPkcs11IdInternal()->empty();
-}
-
-PublicKeySpki MakeRsaSpki(const base::span<const uint8_t>& modulus,
-                          const base::span<const uint8_t>& exponent) {
-  crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-
-  bssl::UniquePtr<BIGNUM> modulus_bignum(
-      BN_bin2bn(modulus.data(), modulus.size(), nullptr));
-  bssl::UniquePtr<BIGNUM> exponent_bignum(
-      BN_bin2bn(exponent.data(), exponent.size(), nullptr));
-  if (!modulus_bignum || !exponent_bignum) {
-    return {};
-  }
-
-  bssl::UniquePtr<RSA> rsa(
-      RSA_new_public_key(modulus_bignum.get(), exponent_bignum.get()));
-  if (!rsa) {
-    return {};
-  }
-
-  bssl::UniquePtr<EVP_PKEY> ssl_public_key(EVP_PKEY_new());
-  if (!ssl_public_key || !EVP_PKEY_set1_RSA(ssl_public_key.get(), rsa.get())) {
-    return {};
-  }
-
-  bssl::ScopedCBB cbb;
-  uint8_t* der = nullptr;
-  size_t der_len = 0;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), ssl_public_key.get()) ||
-      !CBB_finish(cbb.get(), &der, &der_len)) {
-    return {};
-  }
-  bssl::UniquePtr<uint8_t> der_deleter(der);
-
-  return PublicKeySpki(std::vector<uint8_t>(der, der + der_len));
-}
-
-PublicKeySpki MakeEcSpki(const base::span<const uint8_t>& ec_point) {
-  bssl::UniquePtr<EC_KEY> ec(EC_KEY_new());
-  if (!ec) {
-    return {};
-  }
-
-  if (!EC_KEY_set_group(ec.get(), EC_group_p256())) {
-    return {};
-  }
-
-  EC_KEY* ec_ptr = ec.get();
-  const uint8_t* data_2 = ec_point.data();
-  size_t data_2_len = ec_point.size();
-  if (!o2i_ECPublicKey(&ec_ptr, &data_2, data_2_len)) {
-    return {};
-  }
-
-  bssl::UniquePtr<EVP_PKEY> ssl_public_key(EVP_PKEY_new());
-  if (!ssl_public_key ||
-      !EVP_PKEY_set1_EC_KEY(ssl_public_key.get(), ec.get())) {
-    return {};
-  }
-
-  bssl::ScopedCBB cbb;
-  uint8_t* der = nullptr;
-  size_t der_len = 0;
-  if (!CBB_init(cbb.get(), 0) ||
-      !EVP_marshal_public_key(cbb.get(), ssl_public_key.get()) ||
-      !CBB_finish(cbb.get(), &der, &der_len)) {
-    return {};
-  }
-  bssl::UniquePtr<uint8_t> der_deleter(der);
-
-  return PublicKeySpki(std::vector<uint8_t>(der, der + der_len));
 }
 
 uint64_t SigningSchemeToPkcs11Mechanism(SigningScheme scheme) {
@@ -464,7 +379,10 @@ std::vector<uint8_t> GetPssSignParams(SigningScheme kcer_signing_scheme) {
 
 // TODO(244409232): Implement receiving of cert change notifications.
 KcerTokenImpl::KcerTokenImpl(Token token, HighLevelChapsClient* chaps_client)
-    : token_(token), pkcs_11_slot_id_(0), chaps_client_(chaps_client) {
+    : token_(token),
+      pkcs_11_slot_id_(0),
+      chaps_client_(chaps_client),
+      kcer_utils_(token, chaps_client) {
   CHECK(chaps_client_);
 }
 KcerTokenImpl::~KcerTokenImpl() = default;
@@ -481,6 +399,7 @@ base::WeakPtr<KcerToken> KcerTokenImpl::GetWeakPtr() {
 void KcerTokenImpl::InitializeWithoutNss(
     SessionChapsClient::SlotId pkcs11_slot_id) {
   pkcs_11_slot_id_ = pkcs11_slot_id;
+  kcer_utils_.Initialize(pkcs_11_slot_id_);
   // This is supposed to be the first time the task queue is unblocked, no
   // other tasks should be already running.
   UnblockQueueProcessNextTask();
@@ -540,7 +459,7 @@ void KcerTokenImpl::GenerateRsaKeyImpl(GenerateRsaKeyTask task) {
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_MODULUS_BITS,
                MakeSpan(&modulus_bits));
   AddAttribute(public_key_attrs, chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
-               MakeSpan(&public_exponent));
+               base::as_byte_span(public_exponent));
 
   chaps::AttributeList private_key_attrs;
   AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue));
@@ -615,35 +534,22 @@ void KcerTokenImpl::DidGetRsaPublicKey(
   base::span<const uint8_t> public_exponent =
       GetAttributeValue(public_key_attributes, AttributeId::kPublicExponent);
 
-  if (modulus.empty() || public_exponent.empty()) {
+  base::expected<PublicKey, Error> kcer_public_key =
+      MakeRsaPublicKey(token_, modulus, public_exponent);
+  if (!kcer_public_key.has_value()) {
     return chaps_client_->DestroyObjectsWithRetries(
         pkcs_11_slot_id_, {public_key_id, private_key_id},
-        Bind(std::move(task.callback), Error::kFailedToReadAttribute));
+        Bind(std::move(task.callback), kcer_public_key.error()));
   }
-
-  PublicKeySpki spki = MakeRsaSpki(modulus, public_exponent);
-  if (spki->empty()) {
-    return chaps_client_->DestroyObjectsWithRetries(
-        pkcs_11_slot_id_, {public_key_id, private_key_id},
-        Bind(std::move(task.callback), Error::kFailedToCreateSpki));
-  }
-
-  Pkcs11Id pkcs11_id = MakePkcs11Id(modulus);
-  if (pkcs11_id->empty()) {
-    return chaps_client_->DestroyObjectsWithRetries(
-        pkcs_11_slot_id_, {public_key_id, private_key_id},
-        Bind(std::move(task.callback), Error::kFailedToGetPkcs11Id));
-  }
-
-  PublicKey kcer_public_key(token_, pkcs11_id, std::move(spki));
 
   chaps::AttributeList attr_list;
-  AddAttribute(attr_list, chromeos::PKCS11_CKA_ID, pkcs11_id.value());
+  AddAttribute(attr_list, chromeos::PKCS11_CKA_ID,
+               kcer_public_key->GetPkcs11Id().value());
 
   auto chaps_callback =
       base::BindOnce(&KcerTokenImpl::DidAssignRsaKeyId,
                      weak_factory_.GetWeakPtr(), std::move(task), public_key_id,
-                     private_key_id, std::move(kcer_public_key));
+                     private_key_id, std::move(kcer_public_key).value());
   chaps_client_->SetAttributeValue(pkcs_11_slot_id_,
                                    {public_key_id, private_key_id}, attr_list,
                                    std::move(chaps_callback));
@@ -813,29 +719,22 @@ void KcerTokenImpl::DidGetEcPublicKey(
   base::span<const uint8_t> ec_point =
       base::make_span(ec_point_data, ec_point_data_len);
 
-  PublicKeySpki spki = MakeEcSpki(ec_point);
-  if (spki->empty()) {
+  base::expected<PublicKey, Error> kcer_public_key =
+      MakeEcPublicKey(token_, ec_point);
+  if (!kcer_public_key.has_value()) {
     return chaps_client_->DestroyObjectsWithRetries(
         pkcs_11_slot_id_, {public_key_id, private_key_id},
-        Bind(std::move(task.callback), Error::kFailedToCreateSpki));
+        Bind(std::move(task.callback), kcer_public_key.error()));
   }
-
-  Pkcs11Id pkcs11_id = MakePkcs11Id(ec_point);
-  if (pkcs11_id->empty()) {
-    return chaps_client_->DestroyObjectsWithRetries(
-        pkcs_11_slot_id_, {public_key_id, private_key_id},
-        Bind(std::move(task.callback), Error::kFailedToGetPkcs11Id));
-  }
-
-  PublicKey kcer_public_key(token_, pkcs11_id, std::move(spki));
 
   chaps::AttributeList attr_list;
-  AddAttribute(attr_list, chromeos::PKCS11_CKA_ID, pkcs11_id.value());
+  AddAttribute(attr_list, chromeos::PKCS11_CKA_ID,
+               kcer_public_key->GetPkcs11Id().value());
 
   auto chaps_callback =
       base::BindOnce(&KcerTokenImpl::DidAssignEcKeyId,
                      weak_factory_.GetWeakPtr(), std::move(task), public_key_id,
-                     private_key_id, std::move(kcer_public_key));
+                     private_key_id, std::move(kcer_public_key).value());
   chaps_client_->SetAttributeValue(pkcs_11_slot_id_,
                                    {public_key_id, private_key_id}, attr_list,
                                    std::move(chaps_callback));
@@ -863,14 +762,187 @@ void KcerTokenImpl::DidAssignEcKeyId(GenerateEcKeyTask task,
 
 void KcerTokenImpl::ImportKey(Pkcs8PrivateKeyInfoDer pkcs8_private_key_info_der,
                               Kcer::ImportKeyCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::ImportKey, weak_factory_.GetWeakPtr(),
+        std::move(pkcs8_private_key_info_der), std::move(callback)));
+  }
+
+  const uint8_t* buffer = pkcs8_private_key_info_der->data();
+  bssl::UniquePtr<PKCS8_PRIV_KEY_INFO> p8(d2i_PKCS8_PRIV_KEY_INFO(
+      nullptr, &buffer, pkcs8_private_key_info_der->size()));
+  if (!p8) {
+    return std::move(callback).Run(base::unexpected(Error::kFailedToParseKey));
+  }
+
+  KeyData key_data;
+  key_data.key = bssl::UniquePtr<EVP_PKEY>(EVP_PKCS82PKEY(p8.get()));
+  if (!key_data.key) {
+    return std::move(callback).Run(base::unexpected(Error::kFailedToParseKey));
+  }
+
+  Pkcs12Reader pkcs12_reader;
+  Pkcs12ReaderStatusCode enrich_key_data_result =
+      pkcs12_reader.EnrichKeyData(key_data);
+  if (enrich_key_data_result != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToGetPkcs11Id));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  kcer_utils_.ImportKey(KcerTokenUtils::ImportKeyTask(
+      std::move(key_data), std::move(unblocking_callback)));
 }
 
 //==============================================================================
 
+KcerTokenImpl::ImportCertFromBytesTask::ImportCertFromBytesTask(
+    CertDer in_cert_der,
+    Kcer::StatusCallback in_callback)
+    : cert_der(std::move(in_cert_der)), callback(std::move(in_callback)) {}
+KcerTokenImpl::ImportCertFromBytesTask::ImportCertFromBytesTask(
+    ImportCertFromBytesTask&& other) = default;
+KcerTokenImpl::ImportCertFromBytesTask::~ImportCertFromBytesTask() = default;
+
 void KcerTokenImpl::ImportCertFromBytes(CertDer cert_der,
                                         Kcer::StatusCallback callback) {
-  // TODO(244409232): Implement.
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (is_blocked_) {
+    return task_queue_.push_back(base::BindOnce(
+        &KcerTokenImpl::ImportCertFromBytes, weak_factory_.GetWeakPtr(),
+        std::move(cert_der), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = BlockQueueGetUnblocker(std::move(callback));
+
+  ImportCertFromBytesImpl(ImportCertFromBytesTask(
+      std::move(cert_der), std::move(unblocking_callback)));
+}
+
+void KcerTokenImpl::ImportCertFromBytesImpl(ImportCertFromBytesTask task) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  task.attemps_left--;
+  if (task.attemps_left < 0) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kPkcs11SessionFailure));
+  }
+
+  chaps::AttributeList attributes;
+  AddAttribute(attributes, chromeos::PKCS11_CKA_VALUE, task.cert_der.value());
+
+  // Check whether the cert is already imported.
+  chaps_client_->FindObjects(
+      pkcs_11_slot_id_, std::move(attributes),
+      base::BindOnce(&KcerTokenImpl::ImportCertFromBytesWithExistingCerts,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+// Checks whether the private key for the cert exists.
+void KcerTokenImpl::ImportCertFromBytesWithExistingCerts(
+    ImportCertFromBytesTask task,
+    std::vector<ObjectHandle> existing_certs,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ImportCertFromBytesImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+  if (!existing_certs.empty()) {
+    // The cert already exists, no need to import, return success.
+    return std::move(task.callback).Run({});
+  }
+
+  std::string_view spki_string_piece;
+  if (!net::asn1::ExtractSPKIFromDERCert(AsString(task.cert_der.value()),
+                                         &spki_string_piece)) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kInvalidCertificate));
+  }
+  PublicKeySpki spki(std::vector<uint8_t>(
+      spki_string_piece.data(),
+      spki_string_piece.data() + spki_string_piece.size()));
+
+  Pkcs11Id key_id = GetPkcs11IdFromSpki(spki);
+  if (key_id->empty()) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kInvalidCertificate));
+  }
+
+  Pkcs11Id key_id_copy = key_id;
+  kcer_utils_.FindPrivateKey(
+      std::move(key_id),
+      base::BindOnce(&KcerTokenImpl::ImportCertFromBytesWithKeyHandle,
+                     weak_factory_.GetWeakPtr(), std::move(task),
+                     std::move(key_id_copy)));
+}
+
+// Parses and imports the cert into Chaps.
+void KcerTokenImpl::ImportCertFromBytesWithKeyHandle(
+    ImportCertFromBytesTask task,
+    Pkcs11Id pkcs11_id,
+    std::vector<ObjectHandle> key_handles,
+    uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ImportCertFromBytesImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToSearchForObjects));
+  }
+  if (key_handles.empty()) {
+    return std::move(task.callback).Run(base::unexpected(Error::kKeyNotFound));
+  }
+
+  Pkcs12Reader reader;
+  bssl::UniquePtr<X509> cert;
+  Pkcs12ReaderStatusCode status = reader.GetCertFromDerData(
+      task.cert_der.value().data(), task.cert_der.value().size(), cert);
+  if (status != Pkcs12ReaderStatusCode::kSuccess) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kInvalidCertificate));
+  }
+
+  // TODO(b/244409232): Assign the correct nickname.
+  std::string label = "";
+  CertDer cert_der = task.cert_der;
+  auto import_callback =
+      base::BindOnce(&KcerTokenImpl::DidImportCertFromBytes,
+                     weak_factory_.GetWeakPtr(), std::move(task));
+  kcer_utils_.ImportCert(std::move(cert), std::move(pkcs11_id),
+                         std::move(label), std::move(cert_der),
+                         std::move(import_callback));
+}
+
+void KcerTokenImpl::DidImportCertFromBytes(ImportCertFromBytesTask task,
+                                           std::optional<Error> kcer_error,
+                                           ObjectHandle cert_handle,
+                                           uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (kcer_error.has_value()) {
+    return std::move(task.callback).Run(base::unexpected(kcer_error.value()));
+  }
+  if (SessionChapsClient::IsSessionError(result_code)) {
+    return ImportCertFromBytesImpl(std::move(task));
+  }
+  if (result_code != chromeos::PKCS11_CKR_OK) {
+    return std::move(task.callback)
+        .Run(base::unexpected(Error::kFailedToImportCertificate));
+  }
+  return std::move(task.callback).Run({});
 }
 
 //==============================================================================
@@ -965,6 +1037,8 @@ void KcerTokenImpl::RemoveKeyAndCertsWithObjectHandles(
 // Checks the result and notifies that some certs were changed.
 void KcerTokenImpl::DidRemoveKeyAndCerts(RemoveKeyAndCertsTask task,
                                          uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   base::expected<void, Error> result;
   if (SessionChapsClient::IsSessionError(result_code)) {
     return RemoveKeyAndCertsImpl(std::move(task));
@@ -1389,9 +1463,10 @@ void KcerTokenImpl::SignImpl(SignTask task) {
   }
 
   Pkcs11Id key_id = task.key.GetPkcs11IdInternal();
-  FindPrivateKey(std::move(key_id),
-                 base::BindOnce(&KcerTokenImpl::SignWithKeyHandle,
-                                weak_factory_.GetWeakPtr(), std::move(task)));
+  kcer_utils_.FindPrivateKey(
+      std::move(key_id),
+      base::BindOnce(&KcerTokenImpl::SignWithKeyHandle,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
 }
 
 // Digests the data.
@@ -1521,9 +1596,10 @@ void KcerTokenImpl::SignRsaPkcs1RawImpl(SignRsaPkcs1RawTask task) {
   }
 
   Pkcs11Id key_id = task.key.GetPkcs11IdInternal();
-  FindPrivateKey(std::move(key_id),
-                 base::BindOnce(&KcerTokenImpl::SignRsaPkcs1RawWithKeyHandle,
-                                weak_factory_.GetWeakPtr(), std::move(task)));
+  kcer_utils_.FindPrivateKey(
+      std::move(key_id),
+      base::BindOnce(&KcerTokenImpl::SignRsaPkcs1RawWithKeyHandle,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
 }
 
 // Sings the data.
@@ -1602,10 +1678,11 @@ void KcerTokenImpl::GetKeyAttributes(
     std::vector<HighLevelChapsClient::AttributeId> attribute_ids,
     GetKeyAttributesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  FindPrivateKey(key.GetPkcs11IdInternal(),
-                 base::BindOnce(&KcerTokenImpl::GetKeyAttributesWithKeyHandle,
-                                weak_factory_.GetWeakPtr(),
-                                std::move(attribute_ids), std::move(callback)));
+  kcer_utils_.FindPrivateKey(
+      key.GetPkcs11IdInternal(),
+      base::BindOnce(&KcerTokenImpl::GetKeyAttributesWithKeyHandle,
+                     weak_factory_.GetWeakPtr(), std::move(attribute_ids),
+                     std::move(callback)));
 }
 
 void KcerTokenImpl::GetKeyAttributesWithKeyHandle(
@@ -1731,6 +1808,7 @@ void KcerTokenImpl::GetKeyInfoWithAttributes(GetKeyInfoTask task,
                                              std::optional<Error> kcer_error,
                                              chaps::AttributeList attributes,
                                              uint32_t result_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (kcer_error.has_value()) {
     return std::move(task.callback).Run(base::unexpected(kcer_error.value()));
   }
@@ -2161,22 +2239,6 @@ void KcerTokenImpl::UnblockQueueProcessNextTask() {
   base::OnceClosure next_task = std::move(task_queue_.front());
   task_queue_.pop_front();
   std::move(next_task).Run();
-}
-
-void KcerTokenImpl::FindPrivateKey(
-    Pkcs11Id id,
-    base::OnceCallback<void(std::vector<ObjectHandle>, uint32_t)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  const chromeos::PKCS11_CK_OBJECT_CLASS kPrivKeyClass =
-      chromeos::PKCS11_CKO_PRIVATE_KEY;
-  chaps::AttributeList private_key_attrs;
-  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_CLASS,
-               MakeSpan(&kPrivKeyClass));
-  AddAttribute(private_key_attrs, chromeos::PKCS11_CKA_ID, id.value());
-
-  chaps_client_->FindObjects(pkcs_11_slot_id_, std::move(private_key_attrs),
-                             std::move(callback));
 }
 
 }  // namespace kcer::internal

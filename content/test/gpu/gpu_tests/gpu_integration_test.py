@@ -126,6 +126,10 @@ class GpuIntegrationTest(
   # workaround. See crbug.com/1079244.
   _first_run_test: Optional[str] = None
 
+  # Keeps track of whether this is the first browser start on a shard for a
+  # flakiness workaround. See crbug.com/323927831.
+  _is_first_browser_start = True
+
   tab: Optional[ct.Tab] = None
 
   def __init__(self, *args, **kwargs):
@@ -543,6 +547,7 @@ class GpuIntegrationTest(
   # pylint: disable=no-self-use
   def _ShouldForceRetryOnFailureFirstTest(self) -> bool:
     return False
+
   # pylint: enable=no-self-use
 
   def _DetermineFirstTestRetryWorkaround(self, test_name: str) -> bool:
@@ -558,17 +563,30 @@ class GpuIntegrationTest(
     Returns:
       A boolean indicating whether a retry on failure should be forced.
     """
-    if self._ShouldForceRetryOnFailureFirstTest():
-      if GpuIntegrationTest._first_run_test is None:
-        GpuIntegrationTest._first_run_test = test_name
-      if GpuIntegrationTest._first_run_test == test_name:
-        logging.warning('Forcing RetryOnFailure in test %s', test_name)
-        # Notify typ that it should retry this test if necessary.
-        # pylint: disable=attribute-defined-outside-init
-        self.retryOnFailure = True
-        # pylint: enable=attribute-defined-outside-init
-        return True
+    if (GpuIntegrationTest._first_run_test == test_name
+        and self._ShouldForceRetryOnFailureFirstTest()):
+      logging.warning('Forcing RetryOnFailure in test %s', test_name)
+      # Notify typ that it should retry this test if necessary.
+      # pylint: disable=attribute-defined-outside-init
+      self.retryOnFailure = True
+      # pylint: enable=attribute-defined-outside-init
+      return True
     return False
+
+  # pylint: disable=no-self-use
+  def _DetermineFirstBrowserStartWorkaround(self) -> bool:
+    """Potentially allows retries for the first browser start on a shard.
+
+    This is a temporary workaround for crbug.com/323927831 and should be
+    removed once the root cause is fixed.
+    """
+    # The browser is assumed to be dead at this point, so we can't rely on
+    # GetPlatformTags() to restrict this to the flaking Mac configs.
+    if not GpuIntegrationTest._is_first_browser_start:
+      return False
+    return sys.platform == 'darwin'
+
+  # pylint: enable=no-self-use
 
   # pylint: disable=no-self-use
   def _DetermineRetryWorkaround(self, exception: Exception) -> bool:
@@ -596,6 +614,9 @@ class GpuIntegrationTest(
           should_retry_on_failure
           or self._DetermineFirstTestRetryWorkaround(test_name))
       return expected_results, should_retry_on_failure
+
+    if GpuIntegrationTest._first_run_test is None:
+      GpuIntegrationTest._first_run_test = test_name
 
     expected_crashes = {}
     try:
@@ -1007,7 +1028,17 @@ class GpuIntegrationTest(
     return cls._original_finder_options
 
   def setUp(self) -> None:
-    self._EnsureTabIsAvailable()
+    # TODO(crbug.com/323927831): Remove this try/except logic once the root
+    # cause of flakes on Macs is resolved.
+    try:
+      self._EnsureTabIsAvailable()
+    except Exception:  # pylint: disable=broad-except
+      if self._DetermineFirstBrowserStartWorkaround():
+        self._EnsureTabIsAvailable()
+      else:
+        raise
+    finally:
+      GpuIntegrationTest._is_first_browser_start = False
 
     # Append overlay support for extra Intel GPUs when the extra device id is
     # current active GPU's device id

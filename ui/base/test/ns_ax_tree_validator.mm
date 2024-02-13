@@ -56,11 +56,10 @@ std::string NSAXTreeProblemDetails::ToString() {
   return base::SysNSStringToUTF8(s);
 }
 
-absl::optional<NSAXTreeProblemDetails> ValidateNSAXTree(
-    id<NSAccessibility> node,
-    size_t* nodes_visited) {
+std::optional<NSAXTreeProblemDetails> ValidateNSAXTree(id<NSAccessibility> node,
+                                                       size_t* nodes_visited) {
   if (!ToNSAccessibility(node)) {
-    return absl::make_optional<NSAXTreeProblemDetails>(
+    return std::make_optional<NSAXTreeProblemDetails>(
         NSAXTreeProblemDetails::NSAX_NOT_NSACCESSIBILITY, node, nil);
   }
   (*nodes_visited)++;
@@ -77,7 +76,7 @@ absl::optional<NSAXTreeProblemDetails> ValidateNSAXTree(
   if (node.accessibilityParent && !skip_due_to_fb13557859) {
     id<NSAccessibility> parent = ToNSAccessibility(node.accessibilityParent);
     if (!parent) {
-      return absl::make_optional<NSAXTreeProblemDetails>(
+      return std::make_optional<NSAXTreeProblemDetails>(
           NSAXTreeProblemDetails::NSAX_PARENT_NOT_NSACCESSIBILITY, node,
           parent);
     }
@@ -86,21 +85,21 @@ absl::optional<NSAXTreeProblemDetails> ValidateNSAXTree(
         parent.accessibilityChildren;
 
     if (![parent_children containsObject:node]) {
-      return absl::make_optional<NSAXTreeProblemDetails>(
+      return std::make_optional<NSAXTreeProblemDetails>(
           NSAXTreeProblemDetails::NSAX_NOT_CHILD_OF_PARENT, node, parent);
     }
   }
 
   NSArray<id<NSAccessibility>>* children = node.accessibilityChildren;
   for (id<NSAccessibility> child in children) {
-    absl::optional<NSAXTreeProblemDetails> details =
+    std::optional<NSAXTreeProblemDetails> details =
         ValidateNSAXTree(child, nodes_visited);
     if (details.has_value()) {
       return details;
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void PrintNSAXTree(id<NSAccessibility> root) {

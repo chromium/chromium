@@ -75,6 +75,7 @@ using testing::InSequence;
 using testing::NiceMock;
 using testing::WithArg;
 using testing::WithArgs;
+using testing::WithoutArgs;
 #endif
 
 class MockCupsWrapper : public chromeos::CupsWrapper {
@@ -491,6 +492,218 @@ startxref
   )";
   ASSERT_THAT(EvalJs(app_frame(), kPrintJobScript).error,
               testing::HasSubstr("User denied access"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, CancelImmediately) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName,
+                             extensions::ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
+
+  EXPECT_CALL(local_printer(), GetPrinters(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          extensions::ConstructGetPrintersResponse(kId, kName)));
+
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId),
+              *extensions::ConstructPrinterCapabilities())));
+
+  std::optional<uint32_t> job_id;
+  // Pretends to acknowledge the incoming Lacros print job creation request and
+  // responds with PrintJobStatus::kStarted event.
+  // The callback is ignored by the implementation -- for this reason the
+  // invocation order doesn't really matter here (however, dropping it would
+  // yield a mojo error).
+  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
+      .WillOnce(DoAll(WithArg<0>([&](const auto& job) {
+                        job_id = job->job_id;
+                        auto started_update =
+                            crosapi::mojom::PrintJobUpdate::New();
+                        started_update->status =
+                            crosapi::mojom::PrintJobStatus::kStarted;
+                        observer_remote()->OnPrintJobUpdate(
+                            kId, *job_id, std::move(started_update));
+                      }),
+                      base::test::RunOnceCallback<1>()));
+
+  // Pretends to acknowledge the incoming Lacros print job cancelation request
+  // and responds with PrintJobStatus::kCancelled event.
+  // The callback is ignored by the implementation -- for this reason the
+  // invocation order doesn't really matter here (however, dropping it would
+  // yield a mojo error).
+  EXPECT_CALL(local_printer(), CancelPrintJob(_, _, _))
+      .WillOnce(DoAll(WithoutArgs([&] {
+                        // Thanks to InSequence defined in the beginning of the
+                        // test, it's guaranteed that `job_id` will be set
+                        // before we get here.
+                        ASSERT_TRUE(job_id);
+                        auto update = crosapi::mojom::PrintJobUpdate::New();
+                        update->status =
+                            crosapi::mojom::PrintJobStatus::kCancelled;
+                        observer_remote()->OnPrintJobUpdate(kId, *job_id,
+                                                            std::move(update));
+                      }),
+                      base::test::RunOnceCallback<2>(/*canceled=*/true)));
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
+#endif
+  constexpr std::string_view kCancelEarlyScript = R"(
+    (async () => {
+      const pdf = `%PDF-1.0
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 ` +
+`obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 ` +
+`obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
+xref
+0 4
+0000000000 65535 f
+0000000010 00000 n
+0000000053 00000 n
+0000000102 00000 n
+trailer<</Size 4/Root 1 0 R>>
+startxref
+149
+%EOF`;
+
+    const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
+    const printers = await navigator.printing.getPrinters();
+
+    const printJob = await printers[0].printJob("Title", { data: pdfBlob }, {});
+    let phase = 0;
+    const printJobCanceled = new Promise((resolve, reject) => {
+      printJob.onjobstatechange = () => {
+        const state = printJob.attributes().jobState;
+        if (state === 'pending') {
+          if (phase !== 0) {
+            throw new Error('Wrong sequence: kPending should come first.');
+            return;
+          }
+          phase += 1;
+        } else if (state === 'canceled') {
+          if (phase !== 1) {
+            throw new Error('Wrong sequence: kCanceled should come second.');
+            return;
+          }
+          resolve();
+        }
+      };
+    });
+    printJob.cancel();
+    await printJobCanceled;
+   })();
+  )";
+  ASSERT_THAT(EvalJs(app_frame(), kCancelEarlyScript),
+              content::EvalJsResult::IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(WebPrintingBrowserTest, CancelHalfway) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  AddPrinterWithSemanticCaps(kId, kName,
+                             extensions::ConstructPrinterCapabilities());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  InSequence s;
+
+  EXPECT_CALL(local_printer(), GetPrinters(_))
+      .WillOnce(base::test::RunOnceCallback<0>(
+          extensions::ConstructGetPrintersResponse(kId, kName)));
+
+  EXPECT_CALL(local_printer(), GetCapability(kId, _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          printing::PrinterWithCapabilitiesToMojom(
+              chromeos::Printer(kId),
+              *extensions::ConstructPrinterCapabilities())));
+
+  std::optional<uint32_t> job_id;
+  // Pretends to acknowledge the incoming Lacros print job creation request and
+  // responds with PrintJobStatus::kStarted event.
+  // The callback is ignored by the implementation -- for this reason the
+  // invocation order doesn't really matter here (however, dropping it would
+  // yield a mojo error).
+  EXPECT_CALL(local_printer(), CreatePrintJob(_, _))
+      .WillOnce(DoAll(WithArg<0>([&](const auto& job) {
+                        job_id = job->job_id;
+                        auto started_update =
+                            crosapi::mojom::PrintJobUpdate::New();
+                        started_update->status =
+                            crosapi::mojom::PrintJobStatus::kStarted;
+                        observer_remote()->OnPrintJobUpdate(
+                            kId, *job_id, std::move(started_update));
+                      }),
+                      base::test::RunOnceCallback<1>()));
+
+  // Pretends to acknowledge the incoming Lacros print job cancelation request
+  // and responds with PrintJobStatus::kCancelled event.
+  // The callback is ignored by the implementation -- for this reason the
+  // invocation order doesn't really matter here (however, dropping it would
+  // yield a mojo error).
+  EXPECT_CALL(local_printer(), CancelPrintJob(_, _, _))
+      .WillOnce(DoAll(WithoutArgs([&] {
+                        // Thanks to InSequence defined in the beginning of the
+                        // test, it's guaranteed that `job_id` will be set
+                        // before we get here.
+                        ASSERT_TRUE(job_id);
+                        auto update = crosapi::mojom::PrintJobUpdate::New();
+                        update->status =
+                            crosapi::mojom::PrintJobStatus::kCancelled;
+                        observer_remote()->OnPrintJobUpdate(kId, *job_id,
+                                                            std::move(update));
+                      }),
+                      base::test::RunOnceCallback<2>(/*canceled=*/true)));
+
+  printing_infra_helper()
+      .test_printing_context_factory()
+      .SetPrinterNameForSubsequentContexts(kId);
+#endif
+  constexpr std::string_view kCancelHalfwayScript = R"(
+    (async () => {
+      const pdf = `%PDF-1.0
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 ` +
+`obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 ` +
+`obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
+xref
+0 4
+0000000000 65535 f
+0000000010 00000 n
+0000000053 00000 n
+0000000102 00000 n
+trailer<</Size 4/Root 1 0 R>>
+startxref
+149
+%EOF`;
+
+    const pdfBlob = new Blob([pdf], {type: 'application/pdf'});
+    const printers = await navigator.printing.getPrinters();
+
+    const printJob = await printers[0].printJob("Title", { data: pdfBlob }, {});
+    let phase = 0;
+    const printJobProcessingThenCanceled = new Promise((resolve, reject) => {
+      printJob.onjobstatechange = () => {
+        const state = printJob.attributes().jobState;
+        if (state === 'processing') {
+          if (phase !== 0) {
+            throw new Error('Wrong sequence: kProcessing should come first.');
+            return;
+          }
+          phase += 1;
+          printJob.cancel();
+        } else if (state === 'canceled') {
+          if (phase !== 1) {
+            throw new Error('Wrong sequence: kCanceled should come second.');
+            return;
+          }
+          resolve();
+        }
+      };
+    });
+    await printJobProcessingThenCanceled;
+   })();
+  )";
+  ASSERT_THAT(EvalJs(app_frame(), kCancelHalfwayScript),
+              content::EvalJsResult::IsOk());
 }
 
 }  // namespace printing

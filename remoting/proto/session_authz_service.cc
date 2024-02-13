@@ -10,6 +10,10 @@ GenerateHostTokenResponseStruct::~GenerateHostTokenResponseStruct() = default;
 
 VerifySessionTokenRequestStruct::VerifySessionTokenRequestStruct() = default;
 VerifySessionTokenRequestStruct::~VerifySessionTokenRequestStruct() = default;
+VerifySessionTokenRequestStruct::VerifySessionTokenRequestStruct(
+    const VerifySessionTokenRequestStruct&) = default;
+bool VerifySessionTokenRequestStruct::operator==(
+    const VerifySessionTokenRequestStruct&) const = default;
 
 VerifySessionTokenResponseStruct::VerifySessionTokenResponseStruct() = default;
 VerifySessionTokenResponseStruct::~VerifySessionTokenResponseStruct() = default;

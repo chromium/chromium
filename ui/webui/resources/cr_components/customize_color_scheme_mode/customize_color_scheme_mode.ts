@@ -12,7 +12,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {CustomizeColorSchemeModeBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './customize_color_scheme_mode.html.js';
-import {ColorSchemeMode, CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerInterface} from './customize_color_scheme_mode.mojom-webui.js';
+import type {CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerInterface} from './customize_color_scheme_mode.mojom-webui.js';
+import {ColorSchemeMode} from './customize_color_scheme_mode.mojom-webui.js';
 
 export interface ColorSchemeModeOption {
   id: string;

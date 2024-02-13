@@ -197,6 +197,9 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "blink_platform_unittests",
+    mixins = [
+        "skia_gold_test",
+    ],
 )
 
 targets.tests.isolated_script_test(
@@ -556,6 +559,22 @@ targets.tests.isolated_script_test(
     mixins = [
         "has_native_resultdb_integration",
     ],
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_wpt_tests_headful",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    binary = "chrome_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
+    name = "chrome_wpt_tests_old_headless",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+    binary = "chrome_wpt_tests",
 )
 
 targets.tests.gtest_test(
@@ -1609,6 +1628,10 @@ targets.tests.isolated_script_test(
 
 targets.tests.gtest_test(
     name = "notification_helper_unittests",
+)
+
+targets.tests.isolated_script_test(
+    name = "ondevice_stability_tests",
 )
 
 targets.tests.gtest_test(

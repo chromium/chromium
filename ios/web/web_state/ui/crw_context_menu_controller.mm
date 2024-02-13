@@ -111,11 +111,13 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
   params.location = [self.webView convertPoint:location
                                       fromView:interaction.view];
 
-  __block UIContextMenuConfiguration* configuration;
-  self.webState->GetDelegate()->ContextMenuConfiguration(
-      self.webState, params, ^(UIContextMenuConfiguration* conf) {
-        configuration = conf;
-      });
+  __block UIContextMenuConfiguration* configuration = nil;
+  if (self.webState && self.webState->GetDelegate()) {
+    self.webState->GetDelegate()->ContextMenuConfiguration(
+        self.webState, params, ^(UIContextMenuConfiguration* conf) {
+          configuration = conf;
+        });
+  }
 
   if (configuration) {
     // User long pressed on a link or an image. Cancelling all touches will
@@ -168,8 +170,10 @@ void __attribute__((noinline)) ContextMenuNestedCFRunLoop() {
         (UIContextMenuConfiguration*)configuration
                                             animator:
         (id<UIContextMenuInteractionCommitAnimating>)animator {
-  self.webState->GetDelegate()->ContextMenuWillCommitWithAnimator(self.webState,
-                                                                  animator);
+  if (self.webState && self.webState->GetDelegate()) {
+    self.webState->GetDelegate()->ContextMenuWillCommitWithAnimator(
+        self.webState, animator);
+  }
 }
 
 - (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction

@@ -33,11 +33,13 @@ public class ContextualSearchSettingsFragmentTest {
     private ContextualSearchSettingsFragment mSettings;
     private ChromeSwitchPreference mContextualSearchSwitchPreference;
     private ChromeSwitchPreference mSeeBetterResultsSwitchPreference;
+    private Profile mProfile;
 
     @Before
     public void setUp() {
         mSettingsActivityTestRule.startSettingsActivity();
         mSettings = mSettingsActivityTestRule.getFragment();
+        mProfile = mSettings.getProfile();
         mContextualSearchSwitchPreference =
                 (ChromeSwitchPreference)
                         mSettings.findPreference(
@@ -49,7 +51,7 @@ public class ContextualSearchSettingsFragmentTest {
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService = UserPrefs.get(mProfile);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
                 });
@@ -59,7 +61,7 @@ public class ContextualSearchSettingsFragmentTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    PrefService prefService = UserPrefs.get(mProfile);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_ENABLED);
                     prefService.clearPref(Pref.CONTEXTUAL_SEARCH_WAS_FULLY_PRIVACY_ENABLED);
                 });
@@ -75,7 +77,7 @@ public class ContextualSearchSettingsFragmentTest {
                 mContextualSearchSwitchPreference.isChecked());
         Assert.assertTrue(
                 "The Contextual Search default state should be uninitialized",
-                ContextualSearchPolicy.isContextualSearchUninitialized());
+                ContextualSearchPolicy.isContextualSearchUninitialized(mProfile));
 
         mContextualSearchSwitchPreference.performClick();
         Assert.assertFalse(
@@ -83,7 +85,7 @@ public class ContextualSearchSettingsFragmentTest {
                 mContextualSearchSwitchPreference.isChecked());
         Assert.assertTrue(
                 "The state should be disabled.",
-                ContextualSearchPolicy.isContextualSearchDisabled());
+                ContextualSearchPolicy.isContextualSearchDisabled(mProfile));
     }
 
     @Test
@@ -103,7 +105,7 @@ public class ContextualSearchSettingsFragmentTest {
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertFalse(
                 "The Contextual Search default value should not be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
         mSeeBetterResultsSwitchPreference.performClick();
         Assert.assertTrue(
@@ -111,7 +113,7 @@ public class ContextualSearchSettingsFragmentTest {
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertTrue(
                 "The Contextual Search default value should be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
         mContextualSearchSwitchPreference.performClick();
         // "See Better Results" Switch is not visible when Contextual Search Switch is off.
@@ -137,7 +139,7 @@ public class ContextualSearchSettingsFragmentTest {
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertFalse(
                 "The Contextual Search default value should not be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
         mSeeBetterResultsSwitchPreference.performClick();
         Assert.assertTrue(
@@ -145,7 +147,7 @@ public class ContextualSearchSettingsFragmentTest {
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertTrue(
                 "The Contextual Search state should be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
 
         mContextualSearchSwitchPreference.performClick();
         // "See Better Results" Switch is not visible when Contextual Search Switch is off.
@@ -163,6 +165,6 @@ public class ContextualSearchSettingsFragmentTest {
                 mSeeBetterResultsSwitchPreference.isChecked());
         Assert.assertTrue(
                 "The Contextual Search state should be fully opted in.",
-                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn());
+                ContextualSearchPolicy.isContextualSearchPrefFullyOptedIn(mProfile));
     }
 }

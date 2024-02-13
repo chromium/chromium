@@ -4,6 +4,7 @@
 
 #include "net/http/http_cache.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -49,7 +50,6 @@
 #include "net/http/http_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_server_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
@@ -604,7 +604,7 @@ std::string HttpCache::GetResourceURLFromHttpCacheKey(const std::string& key) {
 
 // static
 // Generate a key that can be used inside the cache.
-absl::optional<std::string> HttpCache::GenerateCacheKey(
+std::optional<std::string> HttpCache::GenerateCacheKey(
     const GURL& url,
     int load_flags,
     const NetworkIsolationKey& network_isolation_key,
@@ -626,7 +626,7 @@ absl::optional<std::string> HttpCache::GenerateCacheKey(
     // confused with a single-keyed entry). Separate the origin and url
     // with invalid whitespace character |kDoubleKeySeparator|.
     if (network_isolation_key.IsTransient()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string subframe_document_resource_prefix =
         is_subframe_document_resource ? kSubframeDocumentResourcePrefix : "";
@@ -647,7 +647,7 @@ absl::optional<std::string> HttpCache::GenerateCacheKey(
 }
 
 // static
-absl::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
+std::optional<std::string> HttpCache::GenerateCacheKeyForRequest(
     const HttpRequestInfo* request) {
   CHECK(request);
   const int64_t upload_data_identifier =

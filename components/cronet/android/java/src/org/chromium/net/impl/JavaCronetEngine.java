@@ -17,7 +17,6 @@ import org.chromium.net.NetworkQualityRttListener;
 import org.chromium.net.NetworkQualityThroughputListener;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.UrlRequest;
-import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 
@@ -100,7 +99,7 @@ public final class JavaCronetEngine extends CronetEngineBase {
         try {
             mLogger.logCronetEngineCreation(
                     mCronetEngineId,
-                    new CronetEngineBuilderInfo(builder),
+                    builder.toLoggerInfo(),
                     buildCronetVersion(),
                     CronetSource.CRONET_SOURCE_FALLBACK);
         } catch (RuntimeException e) {

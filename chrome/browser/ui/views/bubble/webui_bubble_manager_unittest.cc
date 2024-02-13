@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -28,26 +28,26 @@ class TestWebUIController : public ui::MojoBubbleWebUIController {
 WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
 
 template <>
-class BubbleContentsWrapperT<TestWebUIController>
-    : public BubbleContentsWrapper,
-      public base::SupportsWeakPtr<
-          BubbleContentsWrapperT<TestWebUIController>> {
+class WebUIContentsWrapperT<TestWebUIController> : public WebUIContentsWrapper {
  public:
-  BubbleContentsWrapperT(const GURL& webui_url,
-                         content::BrowserContext* browser_context,
-                         int task_manager_string_id,
-                         bool webui_resizes_host = true,
-                         bool esc_closes_ui = true)
-      : BubbleContentsWrapper(webui_url,
-                              browser_context,
-                              task_manager_string_id,
-                              webui_resizes_host,
-                              esc_closes_ui,
-                              "Test") {}
+  WebUIContentsWrapperT(const GURL& webui_url,
+                        content::BrowserContext* browser_context,
+                        int task_manager_string_id,
+                        bool webui_resizes_host = true,
+                        bool esc_closes_ui = true)
+      : WebUIContentsWrapper(webui_url,
+                             browser_context,
+                             task_manager_string_id,
+                             webui_resizes_host,
+                             esc_closes_ui,
+                             "Test") {}
   void ReloadWebContents() override {}
-  base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
-    return AsWeakPtr();
+  base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
+
+ private:
+  base::WeakPtrFactory<WebUIContentsWrapper> weak_ptr_factory_{this};
 };
 
 class WebUIBubbleManagerTest : public ChromeViewsTestBase {
@@ -91,7 +91,7 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
 
   // Owned by |test_profile|.
   auto* service =
-      BubbleContentsWrapperServiceFactory::GetForProfile(test_profile, true);
+      WebUIContentsWrapperServiceFactory::GetForProfile(test_profile, true);
   ASSERT_NE(nullptr, service);
 
   std::unique_ptr<views::Widget> anchor_widget =
@@ -103,15 +103,15 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
 
   // The per-profile persistent renderer will not have been created until the
   // first time the bubble is invoked.
-  BubbleContentsWrapper* contents_wrapper =
-      service->GetBubbleContentsWrapperFromURL(GURL(kTestURL));
+  WebUIContentsWrapper* contents_wrapper =
+      service->GetWebUIContentsWrapperFromURL(GURL(kTestURL));
   EXPECT_EQ(nullptr, contents_wrapper);
 
   // Open the bubble, this should create the persistent renderer-backed
   // `contents_wrapper`.
   EXPECT_EQ(nullptr, bubble_manager->GetBubbleWidget());
   bubble_manager->ShowBubble();
-  contents_wrapper = service->GetBubbleContentsWrapperFromURL(GURL(kTestURL));
+  contents_wrapper = service->GetWebUIContentsWrapperFromURL(GURL(kTestURL));
   EXPECT_NE(nullptr, bubble_manager->GetBubbleWidget());
   EXPECT_FALSE(bubble_manager->GetBubbleWidget()->IsClosed());
   EXPECT_EQ(contents_wrapper, bubble_manager->bubble_view_for_testing()
@@ -121,7 +121,7 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
   bubble_manager->CloseBubble();
   EXPECT_TRUE(bubble_manager->GetBubbleWidget()->IsClosed());
   EXPECT_EQ(contents_wrapper,
-            service->GetBubbleContentsWrapperFromURL(GURL(kTestURL)));
+            service->GetWebUIContentsWrapperFromURL(GURL(kTestURL)));
 
   service->Shutdown();  // Need to Shutdown() before the profile owning it.
   profile_manager()->DeleteTestingProfile(kProfileName);
@@ -144,7 +144,7 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
 
   // The service should not exist for off the record profiles.
   auto* service =
-      BubbleContentsWrapperServiceFactory::GetForProfile(otr_profile, true);
+      WebUIContentsWrapperServiceFactory::GetForProfile(otr_profile, true);
   ASSERT_EQ(nullptr, service);
 
   // Open the bubble for the given bubble manager
@@ -192,9 +192,9 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
   auto* profile2 = profile_manager()->CreateTestingProfile(kProfileName2);
 
   auto* service1 =
-      BubbleContentsWrapperServiceFactory::GetForProfile(profile1, true);
+      WebUIContentsWrapperServiceFactory::GetForProfile(profile1, true);
   auto* service2 =
-      BubbleContentsWrapperServiceFactory::GetForProfile(profile2, true);
+      WebUIContentsWrapperServiceFactory::GetForProfile(profile2, true);
 
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
@@ -208,10 +208,10 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
   auto manager2 = create_manager(profile1);
   auto manager3 = create_manager(profile2);
 
-  BubbleContentsWrapper* contents_wrapper_profile1 =
-      service1->GetBubbleContentsWrapperFromURL(GURL(kTestURL));
-  BubbleContentsWrapper* contents_wrapper_profile2 =
-      service2->GetBubbleContentsWrapperFromURL(GURL(kTestURL));
+  WebUIContentsWrapper* contents_wrapper_profile1 =
+      service1->GetWebUIContentsWrapperFromURL(GURL(kTestURL));
+  WebUIContentsWrapper* contents_wrapper_profile2 =
+      service2->GetWebUIContentsWrapperFromURL(GURL(kTestURL));
 
   // Content wrappers should be null until the first time the bubble is shown.
   EXPECT_EQ(nullptr, contents_wrapper_profile1);
@@ -221,13 +221,13 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
   // leverage the same contents wrapper. manager3 should be using a unique
   // contents wrapper as it is backed by a different profile.
   auto show_bubble = [](WebUIBubbleManager* manager,
-                        BubbleContentsWrapperService* service) {
+                        WebUIContentsWrapperService* service) {
     // Open the bubble for the given bubble manager
     EXPECT_EQ(nullptr, manager->GetBubbleWidget());
 
     manager->ShowBubble();
     auto* contents_wrapper =
-        service->GetBubbleContentsWrapperFromURL(GURL(kTestURL));
+        service->GetWebUIContentsWrapperFromURL(GURL(kTestURL));
     EXPECT_NE(nullptr, manager->GetBubbleWidget());
     EXPECT_NE(nullptr, contents_wrapper);
     EXPECT_EQ(
@@ -246,8 +246,8 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
   contents_wrapper_profile2 = show_bubble(manager3.get(), service2);
 
   auto test_manager = [](WebUIBubbleManager* manager,
-                         BubbleContentsWrapperService* service,
-                         BubbleContentsWrapper* expected_wrapper) {
+                         WebUIContentsWrapperService* service,
+                         WebUIContentsWrapper* expected_wrapper) {
     // Open the bubble for the given bubble manager
     EXPECT_EQ(nullptr, manager->GetBubbleWidget());
     manager->ShowBubble();
@@ -265,7 +265,7 @@ TEST_F(WebUIBubbleManagerPersistentRendererTest,
     EXPECT_TRUE(manager->GetBubbleWidget()->IsClosed());
 
     EXPECT_EQ(expected_wrapper,
-              service->GetBubbleContentsWrapperFromURL(GURL(kTestURL)));
+              service->GetWebUIContentsWrapperFromURL(GURL(kTestURL)));
   };
 
   test_manager(manager1.get(), service1, contents_wrapper_profile1);

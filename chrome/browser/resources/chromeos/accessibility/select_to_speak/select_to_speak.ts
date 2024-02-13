@@ -5,9 +5,11 @@
 import {AutomationPredicate} from '/common/automation_predicate.js';
 import {AutomationUtil} from '/common/automation_util.js';
 import {constants} from '/common/constants.js';
+import {FlagName, Flags} from '/common/flags.js';
 import {NodeNavigationUtils} from '/common/node_navigation_utils.js';
 import {NodeUtils} from '/common/node_utils.js';
 import {ParagraphUtils} from '/common/paragraph_utils.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {WordUtils} from '/common/word_utils.js';
 
 import {InputHandler} from './input_handler.js';
@@ -165,7 +167,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     this.init_();
   }
 
-  private init_(): void {
+  private async init_(): Promise<void> {
     chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;
 
@@ -187,14 +189,26 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     this.runContentScripts_();
     this.setUpEventListeners_();
 
-    chrome.contextMenus.create({
+    await Flags.init();
+    const createArgs: chrome.contextMenus.CreateProperties = {
       title: chrome.i18n.getMessage(
           'select_to_speak_listen_context_menu_option_text'),
       contexts: [chrome.contextMenus.ContextType.SELECTION],
-      onclick: () => {
+      id: 'select_to_speak',
+    };
+    if (Flags.isEnabled(FlagName.MANIFEST_V3)) {
+      chrome.contextMenus.onClicked.addListener(() => {
         this.getFocusedNodeAndSpeakSelectedText_();
-      },
-    });
+      });
+    } else {
+      createArgs['onclick'] = () => {
+        this.getFocusedNodeAndSpeakSelectedText_();
+      };
+    }
+    // Install the context menu in the Ash browser.
+    await chrome.contextMenus.create(createArgs);
+
+    // Listen for context menu clicks from other contexts (like Lacros).
     chrome.accessibilityPrivate.onSelectToSpeakContextMenuClicked.addListener(
         () => {
           this.getFocusedNodeAndSpeakSelectedText_();
@@ -1728,3 +1742,5 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     callback();
   }
 }
+
+TestImportManager.exportForTesting(getGSuiteAppRoot);

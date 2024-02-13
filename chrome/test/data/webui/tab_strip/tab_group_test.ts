@@ -5,10 +5,8 @@
 import 'chrome://tab-strip.top-chrome/tab.js';
 import 'chrome://tab-strip.top-chrome/tab_group.js';
 
-import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
-
+import type {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
 import {TabsApiProxyImpl} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
-
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestTabsApiProxy} from './test_tabs_api_proxy.js';

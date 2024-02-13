@@ -8,7 +8,7 @@
 
 #include "base/containers/contains.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 using ResourceContextTypeId = internal::ResourceContextTypeId;
 
@@ -50,4 +50,4 @@ ContextCollection ContextCollection::CreateForTesting(
   return collection;
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

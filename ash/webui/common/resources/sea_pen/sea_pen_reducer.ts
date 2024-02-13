@@ -5,8 +5,8 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {RecentSeaPenData} from './constants.js';
+import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {SeaPenActionName, SeaPenActions} from './sea_pen_actions.js';
 import {SeaPenLoadingState, SeaPenState} from './sea_pen_state.js';
 
@@ -63,21 +63,34 @@ function loadingReducer(
         },
       };
     case SeaPenActionName.BEGIN_SELECT_RECENT_SEA_PEN_IMAGE:
-    case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
-      return {...state, setImage: state.setImage + 1};
+      return {
+        ...state,
+        setImage: state.setImage + 1,
+      };
     case SeaPenActionName.END_SELECT_RECENT_SEA_PEN_IMAGE:
     case SeaPenActionName.END_SELECT_SEA_PEN_THUMBNAIL:
       if (state.setImage <= 0) {
         console.error('Impossible state for loading.setImage');
         // Reset to 0.
-        return {...state, setImage: 0};
+        return {
+          ...state,
+          setImage: 0,
+        };
       }
-      return {...state, setImage: state.setImage - 1};
+      return {
+        ...state,
+        setImage: state.setImage - 1,
+      };
     case SeaPenActionName.BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE:
+      return {
+        ...state,
+        currentSelected: true,
+      };
     case SeaPenActionName.BEGIN_SELECT_SEA_PEN_THUMBNAIL:
       return {
         ...state,
         currentSelected: true,
+        setImage: state.setImage + 1,
       };
     case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
       return {
@@ -127,7 +140,7 @@ function pendingSelectedReducer(
       return action.image;
     case SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE:
       const {key} = action;
-      if (!key) {
+      if (state && !key) {
         console.warn('pendingSelectedReducer: Failed to get selected image.');
         return null;
       } else if (globalState.loading.setImage == 0) {

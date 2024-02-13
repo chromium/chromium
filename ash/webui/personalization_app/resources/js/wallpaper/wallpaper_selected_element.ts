@@ -209,7 +209,9 @@ export class WallpaperSelectedElement extends WithPersonalizationStore {
         state => state.wallpaper.loading.setImage > 0 ||
             state.wallpaper.loading.selected.image ||
             state.wallpaper.loading.selected.attribution ||
-            state.wallpaper.loading.refreshWallpaper);
+            state.wallpaper.loading.refreshWallpaper ||
+            state.wallpaper.seaPen.loading.currentSelected ||
+            state.wallpaper.seaPen.loading.setImage > 0);
     this.watch('dailyRefreshState_', state => state.wallpaper.dailyRefresh);
     this.watch(
         'imagesByCollectionId_', state => state.wallpaper.backdrop.images);

@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -28,6 +29,9 @@
 namespace pdf {
 
 namespace {
+
+// Static factory instance (always nullptr for non-test).
+PdfViewerStreamManager::Factory* g_factory = nullptr;
 
 // Creates a claimed `EmbedderHostInfo` from the `embedder_host`.
 PdfViewerStreamManager::EmbedderHostInfo GetEmbedderHostInfo(
@@ -103,10 +107,33 @@ PdfViewerStreamManager::PdfViewerStreamManager(content::WebContents* contents)
 PdfViewerStreamManager::~PdfViewerStreamManager() = default;
 
 // static
+void PdfViewerStreamManager::Create(content::WebContents* contents) {
+  if (FromWebContents(contents)) {
+    return;
+  }
+
+  if (g_factory) {
+    g_factory->CreatePdfViewerStreamManager(contents);
+  } else {
+    // Using `new` to access a non-public constructor.
+    contents->SetUserData(
+        UserDataKey(), base::WrapUnique(new PdfViewerStreamManager(contents)));
+  }
+}
+
+// static
 PdfViewerStreamManager* PdfViewerStreamManager::FromRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
   return FromWebContents(
       content::WebContents::FromRenderFrameHost(render_frame_host));
+}
+
+// static
+void PdfViewerStreamManager::SetFactoryForTesting(Factory* factory) {
+  if (factory) {
+    CHECK(!g_factory);
+  }
+  g_factory = factory;
 }
 
 void PdfViewerStreamManager::AddStreamContainer(
@@ -169,22 +196,30 @@ void PdfViewerStreamManager::SetPluginCanSave(
 
 void PdfViewerStreamManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  // If this is an unrelated host, ignore.
-  StreamInfo* claimed_stream_info = GetClaimedStreamInfo(render_frame_host);
-  if (!claimed_stream_info &&
-      !ContainsUnclaimedStreamInfo(render_frame_host->GetFrameTreeNodeId())) {
+  // When the PDF embeder frame is deleted, delete its stream.
+  if (GetClaimedStreamInfo(render_frame_host)) {
+    DeleteClaimedStreamInfo(render_frame_host);
+    // DO NOT add code past this point. `this` may have been deleted.
     return;
   }
 
-  // An unclaimed `StreamInfo`'s FrameTreeNode may delete a speculative
-  // `content::RenderFrameHost` before the embedder `content::RenderFrameHost`
-  // commits and claims the stream. The speculative `content::RenderFrameHost`
-  // won't be considered active, and shouldn't cause the stream to be deleted.
-  if (!claimed_stream_info && !render_frame_host->IsActive()) {
+  // If `render_frame_host` isn't active, ignore. An unclaimed `StreamInfo`'s
+  // FrameTreeNode may delete a speculative `content::RenderFrameHost` before
+  // the embedder `content::RenderFrameHost` commits and claims the stream. The
+  // speculative `content::RenderFrameHost` won't be considered active, and
+  // shouldn't cause the stream to be deleted.
+  if (!render_frame_host->IsActive()) {
     return;
   }
 
-  DeleteStreamInfo(render_frame_host);
+  // If `render_frame_host` is an unrelated host (there isn't an unclaimed
+  // stream), ignore.
+  int frame_tree_node_id = render_frame_host->GetFrameTreeNodeId();
+  if (!ContainsUnclaimedStreamInfo(frame_tree_node_id)) {
+    return;
+  }
+
+  DeleteUnclaimedStreamInfo(frame_tree_node_id);
   // DO NOT add code past this point. `this` may have been deleted.
 }
 
@@ -207,7 +242,8 @@ void PdfViewerStreamManager::RenderFrameHostChanged(
   // embedder host is navigating to another PDF URL, then a new `StreamInfo`
   // should have already been created and claimed by `new_host`, so it's still
   // safe to delete `old_host`'s `StreamInfo`.
-  DeleteStreamInfo(old_host);
+  DeleteClaimedStreamInfo(old_host);
+  // DO NOT add code past this point. `this` may have been deleted.
 }
 
 void PdfViewerStreamManager::FrameDeleted(int frame_tree_node_id) {
@@ -361,7 +397,7 @@ PdfViewerStreamManager::StreamInfo* PdfViewerStreamManager::ClaimStreamInfo(
   return stream_info;
 }
 
-void PdfViewerStreamManager::DeleteStreamInfo(
+void PdfViewerStreamManager::DeleteClaimedStreamInfo(
     content::RenderFrameHost* embedder_host) {
   auto iter = stream_infos_.find(GetEmbedderHostInfo(embedder_host));
   CHECK(iter != stream_infos_.end());
@@ -380,6 +416,15 @@ void PdfViewerStreamManager::DeleteStreamInfo(
   }
 }
 
+void PdfViewerStreamManager::DeleteUnclaimedStreamInfo(int frame_tree_node_id) {
+  CHECK(stream_infos_.erase(GetUnclaimedEmbedderHostInfo(frame_tree_node_id)));
+
+  if (stream_infos_.empty()) {
+    web_contents()->RemoveUserData(UserDataKey());
+    // DO NOT add code past this point. RemoveUserData() deleted `this`.
+  }
+}
+
 bool PdfViewerStreamManager::MaybeRegisterPdfSubresourceOverride(
     content::NavigationHandle* navigation_handle) {
   // Only register the subresource override if `navigation_handle` is for the
@@ -391,8 +436,6 @@ bool PdfViewerStreamManager::MaybeRegisterPdfSubresourceOverride(
     return false;
   }
 
-  // The stream container is no longer needed after registering the subresource
-  // override.
   navigation_handle->RegisterSubresourceOverride(
       claimed_stream_info->stream()->TakeTransferrableURLLoader());
 

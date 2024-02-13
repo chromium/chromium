@@ -14,6 +14,7 @@ import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dial
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 import {getTemplate} from './os_sanitize_dialog.html.js';
@@ -56,8 +57,8 @@ export class OsSettingsSanitizeDialogElement extends PolymerElement {
   }
 
   private onPerformSanitize(): void {
-    recordSettingChange();
     this.osResetBrowserProxy_.performSanitizeSettings();
+    recordSettingChange(Setting.kSanitizeCrosSettings);
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }

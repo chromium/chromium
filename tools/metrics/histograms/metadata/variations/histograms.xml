@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileWrite"
-    enum="BooleanSuccess" expires_after="2024-02-04">
+    enum="BooleanSuccess" expires_after="2025-02-04">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.Headers.RequestContextCategory"
-    enum="VariationsHeadersRequestContextCategory" expires_after="2024-06-02">
+    enum="VariationsHeadersRequestContextCategory" expires_after="2024-08-04">
   <owner>asvitkine@chromium.org</owner>
   <owner>jwd@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>
@@ -286,6 +286,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason for rejecting an invalid study. Recorded when processing
     the variations seed at startup and when simulating a new seed.
+  </summary>
+</histogram>
+
+<histogram name="Variations.LimitedEntropyTrial.AshSeedIsValid.OnSyncToLacros"
+    enum="BooleanValid" expires_after="2025-01-07">
+  <owner>yulunz@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether the seed value to randomize the limited entropy synthetic trial is
+    valid. This is only emitted from LaCrOS clients when reading the seed value
+    from the Ash Chrome client.
   </summary>
 </histogram>
 

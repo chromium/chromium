@@ -96,6 +96,9 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   RenderWidgetHostViewMac& operator=(const RenderWidgetHostViewMac&) = delete;
 
   RenderWidgetHostViewCocoa* GetInProcessNSView() const;
+  remote_cocoa::mojom::RenderWidgetHostNSView* GetNSView() const {
+    return ns_view_;
+  }
 
   // |delegate| is used to separate out the logic from the NSResponder delegate.
   // |delegate| is retained by this class.
@@ -122,6 +125,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void SetWindowFrameInScreen(const gfx::Rect& rect) override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool IsHTMLFormPopup() const override;
+  uint64_t GetNSViewId() const override;
 
   // Implementation of RenderWidgetHostViewBase.
   void InitAsPopup(RenderWidgetHostView* parent_host_view,

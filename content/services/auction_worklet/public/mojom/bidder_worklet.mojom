@@ -135,6 +135,19 @@ struct BidderWorkletBid {
   mojo_base.mojom.TimeDelta bid_duration;
 };
 
+// Which auctions the bid is appropriate for, based on whether the auction
+// enforces k-anonymity or not.
+enum BidRole {
+  // Bid valid only for auctions that do not enforce k-anonymity.
+  kUnenforcedKAnon,
+
+  // Bid valid only for auctions that enforce k-anonymity.
+  kEnforcedKAnon,
+
+  // Bid valid regardless of whether the auction does k-anon enforcement.
+  kBothKAnonModes
+};
+
 struct BidderWorklerKAnonBidSameAsNonEnforced {};
 
 // Represents result of applying k-anonymity enforcement to a bidder worklet.

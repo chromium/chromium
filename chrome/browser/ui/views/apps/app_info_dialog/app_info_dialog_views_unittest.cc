@@ -88,8 +88,7 @@ const char kTestOtherExtensionId[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 }  // namespace
 
 class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
-                               public views::WidgetObserver,
-                               public ProfileObserver {
+                               public views::WidgetObserver {
  public:
   AppInfoDialogViewsTest() = default;
 
@@ -149,49 +148,11 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
     BrowserWithTestWindowTest::TearDown();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // BrowserWithTestWindowTest:
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-    AccountId account_id = AccountId::FromUserEmail(email);
-    CHECK(user_manager());
-    user_manager()->AddUser(account_id);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
-  }
-#endif
-
   TestingProfile* CreateProfile(const std::string& profile_name) override {
     auto* profile = BrowserWithTestWindowTest::CreateProfile(profile_name);
-    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto account_id = AccountId::FromUserEmail(profile_name);
-    ash::AnnotatedAccountId::Set(profile, account_id);
-    user_manager()->OnUserProfileCreated(account_id, profile->GetPrefs());
-    auto observation =
-        std::make_unique<base::ScopedObservation<Profile, ProfileObserver>>(
-            this);
-    observation->Observe(profile);
-    profile_observations_.push_back(std::move(observation));
-#endif
     extension_environment_.SetProfile(profile);
     return profile;
   }
-
-  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnProfileWillBeDestroyed(Profile* profile) override {
-    CHECK(base::EraseIf(profile_observations_, [profile](auto& observation) {
-      return observation->IsObservingSource(profile);
-    }));
-    const auto* account_id = ash::AnnotatedAccountId::Get(profile);
-    CHECK(account_id);
-    user_manager()->OnUserProfileWillBeDestroyed(*account_id);
-  }
-#endif
 
  protected:
   void ShowAppInfo(const std::string& app_id) {
@@ -249,9 +210,6 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
 #endif
   };
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::vector<
-      std::unique_ptr<base::ScopedObservation<Profile, ProfileObserver>>>
-      profile_observations_;
   std::unique_ptr<ash::ShelfModel> shelf_model_;
   std::unique_ptr<ChromeShelfController> chrome_shelf_controller_;
   std::unique_ptr<ArcAppTest> arc_test_;

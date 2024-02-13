@@ -69,6 +69,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
     private float mIndicatorItemPadding;
     private int mParentViewWidth;
     private int mParentHeight;
+    private int mModuleInternalPaddingPx;
     private CirclePagerIndicatorDecoration mDecoration;
     private Context mContext;
 
@@ -86,6 +87,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
         mIndicatorHeight =
                 (int) mIndicatorItemDiameter
                         + resources.getDimensionPixelSize(R.dimen.page_indicator_top_margin);
+        mModuleInternalPaddingPx = resources.getDimensionPixelSize(R.dimen.module_internal_padding);
         mParentViewWidth = 800;
         mParentHeight = 400;
         when(mRecyclerView.getHeight()).thenReturn(mParentHeight);
@@ -344,7 +346,7 @@ public class CirclePagerIndicatorDecorationUnitTest {
         View view = Mockito.mock(View.class);
         RecyclerView.State state = Mockito.mock(State.class);
         when(mRecyclerView.getMeasuredWidth()).thenReturn(mParentViewWidth);
-        int expectedItemWith = (int) (mParentViewWidth - mIndicatorItemPadding) / 2;
+        int expectedItemWith = (mParentViewWidth - mModuleInternalPaddingPx) / 2;
         // The recyclerview has 3 items shown.
         when(mAdapter.getItemCount()).thenReturn(3);
 
@@ -368,16 +370,34 @@ public class CirclePagerIndicatorDecorationUnitTest {
         displayStyle =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
+        MarginLayoutParams marginLayoutParams = Mockito.mock(MarginLayoutParams.class);
+        when(view.getLayoutParams()).thenReturn(marginLayoutParams);
         assertEquals(1, getItemPerScreen(mUiConfig.getCurrentDisplayStyle()));
-        mDecoration.onDisplayStyleChanged(0, getItemPerScreen(displayStyle));
+        int startMargin = 20;
+        mDecoration.onDisplayStyleChanged(startMargin, getItemPerScreen(displayStyle));
         mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
 
-        // Verifies that the width is set to MATCH_PARENT if a single item is shown per screen.
-        assertEquals(MATCH_PARENT, layoutParams.width);
+        // Verifies that the start margin is set to the view if a single item is shown per screen.
+        verify(marginLayoutParams).setMarginStart(eq(startMargin));
+        verify(marginLayoutParams).setMarginEnd(eq(startMargin));
+        verify(view).setLayoutParams(eq(marginLayoutParams));
+
+        // Set back to wide screen.
+        displayStyle = new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyle);
+        startMargin = 0;
+        assertEquals(2, getItemPerScreen(mUiConfig.getCurrentDisplayStyle()));
+
+        mDecoration.onDisplayStyleChanged(startMargin, getItemPerScreen(displayStyle));
+        mDecoration.getItemOffsetsImpl(rect, view, mRecyclerView, state);
+        // Verifies that the width is updated for the view when multiple items are shown per screen.
+        verify(marginLayoutParams).setMarginStart(eq(startMargin));
+        verify(marginLayoutParams).setMarginEnd(eq(startMargin));
+        verify(view, times(2)).setLayoutParams(eq(marginLayoutParams));
+        assertEquals(expectedItemWith, layoutParams.width);
     }
 
     private CirclePagerIndicatorDecoration create(boolean isTablet) {
-        return new CirclePagerIndicatorDecoration(
-                mContext, mUiConfig, 0, Color.BLACK, Color.GRAY, isTablet);
+        return new CirclePagerIndicatorDecoration(mContext, 0, Color.BLACK, Color.GRAY, isTablet);
     }
 }

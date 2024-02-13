@@ -31,9 +31,9 @@ class MultiImageContainer final : public views::LabelButtonImageContainer {
   MultiImageContainer& operator=(const MultiImageContainer&) = delete;
   ~MultiImageContainer() override;
 
-  void SetImages(const std::vector<const ui::ImageModel>& image_model);
+  void SetImages(const std::vector<ui::ImageModel>& image_model);
   void SetImage(size_t index, const ui::ImageModel& image_model);
-  void SetImage(size_t index, const gfx::ImageSkia& image_skia);
+  void SetImage(size_t index, const gfx::ImageSkia& image);
 
   // LabelButtonImageContainer
   std::unique_ptr<views::View> CreateView() override;
@@ -46,7 +46,7 @@ class MultiImageContainer final : public views::LabelButtonImageContainer {
   void RemoveExtraImages(const size_t number_of_images);
 
   std::vector<raw_ptr<views::ImageView>> images_;
-  raw_ptr<views::View> view_;
+  views::ViewTracker view_tracker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_MULTI_IMAGE_CONTAINER_H_

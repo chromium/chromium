@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kPrepareVaultForMigration,
     kAddAuthFactor,
     kUpdateAuthFactor,
+    kUpdateAuthFactorMetadata,
     kListAuthFactors,
     kStartMigrateToDircrypto,
     kRemove,
@@ -268,6 +269,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void UpdateAuthFactor(
       const ::user_data_auth::UpdateAuthFactorRequest& request,
       UpdateAuthFactorCallback callback) override;
+  void UpdateAuthFactorMetadata(
+      const ::user_data_auth::UpdateAuthFactorMetadataRequest& request,
+      UpdateAuthFactorMetadataCallback callback) override;
   void RemoveAuthFactor(
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) override;
@@ -322,6 +326,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
                         PrepareVaultForMigrationRequest);
   FUDAC_OPERATION_TYPES(kAddAuthFactor, AddAuthFactorRequest);
   FUDAC_OPERATION_TYPES(kUpdateAuthFactor, UpdateAuthFactorRequest);
+  FUDAC_OPERATION_TYPES(kUpdateAuthFactorMetadata,
+                        UpdateAuthFactorMetadataRequest);
   FUDAC_OPERATION_TYPES(kListAuthFactors, ListAuthFactorsRequest);
   FUDAC_OPERATION_TYPES(kStartMigrateToDircrypto,
                         StartMigrateToDircryptoRequest);

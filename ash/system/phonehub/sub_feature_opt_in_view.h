@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -25,6 +26,8 @@ using ash::phonehub::util::PermissionsOnboardingSetUpMode;
 // An additional entry point shown on the Phone Hub bubble for the user to grant
 // access or opt out for phone hub sub feature.
 class ASH_EXPORT SubFeatureOptInView : public views::View {
+  METADATA_HEADER(SubFeatureOptInView, views::View)
+
  public:
   SubFeatureOptInView(const SubFeatureOptInView&) = delete;
   SubFeatureOptInView& operator=(const SubFeatureOptInView&) = delete;

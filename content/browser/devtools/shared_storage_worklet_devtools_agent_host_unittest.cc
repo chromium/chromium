@@ -114,18 +114,21 @@ class SharedStorageWorkletDevToolsAgentHostTest
             main_rfh);
     document_service->CreateWorklet(
         GURL("http://www.google.com/script.js"),
+        network::mojom::CredentialsMode::kSameOrigin,
         {blink::mojom::OriginTrialFeature::kSharedStorageAPI},
         std::move(worklet_host), base::DoNothing());
 
     SharedStorageWorkletHostManager* manager =
         GetSharedStorageWorkletHostManagerForStoragePartition(
             main_rfh->GetStoragePartition());
-    const std::map<SharedStorageDocumentServiceImpl*,
-                   std::unique_ptr<SharedStorageWorkletHost>>& worklet_hosts =
-        manager->GetAttachedWorkletHostsForTesting();
+    std::map<SharedStorageDocumentServiceImpl*,
+             std::map<SharedStorageWorkletHost*,
+                      std::unique_ptr<SharedStorageWorkletHost>>>&
+        worklet_hosts = manager->GetAttachedWorkletHostsForTesting();
     CHECK_EQ(worklet_hosts.size(), 1u);
+    CHECK_EQ((worklet_hosts.begin()->second).size(), 1u);
 
-    worklet_host_ = worklet_hosts.begin()->second.get();
+    worklet_host_ = worklet_hosts.begin()->second.begin()->second.get();
 
     devtools_agent_host_ = new SharedStorageWorkletDevToolsAgentHost(
         *worklet_host_, base::UnguessableToken());

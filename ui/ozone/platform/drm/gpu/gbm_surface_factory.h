@@ -66,7 +66,7 @@ class GbmSurfaceFactory : public SurfaceFactoryOzone {
       gfx::Size size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
+      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                gpu::VulkanDeviceQueue* device_queue,
                                gfx::Size size,

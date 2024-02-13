@@ -7,11 +7,15 @@
 #include <optional>
 
 #include "base/ranges/algorithm.h"
+#include "base/types/expected_macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
@@ -50,14 +54,17 @@ int32_t GetOperatorOutputIndex(const MLOperator* op,
   return operand_to_index_map.at(output);
 }
 
-Vector<int32_t> ConvertDimensions(const Vector<uint32_t>& input_dimensions) {
+base::expected<Vector<int32_t>, String> ConvertDimensions(
+    const Vector<uint32_t>& input_dimensions) {
   Vector<int32_t> output_dimensions;
   output_dimensions.reserve(input_dimensions.size());
-  base::ranges::transform(input_dimensions,
-                          std::back_inserter(output_dimensions),
-                          [](const auto& dimension) {
-                            return base::checked_cast<int32_t>(dimension);
-                          });
+  for (auto dimension : input_dimensions) {
+    auto checked_dimension = base::MakeCheckedNum<int32_t>(dimension);
+    if (!checked_dimension.IsValid()) {
+      return base::unexpected("The dimension is too large.");
+    }
+    output_dimensions.push_back(checked_dimension.ValueOrDie());
+  }
   return output_dimensions;
 }
 
@@ -95,9 +102,16 @@ uint32_t GetOperatorCodeIndex(tflite::BuiltinOperator code,
   return operator_code_index;
 }
 
+// Holds tflite padding mode and the explicit padding if needed.
+struct TfLitePadding {
+  tflite::Padding mode;
+  // The explicit paddings are used to create TfLite Pad operator.
+  std::optional<Vector<uint32_t>> paddings;
+};
+
 // Helper to get tflite padding mode for convolution 2d or pooling 2d.
 template <typename OptionsType>
-base::expected<tflite::Padding, String> GetTfLitePaddingMode(
+base::expected<TfLitePadding, String> GetTfLitePaddingMode(
     const OptionsType* options,
     const webnn::Size2d<uint32_t>& input,
     const webnn::Size2d<uint32_t>& filter,
@@ -112,7 +126,7 @@ base::expected<tflite::Padding, String> GetTfLitePaddingMode(
       const auto explicit_padding = options->getPaddingOr(no_padding);
       CHECK_EQ(explicit_padding.size(), 4u);
       if (explicit_padding == no_padding) {
-        return tflite::Padding_VALID;
+        return TfLitePadding{.mode = tflite::Padding_VALID};
       } else {
         // Convert the explicit padding to tflite same padding mode, throw
         // exception if the calculated padding with kSameUpper are not the same
@@ -129,10 +143,10 @@ base::expected<tflite::Padding, String> GetTfLitePaddingMode(
             padding_height->begin, padding_height->end, padding_width->begin,
             padding_width->end};
         if (explicit_padding == upper_padding) {
-          return tflite::Padding_SAME;
+          return TfLitePadding{.mode = tflite::Padding_SAME};
         } else {
-          return base::unexpected(
-              "The explicit padding are not supported in tflite.");
+          return TfLitePadding{.mode = tflite::Padding_VALID,
+                               .paddings = explicit_padding};
         }
       }
     }
@@ -140,7 +154,7 @@ base::expected<tflite::Padding, String> GetTfLitePaddingMode(
       // Tflite same padding is the additional ending padding of the spatial
       // input dimensions by default.
       // https://www.tensorflow.org/api_docs/python/tf/nn#same_padding
-      return tflite::Padding_SAME;
+      return TfLitePadding{.mode = tflite::Padding_SAME};
     case V8MLAutoPad::Enum::kSameLower:
       // The values in the padding array are ignored, so we don't need to
       // calculate if it's tflite same padding.
@@ -185,29 +199,108 @@ GetActivationFunctionType(const MLActivation* ml_activation) {
   return activation;
 }
 
+template <typename T>
+struct TensorInfo {
+  tflite::TensorType type;
+  Vector<int32_t> dimensions;
+  Vector<T> values;
+};
+
 template <typename DataType>
-uint32_t SerializeZeroBiasBuffer(V8MLOperandDataType::Enum data_type,
-                                 uint32_t output_channels,
-                                 flatbuffers::FlatBufferBuilder& builder,
-                                 Vector<BufferOffset>& buffers,
-                                 Vector<TensorOffset>& tensors) {
+int32_t SerializeTensorWithBuffer(const TensorInfo<DataType>& tensor_info,
+                                  flatbuffers::FlatBufferBuilder& builder,
+                                  Vector<BufferOffset>& buffers,
+                                  Vector<TensorOffset>& tensors) {
   // Create `tflite::Buffer` for the empty tensors.
   const auto buffer_index = base::checked_cast<uint32_t>(buffers.size());
-  const std::vector<DataType> empty_data(output_channels);
+  const auto& tensor_data = tensor_info.values;
   buffers.emplace_back(tflite::CreateBuffer(
       builder,
-      builder.CreateVector(reinterpret_cast<const uint8_t*>(empty_data.data()),
-                           empty_data.size() * sizeof(DataType))));
+      builder.CreateVector(reinterpret_cast<const uint8_t*>(tensor_data.data()),
+                           tensor_data.size() * sizeof(DataType))));
 
-  // Create `tflite::Tensor` with the output channels and the index of buffer.
+  // Create `tflite::Tensor` with the dimensions and the index of buffer.
   const int32_t tensor_index = base::checked_cast<int32_t>(tensors.size());
-  const auto dimensions = builder.CreateVector<int32_t>(
-      {base::checked_cast<int32_t>(output_channels)});
-  const auto operand_type = BlinkOperandTypeToTFLite(data_type);
+  const auto dimensions = builder.CreateVector<int32_t>(tensor_info.dimensions);
   tensors.emplace_back(tflite::CreateTensor(builder, std::move(dimensions),
-                                            operand_type, buffer_index));
+                                            tensor_info.type, buffer_index));
 
   return tensor_index;
+}
+
+base::expected<int32_t, String> SerializeExplicitPad(
+    const MLOperand* input_operand,
+    const int32_t input_tensor_index,
+    const Vector<uint32_t>& paddings,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<OperatorOffset>& operators,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  // WebNN explicit padding is in [beginning_height, ending_height,
+  // beginning_width, ending_width] sequence.
+  const auto padding_rank = paddings.size();
+  CHECK_EQ(padding_rank, 4u);
+
+  // TfLite padding is an integer tensor array filled with pre and post padding.
+  // For NHWC input layout, the sequence will be [[0, 0], [beginning_height,
+  // ending_height], [beginning_width, ending_width], [0, 0]].
+  Vector<int32_t> tflite_paddings(padding_rank);
+  tflite_paddings.InsertAt(tflite_paddings.begin() + 2, paddings.data(),
+                           paddings.size());
+
+  // The shape of padding is [n, 2], where n is the rank of input as described
+  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
+  const Vector<int32_t> paddings_shape{
+      {base::checked_cast<int32_t>(padding_rank), 2}};
+  const TensorInfo<int32_t> paddings_info = {.type = tflite::TensorType_INT32,
+                                             .dimensions = paddings_shape,
+                                             .values = tflite_paddings};
+  const auto padding_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      paddings_info, builder, buffers, tensors);
+
+  // Create `tflite::Tensor` for the output operand of explicit padding operator
+  // with the dimensions and data type.
+  const Vector<uint32_t>& input_shape = input_operand->Dimensions();
+  CHECK_EQ(input_shape.size(), 4u);
+  Vector<int32_t> output_shape;
+  output_shape.reserve(padding_rank);
+  for (size_t i = 0; i < padding_rank; ++i) {
+    auto checked_dimension = base::MakeCheckedNum<int32_t>(input_shape[i]);
+    // Calculate output height with padding beginning and ending height.
+    if (i == 1) {
+      checked_dimension +=
+          base::MakeCheckedNum<int32_t>(paddings[0]) + paddings[1];
+    } else if (i == 2) {
+      // Calculate output width with padding beginning and ending width.
+      checked_dimension +=
+          base::MakeCheckedNum<int32_t>(paddings[2]) + paddings[3];
+    }
+    if (!checked_dimension.IsValid()) {
+      return base::unexpected("The input dimension or padding is too large.");
+    }
+    output_shape.push_back(checked_dimension.ValueOrDie());
+  }
+
+  const tflite::TensorType input_tensor_type =
+      BlinkOperandTypeToTFLite(input_operand->DataType());
+  const int32_t output_tensor_index =
+      base::checked_cast<int32_t>(tensors.size());
+  tensors.emplace_back(tflite::CreateTensor(
+      builder, builder.CreateVector<int32_t>(output_shape), input_tensor_type));
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  std::array<int32_t, 2> op_inputs = {input_tensor_index, padding_tensor_index};
+  const auto operator_code_index = GetOperatorCodeIndex(
+      tflite::BuiltinOperator_PAD, builder, operator_codes);
+  const std::array<int32_t, 1> op_outputs = {output_tensor_index};
+  operators.emplace_back(tflite::CreateOperator(
+      builder, operator_code_index, builder.CreateVector<int32_t>(op_inputs),
+      builder.CreateVector<int32_t>(op_outputs)));
+
+  return output_tensor_index;
 }
 
 base::expected<OperatorOffset, String> SerializeConv2d(
@@ -215,6 +308,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
     const MLOperator* conv2d,
     flatbuffers::FlatBufferBuilder& builder,
     Vector<OperatorCodeOffset>& operator_codes,
+    Vector<OperatorOffset>& operators,
     Vector<BufferOffset>& buffers,
     Vector<TensorOffset>& tensors) {
   const int32_t input_index =
@@ -255,9 +349,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
   // https://github.com/webmachinelearning/webnn/issues/324.
   const auto validation_result = ValidateFilterLayout(
       depthwise, options->inputLayout(), options->filterLayout());
-  if (!validation_result.has_value()) {
-    return base::unexpected(validation_result.error());
-  }
+  RETURN_IF_ERROR(validation_result);
 
   // Validate activation operator that is partial support in tflite schema and
   // convert to tflite function type.
@@ -266,9 +358,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
   if (options->hasActivation()) {
     const auto activation_result =
         GetActivationFunctionType(options->activation());
-    if (!activation_result.has_value()) {
-      return base::unexpected(validation_result.error());
-    }
+    RETURN_IF_ERROR(activation_result);
     activation = activation_result.value();
   }
 
@@ -295,8 +385,17 @@ base::expected<OperatorOffset, String> SerializeConv2d(
                                                    .width = dilations[1]};
   const auto padding_mode = GetTfLitePaddingMode(
       options, input_size2d, filter_size2d, stride_size2d, dilation_size2d);
-  if (!padding_mode.has_value()) {
-    return base::unexpected(padding_mode.error());
+  RETURN_IF_ERROR(padding_mode);
+
+  // Insert a Pad operator before TfLite Conv2d if needed for explicit padding.
+  std::optional<int32_t> explicit_pad_index;
+  const auto& explicit_padding = padding_mode->paddings;
+  if (explicit_padding) {
+    const auto serialization_result = SerializeExplicitPad(
+        input, input_index, explicit_padding.value(), builder, operator_codes,
+        operators, buffers, tensors);
+    RETURN_IF_ERROR(serialization_result);
+    explicit_pad_index = serialization_result.value();
   }
 
   tflite::BuiltinOperator operator_kind;
@@ -306,7 +405,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
     const uint32_t depth_multiplier = 1;
     operator_kind = tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
     builtin_options = tflite::CreateDepthwiseConv2DOptions(
-                          builder, padding_mode.value(), stride_size2d.width,
+                          builder, padding_mode->mode, stride_size2d.width,
                           stride_size2d.height, depth_multiplier, activation,
                           dilation_size2d.width, dilation_size2d.height)
                           .Union();
@@ -314,7 +413,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
   } else {
     operator_kind = tflite::BuiltinOperator_CONV_2D;
     builtin_options = tflite::CreateConv2DOptions(
-                          builder, padding_mode.value(), stride_size2d.width,
+                          builder, padding_mode->mode, stride_size2d.width,
                           stride_size2d.height, activation,
                           dilation_size2d.width, dilation_size2d.height)
                           .Union();
@@ -336,16 +435,53 @@ base::expected<OperatorOffset, String> SerializeConv2d(
     if (input->DataType() != V8MLOperandDataType::Enum::kFloat32) {
       return base::unexpected("The data type of input is not supported.");
     }
-    bias_index = SerializeZeroBiasBuffer<float>(
-        input->DataType(), output_channels, builder, buffers, tensors);
+    const TensorInfo<float> zero_buffer_info = {
+        .type = BlinkOperandTypeToTFLite(input->DataType()),
+        .dimensions = {base::checked_cast<int32_t>(output_channels)},
+        .values = Vector<float>(output_channels)};
+    bias_index = SerializeTensorWithBuffer<float>(zero_buffer_info, builder,
+                                                  buffers, tensors);
   }
-  const std::vector<int32_t> op_inputs = {input_index, filter_index,
-                                          bias_index};
+
+  const std::vector<int32_t> op_inputs = {
+      explicit_pad_index ? explicit_pad_index.value() : input_index,
+      filter_index, bias_index};
   const std::vector<int32_t> op_outputs = {output_index};
   return tflite::CreateOperator(builder, operator_code_index,
                                 builder.CreateVector<int32_t>(op_inputs),
                                 builder.CreateVector<int32_t>(op_outputs),
                                 builtin_options_type, builtin_options);
+}
+
+OperatorOffset SerializeConcat(const OperandToIndexMap& operand_to_index_map,
+                               const MLOperator* ml_operator,
+                               flatbuffers::FlatBufferBuilder& builder,
+                               Vector<OperatorCodeOffset>& operator_codes) {
+  const MLConcatOperator* concat =
+      static_cast<const MLConcatOperator*>(ml_operator);
+  const auto inputs_size = concat->Inputs().size();
+  Vector<int32_t> operator_inputs(inputs_size);
+  for (wtf_size_t i = 0; i < inputs_size; ++i) {
+    operator_inputs[i] = GetOperatorInputIndex(concat, operand_to_index_map, i);
+  }
+  const int32_t output_index =
+      GetOperatorOutputIndex(concat, operand_to_index_map);
+
+  // Create `tflite::ConcatenationOptions` with axis.
+  const auto concat_options =
+      tflite::CreateConcatenationOptions(builder, concat->Axis());
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index = GetOperatorCodeIndex(
+      tflite::BuiltinOperator_CONCATENATION, builder, operator_codes);
+  const std::array<int32_t, 1> operator_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(operator_inputs),
+                                builder.CreateVector<int32_t>(operator_outputs),
+                                tflite::BuiltinOptions_ConcatenationOptions,
+                                concat_options.Union());
 }
 
 OperatorOffset SerializeElementWiseBinary(
@@ -399,11 +535,229 @@ OperatorOffset SerializeElementWiseBinary(
       builder.CreateVector<int32_t>(operator_outputs));
 }
 
+OperatorOffset SerializeTranspose(const int32_t input_index,
+                                  const int32_t output_index,
+                                  const Vector<int32_t>& permutation,
+                                  flatbuffers::FlatBufferBuilder& builder,
+                                  Vector<OperatorCodeOffset>& operator_codes,
+                                  Vector<BufferOffset>& buffers,
+                                  Vector<TensorOffset>& tensors) {
+  const Vector<int32_t> permutation_shape{
+      base::checked_cast<int32_t>(permutation.size())};
+  const TensorInfo<int32_t> permutation_info = {
+      .type = tflite::TensorType_INT32,
+      .dimensions = permutation_shape,
+      .values = permutation};
+  const auto permutation_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      permutation_info, builder, buffers, tensors);
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index = GetOperatorCodeIndex(
+      tflite::BuiltinOperator_TRANSPOSE, builder, operator_codes);
+  const std::array<int32_t, 2> operator_inputs = {input_index,
+                                                  permutation_tensor_index};
+  const std::array<int32_t, 1> operator_outputs = {output_index};
+  return tflite::CreateOperator(
+      builder, operator_code_index,
+      builder.CreateVector<int32_t>(operator_inputs),
+      builder.CreateVector<int32_t>(operator_outputs));
+}
+
+int32_t InsertTransposeOperator(const MLOperand* input_operand,
+                                const int32_t input_tensor_index,
+                                const Vector<int32_t>& permutation,
+                                flatbuffers::FlatBufferBuilder& builder,
+                                Vector<OperatorCodeOffset>& operator_codes,
+                                Vector<OperatorOffset>& operators,
+                                Vector<BufferOffset>& buffers,
+                                Vector<TensorOffset>& tensors) {
+  // Create `tflite::Tensor` for the output operand of Transpose operator with
+  // the dimensions and tensor data type.
+  const Vector<uint32_t>& input_shape = input_operand->Dimensions();
+  const auto input_rank = input_shape.size();
+  CHECK_EQ(permutation.size(), input_rank);
+  std::vector<int32_t> output_shape(input_rank);
+  for (wtf_size_t i = 0; i < input_rank; ++i) {
+    // The input shape has been validated the overflow before creating tensor.
+    output_shape[i] = base::checked_cast<int32_t>(input_shape[permutation[i]]);
+  }
+  const tflite::TensorType input_tensor_type =
+      BlinkOperandTypeToTFLite(input_operand->DataType());
+  const int32_t output_tensor_index =
+      base::checked_cast<int32_t>(tensors.size());
+  tensors.emplace_back(tflite::CreateTensor(
+      builder, builder.CreateVector<int32_t>(output_shape), input_tensor_type));
+
+  const auto transpose_offset =
+      SerializeTranspose(input_tensor_index, output_tensor_index, permutation,
+                         builder, operator_codes, buffers, tensors);
+  operators.emplace_back(transpose_offset);
+
+  return output_tensor_index;
+}
+
+base::expected<OperatorOffset, String> SerializeGemm(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* gemm,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<OperatorOffset>& operators,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  // Get the tensor index of input, filter, bias and output operand.
+  const int32_t input_index =
+      GetOperatorInputIndex(gemm, operand_to_index_map, 0);
+  const int32_t filter_index =
+      GetOperatorInputIndex(gemm, operand_to_index_map, 1);
+  const int32_t output_index =
+      GetOperatorOutputIndex(gemm, operand_to_index_map);
+
+  // TODO(crbug.com/1273291): Support alpha, beta and aTranspose options.
+  const MLGemmOptions* options =
+      static_cast<const MLGemmOptions*>(gemm->Options());
+  const auto output_channels = gemm->Outputs()[0]->Dimensions()[1];
+  const auto validation_result = ValidateGemmOptions(options, output_channels);
+  RETURN_IF_ERROR(validation_result);
+
+  // The WebNN Gemm follows the expression `alpha * A * B + beta * C`, where A
+  // is a 2-D tensor with shape [M, K], B is a 2-D tensor with shape [K, N] by
+  // default options, but Tflite Fully Connected's input and filter shapes
+  // are [batch, input_channels] and [output_channels, input_channels], so the
+  // Transpose operator need to be inserted before Gemm When bTranspose option
+  // is false.
+  std::optional<int32_t> transpose_index;
+  if (!options->bTranspose()) {
+    const auto* const filter = gemm->Inputs()[1].Get();
+    CHECK_EQ(filter->Dimensions().size(), 2u);
+    const Vector<int32_t> permutation = {1, 0};
+    transpose_index =
+        InsertTransposeOperator(filter, filter_index, permutation, builder,
+                                operator_codes, operators, buffers, tensors);
+  }
+  std::vector<int32_t> operator_inputs = {
+      input_index, transpose_index ? transpose_index.value() : filter_index};
+  if (gemm->Inputs().size() == 3) {
+    operator_inputs.push_back(
+        GetOperatorInputIndex(gemm, operand_to_index_map, 2));
+  }
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index = GetOperatorCodeIndex(
+      tflite::BuiltinOperator_FULLY_CONNECTED, builder, operator_codes);
+  const std::array<int32_t, 1> operator_outputs = {output_index};
+  return tflite::CreateOperator(
+      builder, operator_code_index,
+      builder.CreateVector<int32_t>(operator_inputs),
+      builder.CreateVector<int32_t>(operator_outputs));
+}
+
+base::expected<OperatorOffset, String> SerializePad(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* pad,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  const MLPadOperator* pad_operator = static_cast<const MLPadOperator*>(pad);
+  const int32_t input_index =
+      GetOperatorInputIndex(pad_operator, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(pad_operator, operand_to_index_map);
+
+  // Paddings is an integer tensor array filled with pre and post padding.
+  const Vector<uint32_t>& pre_paddings = pad_operator->BeginningPadding();
+  const Vector<uint32_t>& post_paddings = pad_operator->EndingPadding();
+  CHECK_EQ(pre_paddings.size(), post_paddings.size());
+  Vector<int32_t> paddings(pre_paddings.size() + post_paddings.size());
+  for (size_t i = 0; i < pre_paddings.size(); ++i) {
+    auto checked_pre_padding = base::MakeCheckedNum<int32_t>(pre_paddings[i]);
+    auto checked_post_padding = base::MakeCheckedNum<int32_t>(post_paddings[i]);
+    if (!checked_pre_padding.IsValid() || !checked_post_padding.IsValid()) {
+      return base::unexpected("The padding is too large.");
+    }
+    paddings[i * 2] = checked_pre_padding.ValueOrDie();
+    paddings[i * 2 + 1] = checked_post_padding.ValueOrDie();
+  }
+
+  // The shape of padding is [n, 2], where n is the rank of input as described
+  // here https://www.tensorflow.org/mlir/tfl_ops#tflmirror_pad_tflmirrorpadop.
+  const Vector<int32_t> paddings_shape{
+      {base::checked_cast<int32_t>(pre_paddings.size()), 2}};
+  const TensorInfo<int32_t> paddings_info = {.type = tflite::TensorType_INT32,
+                                             .dimensions = paddings_shape,
+                                             .values = paddings};
+  const auto paddings_index = SerializeTensorWithBuffer<int32_t>(
+      paddings_info, builder, buffers, tensors);
+
+  // Create the inputs of operator with the index of input and paddings, the
+  // index of padding value will be pushed back into the vector if the padding
+  // mode is Constant.
+  std::vector<int32_t> op_inputs = {input_index, paddings_index};
+  const MLPadOptions* options =
+      static_cast<const MLPadOptions*>(pad_operator->Options());
+  CHECK(options);
+  tflite::BuiltinOptions builtin_options_type = tflite::BuiltinOptions_NONE;
+  flatbuffers::Offset<void> builtin_options = 0;
+  tflite::BuiltinOperator operator_code;
+  switch (options->mode().AsEnum()) {
+    case blink::V8MLPaddingMode::Enum::kReflection: {
+      operator_code = tflite::BuiltinOperator_MIRROR_PAD;
+      builtin_options_type = tflite::BuiltinOptions_MirrorPadOptions;
+      builtin_options =
+          CreateMirrorPadOptions(builder, tflite::MirrorPadMode_REFLECT)
+              .Union();
+      break;
+    }
+    case blink::V8MLPaddingMode::Enum::kSymmetric: {
+      operator_code = tflite::BuiltinOperator_MIRROR_PAD;
+      builtin_options_type = tflite::BuiltinOptions_MirrorPadOptions;
+      builtin_options =
+          CreateMirrorPadOptions(builder, tflite::MirrorPadMode_SYMMETRIC)
+              .Union();
+      break;
+    }
+    case blink::V8MLPaddingMode::Enum::kConstant: {
+      operator_code = tflite::BuiltinOperator_PADV2;
+      builtin_options = tflite::CreatePadV2Options(builder).Union();
+      float padding_value = options->value();
+      const TensorInfo<float> padding_value_info = {
+          .type = tflite::TensorType_FLOAT32,
+          .dimensions = {1},
+          .values = {padding_value}};
+      const auto padding_value_index = SerializeTensorWithBuffer<float>(
+          padding_value_info, builder, buffers, tensors);
+      op_inputs.push_back(padding_value_index);
+      break;
+    }
+    case blink::V8MLPaddingMode::Enum::kEdge:
+      return base::unexpected(
+          "The edge padding mode is not supported in tflite schema.");
+  }
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index =
+      GetOperatorCodeIndex(operator_code, builder, operator_codes);
+  const std::array<int32_t, 1> op_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(op_inputs),
+                                builder.CreateVector<int32_t>(op_outputs),
+                                builtin_options_type, builtin_options);
+}
+
 base::expected<OperatorOffset, String> SerializePool2d(
     const OperandToIndexMap& operand_to_index_map,
     const MLOperator* pool2d,
     flatbuffers::FlatBufferBuilder& builder,
-    Vector<OperatorCodeOffset>& operator_codes) {
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<OperatorOffset>& operators,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
   const int32_t input_index =
       GetOperatorInputIndex(pool2d, operand_to_index_map);
   const int32_t output_index =
@@ -462,8 +816,16 @@ base::expected<OperatorOffset, String> SerializePool2d(
 
   const auto padding_mode = GetTfLitePaddingMode(
       options, input_size2d, filter_size2d, stride_size2d, dilation_size2d);
-  if (!padding_mode.has_value()) {
-    return base::unexpected(padding_mode.error());
+  RETURN_IF_ERROR(padding_mode);
+  // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
+  std::optional<int32_t> explicit_pad_index;
+  const auto& explicit_padding = padding_mode->paddings;
+  if (explicit_padding) {
+    const auto serialization_result = SerializeExplicitPad(
+        input, input_index, explicit_padding.value(), builder, operator_codes,
+        operators, buffers, tensors);
+    RETURN_IF_ERROR(serialization_result);
+    explicit_pad_index = serialization_result.value();
   }
 
   tflite::BuiltinOperator operator_kind;
@@ -479,7 +841,7 @@ base::expected<OperatorOffset, String> SerializePool2d(
   }
 
   const auto pool_2d_options = CreatePool2DOptions(
-      builder, padding_mode.value(), stride_size2d.width, stride_size2d.height,
+      builder, padding_mode->mode, stride_size2d.width, stride_size2d.height,
       filter_size2d.width, filter_size2d.height,
       tflite::ActivationFunctionType_NONE);
 
@@ -488,7 +850,8 @@ base::expected<OperatorOffset, String> SerializePool2d(
   // code.
   const auto operator_code_index =
       GetOperatorCodeIndex(operator_kind, builder, operator_codes);
-  const std::vector<int32_t> op_inputs = {input_index};
+  const std::vector<int32_t> op_inputs = {
+      explicit_pad_index ? explicit_pad_index.value() : input_index};
   const std::vector<int32_t> op_outputs = {output_index};
   return tflite::CreateOperator(
       builder, operator_code_index, builder.CreateVector<int32_t>(op_inputs),
@@ -579,9 +942,11 @@ OperatorOffset SerializeReshape(const OperandToIndexMap& operand_to_index_map,
 
   // Create `tflite::ReshapeOptions` with output dimensions.
   const auto& output = reshape->Outputs()[0];
+  const auto output_dimensions = ConvertDimensions(output->Dimensions());
+  // The output dimensions has been verified before creating tflite tensor.
+  CHECK(output_dimensions.has_value());
   const auto reshape_options = tflite::CreateReshapeOptions(
-      builder,
-      builder.CreateVector<int32_t>(ConvertDimensions(output->Dimensions())));
+      builder, builder.CreateVector<int32_t>(output_dimensions.value()));
 
   // Create `tflite::Operator` with the tensor index of inputs and outputs
   // operand. The type of operation is determined by the index of the operator
@@ -622,6 +987,33 @@ OperatorOffset SerializeSoftmax(const OperandToIndexMap& operand_to_index_map,
                                 softmax_options.Union());
 }
 
+base::expected<OperatorOffset, String> SerializeTranspose(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* transpose,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  const int32_t input_index =
+      GetOperatorInputIndex(transpose, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(transpose, operand_to_index_map);
+
+  const MLTransposeOptions* options =
+      static_cast<const MLTransposeOptions*>(transpose->Options());
+  const auto* input = transpose->Inputs()[0].Get();
+  CHECK(input);
+  const auto input_rank = input->Dimensions().size();
+  const Vector<uint32_t> permutation =
+      options->getPermutationOr(CreateDefaultPermutation(input_rank));
+  const auto tflite_permutation = ConvertDimensions(permutation);
+  RETURN_IF_ERROR(tflite_permutation);
+
+  return SerializeTranspose(input_index, output_index,
+                            tflite_permutation.value(), builder, operator_codes,
+                            buffers, tensors);
+}
+
 }  // namespace
 
 MLGraphTfLiteConverter::MLGraphTfLiteConverter() {
@@ -646,7 +1038,7 @@ uint32_t MLGraphTfLiteConverter::SerializeBuffer(const MLOperand* constant) {
   return buffer_index;
 }
 
-int32_t MLGraphTfLiteConverter::SerializeTensor(
+base::expected<int32_t, String> MLGraphTfLiteConverter::SerializeTensor(
     const MLOperand* operand,
     std::optional<String> graph_output_name) {
   // The buffer index 0 represents input and output operand because there is no
@@ -686,8 +1078,10 @@ int32_t MLGraphTfLiteConverter::SerializeTensor(
     }
   }
   // Create `Tensor` with operand shape, the index of buffer and the name.
+  const auto dimensions_result = ConvertDimensions(operand->Dimensions());
+  RETURN_IF_ERROR(dimensions_result);
   const auto dimensions =
-      builder_.CreateVector<int32_t>(ConvertDimensions(operand->Dimensions()));
+      builder_.CreateVector<int32_t>(dimensions_result.value());
   const auto operand_type = BlinkOperandTypeToTFLite(operand->DataType());
   const auto operand_name =
       name.has_value() ? builder_.CreateString(name->Utf8()) : 0;
@@ -702,14 +1096,15 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     const MLOperator* op) {
   OperatorOffset operator_offset;
   switch (op->Kind()) {
+    case MLOperator::OperatorKind::kConcat:
+      operator_offset =
+          SerializeConcat(operand_to_index_map, op, builder_, operator_codes_);
+      break;
     case MLOperator::OperatorKind::kConv2d: {
       const auto conv2d_result =
           SerializeConv2d(operand_to_index_map, op, builder_, operator_codes_,
-                          buffers_, tensors_);
-      // Some conv2d attributes are not supported in tflite schema.
-      if (!conv2d_result.has_value()) {
-        return base::unexpected(conv2d_result.error());
-      }
+                          operators_, buffers_, tensors_);
+      RETURN_IF_ERROR(conv2d_result);
       operator_offset = conv2d_result.value();
       break;
     }
@@ -777,10 +1172,18 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       const auto elu_result =
           SerializeElu(operand_to_index_map, op, builder_, operator_codes_);
       // The scalar multiplier is not supported in tflite schema.
-      if (!elu_result.has_value()) {
-        return base::unexpected(elu_result.error());
-      }
+      RETURN_IF_ERROR(elu_result);
       operator_offset = elu_result.value();
+      break;
+    }
+    case MLOperator::OperatorKind::kGemm: {
+      const auto gemm_result =
+          SerializeGemm(operand_to_index_map, op, builder_, operator_codes_,
+                        operators_, buffers_, tensors_);
+      // The alpha, beta and transpose options are not supported in tflite
+      // schema.
+      RETURN_IF_ERROR(gemm_result);
+      operator_offset = gemm_result.value();
       break;
     }
     case MLOperator::OperatorKind::kHardSwish:
@@ -792,15 +1195,22 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = SerializeLeakyRelu(operand_to_index_map, op, builder_,
                                            operator_codes_);
       break;
+    case MLOperator::OperatorKind::kPad: {
+      const auto pad_result = SerializePad(operand_to_index_map, op, builder_,
+                                           operator_codes_, buffers_, tensors_);
+      // The Edge padding model is not supported in tflite schema.
+      RETURN_IF_ERROR(pad_result);
+      operator_offset = pad_result.value();
+      break;
+    }
     case MLOperator::OperatorKind::kAveragePool2d:
       [[fallthrough]];
     case MLOperator::OperatorKind::kMaxPool2d: {
       const auto pool2d_result =
-          SerializePool2d(operand_to_index_map, op, builder_, operator_codes_);
+          SerializePool2d(operand_to_index_map, op, builder_, operator_codes_,
+                          operators_, buffers_, tensors_);
       // Some pool2d attributes are not supported in tflite schema.
-      if (!pool2d_result.has_value()) {
-        return base::unexpected(pool2d_result.error());
-      }
+      RETURN_IF_ERROR(pool2d_result);
       operator_offset = pool2d_result.value();
       break;
     }
@@ -822,6 +1232,15 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset =
           SerializeSoftmax(operand_to_index_map, op, builder_, operator_codes_);
       break;
+    case MLOperator::OperatorKind::kTranspose: {
+      const auto transpose_result =
+          SerializeTranspose(operand_to_index_map, op, builder_,
+                             operator_codes_, buffers_, tensors_);
+      // Fails to convert the data type of permutation from uint32 to int32.
+      RETURN_IF_ERROR(transpose_result);
+      operator_offset = transpose_result.value();
+      break;
+    }
     default:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");

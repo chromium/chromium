@@ -76,6 +76,10 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
                                  const ui::DialogModelLabel& subtitle,
                                  const ui::ImageModel& icon,
                                  std::optional<int> ok_label);
+  views::Widget* ShowChildDialog(const std::u16string& title,
+                                 const ui::DialogModelLabel& subtitle,
+                                 const ui::ImageModel& icon,
+                                 std::optional<int> ok_label);
 
   void ShowChildView(views::View* view);
 

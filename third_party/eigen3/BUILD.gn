@@ -10,12 +10,6 @@ config("eigen_public_includes") {
     "EIGEN_MAX_ALIGN_BYTES=64",
     "EIGEN_HAS_TYPE_TRAITS=0",
   ]
-
-  if (target_os == "win" && target_cpu == "arm64") {
-    # https://crbug.com/1182242 - Neon extensions are temporarily disabled
-    # for this component on Windows on Arm due to compilation errors.
-    defines += [ "EIGEN_DONT_VECTORIZE" ]
-  }
 }
 
 # As this target suppresses warnings, it should not be added to public_configs.

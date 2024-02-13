@@ -159,7 +159,7 @@ SavedDeskSaveDeskButtonContainer::SavedDeskSaveDeskButtonContainer(
             &kSaveDeskAsTemplateIcon));
   }
 
-  if (saved_desk_util::IsSavedDesksEnabled()) {
+  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
     save_desk_for_later_button_ =
         AddChildView(std::make_unique<SavedDeskSaveDeskButton>(
             save_for_later_callback,
@@ -213,7 +213,7 @@ SavedDeskSaveDeskButton* SavedDeskSaveDeskButtonContainer::GetButtonFromType(
   }
 }
 
-BEGIN_METADATA(SavedDeskSaveDeskButtonContainer, views::BoxLayoutView)
+BEGIN_METADATA(SavedDeskSaveDeskButtonContainer)
 END_METADATA
 
 }  // namespace ash

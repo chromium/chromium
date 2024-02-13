@@ -21,7 +21,7 @@
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/public/resource_attribution/type_helpers.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace internal {
 struct QueryParams;
@@ -221,6 +221,6 @@ class QueryBuilder {
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_QUERIES_H_

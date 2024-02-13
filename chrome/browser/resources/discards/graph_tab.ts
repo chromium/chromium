@@ -4,7 +4,8 @@
 
 import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GraphChangeStreamInterface, GraphChangeStreamReceiver, GraphDump, GraphDumpRemote} from './discards.mojom-webui.js';
+import type {GraphChangeStreamInterface, GraphDumpRemote} from './discards.mojom-webui.js';
+import {GraphChangeStreamReceiver, GraphDump} from './discards.mojom-webui.js';
 import {Graph} from './graph.js';
 import {getTemplate} from './graph_tab.html.js';
 

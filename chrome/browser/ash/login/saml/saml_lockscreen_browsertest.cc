@@ -4,6 +4,7 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -68,7 +69,7 @@ constexpr char kEthServicePath[] = "/service/eth1";
 
 constexpr char kSAMLIdPCookieName[] = "saml";
 constexpr char kSAMLIdPCookieValue[] = "value";
-constexpr base::StringPiece kAffiliationID = "test id";
+constexpr std::string_view kAffiliationID = "test id";
 
 constexpr char kSAMLLink[] = "link";
 constexpr char kSAMLLinkedPageURLPattern[] =

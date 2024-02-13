@@ -18,10 +18,8 @@ stage_folder = "$root_gen_dir/ash/webui/media_app_ui/stage_rollup"
 # JS bundling with rollup.
 # This is for files direct from the src/:  input_folder="./".
 copy("stage_static") {
-  sources = media_app_unconverted_js_sources + [
-              "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
-              "//ui/file_manager/image_loader/piex_loader.js",
-            ]
+  sources = media_app_unconverted_js_sources +
+            [ "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js" ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }
 
@@ -45,7 +43,8 @@ copy("stage_generated") {
 # Takes the JS emitted by the `ts_library` targets and places it with other JS
 # files in the staging folder for `rollup` to consume.
 copy("stage_compiled_ts") {
-  sources = media_app_compiled_sources
+  sources = media_app_compiled_sources +
+            [ "$root_gen_dir/ash/webui/media_app_ui/tsc/piex_loader.js" ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
   deps = [ "//ash/webui/media_app_ui:build_ts" ]
 }
@@ -58,7 +57,7 @@ copy("stage_for_tsc") {
   # dependencies.
   sources = media_app_converted_ts_sources + media_app_static_defs +
             media_app_unconverted_js_sources +
-            [ "//ui/file_manager/image_loader/piex_loader.js" ]
+            [ "//ui/file_manager/image_loader/piex_loader.ts" ]
   outputs = [ ts_root_dir + "/{{source_file_part}}" ]
 }
 

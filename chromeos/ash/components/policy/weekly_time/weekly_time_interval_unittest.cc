@@ -130,6 +130,18 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidEnd) {
   ASSERT_FALSE(result);
 }
 
+TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_InvalidStartEqualsEnd) {
+  em::WeeklyTimeIntervalProto interval_proto;
+  em::WeeklyTimeProto* start = interval_proto.mutable_start();
+  em::WeeklyTimeProto* end = interval_proto.mutable_end();
+  start->set_day_of_week(kWeekdays[start_day_of_week()]);
+  start->set_time(start_time());
+  end->set_day_of_week(kWeekdays[start_day_of_week()]);
+  end->set_time(start_time());
+  auto result = WeeklyTimeInterval::ExtractFromProto(interval_proto, 0);
+  ASSERT_FALSE(result);
+}
+
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_Valid) {
   em::WeeklyTimeIntervalProto interval_proto;
   em::WeeklyTimeProto* start = interval_proto.mutable_start();
@@ -207,6 +219,20 @@ TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidEnd) {
 
   auto result = WeeklyTimeInterval::ExtractFromDict(dict, 0);
   ASSERT_FALSE(result);
+}
+
+TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_InvalidStartEqualsEnd) {
+  base::Value::Dict start = base::Value::Dict()
+                                .Set(WeeklyTime::kDayOfWeek,
+                                     WeeklyTime::kWeekDays[start_day_of_week()])
+                                .Set(WeeklyTime::kTime, start_time());
+  base::Value::Dict end = start.Clone();
+  base::Value::Dict test_dict =
+      base::Value::Dict()
+          .Set(WeeklyTimeInterval::kStart, std::move(start))
+          .Set(WeeklyTimeInterval::kEnd, std::move(end));
+
+  EXPECT_FALSE(WeeklyTimeInterval::ExtractFromDict(test_dict, 0));
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromDict_Valid) {

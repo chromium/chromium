@@ -222,7 +222,7 @@ NSString* const kAuthenticationSnackbarCategory =
       IdentityManagerFactory::GetForBrowserState(browserState);
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  // TODO(crbug.com/1462552): After phase 3 migration usage of
+  // TODO(crbug.com/40066949): After phase 3 migration usage of
   // `lastSyncingEmail` to avoid cross-sync incidents should become obsolete.
   // Delete the usage of ConsentLevel::kSync in this method afterwards.
   // See ConsentLevel::kSync documentation for more details.

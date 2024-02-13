@@ -162,6 +162,12 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let isPreviousCellSelected = (indexPath.item - 1) == selectedIndexPath?.item
     cell.leadingSeparatorHidden = isPreviousCellSelected || !isScrollable
 
+    if UIAccessibility.isVoiceOverRunning {
+      // Prevent frame resizing while VoiceOver is active.
+      // This ensures swiping right/left goes to the next cell.
+      return layoutAttributes
+    }
+
     /// Recalculate the cell width and origin when it intersects with the left
     /// collection view's bounds. The cell should collapse within the collection
     /// view's bounds until its width reaches 0. Its `separatorHeight` is also
@@ -321,8 +327,19 @@ class TabStripLayout: UICollectionViewFlowLayout {
     var origin = layoutAttributes.frame.origin
     var horizontalInset: CGFloat = 0
 
-    let staticSeparatorHorizontalInset =
-      tabCellSize.width - TabStripConstants.AnimatedSeparator.collapseHorizontalInsetThreshold
+    // Add a static separator horizontal inset only if the selected cell is the
+    // first or the last one. Otherwise, when the selected cell is anchored and
+    // a cell is scrolled behind, only one separator is displayed until the
+    // horizontal inset threshold is reached.
+    var staticSeparatorHorizontalInset: CGFloat = 0
+    if let snapshot = dataSource?.snapshot() {
+      let itemCount = snapshot.itemIdentifiers.count
+      if indexPath.item == 0 || indexPath.item == itemCount - 1 {
+        staticSeparatorHorizontalInset =
+          tabCellSize.width - TabStripConstants.AnimatedSeparator.collapseHorizontalInsetThreshold
+      }
+    }
+
     var hideLeftStaticSeparator = true
     var hideRightStaticSeparator = true
 
@@ -367,6 +384,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     cell?.rightSelectedBorderBackgroundViewHidden = hideRightStaticSeparator
 
     layoutAttributes.frame = CGRect(origin: origin, size: frame.size)
+    layoutAttributes.zIndex = TabStripConstants.TabItem.selectedZIndex
     return layoutAttributes
   }
 
@@ -398,9 +416,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
     return alpha
   }
 
+  // MARK: - Public
+
   // Calculates the dynamic size of a tab according to the number of tabs and
   // groups.
-  private func calculateTabCellSize() {
+  public func calculateTabCellSize() {
     guard let collectionView = self.collectionView, let snapshot = dataSource?.snapshot() else {
       return
     }
@@ -429,8 +449,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     tabCellSize = CGSize(width: itemWidth, height: TabStripConstants.TabItem.height)
   }
-
-  // MARK: - Public
 
   public func calculcateCellSize(indexPath: IndexPath) -> CGSize {
     // TODO(crbug.com/1509342): Handle tab group item.

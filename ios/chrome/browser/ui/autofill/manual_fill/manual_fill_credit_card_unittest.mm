@@ -8,6 +8,9 @@
 
 using ManualFillCreditCardiOSTest = PlatformTest;
 
+autofill::CreditCard::RecordType LOCAL_CARD_RECORD_TYPE =
+    autofill::CreditCard::RecordType::kLocalCard;
+
 // Tests that a credential is correctly created.
 TEST_F(ManualFillCreditCardiOSTest, Creation) {
   NSString* GUID = @"1234-5678-abcd";
@@ -27,16 +30,18 @@ TEST_F(ManualFillCreditCardiOSTest, Creation) {
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
-                                 expirationMonth:expirationMonth];
+                                 expirationMonth:expirationMonth
+                                      recordType:LOCAL_CARD_RECORD_TYPE];
   EXPECT_TRUE(card);
   EXPECT_TRUE([GUID isEqualToString:card.GUID]);
   EXPECT_TRUE([network isEqualToString:card.network]);
-  EXPECT_TRUE(card.issuerNetworkIconID == 1);
+  EXPECT_EQ(card.issuerNetworkIconID, 1);
   EXPECT_TRUE([cardHolder isEqualToString:card.cardHolder]);
   EXPECT_TRUE([number isEqualToString:card.number]);
   EXPECT_TRUE([obfuscatedNumber isEqualToString:card.obfuscatedNumber]);
   EXPECT_TRUE([expirationYear isEqualToString:card.expirationYear]);
   EXPECT_TRUE([expirationMonth isEqualToString:card.expirationMonth]);
+  EXPECT_EQ(card.recordType, LOCAL_CARD_RECORD_TYPE);
 }
 
 // Test equality between credit cards.
@@ -49,6 +54,7 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
   NSString* obfuscatedNumber = @"**** **** **** 1234";
   NSString* expirationYear = @"19";
   NSString* expirationMonth = @"10";
+
   ManualFillCreditCard* card =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
                                          network:network
@@ -58,7 +64,8 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
-                                 expirationMonth:expirationMonth];
+                                 expirationMonth:expirationMonth
+                                      recordType:LOCAL_CARD_RECORD_TYPE];
 
   ManualFillCreditCard* equalCard =
       [[ManualFillCreditCard alloc] initWithGUID:GUID
@@ -69,7 +76,8 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
-                                 expirationMonth:expirationMonth];
+                                 expirationMonth:expirationMonth
+                                      recordType:LOCAL_CARD_RECORD_TYPE];
 
   EXPECT_TRUE([card isEqual:equalCard]);
 
@@ -82,9 +90,10 @@ TEST_F(ManualFillCreditCardiOSTest, Equality) {
                                           number:number
                                 obfuscatedNumber:obfuscatedNumber
                                   expirationYear:expirationYear
-                                 expirationMonth:expirationMonth];
+                                 expirationMonth:expirationMonth
+                                      recordType:LOCAL_CARD_RECORD_TYPE];
   EXPECT_FALSE([card isEqual:differentGuidCredential]);
 
   // Guid is the main differentiator, and as long as the guids are equal,
-  // the other fields do not mather.
+  // the other fields do not matter.
 }

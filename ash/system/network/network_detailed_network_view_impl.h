@@ -25,9 +25,9 @@ class ASH_EXPORT NetworkDetailedNetworkViewImpl
     : public NetworkDetailedView,
       public NetworkDetailedNetworkView,
       public NetworkListNetworkHeaderView::Delegate {
- public:
-  METADATA_HEADER(NetworkDetailedNetworkViewImpl);
+  METADATA_HEADER(NetworkDetailedNetworkViewImpl, NetworkDetailedView)
 
+ public:
   NetworkDetailedNetworkViewImpl(
       DetailedViewDelegate* detailed_view_delegate,
       NetworkDetailedNetworkView::Delegate* delegate);

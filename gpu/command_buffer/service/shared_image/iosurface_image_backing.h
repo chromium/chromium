@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_context.h"
@@ -117,7 +118,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       GLenum gl_target,
       bool framebuffer_attachment_angle,
       bool is_cleared,
-      bool retain_gl_texture,
+      GrContextType gr_context_type,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
@@ -127,6 +128,15 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   bool ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) override;
 
   bool InitializePixels(base::span<const uint8_t> pixel_data);
+
+#if BUILDFLAG(USE_DAWN)
+  wgpu::Texture GetCachedWGPUTexture(wgpu::Device device,
+                                     wgpu::TextureUsage texture_usage);
+  void MaybeCacheWGPUTexture(wgpu::Device device, wgpu::Texture texture);
+  void RemoveWGPUTextureFromCache(wgpu::Device device, wgpu::Texture texture);
+  void DestroyWGPUTextureIfNotCached(wgpu::Device device,
+                                     wgpu::Texture texture);
+#endif
 
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);
@@ -212,7 +222,19 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   const gfx::GenericSharedMemoryId io_surface_id_;
 
 #if BUILDFLAG(USE_DAWN)
-  // Per-Device SharedTextureMemory instances used to vend WebGPU textures for
+  using WGPUTextureCache = base::flat_map<wgpu::TextureUsage, wgpu::Texture>;
+
+  struct SharedTextureData {
+    SharedTextureData();
+    ~SharedTextureData();
+    SharedTextureData(SharedTextureData&&);
+    SharedTextureData& operator=(SharedTextureData&&);
+
+    wgpu::SharedTextureMemory memory;
+    WGPUTextureCache texture_cache;
+  };
+
+  // Per-Device SharedTextureData instances used to vend WebGPU textures for
   // the underlying IOSurface. The cache is keyed by raw pointers to the Device
   // as there is currently no better option. To ensure that we don't incorrectly
   // use a SharedTextureMemory instance for a lost Device that then gets aliased
@@ -221,8 +243,11 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   // call before this cache is indexed by the passed-in Device.
   // TODO(crbug.com/1493854): Dawn should expose a unique ID per-Device, which
   // this cache should use as keys rather than raw pointers.
-  base::flat_map<WGPUDevice, wgpu::SharedTextureMemory>
-      shared_texture_memory_cache_;
+  base::flat_map<WGPUDevice, SharedTextureData> shared_texture_data_cache_;
+
+  // Returns a pointer to the WGPUTextureCache instance for this device, or
+  // nullptr if there is no instance.
+  WGPUTextureCache* GetWGPUTextureCache(wgpu::Device device);
 #endif
 
   const GLenum gl_target_;
@@ -247,7 +272,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   // This map tracks all IOSurfaceBackingEGLState instances that exist.
   std::map<EGLDisplay, IOSurfaceBackingEGLState*> egl_state_map_;
-  scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_legacy_mailbox_;
+
+  // If Skia is using GL, this object creates a GL texture at construction time
+  // for the Skia GL context and reuses it (for that context) for its lifetime.
+  scoped_refptr<IOSurfaceBackingEGLState> egl_state_for_skia_gl_context_;
 
   std::unique_ptr<gl::GLFence> last_write_gl_fence_;
 

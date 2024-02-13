@@ -46,7 +46,8 @@ void HeadsUpDisplayLayer::UpdateLocationAndSize(
   constexpr int kDefaultHUDSize = 256;
   bounds_in_dips.SetSize(kDefaultHUDSize, kDefaultHUDSize);
 
-  if (layer_tree_host()->GetDebugState().ShowDebugRects()) {
+  if (layer_tree_host()->GetDebugState().ShowDebugRects() ||
+      layer_tree_host()->GetDebugState().debugger_paused) {
     bounds_in_dips = device_viewport_in_dips;
   } else if (layer_tree_host()->GetDebugState().show_web_vital_metrics ||
              layer_tree_host()->GetDebugState().show_smoothness_metrics) {

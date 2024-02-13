@@ -47,7 +47,9 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   // Requests notification permissions from the system. This will ask the user
   // to accept permissions if not granted or denied already. If a permission
   // request is already pending, this does nothing.
-  void RequestPermission();
+  using RequestPermissionCallback =
+      base::OnceCallback<void(mojom::RequestPermissionResult)>;
+  void RequestPermission(RequestPermissionCallback callback);
 
   // mojom::MacNotificationService:
   void DisplayNotification(mojom::NotificationPtr notification) override;
@@ -63,6 +65,9 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
 
  private:
   void DoDisplayNotification(mojom::NotificationPtr notification);
+
+  void ReportRequestPermissionResult(mojom::RequestPermissionResult result);
+  void DoRequestPermission();
 
   // Initializes the |delivered_notifications_| with notifications currently
   // shown in the macOS notification center.
@@ -109,11 +114,12 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   std::vector<base::OnceClosure> synchronize_notifications_done_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Set to true anytime a RequestPermission() call is call is pending. Makes
-  // sure chrome doesn't terminate the service while we're showing a permission
-  // prompt.
-  bool permission_request_is_pending_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      false;
+  // Holds the callbacks for all pending RequestPermission() calls. This is
+  // also used to determine if it is safe for chrome to terminate this service,
+  // as we don't want to do this while there are any pending permission
+  // requests.
+  std::vector<RequestPermissionCallback> pending_permission_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Ensures that the methods in this class are called on the same sequence.
   SEQUENCE_CHECKER(sequence_checker_);

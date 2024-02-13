@@ -33,6 +33,14 @@
       "drawsContent": false,
       "backfaceVisibility": "hidden",
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
+      "position": [1, 1],
+      "bounds": [100, 430],
+      "drawsContent": false,
+      "backfaceVisibility": "hidden",
+      "transform": 2
     }
   ],
   "transforms": [

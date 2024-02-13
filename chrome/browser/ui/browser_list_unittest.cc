@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 
@@ -117,7 +118,7 @@ class BrowserObserverChild : public BrowserListObserver, TabStripModelObserver {
   }
 
  private:
-  std::set<Browser*> observed_browsers_;
+  std::set<raw_ptr<Browser, SetExperimental>> observed_browsers_;
   raw_ptr<Browser, DanglingUntriaged> created_for_browser_;
 };
 

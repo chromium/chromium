@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -23,7 +24,7 @@ struct AnimationFrame;
 }  // namespace image_util
 
 class ASH_EXPORT PickerGifView : public views::ImageView {
-  METADATA_HEADER(PickerGifView, views::View)
+  METADATA_HEADER(PickerGifView, views::ImageView)
 
  public:
   using FramesFetchedCallback =
@@ -31,7 +32,8 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
   using FramesFetcher = base::OnceCallback<void(FramesFetchedCallback)>;
 
   PickerGifView(FramesFetcher frames_fetcher,
-                const gfx::Size& original_dimensions);
+                const gfx::Size& original_dimensions,
+                std::u16string accessible_name);
   PickerGifView(const PickerGifView&) = delete;
   PickerGifView& operator=(const PickerGifView&) = delete;
   ~PickerGifView() override;
@@ -60,6 +62,11 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
   base::WeakPtrFactory<PickerGifView> weak_factory_{this};
 };
 
+BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerGifView, views::ImageView)
+END_VIEW_BUILDER
+
 }  // namespace ash
+
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerGifView)
 
 #endif  // ASH_PICKER_VIEWS_PICKER_GIF_VIEW_H_

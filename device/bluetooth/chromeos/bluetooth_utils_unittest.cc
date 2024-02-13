@@ -86,7 +86,7 @@ class BluetoothUtilsTest : public testing::Test {
     MockBluetoothDevice* mock_bluetooth_device =
         AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
     ON_CALL(*mock_bluetooth_device, GetName)
-        .WillByDefault(testing::Return(absl::nullopt));
+        .WillByDefault(testing::Return(std::nullopt));
     ON_CALL(*mock_bluetooth_device, GetDeviceType)
         .WillByDefault(testing::Return(BluetoothDeviceType::UNKNOWN));
     ON_CALL(*mock_bluetooth_device, GetAddress)
@@ -213,7 +213,7 @@ TEST_F(
   auto* mock_bluetooth_device =
       AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
   EXPECT_CALL(*mock_bluetooth_device, GetName)
-      .WillOnce(testing::Return(absl::nullopt));
+      .WillOnce(testing::Return(std::nullopt));
 
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);
@@ -238,7 +238,7 @@ TEST_F(
   mock_bluetooth_device_1->AddUUID(device::BluetoothUUID(kHIDServiceUUID));
   mock_bluetooth_device_1->UpdateAdvertisementData(
       1 /* rssi */, 0 /* flags */, BluetoothDevice::UUIDList(),
-      absl::nullopt /* tx_power */, kTestServiceDataMap,
+      std::nullopt /* tx_power */, kTestServiceDataMap,
       BluetoothDevice::ManufacturerDataMap());
 
   auto* mock_bluetooth_device_2 =
@@ -246,7 +246,7 @@ TEST_F(
   mock_bluetooth_device_2->AddUUID(device::BluetoothUUID(kHIDServiceUUID));
   mock_bluetooth_device_2->UpdateAdvertisementData(
       1 /* rssi */, kLimitedDiscoveryFlag /* flags */,
-      BluetoothDevice::UUIDList(), absl::nullopt /* tx_power */,
+      BluetoothDevice::UUIDList(), std::nullopt /* tx_power */,
       kTestServiceDataMap, BluetoothDevice::ManufacturerDataMap());
 
   auto* mock_bluetooth_device_3 =
@@ -254,7 +254,7 @@ TEST_F(
   mock_bluetooth_device_3->AddUUID(device::BluetoothUUID(kHIDServiceUUID));
   mock_bluetooth_device_3->UpdateAdvertisementData(
       1 /* rssi */, kGeneralDiscoveryFlag /* flags */,
-      BluetoothDevice::UUIDList(), absl::nullopt /* tx_power */,
+      BluetoothDevice::UUIDList(), std::nullopt /* tx_power */,
       kTestServiceDataMap, BluetoothDevice::ManufacturerDataMap());
 
   auto* mock_bluetooth_device_4 =
@@ -262,7 +262,7 @@ TEST_F(
   mock_bluetooth_device_4->AddUUID(device::BluetoothUUID(kHIDServiceUUID));
   mock_bluetooth_device_4->UpdateAdvertisementData(
       1 /* rssi */, kLimitedDiscoveryFlag | kGeneralDiscoveryFlag /* flags */,
-      BluetoothDevice::UUIDList(), absl::nullopt /* tx_power */,
+      BluetoothDevice::UUIDList(), std::nullopt /* tx_power */,
       kTestServiceDataMap, BluetoothDevice::ManufacturerDataMap());
 
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
@@ -371,7 +371,7 @@ TEST_F(BluetoothUtilsTest,
 
   // Test RemoveClassicDevicesWithoutNames
   EXPECT_CALL(*mock_bluetooth_device, GetName)
-      .WillRepeatedly(testing::Return(absl::nullopt));
+      .WillRepeatedly(testing::Return(std::nullopt));
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);
 

@@ -25,6 +25,7 @@ struct TabStripConstants {
     static let leadingSeparatorMinInset: CGFloat = 8
     static let horizontalInset: CGFloat = 4
     static let horizontalSelectedInset: CGFloat = 4
+    static let selectedZIndex: Int = 10
   }
 
   /// New tab button constants.
@@ -58,6 +59,7 @@ struct TabStripConstants {
     static let horizontalInset: CGFloat = 4
     static let leadingInset: CGFloat = 6
     static let bottomInset: CGFloat = 4
+    static let backgroundColorAlpha: CGFloat = 0.3
   }
 
 }

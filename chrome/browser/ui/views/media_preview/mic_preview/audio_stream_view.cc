@@ -41,6 +41,7 @@ void AudioStreamView::OnPaint(gfx::Canvas* canvas) {
   gfx::RectF base_rect(x, y, width(), rect_height);
   cc::PaintFlags base_rect_flags;
   base_rect_flags.setColor(GetColorProvider()->GetColor(ui::kColorSysSurface5));
+  base_rect_flags.setAntiAlias(true);
   canvas->DrawRoundRect(base_rect, rounded_radius_, base_rect_flags);
 
   if (last_audio_level_ != 0) {
@@ -52,6 +53,7 @@ void AudioStreamView::OnPaint(gfx::Canvas* canvas) {
     cc::PaintFlags value_rect_flags;
     value_rect_flags.setColor(
         GetColorProvider()->GetColor(ui::kColorSysPrimary));
+    value_rect_flags.setAntiAlias(true);
     canvas->DrawRoundRect(value_rect, rounded_radius_, value_rect_flags);
   }
 }

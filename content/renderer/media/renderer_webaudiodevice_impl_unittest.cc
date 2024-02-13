@@ -78,16 +78,16 @@ class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
  public:
   RendererWebAudioDeviceImplUnderTest(
       const blink::WebAudioSinkDescriptor& sink_descriptor,
-      media::ChannelLayout layout,
-      int number_of_output_channels,
+      media::ChannelLayoutConfig channel_layout_config,
       const blink::WebAudioLatencyHint& latency_hint,
+      std::optional<float> sample_rate,
       media::AudioRendererSink::RenderCallback* callback,
       CreateSilentSinkCallback silent_sink_callback)
       : RendererWebAudioDeviceImpl(
             sink_descriptor,
-            layout,
-            number_of_output_channels,
+            channel_layout_config,
             latency_hint,
+            sample_rate,
             callback,
             base::BindOnce(&MockGetOutputDeviceParameters),
             std::move(silent_sink_callback)) {}
@@ -124,7 +124,9 @@ class RendererWebAudioDeviceImplTest
     blink::WebAudioSinkDescriptor sink_descriptor(
         blink::WebString::FromUTF8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
+        sink_descriptor,
+        media::ChannelLayoutConfig(media::CHANNEL_LAYOUT_MONO, 1), latencyHint,
+        user_context_sample_rate_, this,
         base::BindRepeating(
             &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
             // Guaranteed to be valid because |this| owns |webaudio_device_| and
@@ -138,10 +140,10 @@ class RendererWebAudioDeviceImplTest
     blink::WebAudioSinkDescriptor sink_descriptor(
         blink::WebString::FromUTF8(std::string()), kFrameToken);
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        sink_descriptor, layout, channels,
+        sink_descriptor, media::ChannelLayoutConfig(layout, channels),
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
-        this,
+        user_context_sample_rate_, this,
         base::BindRepeating(
             &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
             // Guaranteed to be valid because |this| owns |webaudio_device_| and
@@ -153,10 +155,11 @@ class RendererWebAudioDeviceImplTest
 
   void SetupDevice(blink::WebAudioSinkDescriptor sink_descriptor) {
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1,
+        sink_descriptor,
+        media::ChannelLayoutConfig(media::CHANNEL_LAYOUT_MONO, 1),
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
-        this,
+        user_context_sample_rate_, this,
         base::BindRepeating(
             &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
             // Guaranteed to be valid because |this| owns |webaudio_device_| and
@@ -178,9 +181,21 @@ class RendererWebAudioDeviceImplTest
   std::unique_ptr<RendererWebAudioDeviceImpl> webaudio_device_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<MockAudioRendererSink> mock_audio_renderer_sink_;
+  std::optional<float> user_context_sample_rate_;
 };
 
-TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {
+class RendererWebAudioDeviceImplWithSampleRateTest
+    : public RendererWebAudioDeviceImplTest,
+      public testing::WithParamInterface<int> {
+ protected:
+  void SetUp() override {
+    if (GetParam()) {
+      user_context_sample_rate_ = static_cast<float>(GetParam());
+    }
+  }
+};
+
+TEST_P(RendererWebAudioDeviceImplWithSampleRateTest, ChannelLayout) {
   for (int ch = 1; ch < static_cast<int>(media::limits::kMaxChannels); ++ch) {
     SCOPED_TRACE(base::StringPrintf("ch == %d", ch));
 
@@ -197,85 +212,93 @@ TEST_F(RendererWebAudioDeviceImplTest, ChannelLayout) {
   }
 }
 
-TEST_F(RendererWebAudioDeviceImplTest, TestLatencyHintValues) {
+TEST_P(RendererWebAudioDeviceImplWithSampleRateTest, TestLatencyHintValues) {
   blink::WebAudioLatencyHint interactiveLatencyHint(
       blink::WebAudioLatencyHint::kCategoryInteractive);
+  int context_sample_rate =
+      user_context_sample_rate_.value_or(kHardwareSampleRate);
   int interactiveBufferSize =
       media::AudioLatency::GetInteractiveBufferSize(kHardwareBufferSize);
   SetupDevice(interactiveLatencyHint);
 
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), interactiveBufferSize);
 
   webaudio_device_->Start();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), interactiveBufferSize);
 
   webaudio_device_->Stop();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), interactiveBufferSize);
 
   webaudio_device_->Start();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), interactiveBufferSize);
 
   webaudio_device_->Stop();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), interactiveBufferSize);
 
   blink::WebAudioLatencyHint balancedLatencyHint(
       blink::WebAudioLatencyHint::kCategoryBalanced);
   int balancedBufferSize = media::AudioLatency::GetRtcBufferSize(
-      kHardwareSampleRate, kHardwareBufferSize);
+      context_sample_rate, kHardwareBufferSize);
   SetupDevice(balancedLatencyHint);
 
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), balancedBufferSize);
 
   webaudio_device_->Start();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), balancedBufferSize);
 
   webaudio_device_->Stop();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), balancedBufferSize);
 
   webaudio_device_->Start();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), balancedBufferSize);
 
   webaudio_device_->Stop();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), balancedBufferSize);
 
   blink::WebAudioLatencyHint playbackLatencyHint(
       blink::WebAudioLatencyHint::kCategoryPlayback);
   int playbackBufferSize = media::AudioLatency::GetHighLatencyBufferSize(
-      kHardwareSampleRate, kHardwareBufferSize);
+      context_sample_rate, kHardwareBufferSize);
   SetupDevice(playbackLatencyHint);
 
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), playbackBufferSize);
 
   webaudio_device_->Start();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), playbackBufferSize);
 
   webaudio_device_->Stop();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), playbackBufferSize);
 
   webaudio_device_->Start();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), playbackBufferSize);
 
   webaudio_device_->Stop();
-  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  EXPECT_EQ(webaudio_device_->SampleRate(), context_sample_rate);
   EXPECT_EQ(webaudio_device_->FramesPerBuffer(), playbackBufferSize);
 
   EXPECT_GE(playbackBufferSize, balancedBufferSize);
   EXPECT_GE(balancedBufferSize, interactiveBufferSize);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RendererWebAudioDeviceImplWithSampleRateTest,
+    // User provided sample rate; 0 means no sample rate provided.
+    testing::ValuesIn({0, 16000, 44100, 48000, 96000}));
 
 TEST_F(RendererWebAudioDeviceImplTest, NullSink_RenderWorks) {
   {

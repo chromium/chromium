@@ -75,6 +75,8 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'abi-main-signature-32bit-c-int.rs'),
     # TODO(https://crbug.com/1513478): remove after rolling rust with fix
     os.path.join('tests', 'ui', 'asm', 'inline-syntax.rs'),
+    # TODO(https://crbug.com/324853415): benign failure; remove when fixed.
+    os.path.join('tests', 'codegen', 'iter-repeat-n-trivial-drop.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
@@ -523,16 +525,6 @@ def BuildLLVMLibraries(skip_build):
             RUST_HOST_LLVM_INSTALL_DIR
         ])
 
-        # The FileCheck binary is built but is not installed, and the rust build
-        # only looks for stuff in the install dir.
-        # TODO(danakj): Set LLVM_INSTALL_UTILS in the llvm build so we don't
-        # need to do this:
-        # https://github.com/rust-lang/rust/blob/021861aea8de20c76c7411eb8ada7e8235e3d9b5/src/bootstrap/src/core/build_steps/llvm.rs#L348
-        EXE = '.exe' if sys.platform == 'win32' else ''
-        CopyFile(
-            os.path.join(RUST_HOST_LLVM_BUILD_DIR, 'bin', f'FileCheck{EXE}'),
-            os.path.join(RUST_HOST_LLVM_INSTALL_DIR, 'bin', f'FileCheck{EXE}'))
-
 
 def GitCherryPick(git_repository, git_remote, commit):
     print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
@@ -673,7 +665,7 @@ def main():
         # Fetch sysroot we build rustc against. This ensures a minimum supported
         # host (not Chromium target). Since the rustc linux package is for
         # x86_64 only, that is the sole needed sysroot.
-        debian_sysroot = DownloadDebianSysroot('amd64')
+        debian_sysroot = DownloadDebianSysroot('amd64', args.skip_checkout)
 
     # Require zlib compression.
     if sys.platform == 'win32':

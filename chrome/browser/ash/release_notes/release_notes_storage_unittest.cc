@@ -75,10 +75,8 @@ class ReleaseNotesStorageTest : public testing::Test,
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kReleaseNotesNotificationAllChannels,
-                              features::kReleaseNotesSuggestionChip},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kReleaseNotesNotificationAllChannels);
   }
 
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;

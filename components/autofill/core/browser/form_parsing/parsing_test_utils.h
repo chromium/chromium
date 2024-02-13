@@ -24,10 +24,10 @@ namespace autofill {
 
 enum class ParseResult {
   // The form was successfully parsed and at least one type was assigned.
-  PARSED = 0,
+  kParsed = 0,
   // Not a single type was assigned.
-  NOT_PARSED,
-  kMaxValue = NOT_PARSED
+  kNotParsed,
+  kMaxValue = kNotParsed
 };
 
 // Represents the intended state of features::kAutofillParsingPatternProvider.
@@ -82,7 +82,13 @@ class FormFieldParserTestBase {
   // empty value means the language is unknown and patterns of all languages are
   // used.
   void ClassifyAndVerify(
-      ParseResult parse_result = ParseResult::PARSED,
+      ParseResult parse_result = ParseResult::kParsed,
+      const GeoIpCountryCode& client_country = GeoIpCountryCode(""),
+      const LanguageCode& page_language = LanguageCode(""));
+
+  // Runs multiple parsing attempts until the end of the form is reached and
+  // verifies the expected types.
+  void ClassifyAndVerifyWithMultipleParses(
       const GeoIpCountryCode& client_country = GeoIpCountryCode(""),
       const LanguageCode& page_language = LanguageCode(""));
 
@@ -98,9 +104,11 @@ class FormFieldParserTestBase {
 
   FieldRendererId MakeFieldRendererId();
 
-  std::vector<std::unique_ptr<AutofillField>> list_;
-  std::unique_ptr<FormFieldParser> field_;
+  // Fields that will be parsed.
+  std::vector<std::unique_ptr<AutofillField>> fields_;
+  // Actual outcome of parsing.
   FieldCandidatesMap field_candidates_map_;
+  // Expectations of parsing.
   std::map<FieldGlobalId, FieldType> expected_classifications_;
 
  private:

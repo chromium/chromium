@@ -5,6 +5,7 @@
 #ifndef UI_GL_GL_SURFACE_H_
 #define UI_GL_GL_SURFACE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect.h"
@@ -255,10 +255,6 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   // Return the interface used for querying EGL timestamps.
   virtual EGLTimestampClient* GetEGLTimestampClient();
-
-  virtual bool SupportsGpuVSync() const;
-
-  virtual void SetGpuVSyncEnabled(bool enabled);
 
   virtual void SetFrameRate(float frame_rate) {}
   static GLSurface* GetCurrent();

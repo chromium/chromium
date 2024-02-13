@@ -1106,9 +1106,17 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerSharedStorageBrowserTest,
   // There are 15 entries for two origins.
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(kOrigin1, kOrigin2));
-  EXPECT_EQ(10, tester.GetSharedStorageNumEntriesForOrigin(kOrigin1));
-  EXPECT_EQ(5, tester.GetSharedStorageNumEntriesForOrigin(kOrigin2));
-  EXPECT_EQ(15, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(10 * kNumBytesPerEntry,
+            tester.GetSharedStorageNumBytesForOrigin(kOrigin1));
+  EXPECT_EQ(5 * kNumBytesPerEntry,
+            tester.GetSharedStorageNumBytesForOrigin(kOrigin2));
+  EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   // Let Clear-Site-Data delete the shared storage of "origin1.com".
   delegate()->ExpectClearSiteDataCall(storage_partition_config(), kOrigin1,
@@ -1121,9 +1129,10 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerSharedStorageBrowserTest,
   // There are now only 5 entries for one origin.
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(kOrigin2));
-  EXPECT_EQ(0, tester.GetSharedStorageNumEntriesForOrigin(kOrigin1));
-  EXPECT_EQ(5, tester.GetSharedStorageNumEntriesForOrigin(kOrigin2));
-  EXPECT_EQ(5, tester.GetSharedStorageTotalEntries());
+  EXPECT_EQ(0, tester.GetSharedStorageNumBytesForOrigin(kOrigin1));
+  EXPECT_EQ(5 * kNumBytesPerEntry,
+            tester.GetSharedStorageNumBytesForOrigin(kOrigin2));
+  EXPECT_EQ(5 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 }
 
 }  // namespace content

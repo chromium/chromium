@@ -121,6 +121,11 @@ void FakeUserManager::RemoveUserFromListForRecreation(
   RemoveUserFromList(account_id);
 }
 
+void FakeUserManager::CleanStaleUserInformationFor(
+    const AccountId& account_id) {
+  RemoveUserFromList(account_id);
+}
+
 const UserList& FakeUserManager::GetUsers() const {
   return users_;
 }
@@ -265,17 +270,8 @@ User* FakeUserManager::FindUserAndModify(const AccountId& account_id) {
   return const_cast<User*>(FindUser(account_id));
 }
 
-std::u16string FakeUserManager::GetUserDisplayName(
-    const AccountId& account_id) const {
-  return std::u16string();
-}
-
 std::optional<std::string> FakeUserManager::GetOwnerEmail() {
   return GetLocalState() ? UserManagerBase::GetOwnerEmail() : std::nullopt;
-}
-
-bool FakeUserManager::IsCurrentUserOwner() const {
-  return is_current_user_owner_;
 }
 
 bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
@@ -379,15 +375,6 @@ bool FakeUserManager::IsDeprecatedSupervisedAccountId(
   return false;
 }
 
-const gfx::ImageSkia& FakeUserManager::GetResourceImageSkiaNamed(int id) const {
-  NOTIMPLEMENTED();
-  return empty_image_;
-}
-
-std::u16string FakeUserManager::GetResourceStringUTF16(int string_id) const {
-  return std::u16string();
-}
-
 void FakeUserManager::ScheduleResolveLocale(
     const std::string& locale,
     base::OnceClosure on_resolved_callback,
@@ -399,6 +386,12 @@ void FakeUserManager::ScheduleResolveLocale(
 bool FakeUserManager::IsValidDefaultUserImageId(int image_index) const {
   NOTIMPLEMENTED();
   return false;
+}
+
+MultiUserSignInPolicyController*
+FakeUserManager::GetMultiUserSignInPolicyController() {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 }  // namespace user_manager

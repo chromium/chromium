@@ -23,6 +23,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/test_data_device_delegate.h"
+#include "components/exo/test/test_data_source_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -36,6 +37,7 @@ namespace exo {
 namespace {
 
 using SeatTest = test::ExoTestBase;
+using test::TestDataSourceDelegate;
 
 class TestSeatObserver : public SeatObserver {
  public:
@@ -51,45 +53,6 @@ class TestSeatObserver : public SeatObserver {
 
  private:
   base::RepeatingClosure callback_;
-};
-
-class TestDataSourceDelegate : public DataSourceDelegate {
- public:
-  TestDataSourceDelegate() {}
-
-  TestDataSourceDelegate(const TestDataSourceDelegate&) = delete;
-  TestDataSourceDelegate& operator=(const TestDataSourceDelegate&) = delete;
-
-  bool cancelled() const { return cancelled_; }
-
-  // Overridden from DataSourceDelegate:
-  void OnDataSourceDestroying(DataSource* device) override {}
-  void OnTarget(const std::optional<std::string>& mime_type) override {}
-  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {
-    if (data_map_.empty()) {
-      const char kTestData[] = "TestData";
-      ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), kTestData));
-    } else {
-      ASSERT_TRUE(base::WriteFileDescriptor(fd.get(), data_map_[mime_type]));
-    }
-  }
-  void OnCancelled() override { cancelled_ = true; }
-  void OnDndDropPerformed() override {}
-  void OnDndFinished() override {}
-  void OnAction(DndAction dnd_action) override {}
-  bool CanAcceptDataEventsForSurface(Surface* surface) const override {
-    return can_accept_;
-  }
-
-  void SetData(const std::string& mime_type, std::vector<uint8_t> data) {
-    data_map_[mime_type] = std::move(data);
-  }
-
-  bool can_accept_ = true;
-
- private:
-  bool cancelled_ = false;
-  base::flat_map<std::string, std::vector<uint8_t>> data_map_;
 };
 
 void RunReadingTask() {
@@ -181,11 +144,9 @@ TEST_F(SeatTest, SetSelectionReadDteFromLacros) {
   DataSource source(&delegate);
 
   source.Offer(kTextMimeType);
-  delegate.SetData(kTextMimeType,
-                   std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
+  delegate.SetData(kTextMimeType, kTestText);
   source.Offer(kDteMimeType);
-  delegate.SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                      kEncodedTestDte.end()));
+  delegate.SetData(kDteMimeType, kEncodedTestDte);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -227,11 +188,9 @@ TEST_F(SeatTest, SetSelectionIgnoreDteFromNonLacros) {
   DataSource source(&delegate);
 
   source.Offer(kTextMimeType);
-  delegate.SetData(kTextMimeType,
-                   std::vector<uint8_t>(kTestText.begin(), kTestText.end()));
+  delegate.SetData(kTextMimeType, kTestText);
   source.Offer(kDteMimeType);
-  delegate.SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                      kEncodedTestDte.end()));
+  delegate.SetData(kDteMimeType, kEncodedTestDte);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -256,13 +215,10 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF8 encoded data
-  const uint8_t data[] = {
-      0xe2, 0x9d, 0x84,       // SNOWFLAKE
-      0xf0, 0x9f, 0x94, 0xa5  // FIRE
-  };
-  std::u16string converted_data;
-  EXPECT_TRUE(base::UTF8ToUTF16(reinterpret_cast<const char*>(data),
-                                sizeof(data), &converted_data));
+  std::string data(
+      "\xe2\x9d\x84"        // SNOWFLAKE
+      "\xf0\x9f\x94\xa5");  // FIRE
+  std::u16string converted_data = base::UTF8ToUTF16(data);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
@@ -271,10 +227,8 @@ TEST_F(SeatTest, SetSelectionTextUTF8) {
   const std::string kTextHtmlType = "text/html;charset=utf-8";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, data);
+  delegate.SetData(kTextHtmlType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -298,19 +252,16 @@ TEST_F(SeatTest, SetSelectionTextUTF8Legacy) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF8 encoded data
-  const uint8_t data[] = {
-      0xe2, 0x9d, 0x84,       // SNOWFLAKE
-      0xf0, 0x9f, 0x94, 0xa5  // FIRE
-  };
-  std::u16string converted_data;
-  EXPECT_TRUE(base::UTF8ToUTF16(reinterpret_cast<const char*>(data),
-                                sizeof(data), &converted_data));
+  std::string data(
+      "\xe2\x9d\x84"        // SNOWFLAKE
+      "\xf0\x9f\x94\xa5");  // FIRE
+  std::u16string converted_data = base::UTF8ToUTF16(data);
 
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   const std::string kMimeType = "UTF8_STRING";
   source.Offer(kMimeType);
-  delegate.SetData(kMimeType, std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kMimeType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -327,11 +278,10 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF16 little endian encoded data
-  const uint8_t data[] = {
-      0xff, 0xfe,              // Byte order mark
-      0x44, 0x27,              // SNOWFLAKE
-      0x3d, 0xd8, 0x25, 0xdd,  // FIRE
-  };
+  std::string data(
+      "\xff\xfe"            // Byte order mark
+      "\x44\x27"            // SNOWFLAKE
+      "\x3d\xd8\x25\xdd");  // FIRE
   std::u16string converted_data;
   converted_data.push_back(0x2744);
   converted_data.push_back(0xd83d);
@@ -343,10 +293,8 @@ TEST_F(SeatTest, SetSelectionTextUTF16LE) {
   const std::string kTextHtmlType = "text/html;charset=utf-16";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, data);
+  delegate.SetData(kTextHtmlType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -370,11 +318,10 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
   seat.set_focused_surface(&focused_surface);
 
   // UTF16 big endian encoded data
-  const uint8_t data[] = {
-      0xfe, 0xff,              // Byte order mark
-      0x27, 0x44,              // SNOWFLAKE
-      0xd8, 0x3d, 0xdd, 0x25,  // FIRE
-  };
+  std::string data(
+      "\xfe\xff"            // Byte order mark
+      "\x27\x44"            // SNOWFLAKE
+      "\xd8\x3d\xdd\x25");  // FIRE
   std::u16string converted_data;
   converted_data.push_back(0x2744);
   converted_data.push_back(0xd83d);
@@ -386,10 +333,8 @@ TEST_F(SeatTest, SetSelectionTextUTF16BE) {
   const std::string kTextHtmlType = "text/html;charset=utf-16";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, data);
+  delegate.SetData(kTextHtmlType, data);
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -412,18 +357,14 @@ TEST_F(SeatTest, SetSelectionTextEmptyString) {
   Surface focused_surface;
   seat.set_focused_surface(&focused_surface);
 
-  const uint8_t data[] = {};
-
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   const std::string kTextPlainType = "text/plain;charset=utf-8";
   const std::string kTextHtmlType = "text/html;charset=utf-16";
   source.Offer(kTextPlainType);
   source.Offer(kTextHtmlType);
-  delegate.SetData(kTextPlainType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
-  delegate.SetData(kTextHtmlType,
-                   std::vector<uint8_t>(data, data + sizeof(data)));
+  delegate.SetData(kTextPlainType, std::string());
+  delegate.SetData(kTextHtmlType, std::string());
   seat.SetSelection(&source);
 
   RunReadingTask();
@@ -469,7 +410,7 @@ TEST_F(SeatTest, SetSelectionFilenames) {
 
   TestDataSourceDelegate delegate;
   const std::string kMimeType = "text/uri-list";
-  delegate.SetData(kMimeType, std::vector<uint8_t>(data.begin(), data.end()));
+  delegate.SetData(kMimeType, data);
   DataSource source(&delegate);
   source.Offer(kMimeType);
   seat.SetSelection(&source);
@@ -498,8 +439,7 @@ TEST_F(SeatTest, SetSelectionWebCustomData) {
 
   TestDataSourceDelegate delegate;
   const std::string kMimeType = "chromium/x-web-custom-data";
-  delegate.SetData(kMimeType, std::vector<uint8_t>(custom_data_str.begin(),
-                                                   custom_data_str.end()));
+  delegate.SetData(kMimeType, std::move(custom_data_str));
   DataSource source(&delegate);
   source.Offer(kMimeType);
   seat.SetSelection(&source);
@@ -698,7 +638,7 @@ TEST_F(SeatTest, SetSelection_ClientOutOfFocus) {
   seat.set_focused_surface(&focused_surface);
 
   TestDataSourceDelegate delegate;
-  delegate.can_accept_ = false;
+  delegate.set_can_accept(false);
   DataSource source(&delegate);
   source.Offer("text/plain;charset=utf-8");
   seat.SetSelection(&source);

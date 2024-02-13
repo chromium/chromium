@@ -62,5 +62,18 @@
       { start: "2020-07-25", domain: "seokho.dev" },
     ]
   },
+  "sohanjg@chromium.org": {
+    affiliations: [
+      { start: "2016-09-10", domain: "huawei.com" },
+      { start: "2014-01-10", domain: "samsung.com" },
+    ]
+  },
+  "yoav@yoav.ws": {
+    affiliations: [
+      { start: "2012-09-01", domain: "yoav.ws"},
+      { start: "2015-01-05", domain: "akamai.com"},
+      { start: "2018-10-01", domain: "google.com"},
+    ]
+  },
 }
 

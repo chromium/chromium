@@ -5,8 +5,9 @@
 #ifndef DEVICE_VR_PUBLIC_MOJOM_POSE_H_
 #define DEVICE_VR_PUBLIC_MOJOM_POSE_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
@@ -40,8 +41,8 @@ class COMPONENT_EXPORT(VR_PUBLIC_TYPEMAPS) Pose {
   // the passed in matrix represents a rigid transformation (i.e. only the
   // orientation and translation components of the decomposed matrix will affect
   // the result). If the matrix could not be decomposed, the method will return
-  // a absl::nullopt.
-  static absl::optional<Pose> Create(const gfx::Transform& other_from_this);
+  // a std::nullopt.
+  static std::optional<Pose> Create(const gfx::Transform& other_from_this);
 
   const gfx::Point3F& position() const { return position_; }
 

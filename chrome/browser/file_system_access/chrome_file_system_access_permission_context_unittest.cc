@@ -1162,6 +1162,11 @@ TEST_F(
   EXPECT_EQ(grants.file_write_grants, expected_file_write_grants);
   EXPECT_EQ(grants.file_read_grants, expected_file_read_grants);
 
+  auto granted_paths = permission_context()->GetGrantedPaths(kTestOrigin);
+  ASSERT_THAT(granted_paths, testing::SizeIs(2));
+  EXPECT_EQ(kTestPath, granted_paths[0]);
+  EXPECT_EQ(kTestPath2, granted_paths[1]);
+
   // Persisted permissions are retained after resetting the active grants.
   file_write_grant.reset();
   file_read_grant.reset();
@@ -1313,6 +1318,10 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoPersistenceTest,
   // read and write access for a given resource.
   ASSERT_THAT(permission_context()->GetGrantedObjects(kTestOrigin),
               testing::SizeIs(1));
+
+  auto granted_paths = permission_context()->GetGrantedPaths(kTestOrigin);
+  ASSERT_THAT(granted_paths, testing::SizeIs(1));
+  EXPECT_EQ(kTestPath, granted_paths[0]);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1663,8 +1672,58 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ToggleExtendedPermissionByUser) {
+  auto read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+  auto write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kSave);
+
+  EXPECT_FALSE(
+      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_EQ(
+      PersistedGrantStatus::kLoaded,
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
+
+  // The persisted grant status and content setting are updated after the user
+  // opts into extended permissions.
+  permission_context()->SetOriginExtendedPermissionByUser(kTestOrigin);
+  EXPECT_TRUE(
+      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_EQ(
+      PersistedGrantStatus::kCurrent,
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
+
+  // Calling `SetOriginExtendedPermissionByUser` again results in the same
+  // state.
+  permission_context()->SetOriginExtendedPermissionByUser(kTestOrigin);
+  EXPECT_TRUE(
+      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_EQ(
+      PersistedGrantStatus::kCurrent,
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
+
+  // Extended permissions are removed when the user opts out, and the
+  // persisted grants remain current.
+  permission_context()->RemoveOriginExtendedPermissionByUser(kTestOrigin);
+  EXPECT_FALSE(
+      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_EQ(
+      PersistedGrantStatus::kCurrent,
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
+
+  // Calling `RemoveOriginExtendedPermissionByUser` again results in the same
+  // state.
+  permission_context()->RemoveOriginExtendedPermissionByUser(kTestOrigin);
+  EXPECT_FALSE(
+      permission_context()->OriginHasExtendedPermissionForTesting(kTestOrigin));
+  EXPECT_EQ(
+      PersistedGrantStatus::kCurrent,
+      permission_context()->GetPersistedGrantStatusForTesting(kTestOrigin));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        OnWebAppInstalled_ExtendedPermissionsEnabled) {
-  // Enabled extended permissions.
+  // Enable extended permissions.
   permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
 
   // Create a persisted grant for `kTestOrigin`.
@@ -2606,7 +2665,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPath, HandleType::kDirectory, GrantType::kWrite));
 
-  // Permissions to the old file path aer not affected.
+  // Permissions to the old file path are not affected.
   auto file_grant_at_old_path = permission_context()->GetWritePermissionGrant(
       kTestOrigin, old_file_path, HandleType::kFile, UserAction::kOpen);
   EXPECT_EQ(file_grant_at_old_path->GetStatus(), PermissionStatus::GRANTED);

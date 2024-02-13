@@ -95,7 +95,7 @@ bool GeometryCache::Ready() const {
 }
 
 void GeometryCache::OnParentGeometryChanged(
-    const absl::optional<gfx::Rect>& old_parent_bounds,
+    const std::optional<gfx::Rect>& old_parent_bounds,
     const gfx::Rect& new_parent_bounds) {
   NotifyGeometryChanged();
 }

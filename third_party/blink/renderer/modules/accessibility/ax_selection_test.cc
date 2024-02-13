@@ -493,14 +493,16 @@ TEST_F(AccessibilitySelectionTest, SetSelectionAcrossLineBreakInEditableText) {
 
 //
 // Get selection tests.
-// Retrieving a selection with endpoints which have no corresponding objects in
-// the accessibility tree, e.g. which are display:none, should shrink or extend
-// the |AXSelection| to valid endpoints.
+// Retrieving a selection with endpoints which have corresponding ignored
+// objects in the accessibility tree, e.g. which are display:none, should shrink
+// or extend the |AXSelection| to valid endpoints.
+// Note: aria-describedby adds hidden target subtrees to the a11y tree as
+// "ignored but included in tree".
 //
 
 TEST_F(AccessibilitySelectionTest, SetSelectionInDisplayNone) {
   SetBodyInnerHTML(R"HTML(
-      <div id="main" role="main">
+      <div id="main" role="main" aria-describedby="hidden1 hidden2">
         <p id="beforeHidden">Before display:none.</p>
         <p id="hidden1" style="display:none">Display:none 1.</p>
         <p id="betweenHidden">In between two display:none elements.</p>

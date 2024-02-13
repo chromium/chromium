@@ -3,10 +3,13 @@
 <translationbundle lang="en-GB">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> of your tabs haven't been used lately. Close them?</translation>
 <translation id="1155815720264022949">Want to close old tabs?</translation>
+<translation id="1197088940767939838">Orange</translation>
 <translation id="1215127405478249895">Review tabs</translation>
 <translation id="125153950246128346">Tap to see another tab</translation>
 <translation id="1326271443836399892">Review the current declutter settings.</translation>
 <translation id="1499635324672558517">Close all Incognito tabs?</translation>
+<translation id="1555130319947370107">Blue</translation>
+<translation id="161042844686301425">Cyan</translation>
 <translation id="1657719826150349398">Move tab down</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> selected tab}other{Bookmark <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Group tab}other{Group tabs}}</translation>
 <translation id="3996880007329611795">Get notified</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tabs seem related. Group them?</translation>
+<translation id="4159784952369912983">Purple</translation>
 <translation id="4212246570487010370">Continue browsing</translation>
 <translation id="427987768447457592">New tab group</translation>
 <translation id="4648718555153979859">Your tabs are grouped together here</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{You have <ph name="TABS_COUNT_ONE" /> tab you haven't used recently}other{You have <ph name="TABS_COUNT_MANY" /> tabs you haven't used recently}}</translation>
 <translation id="5339733443032484186">Your last tab</translation>
+<translation id="5400836586163650660">Grey</translation>
 <translation id="5490235265819901748">Tab group expanded</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5545379293264651575">Close without reviewing</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Get alerts for price drops?</translation>
 <translation id="58326064309361797">Drag tabs to group them</translation>
 <translation id="5846292395804797011">Close <ph name="TITLE_OF_GROUP" /> group with <ph name="NUMBER_OF_TABS" /> tabs</translation>
+<translation id="5901630391730855834">Yellow</translation>
 <translation id="5972844218283131174">Deselect all</translation>
+<translation id="6017514345406065928">Green</translation>
 <translation id="6054741997831917303">The price of this item recently dropped from <ph name="PREVIOUS_PRICE" /> to <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Select tabs</translation>
 <translation id="6228793724645064692">(shop rating)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Group <ph name="TABS_COUNT_ONE" /> selected tab}other{Group <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> reviews}}</translation>
 <translation id="7885132941432959125">Move tab right</translation>
+<translation id="7942349550061667556">Red</translation>
 <translation id="7966321538264951561">Dismiss the suggestions.</translation>
 <translation id="8029301326595421733">Information about this shop opened at full height</translation>
 <translation id="8205266828577616993">Move tab up</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Add new tab to group</translation>
 <translation id="955558140275419384">Review all archived tabs for declutter by entering this editor.</translation>
 <translation id="959682366969460160">Get organised</translation>
+<translation id="992256792861109788">Pink</translation>
 </translationbundle>

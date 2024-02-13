@@ -162,16 +162,6 @@ class MODULES_EXPORT MediaStreamTrack
                          int wheel_delta_y,
                          base::OnceCallback<void(DOMException*)> callback) = 0;
 
-  // When called on a "live" video track associated with tab-capture,
-  // returns the zoom level of the capture tab's viewport.
-  // This is subject to a permission policy on the capturing origin.
-  //
-  // If successful, |callback| is invoked with the zoom level in percentage
-  // points and an empty string.
-  // If unsuccessful, it is invoked with `std::nullopt` and an error message.
-  virtual void GetZoomLevel(
-      base::OnceCallback<void(std::optional<int>, const String&)> callback) = 0;
-
   // When called on a "live" video track associated with tab-capture, asks to
   // set the zoom level on the captured tab's viewport.  This is subject to a
   // permission policy on the capturing origin.

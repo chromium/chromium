@@ -17,7 +17,8 @@
  */
 
 import {assert} from '//resources/js/assert.js';
-import {html, PolymerElement, TemplateInstanceBase, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement, templatize} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class CrLazyRenderElement<T extends HTMLElement> extends PolymerElement {
   static get is() {

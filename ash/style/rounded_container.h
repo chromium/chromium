@@ -18,9 +18,9 @@ namespace ash {
 // A rounded countainer which can be used in any list views to carry the items.
 // It provides 4 `Behavior` styles.
 class ASH_EXPORT RoundedContainer : public views::View {
- public:
-  METADATA_HEADER(RoundedContainer);
+  METADATA_HEADER(RoundedContainer, views::View)
 
+ public:
   // The default empty border insets.
   static constexpr gfx::Insets kBorderInsets = gfx::Insets::VH(8, 0);
 

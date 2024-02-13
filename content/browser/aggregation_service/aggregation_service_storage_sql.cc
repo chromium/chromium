@@ -644,9 +644,9 @@ AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
     if (!not_after_time.is_max()) {
       base::UmaHistogramCustomTimes(
           "PrivacySandbox.AggregationService.Storage.Sql."
-          "RequestDelayFromUpdatedReportTime",
+          "RequestDelayFromUpdatedReportTime2",
           not_after_time - get_requests_statement.ColumnTime(1),
-          /*min=*/base::Seconds(1),
+          /*min=*/base::Milliseconds(1),
           /*max=*/base::Days(24),
           /*buckets=*/50);
     }

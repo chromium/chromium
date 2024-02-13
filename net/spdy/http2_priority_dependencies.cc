@@ -36,7 +36,7 @@ void Http2PriorityDependencies::OnStreamCreation(
     *parent_stream_id = parent->first;
   }
 
-  id_priority_lists_[priority].push_back(std::make_pair(id, priority));
+  id_priority_lists_[priority].emplace_back(id, priority);
   auto it = id_priority_lists_[priority].end();
   --it;
   entry_by_stream_id_[id] = it;
@@ -156,7 +156,7 @@ Http2PriorityDependencies::OnStreamUpdate(spdy::SpdyStreamId id,
   // Move to the new priority.
   auto old = entry_by_stream_id_.find(id);
   id_priority_lists_[old->second->second].erase(old->second);
-  id_priority_lists_[new_priority].push_back(std::make_pair(id, new_priority));
+  id_priority_lists_[new_priority].emplace_back(id, new_priority);
   auto it = id_priority_lists_[new_priority].end();
   --it;
   entry_by_stream_id_[id] = it;

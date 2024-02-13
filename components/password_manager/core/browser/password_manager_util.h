@@ -70,6 +70,9 @@ void UserTriggeredManualGenerationFromContextMenu(
     password_manager::PasswordManagerClient* password_manager_client,
     autofill::AutofillClient* autofill_client);
 
+// Checks if password saving is possible at a storage level.
+bool IsAbleToSavePasswords(password_manager::PasswordManagerClient* client);
+
 // Excluding protocol from a signon_realm means to remove from the signon_realm
 // what is before the web origin (with the protocol excluded as well). For
 // example if the signon_realm is "https://www.google.com/", after

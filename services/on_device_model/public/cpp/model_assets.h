@@ -50,6 +50,32 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) ModelAssets {
 COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP)
 ModelAssets LoadModelAssets(const ModelAssetPaths& paths);
 
+// A bundle of file paths to use for loading an adaptation.
+struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) AdaptationAssetPaths {
+  AdaptationAssetPaths();
+  AdaptationAssetPaths(const AdaptationAssetPaths&);
+  ~AdaptationAssetPaths();
+
+  base::FilePath model;
+  base::FilePath weights;
+};
+
+// A bundle of opened file assets comprising an adaptation description to use
+// for execution.
+struct COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP) AdaptationAssets {
+  AdaptationAssets();
+  AdaptationAssets(AdaptationAssets&&);
+  AdaptationAssets& operator=(AdaptationAssets&&);
+  ~AdaptationAssets();
+
+  base::File model;
+  base::File weights;
+};
+
+// Helper to open files for AdaptationAssets given their containing paths.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ASSETS_CPP)
+AdaptationAssets LoadAdaptationAssets(const AdaptationAssetPaths& paths);
+
 }  // namespace on_device_model
 
 #endif  //  SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_MODEL_ASSETS_H_

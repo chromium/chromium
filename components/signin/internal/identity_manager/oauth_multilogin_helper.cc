@@ -23,6 +23,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#endif
+
 namespace signin {
 
 namespace {
@@ -74,6 +78,11 @@ OAuthMultiloginHelper::OAuthMultiloginHelper(
   DCHECK(token_service_);
   DCHECK(!accounts_.empty());
   DCHECK(callback_);
+
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  bound_session_delegate_ =
+      signin_client_->CreateBoundSessionOAuthMultiloginDelegate();
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #ifndef NDEBUG
   // Check that there is no duplicate accounts.
@@ -148,6 +157,12 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
       VLOG(1) << "Multilogin successful accounts="
               << base::JoinString(account_ids, " ");
     }
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    if (bound_session_delegate_) {
+      bound_session_delegate_->BeforeSetCookies(result);
+    }
+#endif
+
     StartSettingCookies(result);
     return;
   }
@@ -229,8 +244,14 @@ void OAuthMultiloginHelper::OnCookieSet(const std::string& cookie_name,
                << " for domain=" << cookie_domain << ".";
   }
   UMA_HISTOGRAM_BOOLEAN("Signin.SetCookieSuccess", success);
-  if (cookies_to_set_.empty())
+  if (cookies_to_set_.empty()) {
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    if (bound_session_delegate_) {
+      bound_session_delegate_->OnCookiesSet();
+    }
+#endif
     std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
+  }
   // Do not add anything below this line, because this may be deleted.
 }
 

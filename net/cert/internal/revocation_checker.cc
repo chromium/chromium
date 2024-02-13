@@ -4,13 +4,13 @@
 
 #include "net/cert/internal/revocation_checker.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/logging.h"
 #include "crypto/sha2.h"
 #include "net/cert/cert_net_fetcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/common_cert_errors.h"
 #include "third_party/boringssl/src/pki/crl.h"
 #include "third_party/boringssl/src/pki/ocsp.h"
@@ -39,7 +39,7 @@ bool CheckCertRevocation(const bssl::ParsedCertificateList& certs,
                          const RevocationPolicy& policy,
                          base::TimeTicks deadline,
                          std::string_view stapled_ocsp_response,
-                         absl::optional<int64_t> max_age_seconds,
+                         std::optional<int64_t> max_age_seconds,
                          CertNetFetcher* net_fetcher,
                          bssl::CertErrors* cert_errors,
                          bssl::OCSPVerifyResult* stapled_ocsp_verify_result) {
@@ -110,7 +110,7 @@ bool CheckCertRevocation(const bssl::ParsedCertificateList& certs,
 
       // TODO(eroman): Duplication of work if there are multiple URLs to try.
       // TODO(eroman): Are there cases where we would need to POST instead?
-      absl::optional<std::string> get_url_str =
+      std::optional<std::string> get_url_str =
           CreateOCSPGetURL(cert, issuer_cert, ocsp_uri);
       if (!get_url_str.has_value()) {
         // An unexpected failure from BoringSSL, or the input was too large to
@@ -308,7 +308,7 @@ void CheckValidatedChainRevocation(
     std::string_view stapled_ocsp =
         (i == 0) ? stapled_leaf_ocsp_response : std::string_view();
 
-    absl::optional<int64_t> max_age_seconds;
+    std::optional<int64_t> max_age_seconds;
     if (policy.enforce_baseline_requirements) {
       max_age_seconds = ((i == 0) ? kMaxRevocationLeafUpdateAge
                                   : kMaxRevocationIntermediateUpdateAge)

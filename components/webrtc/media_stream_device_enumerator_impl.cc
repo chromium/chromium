@@ -20,22 +20,6 @@ using content::MediaCaptureDevices;
 
 namespace webrtc {
 
-namespace {
-
-// Finds a device in |devices| that has |device_id|, or nullptr if not found.
-const blink::MediaStreamDevice* FindDeviceWithId(
-    const MediaStreamDevices& devices,
-    const std::string& device_id) {
-  auto iter = devices.begin();
-  for (; iter != devices.end(); ++iter) {
-    if (iter->id == device_id)
-      return &(*iter);
-  }
-  return nullptr;
-}
-
-}  // namespace
-
 const MediaStreamDevices&
 MediaStreamDeviceEnumeratorImpl::GetAudioCaptureDevices() const {
   return MediaCaptureDevices::GetInstance()->GetAudioCaptureDevices();
@@ -46,37 +30,20 @@ MediaStreamDeviceEnumeratorImpl::GetVideoCaptureDevices() const {
   return MediaCaptureDevices::GetInstance()->GetVideoCaptureDevices();
 }
 
-void MediaStreamDeviceEnumeratorImpl::GetDefaultDevicesForBrowserContext(
+const std::optional<blink::MediaStreamDevice>
+MediaStreamDeviceEnumeratorImpl::GetPreferredAudioDeviceForBrowserContext(
     content::BrowserContext* context,
-    bool audio,
-    bool video,
-    blink::mojom::StreamDevices& devices) {
-  std::string default_device;
-  if (audio) {
-    const MediaStreamDevices& audio_devices = GetAudioCaptureDevices();
-    if (!audio_devices.empty())
-      devices.audio_device = audio_devices.front();
-  }
-
-  if (video) {
-    const MediaStreamDevices& video_devices = GetVideoCaptureDevices();
-    if (!video_devices.empty())
-      devices.video_device = video_devices.front();
-  }
+    const std::vector<std::string>& eligible_device_ids) const {
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
-const blink::MediaStreamDevice*
-MediaStreamDeviceEnumeratorImpl::GetRequestedAudioDevice(
-    const std::string& requested_audio_device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return FindDeviceWithId(GetAudioCaptureDevices(), requested_audio_device_id);
-}
-
-const blink::MediaStreamDevice*
-MediaStreamDeviceEnumeratorImpl::GetRequestedVideoDevice(
-    const std::string& requested_video_device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return FindDeviceWithId(GetVideoCaptureDevices(), requested_video_device_id);
+const std::optional<blink::MediaStreamDevice>
+MediaStreamDeviceEnumeratorImpl::GetPreferredVideoDeviceForBrowserContext(
+    content::BrowserContext* context,
+    const std::vector<std::string>& eligible_device_ids) const {
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 }  // namespace webrtc

@@ -546,6 +546,7 @@ declare global {
         officeFileMovedGoogleDrive: number;
         driveFsBulkPinningAvailable: boolean;
         driveFsBulkPinningEnabled: boolean;
+        localUserFilesEnabled: boolean;
       }
 
       export interface PreferencesChange {
@@ -793,8 +794,7 @@ declare global {
           entries: Entry[], dlpSourceUrls: string[],
           callback: (resultingTasks: ResultingTasks) => void): void;
 
-      export function getMimeType(
-          entry: Entry, callback: (result: string) => void): void;
+      export function getMimeType(url: string): Promise<string>;
 
       export function getContentMimeType(
           fileEntry: FileEntry, callback: (result: string) => void): void;

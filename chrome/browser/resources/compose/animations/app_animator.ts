@@ -230,4 +230,46 @@ export class ComposeAppAnimator extends Animator {
       this.fadeIn('#editContainer .footer', {delay: 100, duration: 100}),
     ].flat();
   }
+
+  transitionFromEditingToResult(resultContainerHeight: number): Animation[] {
+    const bodyGapHeightAnimation = this.animate(
+        '#body',
+        [
+          {gap: '0px'},
+          {gap: '8px'},
+        ],
+        {duration: 200, easing: STANDARD_EASING});
+
+    const resultContainerHeightAnimation = this.animate(
+        '#resultContainer',
+        [
+          {
+            height: '0px',
+            overflow: 'hidden',
+            alignItems: 'flex-end',
+          },
+          {
+            height: `${resultContainerHeight}px`,
+            overflow: 'hidden',
+            alignItems: 'flex-end',
+          },
+        ],
+        {duration: 200, easing: STANDARD_EASING});
+
+    return [
+      bodyGapHeightAnimation,
+      resultContainerHeightAnimation,
+
+      // Fade out edit form.
+      this.fadeOutAndHide('#editContainer', 'flex', {duration: 200}),
+      this.fadeOutAndHide('#editContainer .footer', 'flex', {duration: 100}),
+      this.maintainStyles(
+          '#editContainer .footer', {opacity: 0},
+          {delay: 100, duration: 100, fill: 'none'}),
+
+      // Fade in result UI.
+      this.fadeIn(
+          '#resultContainer, #resultFooter', {delay: 100, duration: 100}),
+    ].flat();
+  }
 }

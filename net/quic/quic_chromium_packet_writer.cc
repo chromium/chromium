@@ -201,7 +201,7 @@ void QuicChromiumPacketWriter::SetWritable() {
   write_in_progress_ = false;
 }
 
-absl::optional<int> QuicChromiumPacketWriter::MessageTooBigErrorCode() const {
+std::optional<int> QuicChromiumPacketWriter::MessageTooBigErrorCode() const {
   return ERR_MSG_TOO_BIG;
 }
 

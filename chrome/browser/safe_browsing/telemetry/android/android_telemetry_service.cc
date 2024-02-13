@@ -61,8 +61,12 @@ enum class ApkDownloadTelemetryIncompleteReason {
   SB_NAVIGATION_MANAGER_NOT_READY = 1,
   // Full referrer chain captured.
   COMPLETE = 2,
+  // No render frame host existed for the download
+  MISSING_RENDER_FRAME_HOST = 3,
+  // The render frame host had not committed to a valid URL
+  RENDER_FRAME_HOST_INVALID_URL = 4,
 
-  kMaxValue = COMPLETE,
+  kMaxValue = RENDER_FRAME_HOST_INVALID_URL,
 };
 
 void RecordApkDownloadTelemetryIncompleteReason(
@@ -92,15 +96,15 @@ AndroidTelemetryService::~AndroidTelemetryService() {
   coordinator->RemoveObserver(this);
 }
 
-void AndroidTelemetryService::OnDownloadCreated(
-    download::DownloadItem* item) {
+void AndroidTelemetryService::OnDownloadCreated(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
           profile_->GetProfileKey());
-  if (!coordinator->has_all_history_downloads())
+  if (!coordinator->has_all_history_downloads()) {
     return;
+  }
 
   item->AddObserver(this);
 }
@@ -168,28 +172,37 @@ void AndroidTelemetryService::FillReferrerChain(
     content::WebContents* web_contents,
     content::RenderFrameHost* rfh,
     ClientSafeBrowsingReportRequest* report) {
-  if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
-          profile_->GetPrefs(), g_browser_process->safe_browsing_service())) {
-    RecordApkDownloadTelemetryIncompleteReason(
-        ApkDownloadTelemetryIncompleteReason::SB_NAVIGATION_MANAGER_NOT_READY);
-    return;
-  }
+  using enum ApkDownloadTelemetryIncompleteReason;
 
-  RecordApkDownloadTelemetryIncompleteReason(
-      web_contents
-          ? ApkDownloadTelemetryIncompleteReason::COMPLETE
-          : ApkDownloadTelemetryIncompleteReason::MISSING_WEB_CONTENTS);
   SafeBrowsingNavigationObserverManager* observer_manager =
       web_contents
           ? SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
                 web_contents->GetBrowserContext())
           : nullptr;
+
+  if (!web_contents) {
+    RecordApkDownloadTelemetryIncompleteReason(MISSING_WEB_CONTENTS);
+    return;
+  } else if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
+                 profile_->GetPrefs(),
+                 g_browser_process->safe_browsing_service()) ||
+             !observer_manager) {
+    RecordApkDownloadTelemetryIncompleteReason(SB_NAVIGATION_MANAGER_NOT_READY);
+    return;
+  } else if (!rfh) {
+    RecordApkDownloadTelemetryIncompleteReason(MISSING_RENDER_FRAME_HOST);
+    return;
+  } else if (!rfh->GetLastCommittedURL().is_valid()) {
+    RecordApkDownloadTelemetryIncompleteReason(RENDER_FRAME_HOST_INVALID_URL);
+    return;
+  }
+
+  RecordApkDownloadTelemetryIncompleteReason(
+      ApkDownloadTelemetryIncompleteReason::COMPLETE);
   SafeBrowsingNavigationObserverManager::AttributionResult result =
-      observer_manager
-          ? observer_manager->IdentifyReferrerChainByRenderFrameHost(
-                rfh, kAndroidTelemetryUserGestureLimit,
-                report->mutable_referrer_chain())
-          : SafeBrowsingNavigationObserverManager::NAVIGATION_EVENT_NOT_FOUND;
+      observer_manager->IdentifyReferrerChainByRenderFrameHost(
+          rfh, kAndroidTelemetryUserGestureLimit,
+          report->mutable_referrer_chain());
 
   size_t referrer_chain_length = report->referrer_chain().size();
   UMA_HISTOGRAM_COUNTS_100(
@@ -205,10 +218,8 @@ void AndroidTelemetryService::FillReferrerChain(
                      CountOfRecentNavigationsToAppend(
                          profile_, profile_->GetPrefs(), result)
                : 0u;
-  if (observer_manager) {
-    observer_manager->AppendRecentNavigations(recent_navigations_to_collect,
-                                              report->mutable_referrer_chain());
-  }
+  observer_manager->AppendRecentNavigations(recent_navigations_to_collect,
+                                            report->mutable_referrer_chain());
 }
 
 std::unique_ptr<ClientSafeBrowsingReportRequest>
@@ -227,8 +238,9 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
       content::DownloadItemUtils::GetWebContents(item);
   content::RenderFrameHost* rfh =
       content::DownloadItemUtils::GetRenderFrameHost(item);
-  if (!rfh && web_contents)
+  if (!rfh && web_contents) {
     rfh = web_contents->GetPrimaryMainFrame();
+  }
 
   FillReferrerChain(web_contents, rfh, report.get());
 

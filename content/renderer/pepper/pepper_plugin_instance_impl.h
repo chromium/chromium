@@ -752,7 +752,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
   // Bitmap for crashed plugin. Lazily initialized.
   cc::PaintImage sad_plugin_image_;
 
-  typedef std::set<PluginObject*> PluginObjectSet;
+  typedef std::set<raw_ptr<PluginObject, SetExperimental>> PluginObjectSet;
   PluginObjectSet live_plugin_objects_;
 
   // Classes of events that the plugin has registered for, both for filtering

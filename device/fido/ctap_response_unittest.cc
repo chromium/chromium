@@ -441,7 +441,7 @@ std::vector<uint8_t> GetTestCredentialRawIdBytes() {
 
 // DecodeCBOR parses a CBOR structure, ignoring the first byte of |in|, which is
 // assumed to be a CTAP2 status byte.
-absl::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
+std::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
   return cbor::Reader::Read(in.subspan(1));
 }
@@ -643,7 +643,7 @@ TEST(CTAPResponseTest, TestSerializeAuthenticatorDataForSign) {
 
   EXPECT_THAT(
       AuthenticatorData(test_data::kApplicationParameter, flags,
-                        test_data::kTestSignatureCounter, absl::nullopt)
+                        test_data::kTestSignatureCounter, std::nullopt)
           .SerializeToByteArray(),
       ::testing::ElementsAreArray(test_data::kTestSignAuthenticatorData));
 }
@@ -752,7 +752,7 @@ TEST(CTAPResponseTest, TestReadGetInfoResponseWithDuplicateVersion) {
   uint8_t* first_version = base::ranges::search(get_info, kU2Fv9);
   ASSERT_TRUE(first_version);
   memcpy(first_version, "U2F_V3", 6);
-  absl::optional<AuthenticatorGetInfoResponse> response =
+  std::optional<AuthenticatorGetInfoResponse> response =
       ReadCTAPGetInfoResponse(get_info);
   ASSERT_TRUE(response);
   EXPECT_EQ(1u, response->versions.size());
@@ -858,7 +858,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
           test_data::kCtap2MakeCredentialCredentialId),
       std::make_unique<PublicKey>(
           static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
-          kCoseEncodedPublicKey, absl::nullopt));
+          kCoseEncodedPublicKey, std::nullopt));
   AuthenticatorData authenticator_data(application_parameter, flag,
                                        signature_counter,
                                        std::move(attested_credential_data));
@@ -885,7 +885,7 @@ TEST(CTAPResponseTest, TestSerializeMakeCredentialResponse) {
 
 TEST(CTAPResponseTest, AttestationObjectResponseFields) {
   static const std::vector<uint8_t> kInvalidAttestationObject = {1, 2, 3};
-  const absl::optional<AttestationObject::ResponseFields> invalid =
+  const std::optional<AttestationObject::ResponseFields> invalid =
       AttestationObject::ParseForResponseFields(
           kInvalidAttestationObject, /*attestation_acceptable=*/false);
   EXPECT_FALSE(invalid.has_value());
@@ -991,7 +991,7 @@ TEST(CTAPResponseTest, AttestationObjectResponseFields) {
   };
 
   {
-    const absl::optional<AttestationObject::ResponseFields> fields =
+    const std::optional<AttestationObject::ResponseFields> fields =
         AttestationObject::ParseForResponseFields(
             kAttestationObjectBytes, /*attestation_acceptable=*/true);
     ASSERT_TRUE(fields);
@@ -1006,7 +1006,7 @@ TEST(CTAPResponseTest, AttestationObjectResponseFields) {
   }
 
   {
-    const absl::optional<AttestationObject::ResponseFields> fields =
+    const std::optional<AttestationObject::ResponseFields> fields =
         AttestationObject::ParseForResponseFields(
             kAttestationObjectBytes, /*attestation_acceptable=*/false);
     ASSERT_TRUE(fields);

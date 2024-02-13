@@ -68,7 +68,9 @@ class SharedStorageURLLoaderFactoryProxyTest : public testing::Test {
         std::make_unique<SharedStorageURLLoaderFactoryProxy>(
             factory.Unbind(),
             remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
-            frame_origin_, GURL(kScriptUrl));
+            frame_origin_, GURL(kScriptUrl),
+            network::mojom::CredentialsMode::kSameOrigin,
+            net::SiteForCookies::FromOrigin(frame_origin_));
   }
 
   // Attempts to make a request for `request`.

@@ -26,6 +26,7 @@
 #import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_hints_manager.h"
+#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/tab_url_provider_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -95,7 +96,7 @@ OptimizationGuideService::OptimizationGuideService(
   if (optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     prediction_manager_ =
         std::make_unique<optimization_guide::PredictionManager>(
-            optimization_guide::PredictionModelStore::GetInstance(),
+            optimization_guide::IOSChromePredictionModelStore::GetInstance(),
             url_loader_factory, pref_service, off_the_record_,
             application_locale, models_dir, optimization_guide_logger_.get(),
             std::move(background_download_service_provider),

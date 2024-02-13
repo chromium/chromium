@@ -124,6 +124,24 @@ function executeScriptP(webview, details) {
   });
 }
 
+// Promisify webview.getZoom.
+function getZoomP(webview) {
+  return new Promise((resolve) => {
+    webview.getZoom((zoomFactor) => {
+      resolve(zoomFactor);
+    });
+  });
+}
+
+// Promisify webview.setZoom.
+function setZoomP(webview, zoomFactor) {
+  return new Promise((resolve) => {
+    webview.setZoom(zoomFactor, () => {
+      resolve();
+    });
+  });
+}
+
 // Executes `fn` in the context of the `webview` with the given `args`. `fn`
 // must be written in a way that it can be serialized as a string. So anything
 // it references from this context must be passed explicitly via `args`.
@@ -2661,78 +2679,64 @@ function testScreenshotCapture() {
   document.body.appendChild(webview);
 }
 
+function getWebviewInnerWidth(webview) {
+  // Double rAF to help avoid flakiness if an update that affects layout hasn't
+  // happened yet.
+  let getInnerWidthAfterLifecycleUpdate = () => {
+    return new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resolve(window.innerWidth);
+        });
+      });
+    });
+  };
+  return evalInWebView(webview, getInnerWidthAfterLifecycleUpdate, []);
+}
+
 function testZoomAPI() {
   var webview = new WebView();
   webview.src = 'about:blank';
-  webview.addEventListener('loadstop', function(e) {
+  webview.addEventListener('loadstop', async function(e) {
     // getZoom() should work initially.
-    webview.getZoom(function(zoomFactor) {
-      embedder.test.assertEq(zoomFactor, 1);
-    });
+    embedder.test.assertEq(await getZoomP(webview), 1);
 
     // Two consecutive calls to getZoom() should return the same result.
-    var zoomFactor1;
-    webview.getZoom(function(zoomFactor) {
-      zoomFactor1 = zoomFactor;
-    });
-    webview.getZoom(function(zoomFactor) {
-      embedder.test.assertEq(zoomFactor1, zoomFactor);
-    });
+    let results = await Promise.all([getZoomP(webview), getZoomP(webview)]);
+    embedder.test.assertEq(results[0], results[1]);
 
     // Test setZoom()'s callback.
-    var callbackTest = false;
-    webview.setZoom(0.95, function() {
-      callbackTest = true;
-    });
+    await setZoomP(webview, 0.95);
 
     // getZoom() should return the same zoom factor as is set in setZoom().
     webview.setZoom(1.53);
-    webview.getZoom(function(zoomFactor) {
-      embedder.test.assertEq(zoomFactor, 1.53);
-    });
+    embedder.test.assertEq(await getZoomP(webview), 1.53);
     webview.setZoom(0.835847);
-    webview.getZoom(function(zoomFactor) {
-      embedder.test.assertEq(zoomFactor, 0.835847);
-    });
+    embedder.test.assertEq(await getZoomP(webview), 0.835847);
     webview.setZoom(0.3795);
-    webview.getZoom(function(zoomFactor) {
-      embedder.test.assertEq(zoomFactor, 0.3795);
-    });
+    embedder.test.assertEq(await getZoomP(webview), 0.3795);
 
     // setZoom() should really zoom the page (thus changing window.innerWidth).
-    webview.setZoom(0.45, function() {
-      webview.executeScript({code: 'window.innerWidth'},
-        function(result) {
-          var width1 = result[0];
-          webview.setZoom(1.836);
-          webview.executeScript({code: 'window.innerWidth'},
-            function(result) {
-              var width2 = result[0];
-              embedder.test.assertTrue(width2 < width1);
-              webview.setZoom(0.73);
-              webview.executeScript({code: 'window.innerWidth'},
-                function(result) {
-                  var width3 = result[0];
-                  embedder.test.assertTrue(width3 < width1);
-                  embedder.test.assertTrue(width2 < width3);
+    await setZoomP(webview, 0.45);
+    let width1 = await getWebviewInnerWidth(webview);
 
-                  // Test the onzoomchange event.
-                  webview.addEventListener('zoomchange', function(e) {
-                    embedder.test.assertEq(event.oldZoomFactor, 0.73);
-                    embedder.test.assertEq(event.newZoomFactor, 0.25325);
+    await setZoomP(webview, 1.836);
+    let width2 = await getWebviewInnerWidth(webview);
+    embedder.test.assertTrue(width2 < width1);
 
-                    embedder.test.assertTrue(callbackTest);
+    await setZoomP(webview, 0.73);
+    let width3 = await getWebviewInnerWidth(webview);
+    embedder.test.assertTrue(width3 < width1);
+    embedder.test.assertTrue(width2 < width3);
 
-                    embedder.test.succeed();
-                  });
-                  webview.setZoom(0.25325);
-                }
-              );
-            }
-          );
-        }
-      );
+    // Test the onzoomchange event.
+    webview.addEventListener('zoomchange', (event) => {
+      embedder.test.assertEq(event.oldZoomFactor, 0.73);
+      embedder.test.assertEq(event.newZoomFactor, 0.25325);
+
+      embedder.test.succeed();
     });
+    webview.setZoom(0.25325);
   });
   document.body.appendChild(webview);
 };
@@ -3040,19 +3044,25 @@ function testPerOriginZoomMode() {
     document.body.appendChild(webview2);
   });
   webview2.addEventListener('loadstop', function(e) {
-    webview1.getZoomMode(function(zoomMode) {
+    webview1.getZoomMode(async function(zoomMode) {
       // Check that |webview1| is in 'per-origin' mode and zoom it. Check that
       // both webviews zoomed.
       embedder.test.assertEq(zoomMode, 'per-origin');
-      webview1.setZoom(3.14, function() {
-        webview1.getZoom(function(zoom) {
-          embedder.test.assertEq(zoom, 3.14);
-          webview2.getZoom(function(zoom) {
-            embedder.test.assertEq(zoom, 3.14);
-            embedder.test.succeed();
-          });
-        });
-      });
+
+      let width1Before = await getWebviewInnerWidth(webview1);
+      let width2Before = await getWebviewInnerWidth(webview2);
+
+      await setZoomP(webview1, 3.14);
+      embedder.test.assertEq(await getZoomP(webview1), 3.14);
+      embedder.test.assertEq(await getZoomP(webview2), 3.14);
+
+      let width1After = await getWebviewInnerWidth(webview1);
+      let width2After = await getWebviewInnerWidth(webview2);
+
+      embedder.test.assertTrue(width1After < width1Before);
+      embedder.test.assertTrue(width2After < width2Before);
+
+      embedder.test.succeed();
     });
   });
 
@@ -3068,46 +3078,33 @@ function testPerViewZoomMode() {
   webview1.addEventListener('loadstop', function(e) {
     document.body.appendChild(webview2);
   });
-  webview2.addEventListener('loadstop', function(e) {
+  webview2.addEventListener('loadstop', async function(e) {
     // Set |webview2| to 'per-view' mode and zoom it. Make sure that the
     // zoom did not affect |webview1|.
     // We need to verify that the page actually is zooming by comparing
     // |window.innerWidth| before and after the zoom to prevent regressions like
     // https://crbug.com/860511.
-    webview1.executeScript({code: 'window.innerWidth'}, function(result) {
-      var webview1_original_width = result[0];
-      webview2.executeScript({code: 'window.innerWidth'}, function(result) {
-        var webview2_original_width = result[0];
-        webview2.setZoomMode('per-view', function() {
-          webview2.getZoomMode(function(zoomMode) {
-            embedder.test.assertEq(zoomMode, 'per-view');
-            webview2.setZoom(0.45, function() {
-              webview1.getZoom(function(zoom) {
-                embedder.test.assertFalse(zoom == 0.45);
-                webview1.executeScript(
-                    {code: 'window.innerWidth'}, function(result) {
-                      var webview1_new_width = result[0];
-                      // Verify that inner width has not been changed for
-                      // for this WebView.
-                      embedder.test.assertEq(
-                          webview1_new_width, webview1_original_width);
-                      webview2.getZoom(function(zoom) {
-                        embedder.test.assertEq(zoom, 0.45);
-                        webview2.executeScript(
-                            {code: 'window.innerWidth'}, function(result) {
-                              var webview2_new_width = result[0];
-                              // Verify that inner width has been updated for
-                              // the second WebView.
-                              embedder.test.assertTrue(
-                                  webview2_original_width < webview2_new_width);
-                              embedder.test.succeed();
-                            });
-                      });
-                    });
-              });
-            });
-          });
-        });
+    let webview1_original_width = await getWebviewInnerWidth(webview1);
+    let webview2_original_width = await getWebviewInnerWidth(webview2);
+
+    webview2.setZoomMode('per-view', function() {
+      webview2.getZoomMode(async function(zoomMode) {
+        embedder.test.assertEq(zoomMode, 'per-view');
+
+        await setZoomP(webview2, 0.45);
+        embedder.test.assertFalse((await getZoomP(webview1)) == 0.45);
+        embedder.test.assertEq(await getZoomP(webview2), 0.45);
+
+        let webview1_new_width = await getWebviewInnerWidth(webview1);
+        // Verify that inner width has not been changed for
+        // for this WebView.
+        embedder.test.assertEq(webview1_new_width, webview1_original_width);
+
+        let webview2_new_width = await getWebviewInnerWidth(webview2);
+        // Verify that inner width has been updated for
+        // the second WebView.
+        embedder.test.assertTrue(webview2_original_width < webview2_new_width);
+        embedder.test.succeed();
       });
     });
   });
@@ -3152,10 +3149,18 @@ function testDisabledZoomMode() {
 function testZoomBeforeNavigation() {
   var webview = new WebView();
 
-  webview.addEventListener('loadstop', function(e) {
+  webview.addEventListener('loadstop', async function(e) {
     // Check that the zoom state persisted.
-    webview.getZoom(function(zoomFactor) {
-      embedder.test.assertEq(zoomFactor, 3.14);
+    embedder.test.assertEq(await getZoomP(webview), 3.14);
+
+    // Disable zoom so that the webview reverts to the default zoom level. We
+    // then verify that there was a difference in layout when the zoom was
+    // applied.
+    let width1 = await getWebviewInnerWidth(webview);
+    webview.setZoomMode('disabled', async function() {
+      let width2 = await getWebviewInnerWidth(webview);
+      embedder.test.assertTrue(width2 > width1);
+
       embedder.test.succeed();
     });
   });

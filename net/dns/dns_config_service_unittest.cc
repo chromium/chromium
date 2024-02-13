@@ -175,8 +175,8 @@ MockHostsParserFactory::GetFactory() {
 DnsHosts::value_type CreateHostsEntry(base::StringPiece name,
                                       AddressFamily family,
                                       IPAddress address) {
-  DnsHostsKey key = std::make_pair(std::string(name), family);
-  return std::make_pair(std::move(key), address);
+  DnsHostsKey key = std::pair(std::string(name), family);
+  return std::pair(std::move(key), address);
 }
 
 }  // namespace

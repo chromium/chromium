@@ -19,17 +19,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Mediator class responsible for controlling Read Aloud mini player.
  *
  * <p>The show animation has the following steps:
- *
- * <li>Set player visibility from GONE to INVISIBLE to cause it to layout, getting its height. Make
- *     the compositor scene layer visible.
+ * <li>Set player visibility from GONE to VISIBLE to cause it to layout, getting its height, but
+ *     leave it transparent. Make the compositor scene layer visible.
  * <li>Grow bottom controls to cause web contents to shrink and make room for the player. The scene
  *     layer pretends to be the real player and slides up smoothly with the changing bottom controls
  *     min height.
- * <li>When the resize is done, make the player VISIBLE with transparent contents.
- * <li>Fade in the contents.
+ * <li>When the resize is done, fade in the contents.
  *
- * <p>The hide animation is the reverse of the show animation:
- *
+ *     <p>The hide animation is the reverse of the show animation:
  * <li>Fade out the player contents.
  * <li>Make the scene layer visible and set the player visibility to GONE.
  * <li>Shrink the bottom controls and move the scene layer down along with the changing bottom
@@ -130,8 +127,8 @@ public class MiniPlayerMediator {
             // Grow immediately if height is already known.
             growBottomControls();
         }
-        // Set player visibility from GONE to INVISIBLE so that it has a height.
-        mModel.set(Properties.ANDROID_VIEW_VISIBILITY, View.INVISIBLE);
+        // Set player visibility from GONE to VISIBLE so that it has a height.
+        mModel.set(Properties.ANDROID_VIEW_VISIBILITY, View.VISIBLE);
     }
 
     /**
@@ -151,7 +148,6 @@ public class MiniPlayerMediator {
     // (2) Finished growing, start fading in.
     private void onBottomControlsGrown() {
         // Step two: fade in if transition is animated, or jump to full opacity otherwise.
-        mModel.set(Properties.ANDROID_VIEW_VISIBILITY, View.VISIBLE);
         mModel.set(Properties.CONTENTS_OPAQUE, true);
     }
 

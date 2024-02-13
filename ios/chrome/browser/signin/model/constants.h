@@ -36,7 +36,7 @@ enum class PostSignInAction {
   kNone,
   // Shows a snackbar displaying the account that just signed-in.
   kShowSnackbar,
-  // TODO(crbug.com/1462858): Turn on sync was deprecated. Delete this enum
+  // TODO(crbug.com/40067025): Turn on sync was deprecated. Delete this enum
   // after phase 2 launches on iOS. See ConsentLevel::kSync documentation for
   // details.
   // Starts sign-in flow for a sync consent.

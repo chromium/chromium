@@ -1446,9 +1446,9 @@ AX_TEST_F(
     let clicks = 0;
     div.addEventListener('click', function() {
       clicks++;
-      if (clicks == 1) {
+      if (clicks === 1) {
         live.textContent = 'go';
-      } else if (clicks == 2) {
+      } else if (clicks === 2) {
         input.selectionStart = 1;
         live.textContent = 'queued';
       } else {

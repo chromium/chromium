@@ -8,10 +8,6 @@
  * `home-url-input`.
  */
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-// <if expr="chromeos_ash">
-import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
-
-// </if>
 
 import type {PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';

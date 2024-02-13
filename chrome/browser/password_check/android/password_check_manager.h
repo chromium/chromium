@@ -96,6 +96,9 @@ class PasswordCheckManager
   // UI update on completion.
   void RemoveCredential(const password_manager::CredentialUIEntry& credential);
 
+  // Checks if user is signed into their account to perform the check.
+  bool HasAccountForRequest();
+
   // Not copyable or movable
   PasswordCheckManager(const PasswordCheckManager&) = delete;
   PasswordCheckManager& operator=(const PasswordCheckManager&) = delete;

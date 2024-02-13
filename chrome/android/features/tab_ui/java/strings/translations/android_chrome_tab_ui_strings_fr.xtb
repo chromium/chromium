@@ -3,10 +3,13 @@
 <translationbundle lang="fr">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
 <translation id="1155815720264022949">Voulez-vous fermer les anciens onglets ?</translation>
+<translation id="1197088940767939838">Orange</translation>
 <translation id="1215127405478249895">Voir les onglets</translation>
 <translation id="125153950246128346">Appuyer pour afficher un autre onglet</translation>
 <translation id="1326271443836399892">Vérifiez les paramètres de désencombrement actuels.</translation>
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée ?</translation>
+<translation id="1555130319947370107">Bleu</translation>
+<translation id="161042844686301425">Cyan</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet sélectionné aux favoris}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet sélectionné aux favoris}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets sélectionnés aux favoris}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ajouter l'onglet au groupe}one{Ajouter l'onglet au groupe}other{Regrouper les onglets}}</translation>
 <translation id="3996880007329611795">Être averti</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
+<translation id="4159784952369912983">Violet</translation>
 <translation id="4212246570487010370">Poursuivre la navigation</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Veuillez saisir un titre.</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Il y a <ph name="TABS_COUNT_ONE" /> onglet que vous n'avez pas utilisé récemment}one{Il y a <ph name="TABS_COUNT_MANY" /> onglet que vous n'avez pas utilisé récemment}other{Il y a <ph name="TABS_COUNT_MANY" /> onglets que vous n'avez pas utilisés récemment}}</translation>
 <translation id="5339733443032484186">Votre dernier onglet</translation>
+<translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
 <translation id="5545379293264651575">Fermer sans examiner</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Être averti des baisses de prix ?</translation>
 <translation id="58326064309361797">Faites glisser les onglets pour les regrouper</translation>
 <translation id="5846292395804797011">Fermez le groupe <ph name="TITLE_OF_GROUP" /> qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
+<translation id="5901630391730855834">Jaune</translation>
 <translation id="5972844218283131174">Tout désélectionner</translation>
+<translation id="6017514345406065928">Vert</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Regrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Group <ph name="TABS_COUNT_MANY" /> selected tabs}other{Regrouper les <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> avis}one{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}other{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}}</translation>
 <translation id="7885132941432959125">Déplacer l'onglet vers la droite</translation>
+<translation id="7942349550061667556">Rouge</translation>
 <translation id="7966321538264951561">Fermer les suggestions.</translation>
 <translation id="8029301326595421733">Fiche d'infos sur ce magasin ouverte à pleine hauteur</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Ajouter un nouvel onglet au groupe</translation>
 <translation id="955558140275419384">Accédez à cet éditeur pour vérifier les onglets archivés à désencombrer.</translation>
 <translation id="959682366969460160">Restez organisé</translation>
+<translation id="992256792861109788">Rose</translation>
 </translationbundle>

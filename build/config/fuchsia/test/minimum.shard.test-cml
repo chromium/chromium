@@ -24,11 +24,6 @@
     }
   ],
   use: [
-    {
-      directory: "config-data",
-      rights: [ "r*" ],
-      path: "/config/data",
-    },
     // Holds ICU time zone data files.
     // See:
     // https://fuchsia.dev/fuchsia-src/concepts/process/namespaces?typical_directory_structure

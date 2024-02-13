@@ -127,7 +127,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     trace_buffer_.AddFragment(events_str->data());
     trace_buffer_.Finish();
 
-    absl::optional<base::Value> trace_value;
+    std::optional<base::Value> trace_value;
     trace_value =
         base::JSONReader::Read(json_output_.json_output, base::JSON_PARSE_RFC);
 

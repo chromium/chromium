@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -211,11 +211,11 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
 
   // The endpoint result used by `nested_connect_job_`. Stored because
   // `nested_connect_job_` has a limited lifetime.
-  absl::optional<HostResolverEndpointResult> endpoint_result_;
+  std::optional<HostResolverEndpointResult> endpoint_result_;
 
-  // If not `absl::nullopt`, the ECH retry configs to use in the ECH recovery
+  // If not `std::nullopt`, the ECH retry configs to use in the ECH recovery
   // flow. `endpoint_result_` will then contain the endpoint to reconnect to.
-  absl::optional<std::vector<uint8_t>> ech_retry_configs_;
+  std::optional<std::vector<uint8_t>> ech_retry_configs_;
 };
 
 }  // namespace net

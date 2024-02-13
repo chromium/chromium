@@ -17,14 +17,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
-#include "components/browsing_data/content/database_helper.h"
-#include "components/browsing_data/content/file_system_helper.h"
-#include "components/browsing_data/content/indexed_db_helper.h"
-#include "components/browsing_data/content/local_storage_helper.h"
-#include "components/browsing_data/content/service_worker_helper.h"
-#include "components/browsing_data/content/shared_worker_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -587,12 +581,10 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
 #else
           /*ignore_empty_localstorage=*/true,
 #endif
-          delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       blocked_local_shared_objects_(
           GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
           /*ignore_empty_localstorage=*/false,
-          delegate_->GetAdditionalFileSystemTypes(),
           delegate_->GetIsDeletionDisabledCallback()),
       allowed_browsing_data_model_(BrowsingDataModel::BuildEmpty(
           GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition(),
@@ -701,7 +693,6 @@ void PageSpecificContentSettings::StorageAccessed(
           return BrowsingDataModel::StorageType::kQuotaStorage;
       }
     })();
-
     if (storage_type == StorageType::SESSION_STORAGE) {
       auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
       const auto& session_storage_namespace_map =
@@ -984,84 +975,33 @@ void PageSpecificContentSettings::OnTwoSitePermissionChanged(
   }
 }
 
-namespace {
-void AddToContainer(browsing_data::LocalSharedObjectsContainer& container,
-                    StorageType storage_type,
-                    const GURL& url) {
-  url::Origin origin = url::Origin::Create(url);
-  switch (storage_type) {
-    case StorageType::DATABASE:
-      container.databases()->Add(origin);
-      return;
-    case StorageType::LOCAL_STORAGE:
-      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-      // function directly.
-      container.local_storages()->Add(
-          blink::StorageKey::CreateFirstParty(origin));
-      return;
-    case StorageType::SESSION_STORAGE:
-      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-      // function directly.
-      container.session_storages()->Add(
-          blink::StorageKey::CreateFirstParty(origin));
-      return;
-    case StorageType::INDEXED_DB:
-      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
-      // function directly.
-      container.indexed_dbs()->Add(blink::StorageKey::CreateFirstParty(origin));
-      return;
-    case StorageType::CACHE:
-      container.cache_storages()->Add(
-          blink::StorageKey::CreateFirstParty(origin));
-      return;
-    case StorageType::FILE_SYSTEM:
-      container.file_systems()->Add(origin);
-      return;
-    case StorageType::WEB_LOCKS:
-      NOTREACHED();
-      return;
-  }
-}
-}  // namespace
-
-void PageSpecificContentSettings::OnStorageAccessed(
-    StorageType storage_type,
-    const blink::StorageKey& storage_key,
-    bool blocked_by_policy,
-    content::Page* originating_page) {
-  GURL url = storage_key.origin().GetURL();
-  originating_page = originating_page ? originating_page : &page();
-  if (blocked_by_policy) {
-    AddToContainer(blocked_local_shared_objects_, storage_type, url);
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    AddToContainer(allowed_local_shared_objects_, storage_type, url);
-    OnContentAllowed(ContentSettingsType::COOKIES);
-  }
-
-  MaybeUpdateParent(&PageSpecificContentSettings::OnStorageAccessed,
-                    storage_type, storage_key, blocked_by_policy,
-                    originating_page);
-
-  // TODO(crbug/1454806): Consider exposing `blink::StorageKey` details here.
-  AccessDetails access_details{SiteDataType::kStorage, AccessType::kUnknown,
-                               url, blocked_by_policy,
-                               originating_page->IsPrimary()};
-
-  MaybeNotifySiteDataObservers(access_details);
-}
-
 void PageSpecificContentSettings::OnCookiesAccessed(
     const content::CookieAccessDetails& details,
     content::Page* originating_page) {
   originating_page = originating_page ? originating_page : &page();
   if (details.cookie_list.empty())
     return;
+
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    auto& model = details.blocked_by_policy ? blocked_browsing_data_model_
+                                            : allowed_browsing_data_model_;
+    for (const auto& cookie : details.cookie_list) {
+      // The size isn't relevant here and won't be displayed in the UI.
+      model->AddBrowsingData(cookie, BrowsingDataModel::StorageType::kCookie,
+                             /*storage_size=*/0,
+                             /*cookie_count=*/1);
+    }
+  } else {
+    auto& local_shared_objects = details.blocked_by_policy
+                                     ? blocked_local_shared_objects_
+                                     : allowed_local_shared_objects_;
+    local_shared_objects.cookies()->AddCookies(details);
+  }
+
   if (details.blocked_by_policy) {
-    blocked_local_shared_objects_.cookies()->AddCookies(details);
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
-    allowed_local_shared_objects_.cookies()->AddCookies(details);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
@@ -1105,27 +1045,6 @@ void PageSpecificContentSettings::OnServiceWorkerAccessed(
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnServiceWorkerAccessed,
                     scope, storage_key, allowed_result, originating_page);
-}
-
-void PageSpecificContentSettings::OnSharedWorkerAccessed(
-    const GURL& worker_url,
-    const std::string& name,
-    const blink::StorageKey& storage_key,
-    const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies,
-    bool blocked_by_policy) {
-  DCHECK(worker_url.is_valid());
-  if (blocked_by_policy) {
-    blocked_local_shared_objects_.shared_workers()->AddSharedWorker(
-        worker_url, name, storage_key, same_site_cookies);
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    allowed_local_shared_objects_.shared_workers()->AddSharedWorker(
-        worker_url, name, storage_key, same_site_cookies);
-    OnContentAllowed(ContentSettingsType::COOKIES);
-  }
-  MaybeUpdateParent(&PageSpecificContentSettings::OnSharedWorkerAccessed,
-                    worker_url, name, storage_key, same_site_cookies,
-                    blocked_by_policy);
 }
 
 void PageSpecificContentSettings::OnInterestGroupJoined(
@@ -1184,10 +1103,7 @@ void PageSpecificContentSettings::OnBrowsingDataAccessed(
     // related to cookies, as that is the icon that is displayed.
     // TODO(crbug.com/1456641): When the COOKIES content setting Omnibox entry
     // correctly reflects site data, reconsider limiting the types.
-    // This logic will not show a site being blocked for partitioned storage,
-    // reconsider the usage of this method in this context.
-    if (blocked_browsing_data_model_->IsBlockedByThirdPartyCookieBlocking(
-            data_key, storage_type)) {
+    if (model->IsStorageTypeCookieLike(storage_type)) {
       OnContentBlocked(ContentSettingsType::COOKIES);
     }
   } else {

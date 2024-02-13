@@ -95,7 +95,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
+#include "chrome/common/chrome_switches.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::CalculateFormSignature;
@@ -456,45 +456,6 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
   log_router->UnregisterReceiver(&log_receiver);
   EXPECT_TRUE(WasLoggingActivationMessageSent(&logging_active));
   EXPECT_FALSE(logging_active);
-}
-
-TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kPasswords});
-  sync_service()->SetIsUsingExplicitPassphrase(false);
-
-  ChromePasswordManagerClient* client = GetClient();
-
-  // Passwords are syncing and custom passphrase isn't used.
-  EXPECT_EQ(password_manager::SyncState::kSyncingNormalEncryption,
-            client->GetPasswordSyncState());
-
-  // Sync paused due to a persistent auth error.
-  sync_service()->SetPersistentAuthError();
-  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
-            client->GetPasswordSyncState());
-
-  // Again, using a custom passphrase.
-  sync_service()->ClearAuthError();
-  sync_service()->SetIsUsingExplicitPassphrase(true);
-
-  EXPECT_EQ(password_manager::SyncState::kSyncingWithCustomPassphrase,
-            client->GetPasswordSyncState());
-
-  // Report correctly if we aren't syncing passwords.
-  sync_service()->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false,
-      /*types=*/{syncer::UserSelectableType::kBookmarks});
-
-  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
-            client->GetPasswordSyncState());
-
-  // Again, without a custom passphrase.
-  sync_service()->SetIsUsingExplicitPassphrase(false);
-
-  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
-            client->GetPasswordSyncState());
 }
 
 TEST_F(ChromePasswordManagerClientTest,
@@ -1469,13 +1430,16 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 class ChromePasswordManagerClientWithAccountStoreAndroidTest
     : public ChromePasswordManagerClientAndroidTest {
   void SetUp() override {
-    // Using the account store on Android also requires UPM support for local
-    // passwords.
+    // Using the account store on Android requires enabling the flag for UPM
+    // support of local passwords. Skip the Gms version check, otherwise the
+    // flag won't do anything in bots that have outdated GmsCore.
     feature_list_.InitWithFeatures(
         {password_manager::features::
              kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
          password_manager::features::kSharedPasswordNotificationUI},
         {});
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
 
     ChromePasswordManagerClientAndroidTest::SetUp();
 

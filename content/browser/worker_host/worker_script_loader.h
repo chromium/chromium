@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -109,7 +110,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  std::optional<SubresourceLoaderParams> TakeSubresourceLoaderParams() {
+  SubresourceLoaderParams TakeSubresourceLoaderParams() {
     return std::move(subresource_loader_params_);
   }
 
@@ -124,13 +125,13 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void Start();
   void MaybeStartLoader(
       ServiceWorkerMainResourceLoaderInterceptor* interceptor,
-      scoped_refptr<network::SharedURLLoaderFactory> single_request_factory);
+      std::optional<NavigationLoaderInterceptor::Result> interceptor_result);
   void LoadFromNetwork();
   void CommitCompleted(const network::URLLoaderCompletionStatus& status);
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_;
 
-  std::optional<SubresourceLoaderParams> subresource_loader_params_;
+  SubresourceLoaderParams subresource_loader_params_;
 
   const int32_t request_id_;
   const uint32_t options_;

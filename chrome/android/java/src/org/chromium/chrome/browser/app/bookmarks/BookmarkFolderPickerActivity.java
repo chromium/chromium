@@ -56,7 +56,8 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+        Profile profile = getProfileProvider().getOriginalProfile();
+        mBookmarkModel = BookmarkModel.getForProfile(profile);
 
         List<String> bookmarkIdsAsStrings =
                 IntentUtils.safeGetStringArrayListExtra(getIntent(), INTENT_BOOKMARK_IDS);
@@ -67,7 +68,6 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         }
 
         Resources res = getResources();
-        Profile profile = Profile.getLastUsedRegularProfile();
         mBookmarkImageFetcher =
                 new BookmarkImageFetcher(
                         this,

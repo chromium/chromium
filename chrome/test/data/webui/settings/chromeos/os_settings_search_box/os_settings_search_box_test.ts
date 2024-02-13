@@ -11,6 +11,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {FakeMetricsPrivate} from '../fake_metrics_private.js';
 import {FakePersonalizationSearchHandler} from '../fake_personalization_search_handler.js';
 import {FakeSettingsSearchHandler} from '../fake_settings_search_handler.js';
 import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
@@ -19,15 +20,6 @@ import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestOsSettingsSearchBoxBrowserProxy} from './test_os_settings_search_box_browser_proxy.js';
 
 suite('<os-settings-search-box>', () => {
-  // TODO(hsuregan): Keep count and add getters for metrics.
-  class MockMetricsPrivate {
-    recordEnumerationValue() {}
-    recordSparseValue() {}
-    recordTime() {}
-    recordSparseValueWithHashMetricName() {}
-    recordSparseValueWithPersistentHash() {}
-  }
-
   const DEFAULT_RELEVANCE_SCORE: number = 0.5;
   const DEFAULT_PAGE_HIERARCHY: String16[] = [];
   let toolbar: OsToolbarElement;
@@ -110,8 +102,7 @@ suite('<os-settings-search-box>', () => {
   }
 
   function setupSearchBox(): void {
-    chrome.metricsPrivate =
-        new MockMetricsPrivate() as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = new FakeMetricsPrivate();
 
     personalizationSearchHandler = new FakePersonalizationSearchHandler();
     setPersonalizationSearchHandlerForTesting(personalizationSearchHandler);

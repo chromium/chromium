@@ -4,7 +4,7 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
-import("//third_party/openscreen/src/build/config/data_headers_template.gni")
+import("//third_party/openscreen/src/build_overrides/data_headers_template.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 source_set("capability") {

@@ -5,11 +5,11 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_SCENARIO_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_INSPECT_SCENARIO_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace base {
@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXInspectScenario {
   //                    defining which property gets (or not) into the output,
   //                    useful to not make each test to specify common filters
   //                    all over
-  static absl::optional<AXInspectScenario> From(
+  static std::optional<AXInspectScenario> From(
       const std::string& directive_prefix,
       const base::FilePath& scenario_path,
       const std::vector<AXPropertyFilter>& default_filters = {});

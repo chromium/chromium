@@ -85,9 +85,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     GURL url(host);
     test_web_state->SetCurrentURL(url);
     WebStateList* web_state_list = browser->GetWebStateList();
-    web_state_list->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(test_web_state),
-        WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+    web_state_list->InsertWebState(std::move(test_web_state));
   }
 
   // Adds a web state with `host` as the active URL, and with `host` registered
@@ -100,9 +98,7 @@ class CertificatePolicyAppStateAgentTest : public BlockCleanupTest {
     test_web_state->GetSessionCertificatePolicyCache()
         ->RegisterAllowedCertificate(cert_, host, status_);
     WebStateList* web_state_list = browser->GetWebStateList();
-    web_state_list->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(test_web_state),
-        WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+    web_state_list->InsertWebState(std::move(test_web_state));
   }
 
   // Adds one web state to each browser with no certs.

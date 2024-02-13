@@ -179,19 +179,6 @@ void BrowserCaptureMediaStreamTrack::SendWheel(
                                    wheel_delta_y, std::move(callback));
 }
 
-void BrowserCaptureMediaStreamTrack::GetZoomLevel(
-    base::OnceCallback<void(std::optional<int>, const String&)> callback) {
-  const base::expected<MediaStreamVideoSource*, DOMException*> native_source =
-      GetNativeVideoSource(Component());
-  if (!native_source.has_value()) {
-    // Note that BrowserCaptureMediaStreamTrack::GetZoomLevel() will shortly
-    // be removed (by m123), so this translation back to String is temporary.
-    std::move(callback).Run(std::nullopt, native_source.error()->message());
-    return;
-  }
-  native_source.value()->GetZoomLevel(std::move(callback));
-}
-
 void BrowserCaptureMediaStreamTrack::SetZoomLevel(
     int zoom_level,
     base::OnceCallback<void(DOMException*)> callback) {

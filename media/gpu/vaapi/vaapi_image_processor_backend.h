@@ -39,9 +39,9 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
       ErrorCB error_cb);
 
   // ImageProcessor implementation.
-  void Process(scoped_refptr<VideoFrame> input_frame,
-               scoped_refptr<VideoFrame> output_frame,
-               FrameReadyCB cb) override;
+  void ProcessFrame(scoped_refptr<FrameResource> input_frame,
+                    scoped_refptr<FrameResource> output_frame,
+                    FrameResourceReadyCB cb) override;
   void Reset() override;
 
   std::string type() const override;
@@ -53,7 +53,7 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
                              ErrorCB error_cb);
   ~VaapiImageProcessorBackend() override;
 
-  const VASurface* GetSurfaceForVideoFrame(scoped_refptr<VideoFrame> frame,
+  const VASurface* GetSurfaceForVideoFrame(scoped_refptr<FrameResource> frame,
                                            bool use_protected);
 
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;

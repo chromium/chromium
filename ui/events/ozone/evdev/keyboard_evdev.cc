@@ -26,10 +26,10 @@ namespace ui {
 
 namespace {
 
-absl::optional<KeyboardCode> RemapButtonsToKeyboardCodes(unsigned int key) {
+std::optional<KeyboardCode> RemapButtonsToKeyboardCodes(unsigned int key) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ash::features::IsPeripheralCustomizationEnabled()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (key >= BTN_0 && key <= BTN_9) {
@@ -45,7 +45,7 @@ absl::optional<KeyboardCode> RemapButtonsToKeyboardCodes(unsigned int key) {
   }
 #endif
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

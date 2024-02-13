@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -16,7 +17,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_operation.h"
 #include "device/fido/fido_constants.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -47,11 +47,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fSignOperation
   void WinkAndTrySign();
   void TrySign();
   void OnSignResponseReceived(
-      absl::optional<std::vector<uint8_t>> device_response);
+      std::optional<std::vector<uint8_t>> device_response);
   void WinkAndTryFakeEnrollment();
   void TryFakeEnrollment();
   void OnEnrollmentResponseReceived(
-      absl::optional<std::vector<uint8_t>> device_response);
+      std::optional<std::vector<uint8_t>> device_response);
   const std::vector<uint8_t>& key_handle() const;
 
   size_t current_key_handle_index_ = 0;

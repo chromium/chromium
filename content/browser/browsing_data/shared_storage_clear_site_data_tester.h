@@ -33,9 +33,9 @@ class SharedStorageClearSiteDataTester {
 
   std::vector<url::Origin> GetSharedStorageOrigins();
 
-  int GetSharedStorageNumEntriesForOrigin(url::Origin origin);
+  int GetSharedStorageNumBytesForOrigin(url::Origin origin);
 
-  int GetSharedStorageTotalEntries();
+  int GetSharedStorageTotalBytes();
 
  private:
   raw_ptr<StoragePartitionImpl> storage_partition_impl_;

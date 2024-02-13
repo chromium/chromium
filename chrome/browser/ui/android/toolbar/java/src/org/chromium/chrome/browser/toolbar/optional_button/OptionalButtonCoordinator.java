@@ -281,14 +281,16 @@ public class OptionalButtonCoordinator {
         iphCommandBuilder.setOnShowCallback(() -> mMediator.setBackgroundAlpha(0));
         iphCommandBuilder.setOnDismissCallback(() -> mMediator.setBackgroundAlpha(255));
 
-        ViewRectProvider viewRectProvider =
-                new ViewRectProvider(
-                        mView.getBackgroundView() == null ? mView : mView.getBackgroundView());
+        View anchorView = mView;
+        View backgroundView = mView.getBackgroundView();
+        if (backgroundView != null && backgroundView.getVisibility() != View.GONE) {
+            anchorView = backgroundView;
+        }
+        ViewRectProvider viewRectProvider = new ViewRectProvider(anchorView);
         viewRectProvider.setIncludePadding(false);
 
         highlightParams.setBoundsRespectPadding(true);
-        iphCommandBuilder.setAnchorView(
-                mView.getBackgroundView() == null ? mView : mView.getBackgroundView());
+        iphCommandBuilder.setAnchorView(anchorView);
         iphCommandBuilder.setViewRectProvider(viewRectProvider);
         iphCommandBuilder.setHighlightParams(highlightParams);
     }

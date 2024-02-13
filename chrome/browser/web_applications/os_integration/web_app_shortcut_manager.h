@@ -132,6 +132,8 @@ class WebAppShortcutManager {
   static void SetUpdateShortcutsForAllAppsCallback(
       UpdateShortcutsForAllAppsCallback callback);
 
+  static base::OnceClosure& OnSetCurrentAppShortcutsVersionCallbackForTesting();
+
  private:
   void OnIconsRead(const webapps::AppId& app_id,
                    GetShortcutInfoCallback callback,

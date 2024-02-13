@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Nesecurizat</translation>
 <translation id="1075079914415273530">Agricultură și silvicultură</translation>
 <translation id="1075364221219156102">Folosește o cheie de acces</translation>
-<translation id="1078033282564106222">A fost selectată opțiunea pentru numărul clădirii</translation>
 <translation id="1080116354587839789">Încadrează pe lățime</translation>
 <translation id="1081061862829655580">Tava 19</translation>
 <translation id="1082026381988252344">Să mărească și să deruleze în conținutul filei la care ai permis accesul</translation>
@@ -247,6 +246,7 @@
 <translation id="1428729058023778569">Avertismentul se afișează deoarece acest site nu acceptă HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Peliculă autoadezivă</translation>
 <translation id="1430915738399379752">Printează</translation>
+<translation id="1431021750861456539">Ecran complet automat</translation>
 <translation id="1432187715652018471">Pagina dorește să instaleze un handler de serviciu.</translation>
 <translation id="1432581352905426595">Gestionați motoarele de căutare</translation>
 <translation id="1433225466058025572">Încearcă să muți din nou fișierele</translation>
@@ -586,6 +586,7 @@
 <translation id="2075497153347571252">Administratorul a blocat permisiunea pentru <ph name="PERMISSION" /> pe <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2080021694978766903">Această politică nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări.</translation>
+<translation id="2081482239432306393">S-a selectat opțiunea pentru numărul casei</translation>
 <translation id="20817612488360358">Setările proxy de sistem sunt setate pentru a fi utilizate, dar o configurație explicită pentru proxy este, de asemenea, specificată.</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permite la fiecare accesare</translation>
@@ -613,7 +614,6 @@
 <translation id="2126374524350484896">PDF Producer:</translation>
 <translation id="2130448033692577677">Șabloanele specificate nu pot fi aplicate, deoarece politica DnsOverHttpsMode nu este setată.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Se descarcă pachetul lingvistic pentru <ph name="LANGUAGE" />...<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Îmbrăcăminte bărbați</translation>
 <translation id="2137891579555018930">Se așteaptă permisiunea…</translation>
 <translation id="213826338245044447">Marcaje mobile</translation>
@@ -1387,7 +1387,6 @@
 <translation id="3681007416295224113">Informații despre certificat</translation>
 <translation id="3681421644246505351">Chrome reține subiectele de interes pe baza istoricului tău de navigare recent.</translation>
 <translation id="3682094733650754138">A fost selectată opțiunea de completare a adresei</translation>
-<translation id="3689867156802445220">Numărul clădirii</translation>
 <translation id="3693327506115126094">Alege cum să-ți confirmi identitatea</translation>
 <translation id="3698629142018988477">Butonul Creează un site, activează pentru a crea rapid un site în Site-uri Google</translation>
 <translation id="3701325639446035885">Vânzări de bilete la evenimente</translation>
@@ -1412,6 +1411,7 @@
 <translation id="3723663469265383848">În timpul actualizării, nu vei putea să folosești dispozitivul timp de până la 10 minute.</translation>
 <translation id="372429172604983730">Aplicațiile care pot genera această eroare includ software-ul antivirus, firewall, de filtrare web sau proxy.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a crea rapid o prezentare Google în Prezentări</translation>
+<translation id="3727309136762649052">Spațiu de nume</translation>
 <translation id="3727850735097852673">Pentru a folosi Managerul de parole Google cu macOS Keychain, relansează Chrome și permite accesul Keychain. Filele se vor redeschide după relansare.</translation>
 <translation id="3733139489341305600">Vehicule autonome</translation>
 <translation id="3736520371357197498">Dacă înțelegeți riscurile de securitate, puteți să <ph name="BEGIN_LINK" />accesați acest site nesigur<ph name="END_LINK" /> înainte ca programele periculoase să fie eliminate.</translation>
@@ -1576,6 +1576,7 @@
 <translation id="4089152113577680600">Tava 14</translation>
 <translation id="4092349052316400070">Completează adresa</translation>
 <translation id="4096237801206588987">11 x 15 in</translation>
+<translation id="4098306082496067348">Atinge detaliile cardului virtual pentru a le adăuga la finalizarea achiziției.</translation>
 <translation id="4098354747657067197">Urmează un site înșelător</translation>
 <translation id="4099048595830172239">Politica implementată de administrator nu recomandă să permiți accesul <ph name="APPLICATION_TITLE" /> la ecran atunci când este vizibil conținut confidențial:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a personaliza dimensiunea și tipul fontului în Chrome</translation>
@@ -1899,6 +1900,7 @@
 <translation id="4729147136006144950">Caritate și filantropie</translation>
 <translation id="4730977633786878901">Recenzii</translation>
 <translation id="4731638775147756694">Această aplicație a fost blocată de administrator</translation>
+<translation id="4732860731866514038">Se descarcă pachetul lingvistic pentru <ph name="LANGUAGE" />... <ph name="PERCENT" /> %</translation>
 <translation id="4733082559415072992"><ph name="URL" /> dorește să utilizeze locația dispozitivului</translation>
 <translation id="4736491186715342415">Vehicule cu motor</translation>
 <translation id="4736825316280949806">repornește Chromium;</translation>
@@ -1920,7 +1922,6 @@
 <translation id="4757022425116568383">Cheia de acces din profilul Chrome</translation>
 <translation id="4757993714154412917">Ai introdus parola pe un site înșelător. Pentru a-ți proteja conturile, Chromium recomandă să verifici parolele salvate.</translation>
 <translation id="4758311279753947758">Adaugă informații de contact</translation>
-<translation id="4761104368405085019">Utilizează microfonul</translation>
 <translation id="4761326898079498987">Consultă pentru mai multe detalii</translation>
 <translation id="4761869838909035636">Rulează verificarea de siguranță pentru Chrome</translation>
 <translation id="4763196677855776703">Termeni și condiții oferite de <ph name="URL" /></translation>
@@ -2258,7 +2259,6 @@
             <ph name="LIST_ITEM" />cookie-urile și datele privind site-urile,
             <ph name="LIST_ITEM" />informațiile introduse în formulare.
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> solicită permisiunea să controleze și să reprogrameze dispozitivele MIDI (SysEx)</translation>
 <translation id="5443468954631487277">În ordine inversă, cu fața în sus</translation>
 <translation id="5447235695608032700">Permite ca <ph name="SITE" /> să folosească informațiile pe care le salvează despre tine</translation>
 <translation id="5447765697759493033">Acest site nu va fi tradus</translation>
@@ -2285,6 +2285,7 @@
     <ph name="LINE_BREAK" />
     Contactează administratorul sistemului.</translation>
 <translation id="549333378215107354">Mărimea 3</translation>
+<translation id="5501712702042287009">ecran complet automat</translation>
 <translation id="550365051221576010">Completează tot</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Marcaje gestionate</translation>
@@ -2471,7 +2472,6 @@
 <translation id="5877831137320480913">Frumusețe și fitness</translation>
 <translation id="5879989559903563723">Nu se permite în modul pentru invitați</translation>
 <translation id="5880050725127890683">Accesează verificarea de siguranță pentru Chrome</translation>
-<translation id="5883861433316751031">Controlezi și reprogramezi dispozitivele MIDI?</translation>
 <translation id="5884465125445718607">Plic chinezesc 6</translation>
 <translation id="5887400589839399685">Cardul a fost salvat</translation>
 <translation id="5887687176710214216">Accesat ultima dată ieri</translation>
@@ -2822,7 +2822,6 @@
 <translation id="6556866813142980365">Repetă</translation>
 <translation id="6557715786897013164">14 x 17 in</translation>
 <translation id="6560786330438719938">Aplicațiile instalate sau dezinstalate și frecvența de folosire a acestora</translation>
-<translation id="6567084950885568327">Controlul și reprogramarea dispozitivelor MIDI</translation>
 <translation id="6568793038316600992">Butonul Gestionează metodele de plată, activează pentru a gestiona informațiile despre plăți și carduri de credit în setările Chrome</translation>
 <translation id="6569060085658103619">Se afișează pagina unei extensii</translation>
 <translation id="6569366777234823130">Filme de dramă</translation>
@@ -3205,6 +3204,7 @@ Detalii suplimentare:
 <translation id="733354035281974745">Modificarea contului local al dispozitivului</translation>
 <translation id="7334320624316649418">&amp;Repetați reordonarea</translation>
 <translation id="7335157162773372339">Poate solicita permisiunea de a folosi camera</translation>
+<translation id="7336636595549675416">Numărul casei</translation>
 <translation id="7337248890521463931">Afișează mai multe rânduri</translation>
 <translation id="7337706099755338005">Nu este disponibil pe platforma ta.</translation>
 <translation id="733923710415886693">Certificatul serverului nu a fost dezvăluit folosind Transparența certificatului.</translation>
@@ -3912,7 +3912,6 @@ Detalii suplimentare:
 <translation id="8671519637524426245">Valoarea <ph name="SECURE_DNS_SALT" /> nu respectă cerințele de dimensiune.</translation>
 <translation id="867224526087042813">Semnătura</translation>
 <translation id="8672264262457010862">Afaceri și comerț</translation>
-<translation id="8673776281896298303">Controlează și reprogramează dispozitivele MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Fără întârziere</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, răspuns, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Pagina de la <ph name="PAGE" /> nu a putut fi încărcată, deoarece:</translation>
@@ -4152,7 +4151,6 @@ Detalii suplimentare:
 <translation id="9148507642005240123">&amp;Anulați editarea</translation>
 <translation id="9148599396704355100">Prețul este mic</translation>
 <translation id="9150025764986957246">Poți introduce, de exemplu:</translation>
-<translation id="9150045010208374699">Utilizează camera foto</translation>
 <translation id="9150685862434908345">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Actualizat</translation>
 <translation id="9155211586651734179">dispozitivele periferice audio conectate;</translation>

@@ -103,7 +103,7 @@ void DeskButtonBase::UpdateFocusState() {
   views::FocusRing::Get(this)->SchedulePaint();
 }
 
-BEGIN_METADATA(DeskButtonBase, views::LabelButton)
+BEGIN_METADATA(DeskButtonBase)
 END_METADATA
 
 }  // namespace ash

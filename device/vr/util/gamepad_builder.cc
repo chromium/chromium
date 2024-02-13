@@ -56,11 +56,11 @@ bool GamepadBuilder::IsValid() const {
   NOTREACHED();
 }
 
-absl::optional<Gamepad> GamepadBuilder::GetGamepad() {
+std::optional<Gamepad> GamepadBuilder::GetGamepad() {
   if (IsValid())
     return gamepad_;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void GamepadBuilder::AddButton(const GamepadButton& button) {

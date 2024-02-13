@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/factor_setup_success_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/osauth_error_screen_handler.h"
@@ -94,6 +95,16 @@ constexpr UIPath kFactorSetupSuccessDoneButton = {"factor-setup-success",
 constexpr UIPath kFactorSetupSuccessNextButton = {"factor-setup-success",
                                                   "nextButton"};
 
+constexpr UIPath kLocalPasswordSetupElement = {"local-password-setup"};
+constexpr UIPath kLocalPasswordSetupFirstInput = {
+    "local-password-setup", "passwordInput", "firstInput"};
+constexpr UIPath kLocalPasswordSetupConfirmInput = {
+    "local-password-setup", "passwordInput", "confirmInput"};
+constexpr UIPath kLocalPasswordSetupBackButton = {"local-password-setup",
+                                                  "backButton"};
+constexpr UIPath kLocalPasswordSetupNextButton = {"local-password-setup",
+                                                  "nextButton"};
+
 const UIPath kFirstOnboardingScreen = {"consolidated-consent"};
 
 bool IsOldFlow() {
@@ -116,10 +127,24 @@ class LoginScreenAuthSurface : public FullScreenAuthSurface {
     ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   }
 
+  void SubmitPassword(const AccountId& account_id,
+                      const std::string& password,
+                      bool check_if_submittable);
+
+  void SubmitPassword(const AccountId& account_id,
+                      const std::string& password) override {
+    LoginScreenTestApi::SubmitPassword(account_id, password, true);
+  }
+
   std::unique_ptr<LocalAuthenticationDialogActor>
   WaitForLocalAuthenticationDialog() override {
     LocalAuthenticationDialogWaiter()->Wait();
     return std::make_unique<LocalAuthenticationDialogActor>();
+  }
+
+  std::unique_ptr<AuthErrorBubbleActor> WaitForAuthErrorBubble() override {
+    AuthErrorBubbleWaiter()->Wait();
+    return std::make_unique<AuthErrorBubbleActor>();
   }
 };
 
@@ -304,6 +329,35 @@ std::unique_ptr<PasswordUpdatedPageActor> AwaitPasswordUpdatedUI() {
 
 // ----------------------------------------------------------
 
+LocalPasswordSetupPageActor::LocalPasswordSetupPageActor()
+    : OobePageActor(LocalPasswordSetupView::kScreenId,
+                    kLocalPasswordSetupElement) {}
+LocalPasswordSetupPageActor::~LocalPasswordSetupPageActor() = default;
+
+void LocalPasswordSetupPageActor::TypeFirstPassword(
+    const std::string& password) {
+  LocalPasswordSetupExpectFirstInput();
+  LocalPasswordSetupTypeFirstPassword(password);
+}
+
+void LocalPasswordSetupPageActor::TypeConfirmPassword(
+    const std::string& password) {
+  LocalPasswordSetupExpectConfirmInput();
+  LocalPasswordSetupTypeConfirmPassword(password);
+}
+
+void LocalPasswordSetupPageActor::GoBack() {
+  LocalPasswordSetupExpectBackButton();
+  LocalPasswordSetupBackAction();
+}
+
+void LocalPasswordSetupPageActor::Submit() {
+  LocalPasswordSetupExpectNextButton();
+  LocalPasswordSetupNextAction();
+}
+
+// ----------------------------------------------------------
+
 LocalAuthenticationDialogActor::LocalAuthenticationDialogActor() = default;
 LocalAuthenticationDialogActor::~LocalAuthenticationDialogActor() = default;
 
@@ -320,6 +374,31 @@ void LocalAuthenticationDialogActor::SubmitPassword(
     const std::string& password) {
   EXPECT_TRUE(IsVisible());
   LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(password);
+}
+
+void LocalAuthenticationDialogActor::WaitUntilDismissed() {
+  LocalAuthenticationDialogDismissWaiter()->Wait();
+}
+
+// ----------------------------------------------------------
+
+AuthErrorBubbleActor::AuthErrorBubbleActor() = default;
+AuthErrorBubbleActor::~AuthErrorBubbleActor() = default;
+
+bool AuthErrorBubbleActor::IsVisible() {
+  return LoginScreenTestApi::IsAuthErrorBubbleShown();
+}
+
+void AuthErrorBubbleActor::Hide() {
+  LoginScreenTestApi::HideAuthError();
+}
+
+void AuthErrorBubbleActor::PressRecoveryButton() {
+  LoginScreenTestApi::PressAuthErrorRecoveryButton();
+}
+
+void AuthErrorBubbleActor::PressLearnMoreButton() {
+  LoginScreenTestApi::PressAuthErrorLearnMoreButton();
 }
 
 // ----------------------------------------------------------
@@ -459,6 +538,38 @@ void PasswordUpdateNoticeDoneAction() {
   test::OobeJS().ClickOnPath(kFactorSetupSuccessDoneButton);
 }
 
+void LocalPasswordSetupExpectNextButton() {
+  test::OobeJS().ExpectVisiblePath(kLocalPasswordSetupNextButton);
+}
+
+void LocalPasswordSetupNextAction() {
+  test::OobeJS().ClickOnPath(kLocalPasswordSetupNextButton);
+}
+
+void LocalPasswordSetupExpectBackButton() {
+  test::OobeJS().ExpectVisiblePath(kLocalPasswordSetupBackButton);
+}
+
+void LocalPasswordSetupBackAction() {
+  test::OobeJS().ClickOnPath(kLocalPasswordSetupBackButton);
+}
+
+void LocalPasswordSetupExpectFirstInput() {
+  test::OobeJS().ExpectVisiblePath(kLocalPasswordSetupFirstInput);
+}
+
+void LocalPasswordSetupTypeFirstPassword(const std::string& pw) {
+  test::OobeJS().TypeIntoPath(pw, kLocalPasswordSetupFirstInput);
+}
+
+void LocalPasswordSetupExpectConfirmInput() {
+  test::OobeJS().ExpectVisiblePath(kLocalPasswordSetupConfirmInput);
+}
+
+void LocalPasswordSetupTypeConfirmPassword(const std::string& pw) {
+  test::OobeJS().TypeIntoPath(pw, kLocalPasswordSetupConfirmInput);
+}
+
 std::unique_ptr<test::TestConditionWaiter> RecoveryPasswordUpdatedPageWaiter() {
   if (IsOldFlow()) {
     return std::make_unique<CompositeWaiter>(
@@ -468,6 +579,13 @@ std::unique_ptr<test::TestConditionWaiter> RecoveryPasswordUpdatedPageWaiter() {
         OobeJS().CreateVisibilityWaiter(true, kRecoverySuccessStep));
   }
   return CreatePasswordUpdateNoticePageWaiter();
+}
+
+std::unique_ptr<LocalPasswordSetupPageActor> AwaitLocalPasswordSetupUI() {
+  std::unique_ptr<LocalPasswordSetupPageActor> result =
+      std::make_unique<LocalPasswordSetupPageActor>();
+  result->UntilShown()->Wait();
+  return result;
 }
 
 void RecoveryPasswordUpdatedProceedAction() {
@@ -514,6 +632,23 @@ std::unique_ptr<test::TestConditionWaiter> LocalAuthenticationDialogWaiter() {
   return std::make_unique<test::TestPredicateWaiter>(base::BindRepeating([]() {
     return LoginScreenTestApi::IsLocalAuthenticationDialogVisible();
   }));
+}
+
+std::unique_ptr<test::TestConditionWaiter>
+LocalAuthenticationDialogDismissWaiter() {
+  return std::make_unique<test::TestPredicateWaiter>(base::BindRepeating([]() {
+    return !LoginScreenTestApi::IsLocalAuthenticationDialogVisible();
+  }));
+}
+
+std::unique_ptr<test::TestConditionWaiter> AuthErrorBubbleWaiter() {
+  return std::make_unique<test::TestPredicateWaiter>(base::BindRepeating(
+      []() { return LoginScreenTestApi::IsAuthErrorBubbleShown(); }));
+}
+
+std::unique_ptr<test::TestConditionWaiter> AuthErrorBubbleDismissWaiter() {
+  return std::make_unique<test::TestPredicateWaiter>(base::BindRepeating(
+      []() { return !LoginScreenTestApi::IsAuthErrorBubbleShown(); }));
 }
 
 }  // namespace ash::test

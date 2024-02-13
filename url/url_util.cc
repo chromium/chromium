@@ -297,7 +297,7 @@ bool DoCanonicalize(const CHAR* spec,
   } else {
     // Non-special scheme URLs like data: and javascript:.
     if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
-      ParseNonSpecialURL(spec, spec_len, &parsed_input);
+      ParseNonSpecialURLInternal(spec, spec_len, trim_path_end, &parsed_input);
       success =
           CanonicalizeNonSpecialURL(spec, spec_len, parsed_input,
                                     charset_converter, *output, *output_parsed);
@@ -492,11 +492,15 @@ bool DoReplaceComponents(const char* spec,
     return ReplaceStandardURL(spec, parsed, replacements, scheme_type,
                               charset_converter, output, out_parsed);
   }
-  if (DoCompareSchemeComponent(spec, parsed.scheme, url::kMailToScheme)) {
+  if (!IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+      DoCompareSchemeComponent(spec, parsed.scheme, url::kMailToScheme)) {
     return ReplaceMailtoURL(spec, parsed, replacements, output, out_parsed);
   }
 
-  // Default is a path URL.
+  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+    return ReplaceNonSpecialURL(spec, parsed, replacements, charset_converter,
+                                *output, *out_parsed);
+  }
   return ReplacePathURL(spec, parsed, replacements, output, out_parsed);
 }
 

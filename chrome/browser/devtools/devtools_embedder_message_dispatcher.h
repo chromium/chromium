@@ -17,6 +17,7 @@
 
 struct RegisterOptions;
 struct ImpressionEvent;
+struct ResizeEvent;
 struct ClickEvent;
 struct HoverEvent;
 struct DragEvent;
@@ -107,6 +108,7 @@ class DevToolsEmbedderMessageDispatcher {
                                             double duration) = 0;
     virtual void RecordUserMetricsAction(const std::string& name) = 0;
     virtual void RecordImpression(const ImpressionEvent& event) = 0;
+    virtual void RecordResize(const ResizeEvent& event) = 0;
     virtual void RecordClick(const ClickEvent& event) = 0;
     virtual void RecordHover(const HoverEvent& event) = 0;
     virtual void RecordDrag(const DragEvent& event) = 0;

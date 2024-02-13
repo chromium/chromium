@@ -73,14 +73,6 @@ bool IsAccessibilityExposeHTMLElementEnabled() {
       ::features::kEnableAccessibilityExposeHTMLElement);
 }
 
-BASE_FEATURE(kEnableAccessibilityExposeIgnoredNodes,
-             "AccessibilityExposeIgnoredNodes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityExposeIgnoredNodesEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityExposeIgnoredNodes);
-}
-
 BASE_FEATURE(kEnableAccessibilityLanguageDetection,
              "AccessibilityLanguageDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -187,7 +179,7 @@ bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled() {
 
 BASE_FEATURE(kExperimentalAccessibilityGoogleTtsHighQualityVoices,
              "ExperimentalAccessibilityGoogleTtsHighQualityVoices",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExperimentalAccessibilityGoogleTtsHighQualityVoices);

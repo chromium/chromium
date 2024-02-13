@@ -6,6 +6,7 @@
 #define NET_SOCKET_CONNECT_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -29,7 +30,6 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -254,9 +254,9 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // Returns the `HostResolverEndpointResult` structure corresponding to the
   // chosen route. Should only be called on a successful connect. If the
   // `ConnectJob` does not make DNS queries, or does not use the SVCB/HTTPS
-  // record, it may return `absl::nullopt`, to avoid callers getting confused by
+  // record, it may return `std::nullopt`, to avoid callers getting confused by
   // an empty `IPEndPoint` list.
-  virtual absl::optional<HostResolverEndpointResult>
+  virtual std::optional<HostResolverEndpointResult>
   GetHostResolverEndpointResult() const;
 
   const LoadTimingInfo::ConnectTiming& connect_timing() const {
@@ -299,7 +299,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
   }
 
   void SetSocket(std::unique_ptr<StreamSocket> socket,
-                 absl::optional<std::set<std::string>> dns_aliases);
+                 std::optional<std::set<std::string>> dns_aliases);
   void NotifyDelegateOfCompletion(int rv);
   void NotifyDelegateOfProxyAuth(const HttpResponseInfo& response,
                                  HttpAuthController* auth_controller,

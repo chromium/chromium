@@ -327,23 +327,26 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
     const behavior: IdleBehavior =
         parseInt((event.target as HTMLSelectElement).value, 10);
     this.browserProxy_.setIdleBehavior(behavior, /* whenOnAc */ true);
-    recordSettingChange();
+    recordSettingChange(
+        Setting.kPowerIdleBehaviorWhileCharging, {intValue: behavior});
   }
 
   private onBatteryIdleSelectChange_(event: Event): void {
     const behavior: IdleBehavior =
         parseInt((event.target as HTMLSelectElement).value, 10);
     this.browserProxy_.setIdleBehavior(behavior, /* whenOnAc */ false);
-    recordSettingChange();
+    recordSettingChange(
+        Setting.kPowerIdleBehaviorWhileOnBattery, {intValue: behavior});
   }
 
   private onLidClosedToggleChange_(): void {
     // Other behaviors are only displayed when the setting is controlled, in
     // which case the toggle can't be changed by the user.
+    const enabled = this.$.lidClosedToggle.checked;
     this.browserProxy_.setLidClosedBehavior(
-        this.$.lidClosedToggle.checked ? LidClosedBehavior.SUSPEND :
-                                         LidClosedBehavior.DO_NOTHING);
-    recordSettingChange();
+        enabled ? LidClosedBehavior.SUSPEND : LidClosedBehavior.DO_NOTHING);
+    recordSettingChange(
+        Setting.kSleepWhenLaptopLidClosed, {boolValue: enabled});
   }
 
   private onAdaptiveChargingToggleChange_(): void {

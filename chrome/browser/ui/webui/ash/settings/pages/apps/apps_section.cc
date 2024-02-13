@@ -502,11 +502,11 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
            : IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_DESCRIPTION},
       {"appNotificationsLinkToBrowserSettingsDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TO_BROWSER_SETTINGS_DESCRIPTION},
+      {"appNotificationsRowSublabel",
+       IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION},
       {"appNotificationsCountDescription",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_APP_NOTIFICATIONS_LINK_DESCRIPTION
-           : IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
-      {"appNotificationsDoNotDisturbDescription",
+       IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT},
+      {"appNotificationsDoNotDisturbEnabledDescription",
        IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT},
       {"appBadgingToggleLabel", IDS_SETTINGS_APP_BADGING_TOGGLE_LABEL},
       {"appBadgingToggleSublabel", IDS_SETTINGS_APP_BADGING_TOGGLE_SUBLABEL},

@@ -703,8 +703,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
             if (supported_eotfs_bitfield[entry])
               supported_color_transfer_ids_.insert(kTransferIDMap[entry]);
           }
-          hdr_static_metadata_ =
-              absl::make_optional<gfx::HDRStaticMetadata>({});
+          hdr_static_metadata_ = std::make_optional<gfx::HDRStaticMetadata>({});
           hdr_static_metadata_->supported_eotf_mask =
               base::checked_cast<uint8_t>(supported_eotfs_bitfield.to_ulong());
 

@@ -48,8 +48,8 @@
   config.additional_args.push_back(
       "--enable-features=SearchEngineChoiceTrigger:for_tagged_profiles_only/"
       "false");
-  config.additional_args.push_back("--" +
-                                   std::string(kSearchEngineForceEnabled));
+  config.additional_args.push_back(
+      "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   // Relaunches the app at each test to re-display the choice screen.
   config.relaunch_policy = ForceRelaunchByKilling;
 

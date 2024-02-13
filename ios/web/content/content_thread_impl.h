@@ -20,7 +20,7 @@ class ContentThreadImpl : public WebThread {
       const WebTaskTraits& traits);
   static bool IsThreadInitialized(ID identifier);
   static bool CurrentlyOn(ID identifier);
-  static std::string GetDCheckCurrentlyOnErrorMessage(ID expected);
+  static std::string GetCurrentlyOnErrorMessage(ID expected);
   static bool GetCurrentThreadIdentifier(ID* identifier);
 };
 

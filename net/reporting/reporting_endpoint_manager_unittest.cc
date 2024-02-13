@@ -4,6 +4,7 @@
 
 #include "net/reporting/reporting_endpoint_manager.h"
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -20,7 +21,6 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,7 +56,7 @@ class TestReportingCache : public ReportingCache {
   }
 
   // Everything below is NOTREACHED.
-  void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
+  void AddReport(const std::optional<base::UnguessableToken>& reporting_source,
                  const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& user_agent,

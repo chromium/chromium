@@ -78,7 +78,7 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 // This doesn't necessarily mean the store is being used, e.g. this predicate
 // can return true for a signed-out user. For whether the store can be used,
 // see IsOptedInForAccountStorage() instead.
-// TODO(crbug.com/1509058): Rename IsOptedInForAccountStorage() to
+// TODO(b/324038136): Rename IsOptedInForAccountStorage() to
 // CanUseAccountStore() - there's no opt-in on mobile platforms anyway. Rename
 // CanAccountStorageBeEnabled() and IsUserEligibleForAccountStorage().
 bool CanCreateAccountStore(const PrefService* pref_service);
@@ -170,6 +170,12 @@ PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
 // See PasswordFeatureManager::OptInToAccountStorage.
 void OptInToAccountStorage(PrefService* pref_service,
                            syncer::SyncService* sync_service);
+
+// Opts-out from using account storage for passwords for the
+// current signed-in user (unconsented primary account). Addditionally it sets
+// the default password store to kProfileStore.
+void OptOutOfAccountStorage(PrefService* pref_service,
+                            syncer::SyncService* sync_service);
 
 // Clears the opt-in to using account storage for passwords for the
 // current signed-in user (unconsented primary account), as well as all other

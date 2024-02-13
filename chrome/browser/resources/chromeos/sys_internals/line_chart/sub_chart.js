@@ -230,19 +230,19 @@ export class SubChart {
    */
   renderUnitLabels(context) {
     const /** Array<string> */ labelTexts = this.label_.getLabels();
-    if (labelTexts.length == 0) {
+    if (labelTexts.length === 0) {
       return;
     }
 
     let /** number */ tickStartX;
     let /** number */ tickEndX;
     let /** number */ textXCoord;
-    if (this.labelAlign_ == UnitLabelAlign.LEFT) {
+    if (this.labelAlign_ === UnitLabelAlign.LEFT) {
       context.textAlign = 'left';
       tickStartX = 0;
       tickEndX = Y_AXIS_TICK_LENGTH;
       textXCoord = MIN_LABEL_HORIZONTAL_SPACING;
-    } else if (this.labelAlign_ == UnitLabelAlign.RIGHT) {
+    } else if (this.labelAlign_ === UnitLabelAlign.RIGHT) {
       context.textAlign = 'right';
       tickStartX = this.width_ - 1;
       tickEndX = this.width_ - 1 - Y_AXIS_TICK_LENGTH;

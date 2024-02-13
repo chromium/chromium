@@ -4,7 +4,8 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import {LensErrorType, LensFormElement, LensSubmitType} from 'chrome://new-tab-page/lazy_load.js';
+import type {LensFormElement} from 'chrome://new-tab-page/lazy_load.js';
+import {LensErrorType, LensSubmitType} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('LensFormTest', () => {

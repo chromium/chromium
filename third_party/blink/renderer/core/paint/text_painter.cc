@@ -241,18 +241,45 @@ void TextPainter::Paint(const TextFragmentPaintInfo& fragment_paint_info,
   if (!fragment_paint_info.shape_result) {
     return;
   }
+  DCHECK_LE(fragment_paint_info.from, fragment_paint_info.text.length());
+  DCHECK_LE(fragment_paint_info.to, fragment_paint_info.text.length());
+
   GraphicsContextStateSaver state_saver(graphics_context_, false);
   UpdateGraphicsContext(graphics_context_, text_style, state_saver,
                         shadow_mode);
   // TODO(layout-dev): Handle combine text here or elsewhere.
-  PaintInternalFragment<kPaintText>(fragment_paint_info, node_id,
-                                    auto_dark_mode);
+  if (svg_text_paint_state_.has_value()) {
+    const AutoDarkMode svg_text_auto_dark_mode(
+        DarkModeFilter::ElementRole::kSVG,
+        auto_dark_mode.enabled &&
+            !svg_text_paint_state_->IsRenderingClipPathAsMaskImage());
+    PaintSvgTextFragment(fragment_paint_info, node_id, svg_text_auto_dark_mode);
+  } else {
+    graphics_context_.DrawText(font_, fragment_paint_info,
+                               gfx::PointF(text_origin_), node_id,
+                               auto_dark_mode);
+  }
 
   if (!emphasis_mark_.empty()) {
     if (text_style.emphasis_mark_color != text_style.fill_color)
       graphics_context_.SetFillColor(text_style.emphasis_mark_color);
-    PaintInternalFragment<kPaintEmphasisMark>(fragment_paint_info, node_id,
-                                              auto_dark_mode);
+    graphics_context_.DrawEmphasisMarks(
+        font_, fragment_paint_info, emphasis_mark_,
+        gfx::PointF(text_origin_) + gfx::Vector2dF(0, emphasis_mark_offset_),
+        auto_dark_mode);
+  }
+
+  // TODO(sohom): SubstringContainsOnlyWhitespaceOrEmpty() does not check
+  // for all whitespace characters as defined in the spec definition of
+  // whitespace. See https://w3c.github.io/paint-timing/#non-empty
+  // In particular 0xb and 0xc are not checked.
+  if (!fragment_paint_info.text.SubstringContainsOnlyWhitespaceOrEmpty(
+          fragment_paint_info.from, fragment_paint_info.to)) {
+    graphics_context_.GetPaintController().SetTextPainted();
+  }
+
+  if (!font_.ShouldSkipDrawing()) {
+    PaintTimingDetector::NotifyTextPaint(visual_rect_);
   }
 }
 
@@ -357,47 +384,6 @@ void TextPainter::PaintDecorationLine(
     });
   } else {
     decoration_painter.Paint(line_color, nullptr);
-  }
-}
-
-template <TextPainter::PaintInternalStep step>
-void TextPainter::PaintInternalFragment(
-    const TextFragmentPaintInfo& fragment_paint_info,
-    DOMNodeId node_id,
-    const AutoDarkMode& auto_dark_mode) {
-  DCHECK(fragment_paint_info.from <= fragment_paint_info.text.length());
-  DCHECK(fragment_paint_info.to <= fragment_paint_info.text.length());
-
-  if (step == kPaintEmphasisMark) {
-    graphics_context_.DrawEmphasisMarks(
-        font_, fragment_paint_info, emphasis_mark_,
-        gfx::PointF(text_origin_) + gfx::Vector2dF(0, emphasis_mark_offset_),
-        auto_dark_mode);
-  } else {
-    DCHECK(step == kPaintText);
-    if (svg_text_paint_state_.has_value()) {
-      const AutoDarkMode svg_text_auto_dark_mode(
-          DarkModeFilter::ElementRole::kSVG,
-          auto_dark_mode.enabled &&
-              !svg_text_paint_state_->IsRenderingClipPathAsMaskImage());
-      PaintSvgTextFragment(fragment_paint_info, node_id,
-                           svg_text_auto_dark_mode);
-    } else {
-      graphics_context_.DrawText(font_, fragment_paint_info,
-                                 gfx::PointF(text_origin_), node_id,
-                                 auto_dark_mode);
-    }
-
-    // TODO(sohom): SubstringContainsOnlyWhitespaceOrEmpty() does not check
-    // for all whitespace characters as defined in the spec definition of
-    // whitespace. See https://w3c.github.io/paint-timing/#non-empty
-    // In particular 0xb and 0xc are not checked.
-    if (!fragment_paint_info.text.SubstringContainsOnlyWhitespaceOrEmpty(
-            fragment_paint_info.from, fragment_paint_info.to))
-      graphics_context_.GetPaintController().SetTextPainted();
-
-    if (!font_.ShouldSkipDrawing())
-      PaintTimingDetector::NotifyTextPaint(visual_rect_);
   }
 }
 

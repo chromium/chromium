@@ -37,6 +37,17 @@ const char kAudioMimeType[] = "audio";
 const char kImageMimeType[] = "image";
 const char kVideoMimeType[] = "video";
 
+RecentDriveSource::CallContext::CallContext(GetRecentFilesCallback callback)
+    : callback(std::move(callback)), build_start_time(base::TimeTicks::Now()) {}
+
+RecentDriveSource::CallContext::CallContext(CallContext&& context)
+    : callback(std::move(context.callback)),
+      build_start_time(context.build_start_time),
+      files(std::move(context.files)),
+      search_query(std::move(context.search_query)) {}
+
+RecentDriveSource::CallContext::~CallContext() = default;
+
 RecentDriveSource::RecentDriveSource(Profile* profile, size_t max_files)
     : profile_(profile), max_files_(max_files) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -75,16 +86,16 @@ std::vector<std::string> RecentDriveSource::CreateTypeFilters(
 void RecentDriveSource::GetRecentFiles(Params params,
                                        GetRecentFilesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(files_.empty());
-  DCHECK(build_start_time_.is_null());
 
-  build_start_time_ = base::TimeTicks::Now();
+  auto context = std::make_unique<CallContext>(std::move(callback));
+  CallContext* context_ptr = context.get();
+  context_map_.AddWithID(std::move(context), params.call_id());
 
   auto* integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
   if (!integration_service) {
     // |integration_service| is nullptr if Drive is disabled.
-    OnComplete(std::move(callback));
+    OnComplete(params.call_id());
     return;
   }
 
@@ -108,43 +119,55 @@ void RecentDriveSource::GetRecentFiles(Params params,
     query_params->mime_types = std::move(type_filters);
   }
   integration_service->GetDriveFsInterface()->StartSearchQuery(
-      search_query_.BindNewPipeAndPassReceiver(), std::move(query_params));
-  search_query_->GetNextPage(base::BindOnce(
-      &RecentDriveSource::GotSearchResults, weak_ptr_factory_.GetWeakPtr(),
-      params, std::move(callback)));
+      context_ptr->search_query.BindNewPipeAndPassReceiver(),
+      std::move(query_params));
+  context_ptr->search_query->GetNextPage(
+      base::BindOnce(&RecentDriveSource::GotSearchResults,
+                     weak_ptr_factory_.GetWeakPtr(), params));
 }
 
-void RecentDriveSource::OnComplete(GetRecentFilesCallback callback) {
+std::vector<RecentFile> RecentDriveSource::Stop(const int32_t call_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!build_start_time_.is_null());
+  CallContext* context = context_map_.Lookup(call_id);
+  if (context == nullptr) {
+    return {};
+  }
+  std::vector<RecentFile> files = std::move(context->files);
+  context_map_.Remove(call_id);
+  return files;
+}
+
+void RecentDriveSource::OnComplete(int32_t call_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CallContext* context = context_map_.Lookup(call_id);
+  if (context == nullptr) {
+    return;
+  }
+  DCHECK(!context->build_start_time.is_null());
 
   UMA_HISTOGRAM_TIMES(kLoadHistogramName,
-                      base::TimeTicks::Now() - build_start_time_);
-  build_start_time_ = base::TimeTicks();
-
-  std::vector<RecentFile> files = std::move(files_);
-  files_.clear();
-
-  DCHECK(files_.empty());
-  DCHECK(build_start_time_.is_null());
-
-  std::move(callback).Run(std::move(files));
+                      base::TimeTicks::Now() - context->build_start_time);
+  std::move(context->callback).Run(std::move(context->files));
+  context_map_.Remove(call_id);
 }
 
 void RecentDriveSource::GotSearchResults(
     const Params& params,
-    GetRecentFilesCallback callback,
     drive::FileError error,
     std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
-  search_query_.reset();
-  auto* integration_service =
-      drive::util::GetIntegrationServiceByProfile(profile_);
-  if (!results || !integration_service) {
-    OnComplete(std::move(callback));
+  CallContext* context = context_map_.Lookup(params.call_id());
+  if (context == nullptr) {
     return;
   }
 
-  files_.reserve(results->size());
+  auto* integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile_);
+  if (!results || !integration_service) {
+    OnComplete(params.call_id());
+    return;
+  }
+
+  context->files.reserve(results->size());
   for (auto& result : *results) {
     if (!drivefs::IsAFile(result->metadata->type)) {
       continue;
@@ -153,7 +176,7 @@ void RecentDriveSource::GotSearchResults(
     if (!base::FilePath("/").AppendRelativePath(result->path, &path)) {
       path = path.Append(result->path);
     }
-    files_.emplace_back(
+    context->files.emplace_back(
         params.file_system_context()->CreateCrackedFileSystemURL(
             blink::StorageKey::CreateFirstParty(
                 url::Origin::Create(params.origin())),
@@ -163,7 +186,7 @@ void RecentDriveSource::GotSearchResults(
         // treated as recent files.
         result->metadata->last_viewed_by_me_time);
   }
-  OnComplete(std::move(callback));
+  OnComplete(params.call_id());
 }
 
 }  // namespace ash

@@ -165,6 +165,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
     const GURL& script_source_url,
+    network::mojom::CredentialsMode credentials_mode,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -230,7 +231,10 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       std::make_unique<SharedStorageURLLoaderFactoryProxy>(
           std::move(frame_url_loader_factory),
           url_loader_factory.InitWithNewPipeAndPassReceiver(), frame_origin,
-          script_source_url);
+          script_source_url, credentials_mode,
+          static_cast<RenderFrameHostImpl&>(
+              document_service_->render_frame_host())
+              .ComputeSiteForCookies());
 
   shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
       AccessType::kDocumentAddModule, document_service_->main_frame_id(),
@@ -1080,7 +1084,7 @@ void SharedStorageWorkletHost::ExpireWorklet() {
 
   // This will remove this worklet host from the manager.
   shared_storage_worklet_host_manager_->ExpireWorkletHostForDocumentService(
-      document_service_.get());
+      document_service_.get(), this);
 
   // Do not add code after this. SharedStorageWorkletHost has been destroyed.
 }

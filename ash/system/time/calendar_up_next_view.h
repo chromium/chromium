@@ -18,9 +18,9 @@ namespace ash {
 // events that a user has coming up, either imminently or that are already in
 // progress but not yet finished.
 class ASH_EXPORT CalendarUpNextView : public views::View {
- public:
-  METADATA_HEADER(CalendarUpNextView);
+  METADATA_HEADER(CalendarUpNextView, views::View)
 
+ public:
   CalendarUpNextView(CalendarViewController* calendar_view_controller,
                      views::Button::PressedCallback callback);
   CalendarUpNextView(const CalendarUpNextView& other) = delete;

@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module ash.orca.mojom;
 
@@ -182,8 +182,8 @@ interface EditorEventSink {
 
 // The service uses this interface to tell the browser process to perform some
 // actions.
-[Stable]
-interface TextActuator {
+[Stable, RenamedFrom="ash.orca.mojom.TextActuator"]
+interface SystemActuator {
   // Close the UI and insert `text` into the focused input field.
   InsertText@0(string text);
 
@@ -218,7 +218,7 @@ interface TextQueryProvider {
 [Stable, ServiceSandbox=sandbox.mojom.Sandbox.kIme]
 interface OrcaService {
   BindEditor@0(
-    pending_associated_remote<TextActuator> text_actuator,
+    pending_associated_remote<SystemActuator> system_actuator,
     pending_associated_remote<TextQueryProvider> text_query_provider,
     pending_associated_receiver<EditorClientConnector> client_connector,
     pending_associated_receiver<EditorEventSink> event_sink);

@@ -6,8 +6,11 @@
 #define GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/texture_base.h"
+#include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/gpu_gles2_export.h"
 
 // Forwardly declare a few GL types to avoid including GL header files.
@@ -19,6 +22,8 @@ typedef unsigned int GLuint;
 namespace gpu {
 
 namespace gles2 {
+
+class GLES2DecoderPassthroughImpl;
 
 // An AbstractTexture enables access to GL textures from the GPU process, for
 // things that set up textures using some client's decoder.  Creating an
@@ -41,21 +46,19 @@ class GPU_GLES2_EXPORT AbstractTexture {
  public:
   using CleanupCallback = base::OnceCallback<void(AbstractTexture*)>;
 
+  AbstractTexture(scoped_refptr<TexturePassthrough> texture_passthrough,
+                  GLES2DecoderPassthroughImpl* decoder);
+
   // The texture is guaranteed to be around while |this| exists, as long as
   // the decoder isn't destroyed / context isn't lost.
-  virtual ~AbstractTexture() = default;
+  ~AbstractTexture();
 
   // Return our TextureBase, useful mostly for creating a mailbox.  This may
   // return null if the texture has been destroyed.
-  virtual TextureBase* GetTextureBase() const = 0;
+  TextureBase* GetTextureBase() const;
 
   // Set a texture parameter.  The GL context must be current.
-  virtual void SetParameteri(GLenum pname, GLint param) = 0;
-
-  // Marks the texture as cleared, to help prevent sending an uninitialized
-  // texture to the (untrusted) renderer.  One should call this only when one
-  // has actually initialized the texture.
-  virtual void SetCleared() = 0;
+  void SetParameteri(GLenum pname, GLint param);
 
   // Set a callback that will be called when the AbstractTexture is going to
   // drop its reference to the underlying TextureBase.  We can't guarantee that
@@ -64,12 +67,18 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // AbstractTexture is destroyed, or when our stub is destroyed.  Do not change
   // the current context during this callback.  Also, do not assume that one
   // has a current context.
-  virtual void SetCleanupCallback(CleanupCallback cleanup_callback) = 0;
-
-  // Used to notify the AbstractTexture if the context is lost.
-  virtual void NotifyOnContextLost() = 0;
+  void SetCleanupCallback(CleanupCallback cleanup_callback);
 
   unsigned int service_id() const { return GetTextureBase()->service_id(); }
+
+  // Called when our decoder is going away, so that we can try to clean up.
+  scoped_refptr<TexturePassthrough> OnDecoderWillDestroy();
+
+ private:
+  scoped_refptr<TexturePassthrough> texture_passthrough_;
+  raw_ptr<gl::GLApi> gl_api_;
+  raw_ptr<GLES2DecoderPassthroughImpl> decoder_;
+  CleanupCallback cleanup_cb_;
 };
 
 }  // namespace gles2

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="64">
+  <interface name="zaura_shell" version="65">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -805,7 +805,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="64">
+  <interface name="zaura_toplevel" version="65">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1386,6 +1386,21 @@
       <arg name="lower_right_radius" type="uint"/>
       <arg name="lower_left_radius" type="uint"/>
     </request>
+
+    <!-- Version 65 additions -->
+    <event name="configure_occlusion_state" since="65">
+      <description summary="set the occlusion state during a configure">
+        Sets the occlusion state of this window. This should be called during a
+        configure event sequence. This is used when the occlusion state needs to
+        be set as a synchronized operation, compared to occlusion_state_changed,
+        which is not synchronized. For example, this can be used to mark a
+        window as hidden so it can discard resources. When making it visible
+        again, it may need some time to recreate its buffers, which is why this
+        operation needs to be synchronized.
+      </description>
+      <arg name="mode" type="uint" enum="occlusion_state"/>
+    </event>
+
   </interface>
 
   <interface name="zaura_popup" version="46">
@@ -1456,6 +1471,9 @@
 
   <interface name="zaura_output_manager" version="3">
     <description summary="aura shell interface to the output manager">
+      [Deprecated] Deprecated since M122. See the zaura_output_manager_v2
+      interface.
+
       A global responsible for ensuring clients have a complete view of a given
       output's state immediately following the bind of wl_output, and
       subsequently as needed.

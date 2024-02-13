@@ -190,6 +190,10 @@ void TestRenderWidgetHostView::ShowSharePicker(
     const std::string& url,
     const std::vector<std::string>& file_paths,
     blink::mojom::ShareService::ShareCallback callback) {}
+
+uint64_t TestRenderWidgetHostView::GetNSViewId() const {
+  return 0;
+}
 #endif
 
 gfx::Rect TestRenderWidgetHostView::GetBoundsInRootWindow() {

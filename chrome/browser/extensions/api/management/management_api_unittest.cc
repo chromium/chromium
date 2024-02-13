@@ -43,6 +43,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -101,7 +102,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 
   // Runs the management.setEnabled() function to enable an extension.
   bool RunSetEnabledFunction(content::WebContents* web_contents,
-                             const std::string& extension_id,
+                             const ExtensionId& extension_id,
                              bool use_user_gesture,
                              bool accept_dialog,
                              std::string* error,
@@ -139,7 +140,7 @@ bool ManagementApiUnitTest::RunFunction(
 
 bool ManagementApiUnitTest::RunSetEnabledFunction(
     content::WebContents* web_contents,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool use_user_gesture,
     bool accept_dialog,
     std::string* error,
@@ -192,7 +193,7 @@ TEST_F(ManagementApiUnitTest, ManagementSetEnabled) {
   scoped_refptr<const Extension> source_extension =
       ExtensionBuilder("Test").Build();
   service()->AddExtension(source_extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
   function->set_extension(source_extension);
 
@@ -258,7 +259,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyDisabling) {
   auto extension_can_disable_extension =
       [this](scoped_refptr<const Extension> source_extension,
              scoped_refptr<const Extension> target_extension) {
-        std::string id = target_extension->id();
+        const ExtensionId& id = target_extension->id();
         base::Value::List args;
         args.Append(id);
         args.Append(false /* disable the extension */);
@@ -313,7 +314,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
   auto extension_can_enable_extension =
       [this, component](scoped_refptr<const Extension> source_extension,
                         scoped_refptr<const Extension> target_extension) {
-        std::string id = target_extension->id();
+        const ExtensionId& id = target_extension->id();
         base::Value::List args;
         args.Append(id);
         args.Append(true /* enable the extension */);
@@ -345,7 +346,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
   // we would get from the extension management page.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
 
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
@@ -440,7 +441,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
       ExtensionBuilder("Test").SetID(extensions::kWebStoreAppId).Build();
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
@@ -501,7 +502,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallWebstoreHostedApp) {
 TEST_F(ManagementApiUnitTest, ManagementUninstallNewWebstore) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
@@ -543,7 +544,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
       ExtensionBuilder("Triggering Extension").SetID("123").Build();
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   base::Value::List uninstall_args;
   uninstall_args.Append(extension->id());
   base::HistogramTester tester;
@@ -582,7 +583,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallProgramatic) {
 TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string id = extension->id();
+  const ExtensionId& id = extension->id();
 
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
@@ -601,7 +602,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallBlocklisted) {
 TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
   service()->AddExtension(extension.get());
-  std::string id = extension->id();
+  const ExtensionId& id = extension->id();
 
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
@@ -765,7 +766,7 @@ TEST_F(ManagementApiUnitTest, SetEnabledAfterIncreasedPermissions) {
   ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
 
   // Save the id, as |extension| will be destroyed during updating.
-  std::string extension_id = extension->id();
+  ExtensionId extension_id = extension->id();
 
   std::unique_ptr<const PermissionSet> known_perms =
       prefs->GetGrantedPermissions(extension_id);
@@ -876,13 +877,13 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
     return nullptr;
   }
   void EnableExtension(content::BrowserContext* context,
-                       const std::string& extension_id) const override {
+                       const ExtensionId& extension_id) const override {
     ++enable_count_;
   }
   void DisableExtension(
       content::BrowserContext* context,
       const Extension* source_extension,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       disable_reason::DisableReason disable_reason) const override {}
   std::unique_ptr<UninstallDialogDelegate> UninstallFunctionDelegate(
       ManagementUninstallFunctionBase* function,
@@ -891,7 +892,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
     return nullptr;
   }
   bool UninstallExtension(content::BrowserContext* context,
-                          const std::string& transient_extension_id,
+                          const ExtensionId& transient_extension_id,
                           UninstallReason reason,
                           std::u16string* error) const override {
     return true;
@@ -903,7 +904,7 @@ class TestManagementAPIDelegate : public ManagementAPIDelegate {
     return true;
   }
   void SetLaunchType(content::BrowserContext* context,
-                     const std::string& extension_id,
+                     const ExtensionId& extension_id,
                      LaunchType launch_type) const override {}
 
   std::unique_ptr<AppForLinkDelegate> GenerateAppForLinkFunctionDelegate(
@@ -1098,7 +1099,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
   ASSERT_TRUE(extension);
   // The extension should be installed but disabled.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
-  const std::string extension_id = extension->id();
+  const ExtensionId& extension_id = extension->id();
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(prefs->HasDisableReason(
       extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
@@ -1148,7 +1149,7 @@ TEST_F(ManagementApiSupervisedUserTest, SetEnabled_AfterIncreasedPermissions) {
   // The extension should be installed but disabled pending custodian approval.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   // Save the id, as |extension| will be destroyed during updating.
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   // Simulate parent approval for the extension installation.
   GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
@@ -1233,7 +1234,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   // The extension should be installed but disabled pending custodian approval.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   // Save the id, as |extension| will be destroyed during updating.
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   // Simulate parent approval for the extension installation.
   GetSupervisedUserExtensionsDelegate()->AddExtensionApproval(*extension);
@@ -1315,7 +1316,7 @@ TEST_F(ManagementApiSupervisedUserTest,
   // The extension should be installed but disabled pending custodian approval.
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
   // Save the id, as |extension| will be destroyed during updating.
-  const std::string extension_id = extension->id();
+  const ExtensionId extension_id = extension->id();
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   std::unique_ptr<const PermissionSet> known_perms =

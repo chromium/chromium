@@ -96,9 +96,6 @@ namespace fileManagerPrivateInternal {
     [supportsPromises] static void computeChecksum(
         DOMString url,
         ComputeChecksumCallback callback);
-    [supportsPromises] static void getMimeType(
-        DOMString url,
-        GetMimeTypeCallback callback);
     [supportsPromises] static void getContentMimeType(
         DOMString blobUUID,
         GetContentMimeTypeCallback callback);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -16,6 +17,7 @@
 #include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/text_elider.h"
 
@@ -61,19 +63,15 @@ jboolean JNI_PwaBottomSheetController_RequestOrExpandBottomSheetInstaller(
 // static
 bool PwaBottomSheetController::MaybeShow(
     content::WebContents* web_contents,
-    const std::u16string& app_name,
-    const SkBitmap& primary_icon,
-    const bool is_primary_icon_maskable,
-    const GURL& start_url,
-    const std::vector<Screenshot>& screenshots,
-    const std::u16string& description,
+    const WebAppBannerData& web_app_banner_data,
     bool expand_sheet,
-    std::unique_ptr<AddToHomescreenParams> a2hs_params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
-        a2hs_event_callback) {
-  if (!CanShowBottomSheet(web_contents, screenshots))
+        a2hs_event_callback,
+    std::unique_ptr<AddToHomescreenParams> a2hs_params) {
+  if (!CanShowBottomSheet(web_contents, web_app_banner_data.screenshots)) {
     return false;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   if (Java_PwaBottomSheetControllerProvider_doesBottomSheetExist(
@@ -86,33 +84,20 @@ bool PwaBottomSheetController::MaybeShow(
     // sheets can be shown (otherwise an infobar is used and this class is no
     // longer needed).
     PwaBottomSheetController* controller = new PwaBottomSheetController(
-        app_name, primary_icon, is_primary_icon_maskable, start_url,
-        screenshots,
-        gfx::TruncateString(description, webapps::kMaximumDescriptionLength,
-                            gfx::CHARACTER_BREAK),
-        std::move(a2hs_params), std::move(a2hs_event_callback));
+        web_app_banner_data, std::move(a2hs_params),
+        std::move(a2hs_event_callback));
     controller->ShowBottomSheetInstaller(web_contents, expand_sheet);
   }
   return true;
 }
 
 PwaBottomSheetController::PwaBottomSheetController(
-    const std::u16string& app_name,
-    const SkBitmap& primary_icon,
-    const bool is_primary_icon_maskable,
-    const GURL& start_url,
-    const std::vector<Screenshot>& screenshots,
-    const std::u16string& description,
+    const WebAppBannerData& web_app_banner_data,
     std::unique_ptr<AddToHomescreenParams> a2hs_params,
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
         a2hs_event_callback)
-    : app_name_(app_name),
-      primary_icon_(primary_icon),
-      is_primary_icon_maskable_(is_primary_icon_maskable),
-      start_url_(start_url),
-      screenshots_(screenshots),
-      description_(description),
+    : web_app_banner_data_(web_app_banner_data),
       a2hs_params_(std::move(a2hs_params)),
       a2hs_event_callback_(a2hs_event_callback) {}
 
@@ -169,23 +154,29 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
     bool expand_sheet) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_user_title =
-      ConvertUTF16ToJavaString(env, app_name_);
+      ConvertUTF16ToJavaString(env, web_app_banner_data_.GetAppName());
   // Trim down the app URL to the origin. Elide cryptographic schemes so HTTP
   // is still shown.
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
-               *start_url_, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+               web_app_banner_data_.manifest().start_url,
+               url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+
+  std::u16string elided_description = gfx::TruncateString(
+      web_app_banner_data_.manifest().description.value_or(u""),
+      webapps::kMaximumDescriptionLength, gfx::CHARACTER_BREAK);
   ScopedJavaLocalRef<jstring> j_description =
-      ConvertUTF16ToJavaString(env, description_);
+      ConvertUTF16ToJavaString(env, elided_description);
 
   ScopedJavaLocalRef<jobject> j_bitmap =
-      gfx::ConvertToJavaBitmap(primary_icon_);
+      gfx::ConvertToJavaBitmap(web_app_banner_data_.primary_icon);
 
   Java_PwaBottomSheetControllerProvider_showPwaBottomSheetInstaller(
       env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
-      j_bitmap, is_primary_icon_maskable_, j_user_title, j_url, j_description);
+      j_bitmap, web_app_banner_data_.has_maskable_primary_icon, j_user_title,
+      j_url, j_description);
 
-  for (const auto& screenshot : *screenshots_) {
+  for (const auto& screenshot : web_app_banner_data_.screenshots) {
     if (!screenshot.image.isNull())
       UpdateScreenshot(screenshot.image, web_contents);
   }

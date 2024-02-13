@@ -781,8 +781,9 @@ test("gpu_unittests") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (is_chromeos) {
-    deps += [ "//ui/gfx/linux:gbm" ]
+  if (is_ios) {
+    bundle_deps =
+        [ "//testing/buildbot/filters:gpu_unittests_filters_bundle_data" ]
   }
 }
 

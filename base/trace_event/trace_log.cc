@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -29,7 +30,6 @@
 #include "base/process/process_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
@@ -2012,7 +2012,7 @@ void TraceLog::AddMetadataEventsWhileLocked() {
 #endif
 
   if (!process_labels_.empty()) {
-    std::vector<base::StringPiece> labels;
+    std::vector<std::string_view> labels;
     for (const auto& it : process_labels_)
       labels.push_back(it.second);
     AddMetadataEventWhileLocked(current_thread_id, "process_labels", "labels",

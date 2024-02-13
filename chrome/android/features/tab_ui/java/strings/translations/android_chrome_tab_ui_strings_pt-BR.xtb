@@ -3,10 +3,13 @@
 <translationbundle lang="pt-BR">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> das suas guias não foram usadas recentemente. Fechar todas elas?</translation>
 <translation id="1155815720264022949">Quer fechar as guias antigas?</translation>
+<translation id="1197088940767939838">Laranja</translation>
 <translation id="1215127405478249895">Confira as guias</translation>
 <translation id="125153950246128346">Toque para ver outra guia</translation>
 <translation id="1326271443836399892">Revise as configurações atuais de organização.</translation>
 <translation id="1499635324672558517">Fechar todas as guias anônimas?</translation>
+<translation id="1555130319947370107">Azul</translation>
+<translation id="161042844686301425">Ciano</translation>
 <translation id="1657719826150349398">Mover guia para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia selecionada aos favoritos}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia selecionada aos favoritos}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias selecionadas aos favoritos}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar guia}one{Agrupar guia}other{Agrupar guias}}</translation>
 <translation id="3996880007329611795">Receber notificações</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
+<translation id="4159784952369912983">Roxo</translation>
 <translation id="4212246570487010370">Continuar navegando</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4648718555153979859">Suas guias são agrupadas aqui</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">O título é obrigatório</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Você tem <ph name="TABS_COUNT_ONE" /> guia que não usou recentemente}one{Você tem <ph name="TABS_COUNT_MANY" /> guia que não usou recentemente}other{Você tem <ph name="TABS_COUNT_MANY" /> guias que não usou recentemente}}</translation>
 <translation id="5339733443032484186">Sua última guia</translation>
+<translation id="5400836586163650660">Cinza</translation>
 <translation id="5490235265819901748">Grupo de guias expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5545379293264651575">Fechar sem revisar</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Receber alertas de reduções no preço?</translation>
 <translation id="58326064309361797">Arraste as guias para agrupá-las</translation>
 <translation id="5846292395804797011">Fechar grupo "<ph name="TITLE_OF_GROUP" />" com <ph name="NUMBER_OF_TABS" /> guias</translation>
+<translation id="5901630391730855834">Amarelo</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
+<translation id="6017514345406065928">Verde</translation>
 <translation id="6054741997831917303">O preço deste item caiu de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecionar guias</translation>
 <translation id="6228793724645064692">(nota da loja)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Colocar <ph name="TABS_COUNT_ONE" /> guia selecionada no grupo}one{Colocar <ph name="TABS_COUNT_MANY" /> guia selecionada no grupo}other{Colocar <ph name="TABS_COUNT_MANY" /> guias selecionadas no grupo}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_ONE" /> avaliação}one{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliação}other{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliações}}</translation>
 <translation id="7885132941432959125">Mover guia para a direita</translation>
+<translation id="7942349550061667556">Vermelho</translation>
 <translation id="7966321538264951561">Dispensar as sugestões.</translation>
 <translation id="8029301326595421733">As informações sobre a loja estão abertas no tamanho máximo</translation>
 <translation id="8205266828577616993">Mover guia para cima</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Adicionar nova guia ao grupo</translation>
 <translation id="955558140275419384">Acesse este editor para revisar todas as guias arquivadas para melhor organização.</translation>
 <translation id="959682366969460160">Organize-se</translation>
+<translation id="992256792861109788">Rosa</translation>
 </translationbundle>

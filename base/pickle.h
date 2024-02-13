@@ -276,6 +276,10 @@ class BASE_EXPORT Pickle {
     return reinterpret_cast<const char*>(header_) + header_size_;
   }
 
+  base::span<const uint8_t> payload_bytes() const {
+    return base::as_bytes(base::make_span(payload(), payload_size()));
+  }
+
   // Returns the address of the byte immediately following the currently valid
   // header + payload.
   const char* end_of_payload() const {

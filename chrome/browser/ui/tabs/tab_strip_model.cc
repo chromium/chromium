@@ -95,8 +95,8 @@ class RenderWidgetHostVisibilityTracker;
 class ReentrancyCheck {
  public:
   explicit ReentrancyCheck(bool* guard_flag) : guard_flag_(guard_flag) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK(!*guard_flag_);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M126);
+    CHECK(!*guard_flag_, base::NotFatalUntil::M126);
     *guard_flag_ = true;
   }
 

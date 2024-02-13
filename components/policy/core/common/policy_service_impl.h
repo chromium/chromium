@@ -165,7 +165,8 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // Set of providers that have a pending update that was triggered by a
   // call to RefreshPolicies().
-  std::set<ConfigurationPolicyProvider*> refresh_pending_;
+  std::set<raw_ptr<ConfigurationPolicyProvider, SetExperimental>>
+      refresh_pending_;
 
   // List of callbacks to invoke once all providers refresh after a
   // RefreshPolicies() call.
@@ -181,7 +182,8 @@ class POLICY_EXPORT PolicyServiceImpl
   // Note that this is intentionally a set - if multiple updates from the same
   // provider come in faster than they can be processed, they should only
   // trigger one notification to |provider_update_observers_|.
-  std::set<ConfigurationPolicyProvider*> provider_update_pending_;
+  std::set<raw_ptr<ConfigurationPolicyProvider, SetExperimental>>
+      provider_update_pending_;
 
   // If this is true, IsInitializationComplete should be returning false for all
   // policy domains because the owner of this PolicyService is delaying the

@@ -6,12 +6,12 @@
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_PROPERTY_NODE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ui {
 
@@ -90,11 +90,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPropertyNode final {
   bool IsTarget() const { return !!next; }
   bool IsArray() const;
   bool IsDict() const;
-  absl::optional<int> AsInt() const;
+  std::optional<int> AsInt() const;
   std::string AsString() const;
   const AXPropertyNode* FindKey(const char* refkey) const;
-  absl::optional<std::string> FindStringKey(const char* refkey) const;
-  absl::optional<int> FindIntKey(const char* key) const;
+  std::optional<std::string> FindStringKey(const char* refkey) const;
+  std::optional<int> FindIntKey(const char* key) const;
 
   // Returns a string representation of the node.
   std::string ToString() const;

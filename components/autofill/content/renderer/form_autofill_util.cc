@@ -20,7 +20,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
@@ -1354,7 +1353,6 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     if (form_element.IsNull()) {
       DCHECK(form.renderer_id.is_null());
       DCHECK(form.main_frame_origin.opaque());
-      form.is_form_tag = false;
       form.is_action_empty = true;
       return form;
     }
@@ -1491,12 +1489,6 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
                        form.fields.size() < kMaxExtractableFields;
   if (!success) {
     return std::nullopt;
-  }
-  if (base::flat_set<FieldRendererId> field_ids =
-          base::MakeFlatSet<FieldRendererId>(form.fields, {},
-                                             &FormFieldData::renderer_id);
-      field_ids.size() != form.fields.size()) {
-    DumpWithoutCrashingForDuplicateIds(form);
   }
   return form;
 }
@@ -2158,7 +2150,6 @@ std::optional<FormData> FindFormForContentEditable(
   form.name_attribute = GetAttribute<kName>(content_editable).Utf16();
   form.name =
       !form.id_attribute.empty() ? form.id_attribute : form.name_attribute;
-  form.is_form_tag = false;
   form.is_action_empty = true;
   form.fields.emplace_back();
 
@@ -2216,11 +2207,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFormAction(
   if (!IsElementInControlElementSet(initiating_element, control_elements)) {
     return {};
   }
-  const bool num_elements_matches_num_fields =
-      control_elements.size() == fields.size();
-  UMA_HISTOGRAM_BOOLEAN("Autofill.NumElementsMatchesNumFields",
-                        num_elements_matches_num_fields);
-
   // This is the focused element that led to the filling. It might not exist in
   // scenarios like refills where no element is focused, but if it is then it
   // needs special treatment. See intended behavior comment below.

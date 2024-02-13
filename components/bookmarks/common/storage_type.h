@@ -10,6 +10,7 @@ namespace bookmarks {
 // Defines the data storage strategy used by a BookmarkModel.
 // Do not change the explicitly set values. This enum is saved in preference
 // kIosBookmarkLastUsedStorageReceivingBookmarks.
+// TODO(crbug.com/41493391): Move definition to ios/ as it isn't used outside.
 enum class StorageType {
   // Local storage indicates that the data in the BookmarkModel can't be
   // explicitly attributed to an account and the behavior depends on the state

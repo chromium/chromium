@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 @protocol ApplicationCommands;
-@protocol ApplicationSettingsCommands;
+@protocol SettingsCommands;
 @protocol BrowsingDataCommands;
 class Browser;
 class ChromeBrowserState;
@@ -37,7 +37,7 @@ class ChromeBrowserState;
     initWithBrowserState:(ChromeBrowserState*)browserState
               sceneState:(SceneState*)sceneState
      applicationEndpoint:(id<ApplicationCommands>)applicationEndpoint
-        settingsEndpoint:(id<ApplicationSettingsCommands>)settingsEndpoint
+        settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
     browsingDataEndpoint:(id<BrowsingDataCommands>)browsingDataEndpoint
     NS_DESIGNATED_INITIALIZER;
 

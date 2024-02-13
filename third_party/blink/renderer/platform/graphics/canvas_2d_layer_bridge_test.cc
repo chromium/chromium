@@ -30,6 +30,8 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/base/features.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/test/paint_image_matchers.h"
@@ -40,6 +42,7 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -1103,6 +1106,33 @@ TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasNotCompositedIfNotImageChromium) {
   DrawSomething(bridge.get());
   EXPECT_FALSE(Host()->IsComposited());
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
+}
+
+TEST_F(Canvas2DLayerBridgeTest, PushPropertiesAfterVisibilityChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kClearCanvasResourcesInBackground},
+                                {features::kCanvas2DHibernation});
+
+  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
+  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
+                                     ->ContextProvider()
+                                     ->GetCapabilities())
+      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
+
+  std::unique_ptr<Canvas2DLayerBridge> bridge =
+      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
+  cc::PaintFlags flags;
+  Canvas().drawLine(0, 0, 2, 2, flags);
+  DrawSomething(bridge.get());
+
+  Host()->SetPageVisible(false);
+  // TODO(crbug.com/1476964): Remove this when done refactoring.
+  bridge->PageVisibilityChanged();
+  EXPECT_FALSE(Host()->CcLayer()->needs_set_resource_for_testing());
+
+  Host()->SetPageVisible(true);
+  bridge->PageVisibilityChanged();
+  EXPECT_TRUE(Host()->CcLayer()->needs_set_resource_for_testing());
 }
 
 }  // namespace blink

@@ -148,7 +148,7 @@ void BluetoothRemoteGattDescriptorMac::DidUpdateValueForDescriptor(
   }
   DVLOG(1) << *this << ": Value read.";
   value_ = VectorValueFromObjC([cb_descriptor_ value]);
-  std::move(read_value_callback_).Run(/*error_code=*/absl::nullopt, value_);
+  std::move(read_value_callback_).Run(/*error_code=*/std::nullopt, value_);
 }
 
 void BluetoothRemoteGattDescriptorMac::DidWriteValueForDescriptor(

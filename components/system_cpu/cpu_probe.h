@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 
 namespace system_cpu {
 
@@ -36,8 +36,7 @@ namespace system_cpu {
 // Instances are not thread-safe and should be used on the same sequence.
 class CpuProbe {
  public:
-  using SampleCallback =
-      base::OnceCallback<void(std::optional<PressureSample>)>;
+  using SampleCallback = base::OnceCallback<void(std::optional<CpuSample>)>;
 
   // Instantiates the CpuProbe subclass most suitable for the current platform.
   //
@@ -78,20 +77,20 @@ class CpuProbe {
  private:
   // Called with the result of an Update() triggered by StartSampling(). Will do
   // some bookkeeping and then call `started_callback`, ignoring the
-  // PressureSample.
+  // CpuSample.
   void OnSamplingStarted(base::OnceClosure started_callback,
-                         std::optional<PressureSample>);
+                         std::optional<CpuSample>);
 
   // Called with the result of an Update() triggered by RequestSample(). Will do
   // some bookkeeping and then pass `sample` to `callback`.
-  void OnPressureSampleAvailable(SampleCallback callback,
-                                 std::optional<PressureSample> sample);
+  void OnSampleAvailable(SampleCallback callback,
+                         std::optional<CpuSample> sample);
 
   // True if the CpuProbe state will be reported after the next update.
   //
-  // The PressureSample reported by many CpuProbe implementations relies
+  // The CpuSample reported by many CpuProbe implementations relies
   // on the differences observed between two Update() calls. For this reason,
-  // the PressureSample reported after a first Update() call is not
+  // the CpuSample reported after a first Update() call is not
   // reported via the SampleCallback.
   bool got_probe_baseline_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };

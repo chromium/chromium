@@ -19,8 +19,6 @@ class DeviceOwnershipWaiter {
   // Delays execution of `callback` until the device owner is initialized in
   // `UserManager`. The delay is skipped (and the callback invoked immediately)
   // in the following cases:
-  // - we are launching at the login screen: The device owner might not be
-  //   determined yet.
   // - this is a guest session: Guest sessions can occur before the initial OOBE
   //   and are by design without an owner.
   // - this is a demo mode session: Same as guest session.
@@ -36,8 +34,9 @@ class DeviceOwnershipWaiter {
   // - this is a kiosk session: Currently kiosk sessions are only allowed after
   //   enterprise enrollment, which similar to MGS, establishes device
   //   ownership.
-  virtual void WaitForOwnershipFetched(base::OnceClosure callback,
-                                       bool launching_at_login_screen) = 0;
+  //
+  // This must be called after login.
+  virtual void WaitForOwnershipFetched(base::OnceClosure callback) = 0;
 };
 
 }  // namespace crosapi

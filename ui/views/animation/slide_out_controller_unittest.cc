@@ -49,10 +49,10 @@ class TestSlideOutControllerDelegate : public SlideOutControllerDelegate {
     slide_started_count_ = 0;
     slide_changed_count_ = 0;
     slide_out_count_ = 0;
-    slide_changed_last_value_ = absl::nullopt;
+    slide_changed_last_value_ = std::nullopt;
   }
 
-  absl::optional<bool> slide_changed_last_value_;
+  std::optional<bool> slide_changed_last_value_;
   int slide_started_count_ = 0;
   int slide_changed_count_ = 0;
   int slide_out_count_ = 0;

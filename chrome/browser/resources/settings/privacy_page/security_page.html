@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared">
+    <style include="cr-shared-style settings-shared settings-columned-section">
       img {
         width: 100%;
       }
@@ -19,28 +19,6 @@
 
       .bullet-line > div {
         padding-inline-start: var(--cr-radio-button-size);
-      }
-
-      #enhancedProtectionDescContainer {
-        display: flex;
-      }
-
-      #learnMoreLabelContainer {
-        padding-top: 10px;
-      }
-
-      #thingsToConsiderContainer {
-        padding-left: 10px;
-      }
-
-      #whenOnContainer {
-        padding-right: 5px;
-      }
-
-      :is(#whenOnContainer, #thingsToConsiderContainer) > .bullet-line {
-        padding-top: 10px;
-        align-items: flex-start;
-        min-height: 30px;
       }
 
       settings-collapse-radio-button:not(:first-of-type) {
@@ -140,61 +118,74 @@
             </div>
           </template>
           <template is="dom-if" if="[[enableFriendlierSafeBrowsingSettings_]]">
-            <div id="enhancedProtectionDescContainer"
-              slot="collapse">
-              <div id="whenOnContainer">
-                <div class="">$i18n{safeBrowsingEnhancedWhenOnLabel}</div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:data"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulOne}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:download"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulTwo}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:gshield"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulThree}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings:language"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulFour}
-                  </div>
-                </div>
-                <div class="bullet-line last-collapse-item">
-                  <iron-icon icon="settings20:vpn-key-new"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedWhenOnBulFive}
-                  </div>
-                </div>
+            <div id="enhancedProtectionDescContainer" slot="collapse"
+                class="settings-columned-section">
+              <div class="column">
+                <h3 class="description-header">
+                  $i18n{safeBrowsingEnhancedWhenOnLabel}
+                </h3>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <iron-icon icon="settings20:data" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulOne}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:download" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulTwo}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:gshield" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulThree}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings:language" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulFour}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:vpn-key-new" aria-hidden="true">
+                    </iron-icon>
+                    <div class="secondary">
+                      $i18n{safeBrowsingEnhancedWhenOnBulFive}
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <div id="thingsToConsiderContainer">
-                <div>$i18n{safeBrowsingEnhancedThingsToConsiderLabel}</div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:link"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedThingsToConsiderBulOne}
-                  </div>
-                </div>
-                <div class="bullet-line">
-                  <iron-icon icon="settings20:account-circle"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedThingsToConsiderBulTwo}
-                  </div>
-                </div>
-                <div class="bullet-line last-collapse-item">
-                  <iron-icon icon="settings:performance"></iron-icon>
-                  <div class="cr-secondary-text">
-                    $i18n{safeBrowsingEnhancedThingsToConsiderBulThree}
-                  </div>
-                </div>
+              <div class="column">
+                <h3 class="description-header">
+                  $i18n{safeBrowsingEnhancedThingsToConsiderLabel}
+                </h3>
+                <ul class="icon-bulleted-list">
+                  <li>
+                    <iron-icon icon="settings20:link"></iron-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulOne}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings20:account-circle"></iron-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulTwo}
+                    </div>
+                  </li>
+                  <li>
+                    <iron-icon icon="settings:performance"></iron-icon>
+                    <div class="cr-secondary-text">
+                      $i18n{safeBrowsingEnhancedThingsToConsiderBulThree}
+                    </div>
+                  </li>
+                </ul>
                 <div id="learnMoreLabelContainer" class="cr-secondary-text">
                   $i18nRaw{enhancedProtectionLearnMoreLabel}
                 </div>

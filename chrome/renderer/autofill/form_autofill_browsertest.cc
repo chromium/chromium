@@ -5633,7 +5633,7 @@ TEST_F(FormAutofillTest, FormCache_ExtractNewForms) {
     std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     EXPECT_EQ(test_case.number_of_extracted_forms, forms.size());
     if (!forms.empty())
-      EXPECT_EQ(test_case.is_form_tag, forms.back().is_form_tag);
+      EXPECT_EQ(test_case.is_form_tag, !forms.back().renderer_id.is_null());
   }
 }
 

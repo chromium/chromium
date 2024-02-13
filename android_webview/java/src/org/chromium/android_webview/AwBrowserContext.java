@@ -207,11 +207,6 @@ public class AwBrowserContext implements BrowserContextHandle {
         return sInstance;
     }
 
-    // See comments in WebViewChromiumFactoryProvider for details.
-    public void setWebLayerRunningInSameProcess() {
-        AwBrowserContextJni.get().setWebLayerRunningInSameProcess(mNativeAwBrowserContext);
-    }
-
     public void clearPersistentOriginTrialStorageForTesting() {
         AwBrowserContextJni.get()
                 .clearPersistentOriginTrialStorageForTesting(mNativeAwBrowserContext);
@@ -264,8 +259,6 @@ public class AwBrowserContext implements BrowserContextHandle {
         String getDefaultContextRelativePath();
 
         long getQuotaManagerBridge(long nativeAwBrowserContext);
-
-        void setWebLayerRunningInSameProcess(long nativeAwBrowserContext);
 
         String[] updateServiceWorkerXRequestedWithAllowListOriginMatcher(
                 long nativeAwBrowserContext, String[] rules);

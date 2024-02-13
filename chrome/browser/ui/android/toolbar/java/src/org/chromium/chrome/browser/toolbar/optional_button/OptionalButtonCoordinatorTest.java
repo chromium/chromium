@@ -9,6 +9,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.function.BooleanSupplier;
 
@@ -64,6 +66,7 @@ public class OptionalButtonCoordinatorTest {
     @Mock private Tracker mMockTracker;
 
     @Captor ArgumentCaptor<Callback<Integer>> mCallbackArgumentCaptor;
+    @Captor ArgumentCaptor<ViewRectProvider> mViewRectProviderCaptor;
 
     OptionalButtonCoordinator mOptionalButtonCoordinator;
 
@@ -184,7 +187,7 @@ public class OptionalButtonCoordinatorTest {
     }
 
     @Test
-    public void testUpdateButton() {
+    public void testUpdateButton_backgroundVisible() {
         Drawable iconDrawable = mock(Drawable.class);
         OnClickListener clickListener = view -> {};
         IPHCommandBuilder mockIphCommandBuilder = mock(IPHCommandBuilder.class);
@@ -203,11 +206,55 @@ public class OptionalButtonCoordinatorTest {
                         /* tooltipTextResId= */ Resources.ID_NULL,
                         /* showHoverHighlight= */ false);
 
+        View backgroundView = Mockito.mock(View.class);
+        doReturn(View.VISIBLE).when(backgroundView).getVisibility();
+        doReturn(backgroundView).when(mMockOptionalButtonView).getBackgroundView();
+
         mOptionalButtonCoordinator.updateButton(buttonData);
 
         // IPH command builder must be populated with view specific properties.
-        verify(mockIphCommandBuilder).setAnchorView(any());
-        verify(mockIphCommandBuilder).setViewRectProvider(any());
+        verify(mockIphCommandBuilder).setAnchorView(eq(backgroundView));
+        verify(mockIphCommandBuilder).setViewRectProvider(mViewRectProviderCaptor.capture());
+        assertEquals(backgroundView, mViewRectProviderCaptor.getValue().getViewForTesting());
+        verify(mockIphCommandBuilder).setHighlightParams(any());
+        verify(mockIphCommandBuilder).setOnShowCallback(any());
+        verify(mockIphCommandBuilder).setOnDismissCallback(any());
+        verifyNoMoreInteractions(mockIphCommandBuilder);
+
+        verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+    }
+
+    @Test
+    public void testUpdateButton_backgroundGone() {
+        Drawable iconDrawable = mock(Drawable.class);
+        OnClickListener clickListener = view -> {};
+        IPHCommandBuilder mockIphCommandBuilder = mock(IPHCommandBuilder.class);
+        String contentDescription = "description";
+        boolean isEnabled = true;
+        ButtonData buttonData =
+                new ButtonDataImpl(
+                        /* canShow= */ true,
+                        iconDrawable,
+                        clickListener,
+                        contentDescription,
+                        /* supportsTinting= */ true,
+                        mockIphCommandBuilder,
+                        /* isEnabled= */ isEnabled,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
+
+        View backgroundView = Mockito.mock(View.class);
+        doReturn(View.GONE).when(backgroundView).getVisibility();
+        doReturn(backgroundView).when(mMockOptionalButtonView).getBackgroundView();
+
+        mOptionalButtonCoordinator.updateButton(buttonData);
+
+        // IPH command builder must be populated with view specific properties.
+        verify(mockIphCommandBuilder).setAnchorView(eq(mMockOptionalButtonView));
+        verify(mockIphCommandBuilder).setViewRectProvider(mViewRectProviderCaptor.capture());
+        assertEquals(
+                mMockOptionalButtonView, mViewRectProviderCaptor.getValue().getViewForTesting());
         verify(mockIphCommandBuilder).setHighlightParams(any());
         verify(mockIphCommandBuilder).setOnShowCallback(any());
         verify(mockIphCommandBuilder).setOnDismissCallback(any());

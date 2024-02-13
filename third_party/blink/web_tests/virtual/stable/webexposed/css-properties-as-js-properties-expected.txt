@@ -159,6 +159,7 @@ display
 dominantBaseline
 emptyCells
 fallback
+fieldSizing
 fill
 fillOpacity
 fillRule

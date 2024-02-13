@@ -288,7 +288,7 @@ class StateObserverElementT : public StateObserverElement {
 
  private:
   T current_value_;
-  absl::optional<testing::Matcher<T>> target_value_;
+  std::optional<testing::Matcher<T>> target_value_;
   std::unique_ptr<StateObserver<T>> observer_;
 };
 

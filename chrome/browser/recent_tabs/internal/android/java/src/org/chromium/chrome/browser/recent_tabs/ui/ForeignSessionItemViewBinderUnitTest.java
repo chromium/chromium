@@ -80,7 +80,8 @@ public class ForeignSessionItemViewBinderUnitTest {
                 PropertyModelChangeProcessor.create(
                         mModel, mForeignSessionItemView, ForeignSessionItemViewBinder::bind);
 
-        ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
+        ForeignSessionTab tab =
+                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, JAN_1_1970, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
         tabs.add(tab);
 

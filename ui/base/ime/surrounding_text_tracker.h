@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
     // Returns the string piece of the composition range of the
     // |surrounding_text|.
     // If composition is out of the range, nullopt will be returned.
-    absl::optional<base::StringPiece16> GetCompositionText() const;
+    std::optional<base::StringPiece16> GetCompositionText() const;
 
     // Whole surrounding text, specifically this may include composition text.
     std::u16string surrounding_text;

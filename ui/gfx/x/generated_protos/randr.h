@@ -28,6 +28,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -35,7 +36,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "render.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/error.h"
 #include "ui/gfx/x/ref_counted_fd.h"
 #include "xproto.h"
@@ -323,13 +323,13 @@ class COMPONENT_EXPORT(X11) RandR {
       Lease lease{};
       uint8_t created{};
     };
-    absl::optional<Cc> cc{};
-    absl::optional<Oc> oc{};
-    absl::optional<Op> op{};
-    absl::optional<Pc> pc{};
-    absl::optional<Pp> pp{};
-    absl::optional<Rc> rc{};
-    absl::optional<Lc> lc{};
+    std::optional<Cc> cc{};
+    std::optional<Oc> oc{};
+    std::optional<Op> op{};
+    std::optional<Pc> pc{};
+    std::optional<Pp> pp{};
+    std::optional<Rc> rc{};
+    std::optional<Lc> lc{};
   };
 
   struct QueryVersionRequest {

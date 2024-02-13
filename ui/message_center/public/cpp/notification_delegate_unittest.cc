@@ -22,14 +22,14 @@ class NotificationDelegateTest : public testing::Test {
 
   void BodyClickCallback() { ++callback_count_; }
 
-  void ButtonClickCallback(absl::optional<int> button_index) {
+  void ButtonClickCallback(std::optional<int> button_index) {
     ++callback_count_;
     last_button_index_ = button_index;
   }
 
  protected:
   int callback_count_ = 0;
-  absl::optional<int> last_button_index_;
+  std::optional<int> last_button_index_;
 };
 
 TEST_F(NotificationDelegateTest, ClickDelegate) {
@@ -37,7 +37,7 @@ TEST_F(NotificationDelegateTest, ClickDelegate) {
       base::BindRepeating(&NotificationDelegateTest::BodyClickCallback,
                           base::Unretained(this)));
 
-  delegate->Click(absl::nullopt, absl::nullopt);
+  delegate->Click(std::nullopt, std::nullopt);
   EXPECT_EQ(1, callback_count_);
 }
 
@@ -45,7 +45,7 @@ TEST_F(NotificationDelegateTest, NullClickDelegate) {
   auto delegate = base::MakeRefCounted<HandleNotificationClickDelegate>(
       base::RepeatingClosure());
 
-  delegate->Click(absl::nullopt, absl::nullopt);
+  delegate->Click(std::nullopt, std::nullopt);
   EXPECT_EQ(0, callback_count_);
 }
 
@@ -54,11 +54,11 @@ TEST_F(NotificationDelegateTest, ButtonClickDelegate) {
       base::BindRepeating(&NotificationDelegateTest::ButtonClickCallback,
                           base::Unretained(this)));
 
-  delegate->Click(absl::nullopt, absl::nullopt);
+  delegate->Click(std::nullopt, std::nullopt);
   EXPECT_EQ(1, callback_count_);
-  EXPECT_EQ(absl::nullopt, last_button_index_);
+  EXPECT_EQ(std::nullopt, last_button_index_);
 
-  delegate->Click(3, absl::nullopt);
+  delegate->Click(3, std::nullopt);
   EXPECT_EQ(2, callback_count_);
   EXPECT_EQ(3, *last_button_index_);
 }

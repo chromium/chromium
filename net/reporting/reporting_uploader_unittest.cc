@@ -532,8 +532,8 @@ TEST_F(ReportingUploaderTest, DontSendCookies) {
   ResultSavingCookieCallback<CookieAccessResult> cookie_callback;
   GURL url = server_.GetURL("/");
   auto cookie = CanonicalCookie::Create(
-      url, "foo=bar", base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+      url, "foo=bar", base::Time::Now(), std::nullopt /* server_time */,
+      std::nullopt /* cookie_partition_key */);
   context_->cookie_store()->SetCanonicalCookieAsync(
       std::move(cookie), url, CookieOptions::MakeAllInclusive(),
       cookie_callback.MakeCallback());

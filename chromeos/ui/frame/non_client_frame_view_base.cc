@@ -220,4 +220,7 @@ void NonClientFrameViewBase::PaintAsActiveChanged() {
   frame_->non_client_view()->DeprecatedLayoutImmediately();
 }
 
+BEGIN_METADATA(NonClientFrameViewBase)
+END_METADATA
+
 }  // namespace chromeos

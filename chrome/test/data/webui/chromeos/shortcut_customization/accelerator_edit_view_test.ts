@@ -339,7 +339,9 @@ suite('acceleratorEditViewTest', function() {
         'Press 1-4 modifiers and 1 other key on your keyboard. To exit ' +
         'editing mode, press alt + esc.';
     const statusMessageElement = strictQuery(
-        '#acceleratorInfoText', editViewElement!.shadowRoot, HTMLDivElement);
+        '#container',
+        editViewElement!.shadowRoot!.querySelector('#status')!.shadowRoot,
+        HTMLDivElement);
     assertEquals(expectedHintMessage, statusMessageElement.textContent!.trim());
   });
 

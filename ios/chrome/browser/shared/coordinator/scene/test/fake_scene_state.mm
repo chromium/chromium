@@ -79,9 +79,7 @@
   WebStateList* web_state_list =
       self.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
-  web_state_list->InsertWebState(
-      WebStateList::kInvalidIndex, std::move(test_web_state),
-      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  web_state_list->InsertWebState(std::move(test_web_state));
 }
 
 - (void)appendWebStatesWithURL:(const GURL)URL count:(int)count {

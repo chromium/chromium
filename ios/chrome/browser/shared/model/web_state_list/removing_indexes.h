@@ -19,6 +19,13 @@
 // criteria).
 class RemovingIndexes {
  public:
+  // Represents a range of indices.
+  struct Range {
+    int start;
+    int count;
+  };
+
+  explicit RemovingIndexes(Range range);
   explicit RemovingIndexes(std::vector<int> indexes);
   RemovingIndexes(std::initializer_list<int> indexes);
 
@@ -30,12 +37,12 @@ class RemovingIndexes {
 
   ~RemovingIndexes();
 
-  // Helper that return a RemovingIndexes corresponding to a continous range
-  // of indexes.
-  static RemovingIndexes Range(int start, int count);
-
   // Returns the number of WebState that will be closed.
   int count() const;
+
+  // Returns the minimum range that contains all closed WebStates (but may
+  // also contains WebStates that are not closed).
+  Range span() const;
 
   // Returns whether index is present in the list of indexes to close.
   bool Contains(int index) const;
@@ -50,6 +57,9 @@ class RemovingIndexes {
    public:
     // Returns the number of items to remove.
     int Count() const;
+
+    // Returns the minimum range of items that are closed.
+    Range Span() const;
 
     // Returns whether `index` will be removed.
     bool ContainsIndex(int index) const;
@@ -66,6 +76,9 @@ class RemovingIndexes {
     // Returns the number of items to remove.
     int Count() const;
 
+    // Returns the minimum range of items that are closed.
+    Range Span() const;
+
     // Returns whether `index` will be removed.
     bool ContainsIndex(int index) const;
 
@@ -79,10 +92,13 @@ class RemovingIndexes {
   // Represents a RemovingIndexes with a contigous range of indexes.
   class RangeStorage {
    public:
-    RangeStorage(int start, int count);
+    RangeStorage(Range range);
 
     // Returns the number of items to remove.
     int Count() const;
+
+    // Returns the minimum range of items that are closed.
+    Range Span() const;
 
     // Returns whether `index` will be removed.
     bool ContainsIndex(int index) const;
@@ -91,8 +107,7 @@ class RemovingIndexes {
     int IndexAfterRemoval(int index) const;
 
    private:
-    int start_;
-    int count_;
+    Range range_;
   };
 
   // Represents a RemovingIndexes with two or more indexes.
@@ -110,6 +125,9 @@ class RemovingIndexes {
     // Returns the number of items to remove.
     int Count() const;
 
+    // Returns the minimum range of items that are closed.
+    Range Span() const;
+
     // Returns whether `index` will be removed.
     bool ContainsIndex(int index) const;
 
@@ -126,7 +144,9 @@ class RemovingIndexes {
   using Storage =
       absl::variant<EmptyStorage, OneIndexStorage, RangeStorage, VectorStorage>;
 
-  // Helper methods to create the storage from a vector or and initializer list.
+  // Helper methods to create the storage from a range, a vector or an
+  // initializer list.
+  static Storage StorageFromRange(Range range);
   static Storage StorageFromVector(std::vector<int> indexes);
   static Storage StorageFromInitializerList(std::initializer_list<int> indexes);
 

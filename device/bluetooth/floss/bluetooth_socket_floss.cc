@@ -73,7 +73,7 @@ void BluetoothSocketFloss::Connect(BluetoothDeviceFloss* device,
 void BluetoothSocketFloss::Listen(
     scoped_refptr<device::BluetoothAdapter> adapter,
     FlossSocketManager::SocketType socket_type,
-    const absl::optional<device::BluetoothUUID>& uuid,
+    const std::optional<device::BluetoothUUID>& uuid,
     const device::BluetoothAdapter::ServiceOptions& service_options,
     base::OnceClosure success_callback,
     ErrorCompletionCallback error_callback) {
@@ -148,7 +148,7 @@ void BluetoothSocketFloss::Disconnect(base::OnceClosure callback) {
         listening_socket_info_->id,
         base::BindOnce(&BluetoothSocketFloss::CompleteClose,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    listening_socket_info_ = absl::nullopt;
+    listening_socket_info_ = std::nullopt;
     pending_accept_socket_.reset();
   } else {
     if (pending_listen_ready_callback_) {
@@ -201,7 +201,7 @@ void BluetoothSocketFloss::Accept(AcceptCompletionCallback success_callback,
   // to accepting.
   if (!is_accepting_) {
     FlossDBusManager::Get()->GetSocketManager()->Accept(
-        listening_socket_info_->id, absl::nullopt,
+        listening_socket_info_->id, std::nullopt,
         base::BindOnce(&BluetoothSocketFloss::CompleteAccept,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -231,7 +231,7 @@ void BluetoothSocketFloss::DoConnectionStateChanged(
   if (state == FlossSocketManager::ServerSocketState::kReady &&
       status == FlossDBusClient::BtifStatus::kSuccess) {
     FlossDBusManager::Get()->GetSocketManager()->Accept(
-        listening_socket_info_->id, absl::nullopt,
+        listening_socket_info_->id, std::nullopt,
         base::BindOnce(&BluetoothSocketFloss::CompleteAccept,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
@@ -289,7 +289,7 @@ void BluetoothSocketFloss::CompleteConnect(
     base::OnceClosure success_callback,
     ErrorCompletionCallback error_callback,
     FlossDBusClient::BtifStatus status,
-    absl::optional<FlossSocketManager::FlossSocket>&& socket) {
+    std::optional<FlossSocketManager::FlossSocket>&& socket) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
 
   if (status == FlossDBusClient::BtifStatus::kSuccess && socket) {
@@ -316,7 +316,7 @@ void BluetoothSocketFloss::CompleteConnectionInSocketThread(
     base::OnceClosure success_callback,
     ErrorCompletionCallback error_callback,
     FlossDBusClient::BtifStatus status,
-    absl::optional<FlossSocketManager::FlossSocket>&& socket) {
+    std::optional<FlossSocketManager::FlossSocket>&& socket) {
   DCHECK(socket_thread()->task_runner()->RunsTasksInCurrentSequence());
 
   if (status != FlossDBusClient::BtifStatus::kSuccess || !socket) {
@@ -423,7 +423,7 @@ void BluetoothSocketFloss::CompleteListeningConnect() {
   pending_accept_socket_ = BluetoothSocketFloss::CreateBluetoothSocket(
       ui_task_runner(), socket_thread());
 
-  absl::optional<FlossSocketManager::FlossSocket> sock(
+  std::optional<FlossSocketManager::FlossSocket> sock(
       std::move(connection_request_queue_.front()));
   connection_request_queue_.pop();
 

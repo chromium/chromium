@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
@@ -200,10 +201,11 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, DownloadFile) {
 }
 
 TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
-  std::unique_ptr<char[]> data_buffer(new char[kTestFileSize]);
-  base::ReadFile(test_utils_.GetImagePath(), data_buffer.get(), kTestFileSize);
+  std::unique_ptr<char[]> char_buffer(new char[kTestFileSize]);
+  base::span<char> chars = base::make_span(char_buffer.get(), kTestFileSize);
+  base::ReadFile(test_utils_.GetImagePath(), chars);
   base::MD5Digest expected_digest;
-  base::MD5Sum(data_buffer.get(), kTestFileSize, &expected_digest);
+  base::MD5Sum(base::as_bytes(chars), &expected_digest);
   std::string expected_hash = base::MD5DigestToBase16(expected_digest);
 
   scoped_refptr<WriteFromUrlOperationForTest> operation =

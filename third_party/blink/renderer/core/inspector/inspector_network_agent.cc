@@ -1829,6 +1829,11 @@ InspectorNetworkAgent::BuildInitiatorObject(
       .build();
 }
 
+void InspectorNetworkAgent::WillCreateP2PSocketUdp(
+    std::optional<base::UnguessableToken>* devtools_token) {
+  *devtools_token = devtools_token_;
+}
+
 void InspectorNetworkAgent::WillCreateWebSocket(
     ExecutionContext* execution_context,
     uint64_t identifier,

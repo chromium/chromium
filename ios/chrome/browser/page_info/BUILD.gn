@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "about_this_site_service_factory.h",
+    "about_this_site_service_factory.mm",
+  ]
+
+  deps = [
+    "//components/keyed_service/ios:ios",
+    "//components/page_info/core:core",
+    "//ios/chrome/browser/optimization_guide/model:model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state:browser_state",
+  ]
+}

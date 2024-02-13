@@ -43,9 +43,6 @@ BASE_FEATURE(kIPHComposeNewBadgeFeature,
 BASE_FEATURE(kIPHDesktopSharedHighlightingFeature,
              "IPH_DesktopSharedHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHDesktopTabGroupsNewGroupFeature,
-             "IPH_DesktopTabGroupsNewGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDesktopCustomizeChromeFeature,
              "IPH_DesktopCustomizeChrome",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -57,7 +54,7 @@ BASE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadEsbPromoFeature,
              "IPH_DownloadEsbPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHExperimentalAIPromoFeature,
              "IPH_ExperimentalAIPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -572,9 +569,6 @@ BASE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos,
 BASE_FEATURE(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
              "IPH_iOSBlueDotPromoEnhancedSafeBrowsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSInlinePromoEnhancedSafeBrowsingFeature,
-             "IPH_iOSInlinePromoEnhancedSafeBrowsing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSTabGridSwipeLeftForIncognito,
              "IPH_iOSTabGridSwipeLeftForIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -596,6 +590,9 @@ BASE_FEATURE(kIPHiOSPromoStaySafeFeature,
 BASE_FEATURE(kIPHiOSSwipeBackForwardFeature,
              "IPH_iOSSwipeBackForward",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSPostDefaultAbandonmentPromoFeature,
+             "IPH_iOSPostDefaultAbandonmentPromo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

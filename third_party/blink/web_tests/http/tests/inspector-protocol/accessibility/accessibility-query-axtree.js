@@ -6,8 +6,8 @@
   const {dp} = await testRunner.startHTML(
       `
       <h2 id="shown">title</h2>
-      <h2 id="hidden" aria-hidden="true">title</h2>
-      <h2 id="unrendered" hidden>title</h2>
+      <h2 id="hidden" aria-hidden="true" lang="x">title</h2>
+      <h2 id="unrendered" hidden lang="x">title</h2>
 
       <div id="node1" aria-labeledby="node2"></div>
       <div id="node2" aria-label="bar"></div>

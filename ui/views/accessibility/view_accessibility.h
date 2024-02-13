@@ -6,6 +6,7 @@
 #define UI_VIEWS_ACCESSIBILITY_VIEW_ACCESSIBILITY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,12 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/view_accessibility_utils.h"
 #include "ui/views/views_export.h"
 
 namespace ui {
@@ -288,7 +289,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Returns the index of |virtual_view|, or nullopt if |virtual_view| is not a
   // child of this View.
-  absl::optional<size_t> GetIndexOf(const AXVirtualView* virtual_view) const;
+  std::optional<size_t> GetIndexOf(const AXVirtualView* virtual_view) const;
 
   // Returns the native accessibility object associated with the AXVirtualView
   // descendant that is currently focused. If no virtual descendants are
@@ -340,7 +341,17 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Contains data set explicitly via OverrideRole, OverrideName, etc. that
   // overrides anything provided by GetAccessibleNodeData().
-  ui::AXNodeData custom_data_;
+  ui::AXNodeData override_data_;
+
+  // Contains data that is populated by the setters in this class.
+  // This member is tied to the ViewsAX project. Which is introducing a new
+  // system to set accessible properties in a "push" fashion (instead of pull).
+  // Authors are encouraged to start using it today, and it will eventually
+  // replace the old system. For now, while the migration to the new system
+  // happens, we allow the old system to coexist with he new one by just
+  // unioning the data from both systems. This is done in
+  // GetAccessibleNodeData().
+  ui::AXNodeData data_;
 
   // If set to true, anything that is a descendant of this view will be hidden
   // from accessibility.
@@ -358,7 +369,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Used to override the View's enabled state in case we need to mark the View
   // as enabled or disabled only in the accessibility tree.
-  absl::optional<bool> is_enabled_ = absl::nullopt;
+  std::optional<bool> is_enabled_ = std::nullopt;
 
   // Used by the Views system to help some assistive technologies, such as
   // screen readers, transition focus from one widget to another.
@@ -366,7 +377,7 @@ class VIEWS_EXPORT ViewAccessibility {
   base::WeakPtr<Widget> previous_focus_ = nullptr;
 
   // This view's child tree id.
-  absl::optional<ui::AXTreeID> child_tree_id_;
+  std::optional<ui::AXTreeID> child_tree_id_;
 
   // Whether to move accessibility focus to an ancestor.
   bool propagate_focus_to_ancestor_ = false;

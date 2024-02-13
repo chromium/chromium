@@ -81,8 +81,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // focus, but the FocusRing sits on the parent instead of the inner view.
   void SetHasFocusPredicate(const ViewPredicate& predicate);
 
-  absl::optional<ui::ColorId> GetColorId() const;
-  void SetColorId(absl::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorId> GetColorId() const;
+  void SetColorId(std::optional<ui::ColorId> color_id);
 
   float GetHaloThickness() const;
   float GetHaloInset() const;
@@ -143,7 +143,7 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   bool invalid_ = false;
 
   // Overriding color_id for the focus ring.
-  absl::optional<ui::ColorId> color_id_;
+  std::optional<ui::ColorId> color_id_;
 
   // The predicate used to determine whether the parent has focus.
   ViewPredicate has_focus_predicate_;

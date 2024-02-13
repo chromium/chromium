@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTaskObserver {
   void RegisterTask(QuotaTask* task);
   void UnregisterTask(QuotaTask* task);
 
-  std::set<QuotaTask*> running_quota_tasks_;
+  std::set<raw_ptr<QuotaTask, SetExperimental>> running_quota_tasks_;
 };
 }
 

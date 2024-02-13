@@ -112,6 +112,7 @@
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/memory_metrics.h"
@@ -155,7 +156,6 @@
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
 #include "chrome/browser/ash/shortcut_mapping_pref_service.h"
 #include "chrome/browser/ash/startup_settings_cache.h"
-#include "chrome/browser/ash/system/breakpad_consent_watcher.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/user_removal_manager.h"
 #include "chrome/browser/ash/system_token_cert_db_initializer.h"
@@ -824,18 +824,6 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
   // policy connector is started.
   bulk_printers_calculator_factory_ =
       std::make_unique<BulkPrintersCalculatorFactory>();
-
-  // StatsReportingController is created in
-  // ChromeBrowserMainParts::PreCreateThreads, so this must come afterwards.
-  auto* stats_controller = StatsReportingController::Get();
-  // |stats_controller| can be nullptr if ChromeBrowserMainParts's
-  // browser_process_->GetApplicationLocale() returns empty. We're trying to
-  // show an error message in that case, so don't just crash. (See
-  // ChromeBrowserMainParts::PreCreateThreadsImpl()).
-  if (stats_controller != nullptr) {
-    breakpad_consent_watcher_ =
-        system::BreakpadConsentWatcher::Initialize(stats_controller);
-  }
 
 #if BUILDFLAG(PLATFORM_CFM)
   cfm::InitializeCfmServices();
@@ -1590,6 +1578,10 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Let the UserManager unregister itself as an observer of the CrosSettings
   // singleton before it is destroyed. This also ensures that the UserManager
   // has no URLRequest pending (see http://crbug.com/276659).
+  if (auto* user_image_manager_registry =
+          ash::UserImageManagerRegistry::Get()) {
+    user_image_manager_registry->Shutdown();
+  }
   if (g_browser_process->platform_part()->user_manager()) {
     g_browser_process->platform_part()->user_manager()->Shutdown();
   }

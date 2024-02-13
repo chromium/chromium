@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
@@ -99,7 +99,7 @@ class TestWebUIMessageHandler : public WebUIMessageHandler {
                             base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
         "sendMessage",
-        base::BindRepeating(&TestWebUIMessageHandler::OnSendMessase,
+        base::BindRepeating(&TestWebUIMessageHandler::OnSendMessage,
                             base::Unretained(this)));
   }
 
@@ -125,7 +125,7 @@ class TestWebUIMessageHandler : public WebUIMessageHandler {
       finish_closure_.Run();
   }
 
-  void OnSendMessase(const base::Value::List& args) {
+  void OnSendMessage(const base::Value::List& args) {
     // This message will be invoked when WebContents changes the main RFH
     // and the old main RFH is still alive during navigating from WebUI page
     // to cross-site. WebUI message should be handled with old main RFH.
@@ -161,9 +161,9 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(NavigateToURL(web_contents(), GetWebUIURL(kChromeUIGpuHost)));
-    test_handler_ = new TestWebUIMessageHandler();
-    web_contents()->GetWebUI()->AddMessageHandler(
-        base::WrapUnique(test_handler_.get()));
+    auto test_handler = std::make_unique<TestWebUIMessageHandler>();
+    test_handler_ = test_handler.get();
+    web_contents()->GetWebUI()->AddMessageHandler(std::move(test_handler));
   }
   void TearDownOnMainThread() override { test_handler_ = nullptr; }
 
@@ -710,8 +710,9 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
   auto* web_contents = shell()->web_contents();
   ASSERT_TRUE(NavigateToURL(web_contents, GetWebUIURL(kChromeUIHistogramHost)));
 
-  WebUIMessageHandler* test_handler = new TestWebUIMessageHandler;
-  web_contents->GetWebUI()->AddMessageHandler(base::WrapUnique(test_handler));
+  auto owned_test_handler = std::make_unique<TestWebUIMessageHandler>();
+  auto* test_handler = owned_test_handler.get();
+  web_contents->GetWebUI()->AddMessageHandler(std::move(owned_test_handler));
   test_handler->AllowJavascriptForTesting();
 
   // Push onto window.history. Back should now be an in-page navigation.
@@ -735,9 +736,9 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, SameDocumentNavigationsAndReload) {
     // `TestWebUIMessageHandler` will point to a stale WebUI and we can't check
     // the `IsJavascriptAllowed()` value there. So use a new handler here and
     // check the value on the new handler instead.
-    WebUIMessageHandler* test_handler2 = new TestWebUIMessageHandler;
-    web_contents->GetWebUI()->AddMessageHandler(
-        base::WrapUnique(test_handler2));
+    auto owned_test_handler2 = std::make_unique<TestWebUIMessageHandler>();
+    auto* test_handler2 = owned_test_handler2.get();
+    web_contents->GetWebUI()->AddMessageHandler(std::move(owned_test_handler2));
     EXPECT_FALSE(test_handler2->IsJavascriptAllowed());
   }
 }
@@ -829,8 +830,9 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, DISABLED_NavigateWhileWebUISend) {
   auto* web_contents = shell()->web_contents();
   ASSERT_TRUE(NavigateToURL(web_contents, GetWebUIURL(kChromeUIGpuHost)));
 
-  auto* test_handler = new TestWebUIMessageHandler;
-  web_contents->GetWebUI()->AddMessageHandler(base::WrapUnique(test_handler));
+  auto owned_test_handler = std::make_unique<TestWebUIMessageHandler>();
+  auto* test_handler = owned_test_handler.get();
+  web_contents->GetWebUI()->AddMessageHandler(std::move(owned_test_handler));
 
   auto* webui = static_cast<WebUIImpl*>(web_contents->GetWebUI());
   EXPECT_EQ(web_contents->GetPrimaryMainFrame(), webui->GetRenderFrameHost());

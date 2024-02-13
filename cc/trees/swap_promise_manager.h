@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/trees/swap_promise.h"
 
@@ -53,7 +54,8 @@ class CC_EXPORT SwapPromiseManager {
 
  private:
   std::vector<std::unique_ptr<SwapPromise>> swap_promise_list_;
-  std::set<LatencyInfoSwapPromiseMonitor*> latency_info_swap_promise_monitors_;
+  std::set<raw_ptr<LatencyInfoSwapPromiseMonitor, SetExperimental>>
+      latency_info_swap_promise_monitors_;
 };
 
 }  // namespace cc

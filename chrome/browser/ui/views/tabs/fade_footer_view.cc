@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/performance_manager/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -129,7 +128,21 @@ template class FooterRow<PerformanceRowData>;
 
 void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   std::optional<TabAlertState> alert_state = data.alert_state;
-  if (alert_state.has_value()) {
+  if (data.should_show_discard_status) {
+    std::u16string row_text;
+    if (data.memory_savings_in_bytes > 0) {
+      const std::u16string formatted_memory_usage =
+          ui::FormatBytes(data.memory_savings_in_bytes);
+      row_text = l10n_util::GetStringFUTF16(
+          IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS, formatted_memory_usage);
+    } else {
+      row_text = l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB);
+    }
+    SetContent(ui::ImageModel::FromVectorIcon(
+                   kMemorySaverIcon, kColorHoverCardTabAlertAudioPlayingIcon,
+                   GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH)),
+               row_text);
+  } else if (alert_state.has_value()) {
     SetContent(AlertIndicatorButton::GetTabAlertIndicatorImageForHoverCard(
                    alert_state.value()),
                chrome::GetTabAlertStateText(alert_state.value()));
@@ -146,37 +159,22 @@ END_METADATA
 // -----------------------------------------------------------------------
 
 void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
-  std::u16string row_text;
-  if (data.should_show_discard_status) {
-    if (data.memory_savings_in_bytes > 0) {
-      const std::u16string formatted_memory_usage =
-          ui::FormatBytes(data.memory_savings_in_bytes);
-      row_text = l10n_util::GetStringFUTF16(
-          IDS_HOVERCARD_INACTIVE_TAB_MEMORY_SAVINGS, formatted_memory_usage);
-    } else {
-      row_text = l10n_util::GetStringUTF16(IDS_HOVERCARD_INACTIVE_TAB);
-    }
-  } else if (data.memory_usage_in_bytes > 0) {
+  if (data.memory_usage_in_bytes > 0) {
     const std::u16string formatted_memory_usage =
         ui::FormatBytes(data.memory_usage_in_bytes);
-    row_text = l10n_util::GetStringFUTF16(
-        data.memory_usage_in_bytes >
-                static_cast<uint64_t>(
-                    performance_manager::features::
-                        kMemoryUsageInHovercardsHighThresholdBytes.Get())
-            ? IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE
-            : IDS_HOVERCARD_TAB_MEMORY_USAGE,
+    const std::u16string row_text = l10n_util::GetStringFUTF16(
+        data.is_high_memory_usage ? IDS_HOVERCARD_TAB_HIGH_MEMORY_USAGE
+                                  : IDS_HOVERCARD_TAB_MEMORY_USAGE,
         formatted_memory_usage);
+
+    const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
+        kMemorySaverIcon, kColorHoverCardTabAlertAudioPlayingIcon,
+        GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH));
+    SetContent(icon_image_model, row_text);
+  } else {
+    SetContent(ui::ImageModel(), std::u16string());
   }
 
-  const ui::ImageModel icon_image_model =
-      row_text.empty()
-          ? ui::ImageModel()
-          : ui::ImageModel::FromVectorIcon(
-                kMemorySaverIcon, kColorHoverCardTabAlertAudioPlayingIcon,
-                GetLayoutConstant(TAB_ALERT_INDICATOR_ICON_WIDTH));
-
-  SetContent(icon_image_model, row_text);
   data_ = data;
 }
 

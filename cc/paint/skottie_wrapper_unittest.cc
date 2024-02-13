@@ -28,6 +28,7 @@ namespace cc {
 namespace {
 
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Contains;
 using ::testing::Eq;
 using ::testing::FieldsAre;
@@ -258,9 +259,10 @@ TEST(SkottieWrapperTest, SetsTextNodesWithDraw) {
 
   SkottieTextPropertyValueMap text_map = {
       {HashSkottieResourceId(kLottieDataWith2TextNode1),
-       SkottieTextPropertyValue("new-test-text-1", gfx::RectF(1, 1, 1, 1))},
+       SkottieTextPropertyValue("new-test-text-1", gfx::RectF(1, 1, 100, 100))},
       {HashSkottieResourceId(kLottieDataWith2TextNode2),
-       SkottieTextPropertyValue("new-test-text-2", gfx::RectF(2, 2, 2, 2))}};
+       SkottieTextPropertyValue("new-test-text-2",
+                                gfx::RectF(2, 2, 200, 200))}};
   skottie->Draw(&canvas, /*t=*/0, SkRect::MakeWH(500, 500),
                 SkottieWrapper::FrameDataCallback(), SkottieColorMap(),
                 text_map);
@@ -268,14 +270,16 @@ TEST(SkottieWrapperTest, SetsTextNodesWithDraw) {
               UnorderedElementsAre(
                   Pair(HashSkottieResourceId(kLottieDataWith2TextNode1),
                        SkottieTextPropertyValue("new-test-text-1",
-                                                gfx::RectF(1, 1, 1, 1))),
+                                                gfx::RectF(1, 1, 100, 100))),
                   Pair(HashSkottieResourceId(kLottieDataWith2TextNode2),
                        SkottieTextPropertyValue("new-test-text-2",
-                                                gfx::RectF(2, 2, 2, 2)))));
+                                                gfx::RectF(2, 2, 200, 200)))));
+  // Check that we've actually drawn some text.
+  EXPECT_CALL(canvas, onDrawGlyphRunList).Times(AtLeast(1));
 
-  text_map = {
-      {HashSkottieResourceId(kLottieDataWith2TextNode2),
-       SkottieTextPropertyValue("new-test-text-2b", gfx::RectF(3, 3, 3, 3))}};
+  text_map = {{HashSkottieResourceId(kLottieDataWith2TextNode2),
+               SkottieTextPropertyValue("new-test-text-2b",
+                                        gfx::RectF(3, 3, 300, 300))}};
   skottie->Draw(&canvas, /*t=*/0.1, SkRect::MakeWH(500, 500),
                 SkottieWrapper::FrameDataCallback(), SkottieColorMap(),
                 text_map);
@@ -283,10 +287,26 @@ TEST(SkottieWrapperTest, SetsTextNodesWithDraw) {
               UnorderedElementsAre(
                   Pair(HashSkottieResourceId(kLottieDataWith2TextNode1),
                        SkottieTextPropertyValue("new-test-text-1",
-                                                gfx::RectF(1, 1, 1, 1))),
+                                                gfx::RectF(1, 1, 100, 100))),
                   Pair(HashSkottieResourceId(kLottieDataWith2TextNode2),
                        SkottieTextPropertyValue("new-test-text-2b",
-                                                gfx::RectF(3, 3, 3, 3)))));
+                                                gfx::RectF(3, 3, 300, 300)))));
+
+  // Missing glyphs should not trigger a crash.
+  text_map = {
+      {HashSkottieResourceId(kLottieDataWith2TextNode1),
+       SkottieTextPropertyValue("hello 你好", gfx::RectF(4, 4, 400, 400))}};
+  skottie->Draw(&canvas, /*t=*/0.2, SkRect::MakeWH(500, 500),
+                SkottieWrapper::FrameDataCallback(), SkottieColorMap(),
+                text_map);
+  EXPECT_THAT(skottie->GetCurrentTextPropertyValues(),
+              UnorderedElementsAre(
+                  Pair(HashSkottieResourceId(kLottieDataWith2TextNode1),
+                       SkottieTextPropertyValue("hello 你好",
+                                                gfx::RectF(4, 4, 400, 400))),
+                  Pair(HashSkottieResourceId(kLottieDataWith2TextNode2),
+                       SkottieTextPropertyValue("new-test-text-2b",
+                                                gfx::RectF(3, 3, 300, 300)))));
 }
 
 TEST(SkottieWrapperTest, Marker) {

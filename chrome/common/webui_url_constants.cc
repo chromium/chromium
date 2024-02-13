@@ -53,7 +53,6 @@ const char kChromeUIChromeURLsHost[] = "chrome-urls";
 const char kChromeUIChromeURLsURL[] = "chrome://chrome-urls/";
 const char kChromeUIComponentsHost[] = "components";
 const char kChromeUIComponentsUrl[] = "chrome://components";
-const char kChromeUIComposeHost[] = "compose";
 const char kChromeUIConflictsHost[] = "conflicts";
 const char kChromeUIConstrainedHTMLTestURL[] = "chrome://constrained-test/";
 const char kChromeUICookieSettingsURL[] = "chrome://settings/cookies";
@@ -237,6 +236,8 @@ const char kChromeUIThemeHost[] = "theme";
 const char kChromeUIThemeURL[] = "chrome://theme/";
 const char kChromeUITranslateInternalsHost[] = "translate-internals";
 const char kChromeUITopChromeDomain[] = "top-chrome";
+const char kChromeUIUntrustedComposeHost[] = "compose";
+const char kChromeUIUntrustedComposeUrl[] = "chrome-untrusted://compose/";
 #if !BUILDFLAG(IS_ANDROID)
 const char kChromeUIUntrustedHatsHost[] = "hats";
 const char kChromeUIUntrustedHatsURL[] = "chrome-untrusted://hats/";
@@ -579,8 +580,6 @@ const char kChromeUITabStripURL[] = "chrome://tab-strip.top-chrome";
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-const char kChromeUICommanderHost[] = "commander";
-const char kChromeUICommanderURL[] = "chrome://commander";
 const char kChromeUITabSearchHost[] = "tab-search.top-chrome";
 const char kChromeUITabSearchURL[] = "chrome://tab-search.top-chrome/";
 #endif

@@ -8,4 +8,5 @@ found in the LICENSE file.
   <dimen name="page_indicator_internal_padding">8dp</dimen>
   <dimen name="page_indicator_dot_size">3dp</dimen>
   <dimen name="page_indicator_top_margin">14dp</dimen>
+  <dimen name="module_internal_padding">12dp</dimen>
 </resources>

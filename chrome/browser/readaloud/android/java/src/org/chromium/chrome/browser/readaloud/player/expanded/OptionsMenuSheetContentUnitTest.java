@@ -67,7 +67,15 @@ public class OptionsMenuSheetContentUnitTest {
 
     @Test
     public void testClickVoiceMenu() {
-        doReturn(List.of(new PlaybackVoice("en", "a")))
+        doReturn(
+                        List.of(
+                                new PlaybackVoice(
+                                        "en",
+                                        "US",
+                                        "a",
+                                        "Sand",
+                                        PlaybackVoice.Pitch.NONE,
+                                        PlaybackVoice.Tone.NONE)))
                 .when(mModel)
                 .get(eq(PlayerProperties.VOICES_LIST));
         doReturn("a").when(mModel).get(eq(PlayerProperties.SELECTED_VOICE_ID));
@@ -97,7 +105,15 @@ public class OptionsMenuSheetContentUnitTest {
     @Test
     public void testCloseVoiceMenu() {
         // Show the voice menu.
-        doReturn(List.of(new PlaybackVoice("en", "a", "description")))
+        doReturn(
+                        List.of(
+                                new PlaybackVoice(
+                                        "en",
+                                        "US",
+                                        "a",
+                                        "Sand",
+                                        PlaybackVoice.Pitch.NONE,
+                                        PlaybackVoice.Tone.NONE)))
                 .when(mModel)
                 .get(eq(PlayerProperties.VOICES_LIST));
         doReturn("a").when(mModel).get(eq(PlayerProperties.SELECTED_VOICE_ID));

@@ -120,6 +120,7 @@ class CC_EXPORT LayerTreeImpl {
   void OnPurgeMemory();
   void ReleaseTileResources();
   void RecreateTileResources();
+  void SetVisible(bool visible);
 
   // Methods called by the layer tree that pass-through or access LTHI.
   // ---------------------------------------------------------------------------

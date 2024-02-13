@@ -137,9 +137,10 @@ HoverButton::HoverButton(PressedCallback callback,
 
   // Set the layout manager to ignore the ink_drop_container to ensure the ink
   // drop tracks the bounds of its parent.
+  ink_drop_container()->SetProperty(views::kViewIgnoredByLayoutKey, true);
+
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetChildViewIgnoredByLayout(ink_drop_container(), true);
+      ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // The vertical space that must exist on the top and the bottom of the item
   // to ensure the proper spacing is maintained between items when stacking

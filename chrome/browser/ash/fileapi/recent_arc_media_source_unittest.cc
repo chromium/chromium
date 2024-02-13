@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/fileapi/recent_arc_media_source.h"
+
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
@@ -12,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -19,9 +25,9 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_mounter.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
-#include "chrome/browser/ash/fileapi/recent_arc_media_source.h"
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
+#include "chrome/browser/ash/fileapi/test/recent_file_matcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/test/browser_task_environment.h"
@@ -44,15 +50,19 @@ base::FilePath GetPathForRoot(const std::string& root,
 }
 
 base::FilePath GetDocumentPath(const std::string& name) {
-  return GetPathForRoot(arc::kDocumentsRootDocumentId, name);
+  return GetPathForRoot(arc::kDocumentsRootId, name);
 }
 
 base::FilePath GetImagePath(const std::string& name) {
-  return GetPathForRoot(arc::kImagesRootDocumentId, name);
+  return GetPathForRoot(arc::kImagesRootId, name);
 }
 
 base::FilePath GetVideoPath(const std::string& name) {
-  return GetPathForRoot(arc::kVideosRootDocumentId, name);
+  return GetPathForRoot(arc::kVideosRootId, name);
+}
+
+base::Time ModifiedTime(int64_t millis) {
+  return base::Time::FromMillisecondsSinceUnixEpoch(millis);
 }
 
 arc::FakeFileSystemInstance::Document MakeDocument(
@@ -106,45 +116,36 @@ class RecentArcMediaSourceTest : public testing::Test {
 
  protected:
   void AddDocumentsToFakeFileSystemInstance() {
-    auto images_root_doc = MakeDocument(
-        arc::kImagesRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
-        base::Time::FromMillisecondsSinceUnixEpoch(1));
-    auto cat_doc =
-        MakeDocument("cat", arc::kImagesRootDocumentId, "cat.png", "image/png",
-                     base::Time::FromMillisecondsSinceUnixEpoch(2));
-    auto dog_doc =
-        MakeDocument("dog", arc::kImagesRootDocumentId, "dog.jpg", "image/jpeg",
-                     base::Time::FromMillisecondsSinceUnixEpoch(3));
-    auto fox_doc =
-        MakeDocument("fox", arc::kImagesRootDocumentId, "fox.gif", "image/gif",
-                     base::Time::FromMillisecondsSinceUnixEpoch(4));
-    auto elk_doc = MakeDocument("elk", arc::kImagesRootDocumentId, "elk.tiff",
-                                "image/tiff",
-                                base::Time::FromMillisecondsSinceUnixEpoch(5));
-    auto audio_root_doc = MakeDocument(
-        arc::kAudioRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
-        base::Time::FromMillisecondsSinceUnixEpoch(1));
-    auto god_doc =
-        MakeDocument("god", arc::kAudioRootDocumentId, "god.mp3", "audio/mp3",
-                     base::Time::FromMillisecondsSinceUnixEpoch(6));
-    auto videos_root_doc = MakeDocument(
-        arc::kVideosRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
-        base::Time::FromMillisecondsSinceUnixEpoch(1));
-    auto hot_doc =
-        MakeDocument("hot", arc::kVideosRootDocumentId, "hot.mp4", "video/mp4",
-                     base::Time::FromMillisecondsSinceUnixEpoch(7));
-    auto ink_doc = MakeDocument("ink", arc::kVideosRootDocumentId, "ink.webm",
-                                "video/webm",
-                                base::Time::FromMillisecondsSinceUnixEpoch(8));
-    auto documents_root_doc = MakeDocument(
-        arc::kDocumentsRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
-        base::Time::FromMillisecondsSinceUnixEpoch(1));
-    auto word_doc = MakeDocument("word", arc::kDocumentsRootDocumentId,
-                                 "word.doc", "application/msword",
-                                 base::Time::FromMillisecondsSinceUnixEpoch(9));
-    auto text_doc = MakeDocument(
-        "text", arc::kDocumentsRootDocumentId, "text.txt", "text/plain",
-        base::Time::FromMillisecondsSinceUnixEpoch(10));
+    auto images_root_doc =
+        MakeDocument(arc::kImagesRootId, "", "", arc::kAndroidDirectoryMimeType,
+                     base::Time::FromMillisecondsSinceUnixEpoch(1));
+    auto cat_doc = MakeDocument("cat", arc::kImagesRootId, "cat.png",
+                                "image/png", ModifiedTime(2));
+    auto dog_doc = MakeDocument("dog", arc::kImagesRootId, "dog.jpg",
+                                "image/jpeg", ModifiedTime(3));
+    auto fox_doc = MakeDocument("fox", arc::kImagesRootId, "fox.gif",
+                                "image/gif", ModifiedTime(4));
+    auto elk_doc = MakeDocument("elk", arc::kImagesRootId, "elk.tiff",
+                                "image/tiff", ModifiedTime(5));
+    auto audio_root_doc =
+        MakeDocument(arc::kAudioRootId, "", "", arc::kAndroidDirectoryMimeType,
+                     ModifiedTime(1));
+    auto god_doc = MakeDocument("god", arc::kAudioRootId, "god.mp3",
+                                "audio/mp3", ModifiedTime(6));
+    auto videos_root_doc =
+        MakeDocument(arc::kVideosRootId, "", "", arc::kAndroidDirectoryMimeType,
+                     ModifiedTime(1));
+    auto hot_doc = MakeDocument("hot", arc::kVideosRootId, "hot.mp4",
+                                "video/mp4", ModifiedTime(7));
+    auto ink_doc = MakeDocument("ink", arc::kVideosRootId, "ink.webm",
+                                "video/webm", ModifiedTime(8));
+    auto documents_root_doc =
+        MakeDocument(arc::kDocumentsRootId, "", "",
+                     arc::kAndroidDirectoryMimeType, ModifiedTime(1));
+    auto word_doc = MakeDocument("word", arc::kDocumentsRootId, "word.doc",
+                                 "application/msword", ModifiedTime(9));
+    auto text_doc = MakeDocument("text", arc::kDocumentsRootId, "text.txt",
+                                 "text/plain", ModifiedTime(10));
 
     fake_file_system_.AddDocument(images_root_doc);
     fake_file_system_.AddDocument(cat_doc);
@@ -159,24 +160,19 @@ class RecentArcMediaSourceTest : public testing::Test {
     fake_file_system_.AddDocument(word_doc);
     fake_file_system_.AddDocument(text_doc);
 
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId,
-                                        images_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId, cat_doc);
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId, dog_doc);
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId, elk_doc);
-    fake_file_system_.AddRecentDocument(arc::kAudioRootDocumentId,
-                                        audio_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kAudioRootDocumentId, god_doc);
-    fake_file_system_.AddRecentDocument(arc::kVideosRootDocumentId,
-                                        videos_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kVideosRootDocumentId, hot_doc);
-    fake_file_system_.AddRecentDocument(arc::kVideosRootDocumentId, ink_doc);
-    fake_file_system_.AddRecentDocument(arc::kDocumentsRootDocumentId,
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, images_root_doc);
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, cat_doc);
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, dog_doc);
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, elk_doc);
+    fake_file_system_.AddRecentDocument(arc::kAudioRootId, audio_root_doc);
+    fake_file_system_.AddRecentDocument(arc::kAudioRootId, god_doc);
+    fake_file_system_.AddRecentDocument(arc::kVideosRootId, videos_root_doc);
+    fake_file_system_.AddRecentDocument(arc::kVideosRootId, hot_doc);
+    fake_file_system_.AddRecentDocument(arc::kVideosRootId, ink_doc);
+    fake_file_system_.AddRecentDocument(arc::kDocumentsRootId,
                                         documents_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kDocumentsRootDocumentId,
-                                        word_doc);
-    fake_file_system_.AddRecentDocument(arc::kDocumentsRootDocumentId,
-                                        text_doc);
+    fake_file_system_.AddRecentDocument(arc::kDocumentsRootId, word_doc);
+    fake_file_system_.AddRecentDocument(arc::kDocumentsRootId, text_doc);
   }
 
   void EnableFakeFileSystemInstance() {
@@ -186,24 +182,42 @@ class RecentArcMediaSourceTest : public testing::Test {
         arc_service_manager_->arc_bridge_service()->file_system());
   }
 
+  // Fetches files matching the given query and specified `file_type` from
+  // the `source_`. If the `root_lag` has value it can be used to cause one
+  // of the roots (documents, images, videos) to experience an artificial lag.
+  // If the lag is specified, it must be greater than 100ms.
   std::vector<RecentFile> GetRecentFiles(
-      const std::string query,
-      RecentSource::FileType file_type = RecentSource::FileType::kAll) {
+      const std::string& query,
+      RecentSource::FileType file_type = RecentSource::FileType::kAll,
+      std::optional<std::pair<const char*, base::TimeDelta>> root_lag = {}) {
     std::vector<RecentFile> files;
-
     base::RunLoop run_loop;
+    base::OneShotTimer timer;
+
+    const int32_t call_id = 0;
+    if (root_lag.has_value()) {
+      auto [root_id, lag] = root_lag.value();
+      base::TimeDelta stop_delta = lag - base::Milliseconds(100);
+      EXPECT_TRUE(source_->SetLagForTesting(root_id, lag));
+      EXPECT_TRUE(stop_delta.is_positive());
+      timer.Start(FROM_HERE, stop_delta, base::BindLambdaForTesting([&]() {
+                    files = source_->Stop(call_id);
+                    run_loop.Quit();
+                  }));
+    }
 
     source_->GetRecentFiles(
         RecentSource::Params(
-            /*file_system_context=*/nullptr, /*origin=*/GURL(), query,
+            /*file_system_context=*/nullptr, call_id,
+            /*origin=*/GURL(), query,
             /*cutoff_time=*/base::Time(),
             /*end_time=*/base::TimeTicks::Max(),
             /*file_type=*/file_type),
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
                std::vector<RecentFile> files) {
-              run_loop->Quit();
               *out_files = std::move(files);
+              run_loop->Quit();
             },
             &run_loop, &files));
 
@@ -214,7 +228,12 @@ class RecentArcMediaSourceTest : public testing::Test {
 
   void EnableDefer() { runner_->SetShouldDefer(true); }
 
-  content::BrowserTaskEnvironment task_environment_;
+  // NOTE: In local run real time was used. However, that causes the test to run
+  // for over 6s. With MOCK_TIME, this is reduced to 3s with no difference to
+  // test outcomes (UmaStats taking the longest).
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   arc::FakeFileSystemInstance fake_file_system_;
 
   // Use the same initialization/destruction order as
@@ -233,28 +252,20 @@ TEST_F(RecentArcMediaSourceTest, Normal) {
   std::vector<RecentFile> files = GetRecentFiles("");
 
   ASSERT_EQ(6u, files.size());
-  EXPECT_EQ(GetDocumentPath("text.txt"), files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(10),
-            files[0].last_modified());
-  EXPECT_EQ(GetDocumentPath("word.doc"), files[1].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
-            files[1].last_modified());
-  EXPECT_EQ(GetVideoPath("ink.webm"), files[2].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(8),
-            files[2].last_modified());
-  EXPECT_EQ(GetVideoPath("hot.mp4"), files[3].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
-            files[3].last_modified());
-  EXPECT_EQ(GetImagePath("dog.jpg"), files[4].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3),
-            files[4].last_modified());
-  EXPECT_EQ(GetImagePath("cat.png"), files[5].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
-            files[5].last_modified());
+  EXPECT_THAT(files[0],
+              IsRecentFile(GetDocumentPath("text.txt"), ModifiedTime(10)));
+  EXPECT_THAT(files[1],
+              IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
+  EXPECT_THAT(files[2],
+              IsRecentFile(GetVideoPath("ink.webm"), ModifiedTime(8)));
+  EXPECT_THAT(files[3], IsRecentFile(GetVideoPath("hot.mp4"), ModifiedTime(7)));
+  EXPECT_THAT(files[4], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+  EXPECT_THAT(files[5], IsRecentFile(GetImagePath("cat.png"), ModifiedTime(2)));
 
   files = GetRecentFiles("text");
   ASSERT_EQ(1u, files.size());
-  EXPECT_EQ(GetDocumentPath("text.txt"), files[0].url().path());
+  EXPECT_THAT(files[0],
+              IsRecentFile(GetDocumentPath("text.txt"), ModifiedTime(10)));
 }
 
 TEST_F(RecentArcMediaSourceTest, ArcNotAvailable) {
@@ -293,12 +304,8 @@ TEST_F(RecentArcMediaSourceTest, GetImageFiles) {
       GetRecentFiles("", RecentSource::FileType::kImage);
 
   ASSERT_EQ(2u, files.size());
-  EXPECT_EQ(GetImagePath("dog.jpg"), files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3),
-            files[0].last_modified());
-  EXPECT_EQ(GetImagePath("cat.png"), files[1].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
-            files[1].last_modified());
+  EXPECT_THAT(files[0], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+  EXPECT_THAT(files[1], IsRecentFile(GetImagePath("cat.png"), ModifiedTime(2)));
 }
 
 TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
@@ -308,12 +315,9 @@ TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
       GetRecentFiles("", RecentSource::FileType::kVideo);
 
   ASSERT_EQ(2u, files.size());
-  EXPECT_EQ(GetVideoPath("ink.webm"), files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(8),
-            files[0].last_modified());
-  EXPECT_EQ(GetVideoPath("hot.mp4"), files[1].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
-            files[1].last_modified());
+  EXPECT_THAT(files[0],
+              IsRecentFile(GetVideoPath("ink.webm"), ModifiedTime(8)));
+  EXPECT_THAT(files[1], IsRecentFile(GetVideoPath("hot.mp4"), ModifiedTime(7)));
 }
 
 TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
@@ -323,21 +327,113 @@ TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
       GetRecentFiles("", RecentSource::FileType::kDocument);
 
   ASSERT_EQ(2u, files.size());
-  EXPECT_EQ(GetDocumentPath("text.txt"), files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(10),
-            files[0].last_modified());
-  EXPECT_EQ(GetDocumentPath("word.doc"), files[1].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
-            files[1].last_modified());
+  EXPECT_THAT(files[0],
+              IsRecentFile(GetDocumentPath("text.txt"), ModifiedTime(10)));
+  EXPECT_THAT(files[1],
+              IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
 
   files = GetRecentFiles("word", RecentSource::FileType::kDocument);
   ASSERT_EQ(1u, files.size());
-  EXPECT_EQ(GetDocumentPath("word.doc"), files[0].url().path());
-  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
-            files[0].last_modified());
+  EXPECT_THAT(files[0],
+              IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
 
   files = GetRecentFiles("no-match", RecentSource::FileType::kDocument);
   ASSERT_EQ(0u, files.size());
+}
+
+TEST_F(RecentArcMediaSourceTest, LaggyDocuments) {
+  EnableFakeFileSystemInstance();
+  // Find all recent files containing 'd' in their name.
+  std::vector<RecentFile> files_no_lag = GetRecentFiles("d");
+  ASSERT_EQ(2u, files_no_lag.size());
+  EXPECT_THAT(files_no_lag[0],
+              IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
+  EXPECT_THAT(files_no_lag[1],
+              IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+
+  // Now search again; but with an artificial lag for documents. Expect that
+  // word.doc is no longer found.
+  std::vector<RecentFile> files = GetRecentFiles(
+      "d", RecentSource::FileType::kAll,
+      std::make_pair(arc::kDocumentsRootId, base::Milliseconds(500)));
+
+  ASSERT_EQ(1u, files.size());
+  EXPECT_THAT(files[0], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+}
+
+TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
+  EnableFakeFileSystemInstance();
+  // The number of times laggy, overlapping search is repeated.
+  constexpr int32_t reps = 10;
+
+  std::vector<RecentFile> results[reps];
+  base::OneShotTimer timers[reps];
+
+  // Prepare timers; timers are stopping searches at 250ms + 100ms * call_id.
+  // Whenever a source is stopped, the code just collects its partial results
+  // for later analysis.
+  for (int32_t call_id = 0; call_id < reps; ++call_id) {
+    base::TimeDelta stop_delta = base::Milliseconds(250 + 100 * call_id);
+    base::TimeDelta lag_delta = base::Milliseconds(500 + 100 * call_id);
+    EXPECT_TRUE(source_->SetLagForTesting(arc::kDocumentsRootId, lag_delta));
+    timers[call_id].Start(
+        FROM_HERE, stop_delta,
+        base::BindOnce(
+            [](const int32_t my_call_id, std::vector<RecentFile>* out_files,
+               RecentArcMediaSource* source) {
+              *out_files = source->Stop(my_call_id);
+            },
+            call_id, &results[call_id], source_.get()));
+    source_->GetRecentFiles(RecentSource::Params(
+                                /*file_system_context=*/nullptr,
+                                /**call_id=*/call_id,
+                                /*origin=*/GURL(),
+                                /**query=*/"d",
+                                /*cutoff_time=*/base::Time(),
+                                /*end_time=*/base::TimeTicks::Max(),
+                                /*file_type=*/RecentSource::FileType::kAll),
+                            base::BindOnce(
+                                [](std::vector<RecentFile>* out_files,
+                                   std::vector<RecentFile> files) {
+                                  *out_files = std::move(files);
+                                },
+                                &results[call_id]));
+  }
+
+  // Last call; wait for the results; these results are not interrupted and take
+  // longer than any of the request requested above.
+  EXPECT_TRUE(source_->SetLagForTesting(arc::kDocumentsRootId,
+                                        base::Milliseconds(500 + 100 * reps)));
+  base::RunLoop run_loop;
+  std::vector<RecentFile> final_result;
+  source_->GetRecentFiles(
+      RecentSource::Params(
+          /*file_system_context=*/nullptr,
+          /*call_id=*/reps,
+          /*origin=*/GURL(),
+          /*query=*/"d",
+          /*cutoff_time=*/base::Time(),
+          /*end_time=*/base::TimeTicks::Max(),
+          /*file_type=*/RecentSource::FileType::kAll),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, std::vector<RecentFile>* out_files,
+             std::vector<RecentFile> files) {
+            *out_files = std::move(files);
+            run_loop->Quit();
+          },
+          &run_loop, &final_result));
+
+  run_loop.Run();
+  ASSERT_EQ(2u, final_result.size());
+  EXPECT_THAT(final_result[0],
+              IsRecentFile(GetDocumentPath("word.doc"), ModifiedTime(9)));
+  EXPECT_THAT(final_result[1],
+              IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+  for (int32_t call_id = 0; call_id < reps; ++call_id) {
+    ASSERT_EQ(1u, results[call_id].size());
+    EXPECT_THAT(results[call_id][0],
+                IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
+  }
 }
 
 TEST_F(RecentArcMediaSourceTest, UmaStats) {

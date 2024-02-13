@@ -8,6 +8,7 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/splitview/faster_split_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -63,8 +65,9 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
   ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
-  // Snap the window to start partial overview.
+  // Create two browser windows and snap `window` to start partial overview.
   aura::Window* window = browser()->window()->GetNativeWindow();
+  CreateBrowser(browser()->profile());
   ash::WindowState* window_state = ash::WindowState::Get(window);
   const ash::WindowSnapWMEvent primary_snap_event(
       ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
@@ -76,7 +79,10 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
   auto* overview_grid =
       ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
           window->GetRootWindow());
-  auto* settings_button = overview_grid->GetSettingsButtonForTesting();
+  ASSERT_TRUE(overview_grid);
+  auto* faster_split_view = overview_grid->GetFasterSplitView();
+  ASSERT_TRUE(faster_split_view);
+  auto* settings_button = faster_split_view->settings_button();
   ASSERT_TRUE(settings_button);
 
   // Setup navigation observer to wait for the OS Settings page.
@@ -97,4 +103,26 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest, SnapWindowSettings) {
       browser()->profile(), ash::SystemWebAppType::SETTINGS);
   ASSERT_TRUE(settings_browser);
   ASSERT_EQ(os_settings, GetActiveUrl(settings_browser));
+}
+
+// Tests that if partial overview is active, and a window gets session
+// restore'd, partial overview auto-snaps the window. See b/314816288.
+IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
+                       AutoSnapWhileInSessionRestore) {
+  // Create two browser windows and snap `window1` to start partial overview.
+  aura::Window* window1 = browser()->window()->GetNativeWindow();
+  ash::WindowState* window_state = ash::WindowState::Get(window1);
+  CreateBrowser(browser()->profile());
+
+  const ash::WindowSnapWMEvent primary_snap_event(
+      ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
+  window_state->OnWMEvent(&primary_snap_event);
+  ash::WaitForOverviewEntered();
+  ASSERT_TRUE(ash::OverviewController::Get()->InOverviewSession());
+
+  // Open a new browser window. Test it gets auto-snapped.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  aura::Window* window2 = browser2->window()->GetNativeWindow();
+  EXPECT_TRUE(ash::WindowState::Get(window2)->IsSnapped());
+  EXPECT_FALSE(ash::OverviewController::Get()->InOverviewSession());
 }

@@ -12,6 +12,7 @@ mojom("mojom") {
 
   sources = [
     "assistant_volume_control.mojom",
+    "hid_preserving_bluetooth_state_controller.mojom",
     "tray_action.mojom",
   ]
 

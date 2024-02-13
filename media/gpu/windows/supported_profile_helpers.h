@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_WINDOWS_SUPPORTED_PROFILE_HELPERS_H_
 #define MEDIA_GPU_WINDOWS_SUPPORTED_PROFILE_HELPERS_H_
 
+#include <d3d12.h>
 #include <initguid.h>
 
 #include "base/containers/flat_map.h"
@@ -148,6 +149,11 @@ using SupportedResolutionRangeMap =
 MEDIA_GPU_EXPORT
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
+    const gpu::GpuDriverBugWorkarounds& workarounds);
+
+MEDIA_GPU_EXPORT
+SupportedResolutionRangeMap GetSupportedD3D12VideoDecoderResolutions(
+    Microsoft::WRL::ComPtr<ID3D12Device> device,
     const gpu::GpuDriverBugWorkarounds& workarounds);
 
 }  // namespace media

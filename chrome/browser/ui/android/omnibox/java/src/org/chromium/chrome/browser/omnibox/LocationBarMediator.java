@@ -51,12 +51,15 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -512,17 +515,7 @@ class LocationBarMediator
                 mAutocompleteCoordinator.getSuggestionCount() != 0);
     }
 
-    /* package */ void loadUrl(String url, int transition, long inputStart, boolean openInNewTab) {
-        loadUrlWithPostData(url, transition, inputStart, null, null, openInNewTab);
-    }
-
-    /* package */ void loadUrlWithPostData(
-            String url,
-            int transition,
-            long inputStart,
-            String postDataType,
-            byte[] postData,
-            boolean openInNewTab) {
+    /* package */ void loadUrl(OmniboxLoadUrlParams omniboxLoadUrlParams) {
         assert mLocationBarDataProvider != null;
         Tab currentTab = mLocationBarDataProvider.getTab();
 
@@ -532,24 +525,39 @@ class LocationBarMediator
 
         // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
         if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(
-                url,
-                transition,
-                inputStart,
-                postDataType,
-                postData,
+                omniboxLoadUrlParams.url,
+                omniboxLoadUrlParams.transitionType,
+                omniboxLoadUrlParams.inputStartTimestamp,
+                omniboxLoadUrlParams.postDataType,
+                omniboxLoadUrlParams.postData,
                 mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
+        String url = omniboxLoadUrlParams.url;
         if (currentTab != null) {
             boolean isCurrentTabNtpUrl = UrlUtilities.isNtpUrl(currentTab.getUrl());
             if (currentTab.isNativePage() || isCurrentTabNtpUrl) {
                 mOmniboxUma.recordNavigationOnNtp(
-                        url, transition, !currentTab.isIncognito() && isCurrentTabNtpUrl);
+                        omniboxLoadUrlParams.url,
+                        omniboxLoadUrlParams.transitionType,
+                        !currentTab.isIncognito() && isCurrentTabNtpUrl);
                 // Passing in an empty string should not do anything unless the user is at the NTP.
                 // Since the NTP has no url, pressing enter while clicking on the URL bar should
                 // refresh the page as it does when you click and press enter on any other site.
                 if (url.isEmpty()) url = currentTab.getUrl().getSpec();
+            }
+
+            if (omniboxLoadUrlParams.callback != null) {
+                currentTab.addObserver(
+                        new EmptyTabObserver() {
+                            @Override
+                            public void onLoadUrl(
+                                    Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
+                                omniboxLoadUrlParams.callback.onLoadUrl(params, loadUrlResult);
+                                tab.removeObserver(this);
+                            }
+                        });
             }
         }
 
@@ -561,12 +569,13 @@ class LocationBarMediator
                     TimingMetric.shortUptime("Android.Omnibox.SetGeolocationHeadersTime")) {
                 loadUrlParams.setVerbatimHeaders(GeolocationHeader.getGeoHeader(url, currentTab));
             }
-            loadUrlParams.setTransitionType(transition | PageTransition.FROM_ADDRESS_BAR);
-            if (inputStart != 0) {
-                loadUrlParams.setInputStartTimestamp(inputStart);
+            loadUrlParams.setTransitionType(
+                    omniboxLoadUrlParams.transitionType | PageTransition.FROM_ADDRESS_BAR);
+            if (omniboxLoadUrlParams.inputStartTimestamp != 0) {
+                loadUrlParams.setInputStartTimestamp(omniboxLoadUrlParams.inputStartTimestamp);
             }
 
-            if (!TextUtils.isEmpty(postDataType)) {
+            if (!TextUtils.isEmpty(omniboxLoadUrlParams.postDataType)) {
                 StringBuilder headers = new StringBuilder();
                 String prevHeader = loadUrlParams.getVerbatimHeaders();
                 if (prevHeader != null && !prevHeader.isEmpty()) {
@@ -575,16 +584,18 @@ class LocationBarMediator
                 }
 
                 headers.append("Content-Type: ");
-                headers.append(postDataType);
+                headers.append(omniboxLoadUrlParams.postDataType);
 
                 loadUrlParams.setVerbatimHeaders(headers.toString());
             }
 
-            if (postData != null && postData.length != 0) {
-                loadUrlParams.setPostData(ResourceRequestBody.createFromBytes(postData));
+            if (omniboxLoadUrlParams.postData != null
+                    && omniboxLoadUrlParams.postData.length != 0) {
+                loadUrlParams.setPostData(
+                        ResourceRequestBody.createFromBytes(omniboxLoadUrlParams.postData));
             }
 
-            if (openInNewTab
+            if (omniboxLoadUrlParams.openInNewTab
                     && mTabModelSelectorSupplier != null
                     && mTabModelSelectorSupplier.get() != null) {
                 mTabModelSelectorSupplier
@@ -599,7 +610,8 @@ class LocationBarMediator
             }
             RecordUserAction.record("MobileOmniboxUse");
         }
-        mLocaleManager.recordLocaleBasedSearchMetrics(false, url, transition);
+        mLocaleManager.recordLocaleBasedSearchMetrics(
+                false, url, omniboxLoadUrlParams.transitionType);
 
         PostTask.postTask(TaskTraits.UI_USER_VISIBLE, () -> focusCurrentTab());
     }
@@ -1350,7 +1362,10 @@ class LocationBarMediator
                 mTemplateUrlServiceSupplier.get().getUrlForSearchQuery(query, searchParams);
 
         if (!TextUtils.isEmpty(queryUrl)) {
-            loadUrl(queryUrl, PageTransition.GENERATED, 0, /* openInNewTab= */ false);
+            loadUrl(
+                    new OmniboxLoadUrlParams.Builder(queryUrl, PageTransition.GENERATED)
+                            .setOpenInNewTab(false)
+                            .build());
         } else {
             setSearchQuery(query);
         }
@@ -1396,7 +1411,10 @@ class LocationBarMediator
 
     @Override
     public void loadUrlFromVoice(String url) {
-        loadUrl(url, PageTransition.TYPED, 0, /* openInNewTab= */ false);
+        loadUrl(
+                new OmniboxLoadUrlParams.Builder(url, PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
     }
 
     @Override

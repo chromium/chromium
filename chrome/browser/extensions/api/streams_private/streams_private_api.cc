@@ -90,7 +90,7 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
 #if BUILDFLAG(ENABLE_PDF)
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
       extension_id == extension_misc::kPdfExtensionId) {
-    pdf::PdfViewerStreamManager::CreateForWebContents(web_contents);
+    pdf::PdfViewerStreamManager::Create(web_contents);
     pdf::PdfViewerStreamManager::FromWebContents(web_contents)
         ->AddStreamContainer(frame_tree_node_id, internal_id,
                              std::move(stream_container));

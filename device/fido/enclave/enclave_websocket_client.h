@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_ENCLAVE_ENCLAVE_WEBSOCKET_CLIENT_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace device::enclave {
@@ -34,7 +34,7 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
 
   using OnResponseCallback =
       base::RepeatingCallback<void(SocketStatus,
-                                   absl::optional<std::vector<uint8_t>>)>;
+                                   std::optional<std::vector<uint8_t>>)>;
 
   EnclaveWebSocketClient(
       const GURL& service_url,
@@ -105,7 +105,7 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
 
   // pending_write_data_ contains a message to be sent which can be delayed if
   // the socket is still connecting.
-  absl::optional<std::vector<uint8_t>> pending_write_data_;
+  std::optional<std::vector<uint8_t>> pending_write_data_;
 
   mojo::Receiver<network::mojom::WebSocketHandshakeClient> handshake_receiver_{
       this};

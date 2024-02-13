@@ -75,7 +75,6 @@ class OptimizationGuideStoreTest : public testing::Test {
 
   void TearDown() override {
     last_loaded_hint_.reset();
-    pref_service_.reset();
   }
 
   // Initializes the entries contained within the database on startup.

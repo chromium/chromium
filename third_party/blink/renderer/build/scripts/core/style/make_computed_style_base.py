@@ -34,7 +34,7 @@ ALIGNMENT_ORDER = [
     'FilterOperations',
     'DynamicRangeLimit',
     'ComputedGridTrackList',
-    'absl::optional<gfx::Size>',
+    'std::optional<gfx::Size>',
     'double',
     # Aligns like a pointer (can be 32 or 64 bits)
     'NamedGridLinesMap',
@@ -59,12 +59,12 @@ ALIGNMENT_ORDER = [
     'TextDecorationThickness',
     'StyleAspectRatio',
     'StyleIntrinsicLength',
-    'absl::optional<StyleScrollbarColor>',
-    'absl::optional<StyleOverflowClipMargin>',
+    'std::optional<StyleScrollbarColor>',
+    'std::optional<StyleOverflowClipMargin>',
     # Compressed builds a Member can be 32 bits, vs. a pointer will be 64.
     'Member',
     # Aligns like float
-    'absl::optional<Length>',
+    'std::optional<Length>',
     'StyleInitialLetter',
     'StyleOffsetRotation',
     'TransformOrigin',

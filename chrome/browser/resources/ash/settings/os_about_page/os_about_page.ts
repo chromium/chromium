@@ -27,6 +27,7 @@ import './update_warning_dialog.js';
 import '../crostini_page/crostini_settings_card.js';
 
 import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -51,17 +52,21 @@ declare global {
   }
 }
 
-interface OsAboutPageElement {
+export interface OsAboutPageElement {
   $: {
-    updateStatusMessageInner: HTMLDivElement,
+    buttonContainer: HTMLElement,
+    checkForUpdatesButton: CrButtonElement,
     productLogo: HTMLImageElement,
+    regulatoryInfo: HTMLElement,
+    relaunchButton: CrButtonElement,
+    updateStatusMessageInner: HTMLDivElement,
   };
 }
 
 const OsAboutPageBase = DeepLinkingMixin(
     RouteOriginMixin(I18nMixin(WebUiListenerMixin(PolymerElement))));
 
-class OsAboutPageElement extends OsAboutPageBase {
+export class OsAboutPageElement extends OsAboutPageBase {
   static get is() {
     return 'os-about-page' as const;
   }

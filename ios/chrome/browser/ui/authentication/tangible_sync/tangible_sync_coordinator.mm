@@ -100,7 +100,7 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   _mediator.delegate = self;
   if (_firstRun) {
     _viewController.modalInPresentation = YES;
-    base::UmaHistogramEnumeration("FirstRun.Stage",
+    base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kTangibleSyncScreenStart);
   }
   BOOL animated = self.baseNavigationController.topViewController != nil;
@@ -136,7 +136,8 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   } else {
     if (_firstRun) {
       base::UmaHistogramEnumeration(
-          "FirstRun.Stage", first_run::kTangibleSyncScreenCompletionWithSync);
+          first_run::kFirstRunStageHistogram,
+          first_run::kTangibleSyncScreenCompletionWithSync);
     }
     DCHECK(self.coordinatorCompleted);
     self.coordinatorCompleted();
@@ -164,7 +165,8 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 - (void)didTapSecondaryActionButton {
   if (_firstRun) {
     base::UmaHistogramEnumeration(
-        "FirstRun.Stage", first_run::kTangibleSyncScreenCompletionWithoutSync);
+        first_run::kFirstRunStageHistogram,
+        first_run::kTangibleSyncScreenCompletionWithoutSync);
   }
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());

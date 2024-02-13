@@ -195,6 +195,23 @@ const content::EvalJsResult VerifyBackgroundColorIsRed(
 // TODO(odejesush): Add tests for the rest of the Promise API methods.
 const char* kControlledFramePromiseApiMethods[]{"back", "forward", "go"};
 
+[[nodiscard]] bool IsControlledFramePresent(
+    content::WebContents* web_contents) {
+  return ExecJs(web_contents, R"(
+    (async function() {
+      return await new Promise((resolve, reject) => {
+        const controlledframe = document.createElement('controlledframe');
+        if (('src' in controlledframe)) {
+          // Tag is defined.
+          resolve('SUCCESS');
+        } else {
+          reject('FAIL');
+        }
+      });
+    })();
+  )");
+}
+
 }  // namespace
 
 class ControlledFrameApiTest
@@ -885,15 +902,6 @@ class ControlledFrameAvailableChannelTest
   ControlledFrameAvailableChannelTest& operator=(
       const ControlledFrameAvailableChannelTest&) = delete;
 
-  void CheckIsAvailable() {
-    // Test if Controlled Frame is available.
-    const GURL& kOriginalControlledFrameUrl =
-        isolated_web_app_dev_server().GetURL("/controlled_frame.html");
-    ASSERT_TRUE(
-        CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
-    EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_contents()));
-  }
-
  private:
   extensions::ScopedCurrentChannel channel_;
 };
@@ -907,11 +915,16 @@ INSTANTIATE_TEST_SUITE_P(ControlledFrameAvailableChannels,
                                          version_info::Channel::DEFAULT));
 
 IN_PROC_BROWSER_TEST_P(ControlledFrameAvailableChannelTest, Test) {
-  CheckIsAvailable();
+  // Test if Controlled Frame is available.
+  const GURL& kOriginalControlledFrameUrl =
+      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
+  ASSERT_TRUE(
+      CreateControlledFrame(app_contents(), kOriginalControlledFrameUrl));
+  EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundFile(app_contents()));
 }
 
 class ControlledFrameNotAvailableChannelTest
-    : public web_app::WebAppControllerBrowserTest,
+    : public ControlledFrameApiTest,
       public testing::WithParamInterface<version_info::Channel> {
  protected:
   ControlledFrameNotAvailableChannelTest() : channel_(GetParam()) {}
@@ -920,33 +933,6 @@ class ControlledFrameNotAvailableChannelTest
       const ControlledFrameNotAvailableChannelTest&) = delete;
   ControlledFrameNotAvailableChannelTest& operator=(
       const ControlledFrameNotAvailableChannelTest&) = delete;
-
-  [[nodiscard]] bool IsControlledFramePresent(
-      content::WebContents* web_contents) {
-    return ExecJs(web_contents, R"(
-      (async function() {
-        return await new Promise((resolve, reject) => {
-          const controlledframe = document.createElement('controlledframe');
-          if (('src' in controlledframe)) {
-            // Tag is defined.
-            resolve('SUCCESS');
-          } else {
-            reject('FAIL');
-          }
-        });
-      })();
-    )");
-  }
-
-  void CheckIsNotAvailable() {
-    // Test if Controlled Frame is not available.
-    const GURL start_url("https://app.site.test/example/index");
-    const webapps::AppId app_id = InstallPWA(start_url);
-    content::WebContents* app_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-
-    ASSERT_FALSE(IsControlledFramePresent(app_contents));
-  }
 
  private:
   extensions::ScopedCurrentChannel channel_;
@@ -961,7 +947,38 @@ INSTANTIATE_TEST_SUITE_P(ControlledFrameNotAvailableChannels,
                                          version_info::Channel::DEFAULT));
 
 IN_PROC_BROWSER_TEST_P(ControlledFrameNotAvailableChannelTest, Test) {
-  CheckIsNotAvailable();
+  // Test if Controlled Frame is not available.
+  const GURL start_url("https://app.site.test/example/index");
+  const webapps::AppId app_id = InstallPWA(start_url);
+  content::WebContents* app_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_FALSE(IsControlledFramePresent(app_contents));
+}
+
+class ControlledFrameDisabledTest : public ControlledFrameApiTest {
+ public:
+  ControlledFrameDisabledTest(const ControlledFrameDisabledTest&) = delete;
+  ControlledFrameDisabledTest& operator=(const ControlledFrameDisabledTest&) =
+      delete;
+
+ protected:
+  ControlledFrameDisabledTest() {
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kControlledFrame});
+  }
+
+  ~ControlledFrameDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list;
+};
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameDisabledTest, MissingFeature) {
+  const GURL& kOriginalControlledFrameUrl =
+      isolated_web_app_dev_server().GetURL("/controlled_frame.html");
+  ASSERT_FALSE(IsControlledFramePresent(app_contents()));
 }
 
 }  // namespace controlled_frame

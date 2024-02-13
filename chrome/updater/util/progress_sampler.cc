@@ -23,16 +23,17 @@ ProgressSampler::ProgressSampler(const base::TimeDelta& sample_time_range,
 
 ProgressSampler::~ProgressSampler() = default;
 
-void ProgressSampler::AddSample(int sample_value) {
+void ProgressSampler::AddSample(int64_t sample_value) {
   AddSample(base::Time::Now(), sample_value);
 }
 
-std::optional<base::TimeDelta> ProgressSampler::GetRemainingTime(int total) {
+std::optional<base::TimeDelta> ProgressSampler::GetRemainingTime(
+    int64_t total) {
   if (!total || !HasEnoughSamples()) {
     return {};
   }
 
-  const int current = samples_.back().value;
+  const int64_t current = samples_.back().value;
   if (total < current) {
     return {};
   }
@@ -40,7 +41,7 @@ std::optional<base::TimeDelta> ProgressSampler::GetRemainingTime(int total) {
     return base::Milliseconds(0);
   }
 
-  const std::optional<int> per_ms = GetAverageSpeedPerMs();
+  const std::optional<double> per_ms = GetAverageSpeedPerMs();
   if (!per_ms || *per_ms <= 0) {
     return {};
   }
@@ -48,7 +49,8 @@ std::optional<base::TimeDelta> ProgressSampler::GetRemainingTime(int total) {
   return base::Milliseconds((total - current + *per_ms - 1) / *per_ms);
 }
 
-void ProgressSampler::AddSample(const base::Time& timestamp, int sample_value) {
+void ProgressSampler::AddSample(const base::Time& timestamp,
+                                int64_t sample_value) {
   // `Reset` if there is a value or clock regression.
   if (!samples_.empty() && (sample_value < samples_.back().value ||
                             timestamp < samples_.back().timestamp)) {
@@ -74,13 +76,13 @@ bool ProgressSampler::HasEnoughSamples() const {
          minimum_range_required_;
 }
 
-std::optional<int> ProgressSampler::GetAverageSpeedPerMs() const {
+std::optional<double> ProgressSampler::GetAverageSpeedPerMs() const {
   if (!HasEnoughSamples()) {
     return {};
   }
   const base::TimeDelta time_diff =
       samples_.back().timestamp - samples_.front().timestamp;
-  return (samples_.back().value - samples_.front().value) /
+  return static_cast<double>(samples_.back().value - samples_.front().value) /
          time_diff.InMilliseconds();
 }
 

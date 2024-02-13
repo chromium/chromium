@@ -237,7 +237,7 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
         Assert.assertEquals("My Tablet", firstEntry.sourceName);
         Assert.assertEquals(JUnitTestGURLs.INITIAL_URL, firstEntry.url);
         Assert.assertEquals("Initial", firstEntry.title);
-        Assert.assertEquals(makeTimestamp(8, 0, 0), firstEntry.timestamp);
+        Assert.assertEquals(makeTimestamp(8, 0, 0), firstEntry.lastActiveTime);
         Assert.assertEquals(106, firstEntry.id);
     }
 

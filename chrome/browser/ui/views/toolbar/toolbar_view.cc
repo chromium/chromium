@@ -662,7 +662,7 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   PageActionIconView* const bookmark_star_icon =
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate;
+  std::unique_ptr<BubbleSignInPromoDelegate> delegate;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   delegate =
       std::make_unique<BookmarkBubbleSignInDelegate>(browser_->profile());

@@ -69,9 +69,8 @@ class SessionRestorationWebStateListObserverTest : public PlatformTest {
 
   web::FakeWebState* InsertWebState(
       std::unique_ptr<web::FakeWebState> web_state) {
-    const int insertion_index = web_state_list_.InsertWebState(
-        web_state_list_.count(), std::move(web_state),
-        WebStateList::INSERT_NO_FLAGS, WebStateOpener{});
+    const int insertion_index =
+        web_state_list_.InsertWebState(std::move(web_state));
     return static_cast<web::FakeWebState*>(
         web_state_list_.GetWebStateAt(insertion_index));
   }

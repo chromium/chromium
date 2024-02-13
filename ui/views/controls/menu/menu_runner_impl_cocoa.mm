@@ -13,6 +13,7 @@
 #import "components/remote_cocoa/app_shim/menu_controller_cocoa_delegate_impl.h"
 #import "skia/ext/skia_utils_mac.h"
 #import "ui/base/cocoa/menu_controller.h"
+#include "ui/base/cocoa/menu_utils.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
@@ -27,59 +28,11 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller_cocoa_delegate_params.h"
-#include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace views::internal {
-namespace {
-
-// Returns an appropriate event (with a location) suitable for showing a context
-// menu. Uses [NSApp currentEvent] if it's a non-nil mouse click event,
-// otherwise creates an autoreleased dummy event located at |anchor|.
-NSEvent* EventForPositioningContextMenu(const gfx::Rect& anchor,
-                                        NSWindow* window) {
-  NSEvent* event = NSApp.currentEvent;
-  switch (event.type) {
-    case NSEventTypeLeftMouseDown:
-    case NSEventTypeLeftMouseUp:
-    case NSEventTypeRightMouseDown:
-    case NSEventTypeRightMouseUp:
-    case NSEventTypeOtherMouseDown:
-    case NSEventTypeOtherMouseUp:
-      return event;
-    default:
-      break;
-  }
-  NSPoint location_in_window = [window
-      convertPointFromScreen:gfx::ScreenPointToNSPoint(anchor.CenterPoint())];
-  return [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
-                            location:location_in_window
-                       modifierFlags:0
-                           timestamp:0
-                        windowNumber:window.windowNumber
-                             context:nil
-                         eventNumber:0
-                          clickCount:1
-                            pressure:0];
-}
-
-}  // namespace
-
-// static
-MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
-    ui::MenuModel* menu_model,
-    int32_t run_types,
-    base::RepeatingClosure on_menu_closed_callback) {
-  if ((run_types & MenuRunner::CONTEXT_MENU) &&
-      !(run_types & (MenuRunner::IS_NESTED))) {
-    return new MenuRunnerImplCocoa(menu_model,
-                                   std::move(on_menu_closed_callback));
-  }
-  return new MenuRunnerImplAdapter(menu_model,
-                                   std::move(on_menu_closed_callback));
-}
 
 MenuRunnerImplCocoa::MenuRunnerImplCocoa(
     ui::MenuModel* menu_model,
@@ -117,10 +70,11 @@ void MenuRunnerImplCocoa::RunMenuAt(
     MenuAnchorPosition anchor,
     int32_t run_types,
     gfx::NativeView native_view_for_gestures,
-    absl::optional<gfx::RoundedCornersF> corners,
-    absl::optional<std::string> show_menu_host_duration_histogram) {
+    std::optional<gfx::RoundedCornersF> corners,
+    std::optional<std::string> show_menu_host_duration_histogram) {
   DCHECK(!IsRunning());
   DCHECK(parent);
+  CHECK(run_types & MenuRunner::CONTEXT_MENU);
 
   menu_delegate_ = [[MenuControllerCocoaDelegateImpl alloc]
       initWithParams:MenuControllerParamsForWidget(parent)];
@@ -131,21 +85,14 @@ void MenuRunnerImplCocoa::RunMenuAt(
   closing_event_time_ = base::TimeTicks();
   running_ = true;
 
-  // Ensure the UI can update while the menu is fading out.
-  base::ScopedPumpMessagesInPrivateModes pump_private;
-
   NSWindow* window = parent->GetNativeWindow().GetNativeNSWindow();
   NSView* view = parent->GetNativeView().GetNativeNSView();
-  NSMenu* const menu = [menu_controller_ menu];
-  CHECK(run_types & MenuRunner::CONTEXT_MENU);
-  ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(
-      menu, views::ElementTrackerViews::GetContextForWidget(parent));
 
-  [NSMenu popUpContextMenu:menu
-                 withEvent:EventForPositioningContextMenu(bounds, window)
-                   forView:view];
-
-  ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
+  ui::ShowContextMenu(
+      menu_controller_.menu,
+      ui::EventForPositioningContextMenu(bounds.CenterPoint(), window), view,
+      /*allow_nested_tasks=*/false,
+      views::ElementTrackerViews::GetContextForWidget(parent));
 
   closing_event_time_ = ui::EventTimeForNow();
   running_ = false;

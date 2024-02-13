@@ -1,0 +1,13 @@
+<!--
+@WAIT-FOR:done
+-->
+<div role="button" id="button1" tabindex="0">Button 1</div>
+<div role="button" id="button2" tabindex="0" aria-hidden="true">Button 2</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById("button1").setAttribute('aria-hidden', 'true');
+  document.getElementById("button2").setAttribute('aria-hidden', 'false');
+  document.title="done";
+});
+</script>

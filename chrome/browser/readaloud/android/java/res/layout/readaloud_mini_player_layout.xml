@@ -14,7 +14,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_gravity="start|bottom"
     android:orientation="vertical"
-    android:animateLayoutChanges="true"
+    android:alpha="0"
     android:visibility="gone">
 
     <!-- Shadow -->
@@ -36,8 +36,7 @@ found in the LICENSE file.
             android:id="@+id/mini_player_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:alpha="0">
+            android:paddingHorizontal="16dp">
 
             <!-- Buffering/unknown layout. -->
             <LinearLayout
@@ -190,7 +189,6 @@ found in the LICENSE file.
             android:progress="0"
             android:progressTint="@macro/default_icon_color"
             android:progressTintMode="src_atop"
-            android:visibility="gone"
-            android:alpha="0"/>
+            android:visibility="gone"/>
     </FrameLayout>
 </org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerLayout>

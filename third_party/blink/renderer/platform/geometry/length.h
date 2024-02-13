@@ -28,6 +28,8 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/functional/function_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -279,12 +281,11 @@ class PLATFORM_EXPORT Length {
 
   // For the block axis, intrinsic sizes such as `min-content` behave the same
   // as `auto`. https://www.w3.org/TR/css-sizing-3/#valdef-width-min-content
-  bool IsContentOrIntrinsic() const {
-    return GetType() == kMinContent || GetType() == kMaxContent ||
-           GetType() == kFitContent || GetType() == kMinIntrinsic ||
-           GetType() == kContent;
-  }
+  // This includes content-based sizes in calc-size().
+  bool IsContentOrIntrinsic() const;
   bool IsAutoOrContentOrIntrinsic() const {
+    // TODO(https://crbug.com/313072): Add support for 'auto' in 'calc-size()'
+    // here.
     return GetType() == kAuto || IsContentOrIntrinsic();
   }
 
@@ -314,7 +315,6 @@ class PLATFORM_EXPORT Length {
   bool IsDeviceWidth() const { return GetType() == kDeviceWidth; }
   bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
   bool HasAnchorQueries() const;
-  bool HasAutoAnchorPositioning() const;
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
     DCHECK(IsSpecified());
@@ -429,8 +429,18 @@ class PLATFORM_EXPORT Length {
     Mode original_;
   };
 
-  float NonNanCalculatedValue(float max_value,
-                              const AnchorEvaluator* = nullptr) const;
+  using IntrinsicLengthEvaluator = base::FunctionRef<LayoutUnit(const Length&)>;
+
+  struct EvaluationInput {
+    STACK_ALLOCATED();
+
+   public:
+    const Length::AnchorEvaluator* anchor_evaluator = nullptr;
+    std::optional<float> size_keyword_basis = std::nullopt;
+    std::optional<IntrinsicLengthEvaluator> intrinsic_evaluator = std::nullopt;
+  };
+
+  float NonNanCalculatedValue(float max_value, const EvaluationInput&) const;
 
   Length SubtractFromOneHundredPercent() const;
 

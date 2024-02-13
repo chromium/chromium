@@ -94,7 +94,7 @@ bool Image::Load() {
 
   // Verify that the image's checksum matches the checksum in the metadata.
   base::MD5Digest digest;
-  base::MD5Sum(mapped_file_.data(), mapped_file_.length(), &digest);
+  base::MD5Sum(mapped_file_.bytes(), &digest);
   if (base::MD5DigestToBase16(digest) != checksum_) {
     LOG(ERROR) << "Image checksum not matching metadata";
     return false;

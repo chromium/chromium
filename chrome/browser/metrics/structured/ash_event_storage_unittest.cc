@@ -46,19 +46,22 @@ class AshEventStorageTest : public testing::Test {
   }
 
   std::unique_ptr<AshEventStorage> BuildTestStorage() {
-    return std::make_unique<AshEventStorage>(
+    auto storage = std::make_unique<AshEventStorage>(
         /*write_delay=*/base::Seconds(0),
         GetTestDirectory()
             .Append(FILE_PATH_LITERAL("structured_metrics"))
             .Append(FILE_PATH_LITERAL("events")));
+    // Wait for the device events to be loaded.
+    Wait();
+    return storage;
   }
 
   StructuredDataProto GetReport(AshEventStorage* storage) {
-    ChromeUserMetricsExtension uma;
+    StructuredDataProto structured_data;
 
-    storage->MoveEvents(uma);
+    *structured_data.mutable_events() = storage->TakeEvents();
 
-    return uma.structured_data();
+    return structured_data;
   }
 
   void ExpectNoErrors() {
@@ -216,6 +219,34 @@ TEST_F(AshEventStorageTest, AddBatchEvents) {
 
   const auto data = GetReport(storage.get());
   ASSERT_EQ(data.events_size(), 3);
+
+  ExpectNoErrors();
+}
+
+TEST_F(AshEventStorageTest, MergePreUserAndUserEvents) {
+  std::unique_ptr<AshEventStorage> storage = BuildTestStorage();
+  Wait();
+
+  // Add event before OnProfileAdded is called.
+  storage->AddEvent(BuildTestEvent());
+  storage->AddEvent(BuildTestEvent());
+  storage->AddEvent(BuildTestEvent());
+  ASSERT_TRUE(storage->IsReady());
+
+  // There should be 3 events in the pre-profile storage.
+  EventsProto events_proto;
+  storage->CopyEvents(&events_proto);
+  EXPECT_EQ(events_proto.non_uma_events_size(), 3);
+
+  // Add profile and add an event while the profile events are being loaded.
+  storage->OnProfileAdded(GetUserDirectory());
+  storage->AddEvent(BuildTestEvent());
+  Wait();
+
+  storage->AddEvent(BuildTestEvent());
+
+  const auto data = GetReport(storage.get());
+  EXPECT_EQ(data.events_size(), 5);
 
   ExpectNoErrors();
 }

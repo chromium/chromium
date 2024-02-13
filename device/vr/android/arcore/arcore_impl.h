@@ -5,6 +5,8 @@
 #ifndef DEVICE_VR_ANDROID_ARCORE_ARCORE_IMPL_H_
 #define DEVICE_VR_ANDROID_ARCORE_ARCORE_IMPL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -18,7 +20,6 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "device/vr/util/hit_test_subscription_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -62,14 +63,14 @@ class ArCoreImpl : public ArCore {
 
   ~ArCoreImpl() override;
 
-  absl::optional<ArCore::InitializeResult> Initialize(
+  std::optional<ArCore::InitializeResult> Initialize(
       base::android::ScopedJavaLocalRef<jobject> application_context,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           required_features,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-      absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
+      std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
       override;
   MinMaxRange GetTargetFramerateRange() override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
@@ -100,11 +101,11 @@ class ArCoreImpl : public ArCore {
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       std::vector<mojom::XRHitResultPtr>* hit_results);
 
-  absl::optional<uint64_t> SubscribeToHitTest(
+  std::optional<uint64_t> SubscribeToHitTest(
       mojom::XRNativeOriginInformationPtr nativeOriginInformation,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) override;
-  absl::optional<uint64_t> SubscribeToHitTestForTransientInput(
+  std::optional<uint64_t> SubscribeToHitTestForTransientInput(
       const std::string& profile_name,
       const std::vector<mojom::EntityTypeForHitTest>& entity_types,
       mojom::XRRayPtr ray) override;
@@ -183,7 +184,7 @@ class ArCoreImpl : public ArCore {
   // list of images. The index values are needed for blink communication.
   std::unordered_map<int32_t, uint64_t> tracked_image_arcore_id_to_index_;
 
-  absl::optional<device::mojom::XRDepthConfig> depth_configuration_;
+  std::optional<device::mojom::XRDepthConfig> depth_configuration_;
 
   uint64_t next_id_ = 1;
 
@@ -233,8 +234,8 @@ class ArCoreImpl : public ArCore {
 
   // Returns mojo_from_native_origin transform given native origin
   // information. If the transform cannot be found or is unknown, it will return
-  // absl::nullopt.
-  absl::optional<gfx::Transform> GetMojoFromNativeOrigin(
+  // std::nullopt.
+  std::optional<gfx::Transform> GetMojoFromNativeOrigin(
       const mojom::XRNativeOriginInformation& native_origin_information,
       const gfx::Transform& mojo_from_viewer,
       const std::vector<mojom::XRInputSourceStatePtr>& input_state);
@@ -242,8 +243,8 @@ class ArCoreImpl : public ArCore {
   // Returns mojo_from_reference_space transform given reference space type.
   // Mojo_from_reference_space is equivalent to mojo_from_native_origin for
   // native origins that are reference spaces. If the transform cannot be found,
-  // it will return absl::nullopt.
-  absl::optional<gfx::Transform> GetMojoFromReferenceSpace(
+  // it will return std::nullopt.
+  std::optional<gfx::Transform> GetMojoFromReferenceSpace(
       device::mojom::XRReferenceSpaceType type,
       const gfx::Transform& mojo_from_viewer);
 
@@ -266,7 +267,7 @@ class ArCoreImpl : public ArCore {
   // contain the requests that have not been processed.
   // |create_anchor_function| - function to call to actually create the anchor;
   // it will receive the specific anchor creation request, along with position
-  // and orientation for the anchor, and must return absl::optional<AnchorId>.
+  // and orientation for the anchor, and must return std::optional<AnchorId>.
   template <typename T, typename FunctionType>
   void ProcessAnchorCreationRequestsHelper(
       const gfx::Transform& mojo_from_viewer,
@@ -301,7 +302,7 @@ class ArCoreImpl : public ArCore {
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
       const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-      const absl::optional<ArCore::DepthSensingConfiguration>&
+      const std::optional<ArCore::DepthSensingConfiguration>&
           depth_sensing_config,
       std::unordered_set<device::mojom::XRSessionFeature>& enabled_features);
 
@@ -310,7 +311,7 @@ class ArCoreImpl : public ArCore {
   // supported combination of mode and data format. Affects
   // |depth_sensing_usage_| and |depth_sensing_data_format_| members.
   bool ConfigureDepthSensing(
-      const absl::optional<ArCore::DepthSensingConfiguration>&
+      const std::optional<ArCore::DepthSensingConfiguration>&
           depth_sensing_config);
 
   // Must be last.

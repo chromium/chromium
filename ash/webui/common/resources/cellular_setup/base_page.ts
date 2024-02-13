@@ -60,4 +60,10 @@ export class BasePageElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [BasePageElement.is]: BasePageElement;
+  }
+}
+
 customElements.define(BasePageElement.is, BasePageElement);

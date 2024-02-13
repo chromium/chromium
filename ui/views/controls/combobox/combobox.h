@@ -77,8 +77,8 @@ class VIEWS_EXPORT Combobox : public View,
   }
 
   // Gets/Sets the selected index.
-  absl::optional<size_t> GetSelectedIndex() const { return selected_index_; }
-  void SetSelectedIndex(absl::optional<size_t> index);
+  std::optional<size_t> GetSelectedIndex() const { return selected_index_; }
+  void SetSelectedIndex(std::optional<size_t> index);
   [[nodiscard]] base::CallbackListSubscription AddSelectedIndexChangedCallback(
       views::PropertyChangedCallback callback);
 
@@ -151,8 +151,8 @@ class VIEWS_EXPORT Combobox : public View,
 
   // Overridden from PrefixDelegate:
   size_t GetRowCount() override;
-  absl::optional<size_t> GetSelectedRow() override;
-  void SetSelectedRow(absl::optional<size_t> row) override;
+  std::optional<size_t> GetSelectedRow() override;
+  void SetSelectedRow(std::optional<size_t> row) override;
   std::u16string GetTextForRow(size_t row) override;
 
  protected:
@@ -222,7 +222,7 @@ class VIEWS_EXPORT Combobox : public View,
   MenuWillShowCallbackList on_menu_will_show_;
 
   // The current selected index; nullopt means no selection.
-  absl::optional<size_t> selected_index_ = absl::nullopt;
+  std::optional<size_t> selected_index_ = std::nullopt;
 
   // True when the selection is visually denoted as invalid.
   bool invalid_ = false;
@@ -234,15 +234,15 @@ class VIEWS_EXPORT Combobox : public View,
   bool should_show_arrow_ = true;
 
   // Overriding ColorId for the combobox border.
-  absl::optional<ui::ColorId> border_color_id_;
+  std::optional<ui::ColorId> border_color_id_;
 
   // Overriding ColorId for the combobox foreground (text and caret icon).
-  absl::optional<ui::ColorId> foreground_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
 
   // Attempts to override the color for the combobox foreground icon.
-  absl::optional<ui::ColorId> foreground_icon_color_id_;
+  std::optional<ui::ColorId> foreground_icon_color_id_;
 
-  absl::optional<style::TextStyle> foreground_text_style_;
+  std::optional<style::TextStyle> foreground_text_style_;
 
   // A helper used to select entries by keyboard input.
   std::unique_ptr<PrefixSelector> selector_;
@@ -288,7 +288,7 @@ BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Combobox, View)
 VIEW_BUILDER_PROPERTY(base::RepeatingClosure, Callback)
 VIEW_BUILDER_PROPERTY(std::unique_ptr<ui::ComboboxModel>, OwnedModel)
 VIEW_BUILDER_PROPERTY(ui::ComboboxModel*, Model)
-VIEW_BUILDER_PROPERTY(absl::optional<size_t>, SelectedIndex)
+VIEW_BUILDER_PROPERTY(std::optional<size_t>, SelectedIndex)
 VIEW_BUILDER_PROPERTY(bool, Invalid)
 VIEW_BUILDER_PROPERTY(bool, SizeToLargestLabel)
 VIEW_BUILDER_PROPERTY(std::u16string, TooltipTextAndAccessibleName)

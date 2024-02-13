@@ -167,6 +167,18 @@ void NotSizeTSize() {
   span s2(vector.data(), kSize2);              // expected-error@*:* {{The source type is out of range for the destination type}}
 }
 
+void BadConstConversionsWithStdSpan() {
+  int kData[] = {10, 11, 12};
+  {
+    base::span<const int, 3u> fixed_base_span(kData);
+    std::span<int, 3u> s(fixed_base_span);  // expected-error {{no matching constructor}}
+  }
+  {
+    std::span<const int, 3u> fixed_std_span(kData);
+    base::span<int, 3u> s(fixed_std_span);  // expected-error {{no matching constructor}}
+  }
+}
+
 void FromVolatileArrayDisallowed() {
   static volatile int array[] = {1, 2, 3};
   span<int> s(array);  // expected-error {{no matching constructor for initialization of 'span<int>'}}

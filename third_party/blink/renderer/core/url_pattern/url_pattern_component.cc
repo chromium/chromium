@@ -8,6 +8,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "components/url_pattern/url_pattern_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_options.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -43,46 +44,25 @@ StringView TypeToString(Component::Type type) {
   NOTREACHED();
 }
 
-// Utility method to determine if a particular hostname pattern should be
-// treated as an IPv6 hostname.  This implements a simple and fast heuristic
-// looking for a leading `[`.  It is intended to catch the most common cases
-// with minimum overhead.
-bool TreatAsIPv6Hostname(base::StringPiece pattern_utf8) {
-  // The `[` string cannot be a valid IPv6 hostname.  We need at least two
-  // characters to represent `[*`.
-  if (pattern_utf8.size() < 2)
-    return false;
-
-  if (pattern_utf8[0] == '[')
-    return true;
-
-  // We do a bit of extra work to detect brackets behind an escape and
-  // within a grouping.
-  if ((pattern_utf8[0] == '\\' || pattern_utf8[0] == '{') &&
-      pattern_utf8[1] == '[')
-    return true;
-
-  return false;
-}
-
 // Utility method to get the correct encoding callback for a given type.
 liburlpattern::EncodeCallback GetEncodeCallback(base::StringPiece pattern_utf8,
                                                 Component::Type type,
                                                 Component* protocol_component) {
   switch (type) {
     case Component::Type::kProtocol:
-      return ProtocolEncodeCallback;
+      return ::url_pattern::ProtocolEncodeCallback;
     case Component::Type::kUsername:
-      return UsernameEncodeCallback;
+      return ::url_pattern::UsernameEncodeCallback;
     case Component::Type::kPassword:
-      return PasswordEncodeCallback;
+      return ::url_pattern::PasswordEncodeCallback;
     case Component::Type::kHostname:
-      if (TreatAsIPv6Hostname(pattern_utf8))
-        return IPv6HostnameEncodeCallback;
-      else
-        return HostnameEncodeCallback;
+      if (::url_pattern::TreatAsIPv6Hostname(pattern_utf8)) {
+        return ::url_pattern::IPv6HostnameEncodeCallback;
+      } else {
+        return ::url_pattern::HostnameEncodeCallback;
+      }
     case Component::Type::kPort:
-      return PortEncodeCallback;
+      return ::url_pattern::PortEncodeCallback;
     case Component::Type::kPathname:
       // Different types of URLs use different canonicalization for pathname.
       // A "standard" URL flattens `.`/`..` and performs full percent encoding.
@@ -108,13 +88,13 @@ liburlpattern::EncodeCallback GetEncodeCallback(base::StringPiece pattern_utf8,
       // actually have a pathname pattern to compile.
       CHECK(protocol_component);
       if (protocol_component->ShouldTreatAsStandardURL())
-        return StandardURLPathnameEncodeCallback;
+        return ::url_pattern::StandardURLPathnameEncodeCallback;
       else
-        return PathURLPathnameEncodeCallback;
+        return ::url_pattern::PathURLPathnameEncodeCallback;
     case Component::Type::kSearch:
-      return SearchEncodeCallback;
+      return ::url_pattern::SearchEncodeCallback;
     case Component::Type::kHash:
-      return HashEncodeCallback;
+      return ::url_pattern::HashEncodeCallback;
   }
   NOTREACHED();
 }

@@ -15,7 +15,7 @@ namespace metrics {
 
 // IdleTimeout and IdleTimeout policies histogram names.
 inline constexpr char kUMAIdleTimeoutActionSuccessTime[] =
-    "Enterprise.IdleTimeoutPolicies.ActionTimeDuration.%s";
+    "Enterprise.IdleTimeoutPolicies.ActionTime.%s";
 inline constexpr char kUMAIdleTimeoutActionSuccesStatus[] =
     "Enterprise.IdleTimeoutPolicies.Success.%s";
 inline constexpr char kUMAIdleTimeoutActionCase[] =

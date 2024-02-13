@@ -12,6 +12,7 @@
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -220,5 +221,8 @@ void SubFeatureOptInView::InitLayout() {
   dismiss_button_->SetAccessibleDescription(
       u"", ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
 }
+
+BEGIN_METADATA(SubFeatureOptInView)
+END_METADATA
 
 }  // namespace ash

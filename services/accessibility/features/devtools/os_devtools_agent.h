@@ -5,6 +5,7 @@
 #ifndef SERVICES_ACCESSIBILITY_FEATURES_DEVTOOLS_OS_DEVTOOLS_AGENT_H_
 #define SERVICES_ACCESSIBILITY_FEATURES_DEVTOOLS_OS_DEVTOOLS_AGENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -86,7 +87,7 @@ class OSDevToolsAgent : public blink::mojom::DevToolsAgent,
   // These pointers are kept around for access to the session for non-mojo
   // related tasks. The session destroyed callback ensures these are erased when
   // a session is disconnected.
-  std::set<OSDevToolsSession*> sessions_;
+  std::set<raw_ptr<OSDevToolsSession, SetExperimental>> sessions_;
 
   SEQUENCE_CHECKER(v8_sequence_checker_);
   base::WeakPtrFactory<OSDevToolsAgent> weak_ptr_factory_{this};

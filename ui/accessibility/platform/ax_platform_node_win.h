@@ -1145,8 +1145,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // If either |start_offset| or |end_offset| are not provided then the
   // endpoint is treated as the start or end of the node respectively.
   HRESULT GetTextAttributeValue(TEXTATTRIBUTEID attribute_id,
-                                const absl::optional<int>& start_offset,
-                                const absl::optional<int>& end_offset,
+                                const std::optional<int>& start_offset,
+                                const std::optional<int>& end_offset,
                                 base::win::VariantVector* result);
 
   // IRawElementProviderSimple support method.
@@ -1187,13 +1187,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   void ResetComputedHypertext();
 
   // Convert a mojo event to an MSAA event. Exposed for testing.
-  static absl::optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
+  static std::optional<DWORD> MojoEventToMSAAEvent(ax::mojom::Event event);
 
   // Convert a mojo event to a UIA event. Exposed for testing.
-  static absl::optional<EVENTID> MojoEventToUIAEvent(ax::mojom::Event event);
+  static std::optional<EVENTID> MojoEventToUIAEvent(ax::mojom::Event event);
 
   // Convert a mojo event to a UIA property id. Exposed for testing.
-  static absl::optional<PROPERTYID> MojoEventToUIAProperty(
+  static std::optional<PROPERTYID> MojoEventToUIAProperty(
       ax::mojom::Event event);
 
  protected:
@@ -1227,7 +1227,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
 
   bool IsUIAControl() const;
 
-  absl::optional<LONG> ComputeUIALandmarkType() const;
+  std::optional<LONG> ComputeUIALandmarkType() const;
 
   bool IsInaccessibleForUIA() const;
 
@@ -1456,12 +1456,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Computes the AnnotationObjects Attribute for the current node.
   void GetAnnotationObjectsAttribute(base::win::VariantVector* result);
   // Computes the AnnotationTypes Attribute for the current node.
-  HRESULT GetAnnotationTypesAttribute(const absl::optional<int>& start_offset,
-                                      const absl::optional<int>& end_offset,
+  HRESULT GetAnnotationTypesAttribute(const std::optional<int>& start_offset,
+                                      const std::optional<int>& end_offset,
                                       base::win::VariantVector* result);
   // Lookup the LCID for the language this node is using.
-  // Returns absl::nullopt if there was an error.
-  absl::optional<LCID> GetCultureAttributeAsLCID() const;
+  // Returns std::nullopt if there was an error.
+  std::optional<LCID> GetCultureAttributeAsLCID() const;
   // Converts an int attribute to a COLORREF
   COLORREF GetIntAttributeAsCOLORREF(ax::mojom::IntAttribute attribute) const;
   // Converts the ListStyle to UIA BulletStyle
@@ -1469,7 +1469,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Helper to get the UIA StyleId enumeration for this node
   LONG ComputeUIAStyleId() const;
   // Convert mojom TextAlign to UIA HorizontalTextAlignment enumeration
-  static absl::optional<HorizontalTextAlignment>
+  static std::optional<HorizontalTextAlignment>
   AXTextAlignToUIAHorizontalTextAlignment(ax::mojom::TextAlign text_align);
   // Converts IntAttribute::kHierarchicalLevel to UIA StyleId enumeration
   static LONG AXHierarchicalLevelToUIAStyleId(int32_t hierarchical_level);
@@ -1486,7 +1486,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
       ax::mojom::MarkerType marker_type,
       int offset_ranges_amount,
       std::vector<std::pair<int, int>>* ranges,
-      const absl::optional<ax::mojom::HighlightType>& highlight_type);
+      const std::optional<ax::mojom::HighlightType>& highlight_type);
 
   enum class MarkerTypeRangeResult {
     // The MarkerType does not overlap the range.
@@ -1500,11 +1500,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
   // Determine if a text range overlaps a |marker_type|, and whether
   // the overlap is a partial or or complete match.
   MarkerTypeRangeResult GetMarkerTypeFromRange(
-      const absl::optional<int>& start_offset,
-      const absl::optional<int>& end_offset,
+      const std::optional<int>& start_offset,
+      const std::optional<int>& end_offset,
       ax::mojom::MarkerType marker_type,
-      const absl::optional<ax::mojom::HighlightType>& highlight_type =
-          absl::nullopt);
+      const std::optional<ax::mojom::HighlightType>& highlight_type =
+          std::nullopt);
 
   bool IsAncestorComboBox();
 

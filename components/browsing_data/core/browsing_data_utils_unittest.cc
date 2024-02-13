@@ -105,8 +105,11 @@ TEST_F(BrowsingDataUtilsTest, PasswordsCounterResult) {
   auto store = base::MakeRefCounted<password_manager::TestPasswordStore>();
   store->Init(prefs(), /*affiliated_match_helper=*/nullptr);
   PasswordsCounter counter(
-      scoped_refptr<password_manager::PasswordStoreInterface>(store), nullptr,
-      nullptr);
+      /*profile_store=*/scoped_refptr<password_manager::PasswordStoreInterface>(
+          store),
+      /*account_store=*/nullptr,
+      /*pref_service=*/nullptr,
+      /*sync_service=*/nullptr);
 
   // Use a separate struct for input to make test cases easier to read after
   // auto formatting.

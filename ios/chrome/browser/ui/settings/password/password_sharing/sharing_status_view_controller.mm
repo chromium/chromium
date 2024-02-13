@@ -489,22 +489,16 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
 // Creates sharing status animations that are started one by one.
 - (void)createAnimations {
-  UIImageView* lockImage = self.lockImage;
-  UIView* progressBarView = self.progressBarView;
-  UIView* view = self.view;
-
   UICubicTimingParameters* imagesSlidingTimingParams =
       [[UICubicTimingParameters alloc]
           initWithControlPoint1:CGPointMake(0.7, 0.0)
                   controlPoint2:CGPointMake(0.45, 1.45)];
-
   self.imagesSlidingOutAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kImagesSlidingOutDuration
       timingParameters:imagesSlidingTimingParams];
   __weak __typeof(self) weakSelf = self;
   [self.imagesSlidingOutAnimation addAnimations:^{
     [weakSelf setImagesCenterXConstraint:kImagesSlidedOutCenterXConstant];
-    [view layoutIfNeeded];
   }];
   [self.imagesSlidingOutAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
@@ -515,7 +509,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
       initWithDuration:kLockAppearingDuration
                  curve:UIViewAnimationCurveEaseIn
             animations:^{
-              lockImage.hidden = NO;
+              weakSelf.lockImage.hidden = NO;
             }];
   [self.lockAppearingAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
@@ -526,17 +520,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
       initWithDuration:kProgressBarLoadingDuration
                  curve:UIViewAnimationCurveLinear
             animations:^{
-              for (NSInteger i = 0; i < kProgressBarCirclesAmount; i++) {
-                [UIView animateWithDuration:0
-                                      delay:(kProgressBarLoadingDuration /
-                                             kProgressBarCirclesAmount) *
-                                            i
-                                    options:UIViewAnimationOptionCurveEaseInOut
-                                 animations:^{
-                                   progressBarView.subviews[i].alpha = 1.0;
-                                 }
-                                 completion:nil];
-              }
+              [weakSelf animateProgressBarLoading];
             }];
   [self.progressBarLoadingAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
@@ -547,10 +531,9 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
       initWithDuration:kImagesSlidingInDuration
       timingParameters:imagesSlidingTimingParams];
   [self.imagesSlidingInAnimation addAnimations:^{
-    progressBarView.hidden = YES;
+    weakSelf.progressBarView.hidden = YES;
     [weakSelf sendRecipientImageToBack];
     [weakSelf setImagesCenterXConstraint:kImagesSlidedInCenterXConstant];
-    [view layoutIfNeeded];
   }];
   [self.imagesSlidingInAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
@@ -562,7 +545,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
       initWithDuration:kFaviconAppearingDuration
                  curve:UIViewAnimationCurveEaseIn
             animations:^{
-              self.faviconContainerView.hidden = NO;
+              weakSelf.faviconContainerView.hidden = NO;
             }];
   __weak __typeof(self.delegate) weakDelegate = self.delegate;
   [self.faviconAppearingAnimation
@@ -579,15 +562,30 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
       initWithDuration:kSharingCancelledDuration
       timingParameters:animationCancelledTimingParams];
   [self.sharingCancelledAnimation addAnimations:^{
-    progressBarView.hidden = YES;
+    weakSelf.progressBarView.hidden = YES;
     [weakSelf sendRecipientImageToBack];
     [weakSelf setImagesCenterXConstraint:0];
-    [view layoutIfNeeded];
   }];
   [self.sharingCancelledAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf displayCancelledStatus];
       }];
+}
+
+// Animates consecutive circles of the progress bar appearing.
+- (void)animateProgressBarLoading {
+  __weak __typeof(self) weakSelf = self;
+  for (NSUInteger i = 0; i < kProgressBarCirclesAmount; i++) {
+    [UIView animateWithDuration:0
+                          delay:(kProgressBarLoadingDuration /
+                                 kProgressBarCirclesAmount) *
+                                i
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                       weakSelf.progressBarView.subviews[i].alpha = 1.0;
+                     }
+                     completion:nil];
+  }
 }
 
 // Moves the recipient image to the back so that it's below the sender image
@@ -601,6 +599,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 - (void)setImagesCenterXConstraint:(CGFloat)constant {
   _senderImageCenterXConstraint.constant = -constant;
   _recipientImageCenterXConstraint.constant = constant;
+  [self.view layoutIfNeeded];
 }
 
 // Calculates and sets detent based on the height of content.

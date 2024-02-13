@@ -91,9 +91,9 @@ std::unique_ptr<views::LabelButton> CreateFingerButton(
 
 // Captures mouse events and formats them before sending them to the event sink.
 class TrackpadInternalSurfaceView : public views::View {
- public:
-  METADATA_HEADER(TrackpadInternalSurfaceView);
+  METADATA_HEADER(TrackpadInternalSurfaceView, views::View)
 
+ public:
   TrackpadInternalSurfaceView() = default;
   TrackpadInternalSurfaceView(const TrackpadInternalSurfaceView&) = delete;
   TrackpadInternalSurfaceView& operator=(const TrackpadInternalSurfaceView&) =
@@ -210,7 +210,7 @@ class TrackpadInternalSurfaceView : public views::View {
   int fingers_ = kDefaultFingers;
 };
 
-BEGIN_METADATA(TrackpadInternalSurfaceView, views::View)
+BEGIN_METADATA(TrackpadInternalSurfaceView)
 END_METADATA
 
 // -----------------------------------------------------------------------------

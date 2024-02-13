@@ -176,6 +176,9 @@ class SurfaceTreeHost : public SurfaceDelegate,
       const gfx::RectF& bounds,
       const gfx::RoundedCornersF& radii_in_dps);
 
+  scoped_refptr<viz::RasterContextProvider> SetRasterContextProviderForTesting(
+      scoped_refptr<viz::RasterContextProvider> context_provider_test);
+
  protected:
   void UpdateDisplayOnTree();
 

@@ -17,9 +17,11 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "url/gurl.h"
 
+class ChromePermissionsClient;
 class DIPSNavigationHandle;
 class DIPSService;
 class PermissionUmaUtil;
+class PlatformNotificationServiceImpl;
 
 namespace apps {
 class WebsiteMetrics;
@@ -140,6 +142,19 @@ class METRICS_EXPORT UkmRecorder {
   static SourceId GetSourceIdForChromeOSWebsiteURL(
       base::PassKey<apps::WebsiteMetrics>,
       const GURL& chromeos_website_url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be
+  // used for recording Permission UKM events related to persistent and
+  // nonpersistent notifications. `origin` is the domain that uses the Push API.
+  static SourceId GetSourceIdForNotificationPermission(
+      base::PassKey<ChromePermissionsClient>,
+      const GURL& origin);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording persistent and nonpersistent notification UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<PlatformNotificationServiceImpl>,
+      const GURL& origin);
 
   // This method should be called when the system is about to shutdown, but
   // `UkmRecorder` is still available to record metrics.

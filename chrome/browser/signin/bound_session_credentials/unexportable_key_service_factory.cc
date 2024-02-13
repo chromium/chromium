@@ -46,7 +46,8 @@ UnexportableKeyServiceFactory::UnexportableKeyServiceFactory()
           "UnexportableKeyService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              .WithGuest(ProfileSelection::kOwnInstance)
+              // Only an OTR profile is used for browsing in the Guest Session.
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
               .WithSystem(ProfileSelection::kNone)
               .Build()) {}
 

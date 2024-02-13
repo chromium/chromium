@@ -69,9 +69,9 @@ class WallpaperBaseView;
 // a render surface.
 class ASH_EXPORT DeskPreviewView : public views::Button,
                                    public OverviewFocusableView {
- public:
-  METADATA_HEADER(DeskPreviewView);
+  METADATA_HEADER(DeskPreviewView, views::Button)
 
+ public:
   DeskPreviewView(PressedCallback callback, DeskMiniView* mini_view);
 
   DeskPreviewView(const DeskPreviewView&) = delete;
@@ -110,6 +110,9 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   // Performs swap action for this preview. When `right` is true, it swaps with
   // its right preview; otherwise it swaps with its left preview.
   void Swap(bool right);
+
+  // Updates accessible name for this desk preview.
+  void UpdateAccessibleName();
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

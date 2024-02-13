@@ -5,7 +5,6 @@
 #ifndef ASH_USER_EDUCATION_USER_EDUCATION_TYPES_H_
 #define ASH_USER_EDUCATION_USER_EDUCATION_TYPES_H_
 
-#include "base/containers/enum_set.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -58,9 +57,7 @@ enum class PingId {
 
 // Enumeration of quantized time values for easy to interpret metrics about
 // human scale time measurements that can range from minutes to weeks. These
-// values are persisted to logs. Entries should not be renumbered and numeric
-// values should never be reused. Be sure to update `kAllTimeBucketsSet`
-// accordingly.
+// values are persisted to logs.
 enum class TimeBucket {
   kMinValue = 0,
   kOneMinute = kMinValue,
@@ -72,17 +69,6 @@ enum class TimeBucket {
   kOverTwoWeeks = 6,
   kMaxValue = kOverTwoWeeks,
 };
-
-static constexpr auto kAllTimeBucketsSet =
-    base::EnumSet<TimeBucket, TimeBucket::kMinValue, TimeBucket::kMaxValue>({
-        TimeBucket::kOneMinute,
-        TimeBucket::kTenMinutes,
-        TimeBucket::kOneHour,
-        TimeBucket::kOneDay,
-        TimeBucket::kOneWeek,
-        TimeBucket::kTwoWeeks,
-        TimeBucket::kOverTwoWeeks,
-    });
 
 // Each value uniquely identifies a feature tutorial. Used to gate creation of
 // new feature tutorials to avoid spamming the user.

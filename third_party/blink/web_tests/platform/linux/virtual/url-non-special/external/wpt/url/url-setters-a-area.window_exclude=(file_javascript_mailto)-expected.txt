@@ -1,17 +1,5 @@
 This is a testharness.js-based test.
-Found 118 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] <a>: Setting <a://example.net>.protocol = 'b'
-  assert_equals: expected "b://example.net" but got "b:"
-[FAIL] <area>: Setting <a://example.net>.protocol = 'b'
-  assert_equals: expected "b://example.net" but got "b:"
-[FAIL] <a>: Setting <a://example.net>.protocol = 'B' Upper-case ASCII is lower-cased
-  assert_equals: expected "b://example.net" but got "b:"
-[FAIL] <area>: Setting <a://example.net>.protocol = 'B' Upper-case ASCII is lower-cased
-  assert_equals: expected "b://example.net" but got "b:"
-[FAIL] <a>: Setting <a://example.net>.protocol = 'bC0+-.'
-  assert_equals: expected "bc0+-.://example.net" but got "bc0+-.:"
-[FAIL] <area>: Setting <a://example.net>.protocol = 'bC0+-.'
-  assert_equals: expected "bc0+-.://example.net" but got "bc0+-.:"
+Found 108 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <a>: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special
   assert_equals: expected "ssh://me@example.net" but got "http://me@example.net/"
 [FAIL] <area>: Setting <ssh://me@example.net>.protocol = 'http' Can’t switch from non-special scheme to special
@@ -44,18 +32,10 @@ Found 118 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: expected "http://%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
 [FAIL] <area>: Setting <http://example.net>.username = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
   assert_equals: expected "http://%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
-[FAIL] <a>: Setting <sc:///>.username = 'x'
-  assert_equals: expected "sc:///" but got "sc:/"
-[FAIL] <area>: Setting <sc:///>.username = 'x'
-  assert_equals: expected "sc:///" but got "sc:/"
 [FAIL] <a>: Setting <http://example.net>.password = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
   assert_equals: expected "http://:%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://:%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
 [FAIL] <area>: Setting <http://example.net>.password = '\0	\n\r !"#$%&'()*+,-./09:;<=>?@AZ[\\]^_`az{|}~Éé' UTF-8 percent encoding with the userinfo encode set.
   assert_equals: expected "http://:%00%01%09%0A%0D%1F%20!%22%23$%&'()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/" but got "http://:%00%01%09%0A%0D%1F%20!%22%23$%&%27()*+,-.%2F09%3A%3B%3C%3D%3E%3F%40AZ%5B%5C%5D%5E_%60az%7B%7C%7D~%7F%C2%80%C2%81%C3%89%C3%A9@example.net/"
-[FAIL] <a>: Setting <sc:///>.password = 'x'
-  assert_equals: expected "sc:///" but got "sc:/"
-[FAIL] <area>: Setting <sc:///>.password = 'x'
-  assert_equals: expected "sc:///" but got "sc:/"
 [FAIL] <a>: Setting <sc://x/>.host = '	'
   assert_equals: expected "sc:///" but got "sc://x/"
 [FAIL] <area>: Setting <sc://x/>.host = '	'

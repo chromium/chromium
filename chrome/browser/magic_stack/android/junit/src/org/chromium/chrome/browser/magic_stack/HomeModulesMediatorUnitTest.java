@@ -18,10 +18,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.NUM_ENTRIES;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
-import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SINGLE_TAB;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -34,14 +30,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.magic_stack.HomeModulesMediatorUnitTest.ShadowHomeModulesMetricsUtils;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -53,28 +45,8 @@ import java.util.Map;
 
 /** Unit tests for {@link HomeModulesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowHomeModulesMetricsUtils.class})
+@Config(manifest = Config.NONE)
 public class HomeModulesMediatorUnitTest {
-    @Implements(HomeModulesMetricsUtils.class)
-    static class ShadowHomeModulesMetricsUtils {
-        @Implementation
-        public static String getModuleName(@ModuleType int moduleType) {
-            switch (moduleType) {
-                case SINGLE_TAB:
-                    return "SingleTab";
-                case (PRICE_CHANGE):
-                    return "PriceChange";
-                case (NUM_ENTRIES):
-                    return "ForTesting";
-                default:
-                    assert false : "Module type not supported!";
-                    return null;
-            }
-        }
-    }
-
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

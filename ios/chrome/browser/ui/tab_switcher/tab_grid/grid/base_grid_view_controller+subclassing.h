@@ -18,6 +18,7 @@ typedef UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>
     GridDiffableDataSource;
 
 @interface BaseGridViewController (Subclassing) <
+    UICollectionViewDragDelegate,
     UICollectionViewDelegate,
     // TODO(crbug.com/1504112): Remove when the compositional layout is fully
     // landed.

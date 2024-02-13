@@ -123,38 +123,37 @@ size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
   return i;
 }
 
-absl::optional<std::string> GetOptionalStringValueFromParams(
+std::optional<std::string> GetOptionalStringValueFromParams(
     const NetLogEntry& entry,
     base::StringPiece path) {
   if (entry.params.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string* result = entry.params.FindStringByDottedPath(path);
   if (!result)
-    return absl::nullopt;
+    return std::nullopt;
 
   return *result;
 }
 
-absl::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
-                                                       base::StringPiece path) {
+std::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
+                                                      base::StringPiece path) {
   if (entry.params.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return entry.params.FindBoolByDottedPath(path);
 }
 
-absl::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
-                                                      base::StringPiece path) {
+std::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+                                                     base::StringPiece path) {
   if (entry.params.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return entry.params.FindIntByDottedPath(path);
 }
 
-absl::optional<int> GetOptionalNetErrorCodeFromParams(
-    const NetLogEntry& entry) {
+std::optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry) {
   return GetOptionalIntegerValueFromParams(entry, "net_error");
 }
 

@@ -17,12 +17,6 @@
       "transform": 1
     },
     {
-      "name": "LayoutNGBlockFlow DIV id='container'",
-      "position": [5, 5],
-      "bounds": [400, 400],
-      "transform": 1
-    },
-    {
       "name": "HorizontalScrollbar",
       "position": [5, 190],
       "bounds": [185, 15],
@@ -40,6 +34,12 @@
       "name": "Scroll corner of LayoutNGBlockFlow DIV id='container'",
       "position": [190, 190],
       "bounds": [15, 15],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='container'",
+      "position": [5, 5],
+      "bounds": [400, 400],
       "transform": 1
     }
   ],

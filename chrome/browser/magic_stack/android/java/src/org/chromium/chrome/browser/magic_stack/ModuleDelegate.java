@@ -23,12 +23,18 @@ public interface ModuleDelegate {
      * <p>These values are persisted to logs. Entries should not be renumbered and numeric values
      * should never be reused. See tools/metrics/histograms/enums.xml.
      */
-    @IntDef({ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE, ModuleType.NUM_ENTRIES})
+    @IntDef({
+        ModuleType.SINGLE_TAB,
+        ModuleType.PRICE_CHANGE,
+        ModuleType.TAB_RESUMPTION,
+        ModuleType.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface ModuleType {
         int SINGLE_TAB = 0;
         int PRICE_CHANGE = 1;
-        int NUM_ENTRIES = 2;
+        int TAB_RESUMPTION = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**

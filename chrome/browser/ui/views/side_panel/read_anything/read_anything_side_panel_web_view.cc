@@ -21,7 +21,7 @@ ReadAnythingSidePanelWebView::ReadAnythingSidePanelWebView(Profile* profile)
     : SidePanelWebUIViewT(
           base::RepeatingClosure(),
           base::RepeatingClosure(),
-          std::make_unique<BubbleContentsWrapperT<ReadAnythingUntrustedUI>>(
+          std::make_unique<WebUIContentsWrapperT<ReadAnythingUntrustedUI>>(
               GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
               profile,
               IDS_READING_MODE_TITLE,

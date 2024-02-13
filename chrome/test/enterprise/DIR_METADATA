@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Enterprise"
+}
+buganizer_public: {
+  component_id: 1456152
 }

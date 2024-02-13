@@ -4,6 +4,7 @@ Entries:[
 ]
 Set entries via devtools
 Metadata: {
+    bytesUsed : 352
     creationTime : <number>
     length : 6
     remainingBudget : 12

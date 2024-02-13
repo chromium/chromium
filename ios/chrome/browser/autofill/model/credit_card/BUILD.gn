@@ -8,9 +8,9 @@ source_set("credit_card") {
     "credit_card_data.mm",
   ]
   deps = [
-    "//components/autofill/core/browser",
     "//components/strings",
     "//ios/chrome/app/strings",
   ]
+  public_deps = [ "//components/autofill/core/browser" ]
   frameworks = [ "UIKit.framework" ]
 }

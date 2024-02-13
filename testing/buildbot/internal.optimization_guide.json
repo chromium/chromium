@@ -218,6 +218,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -245,6 +246,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Ubuntu-22.04",
             "pool": "chrome.tests.intelligence"
           },
@@ -253,6 +255,33 @@
         "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "chrome"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests Intel UHD 630",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5",
+            "os": "Ubuntu-22.04",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "Intel UHD 630"
       }
     ]
   },
@@ -401,6 +430,32 @@
         "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/"
       }
     ]
   },
@@ -549,6 +604,32 @@
         "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver",
+          "--binary",
+          "Google Chrome.app/Contents/MacOS/Google Chrome"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13",
+            "pool": "chrome.tests"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/"
       }
     ]
   },
@@ -675,6 +756,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -702,6 +784,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -710,6 +793,90 @@
         "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe",
+          "--target-platform=win32"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests AMD Radeon RX 5500 XT",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "1002:7340",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "AMD Radeon RX 5500 XT"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe",
+          "--target-platform=win32"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests Intel UHD 630",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "Intel UHD 630"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe",
+          "--target-platform=win32"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
       }
     ]
   },
@@ -835,6 +1002,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -862,6 +1030,7 @@
         },
         "swarming": {
           "dimensions": {
+            "gce": "1",
             "os": "Windows-10-19045",
             "pool": "chrome.tests.intelligence"
           },
@@ -870,6 +1039,87 @@
         "test": "model_validation_tests",
         "test_id_prefix": "ninja://components/optimization_guide/internal/testing:model_validation_tests/",
         "variant_id": "MODEL_VALIDATION_TRUNK"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests AMD Radeon RX 5500 XT",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "1002:7340",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "AMD Radeon RX 5500 XT"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests Intel UHD 630",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "8086:9bc5",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "Intel UHD 630"
+      },
+      {
+        "args": [
+          "--chromedriver",
+          "chromedriver.exe",
+          "--binary",
+          "Chrome.exe"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "ondevice_stability_tests NVIDIA GeForce GTX 1660",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
+            "pool": "chrome.tests.intelligence"
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "ondevice_stability_tests",
+        "test_id_prefix": "ninja://components/optimization_guide/internal/testing:ondevice_stability_tests/",
+        "variant_id": "NVIDIA GeForce GTX 1660"
       }
     ]
   }

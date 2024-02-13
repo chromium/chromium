@@ -175,7 +175,7 @@ void WindowCache::OnEvent(const Event& event) {
       CompareSequenceIds(event.sequence(), *last_processed_event_) <= 0) {
     return;
   }
-  last_processed_event_ = absl::nullopt;
+  last_processed_event_ = std::nullopt;
 
   // Ignore events sent by clients since the server will send everything
   // we need and client events may have different semantics (eg.

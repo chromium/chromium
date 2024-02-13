@@ -69,9 +69,14 @@
     border-bottom: var(--cr-separator-line);
     color: var(--cr-drawer-header-color, inherit);
     display: flex;
+
+    /* Declare "font" property before more granular font properties like
+     * "font-weight", etc. to properly compute font styles.
+     */
+    font: var(--cr-drawer-header-font, inherit);
     font-size: 123.08%;  /* go to 16px from 13px */
     font-weight: var(--cr-drawer-header-font-weight, inherit);
-    font: var(--cr-drawer-header-font, inherit);
+
     min-height: 56px;
     padding-inline-start: var(--cr-drawer-header-padding, 24px);
   }

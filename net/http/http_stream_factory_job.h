@@ -343,13 +343,9 @@ class HttpStreamFactory::Job
                               bool is_websocket);
 
   // Called in Job constructor. Use |spdy_session_key_| after construction.
-  static SpdySessionKey GetSpdySessionKey(
-      const ProxyChain& proxy_chain,
-      const GURL& origin_url,
-      PrivacyMode privacy_mode,
-      const SocketTag& socket_tag,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      SecureDnsPolicy secure_dns_policy);
+  static SpdySessionKey GetSpdySessionKey(const ProxyChain& proxy_chain,
+                                          const GURL& origin_url,
+                                          const HttpRequestInfo& request_info);
 
   // Returns whether an appropriate SPDY session would correspond to either a
   // connection to the last proxy server in the chain (for the traditional HTTP

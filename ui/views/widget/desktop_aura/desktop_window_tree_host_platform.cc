@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -403,10 +404,11 @@ void DesktopWindowTreeHostPlatform::CloseNow() {
 
   // If we have children, close them. Use a copy for iteration because they'll
   // remove themselves.
-  std::set<DesktopWindowTreeHostPlatform*> window_children_copy =
-      window_children_;
-  for (auto* child : window_children_copy)
+  std::set<raw_ptr<DesktopWindowTreeHostPlatform, SetExperimental>>
+      window_children_copy = window_children_;
+  for (DesktopWindowTreeHostPlatform* child : window_children_copy) {
     child->CloseNow();
+  }
   DCHECK(window_children_.empty());
 
   // If we have a parent, remove ourselves from its children list.
@@ -942,12 +944,12 @@ void DesktopWindowTreeHostPlatform::OnActivationChanged(bool active) {
   ScheduleRelayout();
 }
 
-absl::optional<gfx::Size>
+std::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMinimumSizeForWindow() {
   return native_widget_delegate_->GetMinimumSize();
 }
 
-absl::optional<gfx::Size>
+std::optional<gfx::Size>
 DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
   return native_widget_delegate_->GetMaximumSize();
 }
@@ -962,11 +964,11 @@ SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
   return window_mask;
 }
 
-absl::optional<ui::OwnedWindowAnchor>
+std::optional<ui::OwnedWindowAnchor>
 DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInDIP() {
   const auto* anchor =
       GetContentWindow()->GetProperty(aura::client::kOwnedWindowAnchor);
-  return anchor ? absl::make_optional(*anchor) : absl::nullopt;
+  return anchor ? std::make_optional(*anchor) : std::nullopt;
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToPixels(
@@ -1010,10 +1012,9 @@ gfx::Rect DesktopWindowTreeHostPlatform::ToPixelRect(
       GetRootTransform().MapRect(gfx::RectF(rect_in_dip));
   // Due to the limitation of IEEE floating point representation and rounding
   // error, the converted result may become slightly larger than expected value,
-  // such as 3000.0005. Allow 0.001 eplisin to round down in such case. This is
+  // such as 3000.0005. Allow error to round down in such case. This is
   // also used in cc/viz. See crbug.com/1418606.
-  constexpr float kEpsilon = 0.001f;
-  return gfx::ToEnclosingRectIgnoringError(rect_in_pixels_f, kEpsilon);
+  return gfx::ToEnclosingRectIgnoringError(rect_in_pixels_f);
 }
 
 Widget* DesktopWindowTreeHostPlatform::GetWidget() {

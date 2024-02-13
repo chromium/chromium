@@ -123,7 +123,7 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   // new calls for this method - this as temporary flow to support switching
   // BookmarkModel instances.
   //
-  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   //     See ConsentLevel::kSync documentation for details.
   void WipeStorageAndSyncSubscriptions();
 

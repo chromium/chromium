@@ -42,6 +42,8 @@ class PaymentInstrument {
 
   friend bool operator==(const PaymentInstrument&, const PaymentInstrument&);
 
+  int Compare(const PaymentInstrument& payment_instrument) const;
+
   int64_t instrument_id() const { return instrument_id_; }
 
   const DenseSet<PaymentRail>& supported_rails() const {

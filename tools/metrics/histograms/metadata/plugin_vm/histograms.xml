@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PluginVm.SetupFailureReason" enum="PluginVmSetupFailureReason"
-    expires_after="2024-05-05">
+    expires_after="2024-08-11">
   <owner>timloh@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>Recorded when the Plugin VM installer fails.</summary>

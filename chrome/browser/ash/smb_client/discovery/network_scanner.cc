@@ -13,8 +13,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/smb_client/discovery/host_locator.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -131,5 +130,4 @@ void NetworkScanner::FireCallbackIfFinished(uint32_t request_id) {
   }
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

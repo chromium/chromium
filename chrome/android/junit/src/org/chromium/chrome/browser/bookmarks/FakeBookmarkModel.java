@@ -33,11 +33,11 @@ public class FakeBookmarkModel extends BookmarkModel {
     public static final String READING_LIST_FOLDER_TITLE = "Reading list";
 
     // Factory constructor for the FakeBoomkarkModel
-    public static BookmarkModel createModel() {
+    public static FakeBookmarkModel createModel() {
         // Temporary Jni mock.
         BookmarkBridgeJni.TEST_HOOKS.setInstanceForTesting(
                 Mockito.mock(BookmarkBridge.Natives.class));
-        BookmarkModel fakeBookmarkModel = new FakeBookmarkModel();
+        FakeBookmarkModel fakeBookmarkModel = new FakeBookmarkModel();
         return fakeBookmarkModel;
     }
 
@@ -68,6 +68,15 @@ public class FakeBookmarkModel extends BookmarkModel {
         setupTopLevelFolders();
         bookmarkModelLoaded();
     }
+
+    // Public extensions to the BookmarkModel API for testing.
+
+    /** Adds a managed folder, parent cannot be the root. */
+    public BookmarkId addManagedFolder(BookmarkId parent, String title) {
+        return addFolder(parent, title, /* isManaged= */ true);
+    }
+
+    // Private functions used internally.
 
     private void setupTopLevelFolders() {
         // Setup the root folder structure.
@@ -150,6 +159,10 @@ public class FakeBookmarkModel extends BookmarkModel {
     }
 
     private BookmarkId addFolder(BookmarkId parent, String title) {
+        return addFolder(parent, title, /* isManaged= */ false);
+    }
+
+    private BookmarkId addFolder(BookmarkId parent, String title, boolean isManaged) {
         assert !parent.equals(mRootFolderId);
         assert parent.getType() == BookmarkType.NORMAL;
         return addBookmarkItem(
@@ -159,7 +172,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                 /* url= */ null,
                 /* isFolder= */ true,
                 /* isEditable= */ true,
-                /* isManaged= */ false,
+                isManaged,
                 /* read= */ false,
                 FakeBookmarkModel.this.isAccountBookmark(parent));
     }
@@ -300,7 +313,9 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public BookmarkId getDefaultReadingListFolder(long nativeBookmarkBridge) {
-            return mMobileFolderId;
+            return BookmarkFeatures.isBookmarksAccountStorageEnabled()
+                    ? mAccountReadingListFolderId
+                    : mLocalOrSyncableReadingListFolderId;
         }
 
         @Override

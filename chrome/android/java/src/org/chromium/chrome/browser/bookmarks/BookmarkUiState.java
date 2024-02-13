@@ -73,7 +73,7 @@ public class BookmarkUiState {
     /**
      * @see #createStateFromUrl(Uri, BookmarkModel).
      */
-    static BookmarkUiState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
+    public static BookmarkUiState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
         if (SHOPPING_FILTER_URL.equals(url)) {
             return createShoppingFilterState();
         } else {
@@ -128,6 +128,10 @@ public class BookmarkUiState {
         mUrl = url;
         mFolder = folder;
         mSearchText = queryString;
+    }
+
+    public @Nullable BookmarkId getFolder() {
+        return mFolder;
     }
 
     @Override

@@ -25,6 +25,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +43,7 @@ const char kService2[] = "service2";
 
 // Registers a new EventListener for |service_types| in |listener_list|.
 void AddEventListener(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& service_type,
     content::RenderProcessHost* process,
     extensions::EventListenerMap::ListenerList* listener_list) {
@@ -65,7 +66,7 @@ class MockedMDnsAPI : public MDnsAPI {
   explicit MockedMDnsAPI(content::BrowserContext* context) : MDnsAPI(context) {}
 
  public:
-  MOCK_CONST_METHOD1(IsMDnsAllowed, bool(const std::string& extension_id));
+  MOCK_CONST_METHOD1(IsMDnsAllowed, bool(const ExtensionId& extension_id));
 
   MOCK_METHOD0(GetEventListeners,
                const extensions::EventListenerMap::ListenerList&());
@@ -206,7 +207,7 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
   const scoped_refptr<extensions::Extension> CreateExtension(
       std::string name,
       bool is_platform_app,
-      std::string extension_id) {
+      const extensions::ExtensionId& extension_id) {
     auto manifest = base::Value::Dict()
                         .Set(extensions::manifest_keys::kVersion, "1.0.0.0")
                         .Set(extensions::manifest_keys::kName, name)

@@ -464,6 +464,7 @@ TEST(DocumentScanAshTypeConvertersTest, GetScannerListResponse_UsbScanner) {
   scanner->set_secure(true);
   scanner->add_image_format("image/png");
   scanner->add_image_format("image/jpeg");
+  scanner->set_protocol_type("backend");
 
   auto output = crosapi::mojom::GetScannerListResponse::From(input);
   EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kSuccess);
@@ -479,6 +480,7 @@ TEST(DocumentScanAshTypeConvertersTest, GetScannerListResponse_UsbScanner) {
   EXPECT_TRUE(scanner_out->secure);
   EXPECT_THAT(scanner_out->image_formats,
               UnorderedElementsAre("image/png", "image/jpeg"));
+  EXPECT_EQ(scanner_out->protocol_type, "backend");
 }
 
 TEST(DocumentScanAshTypeConvertersTest, GetScannerListResponse_NetworkScanner) {
@@ -494,6 +496,7 @@ TEST(DocumentScanAshTypeConvertersTest, GetScannerListResponse_NetworkScanner) {
   scanner->set_secure(false);
   scanner->add_image_format("image/png");
   scanner->add_image_format("image/jpeg");
+  scanner->set_protocol_type("backend");
 
   auto output = crosapi::mojom::GetScannerListResponse::From(input);
   EXPECT_EQ(output->result, crosapi::mojom::ScannerOperationResult::kNoMemory);
@@ -509,6 +512,7 @@ TEST(DocumentScanAshTypeConvertersTest, GetScannerListResponse_NetworkScanner) {
   EXPECT_FALSE(scanner_out->secure);
   EXPECT_THAT(scanner_out->image_formats,
               UnorderedElementsAre("image/png", "image/jpeg"));
+  EXPECT_EQ(scanner_out->protocol_type, "backend");
 }
 
 TEST(DocumentScanAshTypeConvertersTest,

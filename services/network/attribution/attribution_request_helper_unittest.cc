@@ -199,7 +199,7 @@ TEST_F(AttributionRequestHelperTest, Begin_HeadersAdded) {
   request->extra_request_headers().GetHeader(
       AttributionVerificationMediator::kReportVerificationHeader,
       &blind_messages_header);
-  std::vector<const std::string> blinded_messages =
+  const std::vector<std::string> blinded_messages =
       DeserializeStructuredHeaderListOfStrings(blind_messages_header);
   std::string expected_origin = "https://origin.example";
   for (const auto& blinded_message : blinded_messages) {

@@ -6,7 +6,7 @@
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
-import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import type {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

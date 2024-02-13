@@ -6,6 +6,7 @@
 #define UI_VIEWS_CONTROLS_MENU_MENU_ITEM_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -163,26 +163,24 @@ class VIEWS_EXPORT MenuItemView : public View {
       const ui::ImageModel& icon,
       Type type,
       ui::MenuSeparatorType separator_style,
-      absl::optional<ui::ColorId> submenu_background_color = absl::nullopt,
-      absl::optional<ui::ColorId> foreground_color = absl::nullopt,
-      absl::optional<ui::ColorId> selected_color_id = absl::nullopt);
+      std::optional<ui::ColorId> submenu_background_color = std::nullopt,
+      std::optional<ui::ColorId> foreground_color = std::nullopt,
+      std::optional<ui::ColorId> selected_color_id = std::nullopt);
 
   void SetMenuItemBackground(
-      absl::optional<MenuItemBackground> menu_item_background) {
+      std::optional<MenuItemBackground> menu_item_background) {
     menu_item_background_ = menu_item_background;
   }
 
-  absl::optional<MenuItemBackground> GetMenuItemBackground() {
+  std::optional<MenuItemBackground> GetMenuItemBackground() {
     return menu_item_background_;
   }
 
-  void SetSelectedColorId(absl::optional<ui::ColorId> selected_color_id) {
+  void SetSelectedColorId(std::optional<ui::ColorId> selected_color_id) {
     selected_color_id_ = selected_color_id;
   }
 
-  absl::optional<ui::ColorId> GetSelectedColorId() {
-    return selected_color_id_;
-  }
+  std::optional<ui::ColorId> GetSelectedColorId() { return selected_color_id_; }
 
   void SetHighlightWhenSelectedWithChildViews(
       bool highlight_when_selected_with_child_views) {
@@ -470,7 +468,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns the font list and font color to use for menu text.
   const gfx::FontList GetFontList() const;
-  const absl::optional<SkColor> GetMenuLabelColor() const;
+  const std::optional<SkColor> GetMenuLabelColor() const;
 
   // Ensures the submenu has an empty menu item iff it needs one, then updates
   // its metrics.
@@ -573,7 +571,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // could interact with model state.
   bool IsScheduledForDeletion() const;
 
-  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color_id) {
+  void SetForegroundColorId(std::optional<ui::ColorId> foreground_color_id) {
     foreground_color_id_ = foreground_color_id;
   }
 
@@ -648,7 +646,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Removed items to be deleted in ChildrenChanged().
   std::vector<raw_ptr<View, VectorExperimental>> removed_items_;
 
-  absl::optional<int> vertical_margin_;
+  std::optional<int> vertical_margin_;
 
   // Corner radius in pixels, for HIGHLIGHTED items placed at the end of a menu.
   int corner_radius_ = 0;
@@ -671,7 +669,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   raw_ptr<ImageView> submenu_arrow_image_view_ = nullptr;
 
   // The forced visual selection state of this item, if any.
-  absl::optional<bool> forced_visual_selection_;
+  std::optional<bool> forced_visual_selection_;
 
   // The vertical separator that separates the actionable and submenu regions of
   // an ACTIONABLE_SUBMENU.
@@ -703,9 +701,9 @@ class VIEWS_EXPORT MenuItemView : public View {
       features::IsChromeRefresh2023() ? IDS_NEW_BADGE_UPPERCASE
                                       : IDS_NEW_BADGE);
 
-  absl::optional<ui::ColorId> foreground_color_id_;
-  absl::optional<MenuItemBackground> menu_item_background_;
-  absl::optional<ui::ColorId> selected_color_id_;
+  std::optional<ui::ColorId> foreground_color_id_;
+  std::optional<MenuItemBackground> menu_item_background_;
+  std::optional<ui::ColorId> selected_color_id_;
 };
 
 // EmptyMenuMenuItem ----------------------------------------------------------

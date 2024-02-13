@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compose/app.js';
+import 'chrome-untrusted://compose/app.js';
 
-import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeState, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
-import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
-import {ComposeStatus} from 'chrome://compose/compose_enums.mojom-webui.js';
-import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible, whenCheck} from 'chrome://webui-test/test_util.js';
+import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {ComposeAppElement, ComposeAppState} from 'chrome-untrusted://compose/app.js';
+import type {ComposeState} from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import {CloseReason, Length, Tone, UserFeedback} from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
+import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import {isVisible, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 
@@ -323,6 +324,16 @@ suite('ComposeApp', () => {
     });
     assertFalse(appWithUndo.$.undoButton.disabled);
 
+    // Input with positive feedback.
+    const appWithPositiveFeedback = await initializeNewAppWithState({
+      webuiState: JSON.stringify({input: 'some input'}),
+      hasPendingRequest: false,
+      feedback: UserFeedback.kUserFeedbackPositive,
+    });
+    assertEquals(
+        CrFeedbackOption.THUMBS_UP,
+        appWithPositiveFeedback.$.feedbackButtons.selectedOption);
+
     // Already has a response but is loading another one.
     const appWithResultAndLoading = await initializeNewAppWithState({
       webuiState: JSON.stringify({input: 'some input'}),
@@ -536,6 +547,7 @@ suite('ComposeApp', () => {
     // Mock clicking edit in the textarea and verify new textarea shows.
     app.$.textarea.dispatchEvent(
         new CustomEvent('edit-click', {composed: true, bubbles: true}));
+    await testProxy.whenCalled('logEditInput');
     assertTrue(isVisible(app.$.editTextarea));
 
     // Mock updating input and cancelling.
@@ -543,6 +555,7 @@ suite('ComposeApp', () => {
     app.$.editTextarea.value = 'Here is a better input.';
     app.$.editTextarea.dispatchEvent(new CustomEvent('value-changed'));
     app.$.cancelEditButton.click();
+    await testProxy.whenCalled('logCancelEdit');
     assertFalse(isVisible(app.$.editTextarea));
     assertEquals('Initial input.', app.$.textarea.value);
 
@@ -622,15 +635,16 @@ suite('ComposeApp', () => {
         selectedLength: Number(Length.kLonger),
         selectedTone: Number(Tone.kCasual),
       }),
-      feedback: UserFeedback.kUserFeedbackUnspecified,
+      feedback: UserFeedback.kUserFeedbackPositive,
     });
     const appWithUndo = document.createElement('compose-app');
     document.body.appendChild(appWithUndo);
     await testProxy.whenCalled('requestInitialState');
 
-    // CLick undo.
+    // Click undo.
     appWithUndo.$.undoButton.click();
     await testProxy.whenCalled('undo');
+    await flushTasks();
 
     // UI is updated.
     assertEquals('my old input', appWithUndo.$.textarea.value);
@@ -639,6 +653,9 @@ suite('ComposeApp', () => {
         appWithUndo.$.resultText.$.root.innerText, 'some undone result');
     assertEquals(Length.kLonger, Number(appWithUndo.$.lengthMenu.value));
     assertEquals(Tone.kCasual, Number(appWithUndo.$.toneMenu.value));
+    assertEquals(
+        CrFeedbackOption.THUMBS_UP,
+        appWithUndo.$.feedbackButtons.selectedOption);
   });
 
   test('Feedback', async () => {

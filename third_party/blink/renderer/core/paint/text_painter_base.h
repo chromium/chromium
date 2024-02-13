@@ -95,8 +95,6 @@ class CORE_EXPORT TextPainterBase {
                                      float stripe_width,
                                      float dilation) = 0;
 
-  enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
-
   GraphicsContext& graphics_context_;
   const Font& font_;
   const LineRelativeOffset text_origin_;

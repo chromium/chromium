@@ -20,6 +20,8 @@ enum class FallbackReason {
   kDriveAuthenticationNotReady,
   kDriveFsInterfaceError,
   kMeteredConnection,
+  kDisableDrivePreferenceSet,
+  kDriveDisabledForAccountType,
 };
 
 using DialogChoiceCallback =

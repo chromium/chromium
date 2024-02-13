@@ -36,8 +36,6 @@ std::u16string ConsumeU16String(FuzzedDataProvider& provider) {
 FormData GenerateFormData(FuzzedDataProvider& provider) {
   FormData result;
 
-  result.is_form_tag = provider.ConsumeBool();
-
   // Determine how many fields this form will have. Pick a low value because
   // after the fuzzer's seed is exhausted, all will be 0s anyway.
   const size_t number_of_fields =

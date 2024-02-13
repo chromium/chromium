@@ -20,9 +20,9 @@ namespace ash {
 // but also records the metrics for the type of scrolling (only the first event
 // after the message center opens is recorded) and scrolling performance.
 class MessageCenterScrollBar : public RoundedScrollBar {
- public:
-  METADATA_HEADER(MessageCenterScrollBar);
+  METADATA_HEADER(MessageCenterScrollBar, RoundedScrollBar)
 
+ public:
   MessageCenterScrollBar();
 
   MessageCenterScrollBar(const MessageCenterScrollBar&) = delete;

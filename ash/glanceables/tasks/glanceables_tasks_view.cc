@@ -318,7 +318,7 @@ void GlanceablesTasksView::ScheduleUpdateTasksList(bool initial_update) {
       task_list_combo_box_view_->GetSelectedIndex().value());
   tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);
   Shell::Get()->glanceables_controller()->GetTasksClient()->GetTasks(
-      active_task_list->id,
+      active_task_list->id, /*force_fetch=*/false,
       base::BindOnce(&GlanceablesTasksView::UpdateTasksList,
                      weak_ptr_factory_.GetWeakPtr(), active_task_list->id,
                      active_task_list->title, initial_update));
@@ -461,7 +461,8 @@ void GlanceablesTasksView::SaveTask(
   if (task_id.empty()) {
     client->AddTask(task_list_id, title, std::move(on_task_saved));
   } else {
-    client->UpdateTask(task_list_id, task_id, title, std::move(on_task_saved));
+    client->UpdateTask(task_list_id, task_id, title, /*completed=*/false,
+                       std::move(on_task_saved));
   }
 }
 
@@ -487,7 +488,7 @@ void GlanceablesTasksView::OnTaskSaved(
                                 kMaximumTasks);
 }
 
-BEGIN_METADATA(GlanceablesTasksView, views::View)
+BEGIN_METADATA(GlanceablesTasksView)
 END_METADATA
 
 }  // namespace ash

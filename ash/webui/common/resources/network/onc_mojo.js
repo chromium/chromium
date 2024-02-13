@@ -677,6 +677,8 @@ export class OncMojo {
             cellularProperties.signalStrength;
         networkState.typeState.cellular.simLocked =
             cellularProperties.simLocked;
+        networkState.typeState.cellular.simLockType =
+            cellularProperties.simLockType;
         break;
       case NetworkType.kEthernet:
         networkState.typeState.ethernet.authentication =
@@ -741,6 +743,7 @@ export class OncMojo {
             activationState: ActivationStateType.kUnknown,
             signalStrength: 0,
             simLocked: false,
+            simLockType: '',
             supportNetworkScan: false,
           },
         };

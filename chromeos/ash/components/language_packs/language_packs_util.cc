@@ -14,6 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/language_packs/language_pack_manager.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -55,6 +56,9 @@ FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
   if (feature_id == kTtsFeatureId) {
     return FeatureIdsEnum::kTts;
   }
+  if (feature_id == kFontsFeatureId) {
+    return FeatureIdsEnum::kFonts;
+  }
 
   // Default value of unknown.
   return FeatureIdsEnum::kUnknown;
@@ -74,6 +78,13 @@ FeatureSuccessEnum GetSuccessValueForUma(const std::string& feature_id,
       return FeatureSuccessEnum::kTtsSuccess;
     } else {
       return FeatureSuccessEnum::kTtsFailure;
+    }
+  }
+  if (feature_id == kFontsFeatureId) {
+    if (success) {
+      return FeatureSuccessEnum::kFontsSuccess;
+    } else {
+      return FeatureSuccessEnum::kFontsFailure;
     }
   }
 
@@ -178,6 +189,9 @@ const std::string ResolveLocale(const std::string& feature_id,
     return ResolveLocaleForHandwriting(locale);
   } else if (feature_id == kTtsFeatureId) {
     return ResolveLocaleForTts(locale);
+  } else if (feature_id == kFontsFeatureId) {
+    // Language pack resolution is handled by the client.
+    return locale;
   } else {
     DLOG(ERROR) << "ResolveLocale called with wrong feature_id";
     return "";

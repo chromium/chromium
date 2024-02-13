@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 [FAIL] NavigatorML must be primary interface of navigator
@@ -42,12 +42,8 @@ Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: interface prototype object missing non-static operation expected property "gru" missing
 [FAIL] MLGraphBuilder interface: operation gruCell(MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLGruCellOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "gruCell" missing
-[FAIL] MLGraphBuilder interface: operation lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions)
-  assert_own_property: interface prototype object missing non-static operation expected property "lstm" missing
 [FAIL] MLGraphBuilder interface: operation lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "lstmCell" missing
-[FAIL] MLGraphBuilder interface: operation l2Pool2d(MLOperand, optional MLPool2dOptions)
-  assert_own_property: interface prototype object missing non-static operation expected property "l2Pool2d" missing
 [FAIL] MLGraphBuilder interface: operation triangular(MLOperand, optional MLTriangularOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "triangular" missing
 [FAIL] MLGraphBuilder interface: builder must inherit property "not(MLOperand)" with the proper type
@@ -62,18 +58,10 @@ Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_inherits: property "gruCell" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling gruCell(MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLGruCellOptions) on builder with too few arguments must throw TypeError
   assert_inherits: property "gruCell" not found in prototype chain
-[FAIL] MLGraphBuilder interface: builder must inherit property "lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions)" with the proper type
-  assert_inherits: property "lstm" not found in prototype chain
-[FAIL] MLGraphBuilder interface: calling lstm(MLOperand, MLOperand, MLOperand, unsigned long, unsigned long, optional MLLstmOptions) on builder with too few arguments must throw TypeError
-  assert_inherits: property "lstm" not found in prototype chain
 [FAIL] MLGraphBuilder interface: builder must inherit property "lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions)" with the proper type
   assert_inherits: property "lstmCell" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling lstmCell(MLOperand, MLOperand, MLOperand, MLOperand, MLOperand, unsigned long, optional MLLstmCellOptions) on builder with too few arguments must throw TypeError
   assert_inherits: property "lstmCell" not found in prototype chain
-[FAIL] MLGraphBuilder interface: builder must inherit property "l2Pool2d(MLOperand, optional MLPool2dOptions)" with the proper type
-  assert_inherits: property "l2Pool2d" not found in prototype chain
-[FAIL] MLGraphBuilder interface: calling l2Pool2d(MLOperand, optional MLPool2dOptions) on builder with too few arguments must throw TypeError
-  assert_inherits: property "l2Pool2d" not found in prototype chain
 [FAIL] MLGraphBuilder interface: builder must inherit property "triangular(MLOperand, optional MLTriangularOptions)" with the proper type
   assert_inherits: property "triangular" not found in prototype chain
 [FAIL] MLGraphBuilder interface: calling triangular(MLOperand, optional MLTriangularOptions) on builder with too few arguments must throw TypeError

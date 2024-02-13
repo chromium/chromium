@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_sign_in_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -95,32 +95,19 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"learnMoreDisclaimer", IDS_TAB_ORGANIZATION_DISCLAIMER},
       {"notStartedBody", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY},
       {"notStartedBodyFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE},
+      {"notStartedBodyLinkFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_LINK_FRE},
       {"notStartedBodySignedOut",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SIGNED_OUT},
-      {"notStartedBodySyncPaused",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SYNC_PAUSED},
-      {"notStartedBodyUnsynced",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED},
-      {"notStartedBodyUnsyncedHistory",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED_HISTORY},
       {"notStartedButton", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON},
       {"notStartedButtonAriaLabel",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_ARIA_LABEL},
       {"notStartedButtonFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE},
       {"notStartedButtonFREAriaLabel",
        IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE_ARIA_LABEL},
-      {"notStartedButtonSyncPaused",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED},
-      {"notStartedButtonSyncPausedAriaLabel",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED_ARIA_LABEL},
-      {"notStartedButtonUnsynced",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED},
-      {"notStartedButtonUnsyncedAriaLabel",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_ARIA_LABEL},
-      {"notStartedButtonUnsyncedHistory",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY},
-      {"notStartedButtonUnsyncedHistoryAriaLabel",
-       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY_ARIA_LABEL},
+      {"notStartedButtonSignedOut",
+       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SIGNED_OUT},
+      {"notStartedButtonSignedOutAriaLabel",
+       IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SIGNED_OUT_ARIA_LABEL},
       {"notStartedTitle", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE},
       {"notStartedTitleFRE", IDS_TAB_ORGANIZATION_NOT_STARTED_TITLE_FRE},
       {"rejectSuggestion", IDS_TAB_ORGANIZATION_REJECT_SUGGESTION},
@@ -201,7 +188,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
-  web_ui->AddMessageHandler(std::make_unique<TabSearchSyncHandler>(profile));
+  web_ui->AddMessageHandler(std::make_unique<TabSearchSignInHandler>(profile));
 
   page_handler_timer_ = base::ElapsedTimer();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(

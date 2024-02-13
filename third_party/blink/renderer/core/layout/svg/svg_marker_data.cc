@@ -266,8 +266,6 @@ void SVGMarkerDataBuilder::UpdateFromPathElement(const PathElement& element) {
   if (starts_new_subpath) {
     subpath_start_ = element.points[0];
     last_moveto_index_ = positions_.size();
-  } else if (element.type == kPathElementCloseSubpath) {
-    subpath_start_ = gfx::PointF();
   }
 
   last_element_type_ = element.type;

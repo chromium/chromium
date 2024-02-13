@@ -1,0 +1,17 @@
+Tests that values passed to SetDeviceOrientationOverride() are validated
+
+Testing alpha in range [0, 360)
+PASS: alpha < 0 fails
+PASS: alpha == 360 fails
+PASS: alpha > 360 fails
+
+Testing beta in range [-180, 180)
+PASS: beta < -180 fails
+PASS: beta == 180 fails
+PASS: beta > 180 fails
+
+Testing gamma in range [-90, 90)
+PASS: gamma < -90 fails
+PASS: gamma == 90 fails
+PASS: gamma > 90 fails
+

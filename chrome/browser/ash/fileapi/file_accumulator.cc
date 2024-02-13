@@ -10,6 +10,10 @@ namespace ash {
 
 FileAccumulator::FileAccumulator(size_t max_capacity)
     : max_capacity_(max_capacity), sealed_(false) {}
+FileAccumulator::FileAccumulator(FileAccumulator&& accumulator)
+    : max_capacity_(accumulator.max_capacity_),
+      sealed_(accumulator.sealed_),
+      files_(std::move(accumulator.files_)) {}
 
 FileAccumulator::~FileAccumulator() = default;
 

@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
@@ -111,7 +112,7 @@ class PageTextObserver : public content::WebContentsObserver,
   void DispatchResponses();
 
   // All registered consumers.
-  std::set<Consumer*> consumers_;
+  std::set<raw_ptr<Consumer, SetExperimental>> consumers_;
 
   // A persisted set of consumer requests.
   std::vector<std::unique_ptr<ConsumerTextDumpRequest>> requests_;

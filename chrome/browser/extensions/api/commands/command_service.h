@@ -16,6 +16,7 @@
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/command.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -72,11 +73,11 @@ class CommandService : public BrowserContextKeyedAPI,
   class Observer {
    public:
     // Called when an extension command is added.
-    virtual void OnExtensionCommandAdded(const std::string& extension_id,
+    virtual void OnExtensionCommandAdded(const ExtensionId& extension_id,
                                          const Command& command) {}
 
     // Called when an extension command is removed.
-    virtual void OnExtensionCommandRemoved(const std::string& extension_id,
+    virtual void OnExtensionCommandRemoved(const ExtensionId& extension_id,
                                            const Command& command) {}
 
     // Called when the CommandService is being destroyed.
@@ -108,7 +109,7 @@ class CommandService : public BrowserContextKeyedAPI,
   // the command is active. Returns false if the command is not active and
   // |type| requested is ACTIVE. |command| contains the command found and
   // |active| (if not null) contains whether |command| is active.
-  bool GetExtensionActionCommand(const std::string& extension_id,
+  bool GetExtensionActionCommand(const ExtensionId& extension_id,
                                  ActionInfo::Type action_type,
                                  QueryType type,
                                  Command* command,
@@ -119,7 +120,7 @@ class CommandService : public BrowserContextKeyedAPI,
   // commands are active. Returns an empty map if the extension has no named
   // commands of the right |scope| or no such active named commands when |type|
   // requested is ACTIVE.
-  bool GetNamedCommands(const std::string& extension_id,
+  bool GetNamedCommands(const ExtensionId& extension_id,
                         QueryType type,
                         CommandScope scope,
                         CommandMap* command_map) const;
@@ -133,7 +134,7 @@ class CommandService : public BrowserContextKeyedAPI,
   // be registered as a global command (be active even when Chrome does not have
   // focus. Returns true if the change was successfully recorded.
   bool AddKeybindingPref(const ui::Accelerator& accelerator,
-                         const std::string& extension_id,
+                         const ExtensionId& extension_id,
                          const std::string& command_name,
                          bool allow_overrides,
                          bool global);
@@ -141,27 +142,27 @@ class CommandService : public BrowserContextKeyedAPI,
   // Removes all keybindings for a given extension by its |extension_id|.
   // |command_name| is optional and if specified, causes only the command with
   // the name |command_name| to be removed.
-  void RemoveKeybindingPrefs(const std::string& extension_id,
+  void RemoveKeybindingPrefs(const ExtensionId& extension_id,
                              const std::string& command_name);
 
   // Update the keybinding prefs (for a command with a matching |extension_id|
   // and |command_name|) to |keystroke|. If the command had another key assigned
   // that key assignment will be removed.
-  void UpdateKeybindingPrefs(const std::string& extension_id,
+  void UpdateKeybindingPrefs(const ExtensionId& extension_id,
                              const std::string& command_name,
                              const std::string& keystroke);
 
   // Set the scope of the keybinding. If |global| is true, the keybinding works
   // even when Chrome does not have focus. If the scope requested is already
   // set, the function returns false, otherwise true.
-  bool SetScope(const std::string& extension_id,
+  bool SetScope(const ExtensionId& extension_id,
                 const std::string& command_name,
                 bool global);
 
   // Finds the command with the name |command_name| within an extension with id
   // |extension_id| . Returns an empty Command object (with keycode
   // VKEY_UNKNOWN) if the command is not found.
-  Command FindCommandByName(const std::string& extension_id,
+  Command FindCommandByName(const ExtensionId& extension_id,
                             const std::string& command) const;
 
   void AddObserver(Observer* observer);

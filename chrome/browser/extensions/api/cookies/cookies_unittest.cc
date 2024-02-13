@@ -215,6 +215,11 @@ TEST_F(ExtensionCookiesTest, PartitionKeySerialization) {
   partition_key_for_nonce_and_regular->top_level_site = top_level_site;
   partition_key_for_opaque->top_level_site = "";
 
+  // Partition key to confirm crbug.com/1522601 is addressed.
+  std::optional<extensions::api::cookies::CookiePartitionKey>
+      partition_key_with_no_top_level_site_set =
+          extensions::api::cookies::CookiePartitionKey();
+
   // Make a CanonicalCookie with a opaque top_level_site or nonce in partition
   // key.
   auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -253,12 +258,26 @@ TEST_F(ExtensionCookiesTest, PartitionKeySerialization) {
 
   // Confirm that to be matchable, the partition key
   // must be serializable.
-  EXPECT_TRUE(cookies_helpers::CookieMatchesPartitionKeyInDetails(
-      partition_key_for_nonce_and_regular, *cookie));
-  EXPECT_FALSE(cookies_helpers::CookieMatchesPartitionKeyInDetails(
-      partition_key_for_nonce_and_regular, *nonce_cookie));
-  EXPECT_FALSE(cookies_helpers::CookieMatchesPartitionKeyInDetails(
-      partition_key_for_opaque, *opaque_cookie));
+  EXPECT_TRUE(
+      cookies_helpers::CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+          partition_key_for_nonce_and_regular, *cookie->PartitionKey()));
+  EXPECT_FALSE(
+      cookies_helpers::CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+          partition_key_for_nonce_and_regular, *nonce_cookie->PartitionKey()));
+  EXPECT_FALSE(
+      cookies_helpers::CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+          partition_key_for_opaque, *opaque_cookie->PartitionKey()));
+  EXPECT_FALSE(
+      cookies_helpers::CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+          partition_key_with_no_top_level_site_set, *cookie->PartitionKey()));
+  EXPECT_FALSE(
+      cookies_helpers::CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+          partition_key_with_no_top_level_site_set,
+          *nonce_cookie->PartitionKey()));
+  EXPECT_FALSE(
+      cookies_helpers::CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+          partition_key_with_no_top_level_site_set,
+          *opaque_cookie->PartitionKey()));
 
   // Confirm that a CanonicalCookie with serializable partition key
   // can be used to create a cookie.

@@ -82,7 +82,7 @@
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
-#include "chromeos/ash/components/heatmap/heatmap_palm_detector.h"
+#include "chromeos/ash/components/heatmap/heatmap_palm_detector_impl.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/services/bluetooth_config/fast_pair_delegate.h"
@@ -97,7 +97,7 @@
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/ozone/public/ozone_platform.h"
+#include "ui/events/ozone/evdev/heatmap_palm_detector.h"
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
 #include "chrome/browser/exo_parts.h"
@@ -319,8 +319,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   device::GeolocationManager::SetInstance(
       ash::SystemGeolocationSource::CreateGeolocationManagerOnAsh());
 
-  ui::OzonePlatform::GetInstance()->SetPalmDetector(
-      std::make_unique<ash::HeatmapPalmDetector>());
+  ui::HeatmapPalmDetector::SetInstance(
+      std::make_unique<ash::HeatmapPalmDetectorImpl>());
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
@@ -367,7 +367,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
       ash::switches::kForceRefreshRateThrottle);
 
   if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
-    picker_client_ = std::make_unique<PickerClientImpl>(picker_controller);
+    picker_client_ = std::make_unique<PickerClientImpl>(
+        picker_controller, user_manager::UserManager::Get());
   }
 
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();

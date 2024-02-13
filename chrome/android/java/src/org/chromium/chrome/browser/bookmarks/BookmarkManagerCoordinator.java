@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -183,6 +184,12 @@ public class BookmarkManagerCoordinator
 
         mModalDialogManager =
                 new ModalDialogManager(new AppModalPresenter(context), ModalDialogType.APP);
+        BookmarkMoveSnackbarManager moveSnackbarManager =
+                new BookmarkMoveSnackbarManager(
+                        context,
+                        mBookmarkModel,
+                        snackbarManager,
+                        IdentityServicesProvider.get().getIdentityManager(profile));
 
         // Using OneshotSupplier as an alternative to a 2-step initialization process.
         OneshotSupplierImpl<BookmarkDelegate> bookmarkDelegateSupplier =
@@ -200,7 +207,8 @@ public class BookmarkManagerCoordinator
                         mBookmarkOpener,
                         mBookmarkUiPrefs,
                         mModalDialogManager,
-                        this::onEndSearch);
+                        this::onEndSearch,
+                        moveSnackbarManager);
         mSelectableListLayout.configureWideDisplayStyle();
 
         LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
@@ -243,7 +251,8 @@ public class BookmarkManagerCoordinator
                         bookmarkImageFetcher,
                         ShoppingServiceFactory.getForProfile(mProfile),
                         mSnackbarManager,
-                        onScrollListenerConsumer);
+                        onScrollListenerConsumer,
+                        moveSnackbarManager);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/* bookmarkDelegate= */ mMediator);

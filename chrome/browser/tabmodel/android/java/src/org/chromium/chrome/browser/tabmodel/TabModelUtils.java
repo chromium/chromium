@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.content_public.browser.WebContents;
@@ -243,5 +244,32 @@ public class TabModelUtils {
             }
         }
         return mostRecentTab;
+    }
+
+    /**
+     * Executes an {@link Callback} when {@link TabModelSelector#isTabStateInitialized()} becomes
+     * true. This will happen immediately and synchronously if the tab state is already initialized.
+     *
+     * @param tabModelSelector The {@link TabModelSelector} to act on.
+     * @param callback The callback to be run once tab state is initialized, receiving a
+     *     tabModelSelector.
+     */
+    public static void runOnTabStateInitialized(
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull Callback<TabModelSelector> callback) {
+        if (tabModelSelector.isTabStateInitialized()) {
+            callback.onResult(tabModelSelector);
+        } else {
+            TabModelSelectorObserver observer =
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onTabStateInitialized() {
+                            tabModelSelector.removeObserver(this);
+                            callback.onResult(tabModelSelector);
+                        }
+                    };
+
+            tabModelSelector.addObserver(observer);
+        }
     }
 }

@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.net.impl.CronetManifest;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,11 +67,6 @@ public final class HttpFlagsLoader {
      */
     @Nullable
     public static Flags load(Context context) {
-        if (!CronetManifest.shouldReadHttpFlags(context)) {
-            Log.d(TAG, "Not loading HTTP flags because they are disabled in the manifest");
-            return null;
-        }
-
         try {
             ApplicationInfo providerApplicationInfo = getProviderApplicationInfo(context);
             if (providerApplicationInfo == null) return null;

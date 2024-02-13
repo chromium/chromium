@@ -30,8 +30,9 @@ TEST_F(AndroidHomeModuleRankerTest, ExecuteModelWithInputForAllModules) {
 
   EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
 
-  std::vector<float> input(16, 0);
-  ExpectClassifierResults(input, {kPriceChange, kSingleTab});
+  std::vector<float> input(24, 0);
+  ExpectClassifierResults(
+      input, {kPriceChange, kSingleTab, kTabResumptionForAndroidHome});
 }
 
 }  // namespace segmentation_platform

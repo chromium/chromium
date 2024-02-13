@@ -17,7 +17,6 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
-#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -29,7 +28,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -336,6 +335,10 @@ void WindowRestoreController::OnWidgetInitialized(views::Widget* widget) {
     return;
   }
 
+  if (!window->GetProperty(app_restore::kLaunchedFromAppRestoreKey)) {
+    return;
+  }
+
   // Windows with restore window key less than -1 are launched from desk
   // templates or saved desks; we want to stay in overview for these. Windows
   // with restore window key more than -1 are launched from full restore and we
@@ -496,19 +499,6 @@ void WindowRestoreController::StackWindow(aura::Window* window) {
 
 bool WindowRestoreController::IsRestoringWindow(aura::Window* window) const {
   return windows_observation_.IsObservingSource(window);
-}
-
-void WindowRestoreController::MaybeStartPineOverviewSession() {
-  CHECK(features::IsForestFeatureEnabled());
-
-  OverviewController* overview_controller = OverviewController::Get();
-  if (overview_controller->InOverviewSession()) {
-    return;
-  }
-
-  // TODO(sammiequon): Add a new start action for this type of overview session.
-  overview_controller->StartOverview(OverviewStartAction::kAccelerator,
-                                     OverviewEnterExitType::kPine);
 }
 
 void WindowRestoreController::SaveWindowImpl(

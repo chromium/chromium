@@ -6,13 +6,13 @@
 #define UI_EVENTS_TEST_EVENT_GENERATOR_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_dispatcher.h"
@@ -301,14 +301,14 @@ class EventGenerator {
   // Generates a touch press event. If |touch_location_in_screen| is not null,
   // the touch press event will happen at |touch_location_in_screen|. Otherwise,
   // it will happen at the current event location |current_screen_location_|.
-  void PressTouch(const absl::optional<gfx::Point>& touch_location_in_screen =
-                      absl::nullopt);
+  void PressTouch(
+      const std::optional<gfx::Point>& touch_location_in_screen = std::nullopt);
 
   // Generates a touch press event with |touch_id|. See PressTouch() event for
   // the description of |touch_location_in_screen| parameter.
-  void PressTouchId(int touch_id,
-                    const absl::optional<gfx::Point>& touch_location_in_screen =
-                        absl::nullopt);
+  void PressTouchId(
+      int touch_id,
+      const std::optional<gfx::Point>& touch_location_in_screen = std::nullopt);
 
   // Generates a ET_TOUCH_MOVED event to |point|.
   void MoveTouch(const gfx::Point& point);

@@ -46,7 +46,7 @@
       <ph name="site">$1<ex>mail.google.com</ex></ph> wants to send you notifications
     </message>
     <message name="IDS_MIDI_SYSEX_INFOBAR_TEXT" desc="Text requesting permission for a site to access MIDI devices with system exclusive messages.">
-      <ph name="URL">$1<ex>www.google.com</ex></ph> wants to control and reprogram your MIDI devices (SysEx)
+      <ph name="URL">$1<ex>www.google.com</ex></ph> wants to control and reprogram your MIDI devices
     </message>
     <message name="IDS_STORAGE_ACCESS_INFOBAR_TEXT" desc="Permission request shown if the user is visiting a site needs access to its data while it is embedded into another site.">
       <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> wants to use cookies and site data on <ph name="TOP_LEVEL_URL">$2<ex>content_domain.site</ex></ph>
@@ -92,13 +92,13 @@
     Show notifications
   </message>
   <message name="IDS_MIDI_SYSEX_PERMISSION_FRAGMENT" desc="Permission asked in the permission bubble when a URL wants to access MIDI devices with system exclusive messages, along with other permissions requests. Preceded by the prompt 'This site would like to:'">
-    Control and reprogram your MIDI devices (SysEx)
+    Control and reprogram your MIDI devices
   </message>
   <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's microphone.">
-    Use your microphone
+    Use your microphones
   </message>
   <message name="IDS_MEDIA_CAPTURE_VIDEO_ONLY_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's camera.">
-    Use your camera
+    Use your cameras
   </message>
   <message name="IDS_MEDIA_CAPTURE_CAMERA_PAN_TILT_ZOOM_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions prompt when a web page requests access to the computer's camera, including zoom and move.">
     Use &amp; move your camera
@@ -240,7 +240,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       Get notifications?
     </message>
     <message name="IDS_MIDI_SYSEX_PERMISSION_CHIP" desc="Button text representing a request for accessing MIDI devices from a website. When clicked, shows a permission prompt bubble with more information.">
-      Control and reprogram MIDI devices?
+      Control &amp; reprogram MIDI devices?
     </message>
     <message name="IDS_MEDIA_CAPTURE_AUDIO_ONLY_PERMISSION_CHIP" desc="Button text representing a request for accessing the computer's microphone from a website. When clicked, shows a permission prompt bubble with more information.">
       Use microphone?

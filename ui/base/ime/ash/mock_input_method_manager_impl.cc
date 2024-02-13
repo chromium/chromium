@@ -5,9 +5,9 @@
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/input_method_util.h"
 
 namespace ash {
@@ -60,7 +60,7 @@ InputMethodDescriptor MockInputMethodManagerImpl::State::GetCurrentInputMethod()
         descriptor.keyboard_layout(), descriptor.language_codes(), true,
         GURL(),  // options page url.
         GURL(),  // input view page url.
-        /*handwriting_language=*/absl::nullopt);
+        /*handwriting_language=*/std::nullopt);
   }
   return descriptor;
 }

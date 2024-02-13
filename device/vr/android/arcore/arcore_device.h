@@ -6,7 +6,9 @@
 #define DEVICE_VR_ANDROID_ARCORE_ARCORE_DEVICE_H_
 
 #include <jni.h>
+
 #include <memory>
+#include <optional>
 #include <unordered_set>
 #include <utility>
 
@@ -20,7 +22,6 @@
 #include "device/vr/vr_device_base.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -150,7 +151,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
     // empty, will be set only once the ArCoreGl has been initialized.
     std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
 
-    absl::optional<device::mojom::XRDepthConfig> depth_configuration_;
+    std::optional<device::mojom::XRDepthConfig> depth_configuration_;
 
     std::vector<device::mojom::XRTrackedImagePtr> tracked_images_;
 

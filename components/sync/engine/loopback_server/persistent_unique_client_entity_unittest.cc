@@ -25,11 +25,11 @@ TEST(PersistentUniqueClientEntityTest, CreateFromEntity) {
 
   entity.clear_specifics();
   entity.mutable_specifics()->mutable_user_event();
-  // CommitOnly type should never have a client_tag_hash.
-  ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+  // CommitOnly type should also have a client_tag_hash.
+  ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(entity));
 
   entity.clear_client_tag_hash();
-  ASSERT_TRUE(PersistentUniqueClientEntity::CreateFromEntity(entity));
+  ASSERT_FALSE(PersistentUniqueClientEntity::CreateFromEntity(entity));
 }
 
 TEST(PersistentUniqueClientEntityTest, CreateFromSpecificsForTesting) {

@@ -5,12 +5,47 @@ Tracing complete
 https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php:
 ResourceSendRequest {
     requestId : <string>
+    resourceType : Other
     url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_logic.js.php
 }
 ResourceReceiveResponse {
     encodedDataLength : 230
     fromCache : false
     fromServiceWorker : false
+    headers : [
+        [0] : {
+            name : Date
+            value : <string>
+        }
+        [1] : {
+            name : Server
+            value : <string>
+        }
+        [2] : {
+            name : X-Powered-By
+            value : <string>
+        }
+        [3] : {
+            name : Ad-Auction-Allowed
+            value : <string>
+        }
+        [4] : {
+            name : Content-Length
+            value : <string>
+        }
+        [5] : {
+            name : Keep-Alive
+            value : <string>
+        }
+        [6] : {
+            name : Connection
+            value : <string>
+        }
+        [7] : {
+            name : Content-Type
+            value : <string>
+        }
+    ]
     mimeType : application/javascript
     requestId : <string>
     responseTime : <absolute timestamp>
@@ -46,12 +81,47 @@ ResourceFinish {
 https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php:
 ResourceSendRequest {
     requestId : <string>
+    resourceType : Other
     url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
 }
 ResourceReceiveResponse {
     encodedDataLength : 230
     fromCache : false
     fromServiceWorker : false
+    headers : [
+        [0] : {
+            name : Date
+            value : <string>
+        }
+        [1] : {
+            name : Server
+            value : <string>
+        }
+        [2] : {
+            name : X-Powered-By
+            value : <string>
+        }
+        [3] : {
+            name : Ad-Auction-Allowed
+            value : <string>
+        }
+        [4] : {
+            name : Content-Length
+            value : <string>
+        }
+        [5] : {
+            name : Keep-Alive
+            value : <string>
+        }
+        [6] : {
+            name : Connection
+            value : <string>
+        }
+        [7] : {
+            name : Content-Type
+            value : <string>
+        }
+    ]
     mimeType : application/javascript
     requestId : <string>
     responseTime : <absolute timestamp>

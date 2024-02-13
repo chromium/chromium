@@ -17,10 +17,8 @@
 namespace crosapi {
 
 void DeviceOwnershipWaiterImpl::WaitForOwnershipFetched(
-    base::OnceClosure callback,
-    bool launching_at_login_screen) {
-  if (launching_at_login_screen ||
-      user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+    base::OnceClosure callback) {
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
       profiles::IsDemoSession() || !base::SysInfo::IsRunningOnChromeOS()) {
     std::move(callback).Run();
     return;

@@ -49,6 +49,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/common/content_features.h"
 #include "net/base/filename_util.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -227,8 +228,8 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
     return;
   }
 
-  if (download->GetMimeType() == kPDFMimeType &&
-      base::FeatureList::IsEnabled(chrome::android::kOpenPdfInline)) {
+  if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
+      base::EqualsCaseInsensitiveASCII(download->GetMimeType(), kPDFMimeType)) {
     return;
   }
 
@@ -345,7 +346,7 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
   // download can start.
   if (!download_item->IsDangerous() &&
       download_item->GetMimeType() == kPDFMimeType &&
-      base::FeatureList::IsEnabled(chrome::android::kOpenPdfInline)) {
+      base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
     content::WebContents* web_contents =
         content::DownloadItemUtils::GetWebContents(download_item);
     if (web_contents) {

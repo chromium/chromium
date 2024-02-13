@@ -23,7 +23,7 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar {
 
  public:
   // Creates new scrollbar, either horizontal or vertical.
-  explicit ScrollBarViews(bool horizontal = true);
+  explicit ScrollBarViews(Orientation orientation = Orientation::kHorizontal);
 
   ScrollBarViews(const ScrollBarViews&) = delete;
   ScrollBarViews& operator=(const ScrollBarViews&) = delete;

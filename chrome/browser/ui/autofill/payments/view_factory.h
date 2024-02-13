@@ -17,6 +17,8 @@ class AutofillErrorDialogController;
 class AutofillErrorDialogView;
 class AutofillProgressDialogController;
 class AutofillProgressDialogView;
+class CardUnmaskAuthenticationSelectionDialogController;
+class CardUnmaskAuthenticationSelectionDialog;
 
 // Factory function for creating and showing the autofill progress dialog
 // view.
@@ -24,8 +26,8 @@ class AutofillProgressDialogView;
 // deletes it on dismissal, so no lifecycle management is needed. However, on
 // Android this is not the case, the view's implementation must delete itself
 // when dismissed.
-AutofillProgressDialogView* CreateAndShowProgressDialog(
-    AutofillProgressDialogController* controller,
+base::WeakPtr<AutofillProgressDialogView> CreateAndShowProgressDialog(
+    base::WeakPtr<AutofillProgressDialogController> controller,
     content::WebContents* web_contents);
 
 // Factory function for creating and showing the view.
@@ -36,6 +38,12 @@ AutofillProgressDialogView* CreateAndShowProgressDialog(
 base::WeakPtr<AutofillErrorDialogView> CreateAndShowAutofillErrorDialog(
     AutofillErrorDialogController* controller,
     content::WebContents* web_contents);
+
+// Factory function for the card unmask view creates and shows the dialog.
+CardUnmaskAuthenticationSelectionDialog*
+CreateAndShowCardUnmaskAuthenticationSelectionDialog(
+    content::WebContents* web_contents,
+    CardUnmaskAuthenticationSelectionDialogController* controller);
 
 }  // namespace autofill
 

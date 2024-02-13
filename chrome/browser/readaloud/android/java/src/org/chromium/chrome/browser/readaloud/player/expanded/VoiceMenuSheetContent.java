@@ -27,6 +27,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /** Bottom sheet content for Read Aloud voices menu. */
 class VoiceMenuSheetContent extends MenuSheetContent {
@@ -59,10 +60,22 @@ class VoiceMenuSheetContent extends MenuSheetContent {
         mVoices = new PlaybackVoice[voices.size()];
 
         int id = 0;
+        String displayLocale = null;
         for (PlaybackVoice voice : voices) {
+            if (id == 0 || isDifferentLocale(voice, voices.get(id - 1))) {
+                displayLocale =
+                        new Locale(voice.getLanguage(), voice.getAccentRegionCode())
+                                .getDisplayName();
+            } else {
+                displayLocale = null;
+            }
             MenuItem item =
                     mMenu.addItem(
-                            id, /* iconId= */ 0, voice.getDisplayName(), MenuItem.Action.RADIO);
+                            id,
+                            /* iconId= */ 0,
+                            voice.getDisplayName(),
+                            displayLocale,
+                            MenuItem.Action.RADIO);
             item.addPlayButton();
             String secondLine = getAttributesString(voice);
             if (secondLine != null) {
@@ -72,6 +85,11 @@ class VoiceMenuSheetContent extends MenuSheetContent {
             mVoiceIdToMenuItemId.put(voice.getVoiceId(), id);
             ++id;
         }
+    }
+
+    private boolean isDifferentLocale(PlaybackVoice current, PlaybackVoice previous) {
+        return (!current.getLanguage().equals(previous.getLanguage())
+                || !current.getAccentRegionCode().equals(previous.getAccentRegionCode()));
     }
 
     void setVoiceSelection(String voiceId) {

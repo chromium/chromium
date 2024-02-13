@@ -29,7 +29,7 @@ namespace {
 
 using TestSignCallback = ::device::test::StatusAndValueCallbackReceiver<
     CtapDeviceResponseCode,
-    absl::optional<AuthenticatorGetAssertionResponse>>;
+    std::optional<AuthenticatorGetAssertionResponse>>;
 
 }  // namespace
 
@@ -73,7 +73,7 @@ TEST_F(U2fSignOperationTest, SignSuccess) {
   sign_callback_receiver().WaitForCallback();
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             sign_callback_receiver().status());
-  absl::optional<AuthenticatorGetAssertionResponse> response =
+  std::optional<AuthenticatorGetAssertionResponse> response =
       sign_callback_receiver().TakeValue();
   ASSERT_TRUE(response);
   EXPECT_THAT(response->signature,

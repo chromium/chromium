@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">Добар ден <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Пребарувајте ги вашите <ph name="CATEGORY" />, датотеки, апликации и слично Користете ги копчињата со стрелки за движење низ апликациите.</translation>
 <translation id="1093645050124056515">ctrl + alt + стрелка надолу</translation>
+<translation id="1094756674036064790">Да се исклучи Bluetooth?</translation>
 <translation id="109942774857561566">Досадно ми е</translation>
 <translation id="1104084341931202936">Прикажи ги поставките за пристапност</translation>
 <translation id="1104621072296271835">Вашите уреди работат уште подобро заедно</translation>
@@ -65,7 +66,6 @@
 <translation id="1217633719248931900">Отворете ја апликацијата</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, апликација од Play Store</translation>
 <translation id="1225748608451425081">Вашиот Chromebook е заклучен поради познат проблем. Ќе може да се најавите по: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">неактивна работна површина</translation>
 <translation id="1229194443904279055">Сопрете со избирање</translation>
 <translation id="1235458158152011030">Познати мрежи</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> е поврзана.</translation>
@@ -159,7 +159,6 @@
 <translation id="1586324912145647027">Одете на работната површина 1 до 8</translation>
 <translation id="158838227375272121">Веб-сајт на Google Classroom</translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
-<translation id="1592682369233288537">Следна работна површина: <ph name="NEXT_DESK_NAME" />, користете Search+Space за активирање.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрелка надолу</translation>
 <translation id="1604857178818051494">Паузирање аудиовизуелни содржини</translation>
 <translation id="1607312127821884567">Отфрлете го поставувањето прегледување на апликациите на телефонот</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">Повеќекратното најавување е оневозможено</translation>
 <translation id="2579264398927991698">Ажурирања на фирмвер</translation>
 <translation id="2582112259361606227">Рестартирај за да се ажурира</translation>
-<translation id="2586561057878260610">Притиснете Ctrl + W за да комбинирате со <ph name="DESK_NAME" />. Притиснете Ctrl + Shift + W за да ги затворите работната површина и прозорците.</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2595239820337756193">5 km во милји</translation>
 <translation id="2596078834055697711">Прави слика од екранот</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">Администраторот на уредот може да ви го следи прелистувањето.</translation>
 <translation id="316086887565479535">Неподдржани апликации во шаблон</translation>
 <translation id="3160929076476941240">2 ч.</translation>
-<translation id="3161500364292033097">Затворете ги работната површина и прозорците</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> го враќа вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
 <translation id="3170769098533255179">Нема поврзани уреди. Wi-Fi ќе остане исклучена додека се користи точка на пристап.</translation>
 <translation id="3171170659304083361">Поставки за методи за внесување</translation>
@@ -660,6 +657,7 @@
 <translation id="3660860940251915011">Вклучување/Исклучување голема видливост на <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, управуван корисник</translation>
 <translation id="3666266999138159418">Повлечете за сокривање на лебдечкиот прозорец</translation>
+<translation id="3673898235958558034">Кога ќе исклучите Bluetooth, ќе се прекине врската меѓу „<ph name="DEVICE_NAME_1" />“ и „<ph name="DEVICE_NAME_2" />“ и вашиот Chromebook.</translation>
 <translation id="367531336287639526">Изберете ја првата икона лево од лентата за адреси</translation>
 <translation id="3677931086890821290">Ова овозможува сите апликации и веб-сајтови со дозволата за локација и ChromeOS да користат локација на Wi-Fi и мобилни мрежи.</translation>
 <translation id="3679827876008292680">Оди до последната картичка во прозорецот</translation>
@@ -671,6 +669,7 @@
 <translation id="3702846122927433391">Население во Нигерија</translation>
 <translation id="3705722231355495246">–</translation>
 <translation id="3708186454126126312">Претходно поврзани</translation>
+<translation id="3712143870407382523">Изберете прозорец за оваа страна</translation>
 <translation id="371370241367527062">Преден микрофон</translation>
 <translation id="3713734891607377840">Отвори кога ќе заврши преземањето</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и уште <ph name="UNAVAILABLE_APPS_COUNT" /> не се на уредов.</translation>
@@ -847,7 +846,6 @@
 <translation id="4389184120735010762">Ја притиснавте кратенката од тастатура за закотвената лупа. Дали сакате да ја вклучите?</translation>
 <translation id="439598569299422042">Паузирано, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Не може да се зачува снимка на екран</translation>
-<translation id="4403371424034411727">Уредот <ph name="PERIPHERAL_NAME" /> е поврзан и подготвен за користење. Глувчето може да го приспособите во „Поставки“.</translation>
 <translation id="4405151984121254935">Поврзаниот вид периферен уред не е поддржан</translation>
 <translation id="4406883609789734330">Автоматски титлови</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
@@ -873,7 +871,6 @@
 <translation id="4491109536499578614">Слика</translation>
 <translation id="450584155212756404">Dev Channel</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
-<translation id="4516212064498225455">Тековна работна површина: <ph name="CURRENT_DESK_NAME" />, користете Search+Space за отворање на менито со сите работни површини.</translation>
 <translation id="4518404433291145981">За да го отклучите вашиот Chromebook, прво отклучете го телефонот</translation>
 <translation id="4527045527269911712">Уредот Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување.</translation>
 <translation id="4533343294786968049">Се продолжува траењето на батеријата. Батеријата целосно ќе се наполни до <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -916,6 +913,7 @@
 <translation id="4666911709726371538">Повеќе апликации</translation>
 <translation id="4667099493359681081">Се презема <ph name="FILENAME" /></translation>
 <translation id="4672539464599646374">„Штедачот на батерија“ е вклучен</translation>
+<translation id="4673427585974421255">Остави вклучено</translation>
 <translation id="468293128311738995">Апликации од телефонот</translation>
 <translation id="4690510401873698237">Полицата е најдолу</translation>
 <translation id="4696813013609194136">Отклучете го уредот со код на родител</translation>
@@ -1048,13 +1046,11 @@
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> настани</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> е комбинирана со <ph name="IN_PLACE_APP" /> за да се создаде нова папка.</translation>
-<translation id="5203299837691351876">активна работна површина</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 друго известување}one{# друго известување}other{# други известувања}}</translation>
 <translation id="5207949376430453814">Нагласи го каретот за текст</translation>
 <translation id="5208059991603368177">Вклучено</translation>
 <translation id="5216991270656129561">Исклучено до <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Следна работна површина: <ph name="NEXT_DESK_NAME" />, користете Search+Space или кратенката од тастатура: Shift+Search+<ph name="NEXT_DESK_INDEX" /> за активирање.</translation>
 <translation id="5218064144558110424">Означи како незавршено</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5229343007215035173">Вклучување/Исклучување „Заштита на приватноста“</translation>
@@ -1067,7 +1063,6 @@
 <translation id="5258528442992323769">Нема зачувани работни површини</translation>
 <translation id="5260676007519551770">Биро 4</translation>
 <translation id="5268819379131021772">Список со задачи на Google</translation>
-<translation id="5275923704957843041">Преглед на работна површина</translation>
 <translation id="5277869901083657836">Прикажи/Скриј алатки за пенкало</translation>
 <translation id="5278086053818066789">Вклучете/исклучете ChromeVox (говорни повратни информации)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> го бара вашето внимание.</translation>
@@ -1216,6 +1211,7 @@
 <translation id="5802516411616338943">Отворете „Брзи поставки“</translation>
 <translation id="5804651031882187592">Исклучете ја поставката „Заклучи SIM“</translation>
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Кога ќе исклучите Bluetooth, ќе се прекине врската меѓу „<ph name="DEVICE_NAME_1" />“, „<ph name="DEVICE_NAME_2" />“ и уште <ph name="DEVICE_COUNT" /> уреди и вашиот Chromebook.</translation>
 <translation id="5823239091726045201">Задачи во Google Tasks на интернет</translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
 <translation id="5837036133683224804">Престани со емитување на <ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
@@ -1320,7 +1316,6 @@
 <translation id="6199775032047436064">Повторно вчитај ја тековната страница</translation>
 <translation id="6200515304866777730">Не е поддржано од апликацијата</translation>
 <translation id="6210042900243040400">Поврзете го уредот (<ph name="NAME" />) претходно зачуван на <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Приспособете го вашиот <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Снимете делумна слика од екранот или снимка од екранот</translation>
 <translation id="6220928844947387476">Сега можете истовремено да се снимате себеси и екранот</translation>
 <translation id="622484624075952240">Долу</translation>
@@ -1396,6 +1391,7 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> се скенира за преземање</translation>
 <translation id="6542521951477560771">Емитување на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">„Пребарување со слики“ според содржини и прегледи на слики</translation>
+<translation id="6547795021703527064">Кога ќе исклучите Bluetooth, ќе се прекине врската меѓу „<ph name="DEVICE_NAME" />“ и вашиот Chromebook.</translation>
 <translation id="6555373427270923730">Напишете веб-адреса во лентата за адреси, а потоа притиснете <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нова инсталација</translation>
@@ -1415,6 +1411,7 @@
 <translation id="6613765291890844037">Искористен простор: <ph name="STORAGE_IN_USE_SIZE" /> | вкупен простор: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>
 <translation id="6622679827379792051">Поставете прегледување на апликациите на телефонот</translation>
+<translation id="6624493541160101248">Тековна работна површина: <ph name="DESK_NAME" /> Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Известувањата од <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> и други се скриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="6627638273713273709">„Пребарување“+Shift+K</translation>
 <translation id="662830937908749204">Преместете го фокусот на следното окно</translation>
@@ -1469,7 +1466,6 @@
 <translation id="6819327813400217281">Камерата е поставена во долниот лев агол</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
 <translation id="6827049576281411231">Затворете ја таблата со настани</translation>
-<translation id="6831561626108366035">Одете на копчето за <ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" />.</translation>
 <translation id="6836499262298959512">Опасна датотека</translation>
 <translation id="6837621009301897464">За да снимите слика од екранот, притиснете</translation>
 <translation id="6852052252232534364">Кликнете за активирање</translation>
@@ -1508,6 +1504,7 @@
 <translation id="698231206551913481">Сите датотеки и локални податоци што се поврзани со корисников трајно ќе се избришат по неговото отстранување.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Резолуцијата е променета на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Кликнете „Потврди“ за да ги задржите промените. Претходните поставки ќе се вратат за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Разгледајте накратко за да дознаете како се користи вашиот Chromebook. Подгответе се во 6 чекори.</translation>
+<translation id="7000027735917578303">Поставки за прозорци и работни површини</translation>
 <translation id="7004910047186208204">Поврзете се на мобилен интернет</translation>
 <translation id="7005239792648594238">Отворете апликација за да започнете</translation>
 <translation id="7007983414944123363">Не може да се потврди PIN-кодот или лозинката. Обидете се повторно.</translation>
@@ -1759,6 +1756,7 @@
 <translation id="8001755249288974029">Го избира текстот од курсорот до почетокот на линијата</translation>
 <translation id="8004512796067398576">Зголемување</translation>
 <translation id="8026334261755873520">Исчисти податоци од прелистување</translation>
+<translation id="802782383769312836">Претходна работна површина: <ph name="DESK_NAME" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Поврзувањето со точка на пристап не успеа</translation>
 <translation id="8029629653277878342">Потребен е PIN или лозинка за поголема безбедност</translation>
 <translation id="8030169304546394654">Не е поврзано</translation>
@@ -1806,6 +1804,7 @@
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8230305195727960608">Режим за инверзија на боите</translation>
 <translation id="8236042855478648955">Време за пауза</translation>
+<translation id="8237964652943995219">Следна работна површина: <ph name="DESK_NAME" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Активирајте работна површина оддесно</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
@@ -1870,7 +1869,6 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> може да не се полни додека е вклучен.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Влезот за микрофон го контролира <ph name="APP_NAME" />}one{Влезот за микрофон го контролираат # апликација}other{Влезот за микрофон го контролираат # апликации}}</translation>
 <translation id="8535393432370007982">Поништете го редоследот на подредувањето по боја</translation>
-<translation id="853768060447955562">Претходна работна површина: <ph name="PREVIOUS_DESK_NAME" />, користете Search+Space или кратенката од тастатура: Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> за активирање.</translation>
 <translation id="8541078764854166027">Врамување камера</translation>
 <translation id="8542053257095774575">Нема зачувани работни површини или шаблони</translation>
 <translation id="8546059259582788728">Успешно поништување на подредувањето</translation>
@@ -1957,7 +1955,6 @@
 <translation id="888982883502837004">Има ажурирања за фирмверот на уредот. Кликнете за да ги прегледате и да ажурирате.</translation>
 <translation id="8896630965521842259">Трајно ќе се избрише <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="889790758758811533">Престануваат уште <ph name="PERCENTAGE" /> % од батеријата (околу <ph name="TIME_LEFT" />). Приклучете го уредот во струја.</translation>
-<translation id="8897940060812808966">Уредот <ph name="PERIPHERAL_NAME" /> е поврзан и подготвен за користење. Таблетот за графика може да го приспособите во „Поставки“.</translation>
 <translation id="88986195241502842">Страница подолу</translation>
 <translation id="8905919797434099235">(Без наслов)</translation>
 <translation id="890616557918890486">Промени го изворот</translation>
@@ -2034,8 +2031,8 @@
 <translation id="92580429198593979">Притиснавте кратенка од тастатурата за инверзија на боите. Дали сакате да ја вклучите?</translation>
 <translation id="925832987464884575">Скриј ги прегледите</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> бара веднаш да го ажурирате вашиот <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">Тековна работна површина: <ph name="DESK_NAME" /> <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Работна површина <ph name="DESK_INDEX" /> од <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Што има во мојот календар?</translation>
-<translation id="943067377221312471">Претходна работна површина: <ph name="PREVIOUS_DESK_NAME" />, користете Search+Space за активирање.</translation>
 <translation id="945383118875625837">Повлечете го линкот до лентата со обележувачи</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="951991426597076286">Одбиј</translation>

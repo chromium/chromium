@@ -31,6 +31,11 @@ constexpr char kForestHashKey[] =
 // Whether checking the forest secret key is ignored.
 bool g_ignore_forest_secret_key = false;
 
+// The hash value for the secret key of the campbell feature.
+constexpr char kCampbellHashKey[] =
+    "\x78\xb6\xa7\x59\x06\x11\xc7\xea\x09\x7e\x92\xe3\xe9\xff\xa6\x01\x4c"
+    "\x03\x18\x32";
+
 }  // namespace
 
 // Please keep the order of these switches synchronized with the header file
@@ -312,6 +317,11 @@ const char kAshUiModeTablet[] = "touch_view";
 // lock the screen or shutdown the system immediately in response to a press
 // instead of displaying an interactive animation.
 const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
+
+// Switch used to pass in a secret key for Campbell feature. Unless the correct
+// secret key is provided, Campbell feature will remain disabled, regardless of
+// the state of the associated feature flag.
+const char kCampbellKey[] = "campbell-key";
 
 // If this flag is set, it indicates that this device is a "Cellular First"
 // device. Cellular First devices use cellular telephone data networks as
@@ -1329,6 +1339,24 @@ bool UseFakeCrasAudioClientForDBus() {
 bool ShouldAllowDefaultShelfPinLayoutIgnoringSync() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kAllowDefaultShelfPinLayoutIgnoringSync);
+}
+
+bool IsCampbellSecretKeyMatched() {
+  // Commandline looks like:
+  //  out/Default/chrome --user-data-dir=/tmp/tmp123
+  //  --campbell-key="INSERT KEY HERE"
+  //  --enable-features=CampbellGlyph:icon/<icon>
+  const std::string provided_key_hash = base::SHA1HashString(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          kCampbellKey));
+
+  const bool key_matched = (provided_key_hash == kCampbellHashKey);
+  if (!key_matched) {
+    LOG(ERROR)
+        << "Provided campbel secrey key does not match the expected one.";
+  }
+
+  return key_matched;
 }
 
 bool IsForestSecretKeyMatched() {

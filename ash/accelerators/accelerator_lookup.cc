@@ -5,15 +5,23 @@
 #include "ash/accelerators/accelerator_lookup.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/accelerators_util.h"
+#include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/types/optional_ref.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char16_t kDetailsDelimiter[] = u"+";
 
 using AcceleratorDetails = AcceleratorLookup::AcceleratorDetails;
 
@@ -27,6 +35,40 @@ AcceleratorLookup::AcceleratorLookup(
     : ash_accelerator_configuration_(ash_accelerators) {}
 
 AcceleratorLookup::~AcceleratorLookup() = default;
+
+// static
+std::u16string AcceleratorLookup::GetAcceleratorDetailsText(
+    AcceleratorDetails details) {
+  std::u16string details_text;
+
+  if (details.accelerator.IsCmdDown()) {
+    std::u16string cmd_string =
+        Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()
+            ? l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_LAUNCHER_KEY)
+            : l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_SEARCH_KEY);
+    details_text = base::StrCat({details_text, cmd_string, kDetailsDelimiter});
+  }
+
+  if (details.accelerator.IsCtrlDown()) {
+    details_text = base::StrCat(
+        {details_text,
+         l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_CONTROL_KEY),
+         kDetailsDelimiter});
+  }
+
+  if (details.accelerator.IsAltDown()) {
+    details_text = base::StrCat(
+        {details_text, l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_ALT_KEY),
+         kDetailsDelimiter});
+  }
+
+  if (details.accelerator.IsShiftDown()) {
+    details_text = base::StrCat(
+        {details_text, l10n_util::GetStringUTF16(IDS_ASH_ACCELERATOR_SHIFT_KEY),
+         kDetailsDelimiter});
+  }
+  return base::StrCat({details_text, details.key_display});
+}
 
 std::vector<AcceleratorDetails> AcceleratorLookup::GetAcceleratorsForAction(
     uint32_t action) const {

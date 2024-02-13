@@ -3,9 +3,7 @@ UNKNOWN focusable has_input_focus
 ++++UNKNOWN
 ++++++STATIC_TEXT label='Supercali'
 ++++++++UNKNOWN label='Supercali'
-++++++UNKNOWN hidden
 ++++++STATIC_TEXT label='fragilistic'
 ++++++++UNKNOWN label='fragilistic'
-++++++UNKNOWN hidden
 ++++++STATIC_TEXT label='expialidocious'
 ++++++++UNKNOWN label='expialidocious'

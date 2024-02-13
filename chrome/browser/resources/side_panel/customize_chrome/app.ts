@@ -26,8 +26,8 @@ import {getTemplate} from './app.html.js';
 import type {AppearanceElement} from './appearance.js';
 import type {CategoriesElement} from './categories.js';
 import type {ChromeColorsElement} from './chrome_colors.js';
-import type {BackgroundCollection} from './customize_chrome.mojom-webui.js';
-import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
+import type {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {ChromeWebStoreCategory, ChromeWebStoreCollection, CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 import type {ThemesElement} from './themes.js';
 
@@ -106,6 +106,12 @@ export class AppElement extends AppElementBase {
   private page_: CustomizeChromePage;
   private selectedCollection_: BackgroundCollection|null;
   private scrollToSectionListenerId_: number|null = null;
+  private pageHandler_: CustomizeChromePageHandlerInterface;
+
+  constructor() {
+    super();
+    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -177,6 +183,21 @@ export class AppElement extends AppElementBase {
         this.shadowRoot!.querySelector('customize-chrome-wallpaper-search');
     assert(page);
     page.focusOnBackButton();
+  }
+
+  private onCouponsButtonClick_() {
+    this.pageHandler_.openChromeWebStoreCategoryPage(
+        ChromeWebStoreCategory.kShopping);
+  }
+
+  private onWritingButtonClick_() {
+    this.pageHandler_.openChromeWebStoreCollectionPage(
+        ChromeWebStoreCollection.kWrittingEssentials);
+  }
+
+  private onProductivityButtonClick_() {
+    this.pageHandler_.openChromeWebStoreCategoryPage(
+        ChromeWebStoreCategory.kWorkflowPlanning);
   }
 }
 

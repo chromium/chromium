@@ -799,13 +799,17 @@ if (is_clang_or_gcc) {
     shim_headers = []
     shim_sources = []
 
-    shim_sources += [ "shim/allocator_shim.cc" ]
+    shim_sources += [
+      "shim/allocator_shim.cc",
+      "shim/allocator_shim_dispatch_to_noop_on_free.cc",
+    ]
     shim_headers += [
       "shim/allocator_shim.h",
       "shim/allocator_shim_internals.h",
       "shim/shim_alloc_functions.h",
       "shim/allocator_shim_functions.h",
       "shim/allocator_dispatch.h",
+      "shim/allocator_shim_dispatch_to_noop_on_free.h",
     ]
     if (use_partition_alloc) {
       shim_sources += [

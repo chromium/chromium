@@ -1311,6 +1311,20 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="18" label="WrappedGraphiteTextureBacking"/>
 </enum>
 
+<enum name="SkiaBackendType">
+  <summary>
+    What Skia backend is being used for GPU acceleration in Chrome.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="GaneshGL"/>
+  <int value="3" label="GaneshVulkan"/>
+  <int value="4" label="GraphiteDawnVulkan"/>
+  <int value="5" label="GraphiteDawnMetal"/>
+  <int value="6" label="GraphiteDawnD3D11"/>
+  <int value="7" label="GraphiteDawnD3D12"/>
+</enum>
+
 <enum name="UnderlayDamageRect">
   <int value="0" label="Zero Damage Rect"/>
   <int value="1" label="Non-Occluding Damage Only"/>

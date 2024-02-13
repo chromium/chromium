@@ -4,7 +4,12 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
+import static org.mockito.Mockito.mock;
+
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,6 +27,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.R;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Instrumentation tests for PWA Universal Install bottom sheet. */
@@ -37,13 +43,35 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
         MockitoAnnotations.initMocks(this);
     }
 
+    private void onInstallCalled() {}
+
+    private void onAddShortcutCalled() {}
+
+    private Pair<Bitmap, Boolean> constructTestIconData() {
+        int size = 48;
+        Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(Color.BLUE);
+        return Pair.create(bitmap, /* maskable= */ false);
+    }
+
     @Test
     @MediumTest
     public void testShowing() {
         final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+
+        PwaUniversalInstallBottomSheetCoordinator.setIconCallForTesting(
+                this::constructTestIconData);
+
+        // Setup the coordinator with a mocked WebContents object.
+        MockWebContents webContents = mock(MockWebContents.class);
         PwaUniversalInstallBottomSheetCoordinator coordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
-                        activity, mBottomSheetControllerMock, 0);
+                        activity,
+                        webContents,
+                        this::onInstallCalled,
+                        this::onAddShortcutCalled,
+                        mBottomSheetControllerMock,
+                        0);
 
         View view = coordinator.getBottomSheetViewForTesting();
         TestThreadUtils.runOnUiThreadBlocking(

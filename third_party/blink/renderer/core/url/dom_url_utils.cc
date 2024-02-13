@@ -73,6 +73,13 @@ void DOMURLUtils::setHost(const String& value) {
 }
 
 void DOMURLUtils::setHostname(const String& value) {
+  // TODO(crbug.com/40063064): Allow setting an empty host for some non-special
+  // URLs.
+  //
+  // For reference, a standard compliant behavior is:
+  // > const url = new URL("git://h/")
+  // > url.host = "";
+  // > assertEquals(url.href, "git:///");
   if (value.empty())
     return;
 

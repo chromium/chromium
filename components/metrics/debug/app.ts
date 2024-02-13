@@ -9,10 +9,12 @@ import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './app.html.js';
-import {KeyValue, Log, LogData, MetricsInternalsBrowserProxy, MetricsInternalsBrowserProxyImpl} from './browser_proxy.js';
+import type {KeyValue, Log, LogData, MetricsInternalsBrowserProxy} from './browser_proxy.js';
+import {MetricsInternalsBrowserProxyImpl} from './browser_proxy.js';
 import {getEventsPeekString, logEventToString, sizeToString, timestampToString, umaLogTypeToString} from './log_utils.js';
 // <if expr="chromeos_ash">
-import {StructuredMetricEvent, StructuredMetricsSummary, updateStructuredMetricsEvents, updateStructuredMetricsSummary} from './structured/structured_utils.js';
+import type {StructuredMetricEvent, StructuredMetricsSummary} from './structured/structured_utils.js';
+import {updateStructuredMetricsEvents, updateStructuredMetricsSummary} from './structured/structured_utils.js';
 // </if>
 
 /**

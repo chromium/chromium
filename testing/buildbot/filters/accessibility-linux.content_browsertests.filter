@@ -16,6 +16,7 @@
 -ScopedAccessibilityModeTest.WebContents
 
 # These tests still need to be triaged and either okayed to skip or fixed.
+-BackForwardCacheWithSubframeNavigationBrowserTest.SubframeNavigationWithUrlLoaderBeforeSendingRequestShouldNotPreventCache
 -PrerenderBrowserTest.ActivatePageWithInnerContents
 -RenderThreadImplBrowserTest.NonResourceDispatchIPCTasksDontGoThroughScheduler
 -RenderThreadImplBrowserTest.RendererIsBackgrounded

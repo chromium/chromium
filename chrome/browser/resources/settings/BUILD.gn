@@ -368,6 +368,10 @@ build_webui("build") {
     "site_settings/all_sites_icons.html",
   ]
 
+  if (is_chrome_branded) {
+    icons_html_files += [ "internal/icons.html" ]
+  }
+
   css_files = [
     "settings_columned_section.css",
     "settings_page_styles.css",

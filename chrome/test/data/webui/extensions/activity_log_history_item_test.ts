@@ -4,7 +4,7 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {ActivityGroup, ActivityLogHistoryItemElement} from 'chrome://extensions/extensions.js';
+import type {ActivityGroup, ActivityLogHistoryItemElement} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

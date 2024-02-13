@@ -138,8 +138,6 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
   <variant name="IPH_DesktopPWAsLinkCapturingLaunch"
       summary="PWA launch due to link capturing being enabled"/>
-  <variant name="IPH_DesktopTabGroupsNewGroup"
-      summary="creating a new tab group"/>
   <variant name="IPH_DownloadEsbPromo" summary="download ESB promo"/>
   <variant name="IPH_DownloadHome" summary="download home"/>
   <variant name="IPH_DownloadInfobarDownloadContinuing"
@@ -223,8 +221,6 @@ chromium-metrics-reviews@google.com.
       summary="Showing the Docking Promo (Remind Me Later version) on iOS"/>
   <variant name="IPH_iOSHistoryOnOverflowMenuFeature"
       summary="history item on the overflow menu on iOS"/>
-  <variant name="IPH_iOSInlinePromoEnhancedSafeBrowsing"
-      summary="showing the Enhanced Safe Browsing Inline Promo on iOS"/>
   <variant name="IPH_iOSNewTabToolbarItemFeature"
       summary="the new tab tool bar item (bottom on iPhone, top on iPad)"/>
   <variant name="IPH_iOSOmniboxPositionFeature"
@@ -233,6 +229,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"
       summary="showing the iOS password promo on desktop"/>
+  <variant name="IPH_iOSPostDefaultAbandonmentPromo"
+      summary="showing the iOS post-default browser abandonment promo on iOS"/>
   <variant name="IPH_iOSPromoAllTabs"
       summary="showing All Tabs default browser promo"/>
   <variant name="IPH_iOSPromoAppStore"
@@ -509,6 +507,8 @@ chromium-metrics-reviews@google.com.
       summary="the tutorial for the customize chrome side panel"/>
   <variant name=".PasswordManager"
       summary="the tutorial for the password manager"/>
+  <variant name=".SavedTabGroup"
+      summary="the tutorial for the saved tab group"/>
   <variant name=".SidePanelReadingList"
       summary="the tutorial for the side panel reading list"/>
   <variant name=".TabGroup" summary="the tutorial for tab groups"/>
@@ -562,7 +562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.DismissalReason.iOS"
-    enum="InProductHelpDismissalReason" expires_after="2024-06-02">
+    enum="InProductHelpDismissalReason" expires_after="2024-08-04">
   <owner>lpromero@google.com</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
@@ -606,7 +606,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.SnoozeAction" enum="InProductHelpSnoozeAction"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>haileywang@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>

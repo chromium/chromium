@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -21,6 +22,27 @@ using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
+namespace {
+
+const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW,
+       mojom::kSystemPreferencesSectionPath,
+       mojom::SearchResultIcon::kSnapWindowSuggestions,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kSnapWindowSuggestions},
+       {IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT1,
+        IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT2,
+        IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT3,
+        IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT4,
+        SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+}  // namespace
+
 MultitaskingSection::MultitaskingSection(Profile* profile,
                                          SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
@@ -28,7 +50,10 @@ MultitaskingSection::MultitaskingSection(Profile* profile,
   CHECK(search_tag_registry);
   CHECK(ash::features::IsOsSettingsRevampWayfindingEnabled());
 
-  // TODO(sophiewen): Add multitasking search tags.
+  if (ShouldShowMultitasking()) {
+    SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+    updater.AddSearchTags(GetSnapWindowSuggestionsSearchConcepts());
+  }
 }
 
 MultitaskingSection::~MultitaskingSection() = default;
@@ -73,7 +98,11 @@ const char* MultitaskingSection::GetSectionPath() const {
 
 bool MultitaskingSection::LogMetric(mojom::Setting setting,
                                     base::Value& value) const {
-  // No metrics are logged.
+  if (setting == mojom::Setting::kSnapWindowSuggestions) {
+    base::UmaHistogramBoolean("ChromeOS.Settings.SnapWindowSuggestions",
+                              value.GetBool());
+    return true;
+  }
   return false;
 }
 

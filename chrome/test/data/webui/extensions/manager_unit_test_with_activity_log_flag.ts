@@ -10,7 +10,8 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsManagerElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
+import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestService} from './test_service.js';

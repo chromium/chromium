@@ -23,9 +23,9 @@ namespace ash {
 // Displays error message at the bottom of the glanceables bubble. Used in
 // tasks bubbles.
 class ASH_EXPORT GlanceablesErrorMessageView : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(GlanceablesErrorMessageView);
+  METADATA_HEADER(GlanceablesErrorMessageView, views::FlexLayoutView)
 
+ public:
   GlanceablesErrorMessageView(views::Button::PressedCallback callback,
                               const std::u16string& error_message);
   GlanceablesErrorMessageView(const GlanceablesErrorMessageView&) = delete;

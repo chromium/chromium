@@ -1579,3 +1579,42 @@ void AuthenticatorPriorityMechanismSheetModel::OnAccept() {
       ->mechanisms()[*dialog_model()->priority_mechanism_index()]
       .callback.Run();
 }
+
+// AuthenticatorGPMCreatePinSheetModel -------------------------------------
+
+AuthenticatorGPMCreatePinSheetModel::AuthenticatorGPMCreatePinSheetModel(
+    AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {
+  // TODO(rgod): Add correct illustration.
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+
+AuthenticatorGPMCreatePinSheetModel::~AuthenticatorGPMCreatePinSheetModel() =
+    default;
+
+std::u16string AuthenticatorGPMCreatePinSheetModel::GetStepTitle() const {
+  return u"Create a PIN for your Google Password Manager (UNTRANSLATED)";
+}
+
+std::u16string AuthenticatorGPMCreatePinSheetModel::GetStepDescription() const {
+  return u"Your PIN protects your data. You'll need it when you want to start "
+         u"using your passkeys on new devices. (UNTRANSLATED)";
+}
+
+bool AuthenticatorGPMCreatePinSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+bool AuthenticatorGPMCreatePinSheetModel::IsAcceptButtonEnabled() const {
+  return false;
+}
+
+std::u16string AuthenticatorGPMCreatePinSheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+void AuthenticatorGPMCreatePinSheetModel::OnAccept() {
+  dialog_model()->OnGPMCreate();
+}

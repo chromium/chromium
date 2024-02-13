@@ -48,3 +48,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, CheckmarkVisibleOnSelected) {
   RunSidePanelTest("side_panel/read_anything/checkmark_visible_on_selected.js",
                    "mocha.run()", SidePanelEntryId::kReadAnything);
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
+  RunSidePanelTest("side_panel/read_anything/voice_selection_menu_test.js",
+                   "mocha.run()", SidePanelEntryId::kReadAnything);
+}

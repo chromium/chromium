@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session_runner.h"
@@ -236,7 +237,7 @@ void HandleRecommendAppsScreen() {
   test::OobeJS().ClickOnPath(
       {"recommend-apps", "appsList", R"(test\\.package)"});
 
-  const std::initializer_list<base::StringPiece> install_button = {
+  const std::initializer_list<std::string_view> install_button = {
       "recommend-apps", "installButton"};
   test::OobeJS().CreateEnabledWaiter(true, install_button)->Wait();
   test::OobeJS().TapOnPath(install_button);
@@ -274,7 +275,7 @@ void HandleAppDownloadingScreen() {
   EXPECT_FALSE(LoginScreenTestApi::IsGuestButtonShown());
   EXPECT_FALSE(LoginScreenTestApi::IsAddUserButtonShown());
 
-  const std::initializer_list<base::StringPiece> continue_button = {
+  const std::initializer_list<std::string_view> continue_button = {
       "app-downloading", "continue-setup-button"};
   test::OobeJS().TapOnPath(continue_button);
 
@@ -302,7 +303,7 @@ void HandleAssistantOptInScreen() {
       .CreateVisibilityWaiter(true, {"assistant-optin-flow", "card", "loading"})
       ->Wait();
 
-  std::initializer_list<base::StringPiece> skip_button_path = {
+  std::initializer_list<std::string_view> skip_button_path = {
       "assistant-optin-flow", "card", "loading", "skip-button"};
   test::OobeJS().CreateEnabledWaiter(true, skip_button_path)->Wait();
   test::OobeJS().TapOnPath(skip_button_path);

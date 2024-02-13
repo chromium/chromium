@@ -441,6 +441,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Delete file"/>
 </enum>
 
+<enum name="ClassroomUserAction">
+  <int value="0" label="Assignment list selected"/>
+  <int value="1" label="Header icon pressed"/>
+  <int value="2" label="Student assignment pressed"/>
+</enum>
+
 <enum name="DataFetchEventSource">
   <int value="0" label="PostLoginFullRestore"/>
   <int value="1" label="Overview"/>
@@ -464,6 +470,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Invalid argument (e.g. wrong ID format)"/>
   <int value="3" label="Exceeed maximum number of templates"/>
   <int value="4" label="Desk template is too large"/>
+</enum>
+
+<enum name="DeskProfilesSelectProfileSource">
+  <int value="0" label="Profile button"/>
+  <int value="1" label="Desk action context menu"/>
+  <int value="2" label="New desk button drop"/>
+</enum>
+
+<enum name="DeskProfilesUsageStatus">
+  <int value="0" label="Conditions are not met"/>
+  <int value="1" label="Conditions are met"/>
+  <int value="2" label="Desk profiles are enabled"/>
 </enum>
 
 <enum name="DesksAssignToAllDesksSource">
@@ -1277,6 +1295,11 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Capture Mode Education Shortcut Nudge"/>
   <int value="23" label="Capture Mode Education Shortcut Tutorial"/>
   <int value="24" label="Capture Mode Education Quick Settings Nudge"/>
+  <int value="25" label="Game Dashboard Controls Nudge"/>
+  <int value="26"
+      label="Website Telemetry Reporting Nudge (deprecated 01/2024)"/>
+  <int value="27" label="Standalone Window Migration Ux"/>
+  <int value="28" label="Focus Mode Ending Moment Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
@@ -1802,6 +1825,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Session exit due to window destruction"/>
   <int value="3" label="Session exit due to shutdown"/>
   <int value="4" label="Session exit due to unspecified reasons"/>
+  <int value="5" label="Session exit due to converting to tablet mode"/>
 </enum>
 
 <enum name="SplitViewSwapWindowsSource">
@@ -1813,6 +1837,18 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="0" label="Remained on the home screen"/>
   <int value="1" label="Transitioned to overview"/>
   <int value="2" label="Went back on the home screen"/>
+</enum>
+
+<enum name="TasksUserAction">
+  <int value="0" label="Active task list changed"/>
+  <int value="1" label="Task marked complete"/>
+  <int value="2" label="Task marked incomplete"/>
+  <int value="3" label="Add task started"/>
+  <int value="4" label="Modify task started"/>
+  <int value="5" label="Header button clicked"/>
+  <int value="6" label="Add new task button clicked"/>
+  <int value="7" label="Footer button clicked"/>
+  <int value="8" label="Edit in Google Tasks button clicked"/>
 </enum>
 
 <enum name="TimeManagementGlanceablesFeatureStatus">
@@ -2415,7 +2451,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
 <enum name="WindowSnapActionSource">
   <int value="0" label="Not specified"/>
   <int value="1" label="Drag window to screen edge to snap"/>
-  <int value="2" label="Use window caption button to snap"/>
+  <int value="2" label="Long press window caption button to snap"/>
   <int value="3" label="Use keyboard shortcut to snap"/>
   <int value="4" label="Drag or select overview window to snap"/>
   <int value="5" label="Long press overview button to snap"/>
@@ -2434,6 +2470,9 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="15"
       label="Window is snapped when updating a window in snap group"/>
   <int value="16" label="Window is snapped in test"/>
+  <int value="17"
+      label="Window is snapped by long pressing lacros window caption button
+             or window layout menu"/>
 </enum>
 
 <enum name="WindowSplittingDragType">

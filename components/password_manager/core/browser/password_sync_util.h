@@ -17,16 +17,21 @@ class IdentityManager;
 
 namespace password_manager {
 
-enum class SyncState;
 struct PasswordForm;
 
 namespace sync_util {
+
+enum class SyncState {
+  kNotActive,
+  kActiveWithNormalEncryption,
+  kActiveWithCustomPassphrase,
+};
 
 // Uses `sync_service` to determine whether the user is signed in with
 // sync-the-feature turned on, and if so, return the e-mail representing the
 // account for which sync is on. Returns an empty string otherwise (which
 // includes the sync-off case even if account passwords are on).
-// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled() is
+// TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled() is
 // fully deprecated, see ConsentLevel::kSync documentation for details.
 std::string GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service);
@@ -51,7 +56,7 @@ bool ShouldSaveEnterprisePasswordHash(const PasswordForm& form,
 // even if account passwords are enabled. On some platforms, e.g. iOS, this can
 // be the majority of users (eventually all), so please avoid integrating with
 // this function if possible.
-// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled() is
+// TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled() is
 // fully deprecated, see ConsentLevel::kSync documentation for details.
 bool IsSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service);
@@ -63,7 +68,7 @@ bool IsSyncFeatureEnabledIncludingPasswords(
 // even if account passwords are enabled and active. On some platforms, e.g.
 // iOS, this can be the majority of users (eventually all), so please avoid
 // integrating with this function if possible.
-// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled()/
+// TODO(crbug.com/40066949): Remove this function once IsSyncFeatureEnabled()/
 // IsSyncFeatureActive() is fully deprecated, see ConsentLevel::kSync
 // documentation for details.
 bool IsSyncFeatureActiveIncludingPasswords(
@@ -77,9 +82,8 @@ std::optional<std::string> GetAccountForSaving(
     const syncer::SyncService* sync_service);
 
 // Reports whether and how passwords are currently synced. In particular, for a
-// null `sync_service` returns NOT_SYNCING.
-password_manager::SyncState GetPasswordSyncState(
-    const syncer::SyncService* sync_service);
+// null `sync_service` returns kNotActive.
+SyncState GetPasswordSyncState(const syncer::SyncService* sync_service);
 
 }  // namespace sync_util
 

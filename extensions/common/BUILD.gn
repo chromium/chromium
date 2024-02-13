@@ -633,6 +633,7 @@ source_set("unit_tests") {
     "url_pattern_set_unittest.cc",
     "url_pattern_unittest.cc",
     "user_script_unittest.cc",
+    "utils/extension_types_utils_unittest.cc",
     "value_counter_unittest.cc",
   ]
 

@@ -274,6 +274,10 @@ bool MockRenderProcessHost::IsInitializedAndNotDead() {
   return has_connection_;
 }
 
+bool MockRenderProcessHost::IsDeletingSoon() {
+  return deletion_callback_called_;
+}
+
 void MockRenderProcessHost::SetBlocked(bool blocked) {}
 
 bool MockRenderProcessHost::IsBlocked() {

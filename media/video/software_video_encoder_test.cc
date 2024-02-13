@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -50,7 +51,6 @@
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
 #endif
-
 #if BUILDFLAG(ENABLE_LIBAOM)
 #include "media/video/av1_video_encoder.h"
 #endif
@@ -574,6 +574,99 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   EXPECT_EQ(total_decoded_frames, total_frames_count);
 }
 
+TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kWebCodecsVideoEncoderFrameDrop);
+  ASSERT_GT(GetDefaultVideoEncoderDropFrameThreshold(), 0u);
+
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(320, 200);
+  options.bitrate = Bitrate::ConstantBitrate(1000000u);  // 1Mbps
+  options.framerate = 25;
+  if (codec_ == VideoCodec::kH264) {
+    options.avc.produce_annexb = true;
+  }
+  options.keyframe_interval = options.framerate.value() * 3;  // every 3s
+  options.latency_mode = VideoEncoder::LatencyMode::Realtime;
+
+  base::circular_deque<scoped_refptr<VideoFrame>> frames_to_encode;
+  const int total_frames_count =
+      options.framerate.value() * 10;  // total duration 10s
+  int total_decoded_frames = 0;
+  int dropped_frames_count = 0;
+  base::circular_deque<base::TimeDelta> dropped_frame_timestamps;
+
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
+
+  VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
+      [&, this](VideoEncoderOutput output,
+                absl::optional<VideoEncoder::CodecDescription> desc) {
+        if (output.size == 0) {
+          dropped_frames_count++;
+          dropped_frame_timestamps.push_back(output.timestamp);
+          return;
+        }
+
+        auto buffer =
+            DecoderBuffer::FromArray(std::move(output.data), output.size);
+        buffer->set_timestamp(output.timestamp);
+        buffer->set_is_key_frame(output.key_frame);
+        decoder_->Decode(std::move(buffer), DecoderStatusCB());
+      });
+
+  VideoDecoder::OutputCB decoder_output_cb =
+      base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> decoded_frame) {
+        ASSERT_FALSE(frames_to_encode.empty());
+        scoped_refptr<VideoFrame> original_frame;
+        while (!frames_to_encode.empty()) {
+          original_frame = std::move(frames_to_encode.front());
+          frames_to_encode.pop_front();
+          if (decoded_frame->timestamp() == original_frame->timestamp()) {
+            break;
+          }
+          ASSERT_FALSE(dropped_frame_timestamps.empty());
+          auto dropped_frame_timestamp = dropped_frame_timestamps.front();
+          dropped_frame_timestamps.pop_front();
+          EXPECT_EQ(original_frame->timestamp(), dropped_frame_timestamp);
+          original_frame.reset();
+        }
+
+        ASSERT_TRUE(original_frame);
+        EXPECT_EQ(decoded_frame->visible_rect().size(),
+                  original_frame->visible_rect().size());
+        EXPECT_EQ(decoded_frame->format(),
+                  GetExpectedOutputPixelFormat(profile_));
+        if (decoded_frame->format() == original_frame->format()) {
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+                    original_frame->visible_rect().width());
+        }
+        ++total_decoded_frames;
+      });
+
+  PrepareDecoder(options.frame_size, std::move(decoder_output_cb));
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb),
+                       ValidateStatusThenQuitCB());
+  RunUntilQuit();
+
+  TestRandom random_color(0x964050);
+  for (int frame_index = 0; frame_index < total_frames_count; frame_index++) {
+    auto timestamp = frame_index * frame_duration;
+    auto frame = CreateFrame(options.frame_size, pixel_format_, timestamp,
+                             random_color.Rand() & 0x00FFFFFF);
+    frames_to_encode.push_back(frame);
+    encoder_->Encode(std::move(frame), VideoEncoder::EncodeOptions(false),
+                     ValidateStatusThenQuitCB());
+    ASSERT_NO_FATAL_FAILURE(RunUntilQuit());
+  }
+
+  encoder_->Flush(ValidateStatusThenQuitCB());
+  RunUntilQuit();
+  DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
+  EXPECT_EQ(total_decoded_frames + dropped_frames_count, total_frames_count);
+}
+
 TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   VideoEncoder::Options options = CreateDefaultOptions();
   options.frame_size = gfx::Size(320, 200);
@@ -661,6 +754,139 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
     for (auto i = 0u; i < decoded_frames.size(); i++) {
       auto decoded_frame = decoded_frames[i];
       auto original_frame = frames_to_encode[i * rate_decimator];
+      EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
+    }
+  }
+}
+
+TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kWebCodecsVideoEncoderFrameDrop);
+  ASSERT_GT(GetDefaultVideoEncoderDropFrameThreshold(), 0u);
+
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(320, 200);
+  options.bitrate = Bitrate::ConstantBitrate(100000u);  // 100kbps
+  options.framerate = 25;
+  options.scalability_mode = GetParam().scalability_mode;
+  if (codec_ == VideoCodec::kH264) {
+    options.avc.produce_annexb = true;
+  }
+  options.latency_mode = VideoEncoder::LatencyMode::Realtime;
+
+  std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
+
+  std::vector<VideoEncoderOutput> chunks;
+  size_t total_frames_count = 80;
+  std::vector<size_t> dropped_frame_indices;
+
+  // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
+
+  VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          std::optional<VideoEncoder::CodecDescription> desc) {
+        if (output.size == 0) {
+          dropped_frame_indices.push_back(chunks.size() +
+                                          dropped_frame_indices.size());
+          return;
+        }
+        chunks.push_back(std::move(output));
+      });
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb),
+                       ValidateStatusThenQuitCB());
+  RunUntilQuit();
+
+  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
+    auto timestamp = frame_index * frame_duration;
+    auto frame = CreateFrame(options.frame_size, pixel_format_, timestamp);
+    frames_to_encode.push_back(frame);
+    encoder_->Encode(std::move(frame), VideoEncoder::EncodeOptions(false),
+                     ValidateStatusThenQuitCB());
+    RunUntilQuit();
+  }
+
+  encoder_->Flush(ValidateStatusThenQuitCB());
+  RunUntilQuit();
+  EXPECT_EQ(chunks.size() + dropped_frame_indices.size(), total_frames_count);
+
+  int num_temporal_layers = 1;
+  if (options.scalability_mode) {
+    switch (options.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T1:
+        // Nothing to do
+        break;
+      case SVCScalabilityMode::kL1T2:
+        num_temporal_layers = 2;
+        break;
+      case SVCScalabilityMode::kL1T3:
+        num_temporal_layers = 3;
+        break;
+      default:
+        NOTREACHED() << "Unsupported SVC: "
+                     << GetScalabilityModeName(
+                            options.scalability_mode.value());
+    }
+  }
+  // Try decoding saved outputs dropping varying number of layers
+  // and check that decoded frames indeed match the pattern:
+  // Layer Index 0: |0| | | |4| | | |8| |  |  |12|
+  // Layer Index 1: | | |2| | | |6| | | |10|  |  |
+  // Layer Index 2: | |1| |3| |5| |7| |9|  |11|  |
+  constexpr size_t kTemporalLayerCycle = 4;
+  constexpr int kTemporalLayerTable[][kTemporalLayerCycle] = {
+      {0, 0, 0, 0},
+      {0, 1, 0, 1},
+      {0, 2, 1, 2},
+  };
+  for (size_t i = 0; i < chunks.size(); ++i) {
+    ASSERT_TRUE(chunks[i].data);
+    EXPECT_EQ(
+        chunks[i].temporal_id,
+        kTemporalLayerTable[num_temporal_layers - 1][i % kTemporalLayerCycle]);
+  }
+
+  for (int max_layer = 0; max_layer < num_temporal_layers; max_layer++) {
+    std::vector<scoped_refptr<VideoFrame>> decoded_frames;
+    VideoDecoder::OutputCB decoder_output_cb =
+        base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> frame) {
+          decoded_frames.push_back(frame);
+        });
+    PrepareDecoder(options.frame_size, std::move(decoder_output_cb));
+
+    size_t num_chunks = 0;
+    for (auto& chunk : chunks) {
+      if (chunk.temporal_id <= max_layer) {
+        num_chunks += 1;
+        auto buffer = DecoderBuffer::CopyFrom(chunk.data.get(), chunk.size);
+        buffer->set_timestamp(chunk.timestamp);
+        buffer->set_is_key_frame(chunk.key_frame);
+        DecodeAndWaitForStatus(std::move(buffer));
+      }
+    }
+    DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
+    ASSERT_EQ(decoded_frames.size(), num_chunks);
+    size_t encoded_frame_index = 0;
+    size_t decoded_frame_index = 0;
+    for (size_t i = 0; i < frames_to_encode.size(); ++i) {
+      if (base::Contains(dropped_frame_indices, i)) {
+        // Dropped
+        continue;
+      }
+      const int temporal_id =
+          kTemporalLayerTable[num_temporal_layers - 1]
+                             [encoded_frame_index % kTemporalLayerCycle];
+      encoded_frame_index++;
+      if (temporal_id > max_layer) {
+        // Not decoded frame.
+        continue;
+      }
+
+      auto decoded_frame = decoded_frames[decoded_frame_index];
+      decoded_frame_index++;
+      auto original_frame = frames_to_encode[i];
       EXPECT_EQ(decoded_frame->timestamp(), original_frame->timestamp());
     }
   }

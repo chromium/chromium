@@ -119,8 +119,7 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
                         CallbackFunctionWithTaskAttributionBase>::value) {
         parent_task = callback_->GetParentTask();
       }
-      if (parent_task ||
-          !tracker->RunningTask(callback_->CallbackRelevantScriptState())) {
+      if (parent_task || !tracker->RunningTask(isolate)) {
         task_attribution_scope_ = tracker->CreateTaskScope(
             callback_->CallbackRelevantScriptState(), parent_task,
             scheduler::TaskAttributionTracker::TaskScopeType::kCallback);

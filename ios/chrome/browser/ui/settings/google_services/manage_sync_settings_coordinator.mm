@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
@@ -40,9 +41,9 @@
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
@@ -195,7 +196,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   viewController.browsingDataHandler =
       HandlerForProtocol(dispatcher, BrowsingDataCommands);
   viewController.settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+      HandlerForProtocol(dispatcher, SettingsCommands);
   viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
 
@@ -328,8 +329,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self stopBulkUpload];
   base::RecordAction(base::UserMetricsAction("BulkUploadSettingsOpen"));
   _bulkUploadCoordinator = [[BulkUploadCoordinator alloc]
-      initWithBaseNavigationController:self.navigationControllerForChildPages
-                               browser:self.browser];
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
   _bulkUploadCoordinator.delegate = self;
   [_bulkUploadCoordinator start];
 }

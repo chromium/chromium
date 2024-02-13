@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 
 /**
@@ -697,3 +699,5 @@ export namespace PrefsManager {
   export const WORD_HIGHLIGHT_KEY =
       'settings.a11y.select_to_speak_word_highlight';
 }
+
+TestImportManager.exportForTesting(PrefsManager);

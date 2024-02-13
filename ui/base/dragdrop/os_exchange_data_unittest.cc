@@ -244,7 +244,7 @@ TEST_F(OSExchangeDataTest, NotRendererTainted) {
   }());
 
   EXPECT_FALSE(copy.IsRendererTainted());
-  EXPECT_EQ(absl::nullopt, copy.GetRendererTaintedOrigin());
+  EXPECT_EQ(std::nullopt, copy.GetRendererTaintedOrigin());
 }
 
 TEST_F(OSExchangeDataTest, RendererTaintedOpaqueOrigin) {
@@ -260,7 +260,7 @@ TEST_F(OSExchangeDataTest, RendererTaintedOpaqueOrigin) {
   }());
 
   EXPECT_TRUE(copy.IsRendererTainted());
-  absl::optional<url::Origin> origin = copy.GetRendererTaintedOrigin();
+  std::optional<url::Origin> origin = copy.GetRendererTaintedOrigin();
   EXPECT_TRUE(origin.has_value());
   EXPECT_TRUE(origin->opaque());
   // Currently, the actual value of an opaque origin is not actually serialized
@@ -281,7 +281,7 @@ TEST_F(OSExchangeDataTest, RendererTaintedTupleOrigin) {
   }());
 
   EXPECT_TRUE(copy.IsRendererTainted());
-  absl::optional<url::Origin> origin = copy.GetRendererTaintedOrigin();
+  std::optional<url::Origin> origin = copy.GetRendererTaintedOrigin();
   EXPECT_TRUE(origin.has_value());
   EXPECT_EQ(tuple_origin, origin);
 }

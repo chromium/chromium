@@ -18,6 +18,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_constants.h"
 
@@ -25,7 +26,7 @@ namespace extensions {
 
 namespace {
 
-using Delegates = std::map<std::string, ExtensionDevToolsInfoBarDelegate*>;
+using Delegates = std::map<ExtensionId, ExtensionDevToolsInfoBarDelegate*>;
 base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
@@ -34,7 +35,7 @@ base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
 constexpr base::TimeDelta ExtensionDevToolsInfoBarDelegate::kAutoCloseDelay;
 
 base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& extension_name,
     base::OnceClosure destroyed_callback) {
   Delegates& delegates = g_delegates.Get();
@@ -99,7 +100,7 @@ int ExtensionDevToolsInfoBarDelegate::GetButtons() const {
 }
 
 ExtensionDevToolsInfoBarDelegate::ExtensionDevToolsInfoBarDelegate(
-    std::string extension_id,
+    ExtensionId extension_id,
     const std::string& extension_name)
     : extension_id_(std::move(extension_id)),
       extension_name_(base::UTF8ToUTF16(extension_name)) {

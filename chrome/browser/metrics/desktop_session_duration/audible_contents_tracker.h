@@ -72,7 +72,7 @@ class AudibleContentsTracker : public BrowserListObserver,
   raw_ptr<Observer> observer_;
 
   // The set of WebContents that are currently playing audio.
-  std::set<content::WebContents*> audible_contents_;
+  std::set<raw_ptr<content::WebContents, SetExperimental>> audible_contents_;
 };
 
 }  // namespace metrics

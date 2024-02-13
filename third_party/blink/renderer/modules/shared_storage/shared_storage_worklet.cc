@@ -11,17 +11,20 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_url_with_metadata.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
-#include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_window_supplement.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -70,18 +73,30 @@ bool IsValidFencedFrameReportingURL(const KURL& url) {
 
 }  // namespace
 
-SharedStorageWorklet::SharedStorageWorklet(SharedStorage* shared_storage)
-    : shared_storage_(shared_storage) {}
+// static
+SharedStorageWorklet* SharedStorageWorklet::Create(ScriptState* script_state) {
+  return MakeGarbageCollected<SharedStorageWorklet>();
+}
 
 void SharedStorageWorklet::Trace(Visitor* visitor) const {
   visitor->Trace(worklet_host_);
-  visitor->Trace(shared_storage_);
   ScriptWrappable::Trace(visitor);
 }
 
 ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
                                               const String& module_url,
+                                              const WorkletOptions* options,
                                               ExceptionState& exception_state) {
+  return AddModuleHelper(script_state, module_url, options, exception_state,
+                         /*resolve_to_worklet=*/false);
+}
+
+ScriptPromise SharedStorageWorklet::AddModuleHelper(
+    ScriptState* script_state,
+    const String& module_url,
+    const WorkletOptions* options,
+    ExceptionState& exception_state,
+    bool resolve_to_worklet) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -130,20 +145,25 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
   if (worklet_host_) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        "sharedStorage.worklet.addModule() can only be invoked once per "
-        "browsing context."));
+        "addModule() can only be invoked once per worklet."));
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return promise;
   }
 
+  const String& credentials = options->credentials();
+  std::optional<network::mojom::CredentialsMode> credentials_mode =
+      Request::ParseCredentialsMode(credentials);
+  CHECK(credentials_mode);
+
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       origin_trial_features =
           OriginTrialContext::GetInheritedTrialFeatures(execution_context);
 
-  shared_storage_->GetSharedStorageDocumentService(execution_context)
+  SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
+      ->GetSharedStorageDocumentService()
       ->CreateWorklet(
-          script_source_url,
+          script_source_url, *credentials_mode,
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(
@@ -151,8 +171,8 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver,
                  SharedStorageWorklet* shared_storage_worklet,
-                 base::TimeTicks start_time, bool success,
-                 const String& error_message) {
+                 base::TimeTicks start_time, bool resolve_to_worklet,
+                 bool success, const String& error_message) {
                 DCHECK(resolver);
                 ScriptState* script_state = resolver->GetScriptState();
 
@@ -173,14 +193,46 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
                 base::UmaHistogramMediumTimes(
                     "Storage.SharedStorage.Document.Timing.AddModule",
                     base::TimeTicks::Now() - start_time);
-                resolver->Resolve();
+
+                if (resolve_to_worklet) {
+                  resolver->Resolve(shared_storage_worklet);
+                } else {
+                  resolver->Resolve();
+                }
               },
-              WrapPersistent(resolver), WrapPersistent(this), start_time));
+              WrapPersistent(resolver), WrapPersistent(this), start_time,
+              resolve_to_worklet));
 
   return promise;
 }
 
-ScriptPromise SharedStorageWorklet::SelectURL(
+// This C++ overload is called by JavaScript:
+// sharedStorage.selectURL('foo', [{url: "bar.com"}]);
+//
+// It returns a JavaScript promise that resolves to an urn::uuid.
+ScriptPromise SharedStorageWorklet::selectURL(
+    ScriptState* script_state,
+    const String& name,
+    HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
+    ExceptionState& exception_state) {
+  return selectURL(script_state, name, urls,
+                   SharedStorageRunOperationMethodOptions::Create(),
+                   exception_state);
+}
+
+// This C++ overload is called by JavaScript:
+// 1. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0}});
+// 2. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0},
+// resolveToConfig: true});
+//
+// It returns a JavaScript promise:
+// 1. that resolves to an urn::uuid, when `resolveToConfig` is false or
+// unspecified.
+// 2. that resolves to a fenced frame config, when `resolveToConfig` is true.
+//
+// This function implements the other overload, with `resolveToConfig`
+// defaulting to false.
+ScriptPromise SharedStorageWorklet::selectURL(
     ScriptState* script_state,
     const String& name,
     HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
@@ -435,7 +487,14 @@ ScriptPromise SharedStorageWorklet::SelectURL(
   return promise;
 }
 
-ScriptPromise SharedStorageWorklet::Run(
+ScriptPromise SharedStorageWorklet::run(ScriptState* script_state,
+                                        const String& name,
+                                        ExceptionState& exception_state) {
+  return run(script_state, name,
+             SharedStorageRunOperationMethodOptions::Create(), exception_state);
+}
+
+ScriptPromise SharedStorageWorklet::run(
     ScriptState* script_state,
     const String& name,
     const SharedStorageRunOperationMethodOptions* options,

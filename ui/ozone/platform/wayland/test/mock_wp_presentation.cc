@@ -62,12 +62,12 @@ void MockWpPresentation::SendPresentationCallback() {
 }
 
 void MockWpPresentation::SendPresentationCallbackDiscarded(bool last) {
-  SendPresentationFeedbackToClient(last, absl::nullopt);
+  SendPresentationFeedbackToClient(last, std::nullopt);
 }
 
 void MockWpPresentation::SendPresentationFeedbackToClient(
     bool last,
-    absl::optional<PresentationFeedbackParams> params) {
+    std::optional<PresentationFeedbackParams> params) {
   wl_resource* callback_resource = GetPresentationCallbackResource(last);
   if (!callback_resource) {
     return;

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -31,9 +32,9 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/parcel_tracking_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -108,7 +109,7 @@ using signin_metrics::PromoAction;
   viewController.browsingDataHandler =
       HandlerForProtocol(dispatcher, BrowsingDataCommands);
   viewController.settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+      HandlerForProtocol(dispatcher, SettingsCommands);
   viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
 
@@ -191,7 +192,7 @@ using signin_metrics::PromoAction;
                   }
                   // Provide additional data retention options if the user is
                   // syncing their data.
-                  // TODO(crbug.com/1462552): Simplify once kSync becomes
+                  // TODO(crbug.com/40066949): Simplify once kSync becomes
                   // unreachable or is deleted from the codebase. See
                   // ConsentLevel::kSync documentation for details.
                   if (weakSelf.identityManager->HasPrimaryAccount(

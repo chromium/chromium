@@ -5,8 +5,6 @@
 #ifndef ASH_PICKER_MODEL_PICKER_CATEGORY_H_
 #define ASH_PICKER_MODEL_PICKER_CATEGORY_H_
 
-#include <string>
-
 #include "ash/ash_export.h"
 
 namespace ash {
@@ -17,9 +15,10 @@ enum class ASH_EXPORT PickerCategory {
   kSymbols,
   kEmoticons,
   kGifs,
+  kOpenTabs,
+  kBrowsingHistory,
+  kBookmarks,
 };
-
-ASH_EXPORT std::u16string GetStringForPickerCategory(PickerCategory category);
 
 }  // namespace ash
 

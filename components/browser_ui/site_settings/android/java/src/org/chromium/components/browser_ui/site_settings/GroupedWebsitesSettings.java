@@ -64,27 +64,22 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             return;
         }
 
-        Object extraGroup = getArguments().getSerializable(EXTRA_GROUP);
-        if (extraGroup == null) assert false : "EXTRA_GROUP must be provided.";
-        mSiteGroup = (WebsiteGroup) extraGroup;
+        WebsiteGroup extraGroup = (WebsiteGroup) getArguments().getSerializable(EXTRA_GROUP);
+        assert extraGroup != null : "EXTRA_GROUP must be provided.";
+        mSiteGroup = extraGroup;
+        var domainAndRegistry = extraGroup.getDomainAndRegistry();
 
         // Set title
-        getActivity()
-                .setTitle(
-                        String.format(
-                                getContext().getString(R.string.domain_settings_title),
-                                mSiteGroup.getDomainAndRegistry()));
+        Activity activity = getActivity();
+        activity.setTitle(activity.getString(R.string.domain_settings_title, domainAndRegistry));
 
         // Preferences screen
         SettingsUtils.addPreferencesFromResource(this, R.xml.grouped_websites_preferences);
-        findPreference(PREF_SITE_TITLE).setTitle(mSiteGroup.getDomainAndRegistry());
+        findPreference(PREF_SITE_TITLE).setTitle(domainAndRegistry);
         findPreference(PREF_SITES_IN_GROUP)
                 .setTitle(
-                        String.format(
-                                getContext()
-                                        .getString(
-                                                R.string.domain_settings_sites_in_group,
-                                                mSiteGroup.getDomainAndRegistry())));
+                        activity.getString(
+                                R.string.domain_settings_sites_in_group, domainAndRegistry));
         setUpClearDataPreference();
         setUpResetGroupPreference();
         setUpRelatedSitesPreferences();

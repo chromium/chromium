@@ -13,6 +13,15 @@ namespace net::test {
 
 // Helper class to encapsulate MockReads and MockWrites for QUIC.
 // Simplify ownership issues and the interaction with the MockSocketFactory.
+//
+// To use, construct an instance, call the `Add*` methods in the desired order,
+// and then call `AddSocketDataToFactory(socket_factory)` to add a socket with
+// the defined behavior to the socket factory. Alternately, use
+// `InitializeAndGetSequencedSocketData()` and pass the result to a mock socket
+// like `MockUDPClientSocket`.
+//
+// The MockQuicData instance must remain live until the socket is created and
+// ultimately closed.
 class MockQuicData {
  public:
   explicit MockQuicData(quic::ParsedQuicVersion version);
@@ -23,12 +32,21 @@ class MockQuicData {
   void AddConnect(IoMode mode, int rv);
 
   // Adds a read at the next sequence number which will read |packet|
-  // synchronously or asynchronously based on |mode|.
+  // synchronously or asynchronously based on |mode|. The QuicReceivedPacket
+  // version includes an ECN codepoint.
+  void AddRead(IoMode mode, std::unique_ptr<quic::QuicReceivedPacket> packet);
   void AddRead(IoMode mode, std::unique_ptr<quic::QuicEncryptedPacket> packet);
 
   // Adds a read at the next sequence number which will return |rv| either
   // synchronously or asynchronously based on |mode|.
   void AddRead(IoMode mode, int rv);
+
+  // Adds a pause, meaning that reads will return ERR_IO_PENDING until
+  // `Resume()` is called. Read and write cannot both be paused simultaneously.
+  void AddReadPause();
+
+  // Like `AddReadPause`, but cannot be resumed.
+  void AddReadPauseForever();
 
   // Adds a write at the next sequence number which will write |packet|
   // synchronously or asynchronously based on |mode|.
@@ -44,6 +62,10 @@ class MockQuicData {
                 int rv,
                 std::unique_ptr<quic::QuicEncryptedPacket> packet);
 
+  // Adds a pause, meaning that writes will return ERR_IO_PENDING until
+  // `Resume()` is called. Read and write cannot both be paused simultaneously.
+  void AddWritePause();
+
   // Adds the reads and writes to |factory|.
   void AddSocketDataToFactory(MockClientSocketFactory* factory);
 
@@ -56,10 +78,13 @@ class MockQuicData {
   // Resumes I/O after it is paused.
   void Resume();
 
-  // Creates a new SequencedSocketData owned by this instance of MockQuicData.
-  // Returns a pointer to the newly created SequencedSocketData.
+  // Creates a new `SequencedSocketData` owned by this instance of
+  // `MockQuicData`. Returns a pointer to the newly created
+  // `SequencedSocketData`.
   SequencedSocketData* InitializeAndGetSequencedSocketData();
 
+  // Get the `SequencedSocketData` created by `AddSocketDataToFactory` or
+  // `InitializeAndGetSequencedSocketData`.
   SequencedSocketData* GetSequencedSocketData();
 
  private:

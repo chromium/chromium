@@ -39,8 +39,10 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
@@ -372,6 +374,18 @@ HTMLFormControlElement::popoverTargetElement() {
       }
     }
   }
+  // The select element's author provided <button> which opens its author
+  // provided <datalist> forms an implicit popover trigger for the <datalist> in
+  // order to function properly with light dismiss.
+  if (!target_element && RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
+      if (auto* select = button->OwnerSelect()) {
+        if (auto* datalist = select->SlottedDatalist()) {
+          target_element = datalist;
+        }
+      }
+    }
+  }
 
   if (!target_element) {
     return no_element;
@@ -454,13 +468,10 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
 
     // invoketarget & popovertarget shouldn't be combined, so warn.
     if (invokee && popover.popover) {
-      ConsoleMessage* console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "popovertarget is ignored on elements with invoketarget set.");
-      console_message->SetNodes(GetDocument().GetFrame(),
-                                {this->GetDomNodeId()});
-      GetDocument().AddConsoleMessage(console_message);
     }
 
     // Buttons with an invoketarget will dispatch an InvokeEvent on the Invoker,

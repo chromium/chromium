@@ -63,6 +63,13 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
         notify: true,
       },
 
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        },
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -91,6 +98,7 @@ export class TimezoneSubpageElement extends TimezoneSubpageElementBase {
   }
 
   activeTimeZoneDisplayName: string;
+  private isGuest_: boolean;
   private browserProxy_: TimeZoneBrowserProxy;
   private showEnableSystemGeolocationDialog_: boolean;
   private shouldShowGeolocationWarningText_: boolean;

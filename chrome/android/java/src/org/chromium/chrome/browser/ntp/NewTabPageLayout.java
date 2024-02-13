@@ -435,6 +435,7 @@ public class NewTabPageLayout extends LinearLayout {
         TraceEvent.begin(TAG + ".initializeTabResumptionModuleCoordinator()");
         mTabResumptionModuleCoordinator =
                 TabResumptionModuleUtils.mayCreateTabResumptionModuleCoordinator(
+                        getContext(),
                         this,
                         suggestionClickCallback,
                         profile,

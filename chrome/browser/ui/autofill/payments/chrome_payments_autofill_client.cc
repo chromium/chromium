@@ -6,12 +6,16 @@
 
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
+#include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace autofill::payments {
@@ -71,6 +75,28 @@ void ChromePaymentsAutofillClient::ShowLocalCardMigrationResults(
                                    migratable_credit_cards,
                                    delete_local_card_callback);
 }
+
+void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
+    bool is_vcn_enrolled) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
+    VirtualCardEnrollBubbleControllerImpl* controller =
+        VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
+    if (controller && controller->IsIconVisible()) {
+      controller->HideIconAndBubble();
+    }
+  }
+}
 #endif  // BUILDFLAG(IS_ANDROID)
+
+void ChromePaymentsAutofillClient::CreditCardUploadCompleted(bool card_saved) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (SaveCardBubbleControllerImpl* controller =
+          SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
+    controller->ShowConfirmationBubbleView(card_saved);
+  }
+#endif
+}
 
 }  // namespace autofill::payments

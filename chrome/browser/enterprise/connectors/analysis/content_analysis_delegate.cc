@@ -214,18 +214,16 @@ std::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
     std::u16string custom_rule_message =
         GetCustomRuleString(custom_rule_message_);
     if (!custom_rule_message.empty()) {
-      return custom_rule_message;
+      return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                                        custom_rule_message);
     }
   }
 
   auto element = data_.settings.tags.find(final_result_tag_);
   if (element != data_.settings.tags.end() &&
       !element->second.custom_message.message.empty()) {
-    return IsDialogCustomRuleMessageEnabled()
-               ? element->second.custom_message.message
-               : l10n_util::GetStringFUTF16(
-                     IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                     element->second.custom_message.message);
+    return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                                      element->second.custom_message.message);
   }
 
   return std::nullopt;
@@ -244,8 +242,11 @@ std::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
 
 std::optional<std::vector<std::pair<gfx::Range, GURL>>>
 ContentAnalysisDelegate::GetCustomRuleMessageRanges() const {
+  size_t offset;
+  l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                             std::u16string{}, &offset);
   std::vector<std::pair<gfx::Range, GURL>> custom_rule_message_ranges =
-      GetCustomRuleStyles(custom_rule_message_);
+      GetCustomRuleStyles(custom_rule_message_, offset);
   if (!custom_rule_message_ranges.empty()) {
     return custom_rule_message_ranges;
   }

@@ -527,18 +527,18 @@ struct MenuController::SelectByCharDetails {
   SelectByCharDetails() = default;
 
   // Index of the first menu with the specified mnemonic.
-  absl::optional<size_t> first_match;
+  std::optional<size_t> first_match;
 
   // If true there are multiple menu items with the same mnemonic.
   bool has_multiple = false;
 
   // Index of the selected item; may remain nullopt.
-  absl::optional<size_t> index_of_item;
+  std::optional<size_t> index_of_item;
 
   // If there are multiple matches this is the index of the item after the
   // currently selected item whose mnemonic matches. This may remain nullopt
   // even though there are matches.
-  absl::optional<size_t> next_match;
+  std::optional<size_t> next_match;
 };
 
 // MenuController:State ------------------------------------------------------
@@ -3537,7 +3537,7 @@ void MenuController::SetChildMenuOpenDirectionAtDepth(
 }
 
 void MenuController::SetMenuRoundedCorners(
-    absl::optional<gfx::RoundedCornersF> corners) {
+    std::optional<gfx::RoundedCornersF> corners) {
   rounded_corners_ = corners;
 }
 

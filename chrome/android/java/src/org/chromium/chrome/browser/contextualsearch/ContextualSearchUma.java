@@ -16,6 +16,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.SyncService;
 
 import java.lang.annotation.Retention;
@@ -155,10 +156,10 @@ public class ContextualSearchUma {
      * Contextual Search feature is active, and will track the different preference settings
      * (disabled, enabled or uninitialized). Calling more than once is fine.
      */
-    public static void logPreferenceState() {
+    public static void logPreferenceState(Profile profile) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Search.ContextualSearchPreferenceState",
-                getPreferenceValue(),
+                getPreferenceValue(profile),
                 ContextualSearchPreference.NUM_ENTRIES);
     }
 
@@ -584,10 +585,10 @@ public class ContextualSearchUma {
     /**
      * @return The code for the Contextual Search preference.
      */
-    private static int getPreferenceValue() {
-        if (ContextualSearchPolicy.isContextualSearchUninitialized()) {
+    private static int getPreferenceValue(Profile profile) {
+        if (ContextualSearchPolicy.isContextualSearchUninitialized(profile)) {
             return ContextualSearchPreference.UNINITIALIZED;
-        } else if (ContextualSearchPolicy.isContextualSearchDisabled()) {
+        } else if (ContextualSearchPolicy.isContextualSearchDisabled(profile)) {
             return ContextualSearchPreference.DISABLED;
         }
         return ContextualSearchPreference.ENABLED;

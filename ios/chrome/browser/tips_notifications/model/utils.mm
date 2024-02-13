@@ -38,6 +38,7 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
 NSString* const kTipsNotificationId = @"kTipsNotificationId";
 NSString* const kTipsNotificationTypeKey = @"kTipsNotificationTypeKey";
 const base::TimeDelta kTipsNotificationDefaultTriggerDelta = base::Hours(72);
+const char kTipsNotificationsSentPref[] = "tips_notifications.sent_bitfield";
 
 bool IsTipsNotification(UNNotificationRequest* request) {
   return [request.identifier isEqualToString:kTipsNotificationId];

@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/web_state_list/model/session_metrics.h",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/push_notification/model",
 ]
 

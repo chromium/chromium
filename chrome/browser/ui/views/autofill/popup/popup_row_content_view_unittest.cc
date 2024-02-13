@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_id.h"
@@ -108,16 +109,19 @@ TEST_F(PopupRowContentViewTest, SetSelectedUpdatesTrackedLabels) {
       untracked_label->GetEnabledColor(),
       get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
 
-  // On select updates only the tracked label's style.
-  view().UpdateStyle(/*selected=*/true);
-  EXPECT_NE(
-      tracked_label->GetEnabledColor(),
-      get_expected_color(*tracked_label, untracked_label->GetTextStyle()));
-  EXPECT_EQ(tracked_label->GetEnabledColor(),
-            get_expected_color(*tracked_label, views::style::STYLE_SELECTED));
-  EXPECT_EQ(
-      untracked_label->GetEnabledColor(),
-      get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
+  // The label styles don't get changed with selection for the new style.
+  if (!ShouldApplyNewAutofillPopupStyle()) {
+    // On select updates only the tracked label's style.
+    view().UpdateStyle(/*selected=*/true);
+    EXPECT_NE(
+        tracked_label->GetEnabledColor(),
+        get_expected_color(*tracked_label, untracked_label->GetTextStyle()));
+    EXPECT_EQ(tracked_label->GetEnabledColor(),
+              get_expected_color(*tracked_label, views::style::STYLE_SELECTED));
+    EXPECT_EQ(
+        untracked_label->GetEnabledColor(),
+        get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
+  }
 }
 
 }  // namespace autofill

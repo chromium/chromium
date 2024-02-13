@@ -29,6 +29,17 @@ namespace blink {
 // if we are in the intrinsic sizes phase.
 bool InlineLengthUnresolvable(const ConstraintSpace& constraint_space,
                               const Length& length) {
+  // TODO(https://crbug.com/313072): This should be refactored to handle
+  // new things that calc-size() can hold (in particular, the
+  // possibility that we might need to check conditions for both
+  // percentages and intrinsic sizing keywords without doing a
+  // possibly-false early return for one of them), and the possibility
+  // introduced by calc-size() that a calc expression might *not* have
+  // a percent.
+
+  // TODO(https://crbug.com/313072): calc-size() doesn't work correctly
+  // when this function returns true.
+
   if (length.IsPercentOrCalc())
     return constraint_space.PercentageResolutionInlineSize() == kIndefiniteSize;
 
@@ -47,6 +58,17 @@ bool BlockLengthUnresolvable(
     const ConstraintSpace& constraint_space,
     const Length& length,
     const LayoutUnit* override_percentage_resolution_size) {
+  // TODO(https://crbug.com/313072): This should be refactored to handle
+  // new things that calc-size() can hold (in particular, the
+  // possibility that we might need to check conditions for both
+  // percentages and intrinsic sizing keywords without doing a
+  // possibly-false early return for one of them), and the possibility
+  // introduced by calc-size() that a calc expression might *not* have
+  // a percent.
+
+  // TODO(https://crbug.com/313072): calc-size() doesn't work correctly
+  // when this function returns true.
+
   if (length.IsAuto() || length.IsMinContent() || length.IsMaxContent() ||
       length.IsMinIntrinsic() || length.IsFitContent() || length.IsNone())
     return true;
@@ -93,7 +115,13 @@ LayoutUnit ResolveInlineLengthInternal(
       DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize)
           << length.ToString();
       LayoutUnit value = MinimumValueForLength(
-          length, percentage_resolution_size, anchor_evaluator);
+          length, percentage_resolution_size,
+          {.anchor_evaluator = anchor_evaluator,
+           .intrinsic_evaluator = [&](const Length& length_to_evaluate) {
+             return ResolveInlineLengthInternal(
+                 constraint_space, style, border_padding, min_max_sizes,
+                 length_to_evaluate, override_available_size, anchor_evaluator);
+           }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.InlineSum(), value);
@@ -164,7 +192,14 @@ LayoutUnit ResolveBlockLengthInternal(
               : constraint_space.PercentageResolutionBlockSize();
       DCHECK(length.IsFixed() || percentage_resolution_size != kIndefiniteSize);
       LayoutUnit value = MinimumValueForLength(
-          length, percentage_resolution_size, anchor_evaluator);
+          length, percentage_resolution_size,
+          {.anchor_evaluator = anchor_evaluator,
+           .intrinsic_evaluator = [&](const Length& length_to_evaluate) {
+             return ResolveBlockLengthInternal(
+                 constraint_space, style, border_padding, length_to_evaluate,
+                 intrinsic_size, override_available_size,
+                 override_percentage_resolution_size, anchor_evaluator);
+           }});
 
       if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.BlockSum(), value);

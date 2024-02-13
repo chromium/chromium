@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -47,14 +48,17 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private CirclePagerIndicatorDecoration mPageIndicatorDecoration;
     private SnapHelper mSnapHelper;
     private boolean mIsSnapHelperAttached;
-    private int mCurrentOrientation;
     private int mItemPerScreen;
     private Set<Integer> mEnabledModuleList;
     private HomeModulesConfigManager mHomeModulesConfigManager;
     private HomeModulesConfigManager.HomeModulesStateListener mHomeModulesStateListener;
 
+    /** It is non-null for tablets. */
     @Nullable private UiConfig mUiConfig;
+
+    /** It is non-null for tablets. */
     @Nullable private DisplayStyleObserver mDisplayStyleObserver;
+
     @Nullable private Callback<Profile> mOnProfileAvailableObserver;
 
     /**
@@ -105,7 +109,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
         mPageIndicatorDecoration =
                 new CirclePagerIndicatorDecoration(
                         activity,
-                        mUiConfig,
                         mModuleDelegateHost.getStartMargin(),
                         SemanticColorUtils.getDefaultIconColorSecondary(activity),
                         activity.getColor(
@@ -136,13 +139,9 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             mSnapHelper.attachToRecyclerView(mRecyclerView);
         }
 
-        // When the screen is rotated, an event of display style change is also triggered.
-        mCurrentOrientation = activity.getResources().getConfiguration().orientation;
-
         // Setup an observer of mUiConfig on tablets.
         mDisplayStyleObserver =
                 newDisplayStyle -> {
-                    boolean wasSnapHelperAttached = mIsSnapHelperAttached;
                     mItemPerScreen =
                             CirclePagerIndicatorDecoration.getItemPerScreen(newDisplayStyle);
                     if (mItemPerScreen > 1) {
@@ -161,15 +160,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     mPageIndicatorDecoration.onDisplayStyleChanged(
                             mModuleDelegateHost.getStartMargin(), mItemPerScreen);
 
-                    int newOrientation = activity.getResources().getConfiguration().orientation;
-                    // Redraws the recyclerview when either the screen is rotated or the width
-                    // of the window in which the magic stack is shown has changed.
-                    if (wasSnapHelperAttached != mIsSnapHelperAttached
-                            || mCurrentOrientation != newOrientation) {
-                        mCurrentOrientation = newOrientation;
-                        // Makes the recyclerview to redraw all items.
-                        mRecyclerView.invalidateItemDecorations();
-                    }
+                    // Redraws the recyclerview when display style is changed on tablets.
+                    mRecyclerView.invalidateItemDecorations();
                 };
         mUiConfig.addObserver(mDisplayStyleObserver);
         mPageIndicatorDecoration.onDisplayStyleChanged(
@@ -351,7 +343,21 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     List<Integer> getModuleList() {
         // TODO(https://crbug.com/1512962): Gets the modules ranking list using segmentation service
         // API.
-        List<Integer> generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        List<Integer> generalModuleList;
+        if (HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.getValue()) {
+            generalModuleList =
+                    List.of(
+                            ModuleType.PRICE_CHANGE,
+                            ModuleType.SINGLE_TAB,
+                            ModuleType.TAB_RESUMPTION);
+        } else if (mModuleDelegateHost.isHomeSurface()) {
+            generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        } else if (ChromeFeatureList.sTabResumptionModuleAndroid.isEnabled()) {
+            generalModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        } else {
+            generalModuleList = List.of(ModuleType.PRICE_CHANGE);
+        }
+
         List<Integer> moduleList = new ArrayList<>();
         for (int i = 0; i < generalModuleList.size(); i++) {
             @ModuleType int currentModuleType = generalModuleList.get(i);

@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {Annotation, URLVisit} from './history_cluster_types.mojom-webui.js';
-import {ClusterAction, RelatedSearchAction, VisitAction, VisitType} from './history_clusters.mojom-webui.js';
+import type {URLVisit} from './history_cluster_types.mojom-webui.js';
+import {Annotation} from './history_cluster_types.mojom-webui.js';
+import type {ClusterAction, RelatedSearchAction, VisitAction} from './history_clusters.mojom-webui.js';
+import {VisitType} from './history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides an abstraction layer for logging metrics for

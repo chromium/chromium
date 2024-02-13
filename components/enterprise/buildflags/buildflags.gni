@@ -26,7 +26,8 @@ declare_args() {
   enterprise_client_certificates = is_win || is_mac
 
   # The watermark is currently implemented using the views framework
-  enterprise_watermark = toolkit_views
+  enterprise_watermark =
+      toolkit_views && (is_win || is_mac || is_linux || is_chromeos)
 }
 
 declare_args() {

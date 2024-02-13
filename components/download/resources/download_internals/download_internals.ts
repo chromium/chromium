@@ -10,7 +10,8 @@ import 'chrome://resources/js/ios/web_ui.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {DownloadInternalsBrowserProxy, DownloadInternalsBrowserProxyImpl, ServiceEntry, ServiceEntryState, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
+import type {DownloadInternalsBrowserProxy, ServiceEntry, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
+import {DownloadInternalsBrowserProxyImpl, ServiceEntryState} from './download_internals_browser_proxy.js';
 
 declare global {
   class JsEvalContext {

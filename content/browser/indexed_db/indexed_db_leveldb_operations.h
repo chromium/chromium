@@ -40,19 +40,8 @@ extern CONTENT_EXPORT const base::FilePath::CharType kIndexedDBExtension[];
 extern const base::FilePath::CharType kIndexedDBFile[];
 extern CONTENT_EXPORT const base::FilePath::CharType kLevelDBExtension[];
 
-// Returns whether the legacy (first-party/default-bucket) path should be used
-// for storing IDB files for the given bucket.
-bool ShouldUseLegacyFilePath(const storage::BucketLocator& bucket_locator);
-
-base::FilePath GetBlobStoreFileName(
-    const storage::BucketLocator& bucket_locator);
-base::FilePath GetLevelDBFileName(const storage::BucketLocator& bucket_locator);
 base::FilePath ComputeCorruptionFileName(
     const storage::BucketLocator& bucket_locator);
-
-// Returns if the given file path is too long for the current operating system's
-// file system.
-bool IsPathTooLong(const base::FilePath& leveldb_dir);
 
 // If a corruption file for the given `storage_key` at the given |path_base|
 // exists it is deleted, and the message is returned. If the file does not

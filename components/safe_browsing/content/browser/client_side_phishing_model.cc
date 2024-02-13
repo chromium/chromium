@@ -153,6 +153,11 @@ void CloseModelFile(base::File model_file) {
   model_file.Close();
 }
 
+int* GetLiveClientPhishingModelCount() {
+  static int count = 0;
+  return &count;
+}
+
 }  // namespace
 
 // --- ClientSidePhishingModel methods ---
@@ -166,6 +171,10 @@ ClientSidePhishingModel::ClientSidePhishingModel(
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING,
       /*model_metadata=*/std::nullopt, this);
+  *GetLiveClientPhishingModelCount() += 1;
+  base::UmaHistogramCounts1000(
+      "SBClientPhishing.LiveClientPhishingModelCountAtCreation",
+      *GetLiveClientPhishingModelCount());
 }
 
 void ClientSidePhishingModel::OnModelUpdated(
@@ -433,6 +442,8 @@ ClientSidePhishingModel::~ClientSidePhishingModel() {
   }
 
   opt_guide_ = nullptr;
+
+  *GetLiveClientPhishingModelCount() -= 1;
 }
 
 base::CallbackListSubscription ClientSidePhishingModel::RegisterCallback(

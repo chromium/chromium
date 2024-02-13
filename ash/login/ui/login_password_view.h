@@ -58,8 +58,9 @@ class ASH_EXPORT LoginPasswordView : public views::View,
                                      public views::TextfieldController,
                                      public ImeControllerImpl::Observer,
                                      public ui::ImplicitAnimationObserver {
+  METADATA_HEADER(LoginPasswordView, views::View)
+
  public:
-  METADATA_HEADER(LoginPasswordView);
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
    public:

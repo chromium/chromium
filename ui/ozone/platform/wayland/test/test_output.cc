@@ -6,8 +6,9 @@
 
 #include <wayland-server-protocol.h>
 
+#include <optional>
+
 #include "base/check_op.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 
 namespace wl {
@@ -17,13 +18,12 @@ namespace {
 constexpr uint32_t kOutputVersion = 2;
 }
 
-TestOutput::TestOutput(FlushMetricsCallback flush_metrics_callback)
-    : TestOutput(std::move(flush_metrics_callback), TestOutputMetrics()) {}
+TestOutput::TestOutput(Delegate* delegate)
+    : TestOutput(delegate, TestOutputMetrics()) {}
 
-TestOutput::TestOutput(FlushMetricsCallback flush_metrics_callback,
-                       TestOutputMetrics metrics)
+TestOutput::TestOutput(Delegate* delegate, TestOutputMetrics metrics)
     : GlobalObject(&wl_output_interface, nullptr, kOutputVersion),
-      flush_metrics_callback_(std::move(flush_metrics_callback)),
+      delegate_(delegate),
       metrics_(std::move(metrics)) {}
 
 TestOutput::~TestOutput() = default;
@@ -31,6 +31,10 @@ TestOutput::~TestOutput() = default;
 // static
 TestOutput* TestOutput::FromResource(wl_resource* resource) {
   return GetUserDataAs<TestOutput>(resource);
+}
+
+uint64_t TestOutput::GetOutputName(wl_client* client) const {
+  return wl_global_get_name(global(), client);
 }
 
 void TestOutput::SetPhysicalAndLogicalBounds(const gfx::Rect& bounds) {
@@ -94,7 +98,7 @@ int64_t TestOutput::GetDisplayId() const {
 }
 
 void TestOutput::Flush() {
-  flush_metrics_callback_.Run(resource(), metrics_);
+  delegate_->OnTestOutputFlush(this, metrics_);
 
   constexpr char kUnknownMake[] = "unknown_make";
   constexpr char kUnknownModel[] = "unknown_model";
@@ -117,6 +121,11 @@ void TestOutput::Flush() {
   }
 
   wl_output_send_done(resource());
+}
+
+void TestOutput::DestroyGlobal() {
+  GlobalObject::DestroyGlobal();
+  delegate_->OnTestOutputGlobalDestroy(this);
 }
 
 // Notifies clients about the changes in the output configuration via server

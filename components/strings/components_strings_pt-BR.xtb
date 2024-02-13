@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Não seguro</translation>
 <translation id="1075079914415273530">Agricultura e silvicultura</translation>
 <translation id="1075364221219156102">Usar uma chave de acesso</translation>
-<translation id="1078033282564106222">A opção de número do edifício foi selecionada</translation>
 <translation id="1080116354587839789">Ajustar à largura</translation>
 <translation id="1081061862829655580">Bandeja 19</translation>
 <translation id="1082026381988252344">Rolar e aplicar zoom ao conteúdo da guia compartilhada</translation>
@@ -247,6 +246,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1428729058023778569">Este aviso está sendo exibido porque o site não é compatível com HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Filme autoadesivo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1431021750861456539">Tela cheia automática</translation>
 <translation id="1432187715652018471">A página quer instalar um manipulador de serviço.</translation>
 <translation id="1432581352905426595">Gerenciar mecanismos de pesquisa</translation>
 <translation id="1433225466058025572">Tente mover os arquivos de novo</translation>
@@ -586,6 +586,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2075497153347571252">O administrador bloqueou a permissão <ph name="PERMISSION" /> em <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2080021694978766903">Essa política não pode ter mais que <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
+<translation id="2081482239432306393">A opção de número da casa foi selecionada</translation>
 <translation id="20817612488360358">As configurações de proxy do sistema são definidas para serem utilizadas, mas uma configuração explícita de proxy também foi especificada.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Permitir em todos os acessos</translation>
@@ -613,7 +614,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2126374524350484896">Criador do PDF:</translation>
 <translation id="2130448033692577677">Os modelos que você especificou podem não ser aplicados, porque a política DnsOverHttpsMode não foi definida.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Fazendo o download do pacote de idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Roupas masculinas</translation>
 <translation id="2137891579555018930">Aguardando permissão...</translation>
 <translation id="213826338245044447">Favoritos nos dispositivos móveis</translation>
@@ -1387,7 +1387,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3681007416295224113">Informações do certificado</translation>
 <translation id="3681421644246505351">O Chrome registra temas do seu interesse com base no seu histórico de navegação recente.</translation>
 <translation id="3682094733650754138">A opção de preencher um endereço foi selecionada</translation>
-<translation id="3689867156802445220">Número do edifício</translation>
 <translation id="3693327506115126094">Escolha como confirmar sua identidade</translation>
 <translation id="3698629142018988477">Botão "Criar site". Ative para criar rapidamente um novo site no Google Sites</translation>
 <translation id="3701325639446035885">Vendas de ingressos para eventos</translation>
@@ -1412,6 +1411,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3723663469265383848">Não será possível usar o dispositivo por até 10 minutos durante a atualização.</translation>
 <translation id="372429172604983730">Entre os apps que podem causar esse erro estão antivírus, firewall e softwares de filtros ou proxy da Web.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo no Apresentações Google</translation>
+<translation id="3727309136762649052">Namespace</translation>
 <translation id="3727850735097852673">Para usar o Gerenciador de senhas do Google com o Acesso às Chaves do macOS, reinicie o Chrome e permita o acesso. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="3733139489341305600">Veículos autônomos</translation>
 <translation id="3736520371357197498">Se você entende os riscos à sua segurança, pode <ph name="BEGIN_LINK" />acessar este site inseguro<ph name="END_LINK" /> antes de os programas perigosos serem removidos.</translation>
@@ -1576,6 +1576,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4089152113577680600">Bandeja 14</translation>
 <translation id="4092349052316400070">Preencha o endereço</translation>
 <translation id="4096237801206588987">11 x 15 pol.</translation>
+<translation id="4098306082496067348">Toque nos detalhes do cartão virtual para adicioná-lo ao pagamento.</translation>
 <translation id="4098354747657067197">Site fraudulento</translation>
 <translation id="4099048595830172239">A política do administrador não recomenda compartilhar a tela com o app <ph name="APPLICATION_TITLE" /> quando algum conteúdo confidencial estiver visível:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar tamanhos e fontes no Chrome</translation>
@@ -1899,6 +1900,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4729147136006144950">Caridade e filantropia</translation>
 <translation id="4730977633786878901">Avaliações</translation>
 <translation id="4731638775147756694">Este aplicativo foi bloqueado pelo seu administrador</translation>
+<translation id="4732860731866514038">Baixando o pacote de idioma <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> quer acessar o local do seu dispositivo</translation>
 <translation id="4736491186715342415">Veículos motorizados</translation>
 <translation id="4736825316280949806">Reiniciar o Chromium</translation>
@@ -1920,7 +1922,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4757022425116568383">Chave de acesso do seu perfil do Chrome</translation>
 <translation id="4757993714154412917">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chromium recomenda conferir as senhas salvas.</translation>
 <translation id="4758311279753947758">Adicionar dados de contato</translation>
-<translation id="4761104368405085019">Usar microfone</translation>
 <translation id="4761326898079498987">Revise para conferir mais detalhes</translation>
 <translation id="4761869838909035636">Executar a confirmação de segurança do Chrome</translation>
 <translation id="4763196677855776703">Termos e Condições fornecidos por <ph name="URL" /></translation>
@@ -2258,7 +2259,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
             <ph name="LIST_ITEM" />Cookies e dados de sites
             <ph name="LIST_ITEM" />Informações inseridas em formulários
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> quer controlar e reprogramar seus dispositivos MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Ordem reversa virada para cima</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use as informações salvas sobre você</translation>
 <translation id="5447765697759493033">Este site não será traduzido</translation>
@@ -2285,6 +2285,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
     <ph name="LINE_BREAK" />
     Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="549333378215107354">Tamanho 3</translation>
+<translation id="5501712702042287009">tela cheia automática</translation>
 <translation id="550365051221576010">Preencher tudo</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Favoritos gerenciados</translation>
@@ -2471,7 +2472,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5877831137320480913">Beleza e fitness</translation>
 <translation id="5879989559903563723">Não permitido no modo convidado</translation>
 <translation id="5880050725127890683">Acessar a confirmação de segurança do Chrome</translation>
-<translation id="5883861433316751031">Controlar e reprogramar dispositivos MIDI?</translation>
 <translation id="5884465125445718607">Envelope chinês 6</translation>
 <translation id="5887400589839399685">Cartão salvo</translation>
 <translation id="5887687176710214216">Última visita: ontem</translation>
@@ -2822,7 +2822,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6556866813142980365">Refazer</translation>
 <translation id="6557715786897013164">14 x 17 pol.</translation>
 <translation id="6560786330438719938">Os apps instalados ou desinstalados e a frequência de uso deles</translation>
-<translation id="6567084950885568327">Controle e reprogramação de dispositivos MIDI</translation>
 <translation id="6568793038316600992">Botão "Gerenciar formas de pagamento". Ative para gerenciar suas informações de pagamento e de cartão de crédito nas configurações do Chrome</translation>
 <translation id="6569060085658103619">Você está vendo uma página de extensões</translation>
 <translation id="6569366777234823130">Filmes de drama</translation>
@@ -3205,6 +3204,7 @@ Mais detalhes:
 <translation id="733354035281974745">Substituição de conta local do dispositivo</translation>
 <translation id="7334320624316649418">&amp;Refazer reordenar</translation>
 <translation id="7335157162773372339">Pode pedir para usar a câmera</translation>
+<translation id="7336636595549675416">Número da casa</translation>
 <translation id="7337248890521463931">Mostrar mais linhas</translation>
 <translation id="7337706099755338005">Não está disponível na sua plataforma.</translation>
 <translation id="733923710415886693">O certificado do servidor não foi divulgado por meio da Transparência dos certificados.</translation>
@@ -3912,7 +3912,6 @@ Mais detalhes:
 <translation id="8671519637524426245">O valor <ph name="SECURE_DNS_SALT" /> não atende aos requisitos de tamanho.</translation>
 <translation id="867224526087042813">Assinatura</translation>
 <translation id="8672264262457010862">Indústria e negócios</translation>
-<translation id="8673776281896298303">Controlar e reprogramar seus dispositivos MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Sem atraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>
@@ -4154,7 +4153,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="9148507642005240123">&amp;Desfazer editar</translation>
 <translation id="9148599396704355100">Preço baixo</translation>
 <translation id="9150025764986957246">Você pode inserir informações como:</translation>
-<translation id="9150045010208374699">Usar câmera</translation>
 <translation id="9150685862434908345">O administrador pode mudar as configurações do navegador remotamente. A atividade deste dispositivo também pode ser gerenciada fora do Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Atualizado</translation>
 <translation id="9155211586651734179">Periféricos de áudio conectados</translation>

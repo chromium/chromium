@@ -50,8 +50,7 @@
 #include "net/base/network_interfaces.h"
 #include "url/url_util.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -711,5 +710,4 @@ bool SmbService::IsAnySmbShareConfigured() {
   return !saved_smbfs_shares.empty() || !preconfigured_shares.empty();
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

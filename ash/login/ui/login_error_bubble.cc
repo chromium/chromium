@@ -65,7 +65,7 @@ void LoginErrorBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(GetAccessibleName());
 }
 
-BEGIN_METADATA(LoginErrorBubble, LoginBaseBubbleView)
+BEGIN_METADATA(LoginErrorBubble)
 END_METADATA
 
 }  // namespace ash

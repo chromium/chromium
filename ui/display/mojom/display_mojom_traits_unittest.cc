@@ -589,7 +589,7 @@ TEST(DisplayStructTraitsTest, DisplaySnapshotInternal) {
       has_content_protection_key, color_info, display_name, sys_path,
       std::move(modes), PanelOrientation::kRightUp, edid, current_mode,
       native_mode, product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, absl::nullopt, drm_formats_and_modifiers);
+      variable_refresh_rate_state, std::nullopt, drm_formats_and_modifiers);
 
   std::unique_ptr<DisplaySnapshot> output;
   SerializeAndDeserialize<mojom::DisplaySnapshot>(input->Clone(), &output);

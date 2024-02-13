@@ -62,8 +62,7 @@ suite('<settings-input-method-options-page>', () => {
     CrSettingsPrefs.deferInitialization = true;
     const settingsPrefs = document.createElement('settings-prefs');
     settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
-    settingsPrefs.initialize(
-        settingsPrivate as unknown as typeof chrome.settingsPrivate);
+    settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 

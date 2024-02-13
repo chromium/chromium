@@ -38,7 +38,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   ~SyncSessionDurationsMetricsRecorderTest() override = default;
 
   void EnableSync() {
-    // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
     // deleted from the codebase. See ConsentLevel::kSync documentation for
     // details.
     identity_test_env_.MakePrimaryAccountAvailable("foo@gmail.com",
@@ -54,7 +54,7 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     DCHECK_EQ(sync_service_.GetTransportState(),
               SyncService::TransportState::PAUSED);
 
-    // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+    // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
     // deleted from the codebase. See ConsentLevel::kSync documentation for
     // details.
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(

@@ -203,7 +203,7 @@ TEST_F(Mp4MuxerDelegateTest, AddVideoFrame) {
 
   {
     // Validate MP4 format.
-    std::set<int> audio_object_types;
+    base::flat_set<int> audio_object_types;
     audio_object_types.insert(mp4::kISO_14496_3);
     mp4::MP4StreamParser mp4_stream_parser(audio_object_types, false, false,
                                            false, false);
@@ -501,7 +501,7 @@ TEST_F(Mp4MuxerDelegateTest, AddAudioFrame) {
 
   {
     // Validate MP4 format.
-    std::set<int> audio_object_types;
+    base::flat_set<int> audio_object_types;
     audio_object_types.insert(mp4::kISO_14496_3);
     mp4::MP4StreamParser mp4_stream_parser(audio_object_types, false, false,
                                            false, false);

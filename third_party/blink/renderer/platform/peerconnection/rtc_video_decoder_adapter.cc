@@ -174,6 +174,10 @@ std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
     return RTCVideoDecoderFallbackReason::kSpatialLayers;
   }
 
+  if (codec == media::VideoCodec::kAV1 && is_spatial_layer_buffer) {
+    // No hardware decoder supports AV1 SVC stream.
+    return RTCVideoDecoderFallbackReason::kSpatialLayers;
+  }
   return std::nullopt;
 }
 }  // namespace

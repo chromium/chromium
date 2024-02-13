@@ -101,6 +101,7 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
+#include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -381,7 +382,6 @@ void ProfileImpl::RegisterProfilePrefs(
                                 false);
   registry->RegisterIntegerPref(policy::policy_prefs::kForceYouTubeRestrict,
                                 safe_search_api::YOUTUBE_RESTRICT_OFF);
-  registry->RegisterStringPref(prefs::kAllowedDomainsForApps, std::string());
 
   registry->RegisterIntegerPref(prefs::kProfileAvatarIndex, -1);
   // Whether a profile is using an avatar without having explicitely chosen it
@@ -877,9 +877,11 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // as it depends on the default StoragePartition being initialized.
   GetOriginTrialsControllerDelegate();
 
-  // The TpcdTrialService must be created with the profile, but after the
-  // initialization of the OriginTrialsControllerDelegate, as it depends on it.
+  // The TpcdTrialService and TopLevelTrialService must be created with the
+  // profile, but after the initialization of the
+  // OriginTrialsControllerDelegate, as it depends on it.
   tpcd::trial::TpcdTrialServiceFactory::GetForProfile(this);
+  tpcd::trial::TopLevelTrialServiceFactory::GetForProfile(this);
 }
 
 base::FilePath ProfileImpl::last_selected_directory() {

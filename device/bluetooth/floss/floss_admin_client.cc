@@ -209,7 +209,7 @@ void FlossAdminClient::OnServiceAllowlistChanged(
 
 void FlossAdminClient::OnDevicePolicyEffectChanged(
     const FlossDeviceId& device_id,
-    const absl::optional<PolicyEffect>& effect) {
+    const std::optional<PolicyEffect>& effect) {
   for (auto& observer : observers_) {
     observer.DevicePolicyEffectChanged(device_id, effect);
   }

@@ -120,21 +120,21 @@ test(function() {
   // Get the accessible node again, because although the hierarchy hasn't really changed,
   // the underlying object may be new, due to aria-hidden changes.
   axElement = axElementById(element.id);
-  assert_equals(axElement.isIgnored, true,
+  assert_equals(axElementById(element.id).isIgnored, true,
     "ariaHidden can be set through ElementInternals");
 
   element.internals.ariaHidden = "false";
   // Get the accessible node again, because although the hierarchy hasn't really changed,
   // the underlying object may be new, due to aria-hidden changes.
   axElement = axElementById(element.id);
-  assert_equals(axElement.isIgnored, false,
+  assert_equals(axElementById(element.id).isIgnored, false,
     "ariaHidden can change through ElementInternals");
 
   element.ariaHidden = "true";
   // Get the accessible node again, because although the hierarchy hasn't really changed,
   // the underlying object may be new, due to aria-hidden changes.
   axElement = axElementById(element.id);
-  assert_equals(axElement.isIgnored, true,
+  assert_equals(axElementById(element.id).isIgnored, true,
     "ariaHidden value set on Element overrides value from ElementInternals");
   element.remove();
 }, "aria-hidden");

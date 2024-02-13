@@ -515,7 +515,7 @@ const AcceleratorLayoutMap& GetAcceleratorLayoutMap() {
             AcceleratorAction::kExit, IDS_ASH_ACCELERATOR_DESCRIPTION_EXIT,
             mojom::AcceleratorCategory::kGeneral,
             mojom::AcceleratorSubcategory::kGeneralControls,
-            /*locked=*/true, mojom::AcceleratorLayoutStyle::kDefault,
+            /*locked=*/false, mojom::AcceleratorLayoutStyle::kDefault,
             mojom::AcceleratorSource::kAsh)},
        {AcceleratorAction::kSwitchToNextUser,
         AcceleratorLayoutDetails(

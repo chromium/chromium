@@ -8,11 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/strings/string_split.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
@@ -51,7 +51,7 @@ struct AssistantNode {
   bool line_through;
 
   // Selected portion of the text.
-  absl::optional<gfx::Range> selection;
+  std::optional<gfx::Range> selection;
 
   // Fake Android view class name of the element.  Each node is assigned
   // a closest approximation of Android's views to keep the server happy.
@@ -66,7 +66,7 @@ struct AssistantNode {
 
   // Accessibility functionality of the node inferred from DOM or based on HTML
   // role attribute.
-  absl::optional<std::string> role;
+  std::optional<std::string> role;
 };
 
 struct AssistantTree {

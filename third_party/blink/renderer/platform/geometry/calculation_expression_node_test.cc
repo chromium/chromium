@@ -36,8 +36,8 @@ TEST(CalculationExpressionOperationNodeTest, Comparison) {
   scoped_refptr<CalculationExpressionOperationNode> operation3 =
       BuildOperationNode({17.f, 13.f}, CalculationOperator::kMax);
 
-  EXPECT_EQ(operation1->Evaluate(FLT_MAX, nullptr),
-            operation2->Evaluate(FLT_MAX, nullptr));
+  EXPECT_EQ(operation1->Evaluate(FLT_MAX, {}),
+            operation2->Evaluate(FLT_MAX, {}));
   EXPECT_EQ(*operation2, *operation3);
 }
 
@@ -60,38 +60,38 @@ TEST(CalculationExpressionOperationNodeTest, SteppedValueFunctions) {
       base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(operands_rem_two_mods), CalculationOperator::kRem);
 
-  EXPECT_EQ(operation_nearest_1_1->Evaluate(FLT_MAX, nullptr), 1.f);
-  EXPECT_EQ(operation_mod_1_1->Evaluate(FLT_MAX, nullptr), 0.f);
-  EXPECT_EQ(operation_rem_1_1->Evaluate(FLT_MAX, nullptr), 0.f);
-  EXPECT_EQ(operation_rem_two_mods->Evaluate(FLT_MAX, nullptr), 1.f);
+  EXPECT_EQ(operation_nearest_1_1->Evaluate(FLT_MAX, {}), 1.f);
+  EXPECT_EQ(operation_mod_1_1->Evaluate(FLT_MAX, {}), 0.f);
+  EXPECT_EQ(operation_rem_1_1->Evaluate(FLT_MAX, {}), 0.f);
+  EXPECT_EQ(operation_rem_two_mods->Evaluate(FLT_MAX, {}), 1.f);
 }
 
 TEST(CalculationExpressionOperationNodeTest, ExponentialFunctions) {
   EXPECT_EQ(BuildOperationNode({3.f, 4.f}, CalculationOperator::kHypot)
-                ->Evaluate(FLT_MAX, nullptr),
+                ->Evaluate(FLT_MAX, {}),
             5.f);
   EXPECT_EQ(BuildOperationNode({3e37f, 4e37f}, CalculationOperator::kHypot)
-                ->Evaluate(FLT_MAX, nullptr),
+                ->Evaluate(FLT_MAX, {}),
             5e37f);
   EXPECT_EQ(BuildOperationNode({8e-46f, 15e-46f}, CalculationOperator::kHypot)
-                ->Evaluate(FLT_MAX, nullptr),
+                ->Evaluate(FLT_MAX, {}),
             17e-46f);
   EXPECT_EQ(
       BuildOperationNode({6e37f, 6e37f, 17e37}, CalculationOperator::kHypot)
-          ->Evaluate(FLT_MAX, nullptr),
+          ->Evaluate(FLT_MAX, {}),
       19e37f);
   EXPECT_EQ(BuildOperationNode({-3.f, 4.f}, CalculationOperator::kHypot)
-                ->Evaluate(FLT_MAX, nullptr),
+                ->Evaluate(FLT_MAX, {}),
             5.f);
   EXPECT_EQ(BuildOperationNode({-3.f, -4.f}, CalculationOperator::kHypot)
-                ->Evaluate(FLT_MAX, nullptr),
+                ->Evaluate(FLT_MAX, {}),
             5.f);
   EXPECT_EQ(BuildOperationNode({-0.f, +0.f}, CalculationOperator::kHypot)
-                ->Evaluate(FLT_MAX, nullptr),
+                ->Evaluate(FLT_MAX, {}),
             +0.f);
   EXPECT_EQ(
       BuildOperationNode({6e37f, -6e37f, -17e37}, CalculationOperator::kHypot)
-          ->Evaluate(FLT_MAX, nullptr),
+          ->Evaluate(FLT_MAX, {}),
       19e37f);
 }
 
@@ -108,8 +108,7 @@ TEST(CalculationExpressionOperationNodeTest,
           CalculationExpressionOperationNode::CreateSimplified(
               std::move(children), CalculationOperator::kAbs);
   EXPECT_TRUE(pixels_and_percent_operation_abs->IsOperation());
-  EXPECT_EQ(pixels_and_percent_operation_abs->Evaluate(100.0f, nullptr),
-            200.0f);
+  EXPECT_EQ(pixels_and_percent_operation_abs->Evaluate(100.0f, {}), 200.0f);
 }
 
 TEST(CalculationExpressionOperationNodeTest,
@@ -125,7 +124,7 @@ TEST(CalculationExpressionOperationNodeTest,
           CalculationExpressionOperationNode::CreateSimplified(
               std::move(children), CalculationOperator::kSign);
   EXPECT_TRUE(pixels_and_zero_percent_operation_sign->IsNumber());
-  EXPECT_EQ(pixels_and_zero_percent_operation_sign->Evaluate(FLT_MAX, nullptr),
+  EXPECT_EQ(pixels_and_zero_percent_operation_sign->Evaluate(FLT_MAX, {}),
             -1.0f);
 }
 
@@ -138,7 +137,7 @@ TEST(CalculationExpressionOperationNodeTest, SignRelatedFunctionsPixelsOnly) {
       CalculationExpressionOperationNode::CreateSimplified(
           std::move(children), CalculationOperator::kSign);
   EXPECT_TRUE(pixels_operation_sign->IsOperation());
-  EXPECT_TRUE(std::signbit(pixels_operation_sign->Evaluate(FLT_MAX, nullptr)));
+  EXPECT_TRUE(std::signbit(pixels_operation_sign->Evaluate(FLT_MAX, {})));
 }
 
 TEST(CalculationExpressionOperationNodeTest, SignRelatedFunctions) {
@@ -157,13 +156,13 @@ TEST(CalculationExpressionOperationNodeTest, SignRelatedFunctions) {
   scoped_refptr<CalculationExpressionOperationNode> operation_sign_minus_0 =
       BuildOperationNode({-0.0f}, CalculationOperator::kSign);
 
-  EXPECT_EQ(operation_abs_1->Evaluate(FLT_MAX, nullptr), 1.0f);
-  EXPECT_EQ(operation_abs_minus_1->Evaluate(FLT_MAX, nullptr), 1.0f);
-  EXPECT_EQ(operation_abs_minus_0->Evaluate(FLT_MAX, nullptr), 0.0f);
-  EXPECT_EQ(operation_sign_1->Evaluate(FLT_MAX, nullptr), 1.0f);
-  EXPECT_EQ(operation_sign_minus_1->Evaluate(FLT_MAX, nullptr), -1.0f);
-  EXPECT_EQ(operation_sign_0->Evaluate(FLT_MAX, nullptr), 0.0f);
-  EXPECT_TRUE(std::signbit(operation_sign_minus_0->Evaluate(FLT_MAX, nullptr)));
+  EXPECT_EQ(operation_abs_1->Evaluate(FLT_MAX, {}), 1.0f);
+  EXPECT_EQ(operation_abs_minus_1->Evaluate(FLT_MAX, {}), 1.0f);
+  EXPECT_EQ(operation_abs_minus_0->Evaluate(FLT_MAX, {}), 0.0f);
+  EXPECT_EQ(operation_sign_1->Evaluate(FLT_MAX, {}), 1.0f);
+  EXPECT_EQ(operation_sign_minus_1->Evaluate(FLT_MAX, {}), -1.0f);
+  EXPECT_EQ(operation_sign_0->Evaluate(FLT_MAX, {}), 0.0f);
+  EXPECT_TRUE(std::signbit(operation_sign_minus_0->Evaluate(FLT_MAX, {})));
 }
 
 TEST(CalculationExpressionOperationNodeTest, ExplicitPixelsAndPercent) {
@@ -201,15 +200,15 @@ TEST(CalculationExpressionOperationNodeTest, NonExplicitPixelsAndPercent) {
 
 TEST(CalculationExpressionOperationNodeTest, ProgressNotation) {
   EXPECT_EQ(BuildOperationNode({3.f, 0.f, 1.f}, CalculationOperator::kProgress)
-                ->Evaluate(FLT_MAX, nullptr),
+                ->Evaluate(FLT_MAX, {}),
             3.f);
   EXPECT_EQ(
       BuildOperationNode({10.f, 5.f, 10.f}, CalculationOperator::kProgress)
-          ->Evaluate(FLT_MAX, nullptr),
+          ->Evaluate(FLT_MAX, {}),
       1.f);
   EXPECT_TRUE(std::isnan(
       BuildOperationNode({0.f, 0.f, 0.f}, CalculationOperator::kProgress)
-          ->Evaluate(FLT_MAX, nullptr)));
+          ->Evaluate(FLT_MAX, {})));
 }
 
 }  // namespace blink

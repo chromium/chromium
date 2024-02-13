@@ -82,8 +82,8 @@ void RendererFreezer::OnRenderProcessHostCreated(
       extensions::ExtensionRegistry::Get(context);
   for (const std::string& extension_id :
        extensions::ProcessMap::Get(context)->GetExtensionsInProcess(rph_id)) {
-    const extensions::Extension* extension = registry->GetExtensionById(
-        extension_id, extensions::ExtensionRegistry::ENABLED);
+    const extensions::Extension* extension =
+        registry->enabled_extensions().GetByID(extension_id);
     if (!extension || !extension->permissions_data()->HasAPIPermission(
                           extensions::mojom::APIPermissionID::kGcm)) {
       continue;

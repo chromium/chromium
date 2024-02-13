@@ -190,14 +190,13 @@ export class SettingsGoogleAssistantSubpageElement extends
         toggleValue ? 'searchGoogleAssistantOn' : 'searchGoogleAssistantOff');
   }
 
-  private onGoogleAssistantSettingsTapped_(): void {
+  private onGoogleAssistantSettingsClick_(): void {
     this.browserProxy_.showGoogleAssistantSettings();
-    recordSettingChange();
   }
 
-  private onRetrainVoiceModelTapped_(): void {
+  private onRetrainVoiceModelClick_(): void {
     this.browserProxy_.retrainAssistantVoiceModel();
-    recordSettingChange();
+    recordSettingChange(Setting.kTrainAssistantVoiceModel);
   }
 
   private onEnableHotwordChange_(event: Event): void {

@@ -17,14 +17,6 @@ namespace features {
 
 // All features in alphabetical order.
 
-#if BUILDFLAG(IS_ANDROID)
-// Use chromim's implementation of selection magnifier built using surface
-// control APIs, instead of using the system-provided magnifier.
-BASE_FEATURE(kAndroidSurfaceControlMagnifier,
-             "AndroidSurfaceControlMagnifier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // Enables FLEDGE and Attribution Reporting API integration.
 BASE_FEATURE(kAttributionFencedFrameReportingBeacon,
              "AttributionFencedFrameReportingBeacon",
@@ -504,12 +496,13 @@ BASE_FEATURE(kInstalledAppProvider,
 // isolated web apps via the isolated-app:// scheme, and other advanced isolated
 // app functionality. See https://github.com/reillyeon/isolated-web-apps for a
 // general overview.
-// This also enables support for IWA Controlled Frame, providing the Controlled
-// Frame tag to IWA apps. See
-// https://github.com/chasephillips/controlled-frame/blob/main/EXPLAINER.md for
-// more info. Please don't use this feature flag directly to guard the IWA code.
-// Use IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled() in the browser process
-// or check kEnableIsolatedWebAppsInRenderer command line flag in the renderer
+// This also enables support for Controlled Frame, providing the Controlled
+// Frame tag to IWA apps assuming that Controlled Frame isn't otherwise
+// disabled via the kControlledFrame feature. See
+// https://github.com/WICG/controlled-frame/blob/main/README.md for more info.
+// Please don't use this feature flag directly to guard the IWA code.  Use
+// IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled() in the browser process or
+// check kEnableIsolatedWebAppsInRenderer command line flag in the renderer
 // process.
 BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",
@@ -667,16 +660,6 @@ BASE_FEATURE(kOverscrollHistoryNavigation,
              "OverscrollHistoryNavigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Setting to control overscroll history navigation.
-BASE_FEATURE(kOverscrollHistoryNavigationSetting,
-             "OverscrollHistoryNavigationSetting",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
@@ -756,7 +739,7 @@ BASE_FEATURE(kPrivateNetworkAccessForWorkersWarningOnly,
 //  - `kPrivateNetworkAccessRespectPreflightResults`
 BASE_FEATURE(kPrivateNetworkAccessForNavigations,
              "PrivateNetworkAccessForNavigations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
@@ -1181,27 +1164,10 @@ BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
              "WebAssemblyExperimentalJSPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable support for the WebAssembly Garbage Collection proposal:
-// https://github.com/WebAssembly/gc.
-BASE_FEATURE(kWebAssemblyGarbageCollection,
-             "WebAssemblyGarbageCollection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable WebAssembly lazy compilation (JIT on first call).
 BASE_FEATURE(kWebAssemblyLazyCompilation,
              "WebAssemblyLazyCompilation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable the use of WebAssembly Relaxed SIMD operations
-BASE_FEATURE(kWebAssemblyRelaxedSimd,
-             "WebAssemblyRelaxedSimd",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable support for the WebAssembly Stringref proposal:
-// https://github.com/WebAssembly/stringref.
-BASE_FEATURE(kWebAssemblyStringref,
-             "WebAssemblyStringref",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable WebAssembly tiering (Liftoff -> TurboFan).
 BASE_FEATURE(kWebAssemblyTiering,
@@ -1289,6 +1255,16 @@ BASE_FEATURE(kAccessibilityPageZoomEnhancements,
              "AccessibilityPageZoomEnhancements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the use of a unified code path for AXTree snapshots.
+BASE_FEATURE(kAccessibilityUnifiedSnapshots,
+             "AccessibilityUnifiedSnapshots",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable open PDF inline on Android.
+BASE_FEATURE(kAndroidOpenPdfInline,
+             "AndroidOpenPdfInline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1321,11 +1297,6 @@ BASE_FEATURE(kRequestDesktopSiteWindowSetting,
 BASE_FEATURE(kSelectionMenuItemModification,
              "SelectionMenuItemModification",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Send background signal to GPU stack for synchronous compositor.
-BASE_FEATURE(kSynchronousCompositorBackgroundSignal,
-             "SynchronousCompositorBackgroundSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Screen Capture API support for Android
 BASE_FEATURE(kUserMediaScreenCapturing,

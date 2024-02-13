@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 
+#include <string_view>
+
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -12,7 +14,7 @@
 
 namespace guest_os {
 
-GuestOsUrlHandler::GuestOsUrlHandler(const base::StringPiece name,
+GuestOsUrlHandler::GuestOsUrlHandler(const std::string_view name,
                                      const HandlerCallback handler)
     : name_(name), handler_(handler) {}
 

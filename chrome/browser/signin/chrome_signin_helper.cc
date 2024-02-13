@@ -348,9 +348,10 @@ void ProcessMirrorHeader(
       return;
     }
     SigninBridge::OpenAccountPickerBottomSheet(
-        window, manage_accounts_params.continue_url.empty()
-                    ? chrome::kChromeUINativeNewTabURL
-                    : manage_accounts_params.continue_url);
+        profile, window,
+        manage_accounts_params.continue_url.empty()
+            ? chrome::kChromeUINativeNewTabURL
+            : manage_accounts_params.continue_url);
     return;
   }
   if (service_type == signin::GAIA_SERVICE_TYPE_INCOGNITO) {

@@ -21,7 +21,7 @@
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/gl/vsync_observer.h"
+#include "ui/gl/vsync_thread_win.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -39,8 +39,9 @@ class VSyncThreadWin;
 class DCLayerTree;
 class DirectCompositionChildSurfaceWin;
 
-class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
-                                              public VSyncObserver {
+class GL_EXPORT DirectCompositionSurfaceWin
+    : public GLSurfaceEGL,
+      public VSyncThreadWin::VSyncObserver {
  public:
   using VSyncCallback =
       base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
@@ -59,7 +60,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   DirectCompositionSurfaceWin(
       GLDisplayEGL* display,
-      VSyncCallback vsync_callback,
       const DirectCompositionSurfaceWin::Settings& settings);
 
   DirectCompositionSurfaceWin(const DirectCompositionSurfaceWin&) = delete;
@@ -94,8 +94,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   bool SupportsProtectedVideo() const override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
   gfx::Vector2d GetDrawOffset() const override;
-  bool SupportsGpuVSync() const override;
-  void SetGpuVSyncEnabled(bool enabled) override;
   // This schedules an overlay plane to be displayed on the next SwapBuffers
   // or PostSubBuffer call. Overlay planes must be scheduled before every swap
   // to remain in the layer tree. This surface's backbuffer doesn't have to be
@@ -157,8 +155,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   void StartOrStopVSyncThread();
 
-  bool VSyncCallbackEnabled() const;
-
   void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
                                base::TimeDelta interval);
 
@@ -166,14 +162,10 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
 
-  const VSyncCallback vsync_callback_;
-
   const raw_ptr<VSyncThreadWin> vsync_thread_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  bool vsync_thread_started_ = false;
-  bool vsync_callback_enabled_ GUARDED_BY(vsync_callback_enabled_lock_) = false;
-  mutable base::Lock vsync_callback_enabled_lock_;
+  bool observing_vsync_ = false;
 
   // Queue of pending presentation callbacks.
   base::circular_deque<PendingFrame> pending_frames_;

@@ -230,8 +230,8 @@ bool VideoCaptureOracle::ObserveEventAndDecideCapture(
   return true;
 }
 
-void VideoCaptureOracle::RecordCapture(double pool_utilization) {
-  DCHECK(std::isfinite(pool_utilization) && pool_utilization >= 0.0);
+void VideoCaptureOracle::RecordCapture(float pool_utilization) {
+  DCHECK(std::isfinite(pool_utilization) && pool_utilization >= 0.0f);
 
   smoothing_sampler_.RecordSample();
   const base::TimeTicks timestamp = GetFrameTimestamp(next_frame_number_);
@@ -246,12 +246,12 @@ void VideoCaptureOracle::RecordCapture(double pool_utilization) {
   next_frame_number_++;
 }
 
-void VideoCaptureOracle::RecordWillNotCapture(double pool_utilization) {
+void VideoCaptureOracle::RecordWillNotCapture(float pool_utilization) {
   VLOG(1) << "Client rejects proposal to capture frame (at #"
           << next_frame_number_ << ").";
 
   if (capture_size_throttling_mode_ == kThrottlingActive) {
-    DCHECK(std::isfinite(pool_utilization) && pool_utilization >= 0.0);
+    DCHECK(std::isfinite(pool_utilization) && pool_utilization >= 0.0f);
     const base::TimeTicks timestamp = GetFrameTimestamp(next_frame_number_);
     buffer_pool_utilization_.Update(pool_utilization, timestamp);
     AnalyzeAndAdjust(timestamp);

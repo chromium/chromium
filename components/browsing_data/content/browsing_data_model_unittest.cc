@@ -392,10 +392,15 @@ class OriginOwnershipDelegate final : public BrowsingDataModel::Delegate {
     return std::nullopt;
   }
 
+  std::optional<bool> IsStorageTypeCookieLike(
+      BrowsingDataModel::StorageType storage_type) const override {
+    return false;
+  }
+
   std::optional<bool> IsBlockedByThirdPartyCookieBlocking(
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override {
-    return false;
+    return IsStorageTypeCookieLike(storage_type);
   }
 
   bool IsCookieDeletionDisabled(const GURL& url) override { return false; }

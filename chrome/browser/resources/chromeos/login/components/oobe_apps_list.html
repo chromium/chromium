@@ -8,7 +8,7 @@ found in the LICENSE file.
   OOBE polymer element which is used to show a list of recommended apps.
 -->
 
-<style include="cros-color-overrides">
+<style include="cros-color-overrides oobe-common-styles">
   :host {
     --checkbox-column-width: 40px;
     --checkbox-size: 16px;
@@ -23,9 +23,6 @@ found in the LICENSE file.
   }
 
   #appsList {
-    height: 100%;
-    /* Bug(b/294443311): Add logic to apply bottom border to the container only
-    if there is an overflow. */
     overflow-y: auto;
   }
 
@@ -176,39 +173,41 @@ found in the LICENSE file.
   >
     <slot name="selectAllTitle"></slot>
   </cr-checkbox>
-  <div id="appsList">
-    <template is="dom-repeat" items="[[appList]]">
-      <div class="app-item">
-        <cr-checkbox
-          id="[[item.package_name]]"
-          checked="{{item.checked}}"
-          class="no-label"
-          aria-description="[[item.title]]"
-          on-change="updateCount"
-        >
-        </cr-checkbox>
-        <webview
-          role="img"
-          class="app-icon"
-          src="[[getWrappedIcon(item.icon_url)]]"
-          aria-hidden="true"
-          tabindex="-1"
-          on-contentload="onImageLoaded"
-        >
-        </webview>
-        <div class="app-title">[[item.title]]</div>
-        <div class="app-tags secondary-text truncated">
-          <ul>
-            <template is="dom-repeat" items="[[item.tags]]">
-              <li>[[item]]</li>
-            </template>
-          </ul>
+  <div id="appsList" class="scrollable">
+    <div id="scrollContent">
+      <template is="dom-repeat" items="[[appList]]">
+        <div class="app-item">
+          <cr-checkbox
+            id="[[item.package_name]]"
+            checked="{{item.checked}}"
+            class="no-label"
+            aria-description="[[item.title]]"
+            on-change="updateCount"
+          >
+          </cr-checkbox>
+          <webview
+            role="img"
+            class="app-icon"
+            src="[[getWrappedIcon(item.icon_url)]]"
+            aria-hidden="true"
+            tabindex="-1"
+            on-contentload="onImageLoaded"
+          >
+          </webview>
+          <div class="app-title">[[item.title]]</div>
+          <div class="app-tags secondary-text truncated">
+            <ul>
+              <template is="dom-repeat" items="[[item.tags]]">
+                <li>[[item]]</li>
+              </template>
+            </ul>
+          </div>
+          <div class="app-description secondary-text">
+            [[item.description]]
+          </div>
+          </div>
         </div>
-        <div class="app-description secondary-text">
-          [[item.description]]
-        </div>
-        </div>
-      </div>
-    </template>
+      </template>
+    </div>
   </div>
 </div>

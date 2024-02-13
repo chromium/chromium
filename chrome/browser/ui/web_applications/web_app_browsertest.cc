@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/web_app.h"
+
 #include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -11,12 +14,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/concurrent_callbacks.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -50,7 +53,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -71,7 +73,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -1753,9 +1754,13 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   base::HistogramTester tester;
   base::test::TestFuture<Result> result;
 
-  auto synchronize_barrier = base::BarrierCallback<Result>(
-      /*num_callbacks=*/2,
-      base::BindOnce(
+  base::ConcurrentCallbacks<Result> concurrent;
+  provider->os_integration_manager().UpdateShortcuts(
+      app_id, "Manifest test app", concurrent.CreateCallback());
+  provider->os_integration_manager().Synchronize(
+      app_id, base::BindOnce(concurrent.CreateCallback(), Result::kOk));
+  std::move(concurrent)
+      .Done(base::BindOnce(
           [&](base::OnceCallback<void(Result)> result_callback,
               std::vector<Result> final_results) {
             DCHECK_EQ(2u, final_results.size());
@@ -1768,10 +1773,6 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
           },
           result.GetCallback()));
 
-  provider->os_integration_manager().UpdateShortcuts(
-      app_id, "Manifest test app", synchronize_barrier);
-  provider->os_integration_manager().Synchronize(
-      app_id, base::BindOnce(synchronize_barrier, Result::kOk));
   ASSERT_TRUE(result.Wait());
   EXPECT_THAT(result.Get(), testing::Eq(Result::kOk));
 
@@ -2087,9 +2088,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PopupLocationBar) {
   EXPECT_TRUE(
       popup_browser->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR));
 
-  FullscreenNotificationObserver waiter(popup_browser);
-  chrome::ToggleFullscreenMode(popup_browser);
-  waiter.Wait();
+  ui_test_utils::ToggleFullscreenModeAndWait(popup_browser);
 
   EXPECT_TRUE(
       popup_browser->CanSupportWindowFeature(Browser::FEATURE_LOCATIONBAR));

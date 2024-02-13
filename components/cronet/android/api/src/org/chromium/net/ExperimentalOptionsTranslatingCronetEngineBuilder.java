@@ -284,8 +284,7 @@ final class ExperimentalOptionsTranslatingCronetEngineBuilder extends ICronetEng
                     }
                     if (options.getEnablePathDegradationMigration() != null) {
                         boolean pathDegradationValue = options.getEnablePathDegradationMigration();
-
-                        boolean skipPortMigrationFlag = false;
+                        quicOptions.put("allow_port_migration", pathDegradationValue);
 
                         if (options.getAllowNonDefaultNetworkUsage() != null) {
                             boolean nonDefaultNetworkValue =
@@ -296,17 +295,15 @@ final class ExperimentalOptionsTranslatingCronetEngineBuilder extends ICronetEng
                                         "Unable to turn on non-default network usage without path "
                                                 + "degradation migration!");
                             } else if (pathDegradationValue && nonDefaultNetworkValue) {
-                                // Both values being true results in the non-default network
-                                // migration being enabled.
                                 quicOptions.put("migrate_sessions_early_v2", true);
-                                skipPortMigrationFlag = true;
+                                // To enable connection migration,
+                                // migrate_sessions_on_network_change_v2 option needs to be set.
+                                // See http://go/quic-cmv2-config-options or
+                                // https://crsrc.org/c/net/quic/quic_session_pool.cc;l=1532;drc=4a6bf24b15fdb49a018a12af2025321691f87e1a?q=migrate_sessions_on_network_change
+                                quicOptions.put("migrate_sessions_on_network_change_v2", true);
                             } else {
                                 quicOptions.put("migrate_sessions_early_v2", false);
                             }
-                        }
-
-                        if (!skipPortMigrationFlag) {
-                            quicOptions.put("allow_port_migration", pathDegradationValue);
                         }
                     }
                 });
@@ -470,5 +467,10 @@ final class ExperimentalOptionsTranslatingCronetEngineBuilder extends ICronetEng
     public ICronetEngineBuilder setThreadPriority(int priority) {
         mDelegate.setThreadPriority(priority);
         return this;
+    }
+
+    @Override
+    protected long getLogCronetInitializationRef() {
+        return mDelegate.getLogCronetInitializationRef();
     }
 }

@@ -3,10 +3,13 @@
 <translationbundle lang="am">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ትሮችዎ በቅርቡ ሥራ ላይ አልዋሉም። ይዘጉ?</translation>
 <translation id="1155815720264022949">የድሮ ትሮችን መዝጋት ይፈልጋሉ?</translation>
+<translation id="1197088940767939838">ብርቱካናማ</translation>
 <translation id="1215127405478249895">ትሮችን ይገምግሙ</translation>
 <translation id="125153950246128346">ሌላ ትር ለመመልከት መታ ያድርጉ</translation>
 <translation id="1326271443836399892">የአሁኖቹን የተዝረከረኩትን የማስተካከል ቅንብሮች ይገምግሙ።</translation>
 <translation id="1499635324672558517">ሁሉም ማንነት የማያሳውቁ ትሮች ይዘጉ?</translation>
+<translation id="1555130319947370107">ሰማያዊ</translation>
+<translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1657719826150349398">ትርን ወደ ታች ያንቀሳቅሱ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር}one{<ph name="TABS_COUNT_MANY" /> ትሮች}other{<ph name="TABS_COUNT_MANY" /> ትሮች}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{የዕልባት <ph name="TABS_COUNT_ONE" /> የተመረጠ ትር}one{የዕልባት <ph name="TABS_COUNT_MANY" /> የተመረጠ ትር}other{የዕልባት <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮች}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ትርን ቦድን}one{ትርን ቦድን}other{ትሮችን ቦድን}}</translation>
 <translation id="3996880007329611795">ማሳወቂያ ይድረሰዎት</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ ይቦደኑ?</translation>
+<translation id="4159784952369912983">ሐምራዊ</translation>
 <translation id="4212246570487010370">ማሰሱን ይቀጥሉ</translation>
 <translation id="427987768447457592">አዲስ የትር ቡድን</translation>
 <translation id="4648718555153979859">የእርስዎ ትሮች እዚህ አብረው ይቦደናሉ</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{በቅርቡ ጥቅም ላይ ያላዋሉት <ph name="TABS_COUNT_ONE" /> ትር አለዎት}one{በቅርቡ ጥቅም ላይ ያላዋሉት <ph name="TABS_COUNT_MANY" /> ትር አለዎት}other{በቅርቡ ጥቅም ላይ ያላዋሏቸው <ph name="TABS_COUNT_MANY" /> ትሮች አሉዎት}}</translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
+<translation id="5400836586163650660">ግራጫ</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
 <translation id="5545379293264651575">ሳይገመገሙ ዝጋ</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">ለዋጋ ቅነሳዎች ማንቂያዎችን ያግኙ?</translation>
 <translation id="58326064309361797">ለመቦደን ትሮችን ይጎትቱ</translation>
 <translation id="5846292395804797011">የ<ph name="TITLE_OF_GROUP" /> ቡድንን ከ<ph name="NUMBER_OF_TABS" /> ትሮች ጋር ይዝጉ</translation>
+<translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5972844218283131174">ሁሉንም አትምረጥ</translation>
+<translation id="6017514345406065928">አረንጓዴ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትር ቦድን}one{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ቦድን}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ቦድን}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣ <ph name="REVIEWS_COUNT_ONE" /> ግምገማ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}}</translation>
 <translation id="7885132941432959125">ቅርን ወደ ቀኝ አንቀሳቅስ</translation>
+<translation id="7942349550061667556">ቀይ</translation>
 <translation id="7966321538264951561">ጥቆማ ሐሳቦችን ያሰናብቱ።</translation>
 <translation id="8029301326595421733">ስለዚህ መደብር መረጃ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="8205266828577616993">ትርን ወደ ላይ አንቀሳቅስ</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">አዲስ ትር ወደ ቡድን አክል</translation>
 <translation id="955558140275419384">ይህንን አርታዒ በማስገባት የተዝረከረኩትን ለማስተካከል ሁሉንም በማህደር የተቀመጡ ትሮችን ይገምግሙ።</translation>
 <translation id="959682366969460160">ይደራጁ</translation>
+<translation id="992256792861109788">ሮዝ</translation>
 </translationbundle>

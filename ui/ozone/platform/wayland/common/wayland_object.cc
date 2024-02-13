@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
+#include <aura-output-management-client-protocol.h>
 #include <aura-shell-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
@@ -104,6 +105,10 @@ void delete_touch(wl_touch* touch) {
 
 void delete_zaura_output_manager(zaura_output_manager* manager) {
   zaura_output_manager_destroy(manager);
+}
+
+void delete_zaura_output_manager_v2(zaura_output_manager_v2* manager) {
+  zaura_output_manager_v2_destroy(manager);
 }
 
 void delete_zaura_shell(zaura_shell* shell) {
@@ -242,6 +247,8 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_output_manager,
                                              delete_zaura_output_manager)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_output_manager_v2,
+                                             delete_zaura_output_manager_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_shell, delete_zaura_shell)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_surface,
                                              delete_zaura_surface)

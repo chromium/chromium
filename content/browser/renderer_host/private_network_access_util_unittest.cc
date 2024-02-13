@@ -158,15 +158,15 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       },
       {
           {kNonSecure, AddressSpace::kPublic, RequestContext::kNavigation},
-          Policy::kAllow,
+          Policy::kWarn,
       },
       {
           {kNonSecure, AddressSpace::kPrivate, RequestContext::kNavigation},
-          Policy::kAllow,
+          Policy::kWarn,
       },
       {
           {kNonSecure, AddressSpace::kLocal, RequestContext::kNavigation},
-          Policy::kAllow,
+          Policy::kWarn,
       },
       {
           {kSecure, AddressSpace::kUnknown, RequestContext::kNavigation},
@@ -174,15 +174,15 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
       },
       {
           {kSecure, AddressSpace::kPublic, RequestContext::kNavigation},
-          Policy::kAllow,
+          Policy::kPreflightWarn,
       },
       {
           {kSecure, AddressSpace::kPrivate, RequestContext::kNavigation},
-          Policy::kAllow,
+          Policy::kPreflightWarn,
       },
       {
           {kSecure, AddressSpace::kLocal, RequestContext::kNavigation},
-          Policy::kAllow,
+          Policy::kPreflightWarn,
       },
   };
 }
@@ -229,6 +229,8 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyBlockFromInsecureUnknown) {
   // Workers are currently in warning-only mode.
   expected[{kNonSecure, AddressSpace::kUnknown, RequestContext::kWorker}] =
       Policy::kWarn;
+  expected[{kNonSecure, AddressSpace::kUnknown, RequestContext::kNavigation}] =
+      Policy::kWarn;
 
   TestPolicyMap(expected);
 }
@@ -250,6 +252,12 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyNoPreflights) {
   expected[{kSecure, AddressSpace::kPrivate, RequestContext::kWorker}] =
       Policy::kAllow;
   expected[{kSecure, AddressSpace::kLocal, RequestContext::kWorker}] =
+      Policy::kAllow;
+  expected[{kSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
+      Policy::kAllow;
+  expected[{kSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
+      Policy::kAllow;
+  expected[{kSecure, AddressSpace::kLocal, RequestContext::kNavigation}] =
       Policy::kAllow;
 
   TestPolicyMap(expected);
@@ -325,32 +333,6 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyDisableWebSecurity) {
   TestPolicyMap(AllAllowMap());
 }
 
-TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWarningOnly) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {
-          features::kPrivateNetworkAccessForNavigations,
-          features::kPrivateNetworkAccessForNavigationsWarningOnly,
-      },
-      {});
-
-  std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
-  expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
-      Policy::kWarn;
-  expected[{kNonSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
-      Policy::kWarn;
-  expected[{kNonSecure, AddressSpace::kLocal, RequestContext::kNavigation}] =
-      Policy::kWarn;
-  expected[{kSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
-      Policy::kPreflightWarn;
-  expected[{kSecure, AddressSpace::kPrivate, RequestContext::kNavigation}] =
-      Policy::kPreflightWarn;
-  expected[{kSecure, AddressSpace::kLocal, RequestContext::kNavigation}] =
-      Policy::kPreflightWarn;
-
-  TestPolicyMap(expected);
-}
-
 TEST(PrivateNetworkAccessUtilTest,
      DerivePolicyIframesWarningOnlyWithPreflights) {
   base::test::ScopedFeatureList feature_list;
@@ -391,8 +373,10 @@ TEST(PrivateNetworkAccessUtilTest,
 }
 
 TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframes) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPrivateNetworkAccessForNavigations);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kPrivateNetworkAccessForNavigations},
+      {features::kPrivateNetworkAccessForNavigationsWarningOnly});
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   expected[{kNonSecure, AddressSpace::kPublic, RequestContext::kNavigation}] =
@@ -418,7 +402,7 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyIframesWithPreflights) {
           features::kPrivateNetworkAccessForNavigations,
           features::kPrivateNetworkAccessRespectPreflightResults,
       },
-      {});
+      {features::kPrivateNetworkAccessForNavigationsWarningOnly});
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
 

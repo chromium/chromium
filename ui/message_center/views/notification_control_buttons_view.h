@@ -124,7 +124,7 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   raw_ptr<views::ImageButton, DanglingUntriaged> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
-  absl::optional<SkColor> icon_color_;
+  std::optional<SkColor> icon_color_;
 
   // The background color for readability of the icons.
   SkColor background_color_ = SK_ColorTRANSPARENT;

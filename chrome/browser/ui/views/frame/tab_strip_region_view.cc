@@ -90,8 +90,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
       this, views::kCascadingBackgroundColor,
       kColorTabBackgroundInactiveFrameInactive);
 
-  layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   tab_strip_ = tab_strip.get();
   const Browser* browser = tab_strip_->GetBrowser();
@@ -113,7 +113,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
     // Inset between the tabsearch and tabstrip should be reduced to account for
     // extra spacing.
-    layout_manager_->SetChildViewIgnoredByLayout(tab_search_container_, true);
+    tab_search_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   }
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
@@ -499,7 +499,7 @@ void TabStripRegionView::UpdateTabStripMargin() {
       new_tab_button_->layer()->SetFillsBoundsOpaquely(false);
       // Inset between the tabstrip and new tab button should be reduced to
       // account for extra spacing.
-      layout_manager_->SetChildViewIgnoredByLayout(new_tab_button_, true);
+      new_tab_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
       tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
                                GetLayoutConstant(TAB_STRIP_PADDING);
@@ -509,7 +509,7 @@ void TabStripRegionView::UpdateTabStripMargin() {
   std::optional<int> tab_strip_left_margin;
   if (tab_search_container_ && render_tab_search_before_tab_strip_) {
     // The `tab_search_container_` is being laid out manually.
-    CHECK(layout_manager_->IsChildViewIgnoredByLayout(tab_search_container_));
+    tab_search_container_->GetProperty(views::kViewIgnoredByLayoutKey);
 
     // Add a margin to the tab_strip_container_ to leave the correct amount of
     // space for the `tab_search_container_`.

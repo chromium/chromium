@@ -25,8 +25,8 @@ class DevicePosturePlatformProvider {
    public:
     virtual void OnDevicePostureChanged(
         const blink::mojom::DevicePostureType& posture) {}
-    virtual void OnViewportSegmentsChanged(
-        const std::vector<gfx::Rect>& segments) {}
+    virtual void OnDisplayFeatureBoundsChanged(
+        const gfx::Rect& display_feature_bounds) {}
   };
 
   // Returns a DevicePostureProvider for the current platform.
@@ -36,7 +36,7 @@ class DevicePosturePlatformProvider {
   virtual ~DevicePosturePlatformProvider();
 
   blink::mojom::DevicePostureType GetDevicePosture();
-  const std::vector<gfx::Rect>& GetViewportSegments();
+  const gfx::Rect& GetDisplayFeatureBounds();
 
   DevicePosturePlatformProvider(const DevicePosturePlatformProvider&) = delete;
   DevicePosturePlatformProvider& operator=(
@@ -53,11 +53,11 @@ class DevicePosturePlatformProvider {
 
   void NotifyDevicePostureChanged(
       const blink::mojom::DevicePostureType& posture);
-  void NotifyWindowSegmentsChanged(const std::vector<gfx::Rect>& segments);
+  void NotifyDisplayFeatureBoundsChanged(const gfx::Rect& segments);
 
   blink::mojom::DevicePostureType current_posture_ =
       blink::mojom::DevicePostureType::kContinuous;
-  std::vector<gfx::Rect> current_viewport_segments_;
+  gfx::Rect current_display_feature_bounds_;
 
  private:
   // DevicePosturePlatformProvider observers are expected to unregister

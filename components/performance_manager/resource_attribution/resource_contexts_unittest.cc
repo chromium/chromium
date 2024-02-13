@@ -9,21 +9,23 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
 template <typename PublicNode, typename NodeImpl>
-const PublicNode* ToPublic(const TestNodeWrapper<NodeImpl>& wrapper) {
+const PublicNode* ToPublic(
+    const performance_manager::TestNodeWrapper<NodeImpl>& wrapper) {
   return wrapper.get();
 }
 
-using ResourceAttrResourceContextsTest = GraphTestHarness;
+using ResourceAttrResourceContextsTest = performance_manager::GraphTestHarness;
 using ResourceAttrResourceContextsDeathTest = ResourceAttrResourceContextsTest;
 
 // Tests the context tokens returned from PM nodes.
 TEST_F(ResourceAttrResourceContextsTest, NodeContexts) {
-  MockUtilityAndMultipleRenderProcessesGraph mock_graph(graph());
+  performance_manager::MockUtilityAndMultipleRenderProcessesGraph mock_graph(
+      graph());
 
   // Test each type of ProcessNode (browser, renderer, non-renderer child) since
   // they use different constructors.
@@ -49,7 +51,8 @@ TEST_F(ResourceAttrResourceContextsTest, NodeContexts) {
 }
 
 TEST_F(ResourceAttrResourceContextsTest, ResourceContextComparators) {
-  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
+      mock_graph(graph());
 
   // Ensure tokens of the same type can be compared when wrapped in
   // ResourceContext.
@@ -87,9 +90,8 @@ TEST_F(ResourceAttrResourceContextsTest, ResourceContextComparators) {
 }
 
 TEST_F(ResourceAttrResourceContextsTest, ResourceContextConverters) {
-  using ::testing::Optional;
-
-  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
+      mock_graph(graph());
 
   const ResourceContext process_context =
       mock_graph.process->GetResourceContext();
@@ -104,14 +106,15 @@ TEST_F(ResourceAttrResourceContextsTest, ResourceContextConverters) {
             mock_graph.process->GetResourceContext());
 
   EXPECT_THAT(AsOptionalContext<ProcessContext>(process_context),
-              Optional(mock_graph.process->GetResourceContext()));
+              ::testing::Optional(mock_graph.process->GetResourceContext()));
   EXPECT_EQ(AsOptionalContext<ProcessContext>(page_context), std::nullopt);
 }
 
 TEST_F(ResourceAttrResourceContextsTest, ResourceContextTypeId) {
   using ResourceContextTypeId = internal::ResourceContextTypeId;
 
-  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
+      mock_graph(graph());
 
   const ResourceContext process_context =
       mock_graph.process->GetResourceContext();
@@ -132,7 +135,8 @@ TEST_F(ResourceAttrResourceContextsTest, ResourceContextTypeId) {
 }
 
 TEST_F(ResourceAttrResourceContextsDeathTest, FailedResourceContextConverters) {
-  MockMultiplePagesAndWorkersWithMultipleProcessesGraph mock_graph(graph());
+  performance_manager::MockMultiplePagesAndWorkersWithMultipleProcessesGraph
+      mock_graph(graph());
   const ResourceContext page_context = mock_graph.page->GetResourceContext();
   EXPECT_DEATH_IF_SUPPORTED(AsContext<ProcessContext>(page_context),
                             "Bad variant access");
@@ -140,4 +144,4 @@ TEST_F(ResourceAttrResourceContextsDeathTest, FailedResourceContextConverters) {
 
 }  // namespace
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

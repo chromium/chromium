@@ -198,7 +198,7 @@ ExtensionFunction::ResponseAction DocumentScanStartScanFunction::Run() {
   DocumentScanAPIHandler::Get(browser_context())
       ->StartScan(
           ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
-          extension_, std::move(params->scanner_handle),
+          extension_, user_gesture(), std::move(params->scanner_handle),
           std::move(params->options),
           base::BindOnce(&DocumentScanStartScanFunction::OnResponseReceived,
                          this));

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,7 +40,6 @@
 #include "net/websockets/websocket_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -161,10 +161,9 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
   base::WeakPtrFactory<bool> weak_set_cookie_result(&set_cookie_result);
 
   base::RunLoop run_loop;
-  auto cookie =
-      CanonicalCookie::Create(cookie_url, cookie_line, base::Time::Now(),
-                              absl::nullopt /* server_time */,
-                              absl::nullopt /* cookie_partition_key */);
+  auto cookie = CanonicalCookie::Create(
+      cookie_url, cookie_line, base::Time::Now(),
+      std::nullopt /* server_time */, std::nullopt /* cookie_partition_key */);
   store->SetCanonicalCookieAsync(
       std::move(cookie), cookie_url, net::CookieOptions::MakeAllInclusive(),
       base::BindOnce(&SetCookieHelperFunction, run_loop.QuitClosure(),

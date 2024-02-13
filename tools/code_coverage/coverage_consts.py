@@ -325,6 +325,7 @@ FUZZERS_WITH_CORPORA = [
     'pffft_complex_fuzzer',
     'pffft_real_fuzzer',
     'pickle_fuzzer',
+    'pix_code_validator_fuzzer',
     'policy_schema_fuzzer',
     'preg_parser_fuzzer',
     'process_doc_fuzzer',

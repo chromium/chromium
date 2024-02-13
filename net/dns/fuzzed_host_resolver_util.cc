@@ -304,9 +304,11 @@ class FuzzedMdnsSocket : public DatagramServerSocket {
   }
   void UseNonBlockingIO() override {}
   int SetDoNotFragment() override { return OK; }
-  int SetRecvEcn() override { return OK; }
+  int SetRecvTos() override { return OK; }
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) override { return OK; }
   void SetMsgConfirm(bool confirm) override {}
   const NetLogWithSource& NetLog() const override { return net_log_; }
+  DscpAndEcn GetLastTos() const override { return {DSCP_DEFAULT, ECN_DEFAULT}; }
 
  private:
   void CompleteRecv(CompletionOnceCallback callback,

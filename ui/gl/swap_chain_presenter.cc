@@ -719,7 +719,7 @@ gfx::Size SwapChainPresenter::GetMonitorSize() const {
 void SwapChainPresenter::SetTargetToFullScreen(
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect,
-    const absl::optional<gfx::Rect>& target_rect) {
+    const std::optional<gfx::Rect>& target_rect) {
   if (base::FeatureList::IsEnabled(kApplyTransformToLetterboxing) &&
       target_rect.has_value()) {
     // Reset the horizontal/vertical shift according to the target_rect and
@@ -757,8 +757,8 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
     gfx::Size* swap_chain_size,
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect,
-    absl::optional<gfx::Size>* dest_size,
-    absl::optional<gfx::Rect>* target_rect) const {
+    std::optional<gfx::Size>* dest_size,
+    std::optional<gfx::Rect>* target_rect) const {
   // First try to adjust the full screen overlay that can fit the whole
   // screen. If it cannot fit the whole screen and we know it's in
   // letterboxing mode, try to center the overlay and adjust only x or only y.
@@ -781,8 +781,8 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeededF(
     gfx::SizeF* swap_chain_size,
     gfx::Transform* visual_transform,
     gfx::RectF* visual_clip_rect,
-    absl::optional<gfx::SizeF>* dest_size,
-    absl::optional<gfx::RectF>* target_rect) const {
+    std::optional<gfx::SizeF>* dest_size,
+    std::optional<gfx::RectF>* target_rect) const {
   // First try to adjust the full screen overlay that can fit the whole
   // screen. If it cannot fit the whole screen and we know it's in
   // letterboxing mode, try to center the overlay and adjust only x or only y.
@@ -1074,8 +1074,8 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     gfx::Size* swap_chain_size,
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect,
-    absl::optional<gfx::Size>* dest_size,
-    absl::optional<gfx::Rect>* target_rect) const {
+    std::optional<gfx::Size>* dest_size,
+    std::optional<gfx::Rect>* target_rect) const {
   if (!base::FeatureList::IsEnabled(
           features::kDirectCompositionLetterboxVideoOptimization)) {
     return;
@@ -1314,8 +1314,8 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxingF(
     gfx::SizeF* swap_chain_size,
     gfx::Transform* visual_transform,
     gfx::RectF* visual_clip_rect,
-    absl::optional<gfx::SizeF>* dest_size,
-    absl::optional<gfx::RectF>* target_rect) const {
+    std::optional<gfx::SizeF>* dest_size,
+    std::optional<gfx::RectF>* target_rect) const {
   if (!base::FeatureList::IsEnabled(
           features::kDirectCompositionLetterboxVideoOptimization)) {
     return;
@@ -1560,8 +1560,8 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
     const DCLayerOverlayParams& params,
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect,
-    absl::optional<gfx::Size>* dest_size,
-    absl::optional<gfx::Rect>* target_rect) const {
+    std::optional<gfx::Size>* dest_size,
+    std::optional<gfx::Rect>* target_rect) const {
   // Swap chain size is the minimum of the on-screen size and the source size so
   // the video processor can do the minimal amount of work and the overlay has
   // to read the minimal amount of data. DWM is also less likely to promote a
@@ -1630,11 +1630,11 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSizeF(
     const DCLayerOverlayParams& params,
     gfx::Transform* visual_transform,
     gfx::Rect* visual_clip_rect,
-    absl::optional<gfx::Size>* dest_size,
-    absl::optional<gfx::Rect>* target_rect) const {
+    std::optional<gfx::Size>* dest_size,
+    std::optional<gfx::Rect>* target_rect) const {
   gfx::RectF visual_clip_rect_float = gfx::RectF(*visual_clip_rect);
-  absl::optional<gfx::SizeF> dest_size_float;
-  absl::optional<gfx::RectF> target_rect_float;
+  std::optional<gfx::SizeF> dest_size_float;
+  std::optional<gfx::RectF> target_rect_float;
 
   // Swap chain size is the minimum of the on-screen size and the source size so
   // the video processor can do the minimal amount of work and the overlay has
@@ -1715,8 +1715,8 @@ bool SwapChainPresenter::TryPresentToDecodeSwapChain(
     const gfx::Size& swap_chain_size,
     DXGI_FORMAT swap_chain_format,
     const gfx::Transform& transform_to_root,
-    const absl::optional<gfx::Size> dest_size,
-    const absl::optional<gfx::Rect> target_rect) {
+    const std::optional<gfx::Size> dest_size,
+    const std::optional<gfx::Rect> target_rect) {
   if (ShouldUseVideoProcessorScaling())
     return false;
 
@@ -1790,8 +1790,8 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     const gfx::ColorSpace& color_space,
     const gfx::Rect& content_rect,
     const gfx::Size& swap_chain_size,
-    const absl::optional<gfx::Size> dest_size,
-    const absl::optional<gfx::Rect> target_rect) {
+    const std::optional<gfx::Size> dest_size,
+    const std::optional<gfx::Rect> target_rect) {
   DCHECK(!swap_chain_size.IsEmpty());
 
   TRACE_EVENT2("gpu", "SwapChainPresenter::PresentToDecodeSwapChain",
@@ -1951,8 +1951,8 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   // Optional |dest_size| and |target_rect| are only calculated for full screen
   // letterboxing in |AdjustTargetForFullScreenLetterboxing|, which is guarded
   // by flag of DirectCompositionLetterboxVideoOptimization for now.
-  absl::optional<gfx::Size> dest_size;
-  absl::optional<gfx::Rect> target_rect;
+  std::optional<gfx::Size> dest_size;
+  std::optional<gfx::Rect> target_rect;
   gfx::Size swap_chain_size;
   if (!UseFloatingPointAdjustments()) {
     swap_chain_size = CalculateSwapChainSize(
@@ -2068,7 +2068,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     input_level = 0;
   }
 
-  absl::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
+  std::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
   if (params.hdr_metadata.IsValid()) {
     stream_metadata =
         gl::HDRMetadataHelperWin::HDRMetadataToDXGI(params.hdr_metadata);
@@ -2257,8 +2257,8 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     // Apply fullscreen rounding and transform to video and notify DCOMPTexture.
     gfx::Rect overlay_onscreen_rect = params.quad_rect;
     gfx::Size on_screen_size = overlay_onscreen_rect.size();
-    absl::optional<gfx::Size> dest_size;
-    absl::optional<gfx::Rect> target_rect;
+    std::optional<gfx::Size> dest_size;
+    std::optional<gfx::Rect> target_rect;
     AdjustTargetToOptimalSizeIfNeeded(
         params, overlay_onscreen_rect, &on_screen_size, visual_transform,
         visual_clip_rect, &dest_size, &target_rect);
@@ -2274,8 +2274,8 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     gfx::SizeF on_screen_size_float = overlay_onscreen_rect.size();
 
     gfx::RectF visual_clip_rect_float = gfx::RectF(*visual_clip_rect);
-    absl::optional<gfx::SizeF> dest_size;
-    absl::optional<gfx::RectF> target_rect;
+    std::optional<gfx::SizeF> dest_size;
+    std::optional<gfx::RectF> target_rect;
 
     // In order to get the fullscreen DWM optimizations, the overlay onscreen
     // rect must fit the monitor when in non-letterboxing fullscreen mode.
@@ -2371,7 +2371,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
     UINT input_level,
     const gfx::Rect& content_rect,
     const gfx::ColorSpace& src_color_space,
-    absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata,
+    std::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata,
     bool use_vp_auto_hdr) {
   TRACE_EVENT2("gpu", "SwapChainPresenter::VideoProcessorBlt", "content_rect",
                content_rect.ToString(), "swap_chain_size",
@@ -2440,7 +2440,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
   }
 
   Microsoft::WRL::ComPtr<ID3D11VideoContext2> context2;
-  absl::optional<DXGI_HDR_METADATA_HDR10> display_metadata =
+  std::optional<DXGI_HDR_METADATA_HDR10> display_metadata =
       layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata();
   if (display_metadata.has_value() && SUCCEEDED(video_context.As(&context2))) {
     if (stream_hdr_metadata.has_value()) {

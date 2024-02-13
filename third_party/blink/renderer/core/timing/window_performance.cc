@@ -511,35 +511,13 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
   std::optional<int> key_code = event_data->GetKeyCode();
   std::optional<PointerId> pointer_id = event_data->GetPointerId();
 
-  const bool is_artificial_pointerup_or_click =
-      (entry->name() == event_type_names::kPointerup ||
-       entry->name() == event_type_names::kClick) &&
-      entry->startTime() == pending_pointer_down_start_time_;
-
-  if (is_artificial_pointerup_or_click) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kEventTimingArtificialPointerupOrClick);
-  }
-
-  // The page visibility was changed, or this is an artificial event. We
-  // fallback entry's end time to its processingEnd (as if there was no next
-  // paint needed).
-  const bool fallback_end_time_to_processing_end =
-      (last_visibility_change_timestamp_ > event_timestamp &&
-       last_visibility_change_timestamp_ < presentation_timestamp)
-#if BUILDFLAG(IS_MAC)
-      || is_artificial_pointerup_or_click
-#endif  // BUILDFLAG(IS_MAC)
-      ;
+  absl::optional<base::TimeTicks> fallback_time =
+      GetFallbackTime(entry, event_timestamp, presentation_timestamp);
 
   base::TimeTicks entry_end_timetick =
-      fallback_end_time_to_processing_end
-          ? GetTimeOriginInternal() + base::Milliseconds(entry->processingEnd())
-          : presentation_timestamp;
+      fallback_time.has_value() ? *fallback_time : presentation_timestamp;
   DOMHighResTimeStamp entry_end_time =
-      fallback_end_time_to_processing_end
-          ? entry->processingEnd()
-          : MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
+      MonotonicTimeToDOMHighResTimeStamp(entry_end_timetick);
 
   base::TimeDelta processing_time =
       base::Milliseconds(entry->processingEnd() - entry->processingStart());
@@ -631,6 +609,70 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
     TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
         "devtools.timeline", "EventTiming", hash, unsafe_end_time);
   }
+}
+
+absl::optional<base::TimeTicks> WindowPerformance::GetFallbackTime(
+    PerformanceEventTiming* entry,
+    base::TimeTicks event_timestamp,
+    base::TimeTicks presentation_timestamp) {
+  // For artificial events on MacOS, we will fallback entry's end time to its
+  // processingEnd (as if there was no next paint needed). crbug.com/1321819.
+  const bool is_artificial_pointerup_or_click =
+      (entry->name() == event_type_names::kPointerup ||
+       entry->name() == event_type_names::kClick) &&
+      entry->startTime() == pending_pointer_down_start_time_;
+
+  if (is_artificial_pointerup_or_click) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEventTimingArtificialPointerupOrClick);
+  }
+
+  // If the page visibility was changed. We fallback entry's end time to its
+  // processingEnd (as if there was no next paint needed). crbug.com/1312568.
+  const bool was_page_visibility_changed =
+      last_visibility_change_timestamp_ > event_timestamp &&
+      last_visibility_change_timestamp_ < presentation_timestamp;
+
+  // An javascript synchronous modal dialog showed before the event frame
+  // got presented. User could wait for arbitrarily long on the dialog. Thus
+  // we fall back presentation time to the pre dialog showing time.
+  // crbug.com/1435448.
+  bool fallback_end_time_to_dialog_time = false;
+  base::TimeTicks first_modal_dialog_timestamp;
+
+  // Clean up stale dialog times.
+  while (!show_modal_dialog_timestamps_.empty() &&
+         show_modal_dialog_timestamps_.front() < event_timestamp) {
+    show_modal_dialog_timestamps_.pop_front();
+  }
+
+  if (!show_modal_dialog_timestamps_.empty() &&
+      show_modal_dialog_timestamps_.front() < presentation_timestamp) {
+    if (base::FeatureList::IsEnabled(
+            features::kEventTimingFallbackToModalDialogStart)) {
+      fallback_end_time_to_dialog_time = true;
+    }
+    first_modal_dialog_timestamp = show_modal_dialog_timestamps_.front();
+  }
+
+  const bool fallback_end_time_to_processing_end =
+      was_page_visibility_changed
+#if BUILDFLAG(IS_MAC)
+      || is_artificial_pointerup_or_click
+#endif  // BUILDFLAG(IS_MAC)
+      ;
+
+  // Return minimum fallback time.
+  base::TimeTicks processing_end_timetick =
+      GetTimeOriginInternal() + base::Milliseconds(entry->processingEnd());
+  if (fallback_end_time_to_dialog_time && fallback_end_time_to_processing_end) {
+    return std::min(first_modal_dialog_timestamp, processing_end_timetick);
+  } else if (fallback_end_time_to_dialog_time) {
+    return first_modal_dialog_timestamp;
+  } else if (fallback_end_time_to_processing_end) {
+    return processing_end_timetick;
+  }
+  return absl::nullopt;
 }
 
 bool WindowPerformance::SetInteractionIdAndRecordLatency(
@@ -753,6 +795,10 @@ void WindowPerformance::PageVisibilityChanged() {
   last_visibility_change_timestamp_ = base::TimeTicks::Now();
   AddVisibilityStateEntry(GetPage()->IsPageVisible(),
                           last_visibility_change_timestamp_);
+}
+
+void WindowPerformance::WillShowModalDialog() {
+  show_modal_dialog_timestamps_.push_back(base::TimeTicks::Now());
 }
 
 EventCounts* WindowPerformance::eventCounts() {

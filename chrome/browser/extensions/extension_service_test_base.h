@@ -29,8 +29,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -238,7 +239,8 @@ class ExtensionServiceTestBase : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
-  ash::ScopedTestUserManager test_user_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

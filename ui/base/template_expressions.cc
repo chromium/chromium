@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <ostream>
 
 #include "base/check_op.h"
@@ -14,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if DCHECK_IS_ON()
 #include "third_party/re2/src/re2/re2.h"  // nogncheck
@@ -95,7 +95,7 @@ std::string PolymerParameterEscape(const std::string& in_string,
 }
 
 bool EscapeForJS(const std::string& in_string,
-                 absl::optional<char> in_previous,
+                 std::optional<char> in_previous,
                  std::string* out_string) {
   out_string->reserve(in_string.size() * 2);
   bool last_was_dollar = in_previous && in_previous.value() == '$';
@@ -172,9 +172,9 @@ bool ReplaceTemplateExpressionsInternal(
     std::string replacement = value->second;
     if (is_javascript) {
       // Run JS escaping first.
-      absl::optional<char> last = formatted->empty()
-                                      ? absl::nullopt
-                                      : absl::make_optional(formatted->back());
+      std::optional<char> last = formatted->empty()
+                                     ? std::nullopt
+                                     : std::make_optional(formatted->back());
       std::string escaped_replacement;
       if (!EscapeForJS(replacement, last, &escaped_replacement))
         return false;

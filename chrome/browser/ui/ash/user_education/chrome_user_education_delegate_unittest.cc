@@ -81,10 +81,6 @@ class MockAppListSyncableService : public app_list::AppListSyncableService {
 // Base class for tests of the `ChromeUserEducationDelegate`.
 class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
  public:
-  ChromeUserEducationDelegateTest()
-      : user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())) {}
-
   // Returns the `AccountId` for the primary `profile()`.
   const AccountId& account_id() const {
     return ash::BrowserContextHelper::Get()
@@ -104,23 +100,6 @@ class ChromeUserEducationDelegateTest : public BrowserWithTestWindowTest {
     // so that the browser process has fully initialized.
     delegate_ = std::make_unique<ChromeUserEducationDelegate>();
   }
-
-  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    // Register user.
-    user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
-
-    // Activate session.
-    auto* client = ash_test_helper()->test_session_controller_client();
-    client->AddUserSession(email);
-    client->SwitchActiveUser(account_id);
-  }
-
-  // User management.
-  const raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
 
   // The delegate instance under test.
   std::unique_ptr<ChromeUserEducationDelegate> delegate_;

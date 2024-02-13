@@ -14,6 +14,7 @@
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/cert_database.h"
+#include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
 
@@ -31,44 +32,50 @@ namespace {
 
 constexpr int kDefaultAttempts = KcerTokenImpl::kDefaultAttempts;
 
+// Base64 encoded RSA modulus for client_1.key.
 constexpr char kFakeRsaModulusBase64[] =
-    "pKQjSyvO8LMtTx1ZKIhymKPSwn0GXBxjBshy7390MRKDa8CXfKsrkicIdbUQ54RlY2GGuxufuo"
-    "kdz7WBugxW5zReJkBcMG8idCaG6moQIr3nIgOpP1ntN0Y7xFrXIshKLifm6m9AaYyXoKMjq1wc"
-    "rFb1zDO3iZoZi5a4RvSueuwTPJ6nMo6ABRqe2dcJaTeBgFtt3au49psAe3MYBtym191C3BXlc3"
-    "Ei+I25Es0Pf2moxaal8BmJuaZxAIkmOFWDto9ChelM+8KA7F28Js/CHEUlGlV1g9JCOJEpH/"
-    "Hh8mF9taYmrzzOsrDOjW4bgWVXTxOVFbkI8Znj/9Yt7VyWdQ==";
+    "2vg6u00xUsNQMUZGn7awjPLbj22B+"
+    "zU8S3R4pdBdsuBvj765ajdKgeN7UWiiT0BGIRvkZ6aV3jpOvwG4DhVwUAj6FSVjo8cDF93mt60"
+    "izOQvcVD/UbJ3/35J4A+huqTqNp2Ip34KSDUA4Rgf6/ASbOvUTYb4HWzeGlewc/"
+    "FhmKihdw1YVfg4ucyDjzQvc6GUD3suHbjEtOjhERuzqfHxcLN0KAsxMsFXQG3v0fpuaHoPO+"
+    "by1b5jjcA4udpqr+"
+    "K4G35fmj4csj86Ed4XSDxItdwEAeYZsiwHEw7b3Im923jS8OfOjV3GIEGXXGy5g5I1UQyuLp4h"
+    "OEGkVBnkSQ9vsQ==";
 constexpr char kFakeRsaExponentBase64[] = "AQAB";
 // The correct id for `kFakeRsaModulusBase64`.
-constexpr char kFakeRsaPkcs11IdBase64[] = "b4IkC5I3TLzDPDfaMaVES/hL6I4=";
+constexpr char kFakeRsaPkcs11IdBase64[] = "PIlO/U4s0iZrIYu7pjwbGzTrWlA=";
 // The correct SPKI for `kFakeRsaModulusBase64` and `kFakeRsaExponentBase64`
 // pair.
 constexpr char kFakeRsaSpkiBase64[] =
-    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApKQjSyvO8LMtTx1ZKIhymKPSwn0GXB"
-    "xjBshy7390MRKDa8CXfKsrkicIdbUQ54RlY2GGuxufuokdz7WBugxW5zReJkBcMG8idCaG6moQ"
-    "Ir3nIgOpP1ntN0Y7xFrXIshKLifm6m9AaYyXoKMjq1wcrFb1zDO3iZoZi5a4RvSueuwTPJ6nMo"
-    "6ABRqe2dcJaTeBgFtt3au49psAe3MYBtym191C3BXlc3Ei+"
-    "I25Es0Pf2moxaal8BmJuaZxAIkmOFWDto9ChelM+8KA7F28Js/CHEUlGlV1g9JCOJEpH/"
-    "Hh8mF9taYmrzzOsrDOjW4bgWVXTxOVFbkI8Znj/9Yt7VyWdQIDAQAB";
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2vg6u00xUsNQMUZGn7awjPLbj22B+"
+    "zU8S3R4pdBdsuBvj765ajdKgeN7UWiiT0BGIRvkZ6aV3jpOvwG4DhVwUAj6FSVjo8cDF93mt60"
+    "izOQvcVD/UbJ3/35J4A+huqTqNp2Ip34KSDUA4Rgf6/ASbOvUTYb4HWzeGlewc/"
+    "FhmKihdw1YVfg4ucyDjzQvc6GUD3suHbjEtOjhERuzqfHxcLN0KAsxMsFXQG3v0fpuaHoPO+"
+    "by1b5jjcA4udpqr+"
+    "K4G35fmj4csj86Ed4XSDxItdwEAeYZsiwHEw7b3Im923jS8OfOjV3GIEGXXGy5g5I1UQyuLp4h"
+    "OEGkVBnkSQ9vsQIDAQAB";
 
-constexpr char kFakeEcPublicValueBase64[] =
-    "BEEE9zBHRlSWLfKiDRa63Ztqagi6rnkCpQ3L8/voA1/"
-    "orozntbgol7gilBcwU3cAqdazmeWz7XRNk3OE++XVFzGgbA==";
+// DER-encoded ASN.1 octet string containing the public value of an EC key (the
+// EC point).
+constexpr char kFakeEcPublicValueOctetStringDerBase64[] =
+    "BEEE862evgBzpaK6fQ+IuGRLhVtiHE9eg0Qq+auOnkj/"
+    "PQsakZK+HwzGhwq9BkcLYwa3J7pY4wVkbR0wKO7u8ql7kw==";
 // The correct id for `kFakeEcPublicValueBase64`.
-constexpr char kFakeEcPkcs11IdBase64[] = "7vBH+E9iez6kgpEWm0+MSjVZxpI=";
+constexpr char kFakeEcPkcs11IdBase64[] = "gE0RjontXMV0CGICnWode163LoU=";
 // The correct SPKI for `kFakeEcPublicValueBase64` and `kFakeEcPkcs11IdBase64`
 // pair.
 constexpr char kFakeEcSpkiBase64[] =
-    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE9zBHRlSWLfKiDRa63Ztqagi6rnkCpQ3L8/"
-    "voA1/orozntbgol7gilBcwU3cAqdazmeWz7XRNk3OE++XVFzGgbA==";
+    "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE862evgBzpaK6fQ+IuGRLhVtiHE9eg0Qq+"
+    "auOnkj/PQsakZK+HwzGhwq9BkcLYwa3J7pY4wVkbR0wKO7u8ql7kw==";
 
 template <typename T1, typename T2>
 bool SpanEqual(base::span<T1> s1, base::span<T2> s2) {
   return base::ranges::equal(base::as_bytes(s1), base::as_bytes(s2));
 }
 
-bool FindAttribute(chaps::AttributeList attrs,
-                   uint32_t attribute_type,
-                   base::span<const uint8_t> value) {
+[[nodiscard]] bool FindAttribute(chaps::AttributeList attrs,
+                                 uint32_t attribute_type,
+                                 base::span<const uint8_t> value) {
   for (int i = 0; i < attrs.attributes_size(); ++i) {
     const chaps::Attribute& cur_attr = attrs.attributes(i);
     if (cur_attr.type() != attribute_type) {
@@ -140,7 +147,8 @@ class KcerTokenImplTest : public testing::Test {
         rsa_pub_exponent_(base::Base64Decode(kFakeRsaExponentBase64).value()),
         rsa_pkcs11_id_(base::Base64Decode(kFakeRsaPkcs11IdBase64).value()),
         rsa_spki_(base::Base64Decode(kFakeRsaSpkiBase64).value()),
-        ec_public_value_(base::Base64Decode(kFakeEcPublicValueBase64).value()),
+        ec_public_value_(
+            base::Base64Decode(kFakeEcPublicValueOctetStringDerBase64).value()),
         ec_pkcs11_id_(base::Base64Decode(kFakeEcPkcs11IdBase64).value()),
         ec_spki_(base::Base64Decode(kFakeEcSpkiBase64).value()),
         token_(Token::kUser, &chaps_client_) {}
@@ -656,6 +664,982 @@ TEST_F(KcerTokenImplTest, GenerateEcKeyRetrySetIdOnSessionError) {
   EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
 }
 
+// Test that ImportKey correctly fails when it's given an invalid key.
+TEST_F(KcerTokenImplTest, ImportKeyBadKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  Pkcs8PrivateKeyInfoDer invalid_key({1, 2, 3, 4, 5});
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(invalid_key, import_key_waiter.GetCallback());
+  EXPECT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kFailedToParseKey);
+}
+
+// Test that ImportKey can successfully import an RSA key.
+TEST_F(KcerTokenImplTest, ImportKeyRsaSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  // ImportKey() will check whether the key already exists.
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_key_attrs),
+                      RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                         chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList private_key_attrs;
+  chaps::AttributeList public_key_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&private_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&public_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_TRUE(import_key_waiter.Get().has_value());
+  const PublicKey& kcer_public_key = import_key_waiter.Get().value();
+
+  // Check that ImportKey() was looking for the correct existing key.
+  const chromeos::PKCS11_CK_OBJECT_CLASS kPrivKeyClass =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&kPrivKeyClass)));
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+
+  // Check the private key attributes.
+  constexpr chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  chromeos::PKCS11_CK_KEY_TYPE key_type = chromeos::PKCS11_CKK_RSA;
+  // At the moment of writing these key components were printed from the code
+  // under test, i.e. not guaranteed to be correct. The code was also tested
+  // against the real Chaps and was able to correctly sign using the imported
+  // key client_1.key, so most likely they are correct. Long term this is a
+  // regression test.
+  std::vector<uint8_t> private_exponent =
+      base::Base64Decode(
+          "BMvoYMcg2WGDuESZZ5u6nn0eZUlT4329H6ECQzg/KTEvOGydhqUF6eD4B/"
+          "vnsZ6POrVFSaZK76EtgukbJUcqcee0b1yljrDyvCXaoojgHjFcaa90HE/"
+          "Gvvm++AcXoZfwX826cILQtQK2OCK4EPTDY+U+6LYtaVruZZDTVxgr7V+v4v1EDKEjQc+"
+          "Ttupwo6aXSeiTKuqNsXuodoDvcv/"
+          "uJgzMDCxi14TZTjaWOz7Xw2JZ+NLbTrsiqTyzmyJousV6/+4sfTYt8/"
+          "tz0gMt3Qaddvs+"
+          "BpTTrYIKTpsGYwPkKDqUdEkC87OQ6a2mXB1lpA7FMpZiiyJ1HpIXHkd+eLoNkQ==")
+          .value();
+  std::vector<uint8_t> prime_1 =
+      base::Base64Decode(
+          "5ULWXU5R7tGCzNlpTkRWD/M8sf/"
+          "ZOq12VVWSzQXGWsxFJHIFyezEvKV4nol6OlCRH9DzQgmNtaKDjD6uiyNDTRf8g270/"
+          "UYu3kTWUWaLFyA2gde0vd74GeFJK4uySb9wcfldlsJdz9v4NPNLIasfGWbINWkKqSqL/"
+          "arGr8lwLhk=")
+          .value();
+  std::vector<uint8_t> prime_2 =
+      base::Base64Decode(
+          "9IIdj/q7dI0PUpyfBExsxQF5oWcreJsvrwbhV/"
+          "LRbwcsTIlCMc7Jh8QgOrXf+iglj8KKN8YXu6//"
+          "jRxBXupPTUdyoKxzqxxXAqjgB1mD7jwimhtMnGxBd7Y87g22VCcx+"
+          "FgYEAxLD5cA2BKZEdexV+rCDGgDzEb5TnGUGap10Vk=")
+          .value();
+  std::vector<uint8_t> exponent_1 =
+      base::Base64Decode(
+          "urdPnNhPlGAf1jRvNmYjbYQdd562zbo+eMtj7wR4ArUAzujqXAUwSa++Z+fxmxLIzw+/"
+          "PpZHSpnb51mZkAodIumZJ3Yzox8Ixs9reQo515DNs7v5IPY6O+GmVQfGIZf/"
+          "vWNpXIJaIxK0uHM5SmdywZ5bClzNaO8U6niurrYxXek=")
+          .value();
+  std::vector<uint8_t> exponent_2 =
+      base::Base64Decode(
+          "gGh9AgpZvCIAtBAQ6v7/"
+          "+I6HxB4clGBbsH3ahoe9OaP4vdEv9Fx3Nlfn3S17DTNcVp2CXTwpZqZNfVwjcKd5Mkqd"
+          "hohKzsg5YeoyjWmTgeAPBAPmPhgUYbxRT2vgH13ePmB1cqgiG3PgO5m4zcgLGPLvKfjO"
+          "Vc/ISkwXzUraSTE=")
+          .value();
+  std::vector<uint8_t> coefficient =
+      base::Base64Decode(
+          "fpgE21erI8NeCrK9GSNm3TUjZlifaIgcGEfINYTmPRCOHMXaQukogBI7W45Oxq6sCE+"
+          "7JRNH7wRe7Y5I/"
+          "dGhonlu7BRvzIvZvxDTvlYJKn55d1TpmYRh1+cpf7rcj1Aha9MWxERnJsVHi0+"
+          "CxAkar8vyM0jEPEb0PQ/UjZnGt90=")
+          .value();
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_KEY_TYPE,
+                            MakeSpan(&key_type)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_TOKEN,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_SENSITIVE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chaps::kForceSoftwareAttribute,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_EXTRACTABLE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_PRIVATE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_UNWRAP,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_DECRYPT,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_SIGN,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(
+      private_key_attrs, chromeos::PKCS11_CKA_SIGN_RECOVER, MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_MODULUS,
+                            rsa_modulus_));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(private_key_attrs,
+                            chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
+                            rsa_pub_exponent_));
+  EXPECT_TRUE(FindAttribute(private_key_attrs,
+                            chromeos::PKCS11_CKA_PRIVATE_EXPONENT,
+                            private_exponent));
+  EXPECT_TRUE(
+      FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_PRIME_1, prime_1));
+  EXPECT_TRUE(
+      FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_PRIME_2, prime_2));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_EXPONENT_1,
+                            exponent_1));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_EXPONENT_2,
+                            exponent_2));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_COEFFICIENT,
+                            coefficient));
+
+  // Check the public key attributes.
+  chromeos::PKCS11_CK_OBJECT_CLASS pub_key_class =
+      chromeos::PKCS11_CKO_PUBLIC_KEY;
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&pub_key_class)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_KEY_TYPE,
+                            MakeSpan(&key_type)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_TOKEN,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_WRAP,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_ENCRYPT,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_VERIFY,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_MODULUS,
+                            rsa_modulus_));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(public_key_attrs,
+                            chromeos::PKCS11_CKA_PUBLIC_EXPONENT,
+                            rsa_pub_exponent_));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chaps::kForceSoftwareAttribute,
+                            MakeSpan(&kTrue)));
+
+  // Check returned kcer::PublicKey.
+  EXPECT_EQ(kcer_public_key.GetPkcs11Id(), rsa_pkcs11_id_);
+  EXPECT_EQ(kcer_public_key.GetSpki(), rsa_spki_);
+  EXPECT_EQ(kcer_public_key.GetToken(), Token::kUser);
+}
+
+// Test that ImportKey skips the import and succeeds when it's given an already
+// imported RSA key.
+TEST_F(KcerTokenImplTest, ImportKeyRsaAlreadyExists) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>{ObjectHandle(1)},
+                                   chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  EXPECT_TRUE(import_key_waiter.Get().has_value());
+  const PublicKey& kcer_public_key = import_key_waiter.Get().value();
+  EXPECT_EQ(kcer_public_key.GetPkcs11Id(), rsa_pkcs11_id_);
+  EXPECT_EQ(kcer_public_key.GetSpki(), rsa_spki_);
+  EXPECT_EQ(kcer_public_key.GetToken(), Token::kUser);
+}
+
+// Test that ImportKey correctly fails when Chaps fails to search for the
+// existing RSA key.
+TEST_F(KcerTokenImplTest, ImportKeyRsaFailToSearchExistingKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ImportKey retries several times when Chaps fails to search for the
+// existing RSA key with a session error.
+TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToSearchExistingKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportKey correctly fails when Chaps fails to create the private
+// RSA key.
+TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePrivKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  EXPECT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kFailedToImportKey);
+}
+
+// Test that ImportKey retries several times when Chaps fails to create the
+// private RSA key with a session error.
+TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToCreatePrivKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
+                                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          ObjectHandle(0), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  EXPECT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportKey correctly fails when Chaps fails to create the public RSA
+// key.
+TEST_F(KcerTokenImplTest, ImportKeyRsaFailToCreatePubKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  ObjectHandle priv_key_handle(10);
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(priv_key_handle, chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  EXPECT_CALL(chaps_client_, DestroyObjectsWithRetries(
+                                 pkcs11_slot_id_,
+                                 std::vector<ObjectHandle>{priv_key_handle}, _))
+      .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kFailedToImportKey);
+}
+
+// Test that ImportKey retries several times when Chaps fails to create the
+// public RSA key with a session error.
+TEST_F(KcerTokenImplTest, ImportKeyRsaRetryToCreatePubKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
+                                                   chromeos::PKCS11_CKR_OK));
+
+  // Alternates between replying with OK and SESSION_CLOSED to handle
+  // alternating calls for private and public keys.
+  auto fake_create_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_pub_key = true;
+    bool is_pub_key =
+        std::exchange(next_is_pub_key, /*new_value=*/!next_is_pub_key);
+    if (is_pub_key) {
+      return std::move(callback).Run(ObjectHandle(10), chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(ObjectHandle(0),
+                                     chromeos::PKCS11_CKR_SESSION_CLOSED);
+    }
+  };
+
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_create_objects));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportKey can successfully import an EC key.
+TEST_F(KcerTokenImplTest, ImportKeyEcSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(DoAll(MoveArg<1>(&find_key_attrs),
+                      RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                         chromeos::PKCS11_CKR_OK)));
+
+  chaps::AttributeList private_key_attrs;
+  chaps::AttributeList public_key_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&private_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)))
+      .WillOnce(
+          DoAll(MoveArg<1>(&public_key_attrs),
+                RunOnceCallback<2>(ObjectHandle(2), chromeos::PKCS11_CKR_OK)));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_TRUE(import_key_waiter.Get().has_value());
+  const PublicKey& kcer_public_key = import_key_waiter.Get().value();
+
+  const chromeos::PKCS11_CK_OBJECT_CLASS kPrivKeyClass =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&kPrivKeyClass)));
+  EXPECT_TRUE(FindAttribute(find_key_attrs, chromeos::PKCS11_CKA_ID,
+                            ec_pkcs11_id_.value()));
+
+  // Check the private key attributes.
+  constexpr chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
+  chromeos::PKCS11_CK_OBJECT_CLASS priv_key_class =
+      chromeos::PKCS11_CKO_PRIVATE_KEY;
+  chromeos::PKCS11_CK_KEY_TYPE key_type = chromeos::PKCS11_CKK_EC;
+  // At the moment of writing these key components were printed from the code
+  // under test, i.e. not guaranteed to be correct. The code was also tested
+  // against the real Chaps and was able to correctly sign using the imported
+  // key key_usage_p256.key, so most likely they are correct. Long term this is
+  // a regression test.
+  std::vector<uint8_t> priv_key_bytes =
+      base::Base64Decode("eor3507Mmwvc9idKsuXWTudE0GDlVmEc64H7acez5xQ=")
+          .value();
+  std::vector<uint8_t> ec_params_der =
+      base::Base64Decode("BggqhkjOPQMBBw==").value();
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&priv_key_class)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_KEY_TYPE,
+                            MakeSpan(&key_type)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_TOKEN,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_SENSITIVE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chaps::kForceSoftwareAttribute,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_EXTRACTABLE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_SIGN,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(
+      private_key_attrs, chromeos::PKCS11_CKA_SIGN_RECOVER, MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_DERIVE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_ID,
+                            ec_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_VALUE,
+                            priv_key_bytes));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_EC_POINT,
+                            ec_public_value_));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_PRIVATE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(private_key_attrs, chromeos::PKCS11_CKA_EC_PARAMS,
+                            ec_params_der));
+
+  // Check the public key attributes.
+  chromeos::PKCS11_CK_OBJECT_CLASS pub_key_class =
+      chromeos::PKCS11_CKO_PUBLIC_KEY;
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&pub_key_class)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_KEY_TYPE,
+                            MakeSpan(&key_type)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_TOKEN,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_VERIFY,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_DERIVE,
+                            MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_EC_PARAMS,
+                            ec_params_der));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_EC_POINT,
+                            ec_public_value_));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chromeos::PKCS11_CKA_ID,
+                            ec_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(public_key_attrs, chaps::kForceSoftwareAttribute,
+                            MakeSpan(&kTrue)));
+
+  // Check returned kcer::PublicKey.
+  EXPECT_EQ(kcer_public_key.GetPkcs11Id(), ec_pkcs11_id_);
+  EXPECT_EQ(kcer_public_key.GetSpki(), ec_spki_);
+  EXPECT_EQ(kcer_public_key.GetToken(), Token::kUser);
+}
+
+// Test that ImportKey skips the import and succeeds when it's given an already
+// imported EC key.
+TEST_F(KcerTokenImplTest, ImportKeyEcAlreadyExists) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>{ObjectHandle(1)},
+                                   chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  EXPECT_TRUE(import_key_waiter.Get().has_value());
+  const PublicKey& kcer_public_key = import_key_waiter.Get().value();
+  EXPECT_EQ(kcer_public_key.GetPkcs11Id(), ec_pkcs11_id_);
+  EXPECT_EQ(kcer_public_key.GetSpki(), ec_spki_);
+  EXPECT_EQ(kcer_public_key.GetToken(), Token::kUser);
+}
+
+// Test that ImportKey correctly fails when Chaps fails to search for the
+// existing EC key.
+TEST_F(KcerTokenImplTest, ImportKeyEcFailToSearchExistingKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ImportKey retries several times when Chaps fails to search for the
+// existing EC key with a session error.
+TEST_F(KcerTokenImplTest, ImportKeyEcRetryToSearchExistingKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportKey correctly fails when Chaps fails to create the private EC
+// key.
+TEST_F(KcerTokenImplTest, ImportKeyEcFailToCreatePrivKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  EXPECT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kFailedToImportKey);
+}
+
+// Test that ImportKey retries several times when Chaps fails to create the
+// private RSA key with a session error.
+TEST_F(KcerTokenImplTest, ImportKeyEcRetryToCreatePrivKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
+                                                   chromeos::PKCS11_CKR_OK));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          ObjectHandle(0), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  EXPECT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportKey correctly fails when Chaps fails to create the public EC
+// key.
+TEST_F(KcerTokenImplTest, ImportKeyEcFailToCreatePubKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  ObjectHandle priv_key_handle(10);
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(priv_key_handle, chromeos::PKCS11_CKR_OK))
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  EXPECT_CALL(chaps_client_, DestroyObjectsWithRetries(
+                                 pkcs11_slot_id_,
+                                 std::vector<ObjectHandle>{priv_key_handle}, _))
+      .WillOnce(RunOnceCallback<2>(chromeos::PKCS11_CKR_OK));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kFailedToImportKey);
+}
+
+// Test that ImportKey retries several times when Chaps fails to create the
+// public EC key with a session error.
+TEST_F(KcerTokenImplTest, ImportKeyEcRetryToCreatePubKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  chaps::AttributeList find_key_attrs;
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
+                                                   chromeos::PKCS11_CKR_OK));
+
+  // Alternates between replying with OK and SESSION_CLOSED to handle
+  // alternating calls for private and public keys.
+  auto fake_create_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_pub_key = true;
+    bool is_pub_key =
+        std::exchange(next_is_pub_key, /*new_value=*/!next_is_pub_key);
+    if (is_pub_key) {
+      return std::move(callback).Run(ObjectHandle(10), chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(ObjectHandle(0),
+                                     chromeos::PKCS11_CKR_SESSION_CLOSED);
+    }
+  };
+
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_create_objects));
+
+  std::optional<std::vector<uint8_t>> key = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("key_usage_p256.key"));
+  ASSERT_TRUE(key.has_value() && (key->size() > 0));
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> import_key_waiter;
+  token_.ImportKey(Pkcs8PrivateKeyInfoDer(std::move(key.value())),
+                   import_key_waiter.GetCallback());
+  ASSERT_FALSE(import_key_waiter.Get().has_value());
+  EXPECT_EQ(import_key_waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportCertFromBytes can successfully import a cert.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesSuccess) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Simulate that a key for the cert exists.
+      .WillOnce(RunOnceCallback<2>(result_handles, chromeos::PKCS11_CKR_OK));
+
+  chaps::AttributeList cert_attrs;
+  EXPECT_CALL(chaps_client_, CreateObject(pkcs11_slot_id_, _, _))
+      .WillOnce(
+          DoAll(MoveArg<1>(&cert_attrs),
+                RunOnceCallback<2>(ObjectHandle(1), chromeos::PKCS11_CKR_OK)));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  EXPECT_TRUE(waiter.Get().has_value());
+
+  chromeos::PKCS11_CK_OBJECT_CLASS cert_class =
+      chromeos::PKCS11_CKO_CERTIFICATE;
+  chromeos::PKCS11_CK_CERTIFICATE_TYPE cert_type = chromeos::PKCS11_CKC_X_509;
+  chromeos::PKCS11_CK_BBOOL kTrue = chromeos::PKCS11_CK_TRUE;
+  std::string expected_label = "";
+
+  // Contains "CN=B CA".
+  std::vector<uint8_t> issuer_name_der =
+      base::Base64Decode("MA8xDTALBgNVBAMMBEIgQ0E=").value();
+  // Contains "CN=Client Cert A".
+  std::vector<uint8_t> subject_name_der =
+      base::Base64Decode("MBgxFjAUBgNVBAMMDUNsaWVudCBDZXJ0IEE=").value();
+  // Contains 4096.
+  std::vector<uint8_t> serial_number_der =
+      base::Base64Decode("AgIQAA==").value();
+
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_CLASS,
+                            MakeSpan(&cert_class)));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_CERTIFICATE_TYPE,
+                            MakeSpan(&cert_type)));
+  EXPECT_TRUE(
+      FindAttribute(cert_attrs, chromeos::PKCS11_CKA_TOKEN, MakeSpan(&kTrue)));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_ID,
+                            rsa_pkcs11_id_.value()));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_LABEL,
+                            base::as_byte_span(expected_label)));
+  EXPECT_TRUE(
+      FindAttribute(cert_attrs, chromeos::PKCS11_CKA_VALUE, cert.value()));
+  EXPECT_TRUE(
+      FindAttribute(cert_attrs, chromeos::PKCS11_CKA_ISSUER, issuer_name_der));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_SUBJECT,
+                            subject_name_der));
+  EXPECT_TRUE(FindAttribute(cert_attrs, chromeos::PKCS11_CKA_SERIAL_NUMBER,
+                            serial_number_der));
+}
+
+// Test that ImportCertFromBytes correctly fails when the key for the cert is
+// not present.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesKeyNotFound) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Return empty list of found keys.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kKeyNotFound);
+}
+
+// Test that ImportCertFromBytes returns success without importing a cert when
+// it already exists.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesAlreadyExists) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Return some handles to simulate that an existing cert was found.
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(RunOnceCallback<2>(result_handles, chromeos::PKCS11_CKR_OK));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  EXPECT_TRUE(waiter.Get().has_value());
+}
+
+// Test that ImportCertFromBytes correctly fails when the cert is invalid.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesBadCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+  // Corrupt the data.
+  cert.value().pop_back();
+
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject).Times(0);
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kInvalidCertificate);
+}
+
+// Test that ImportCertFromBytes correctly fails when it fails to fetch search
+// for the existing cert.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToSearchForCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ImportCertFromBytes correctly fails when it fails to fetch search
+// for the existing key.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToSearchForKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Return some handles to simulate that an existing cert was found.
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Return an error when searching for the key.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+}
+
+// Test that ImportCertFromBytes correctly fails when it fails to create a cert
+// object.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesFailToCreate) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  std::vector<ObjectHandle> result_handles{ObjectHandle(10)};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      // Return empty list of existing certs.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK))
+      // Simulate that a key for the cert exists.
+      .WillOnce(RunOnceCallback<2>(result_handles, chromeos::PKCS11_CKR_OK));
+
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillOnce(RunOnceCallback<2>(ObjectHandle(0),
+                                   chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kFailedToImportCertificate);
+}
+
+// Test that ImportCertFromBytes retries several times when Chaps fails to
+// search for the cert with a session error.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToSearchForCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .Times(kDefaultAttempts)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          std::vector<ObjectHandle>(), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportCertFromBytes retries several times when Chaps fails to
+// search for the key with a session error.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToSearchForKey) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Alternates between replying with OK and SESSION_CLOSED to handle
+  // alternating calls for existing certs and keys.
+  auto fake_find_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_cert = true;
+    bool is_cert = std::exchange(next_is_cert, /*new_value=*/!next_is_cert);
+    if (is_cert) {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_SESSION_CLOSED);
+    }
+  };
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_find_objects));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
+// Test that ImportCertFromBytes retries several times when Chaps fails to
+// create a new cert with a session error.
+TEST_F(KcerTokenImplTest, ImportCertFromBytesRetryToCreateCert) {
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
+  std::optional<std::vector<uint8_t>> cert = ReadPemFileReturnDer(
+      net::GetTestCertsDirectory().AppendASCII("client_1.pem"));
+  ASSERT_TRUE(cert.has_value() && (cert->size() > 0));
+
+  // Alternates between replying with empty and non-empty handles to process
+  // alternating calls for existing certs and keys.
+  auto fake_find_objects = [](auto slot_id, auto attrs, auto callback) {
+    static bool next_is_cert = true;
+    bool is_cert = std::exchange(next_is_cert, /*new_value=*/!next_is_cert);
+    if (is_cert) {
+      return std::move(callback).Run(std::vector<ObjectHandle>(),
+                                     chromeos::PKCS11_CKR_OK);
+    } else {
+      return std::move(callback).Run(std::vector<ObjectHandle>{ObjectHandle(1)},
+                                     chromeos::PKCS11_CKR_OK);
+    }
+  };
+
+  EXPECT_CALL(chaps_client_, FindObjects)
+      .Times(2 * kDefaultAttempts)
+      .WillRepeatedly(Invoke(fake_find_objects));
+  EXPECT_CALL(chaps_client_, CreateObject)
+      .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
+          ObjectHandle(0), chromeos::PKCS11_CKR_SESSION_CLOSED));
+
+  base::test::TestFuture<base::expected<void, Error>> waiter;
+  token_.ImportCertFromBytes(CertDer(cert.value()), waiter.GetCallback());
+
+  ASSERT_FALSE(waiter.Get().has_value());
+  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+}
+
 // Test that RemoveKeyAndCerts can successfully remove a key pair and certs by
 // PKCS#11 id.
 TEST_F(KcerTokenImplTest, RemoveKeyAndCertsByIdSuccess) {
@@ -993,7 +1977,7 @@ TEST_F(KcerTokenImplTest, ListKeysBadKeysAreSkipped) {
 
   chaps::AttributeList bad_rsa_attrs = GetRsaKeyAttrs(
       rsa_pkcs11_id_.value(),
-      std::vector<uint8_t>(rsa_modulus_.begin(), rsa_modulus_.end() - 1),
+      std::vector<uint8_t>(rsa_modulus_.begin(), rsa_modulus_.end() - 4),
       rsa_pub_exponent_);
   chaps::AttributeList bad_ec_attrs = GetEcKeyAttrs(
       ec_pkcs11_id_.value(), std::vector<uint8_t>(ec_public_value_.begin(),
@@ -1107,7 +2091,6 @@ TEST_F(KcerTokenImplTest, ListKeysRetryFindEcOnSessionError) {
     }
   };
 
-  std::vector<ObjectHandle> handles{ObjectHandle(1)};
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(2 * kDefaultAttempts)
       .WillRepeatedly(Invoke(fake_find_objects));
@@ -1138,7 +2121,6 @@ TEST_F(KcerTokenImplTest, ListKeysRetryGetEcOnSessionError) {
     }
   };
 
-  std::vector<ObjectHandle> handles{ObjectHandle(1)};
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(2 * kDefaultAttempts)
       .WillRepeatedly(Invoke(fake_find_objects));
@@ -2284,7 +3266,6 @@ TEST_F(KcerTokenImplTest, SetKeyNicknameSuccess) {
 // specified by SPKI.
 TEST_F(KcerTokenImplTest, SetKeyNicknameBySpkiSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
-  PublicKey public_key(Token::kUser, rsa_pkcs11_id_, rsa_spki_);
 
   ObjectHandle key_handle{1};
   std::vector<ObjectHandle> key_handles{key_handle};

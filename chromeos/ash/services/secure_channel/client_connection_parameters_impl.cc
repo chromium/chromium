@@ -69,9 +69,12 @@ void ClientConnectionParametersImpl::PerformSetConnectionAttemptFailed(
 
 void ClientConnectionParametersImpl::PerformSetConnectionSucceeded(
     mojo::PendingRemote<mojom::Channel> channel,
-    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver) {
+    mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver,
+    mojo::PendingReceiver<mojom::NearbyConnectionStateListener>
+        nearby_connection_state_listener_receiver) {
   connection_delegate_remote_->OnConnection(
-      std::move(channel), std::move(message_receiver_receiver));
+      std::move(channel), std::move(message_receiver_receiver),
+      std::move(nearby_connection_state_listener_receiver));
 }
 
 void ClientConnectionParametersImpl::OnConnectionDelegateRemoteDisconnected() {
@@ -83,6 +86,19 @@ void ClientConnectionParametersImpl::UpdateBleDiscoveryState(
     absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {
   secure_channel_structured_metrics_logger_remote_->LogDiscoveryAttempt(
       discovery_state, potential_error_code);
+}
+
+void ClientConnectionParametersImpl::UpdateNearbyConnectionState(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  secure_channel_structured_metrics_logger_remote_->LogNearbyConnectionState(
+      step, result);
+}
+
+void ClientConnectionParametersImpl::UpdateSecureChannelAuthenticationState(
+    mojom::SecureChannelState secure_channel_state) {
+  secure_channel_structured_metrics_logger_remote_->LogSecureChannelState(
+      secure_channel_state);
 }
 
 }  // namespace ash::secure_channel

@@ -124,7 +124,7 @@ class AuthenticationService : public KeyedService,
   // `access_point`. This starts setting up Sync-the-feature, but the setup will
   // only complete once SyncUserSettings::SetInitialSyncFeatureSetupComplete()
   // is called. This method is used for testing. Virtual for testing.
-  // TODO(crbug.com/1462858): Delete this method after Phase 2 on iOS is
+  // TODO(crbug.com/40067025): Delete this method after Phase 2 on iOS is
   // launched. See ConsentLevel::kSync documentation for details.
   virtual void GrantSyncConsent(id<SystemIdentity> identity,
                                 signin_metrics::AccessPoint access_point);

@@ -3,10 +3,13 @@
 <translationbundle lang="ms">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
 <translation id="1155815720264022949">Mahu menutup tab lama?</translation>
+<translation id="1197088940767939838">Oren</translation>
 <translation id="1215127405478249895">Semak tab</translation>
 <translation id="125153950246128346">Ketik untuk melihat tab lain</translation>
 <translation id="1326271443836399892">Semak tetapan pengurangan selerak semasa.</translation>
 <translation id="1499635324672558517">Tutup semua tab Inkognito?</translation>
+<translation id="1555130319947370107">Biru</translation>
+<translation id="161042844686301425">Sian</translation>
 <translation id="1657719826150349398">Alihkan tab ke bawah</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Tandai halaman <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tandai halaman <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Himpunkan tab}other{Himpunkan tab}}</translation>
 <translation id="3996880007329611795">Dapatkan pemberitahuan</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
+<translation id="4159784952369912983">Ungu</translation>
 <translation id="4212246570487010370">Teruskan penyemakan imbas</translation>
 <translation id="427987768447457592">Kumpulan tab baharu</translation>
 <translation id="4648718555153979859">Tab anda dikumpulkan bersama di sini</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Tajuk diperlukan</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Anda mempunyai <ph name="TABS_COUNT_ONE" /> tab yang tidak digunakan baru-baru ini}other{Anda mempunyai <ph name="TABS_COUNT_MANY" /> tab yang tidak digunakan baru-baru ini}}</translation>
 <translation id="5339733443032484186">Tab terakhir anda</translation>
+<translation id="5400836586163650660">Kelabu</translation>
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5545379293264651575">Tutup tanpa membuat semakan</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Dapatkan makluman untuk penurunan harga?</translation>
 <translation id="58326064309361797">Seret tab untuk dihimpunkan</translation>
 <translation id="5846292395804797011">Tutup kumpulan <ph name="TITLE_OF_GROUP" /> dengan <ph name="NUMBER_OF_TABS" /> tab</translation>
+<translation id="5901630391730855834">Kuning</translation>
 <translation id="5972844218283131174">Nyahpilih semua</translation>
+<translation id="6017514345406065928">Hijau</translation>
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Pilih tab</translation>
 <translation id="6228793724645064692">(rating kedai)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Himpunkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Himpunkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ulasan}other{Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ulasan}}</translation>
 <translation id="7885132941432959125">Alihkan tab ke kanan</translation>
+<translation id="7942349550061667556">Merah</translation>
 <translation id="7966321538264951561">Tolak cadangan.</translation>
 <translation id="8029301326595421733">Maklumat tentang kedai ini dibuka pada ketinggian penuh</translation>
 <translation id="8205266828577616993">Alihkan tab ke atas</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>
 <translation id="955558140275419384">Semak semua tab yang diarkibkan untuk mengurangkan selerak dengan memasukkan editor ini.</translation>
 <translation id="959682366969460160">Jadi teratur</translation>
+<translation id="992256792861109788">Merah Jambu</translation>
 </translationbundle>

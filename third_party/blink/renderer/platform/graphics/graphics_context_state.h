@@ -93,6 +93,9 @@ class PLATFORM_EXPORT GraphicsContextState final {
   }
   void SetFillColor(const Color&);
 
+  void SetTextPaintOrder(TextPaintOrder order) { text_paint_order_ = order; }
+  TextPaintOrder GetTextPaintOrder() const { return text_paint_order_; }
+
   // Shadow. (This will need tweaking if we use draw loopers for other things.)
   SkDrawLooper* DrawLooper() const {
     DCHECK_EQ(fill_flags_.getLooper(), stroke_flags_.getLooper());
@@ -128,6 +131,7 @@ class PLATFORM_EXPORT GraphicsContextState final {
   // fetched for use.
   mutable cc::PaintFlags stroke_flags_;
   cc::PaintFlags fill_flags_;
+  TextPaintOrder text_paint_order_ = kFillStroke;
 
   StrokeData stroke_data_;
 

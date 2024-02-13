@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/dbus/bluez_dbus_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class ObjectProxy;
@@ -111,6 +111,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
     // Local Device ID information in Linux kernel modalias format. Read-only.
     dbus::Property<std::string> modalias;
 
+    // List of roles supported by the adapter. Read-only.
+    dbus::Property<std::vector<std::string>> roles;
+
     Properties(dbus::ObjectProxy* object_proxy,
                const std::string& interface_name,
                const PropertyChangedCallback& callback);
@@ -171,7 +174,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
   // Callback used by adapter methods to indicate that a response was
   // received with an optional Error in case an error occurred.
   using ResponseCallback =
-      base::OnceCallback<void(const absl::optional<Error>&)>;
+      base::OnceCallback<void(const std::optional<Error>&)>;
 
   // Starts a device discovery on the adapter with object path |object_path|.
   virtual void StartDiscovery(const dbus::ObjectPath& object_path,
@@ -228,7 +231,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterClient : public BluezDBusClient {
   // |address_type| will create a BR/EDR device.
   virtual void ConnectDevice(const dbus::ObjectPath& object_path,
                              const std::string& address,
-                             const absl::optional<AddressType>& address_type,
+                             const std::optional<AddressType>& address_type,
                              ConnectDeviceCallback callback,
                              ErrorCallback error_callback) = 0;
 

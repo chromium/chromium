@@ -28,7 +28,8 @@ public final class ToolbarFeatures {
             "use_toolbar_bg_color_for_strip_transition_scrim";
 
     /**
-     * Whether the toolbar bg color will be used as the scrim overlay during a tab strip transition.
+     * Whether the toolbar bg color will be used as the scrim overlay on the tab strip / status bar
+     * during a tab strip transition.
      */
     public static final BooleanCachedFieldTrialParameter
             USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM =
@@ -57,5 +58,13 @@ public final class ToolbarFeatures {
      */
     public static boolean shouldRecordSuppressionMetrics() {
         return ChromeFeatureList.sRecordSuppressionMetrics.isEnabled();
+    }
+
+    /**
+     * @return Whether the toolbar bg color will be used as the scrim overlay on the tab strip and
+     *     status bar during a tab strip transition.
+     */
+    public static boolean shouldUseToolbarBgColorForStripTransitionScrim() {
+        return USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.getValue();
     }
 }

@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
@@ -76,10 +77,8 @@ using blink::mojom::blink::DigitalCredentialSelectorPtr;
 using blink::mojom::blink::Hint;
 using blink::mojom::blink::IdentityCredentialDisconnectOptions;
 using blink::mojom::blink::IdentityCredentialDisconnectOptionsPtr;
-using blink::mojom::blink::IdentityProvider;
 using blink::mojom::blink::IdentityProviderConfig;
 using blink::mojom::blink::IdentityProviderConfigPtr;
-using blink::mojom::blink::IdentityProviderPtr;
 using blink::mojom::blink::IdentityProviderRequestOptions;
 using blink::mojom::blink::IdentityProviderRequestOptionsPtr;
 using blink::mojom::blink::IdentityUserInfo;
@@ -898,66 +897,55 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
 }
 
 // static
-IdentityProviderPtr
-TypeConverter<IdentityProviderPtr, blink::IdentityProviderRequestOptions>::
-    Convert(const blink::IdentityProviderRequestOptions& provider) {
-  if (provider.hasHolder() &&
-      // TODO(https://crbug.com/1416939): make sure the Digital Credentials API
-      // works well with the Multiple IdP API.
-      !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-    auto mojo_provider = DigitalCredentialProvider::New();
-    if (provider.holder()->hasParams()) {
-      HashMap<String, String> params;
-      for (const auto& pair : provider.holder()->params()) {
-        params.Set(pair.first, pair.second);
-      }
-      mojo_provider->params = std::move(params);
+DigitalCredentialProviderPtr
+TypeConverter<DigitalCredentialProviderPtr, blink::DigitalCredentialProvider>::
+    Convert(const blink::DigitalCredentialProvider& provider) {
+  auto mojo_provider = DigitalCredentialProvider::New();
+  if (provider.hasParams()) {
+    HashMap<String, String> params;
+    for (const auto& pair : provider.params()) {
+      params.Set(pair.first, pair.second);
     }
-    if (provider.holder()->hasSelector()) {
-      mojo_provider->selector = DigitalCredentialSelector::New();
-      if (provider.holder()->selector()->hasFormat()) {
-        mojo_provider->selector->format =
-            provider.holder()->selector()->format();
-      }
-      if (provider.holder()->selector()->hasDoctype()) {
-        mojo_provider->selector->doctype =
-            provider.holder()->selector()->doctype();
-      }
-      if (provider.holder()->selector()->hasFields()) {
-        WTF::Vector<DigitalCredentialFieldRequirementPtr> fields;
-        for (auto element : provider.holder()->selector()->fields()) {
-          auto requested_element = DigitalCredentialFieldRequirement::New();
-          if (element->IsString()) {
-            requested_element->name = element->GetAsString();
-          } else {
-            requested_element->name =
-                element->GetAsDigitalCredentialFieldRequirement()->name();
-            if (element->GetAsDigitalCredentialFieldRequirement()
-                    ->hasEquals()) {
-              requested_element->equals =
-                  element->GetAsDigitalCredentialFieldRequirement()->equals();
-            }
-          }
-
-          fields.push_back(std::move(requested_element));
-        }
-        mojo_provider->selector->fields = std::move(fields);
-      }
-    }
-    if (provider.holder()->hasProtocol()) {
-      mojo_provider->protocol = provider.holder()->protocol();
-    }
-    if (provider.holder()->hasRequest()) {
-      mojo_provider->request = provider.holder()->request();
-    }
-    if (provider.holder()->hasPublicKey()) {
-      mojo_provider->publicKey = provider.holder()->publicKey();
-    }
-    return IdentityProvider::NewHolder(std::move(mojo_provider));
-  } else {
-    auto config = IdentityProviderRequestOptions::From(provider);
-    return IdentityProvider::NewFederated(std::move(config));
+    mojo_provider->params = std::move(params);
   }
+  if (provider.hasSelector()) {
+    mojo_provider->selector = DigitalCredentialSelector::New();
+    if (provider.selector()->hasFormat()) {
+      mojo_provider->selector->format = provider.selector()->format();
+    }
+    if (provider.selector()->hasDoctype()) {
+      mojo_provider->selector->doctype = provider.selector()->doctype();
+    }
+    if (provider.selector()->hasFields()) {
+      WTF::Vector<DigitalCredentialFieldRequirementPtr> fields;
+      for (auto element : provider.selector()->fields()) {
+        auto requested_element = DigitalCredentialFieldRequirement::New();
+        if (element->IsString()) {
+          requested_element->name = element->GetAsString();
+        } else {
+          requested_element->name =
+              element->GetAsDigitalCredentialFieldRequirement()->name();
+          if (element->GetAsDigitalCredentialFieldRequirement()->hasEquals()) {
+            requested_element->equals =
+                element->GetAsDigitalCredentialFieldRequirement()->equals();
+          }
+        }
+
+        fields.push_back(std::move(requested_element));
+      }
+      mojo_provider->selector->fields = std::move(fields);
+    }
+  }
+  if (provider.hasProtocol()) {
+    mojo_provider->protocol = provider.protocol();
+  }
+  if (provider.hasRequest()) {
+    mojo_provider->request = provider.request();
+  }
+  if (provider.hasPublicKey()) {
+    mojo_provider->publicKey = provider.publicKey();
+  }
+  return mojo_provider;
 }
 
 // static

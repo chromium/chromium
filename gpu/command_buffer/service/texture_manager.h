@@ -18,7 +18,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -52,8 +51,7 @@ class TextureRef;
 // all references have been released.
 class GPU_GLES2_EXPORT TexturePassthrough final
     : public TextureBase,
-      public base::RefCounted<TexturePassthrough>,
-      public base::SupportsWeakPtr<TexturePassthrough> {
+      public base::RefCounted<TexturePassthrough> {
  public:
   TexturePassthrough(GLuint service_id, GLenum target);
 

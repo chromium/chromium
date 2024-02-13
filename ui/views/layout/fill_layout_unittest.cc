@@ -12,6 +12,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -200,7 +201,7 @@ TEST_F(FillLayoutTest, LayoutIgnoreView) {
   View* const child_2 = AddChildView(5, 5);
   View* const child_3 = AddChildView(25, 10);
 
-  layout()->SetChildViewIgnoredByLayout(child_3, true);
+  child_3->SetProperty(kViewIgnoredByLayoutKey, true);
   EXPECT_EQ(gfx::Size(10, 50), GetPreferredSize());
   test::RunScheduledLayout(host_.get());
 
@@ -254,7 +255,7 @@ TEST_F(FillLayoutTest, MinimumSizeExcludesView) {
   child_1->set_minimum_size({1, 3});
   child_2->set_minimum_size({3, 1});
   child_3->set_minimum_size({2, 2});
-  layout()->SetChildViewIgnoredByLayout(child_2, true);
+  child_2->SetProperty(kViewIgnoredByLayoutKey, true);
   EXPECT_EQ(gfx::Size(2, 3), host_->GetMinimumSize());
 }
 

@@ -35,9 +35,13 @@ class ChromeWebContentsMenuHelperUnitTest : public BrowserWithTestWindowTest {
     RegisterUserProfilePrefs(prefs->registry());
     pref_service_ = prefs.get();
 
-    return profile_manager()->CreateTestingProfile(
+    auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(prefs), std::u16string(), 0,
         TestingProfile::TestingFactories());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    OnUserProfileCreated(profile_name, profile);
+#endif
+    return profile;
   }
 
   sync_preferences::PrefServiceSyncable* pref_service() {

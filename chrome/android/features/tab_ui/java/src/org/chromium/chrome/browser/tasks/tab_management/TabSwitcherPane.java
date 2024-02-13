@@ -140,15 +140,32 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     @Override
     public boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode) {
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
-        if (coordinator == null) return false;
+        if (coordinator == null) {
+            return false;
+        }
+
+        @Nullable TabModelFilter filter = mTabModelFilterSupplier.get();
+        if (filter == null || !filter.isTabModelRestored()) {
+            // The tab list is trying to show without the filter being ready. This happens when
+            // first trying to show a the pane. If this happens an attempt to show will be made
+            // when the filter's restoreCompleted() method is invoked in TabSwitcherPaneMediator.
+            // Start a timer to measure how long it takes for tab state to be initialized and for
+            // this UI to show i.e. isTabModelRestored becomes true. This timer will emit a
+            // histogram when we successfully show. This timer is cancelled if: 1) the pane becomes
+            // invisible in TabSwitcherPaneBase#notifyLoadHint, or 2) the filter becomes ready and
+            // nothing gets shown.
+            startWaitForTabStateInitializedTimer();
+            return false;
+        }
 
         boolean isNotVisibleOrSelected =
-                !getIsVisibleSupplier().get()
-                        || !mTabModelFilterSupplier.get().isCurrentlySelectedFilter();
+                !getIsVisibleSupplier().get() || !filter.isCurrentlySelectedFilter();
 
         if (isNotVisibleOrSelected) {
+            cancelWaitForTabStateInitializedTimer();
             coordinator.resetWithTabList(null);
         } else {
+            finishWaitForTabStateInitializedTimer();
             coordinator.resetWithTabList(tabList);
         }
         return true;

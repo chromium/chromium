@@ -46,6 +46,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
@@ -466,8 +467,8 @@ message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
           .release(),
       this, a11_feedback_on_init);
 
-  if (message_center_utils::IsAshNotificationView(popup_view->message_view()) ||
-      features::IsRenderArcNotificationsByChromeEnabled()) {
+  // Custom notifications handle their own styling and background.
+  if (notification.type() != message_center::NOTIFICATION_TYPE_CUSTOM) {
     notification_style_utils::StyleNotificationPopup(
         popup_view->message_view());
   }
@@ -484,7 +485,7 @@ void AshMessagePopupCollection::ClosePopupItem(const PopupItem& item) {
 
 bool AshMessagePopupCollection::IsWidgetAPopupNotification(
     views::Widget* widget) {
-  for (auto* popup_widget : tracked_widgets_) {
+  for (views::Widget* popup_widget : tracked_widgets_) {
     if (widget == popup_widget) {
       return true;
     }

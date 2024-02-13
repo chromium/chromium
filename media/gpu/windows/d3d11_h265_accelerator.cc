@@ -552,6 +552,9 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     }
   }
 
+  CHECK_GT(current_frame_size_, 0u);
+  video_decoder_wrapper_->GetBitstreamBuffer(current_frame_size_);
+
   constexpr uint8_t kStartCode[] = {0, 0, 1};
   bool ok =
       video_decoder_wrapper_
@@ -570,9 +573,17 @@ H265DecoderStatus D3D11H265Accelerator::SubmitDecode(
 }
 
 void D3D11H265Accelerator::Reset() {
+  current_frame_size_ = 0;
   if (video_decoder_wrapper_) {
     video_decoder_wrapper_->Reset();
   }
+}
+
+H265Decoder::H265Accelerator::Status D3D11H265Accelerator::SetStream(
+    base::span<const uint8_t> stream,
+    const DecryptConfig* decrypt_config) {
+  current_frame_size_ = stream.size();
+  return H265Accelerator::SetStream(stream, decrypt_config);
 }
 
 bool D3D11H265Accelerator::OutputPicture(scoped_refptr<H265Picture> pic) {

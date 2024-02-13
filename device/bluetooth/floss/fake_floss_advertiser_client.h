@@ -27,9 +27,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdvertiserClient
   void StartAdvertisingSet(
       const AdvertisingSetParameters& params,
       const AdvertiseData& adv_data,
-      const absl::optional<AdvertiseData> scan_rsp,
-      const absl::optional<PeriodicAdvertisingParameters> periodic_params,
-      const absl::optional<AdvertiseData> periodic_data,
+      const std::optional<AdvertiseData> scan_rsp,
+      const std::optional<PeriodicAdvertisingParameters> periodic_params,
+      const std::optional<AdvertiseData> periodic_data,
       const int32_t duration,
       const int32_t max_ext_adv_events,
       StartSuccessCallback success_callback,

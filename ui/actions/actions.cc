@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 
 #include "base/no_destructor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace actions {
@@ -23,8 +23,8 @@ class GlobalActionManager : public ActionManager {
   ~GlobalActionManager() override = default;
 };
 
-absl::optional<GlobalActionManager>& GetGlobalManager() {
-  static base::NoDestructor<absl::optional<GlobalActionManager>> manager;
+std::optional<GlobalActionManager>& GetGlobalManager() {
+  static base::NoDestructor<std::optional<GlobalActionManager>> manager;
   return *manager;
 }
 
@@ -185,13 +185,13 @@ ActionItem::ActionItemBuilder::SetAccessibleName(
 }
 
 ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetActionId(
-    absl::optional<ActionId> action_id) & {
+    std::optional<ActionId> action_id) & {
   action_item_->SetActionId(action_id);
   return *this;
 }
 
 ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetActionId(
-    absl::optional<ActionId> action_id) && {
+    std::optional<ActionId> action_id) && {
   return std::move(this->SetActionId(action_id));
 }
 
@@ -229,13 +229,13 @@ ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetEnabled(
 }
 
 ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetGroupId(
-    absl::optional<int> group_id) & {
+    std::optional<int> group_id) & {
   action_item_->SetGroupId(group_id);
   return *this;
 }
 
 ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetGroupId(
-    absl::optional<int> group_id) && {
+    std::optional<int> group_id) && {
   return std::move(this->SetGroupId(group_id));
 }
 
@@ -331,11 +331,11 @@ void ActionItem::SetAccessibleName(const std::u16string accessible_name) {
   ActionItemChanged();
 }
 
-absl::optional<ActionId> ActionItem::GetActionId() const {
+std::optional<ActionId> ActionItem::GetActionId() const {
   return action_id_;
 }
 
-void ActionItem::SetActionId(absl::optional<ActionId> action_id) {
+void ActionItem::SetActionId(std::optional<ActionId> action_id) {
   if (action_id_ == action_id) {
     return;
   }
@@ -391,11 +391,11 @@ void ActionItem::SetEnabled(bool enabled) {
   ActionItemChanged();
 }
 
-absl::optional<int> ActionItem::GetGroupId() const {
+std::optional<int> ActionItem::GetGroupId() const {
   return group_id_;
 }
 
-void ActionItem::SetGroupId(absl::optional<int> group_id) {
+void ActionItem::SetGroupId(std::optional<int> group_id) {
   if (group_id_ == group_id) {
     return;
   }
@@ -483,7 +483,7 @@ int ActionItem::GetInvokeCount() const {
   return invoke_count_;
 }
 
-absl::optional<base::TimeTicks> ActionItem::GetLastInvokeTime() const {
+std::optional<base::TimeTicks> ActionItem::GetLastInvokeTime() const {
   return last_invoke_time_;
 }
 
@@ -532,16 +532,16 @@ void ActionItem::EndUpdate() {
 
 BEGIN_METADATA(ActionItem)
 ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
-ADD_PROPERTY_METADATA(absl::optional<ActionId>, ActionId)
+ADD_PROPERTY_METADATA(std::optional<ActionId>, ActionId)
 ADD_PROPERTY_METADATA(ui::Accelerator, Accelerator)
 ADD_PROPERTY_METADATA(bool, Checked)
 ADD_PROPERTY_METADATA(bool, Enabled)
-ADD_PROPERTY_METADATA(absl::optional<int>, GroupId)
+ADD_PROPERTY_METADATA(std::optional<int>, GroupId)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_READONLY_PROPERTY_METADATA(int, InvokeCount)
-ADD_READONLY_PROPERTY_METADATA(absl::optional<base::TimeTicks>, LastInvokeTime)
+ADD_READONLY_PROPERTY_METADATA(std::optional<base::TimeTicks>, LastInvokeTime)
 END_METADATA
 
 ActionManager::ActionManager() {
@@ -552,7 +552,7 @@ ActionManager::~ActionManager() = default;
 
 // static
 ActionManager& ActionManager::Get() {
-  absl::optional<GlobalActionManager>& manager = GetGlobalManager();
+  std::optional<GlobalActionManager>& manager = GetGlobalManager();
   if (!manager.has_value()) {
     manager.emplace();
   }
@@ -576,17 +576,17 @@ void ActionIdMap::ResetMapsForTesting() {
 }
 
 // static
-absl::optional<ActionIdMap::ActionIdToStringMap>&
+std::optional<ActionIdMap::ActionIdToStringMap>&
 ActionIdMap::GetGlobalActionIdToStringMap() {
-  static base::NoDestructor<absl::optional<ActionIdMap::ActionIdToStringMap>>
+  static base::NoDestructor<std::optional<ActionIdMap::ActionIdToStringMap>>
       map;
   return *map;
 }
 
 // static
-absl::optional<ActionIdMap::StringToActionIdMap>&
+std::optional<ActionIdMap::StringToActionIdMap>&
 ActionIdMap::GetGlobalStringToActionIdMap() {
-  static base::NoDestructor<absl::optional<ActionIdMap::StringToActionIdMap>>
+  static base::NoDestructor<std::optional<ActionIdMap::StringToActionIdMap>>
       map;
   return *map;
 }
@@ -596,7 +596,7 @@ ActionIdMap::GetGlobalStringToActionIdMap() {
 
 // static
 ActionIdMap::ActionIdToStringMap& ActionIdMap::GetActionIdToStringMap() {
-  absl::optional<ActionIdMap::ActionIdToStringMap>& map =
+  std::optional<ActionIdMap::ActionIdToStringMap>& map =
       GetGlobalActionIdToStringMap();
   if (!map.has_value()) {
     map.emplace(std::vector<std::pair<ActionId, std::string>>{ACTION_IDS});
@@ -612,7 +612,7 @@ ActionIdMap::ActionIdToStringMap& ActionIdMap::GetActionIdToStringMap() {
 
 // static
 ActionIdMap::StringToActionIdMap& ActionIdMap::GetStringToActionIdMap() {
-  absl::optional<ActionIdMap::StringToActionIdMap>& map =
+  std::optional<ActionIdMap::StringToActionIdMap>& map =
       GetGlobalStringToActionIdMap();
   if (!map.has_value()) {
     map.emplace(std::vector<std::pair<std::string, ActionId>>{ACTION_IDS});
@@ -624,29 +624,29 @@ ActionIdMap::StringToActionIdMap& ActionIdMap::GetStringToActionIdMap() {
 #undef MAP_STRING_TO_ACTION_IDS
 
 // static
-absl::optional<std::string> ActionIdMap::ActionIdToString(
+std::optional<std::string> ActionIdMap::ActionIdToString(
     const ActionId action_id) {
   auto iter = GetActionIdToStringMap().find(action_id);
   if (iter != GetActionIdToStringMap().end()) {
     return iter->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-absl::optional<ActionId> ActionIdMap::StringToActionId(
+std::optional<ActionId> ActionIdMap::StringToActionId(
     const std::string action_id_string) {
   auto iter = GetStringToActionIdMap().find(action_id_string);
   if (iter != GetStringToActionIdMap().end()) {
     return iter->second;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
-std::vector<absl::optional<std::string>> ActionIdMap::ActionIdsToStrings(
+std::vector<std::optional<std::string>> ActionIdMap::ActionIdsToStrings(
     std::vector<ActionId> action_ids) {
-  std::vector<absl::optional<std::string>> action_id_strings;
+  std::vector<std::optional<std::string>> action_id_strings;
   action_id_strings.reserve(action_ids.size());
 
   for (ActionId action_id : action_ids) {
@@ -656,9 +656,9 @@ std::vector<absl::optional<std::string>> ActionIdMap::ActionIdsToStrings(
 }
 
 // static
-std::vector<absl::optional<ActionId>> ActionIdMap::StringsToActionIds(
+std::vector<std::optional<ActionId>> ActionIdMap::StringsToActionIds(
     std::vector<std::string> action_id_strings) {
-  std::vector<absl::optional<ActionId>> action_ids;
+  std::vector<std::optional<ActionId>> action_ids;
   action_ids.reserve(action_id_strings.size());
 
   for (std::string action_id_string : action_id_strings) {

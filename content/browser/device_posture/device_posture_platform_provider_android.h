@@ -26,9 +26,18 @@ class DevicePosturePlatformProviderAndroid
   void StartListening() override;
   void StopListening() override;
 
-  void SetDeviceFolded(JNIEnv* env, bool device_posture);
+  void UpdateDisplayFeature(JNIEnv* env,
+                            bool device_posture,
+                            int display_feature_bounds_left,
+                            int display_feature_bounds_top,
+                            int display_feature_bounds_right,
+                            int display_feature_bounds_bottom);
 
  private:
+  void NotifyDisplayFeatureChangeIfNeeded(
+      const gfx::Rect& display_feature_bounds);
+  void NotifyDevicePostureChangeIfNeeded(bool is_folded);
+
   base::android::ScopedJavaGlobalRef<jobject> java_device_posture_provider_;
 };
 

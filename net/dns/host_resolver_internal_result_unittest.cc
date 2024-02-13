@@ -239,7 +239,7 @@ TEST(HostResolverInternalResultTest, MetadataResult) {
 
   EXPECT_THAT(result->AsMetadata(), Ref(*result));
 
-  EXPECT_THAT(result->metadatas(), ElementsAre(std::make_pair(4, kMetadata)));
+  EXPECT_THAT(result->metadatas(), ElementsAre(std::pair(4, kMetadata)));
 }
 
 TEST(HostResolverInternalResultTest, CloneMetadataResult) {

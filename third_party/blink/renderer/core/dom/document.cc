@@ -981,14 +981,9 @@ Range* Document::CreateRangeAdjustedToTreeScope(const TreeScope& tree_scope,
                                      adjusted_position, adjusted_position);
 }
 
-CaretPosition* Document::CreateCaretPositionAdjustedToTreeScope(
-    const TreeScope& tree_scope,
-    const Position& position) {
-  const Position& adjusted_position =
-      PositionAdjustedToTreeScope(tree_scope, position);
+CaretPosition* Document::CreateCaretPosition(const Position& position) {
   return MakeGarbageCollected<CaretPosition>(
-      adjusted_position.ComputeContainerNode(),
-      adjusted_position.ComputeOffsetInContainerNode());
+      position.AnchorNode(), position.ComputeOffsetInContainerNode());
 }
 
 const Position Document::PositionAdjustedToTreeScope(
@@ -1649,11 +1644,26 @@ void Document::SetContentFromDOMParser(const String& content) {
   if (RuntimeEnabledFeatures::DOMParserUsesHTMLFastPathParserEnabled() &&
       contentType() == "text/html" && IsA<HTMLDocument>(this)) {
     auto* body = MakeGarbageCollected<HTMLBodyElement>(*this);
-    const bool include_shadow_roots =
-        declarative_shadow_root_allow_state_ == AllowState::kAllow;
-    if (TryParsingHTMLFragment(content, *this, *body, *body,
-                               kAllowScriptingContent, include_shadow_roots,
-                               nullptr)) {
+    HTMLFragmentParsingBehaviorSet parser_behavior(
+        {HTMLFragmentParsingBehavior::kStripInitialWhitespaceForBody});
+    if (declarative_shadow_root_allow_state_ == AllowState::kAllow) {
+      parser_behavior.Put(HTMLFragmentParsingBehavior::kIncludeShadowRoots);
+    }
+    const bool success = TryParsingHTMLFragment(content, *this, *body, *body,
+                                                kAllowScriptingContent,
+                                                parser_behavior, nullptr);
+    if (success) {
+      // When DCHECK is enabled, use SetContent() and verify fast-path
+      // content matches. This effectively means the results of the fast-path
+      // parser aren't used with DCHECK enabled, but it provides a way to
+      // catch problems.
+#if DCHECK_IS_ON()
+      SetContent(content);
+      DCHECK(this->body());
+      DCHECK_EQ(CreateMarkup(body), CreateMarkup(this->body()))
+          << " supplied value " << content;
+      DCHECK(body->isEqualNode(this->body()));
+#else
       auto* html = MakeGarbageCollected<HTMLHtmlElement>(*this);
       auto* head = MakeGarbageCollected<HTMLHeadElement>(*this);
       html->AppendChild(head);
@@ -1661,6 +1671,7 @@ void Document::SetContentFromDOMParser(const String& content) {
       // Append `body` last so that the newly created children of `body` only
       // get one InsertedInto().
       html->AppendChild(body);
+#endif
       return;
     }
   }
@@ -1728,8 +1739,8 @@ CaretPosition* Document::caretPositionFromPoint(float x, float y) {
     return nullptr;
   }
 
-  return CreateCaretPositionAdjustedToTreeScope(
-      *this, position_with_affinity.GetPosition().ParentAnchoredEquivalent());
+  return CreateCaretPosition(
+      position_with_affinity.GetPosition().ParentAnchoredEquivalent());
 }
 
 Element* Document::scrollingElement() {
@@ -1942,14 +1953,11 @@ uint32_t Document::softNavigations() const {
   if (!window) {
     return 0;
   }
-  LocalFrame* frame = window->GetFrame();
-  if (!frame || !frame->IsMainFrame()) {
-    return 0;
+  if (SoftNavigationHeuristics* heuristics =
+          SoftNavigationHeuristics::From(*window)) {
+    return heuristics->SoftNavigationCount();
   }
-  SoftNavigationHeuristics* heuristics =
-      SoftNavigationHeuristics::From(*window);
-  DCHECK(heuristics);
-  return heuristics->SoftNavigationCount();
+  return 0;
 }
 
 bool Document::hidden() const {
@@ -3174,6 +3182,13 @@ void Document::Shutdown() {
   mime_handler_view_before_unload_event_listener_ = nullptr;
 
   resource_coordinator_.reset();
+
+  // Because the document view transition supplement can get destroyed before
+  // the execution context notification, we should clean up the transition
+  // object here.
+  if (auto* transition = ViewTransitionUtils::GetTransition(*this)) {
+    transition->SkipTransition();
+  }
 
   // This is required, as our LocalFrame might delete itself as soon as it
   // detaches us. However, this violates Node::detachLayoutTree() semantics, as
@@ -5353,7 +5368,7 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   // Remove focus from the existing focus node (if any)
   if (old_focused_element) {
     old_focused_element->SetFocused(false, params.type);
-    old_focused_element->SetHasFocusWithinUpToAncestor(false, ancestor);
+    old_focused_element->SetHasFocusWithinUpToAncestor(false, ancestor, true);
 
     DisplayLockUtilities::ElementLostFocus(old_focused_element);
 
@@ -5429,7 +5444,7 @@ bool Document::SetFocusedElement(Element* new_focused_element,
     if (focused_element_ == nullptr) {
       return false;
     }
-    focused_element_->SetHasFocusWithinUpToAncestor(true, ancestor);
+    focused_element_->SetHasFocusWithinUpToAncestor(true, ancestor, true);
     DisplayLockUtilities::ElementGainedFocus(focused_element_.Get());
 
     // Element::setFocused for frames can dispatch events.

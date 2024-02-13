@@ -6,12 +6,12 @@
 
 #include <cstdint>
 #include <iomanip>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -37,7 +37,7 @@ constexpr int kResponseErrorNotFirstTimeChromebookUser = 6;
 
 // The response starts with a prefix ")]}'". This needs to be removed before
 // further parsing.
-constexpr base::StringPiece kJsonXssPreventionPrefix = ")]}'";
+constexpr std::string_view kJsonXssPreventionPrefix = ")]}'";
 
 constexpr base::TimeDelta kDownloadTimeOut = base::Minutes(1);
 
@@ -168,7 +168,7 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   // If the recommended app list were downloaded successfully, show them to
   // the user.
   //
-  base::StringPiece response_body_json(*response_body);
+  std::string_view response_body_json(*response_body);
   if (base::StartsWith(response_body_json, kJsonXssPreventionPrefix))
     response_body_json.remove_prefix(kJsonXssPreventionPrefix.length());
   std::optional<base::Value> output = ParseResponse(response_body_json);
@@ -182,7 +182,7 @@ void RecommendAppsFetcherImpl::OnDownloaded(
 }
 
 std::optional<base::Value> RecommendAppsFetcherImpl::ParseResponse(
-    base::StringPiece response) {
+    std::string_view response) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(response);
 
   if (!parsed_json.has_value()) {

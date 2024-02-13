@@ -15,14 +15,8 @@
     {
       "name": "LayoutNGBlockFlow DIV id='outer'",
       "position": [1, 1],
-      "bounds": [400, 500],
-      "drawsContent": false,
+      "bounds": [400, 602],
       "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV id='inner'",
-      "bounds": [102, 102],
-      "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow DIV id='inner'",

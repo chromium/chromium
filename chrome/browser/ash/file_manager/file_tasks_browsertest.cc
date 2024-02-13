@@ -1696,8 +1696,7 @@ class OneDriveTest : public TestAccountBrowserTest,
 
   base::FilePath AndroidOneDriveMountPathForEmail(std::string user_email) {
     return arc::GetDocumentsProviderMountPath(
-        "com.microsoft.skydrive.content.StorageAccessProvider",
-        "pivots%2F" + user_email);
+        "com.microsoft.skydrive.content.StorageAccessProvider", user_email);
   }
 
   void SetNetworkConnected(const bool connected) {

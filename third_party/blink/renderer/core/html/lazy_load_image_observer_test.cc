@@ -381,8 +381,7 @@ class LazyLoadImagesTest : public SimTest {
 
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetLazyLoadingImageMarginPx4G(kLoadingDistanceThreshold);
-    settings.SetLazyFrameLoadingDistanceThresholdPx4G(
-        kLoadingDistanceThreshold);
+    settings.SetLazyLoadingFrameMarginPx4G(kLoadingDistanceThreshold);
   }
 
   String MakeMainResourceString(const char* image_attributes) {
@@ -677,11 +676,8 @@ TEST_F(LazyLoadImagesTest, ImageInsideLazyLoadedFrame) {
   SimSubresourceRequest lazy_resource("https://example.com/lazy.png",
                                       "image/png");
 
-  // Scroll down so that all the images in the iframe are near the viewport.
-  // TODO(crbug.com/1503290): Change this back to 250 once scroll margin is
-  // fixed to walk through same-origin iframes.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 250), mojom::blink::ScrollType::kProgrammatic);
 
   Compositor().BeginFrame();
   test::RunPendingTasks();

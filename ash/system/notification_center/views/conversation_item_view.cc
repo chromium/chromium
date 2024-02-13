@@ -69,7 +69,7 @@ ConversationItemView::ConversationItemView(
 
 ConversationItemView::~ConversationItemView() = default;
 
-BEGIN_METADATA(ConversationItemView, views::FlexLayoutView)
+BEGIN_METADATA(ConversationItemView)
 END_METADATA
 
 }  // namespace ash

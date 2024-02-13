@@ -8,7 +8,6 @@
 #include <vulkan/vulkan_core.h>
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "gpu/vulkan/vulkan_command_buffer.h"
@@ -37,10 +36,9 @@ class MEDIA_GPU_EXPORT VulkanImageProcessor {
   // Note: |crop_rect| is actually the crop *in addition* to the |visible_rect|
   // cropping. It is equivalent to |uv_rect| in an OverlayCandidate.
   void Process(gpu::VulkanImage& in_image,
-               const gfx::Size& input_coded_size,
                const gfx::Size& input_visible_size,
                gpu::VulkanImage& out_image,
-               const gfx::Rect& display_rect,
+               const gfx::RectF& display_rect,
                const gfx::RectF& crop_rect,
                gfx::OverlayTransform transform,
                std::vector<VkSemaphore>& begin_semaphores,

@@ -5,39 +5,36 @@
 // TTS api test for Chrome on ChromeOS.
 // browser_tests.exe --gtest_filter="TtsApiTest.*"
 
-chrome.test.runTests([
-  function testEnqueue() {
-    var callbacks = 0;
-    chrome.tts.speak(
-        'text 1',
-        {
-         'enqueue': true,
-         'onEvent': function(event) {
-           chrome.test.assertEq('end', event.type);
-           callbacks++;
-         }
-        },
-        function() {
-          chrome.test.assertNoLastError();
+chrome.test.runTests([function testEnqueue() {
+  let callbacks = 0;
+  chrome.tts.speak(
+      'text 1', {
+        'enqueue': true,
+        'onEvent': (event) => {
+          chrome.test.assertEq('end', event.type);
+          chrome.test.assertEq(2, callbacks);
           callbacks++;
-        });
-    chrome.tts.speak(
-        'text 2',
-        {
-         'enqueue': true,
-         'onEvent': function(event) {
-           chrome.test.assertEq('end', event.type);
-           callbacks++;
-           if (callbacks == 4) {
-             chrome.test.succeed();
-           } else {
-             chrome.test.fail();
-           }
-         }
-        },
-        function() {
-          chrome.test.assertNoLastError();
-          callbacks++;
-        });
-  }
-]);
+        }
+      },
+      () => {
+        // This happens immediately.
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq(0, callbacks);
+        callbacks++;
+      });
+  chrome.tts.speak(
+      'text 2', {
+        'enqueue': true,
+        'onEvent': (event) => {
+          chrome.test.assertEq('end', event.type);
+          chrome.test.assertEq(3, callbacks);
+          chrome.test.succeed();
+        }
+      },
+      () => {
+        // This happens immediately.
+        chrome.test.assertNoLastError();
+        chrome.test.assertEq(1, callbacks);
+        callbacks++;
+      });
+}]);

@@ -834,7 +834,7 @@ void DownloadItemView::UpdateLabels() {
 void DownloadItemView::UpdateButtons() {
   bool prompt_to_scan = false, prompt_to_discard = false;
   bool prompt_to_review = enterprise_connectors::ShouldPromptReviewForDownload(
-      model_->profile(), model_->GetDangerType());
+      model_->profile(), model_->GetDownloadItem());
   if (is_download_warning(mode_)) {
     const auto danger_type = model_->GetDangerType();
     prompt_to_scan =
@@ -1213,7 +1213,6 @@ void DownloadItemView::ReviewButtonPressed() {
       ElidedFilename(*file_name_label_), model_->profile(),
       model_->GetDownloadItem(),
       shelf_->browser()->tab_strip_model()->GetActiveWebContents(),
-      model_->GetDangerType(),
       base::BindOnce(&DownloadItemView::ExecuteCommand, base::Unretained(this),
                      DownloadCommands::KEEP),
       base::BindOnce(&DownloadItemView::ExecuteCommand, base::Unretained(this),

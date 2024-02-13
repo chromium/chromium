@@ -24,6 +24,7 @@
 #include "components/exo/data_offer_delegate.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
+#include "components/exo/test/test_data_offer_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -38,49 +39,14 @@
 namespace exo {
 namespace {
 
+using test::TestDataOfferDelegate;
+
 class DataOfferTest : public test::ExoTestBase {
  public:
   void TearDown() override {
     ui::Clipboard::DestroyClipboardForCurrentThread();
     test::ExoTestBase::TearDown();
   }
-};
-
-class TestDataOfferDelegate : public DataOfferDelegate {
- public:
-  TestDataOfferDelegate() {}
-
-  TestDataOfferDelegate(const TestDataOfferDelegate&) = delete;
-  TestDataOfferDelegate& operator=(const TestDataOfferDelegate&) = delete;
-
-  // Called at the top of the data device's destructor, to give observers a
-  // chance to remove themselves.
-  void OnDataOfferDestroying(DataOffer* offer) override {}
-
-  // Called when |mime_type| is offered by the client.
-  void OnOffer(const std::string& mime_type) override {
-    mime_types_.insert(mime_type);
-  }
-
-  // Called when possible |source_actions| is offered by the client.
-  void OnSourceActions(
-      const base::flat_set<DndAction>& source_actions) override {
-    source_actions_ = source_actions;
-  }
-
-  // Called when current |action| is offered by the client.
-  void OnAction(DndAction dnd_action) override { dnd_action_ = dnd_action; }
-
-  const base::flat_set<std::string>& mime_types() const { return mime_types_; }
-  const base::flat_set<DndAction>& source_actions() const {
-    return source_actions_;
-  }
-  DndAction dnd_action() const { return dnd_action_; }
-
- private:
-  base::flat_set<std::string> mime_types_;
-  base::flat_set<DndAction> source_actions_;
-  DndAction dnd_action_ = DndAction::kNone;
 };
 
 class TestDataTransferPolicyController : ui::DataTransferPolicyController {

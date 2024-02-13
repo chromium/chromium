@@ -13,7 +13,9 @@
 #include <lib/fpromise/result.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
+
 #include <memory>
+#include <string_view>
 #include <tuple>
 
 #include "base/files/file_util.h"
@@ -246,7 +248,7 @@ class RebootFuchsiaTest : public ::testing::Test {
   base::FilePath full_path_;
 
  protected:
-  base::FilePath GenerateFlagFilePath(const base::StringPiece& name) {
+  base::FilePath GenerateFlagFilePath(std::string_view name) {
     return full_path_.Append(name);
   }
 

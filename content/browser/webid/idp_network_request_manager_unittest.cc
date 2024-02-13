@@ -713,7 +713,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingInvalidColor) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
-       ParseConfigIgnoreInsufficientContrastTextColor) {
+       ParseConfigWithInsufficientContrastTextColor) {
   const char test_json[] = R"({
   "branding" : {
     "background_color": "#000000",
@@ -729,11 +729,11 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_EQ(SkColorSetRGB(0, 0, 0), idp_metadata.brand_background_color);
-  EXPECT_EQ(std::nullopt, idp_metadata.brand_text_color);
+  EXPECT_EQ(SkColorSetRGB(1, 1, 1), idp_metadata.brand_text_color);
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
-       ParseConfigBrandingIgnoreCustomTextColorNoCustomBackgroundColor) {
+       ParseConfigBrandingWithTextColorAndNoBackgroundColor) {
   const char test_json[] = R"({
   "branding" : {
     "color": "blue"
@@ -748,7 +748,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_EQ(std::nullopt, idp_metadata.brand_background_color);
-  EXPECT_EQ(std::nullopt, idp_metadata.brand_text_color);
+  EXPECT_EQ(SkColorSetRGB(0, 0, 255), idp_metadata.brand_text_color);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingSelectBestSize) {

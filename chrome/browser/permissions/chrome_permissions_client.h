@@ -46,7 +46,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
       std::vector<std::pair<url::Origin, bool>>* urls) override;
   bool IsCookieDeletionDisabled(content::BrowserContext* browser_context,
                                 const GURL& origin) override;
-  void GetUkmSourceId(content::BrowserContext* browser_context,
+  void GetUkmSourceId(ContentSettingsType permission_type,
+                      content::BrowserContext* browser_context,
                       content::WebContents* web_contents,
                       const GURL& requesting_origin,
                       GetUkmSourceIdCallback callback) override;

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_all_password_coordinator.h"
@@ -70,21 +71,21 @@ class ManualFillAllPasswordCoordinatorTest : public PlatformTest {
     // Add fake web state.
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     browser_->GetWebStateList()->InsertWebState(
-        WebStateList::kInvalidIndex, std::move(fake_web_state),
-        WebStateList::INSERT_ACTIVATE, WebStateOpener());
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
-    // ApplicationSettingsCommands, it must be mocked as well.
+    // SettingsCommands, it must be mocked as well.
     mocked_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
     id mocked_application_settings_command_handler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+        OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_settings_command_handler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+                     forProtocol:@protocol(SettingsCommands)];
 
     mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
     // Delay auth result so auth doesn't pass right after starting coordinator.

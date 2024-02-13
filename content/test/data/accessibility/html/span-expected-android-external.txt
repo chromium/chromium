@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
 ++TextView text:"This paragraph has text in spans." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="paragraph"]
 ++++TextView text:"E1. Eat" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="staticText"]

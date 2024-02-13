@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -22,6 +21,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes_side_panel_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
@@ -111,7 +111,7 @@ void UserNoteUICoordinator::CreateAndRegisterEntry(
 }
 
 std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesWebUIView() {
-  auto wrapper = std::make_unique<BubbleContentsWrapperT<UserNotesSidePanelUI>>(
+  auto wrapper = std::make_unique<WebUIContentsWrapperT<UserNotesSidePanelUI>>(
       GURL(chrome::kChromeUIUserNotesSidePanelURL), browser_->profile(),
       IDS_USER_NOTE_TITLE,
       /*webui_resizes_host=*/false,

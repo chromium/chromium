@@ -393,13 +393,12 @@ bool WaylandToplevelWindow::CanSetDecorationInsets() const {
 }
 
 void WaylandToplevelWindow::SetOpaqueRegion(
-    absl::optional<std::vector<gfx::Rect>> region_px) {
+    std::optional<std::vector<gfx::Rect>> region_px) {
   opaque_region_px_ = region_px;
   root_surface()->set_opaque_region(region_px);
 }
 
-void WaylandToplevelWindow::SetInputRegion(
-    absl::optional<gfx::Rect> region_px) {
+void WaylandToplevelWindow::SetInputRegion(std::optional<gfx::Rect> region_px) {
   input_region_px_ = region_px;
   root_surface()->set_input_region(region_px);
 }
@@ -883,6 +882,10 @@ void WaylandToplevelWindow::SetShadowCornersRadii(
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+void WaylandToplevelWindow::RoundTripQueue() {
+  connection()->RoundTripQueue();
+}
+
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {
@@ -1297,8 +1300,8 @@ void WaylandToplevelWindow::UpdateWindowMask() {
   root_surface()->set_opaque_region(
       opaque_region_px_.has_value()
           ? opaque_region_px_
-          : (IsOpaqueWindow() ? absl::optional<std::vector<gfx::Rect>>(region)
-                              : absl::nullopt));
+          : (IsOpaqueWindow() ? std::optional<std::vector<gfx::Rect>>(region)
+                              : std::nullopt));
   root_surface()->set_input_region(input_region_px_ ? input_region_px_
                                                     : *region.begin());
 }

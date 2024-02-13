@@ -38,9 +38,9 @@ class ASH_EXPORT OverviewButtonTray : public TrayBackgroundView,
                                       public OverviewObserver,
                                       public TabletModeObserver,
                                       public ShelfConfig::Observer {
- public:
-  METADATA_HEADER(OverviewButtonTray);
+  METADATA_HEADER(OverviewButtonTray, TrayBackgroundView)
 
+ public:
   // Second taps within this time will be counted as double taps. Use this
   // instead of ui::Event's click_count and tap_count as those have a minimum
   // time bewtween events before the second tap counts as a double tap.

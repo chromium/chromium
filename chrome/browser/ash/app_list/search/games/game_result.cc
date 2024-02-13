@@ -6,12 +6,12 @@
 
 #include <cmath>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/apps/app_discovery_service/game_extras.h"
@@ -32,7 +32,7 @@ namespace {
 
 constexpr char16_t kA11yDelimiter[] = u", ";
 
-constexpr auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<base::StringPiece>(
+constexpr auto kAllowedLaunchAppIds = base::MakeFixedFlatSet<std::string_view>(
     {"egmafekfmcnknbdlbfbhafbllplmjlhn", "pnkcfpnngfokcnnijgkllghjlhkailce"});
 
 void LogIconLoadStatus(apps::DiscoveryError status) {

@@ -21,7 +21,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) LogoView : public views::View {
     kUndefined,
     kListening,
     kMic,
-    kMoleculeWavy,
     kUserSpeaks,
   };
 

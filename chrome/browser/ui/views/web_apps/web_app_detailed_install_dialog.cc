@@ -75,6 +75,7 @@
 // TODO(crbug/1125897): Enable gn check once it learns about conditional
 // includes.
 #include "components/metrics/structured/structured_events.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_client.h"  // nogncheck
 #endif
 
 namespace {
@@ -418,9 +419,9 @@ void ShowWebAppDetailedInstallDialog(
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
     webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
-    cros_events::AppDiscovery_Browser_AppInstallDialogShown()
-        .SetAppId(app_id)
-        .Record();
+    metrics::structured::StructuredMetricsClient::Record(std::move(
+        cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
+            app_id)));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }

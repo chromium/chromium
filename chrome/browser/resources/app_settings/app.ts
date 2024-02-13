@@ -19,9 +19,9 @@ import './supported_links_item.js';
 import './supported_links_overlapping_apps_dialog.js';
 import './supported_links_dialog.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "net/socket/connection_attempts.h"
 #include "net/ssl/ssl_config.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -291,7 +291,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     kQuicProtocolError = 18,
     kMaxValue = kQuicProtocolError,
   };
-  static absl::optional<RetryReason> GetRetryReasonForIOError(int error);
+  static std::optional<RetryReason> GetRetryReasonForIOError(int error);
 
   // Resets the connection and the request headers for resend.  Called when
   // ShouldResendRequest() is true.
@@ -505,7 +505,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Set to true when the server required HTTP/1.1 fallback.
   bool http_1_1_was_required_ = false;
 
-  absl::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
+  std::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
 };
 
 }  // namespace net

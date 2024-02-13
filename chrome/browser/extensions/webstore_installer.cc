@@ -55,6 +55,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -101,7 +102,7 @@ const base::FilePath::CharType kWebstoreDownloadFolder[] =
 base::FilePath* g_download_directory_for_tests = nullptr;
 
 base::FilePath GetDownloadFilePath(const base::FilePath& download_directory,
-                                   const std::string& id) {
+                                   const extensions::ExtensionId& id) {
   // Ensure the download directory exists. TODO(asargent) - make this use
   // common code from the downloads system.
   if (!base::DirectoryExists(download_directory) &&
@@ -232,7 +233,7 @@ WebstoreInstaller::Approval::CreateForSharedModule(Profile* profile) {
 std::unique_ptr<WebstoreInstaller::Approval>
 WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
     Profile* profile,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     base::Value::Dict parsed_manifest,
     bool strict_manifest_check) {
   std::unique_ptr<Approval> result(new Approval());
@@ -258,7 +259,7 @@ WebstoreInstaller::WebstoreInstaller(Profile* profile,
                                      SuccessCallback success_callback,
                                      FailureCallback failure_callback,
                                      content::WebContents* web_contents,
-                                     const std::string& id,
+                                     const extensions::ExtensionId& id,
                                      std::unique_ptr<Approval> approval,
                                      InstallSource source)
     : web_contents_(web_contents->GetWeakPtr()),
@@ -302,7 +303,7 @@ void WebstoreInstaller::Start() {
 
   total_modules_ = pending_modules_.size();
 
-  std::set<std::string> ids;
+  std::set<extensions::ExtensionId> ids;
   std::list<SharedModuleInfo::ImportInfo>::const_iterator i;
   for (i = pending_modules_.begin(); i != pending_modules_.end(); ++i) {
     ids.insert(i->extension_id);
@@ -398,7 +399,7 @@ WebstoreInstaller::~WebstoreInstaller() {
 }
 
 void WebstoreInstaller::OnDownloadStarted(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     DownloadItem* item,
     download::DownloadInterruptReason interrupt_reason) {
   if (!item || interrupt_reason != download::DOWNLOAD_INTERRUPT_REASON_NONE) {
@@ -517,9 +518,8 @@ void WebstoreInstaller::DownloadNextPendingModule() {
   }
 }
 
-void WebstoreInstaller::DownloadCrx(
-    const std::string& extension_id,
-    InstallSource source) {
+void WebstoreInstaller::DownloadCrx(const extensions::ExtensionId& extension_id,
+                                    InstallSource source) {
   download_url_ = GetWebstoreInstallURL(extension_id, source);
   MaybeAppendAuthUserParameter(approval_->authuser, &download_url_);
 
@@ -544,8 +544,9 @@ void WebstoreInstaller::DownloadCrx(
 // reports should narrow down exactly which pointer it is.  Collapsing all the
 // early-returns into a single branch makes it hard to see exactly which pointer
 // it is.
-void WebstoreInstaller::StartDownload(const std::string& extension_id,
-                                      const base::FilePath& file) {
+void WebstoreInstaller::StartDownload(
+    const extensions::ExtensionId& extension_id,
+    const base::FilePath& file) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (file.empty()) {

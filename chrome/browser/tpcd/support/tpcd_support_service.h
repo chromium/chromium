@@ -12,6 +12,8 @@ namespace content {
 class BrowserContext;
 }
 
+class HostContentSettingsMap;
+
 namespace tpcd::trial {
 
 // A profile-keyed service that maintains TPCD_TRIAL content settings based on
@@ -44,6 +46,9 @@ class TpcdTrialService
                                bool match_subdomains,
                                bool enabled);
   void ClearTpcdTrialSettings();
+
+  void SyncTpcdTrialSettingsToNetworkService(
+      HostContentSettingsMap* settings_map);
 
   // content::OriginTrialsControllerDelegate::Observer overrides:
   void OnStatusChanged(const url::Origin& origin,

@@ -24,6 +24,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -975,7 +976,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // A list of all StatementRefs we've given out. Each ref must register with
   // us when it's created or destroyed. This allows us to potentially close
   // any open statements when we encounter an error.
-  std::set<StatementRef*> open_statements_;
+  std::set<raw_ptr<StatementRef, SetExperimental>> open_statements_;
 
   // Number of currently-nested transactions.
   int transaction_nesting_ = 0;
@@ -1022,6 +1023,9 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Stores the dump provider object when db is open.
   std::unique_ptr<DatabaseMemoryDumpProvider> memory_dump_provider_;
+
+  // Vends WeakPtr<Database> for internal scoping helpers.
+  base::WeakPtrFactory<Database> weak_factory_{this};
 };
 
 }  // namespace sql

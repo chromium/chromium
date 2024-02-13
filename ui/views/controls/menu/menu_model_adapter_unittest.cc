@@ -134,8 +134,8 @@ class MenuModelBase : public ui::MenuModel {
   const Item& GetItemDefinition(size_t index) { return items_[index]; }
 
   // Access index argument to ActivatedAt().
-  absl::optional<size_t> last_activation() const { return last_activation_; }
-  void set_last_activation(absl::optional<size_t> last_activation) {
+  std::optional<size_t> last_activation() const { return last_activation_; }
+  void set_last_activation(std::optional<size_t> last_activation) {
     last_activation_ = last_activation;
   }
 
@@ -144,7 +144,7 @@ class MenuModelBase : public ui::MenuModel {
 
  private:
   int command_id_base_;
-  absl::optional<size_t> last_activation_;
+  std::optional<size_t> last_activation_;
 };
 
 class SubmenuModel : public MenuModelBase {
@@ -272,7 +272,7 @@ void CheckSubmenu(const RootModel& model,
     // Check activation.
     static_cast<views::MenuDelegate*>(delegate)->ExecuteCommand(id);
     EXPECT_EQ(i, submodel->last_activation());
-    submodel->set_last_activation(absl::nullopt);
+    submodel->set_last_activation(std::nullopt);
   }
 }
 
@@ -356,7 +356,7 @@ TEST_F(MenuModelAdapterTest, BasicTest) {
     // Check activation.
     static_cast<views::MenuDelegate*>(&delegate)->ExecuteCommand(id);
     EXPECT_EQ(i, model.last_activation());
-    model.set_last_activation(absl::nullopt);
+    model.set_last_activation(std::nullopt);
   }
 
   // Check the submenu.

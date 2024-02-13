@@ -92,7 +92,7 @@ class ClipboardMacTest : public PlatformTest,
     clipboard_mac->WriteBitmapInternal(bitmap, pasteboard);
   }
 
-  absl::optional<DataTransferEndpoint> GetSource(
+  std::optional<DataTransferEndpoint> GetSource(
       const ClipboardMac* clipboard_mac,
       NSPasteboard* pasteboard) {
     return clipboard_mac->GetSourceInternal(ClipboardBuffer::kCopyPaste,

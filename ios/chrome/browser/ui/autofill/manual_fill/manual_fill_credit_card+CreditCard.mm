@@ -59,7 +59,8 @@
                      number:number
            obfuscatedNumber:obfuscatedNumber
              expirationYear:expirationYear
-            expirationMonth:expirationMonth];
+            expirationMonth:expirationMonth
+                 recordType:creditCard.record_type()];
 }
 
 @end

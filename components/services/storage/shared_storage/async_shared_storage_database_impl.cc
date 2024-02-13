@@ -155,6 +155,16 @@ void AsyncSharedStorageDatabaseImpl::Entries(
       .Then(std::move(callback));
 }
 
+void AsyncSharedStorageDatabaseImpl::BytesUsed(
+    url::Origin context_origin,
+    base::OnceCallback<void(int)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::BytesUsed)
+      .WithArgs(std::move(context_origin))
+      .Then(std::move(callback));
+}
+
 void AsyncSharedStorageDatabaseImpl::PurgeMatchingOrigins(
     StorageKeyPolicyMatcherFunction storage_key_policy,
     base::Time begin,

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -159,29 +160,37 @@ void ObjectPainter::RecordHitTestData(
     return;
   }
 
-  // Effects (e.g. clip-path and mask) are not checked here even if they
-  // affects hit test. They are checked during PaintArtifactCompositor update
-  // based on paint properties.
-  auto hit_test_opaqueness = cc::HitTestOpaqueness::kMixed;
-  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
-    if (!layout_object_.VisibleToHitTesting()) {
-      hit_test_opaqueness = cc::HitTestOpaqueness::kTransparent;
-    } else {
-      // Border radius is not considered opaque for hit test because the hit
-      // test may be inside or outside of the rounded corner.
-      // SVG children are not considered opaque for hit test because SVG has
-      // special hit test rules for stroke/fill/etc, and the children may
-      // overflow the root.
-      if (!layout_object_.StyleRef().HasBorderRadius() &&
-          !layout_object_.IsSVGChild()) {
-        hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
-      }
-    }
-  }
   paint_info.context.GetPaintController().RecordHitTestData(
       background_client, paint_rect,
       layout_object_.EffectiveAllowedTouchAction(),
-      layout_object_.InsideBlockingWheelEventHandler(), hit_test_opaqueness);
+      layout_object_.InsideBlockingWheelEventHandler(), GetHitTestOpaqueness());
+}
+
+cc::HitTestOpaqueness ObjectPainter::GetHitTestOpaqueness() const {
+  if (!RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    return cc::HitTestOpaqueness::kMixed;
+  }
+
+  // Effects (e.g. clip-path and mask) are not checked here even if they
+  // affects hit test. They are checked during PaintArtifactCompositor update
+  // based on paint properties.
+
+  if (!layout_object_.VisibleToHitTesting() ||
+      !layout_object_.GetFrame()->GetVisibleToHitTesting()) {
+    return cc::HitTestOpaqueness::kTransparent;
+  }
+  // Border radius is not considered opaque for hit test because the hit
+  // test may be inside or outside of the rounded corner.
+  if (layout_object_.StyleRef().HasBorderRadius()) {
+    return cc::HitTestOpaqueness::kMixed;
+  }
+  // SVG children are not considered opaque for hit test because SVG has
+  // special hit test rules for stroke/fill/etc, and the children may
+  // overflow the root.
+  if (layout_object_.IsSVGChild()) {
+    return cc::HitTestOpaqueness::kMixed;
+  }
+  return cc::HitTestOpaqueness::kOpaque;
 }
 
 bool ObjectPainter::ShouldRecordSpecialHitTestData(

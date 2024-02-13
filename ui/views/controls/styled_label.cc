@@ -8,13 +8,13 @@
 
 #include <algorithm>
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -164,12 +164,12 @@ void StyledLabel::SetDefaultTextStyle(int text_style) {
   OnPropertyChanged(&default_text_style_, kPropertyEffectsPreferredSizeChanged);
 }
 
-absl::optional<ui::ColorId> StyledLabel::GetDefaultEnabledColorId() const {
+std::optional<ui::ColorId> StyledLabel::GetDefaultEnabledColorId() const {
   return default_enabled_color_id_;
 }
 
 void StyledLabel::SetDefaultEnabledColorId(
-    absl::optional<ui::ColorId> enabled_color_id) {
+    std::optional<ui::ColorId> enabled_color_id) {
   if (default_enabled_color_id_ == enabled_color_id) {
     return;
   }
@@ -646,9 +646,9 @@ void StyledLabel::UpdateLabelBackgroundColor() {
       DCHECK(IsViewClass<Label>(child) || IsViewClass<LinkFragment>(child));
       static_cast<Label*>(child)->SetBackgroundColorId(
           absl::holds_alternative<ui::ColorId>(displayed_on_background_color_)
-              ? absl::optional<ui::ColorId>(
+              ? std::optional<ui::ColorId>(
                     absl::get<ui::ColorId>(displayed_on_background_color_))
-              : absl::nullopt);
+              : std::nullopt);
       if (absl::holds_alternative<SkColor>(displayed_on_background_color_)) {
         static_cast<Label*>(child)->SetBackgroundColor(
             absl::get<SkColor>(displayed_on_background_color_));
@@ -672,7 +672,7 @@ ADD_PROPERTY_METADATA(int, DefaultTextStyle)
 ADD_PROPERTY_METADATA(int, LineHeight)
 ADD_PROPERTY_METADATA(bool, AutoColorReadabilityEnabled)
 ADD_PROPERTY_METADATA(StyledLabel::ColorVariant, DisplayedOnBackgroundColor)
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, DefaultEnabledColorId)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, DefaultEnabledColorId)
 END_METADATA
 
 }  // namespace views

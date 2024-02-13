@@ -224,7 +224,7 @@ BASE_FEATURE(kOutOfProcessVideoDecoding,
 // Settings page.
 BASE_FEATURE(kPerAppLanguage,
              "PerAppLanguage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls ARC picture-in-picture feature. If this is enabled, then Android
 // will control which apps can enter PIP. If this is disabled, then ARC PIP

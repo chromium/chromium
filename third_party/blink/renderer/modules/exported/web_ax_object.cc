@@ -209,21 +209,14 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   private_->Serialize(node_data, accessibility_mode);
 }
 
-void WebAXObject::MarkSerializerSubtreeDirty() const {
-  if (IsDetached())
-    return;
-  private_->AXObjectCache().MarkSerializerSubtreeDirty(*private_);
-}
-
 void WebAXObject::AddDirtyObjectToSerializationQueue(
-    bool subtree,
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents) const {
   if (IsDetached())
     return;
   private_->AXObjectCache().AddDirtyObjectToSerializationQueue(
-      private_.Get(), subtree, event_from, event_from_action, event_intents);
+      private_.Get(), event_from, event_from_action, event_intents);
 }
 
 void WebAXObject::OnLoadInlineTextBoxes() const {

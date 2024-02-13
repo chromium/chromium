@@ -29,9 +29,9 @@ class WindowMiniView;
 // icon and a title label from the source window of the `window_mini_view_` and
 // has a stroke at the bottom of it.
 class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(WindowMiniViewHeaderView);
+  METADATA_HEADER(WindowMiniViewHeaderView, views::BoxLayoutView)
 
+ public:
   explicit WindowMiniViewHeaderView(WindowMiniView* window_mini_view);
   WindowMiniViewHeaderView(const WindowMiniViewHeaderView&) = delete;
   WindowMiniViewHeaderView& operator=(const WindowMiniViewHeaderView&) = delete;

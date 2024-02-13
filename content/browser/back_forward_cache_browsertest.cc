@@ -76,6 +76,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
@@ -448,8 +449,9 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
     const std::optional<testing::Matcher<std::string>>& id,
     const std::optional<testing::Matcher<std::string>>& name,
     const std::optional<testing::Matcher<std::string>>& src,
-    const std::vector<testing::Matcher<std::string>>& reasons,
+    const std::vector<BlockingDetailsReasonsMatcher>& reasons,
     const std::optional<SameOriginMatcher>& same_origin_details) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
   return testing::Pointee(testing::AllOf(
       id.has_value()
           ? testing::Field(
@@ -491,6 +493,7 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
 SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
     const testing::Matcher<std::string>& url,
     const std::vector<ReasonsMatcher>& children) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
   return testing::Pointee(testing::AllOf(
       testing::Field(
           "url", &blink::mojom::SameOriginBfcacheNotRestoredDetails::url, url),
@@ -500,11 +503,49 @@ SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
           testing::ElementsAreArray(children))));
 }
 
+BlockingDetailsReasonsMatcher
+BackForwardCacheBrowserTest::MatchesDetailedReason(
+    const testing::Matcher<std::string>& name,
+    const std::optional<BlockingReasonLocationMatcher>& source) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly
+  // messages.
+  return testing::Pointee(testing::AllOf(
+      testing::Field("name", &blink::mojom::BFCacheBlockingDetailedReason::name,
+                     name),
+      testing::Field(
+          "source", &blink::mojom::BFCacheBlockingDetailedReason::source,
+          source.has_value()
+              ? source.value()
+              : testing::Property(
+                    "is_null",
+                    &blink::mojom::BlockingReasonSourceLocationPtr::is_null,
+                    true))));
+}
+
+BlockingReasonLocationMatcher
+BackForwardCacheBrowserTest::MatchesSourceLocation(
+    const testing::Matcher<std::string>& url,
+    const testing::Matcher<uint64_t>& line_number,
+    const testing::Matcher<uint64_t>& column_number) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly
+  // messages.
+  return testing::Pointee(testing::AllOf(
+      testing::Field("url", &blink::mojom::BlockingReasonSourceLocation::url,
+                     url),
+      testing::Field("line_number",
+                     &blink::mojom::BlockingReasonSourceLocation::line_number,
+                     line_number),
+      testing::Field("column_number",
+                     &blink::mojom::BlockingReasonSourceLocation::column_number,
+                     column_number)));
+}
+
 BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
     const std::optional<testing::Matcher<std::string>>& url,
     const std::optional<testing::Matcher<std::string>>& function_name,
     const testing::Matcher<uint64_t>& line_number,
     const testing::Matcher<uint64_t>& column_number) {
+  // TODO(crbug.com/1523191) Make this matcher display human-friendly messages.
   return testing::Pointee(testing::AllOf(
       url.has_value()
           ? testing::Field("url", &blink::mojom::BlockingDetails::url,
@@ -1826,7 +1867,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that we're getting the correct TextInputState and focus updates when a
 // page enters the back-forward cache and when it gets restored.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TextInputStateUpdated) {
+// TODO(b/324570785): Re-enable the test for Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_TextInputStateUpdated DISABLED_TextInputStateUpdated
+#else
+#define MAYBE_TextInputStateUpdated TextInputStateUpdated
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MAYBE_TextInputStateUpdated) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -2771,7 +2819,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 class BackForwardCacheBrowserUnloadHandlerTest
     : public BackForwardCacheBrowserTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, bool, TestFrameType>> {
+          std::tuple<bool, bool, bool, TestFrameType>> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (IsUnloadAllowed()) {
@@ -2784,20 +2832,28 @@ class BackForwardCacheBrowserUnloadHandlerTest
     } else {
       DisableFeature(blink::features::kUnloadBlocklisted);
     }
+    if (IsUnloadDeprecationOptedOut()) {
+      EnableFeatureAndSetParams(blink::features::kDeprecateUnloadOptOut, "",
+                                "");
+    } else {
+      DisableFeature(blink::features::kDeprecateUnloadOptOut);
+    }
+
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
   bool IsUnloadAllowed() { return std::get<0>(GetParam()); }
   bool IsUnloadBlocklisted() { return std::get<1>(GetParam()); }
+  bool IsUnloadDeprecationOptedOut() { return std::get<2>(GetParam()); }
 
-  TestFrameType GetTestFrameType() { return std::get<2>(GetParam()); }
+  TestFrameType GetTestFrameType() { return std::get<3>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Ensure that unload handlers in main frames and subframes block caching or
-// not, depending on the flag setting.
+// Ensure that unload handlers in main frames and subframes block caching,
+// depending on unload deprecation status and OS.
 IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
                        UnloadHandlerPresent) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -2808,17 +2864,28 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
 
-  BackForwardCacheMetrics::NotRestoredReason expected_blocking_reason;
+  std::vector<BackForwardCacheMetrics::NotRestoredReason>
+      expected_blocking_reasons;
+  std::vector<blink::scheduler::WebSchedulerTrackedFeature>
+      expected_blocklisted_reason;
+  if (IsUnloadBlocklisted()) {
+    expected_blocking_reasons.push_back(
+        BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
+    expected_blocklisted_reason.push_back(
+        blink::scheduler::WebSchedulerTrackedFeature::kUnloadHandler);
+  }
   switch (GetTestFrameType()) {
     case content::TestFrameType::kMainFrame:
       InstallUnloadHandlerOnMainFrame();
-      expected_blocking_reason = BackForwardCacheMetrics::NotRestoredReason::
-          kUnloadHandlerExistsInMainFrame;
+      expected_blocking_reasons.push_back(
+          BackForwardCacheMetrics::NotRestoredReason::
+              kUnloadHandlerExistsInMainFrame);
       break;
     case content::TestFrameType::kSubFrame:
       InstallUnloadHandlerOnSubFrame();
-      expected_blocking_reason = BackForwardCacheMetrics::NotRestoredReason::
-          kUnloadHandlerExistsInSubFrame;
+      expected_blocking_reasons.push_back(
+          BackForwardCacheMetrics::NotRestoredReason::
+              kUnloadHandlerExistsInSubFrame);
       break;
     default:
       NOTREACHED();
@@ -2830,47 +2897,32 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  if (IsUnloadBlocklisted()) {
+  bool unload_never_blocks = IsUnloadAllowed();
+  bool unload_deprecated_and_not_opted_out =
+      (base::FeatureList::IsEnabled(blink::features::kDeprecateUnload) &&
+       !IsUnloadDeprecationOptedOut());
+  if (unload_never_blocks || unload_deprecated_and_not_opted_out) {
     // Pages with unload handlers are eligible for bfcache only if it is
-    // specifically allowed (happens on Android), or when unload handlers are
-    // deprecated.
-    if (BackForwardCacheImpl::IsUnloadAllowed() ||
-        base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
-      ExpectRestored(FROM_HERE);
-      EXPECT_EQ("0", GetUnloadRunCount());
-    } else {
-      // If unload handlers are a blocklisted feature, the blocklisted feature
-      // gets reported in addition to the not restored reason.
-      ExpectNotRestored(
-          {expected_blocking_reason,
-           BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-          {blink::scheduler::WebSchedulerTrackedFeature::kUnloadHandler}, {},
-          {}, {}, FROM_HERE);
-      EXPECT_EQ("1", GetUnloadRunCount());
-    }
+    // specifically allowed (happens on Android). Also, when unload is
+    // deprecated and `kDeprecateUnloadOptOut` doesn't override it, unload
+    // handlers cannot be installed so there should be no blocker for BFCache.
+    ExpectRestored(FROM_HERE);
+    EXPECT_EQ("0", GetUnloadRunCount());
   } else {
-    if (BackForwardCacheImpl::IsUnloadAllowed() ||
-        base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
-      ExpectRestored(FROM_HERE);
-      EXPECT_EQ("0", GetUnloadRunCount());
-    } else {
-      ExpectNotRestored({expected_blocking_reason}, {}, {}, {}, {}, FROM_HERE);
-      EXPECT_EQ("1", GetUnloadRunCount());
-    }
+    ExpectNotRestored(expected_blocking_reasons, expected_blocklisted_reason,
+                      {}, {}, {}, FROM_HERE);
+    EXPECT_EQ("1", GetUnloadRunCount());
   }
-
-  // 4) Go forward.
-  ASSERT_TRUE(HistoryGoForward(web_contents()));
-
-  ExpectRestored(FROM_HERE);
 }
 
-// The first param is to check if unload is allowed, and the second one is to
-// check if unload is a blocklisted feature.
+// First param: whether unload is allowed or not.
+// Second one: whether unload is blocklisted or not.
+// Third one: whether it's opted out from unload deprecation or not.
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackForwardCacheBrowserUnloadHandlerTest,
     ::testing::Combine(::testing::Bool(),
+                       ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Values(TestFrameType::kMainFrame,
                                          TestFrameType::kSubFrame)));

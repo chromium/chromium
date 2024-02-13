@@ -75,9 +75,9 @@ END_METADATA
 // The container view for the system tray, i.e. the panel containing settings
 // buttons and sliders (e.g. sign out, lock, volume slider, etc.).
 class QuickSettingsView::SystemTrayContainer : public views::View {
- public:
-  METADATA_HEADER(SystemTrayContainer);
+  METADATA_HEADER(SystemTrayContainer, views::View)
 
+ public:
   SystemTrayContainer()
       : layout_manager_(SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical))) {}
@@ -304,7 +304,7 @@ void QuickSettingsView::TotalPagesChanged(int previous_page_count,
   pagination_view_->SetVisible(new_page_count > 1);
 }
 
-BEGIN_METADATA(QuickSettingsView, views::View)
+BEGIN_METADATA(QuickSettingsView)
 END_METADATA
 
 }  // namespace ash

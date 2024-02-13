@@ -4323,13 +4323,16 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
 
 void LocalFrameView::SetIntersectionObservationState(
     IntersectionObservationState state) {
+  if (state >= kDesired) {
+    // Disable MinScrollDeltaToUpdate optimization and schedule update for
+    // all intersection observers.
+    accumulated_scroll_delta_since_last_intersection_update_ =
+        IntersectionGeometry::kInfiniteScrollDelta;
+  }
+
   if (intersection_observation_state_ >= state)
     return;
   intersection_observation_state_ = state;
-  // Disable scroll delta optimization on any change other than pure scroll
-  // (see UpdateIntersectionObservationStateOnScroll).
-  accumulated_scroll_delta_since_last_intersection_update_ =
-      IntersectionGeometry::kInfiniteScrollDelta;
 
   // If an intersection observation is required, force all ancestors to update.
   // Otherwise, an update could stop at a throttled frame before reaching this.
@@ -4346,24 +4349,7 @@ void LocalFrameView::UpdateIntersectionObservationStateOnScroll(
     gfx::Vector2dF scroll_delta) {
   accumulated_scroll_delta_since_last_intersection_update_ +=
       gfx::Vector2dF(std::abs(scroll_delta.x()), std::abs(scroll_delta.y()));
-  intersection_observation_state_ =
-      std::max(intersection_observation_state_, kDesired);
-}
-
-void LocalFrameView::InvalidateIntersectionObservations() {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    return;
-  }
-  DCHECK_EQ(Lifecycle().GetState(), DocumentLifecycle::kInPrePaint);
-  DCHECK(GetFrame().IsLocalRoot() || !IsAttached());
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    if (auto* controller = frame_view.GetFrame()
-                               .GetDocument()
-                               ->GetIntersectionObserverController()) {
-      controller->InvalidateCachedRectsIfPaintPropertiesChanged();
-      frame_view.SetIntersectionObservationState(LocalFrameView::kDesired);
-    }
-  });
+  SetIntersectionObservationState(kScrollAndVisibilityOnly);
 }
 
 void LocalFrameView::SetVisualViewportOrOverlayNeedsRepaint() {

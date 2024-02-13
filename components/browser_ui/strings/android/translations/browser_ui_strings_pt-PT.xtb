@@ -121,6 +121,7 @@
 <translation id="2979365474350987274">Os cookies de terceiros são limitados</translation>
 <translation id="3008272652534848354">Repor autorizações</translation>
 <translation id="301521992641321250">Bloqueada automaticamente</translation>
+<translation id="3025010840409371499"><ph name="RECENCY" /> <ph name="SEPARATOR" /> <ph name="HOST_NAME" /></translation>
 <translation id="3069226013421428034">Permita o início de sessão de terceiros num site específico.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Expira amanhã}other{Expira dentro de # dias}}</translation>
 <translation id="310297983047869047">Diapositivo anterior</translation>
@@ -187,9 +188,11 @@
 <translation id="4149994727733219643">Vista simplificada de páginas Web</translation>
 <translation id="4151930093518524179">Zoom predefinido</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
+<translation id="4169019654293892025">Ocultar <ph name="TITLE_OF_MODULE" /></translation>
 <translation id="4169549551965910670">Ligado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que os sites vejam e alterem informações em dispositivos NFC (recomendado)</translation>
 <translation id="4200726100658658164">Abrir definições de localização</translation>
+<translation id="4206661981211220935"><ph name="RECENCY" /> <ph name="SEPARATOR" /> De <ph name="FROM_DEVICE" /></translation>
 <translation id="4226663524361240545">As notificações podem fazer com que o dispositivo vibre</translation>
 <translation id="4259722352634471385">A navegação está bloqueada: <ph name="URL" /></translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -364,7 +367,6 @@
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 selecionado}other{# selecionados}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> selecionado(s). Opções disponíveis junto à parte superior do ecrã.</translation>
-<translation id="7137403271056944713">Reprogram./controlo dispos. MIDI</translation>
 <translation id="7141896414559753902">Impedir que os sites apresentem pop-ups e redirecionamentos (recomendado).</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atualizar</translation>
@@ -400,9 +402,10 @@
 <translation id="7667547420449112975">O Maravilhoso Feiticeiro de Oz</translation>
 <translation id="7684642910516280563">Não permita que um site use cookies de terceiros</translation>
 <translation id="7719367874908701697">Zoom da página</translation>
-<translation id="7770832849480336015">Ocultar "<ph name="TITLE_OF_MODULE" />"</translation>
+<translation id="7759147511335618829">Reprogram. e controlo disp. MIDI</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7791543448312431591">Adicionar</translation>
+<translation id="7801888679188438140">{TILE_COUNT,plural, =1{Continue com este separador}other{Continue com estes separadores}}</translation>
 <translation id="780301667611848630">Não</translation>
 <translation id="7804248752222191302">Um site está a utilizar a sua câmara.</translation>
 <translation id="7807060072011926525">Disponibilizados pela Google</translation>

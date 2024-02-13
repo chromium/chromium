@@ -8,11 +8,11 @@
  */
 function getPlayFooterElement() {
   const elements = document.getElementsByClassName('glue-footer');
-  if (!elements || elements.length == 0) {
+  if (!elements || elements.length === 0) {
     console.error('Failed to find play-footer element in ToS.');
     return null;
   }
-  if (elements.length != 1) {
+  if (elements.length !== 1) {
     console.error('Found more than one play-footer element in ToS.');
   }
   return elements[0];
@@ -28,11 +28,11 @@ function getLangZoneSelect() {
   }
 
   const elements = footer.getElementsByTagName('select');
-  if (!elements || elements.length == 0) {
+  if (!elements || elements.length === 0) {
     console.error('Cannot find zone/language select select element');
     return null;
   }
-  if (elements.length != 1) {
+  if (elements.length !== 1) {
     console.error('Found more than one zone/language select element in ToS.');
   }
   return elements[0];
@@ -57,7 +57,7 @@ function navigateToLanguageAndCountryCode(language, countryCode) {
     const matchDefaultUs = null;
     if (window.location.href.startsWith(
             'https://play.google/intl/en_us/play-terms') &&
-        termsLang == 'en' && countryCode == 'us' &&
+        termsLang === 'en' && countryCode === 'us' &&
         selectLangZoneTerms.value.startsWith('/intl/en/play-terms')) {
       return true;
     }
@@ -84,7 +84,7 @@ function navigateToLanguageAndCountryCode(language, countryCode) {
     return true;
   }
   const langSegments = language.split('-');
-  if (langSegments.length == 2 && applyTermsForLangAndZone(langSegments[0])) {
+  if (langSegments.length === 2 && applyTermsForLangAndZone(langSegments[0])) {
     return true;
   }
 
@@ -117,7 +117,7 @@ function processLangZoneTerms(initialLoad, language, countryCode) {
 
   const matchByLang = '/intl/' + language + '_';
   let matchByLangShort = null;
-  if (langSegments.length == 2) {
+  if (langSegments.length === 2) {
     matchByLangShort = '/intl/' + langSegments[0] + '_';
   }
 
@@ -137,7 +137,7 @@ function processLangZoneTerms(initialLoad, language, countryCode) {
 
   for (let i = selectLangZoneTerms.options.length - 1; i >= 0; --i) {
     const option = selectLangZoneTerms.options[i];
-    if (selectLangZoneTerms.selectedIndex == i) {
+    if (selectLangZoneTerms.selectedIndex === i) {
       langMatch = option.value.startsWith(matchByLang) ||
           (matchByLangShort && option.value.startsWith(matchByLangShort));
       continue;
@@ -150,7 +150,7 @@ function processLangZoneTerms(initialLoad, language, countryCode) {
     option.hidden = !option.value.startsWith(matchByLang) &&
         !option.value.includes(matchByZone) &&
         !(matchByLangShort && option.value.startsWith(matchByLangShort)) &&
-        option.text != 'English';
+        option.text !== 'English';
   }
 
   if (initialLoad && !langMatch && defaultExist) {

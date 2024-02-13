@@ -127,6 +127,14 @@ void AuthenticatedChannelImpl::OnMessageReceived(SecureChannel* secure_channel,
   NotifyMessageReceived(feature, payload);
 }
 
+void AuthenticatedChannelImpl::OnNearbyConnectionStateChanged(
+    SecureChannel* secure_channel,
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  DCHECK_EQ(secure_channel_.get(), secure_channel);
+  NotifyNearbyConnectionStateChanged(step, result);
+}
+
 void AuthenticatedChannelImpl::OnMessageSent(SecureChannel* secure_channel,
                                              int sequence_number) {
   DCHECK_EQ(secure_channel_.get(), secure_channel);

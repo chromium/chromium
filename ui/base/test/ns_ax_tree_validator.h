@@ -5,7 +5,8 @@
 #ifndef UI_BASE_TEST_NS_AX_TREE_VALIDATOR_H_
 #define UI_BASE_TEST_NS_AX_TREE_VALIDATOR_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
+#include <string>
 
 @protocol NSAccessibility;
 
@@ -38,10 +39,9 @@ struct NSAXTreeProblemDetails {
 
 // Validates the accessibility tree rooted at `root`. If at least one problem is
 // found, returns an `AXTreeProblemDetails` as described above; if not, returns
-// absl::nullopt.
-absl::optional<NSAXTreeProblemDetails> ValidateNSAXTree(
-    id<NSAccessibility> root,
-    size_t* nodes_visited);
+// std::nullopt.
+std::optional<NSAXTreeProblemDetails> ValidateNSAXTree(id<NSAccessibility> root,
+                                                       size_t* nodes_visited);
 
 // Prints the accessibility tree rooted at `root`. This function is useful for
 // debugging failures of ValidateNSAXTree tests.

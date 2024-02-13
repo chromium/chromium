@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/emoji/emoji_search.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -294,6 +295,10 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
         emoji_picker::mojom::Feature::EMOJI_PICKER_GIF_SUPPORT);
   }
 
+  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerMojoSearch)) {
+    enabled_features.push_back(
+        emoji_picker::mojom::Feature::EMOJI_PICKER_MOJO_SEARCH);
+  }
   if (SealUtils::ShouldEnable()) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_SEAL_SUPPORT);

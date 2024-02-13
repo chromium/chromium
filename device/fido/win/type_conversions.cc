@@ -5,6 +5,7 @@
 #include "device/fido/win/type_conversions.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -24,21 +25,20 @@
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
 
 namespace {
 
-absl::optional<std::vector<uint8_t>> HMACSecretOutputs(
+std::optional<std::vector<uint8_t>> HMACSecretOutputs(
     const WEBAUTHN_HMAC_SECRET_SALT& salt) {
   constexpr size_t kOutputLength = 32;
   if (salt.cbFirst != kOutputLength ||
       (salt.cbSecond != 0 && salt.cbSecond != kOutputLength)) {
     FIDO_LOG(ERROR) << "Incorrect HMAC output lengths: " << salt.cbFirst << " "
                     << salt.cbSecond;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::vector<uint8_t> ret;
@@ -51,7 +51,7 @@ absl::optional<std::vector<uint8_t>> HMACSecretOutputs(
 
 }  // namespace
 
-absl::optional<FidoTransportProtocol> FromWinTransportsMask(
+std::optional<FidoTransportProtocol> FromWinTransportsMask(
     const DWORD transport) {
   switch (transport) {
     case WEBAUTHN_CTAP_TRANSPORT_USB:
@@ -66,7 +66,7 @@ absl::optional<FidoTransportProtocol> FromWinTransportsMask(
       return FidoTransportProtocol::kHybrid;
     default:
       // Ignore _TEST and possibly future others.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -98,7 +98,7 @@ uint32_t ToWinTransportsMask(
   return result;
 }
 
-absl::optional<AuthenticatorMakeCredentialResponse>
+std::optional<AuthenticatorMakeCredentialResponse>
 ToAuthenticatorMakeCredentialResponse(
     const WEBAUTHN_CREDENTIAL_ATTESTATION& credential_attestation) {
   auto authenticator_data = AuthenticatorData::DecodeAuthenticatorData(
@@ -108,19 +108,19 @@ ToAuthenticatorMakeCredentialResponse(
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
                 << base::HexEncode(credential_attestation.pbAuthenticatorData,
                                    credential_attestation.cbAuthenticatorData);
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<cbor::Value> cbor_attestation_statement = cbor::Reader::Read(
+  std::optional<cbor::Value> cbor_attestation_statement = cbor::Reader::Read(
       base::span<const uint8_t>(credential_attestation.pbAttestation,
                                 credential_attestation.cbAttestation));
   if (!cbor_attestation_statement || !cbor_attestation_statement->is_map()) {
     DLOG(ERROR) << "CBOR decoding attestation statement failed: "
                 << base::HexEncode(credential_attestation.pbAttestation,
                                    credential_attestation.cbAttestation);
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<FidoTransportProtocol> transport_used;
+  std::optional<FidoTransportProtocol> transport_used;
   if (credential_attestation.dwVersion >=
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_3) {
     // dwUsedTransport should have exactly one of the
@@ -159,7 +159,7 @@ ToAuthenticatorMakeCredentialResponse(
   return ret;
 }
 
-absl::optional<AuthenticatorGetAssertionResponse>
+std::optional<AuthenticatorGetAssertionResponse>
 ToAuthenticatorGetAssertionResponse(
     const WEBAUTHN_ASSERTION& assertion,
     const CtapGetAssertionOptions& request_options) {
@@ -170,12 +170,12 @@ ToAuthenticatorGetAssertionResponse(
     DLOG(ERROR) << "DecodeAuthenticatorData failed: "
                 << base::HexEncode(assertion.pbAuthenticatorData,
                                    assertion.cbAuthenticatorData);
-    return absl::nullopt;
+    return std::nullopt;
   }
-  absl::optional<FidoTransportProtocol> transport_used =
+  std::optional<FidoTransportProtocol> transport_used =
       assertion.dwVersion >= WEBAUTHN_ASSERTION_VERSION_4
           ? FromWinTransportsMask(assertion.dwUsedTransport)
-          : absl::nullopt;
+          : std::nullopt;
   AuthenticatorGetAssertionResponse response(
       std::move(*authenticator_data),
       std::vector<uint8_t>(assertion.pbSignature,
@@ -391,11 +391,11 @@ WinCredentialDetailsListToCredentialMetadata(
         PublicKeyCredentialUserEntity(
             std::vector<uint8_t>(user->pbId, user->pbId + user->cbId),
             user->pwszName
-                ? absl::make_optional(base::WideToUTF8(user->pwszName))
-                : absl::nullopt,
+                ? std::make_optional(base::WideToUTF8(user->pwszName))
+                : std::nullopt,
             user->pwszDisplayName
-                ? absl::make_optional(base::WideToUTF8(user->pwszDisplayName))
-                : absl::nullopt));
+                ? std::make_optional(base::WideToUTF8(user->pwszDisplayName))
+                : std::nullopt));
     metadata.system_created = !credential->bRemovable;
     result.push_back(std::move(metadata));
   }

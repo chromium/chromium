@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -229,7 +229,7 @@ void CameraHalDispatcherImpl::BindCameraServiceOnProxyThread(
   // Set up the Mojo channels for clients which registered before cros camera
   // service starts or that have disconnected from the camera module because the
   // cros camera service stopped.
-  for (auto* client_observer : client_observers_) {
+  for (CameraClientObserver* client_observer : client_observers_) {
     EstablishMojoChannel(client_observer);
   }
 }
@@ -532,6 +532,9 @@ void CameraHalDispatcherImpl::CameraSWPrivacySwitchStateChange(
   CAMERA_LOG(EVENT) << "Camera software privacy switch state changed: "
                     << state;
 }
+
+void CameraHalDispatcherImpl::CameraEffectChange(
+    cros::mojom::EffectsConfigPtr config) {}
 
 base::UnguessableToken CameraHalDispatcherImpl::GetTokenForTrustedClient(
     cros::mojom::CameraClientType type) {

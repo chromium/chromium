@@ -30,7 +30,7 @@ uint8_t* Mmap(const size_t length, const int fd, int permissions) {
 }
 
 void MunmapBuffers(const std::vector<std::pair<uint8_t*, size_t>>& chunks,
-                   scoped_refptr<const VideoFrame> video_frame) {
+                   scoped_refptr<const FrameResource> video_frame) {
   for (const auto& chunk : chunks) {
     DLOG_IF(ERROR, !chunk.first) << "Pointer to be released is nullptr.";
     munmap(chunk.first, chunk.second);
@@ -42,7 +42,7 @@ void MunmapBuffers(const std::vector<std::pair<uint8_t*, size_t>>& chunks,
 // |chunks| is the vector of pair of (address, size) to be called in munmap().
 // |src_video_frame| is the video frame that owns dmabufs to the mapped planes.
 scoped_refptr<VideoFrame> CreateMappedVideoFrame(
-    scoped_refptr<const VideoFrame> src_video_frame,
+    scoped_refptr<const FrameResource> src_video_frame,
     uint8_t* plane_addrs[VideoFrame::kMaxPlanes],
     const std::vector<std::pair<uint8_t*, size_t>>& chunks) {
   scoped_refptr<VideoFrame> video_frame;
@@ -104,8 +104,8 @@ GenericDmaBufVideoFrameMapper::GenericDmaBufVideoFrameMapper(
     VideoPixelFormat format)
     : VideoFrameMapper(format) {}
 
-scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
-    scoped_refptr<const VideoFrame> video_frame,
+scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
+    scoped_refptr<const FrameResource> video_frame,
     int permissions) const {
   if (!video_frame) {
     LOG(ERROR) << "Video frame is nullptr";

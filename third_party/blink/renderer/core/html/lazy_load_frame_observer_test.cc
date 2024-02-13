@@ -62,12 +62,12 @@ class LazyLoadFramesParamsTest
 
     // These should match the values that would be returned by
     // GetLoadingDistanceThreshold().
-    settings.SetLazyFrameLoadingDistanceThresholdPxUnknown(200);
-    settings.SetLazyFrameLoadingDistanceThresholdPxOffline(300);
-    settings.SetLazyFrameLoadingDistanceThresholdPxSlow2G(400);
-    settings.SetLazyFrameLoadingDistanceThresholdPx2G(500);
-    settings.SetLazyFrameLoadingDistanceThresholdPx3G(600);
-    settings.SetLazyFrameLoadingDistanceThresholdPx4G(700);
+    settings.SetLazyLoadingFrameMarginPxUnknown(200);
+    settings.SetLazyLoadingFrameMarginPxOffline(300);
+    settings.SetLazyLoadingFrameMarginPxSlow2G(400);
+    settings.SetLazyLoadingFrameMarginPx2G(500);
+    settings.SetLazyLoadingFrameMarginPx3G(600);
+    settings.SetLazyLoadingFrameMarginPx4G(700);
     settings.SetLazyLoadEnabled(true);
   }
 
@@ -820,8 +820,7 @@ class LazyLoadFramesTest : public SimTest {
         gfx::Size(kViewportWidth, kViewportHeight));
 
     Settings& settings = WebView().GetPage()->GetSettings();
-    settings.SetLazyFrameLoadingDistanceThresholdPx4G(
-        kLoadingDistanceThresholdPx);
+    settings.SetLazyLoadingFrameMarginPx4G(kLoadingDistanceThresholdPx);
     settings.SetLazyLoadEnabled(true);
   }
 

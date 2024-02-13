@@ -36,9 +36,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
     kMaxValue = kEligible,
   };
 
+  // Both network_service_proxy_allow_list and ipp_config_cache must be
+  // non-null. The network_service_proxy_allow_list (MaskedDomainList) feature
+  // must be enabled.
   IpProtectionProxyDelegate(
       NetworkServiceProxyAllowList* network_service_proxy_allow_list,
-      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache);
+      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache,
+      bool is_ip_protection_enabled);
 
   IpProtectionProxyDelegate(const IpProtectionProxyDelegate&) = delete;
   IpProtectionProxyDelegate& operator=(const IpProtectionProxyDelegate&) =
@@ -72,6 +76,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
   void VerifyIpProtectionConfigGetterForTesting(
       VerifyIpProtectionConfigGetterForTestingCallback callback) override;
   void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
+  void SetIpProtectionEnabled(bool enabled) override;
+  void IsIpProtectionEnabledForTesting(
+      IsIpProtectionEnabledForTestingCallback callback) override;
 
   void OnIpProtectionConfigAvailableForTesting(
       VerifyIpProtectionConfigGetterForTestingCallback callback);
@@ -95,7 +102,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
 
   const raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
 
-  std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
+  const std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
+
+  bool is_ip_protection_enabled_;
 
   mojo::Receiver<network::mojom::IpProtectionProxyDelegate> receiver_{this};
 

@@ -225,7 +225,7 @@ Polymer({
     ];
 
     document.addEventListener('keyup', event => {
-      if (event.key == 'Escape' && this.canCancel_(this.state_)) {
+      if (event.key === 'Escape' && this.canCancel_(this.state_)) {
         this.onCancelButtonClick_();
         event.preventDefault();
       }

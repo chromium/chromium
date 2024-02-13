@@ -40,6 +40,10 @@ network::mojom::CookieManager* IOSWebViewSigninClient::GetCookieManager() {
   return browser_state_->GetCookieManager();
 }
 
+network::mojom::NetworkContext* IOSWebViewSigninClient::GetNetworkContext() {
+  return browser_state_->GetNetworkContext();
+}
+
 void IOSWebViewSigninClient::DoFinalInit() {}
 
 bool IOSWebViewSigninClient::AreSigninCookiesAllowed() {

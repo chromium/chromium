@@ -128,6 +128,9 @@ TEST_F(CastAuthUtilTest, VerifyBadClientAuthCert) {
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadSignature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kEnforceFallbackCRLRevocationChecking);
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   MangleString(auth_response.mutable_signature());
@@ -138,6 +141,9 @@ TEST_F(CastAuthUtilTest, VerifyBadSignature) {
 }
 
 TEST_F(CastAuthUtilTest, VerifyEmptySignature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kEnforceFallbackCRLRevocationChecking);
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   auth_response.mutable_signature()->clear();
@@ -256,7 +262,8 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithInvalidFallbackCRL) {
 TEST_F(CastAuthUtilTest,
        VerifyInvalidCRLWithFeatureFlagEnforceRevocationChecking) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnforceRevocationChecking);
+  scoped_feature_list.InitWithFeatures({kEnforceRevocationChecking},
+                                       {kEnforceFallbackCRLRevocationChecking});
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   AuthResult result = VerifyCredentials(auth_response, signed_data);
@@ -269,7 +276,8 @@ TEST_F(CastAuthUtilTest,
        VerifyMissingCRLWithoutFeatureFlagEnforceRevocationChecking) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::string signed_data;
-  scoped_feature_list.InitAndDisableFeature(kEnforceRevocationChecking);
+  scoped_feature_list.InitWithFeatures(
+      {}, {kEnforceRevocationChecking, kEnforceFallbackCRLRevocationChecking});
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   AuthResult result = VerifyCredentials(auth_response, signed_data);
   EXPECT_TRUE(result.success());
@@ -280,7 +288,8 @@ TEST_F(CastAuthUtilTest,
 TEST_F(CastAuthUtilTest,
        VerifyParsingErrorWithFeatureFlagEnforceRevocationChecking) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kEnforceRevocationChecking);
+  scoped_feature_list.InitWithFeatures({kEnforceRevocationChecking},
+                                       {kEnforceFallbackCRLRevocationChecking});
 
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
@@ -320,6 +329,9 @@ TEST_F(CastAuthUtilTest, VerifyCrlOptionalWithInvalidFallbackCRL) {
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadPeerCert) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kEnforceFallbackCRLRevocationChecking);
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   MangleString(&signed_data);

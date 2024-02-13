@@ -25,6 +25,7 @@
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -52,6 +53,7 @@
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
@@ -112,6 +114,9 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
           personal_data_manager_,
+          ios::HistoryServiceFactory::GetForBrowserState(
+              browser_state,
+              ServiceAccessType::EXPLICIT_ACCESS),
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
       unmask_controller_(browser_state->GetPrefs()),
@@ -174,6 +179,15 @@ CreditCardOtpAuthenticator* ChromeAutofillClientIOS::GetOtpAuthenticator() {
   if (!otp_authenticator_)
     otp_authenticator_ = std::make_unique<CreditCardOtpAuthenticator>(this);
   return otp_authenticator_.get();
+}
+
+CreditCardRiskBasedAuthenticator*
+ChromeAutofillClientIOS::GetRiskBasedAuthenticator() {
+  if (!risk_based_authenticator_) {
+    risk_based_authenticator_ =
+        std::make_unique<CreditCardRiskBasedAuthenticator>(this);
+  }
+  return risk_based_authenticator_.get();
 }
 
 PrefService* ChromeAutofillClientIOS::GetPrefs() {
@@ -361,10 +375,6 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
               options, card, legal_message_lines, account_info),
           std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
                                                      options))));
-}
-
-void ChromeAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {
-  NOTIMPLEMENTED();
 }
 
 void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(

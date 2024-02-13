@@ -171,7 +171,7 @@ void AssistantButton::OnButtonPressed() {
   listener_->OnButtonPressed(id_);
 }
 
-BEGIN_METADATA(AssistantButton, views::ImageButton)
+BEGIN_METADATA(AssistantButton)
 END_METADATA
 
 }  // namespace ash

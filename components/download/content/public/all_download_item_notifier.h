@@ -93,7 +93,7 @@ class AllDownloadItemNotifier : public content::DownloadManager::Observer,
 
   raw_ptr<content::DownloadManager> manager_;
   raw_ptr<AllDownloadItemNotifier::Observer> observer_;
-  std::set<DownloadItem*> observing_;
+  std::set<raw_ptr<DownloadItem, SetExperimental>> observing_;
   base::WeakPtrFactory<AllDownloadItemNotifier> weak_factory_{this};
 };
 

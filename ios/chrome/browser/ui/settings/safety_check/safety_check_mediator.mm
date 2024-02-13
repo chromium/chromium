@@ -875,6 +875,15 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
           // push a completed state to the UI if the check was cancelled.
           if (weakSelf.checksRemaining)
             [weakSelf checkAndReconfigureSafeBrowsingState];
+
+          NSString* announcement = weakSelf.updateCheckItem.detailText;
+          announcement = [announcement
+              stringByAppendingString:weakSelf.passwordCheckItem.detailText];
+          announcement = [announcement
+              stringByAppendingString:weakSelf.safeBrowsingCheckItem
+                                          .detailText];
+          UIAccessibilityPostNotification(
+              UIAccessibilityScreenChangedNotification, announcement);
         });
   }
 }

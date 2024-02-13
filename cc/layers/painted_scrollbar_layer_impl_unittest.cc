@@ -103,12 +103,10 @@ TEST(PaintedScrollbarLayerImplTest, Occlusion) {
     EXPECT_EQ(thumb_quad->visible_rect.ToString(),
               scaled_thumb_rect.ToString());
     EXPECT_TRUE(thumb_quad->needs_blending);
-    EXPECT_EQ(scrollbar_layer_impl->contents_opaque(),
-              thumb_quad->shared_quad_state->are_contents_opaque);
-    for (size_t i = 0; i < 4; ++i) {
-      EXPECT_EQ(painted_opacity_, thumb_quad->vertex_opacity[i]);
-      EXPECT_EQ(1.f, track_quad->vertex_opacity[i]);
-    }
+    EXPECT_FALSE(thumb_quad->shared_quad_state->are_contents_opaque);
+
+    EXPECT_EQ(painted_opacity_, thumb_quad->shared_quad_state->opacity);
+    EXPECT_EQ(1.f, track_quad->shared_quad_state->opacity);
   }
 
   {

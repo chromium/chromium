@@ -176,8 +176,7 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
                                             int lid,
                                             ProcessId pid,
                                             const string& url,
-                                            const string& rtc_configuration,
-                                            const string& constraints) {
+                                            const string& rtc_configuration) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(tommi): Consider changing this design so that webrtc-internals has
@@ -188,7 +187,6 @@ void WebRTCInternals::OnPeerConnectionAdded(GlobalRenderFrameHostId frame_id,
   dict.Set("lid", lid);
   dict.Set("pid", static_cast<int>(pid));
   dict.Set("rtcConfiguration", rtc_configuration);
-  dict.Set("constraints", constraints);
   dict.Set("url", url);
   dict.Set("isOpen", true);
   dict.Set("connected", false);

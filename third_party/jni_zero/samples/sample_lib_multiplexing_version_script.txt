@@ -1,0 +1,7 @@
+{
+  global:
+    JNI_OnLoad;
+    Java_*_resolve_1for_*;
+  local:
+    *;
+};

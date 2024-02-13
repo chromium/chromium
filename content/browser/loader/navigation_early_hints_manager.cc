@@ -471,7 +471,9 @@ void NavigationEarlyHintsManager::MaybePreconnect(
   bool allow_credentials =
       link->cross_origin != network::mojom::CrossOriginAttribute::kAnonymous;
   network_context->PreconnectSockets(
-      /*num_streams=*/1, link->href, allow_credentials,
+      /*num_streams=*/1, link->href,
+      allow_credentials ? network::mojom::CredentialsMode::kInclude
+                        : network::mojom::CredentialsMode::kOmit,
       isolation_info_.network_anonymization_key());
   preconnect_entries_.insert(std::move(entry));
 }

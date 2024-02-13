@@ -50,7 +50,7 @@ import * as Elements from 'devtools/panels/elements/elements.js';
       var shadowDiv = children[0];
       TestRunner.addResult('User-agent shadow DOM hidden:');
       Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv).then(() => {
-        Common.Settings.settingForTest('showUAShadowDOM').set(true);
+        Common.Settings.settingForTest('show-ua-shadow-dom').set(true);
         TestRunner.addResult('User-agent shadow DOM shown:');
         Elements.ElementsPanel.ElementsPanel.instance().revealAndSelectNode(shadowDiv);
       });

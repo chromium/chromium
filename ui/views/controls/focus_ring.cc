@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
@@ -139,11 +139,11 @@ void FocusRing::SetHasFocusPredicate(const ViewPredicate& predicate) {
   RefreshLayer();
 }
 
-absl::optional<ui::ColorId> FocusRing::GetColorId() const {
+std::optional<ui::ColorId> FocusRing::GetColorId() const {
   return color_id_;
 }
 
-void FocusRing::SetColorId(absl::optional<ui::ColorId> color_id) {
+void FocusRing::SetColorId(std::optional<ui::ColorId> color_id) {
   if (color_id_ == color_id)
     return;
   color_id_ = color_id;
@@ -414,7 +414,7 @@ SkPath GetHighlightPath(const View* view, float halo_thickness) {
 }
 
 BEGIN_METADATA(FocusRing)
-ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, ColorId)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, ColorId)
 ADD_PROPERTY_METADATA(float, HaloInset)
 ADD_PROPERTY_METADATA(float, HaloThickness)
 ADD_PROPERTY_METADATA(bool, OutsetFocusRingDisabled)

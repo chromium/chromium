@@ -62,7 +62,7 @@ class SingleClientOfferSyncTest : public SyncTest {
   void WaitForNumberOfOffers(size_t expected_count,
                              autofill::PersonalDataManager* pdm) {
     while (pdm->GetAutofillOffers().size() != expected_count ||
-           pdm->HasPendingQueriesForTesting()) {
+           pdm->HasPendingPaymentQueriesForTesting()) {
       WaitForOnPersonalDataChanged(pdm);
     }
   }
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   // changes from sync in the DB propagate into pdm. As we don't expect anything
   // to change, we have no better specific condition to wait for.
   pdm->Refresh();
-  while (pdm->HasPendingQueriesForTesting()) {
+  while (pdm->HasPendingPaymentQueriesForTesting()) {
     WaitForOnPersonalDataChanged(pdm);
   }
 

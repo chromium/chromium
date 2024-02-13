@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
@@ -15,7 +16,10 @@
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/download/public/common/download_danger_type.h"
+#include "components/download/public/common/download_item.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -169,19 +173,18 @@ std::u16string GetCustomRuleString(
 
 std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message) {
-  int curr_index = 0;
+        custom_rule_message,
+    size_t offset) {
   std::vector<std::pair<gfx::Range, GURL>> linked_ranges;
   for (const auto& custom_segment : custom_rule_message.message_segments()) {
     if (custom_segment.has_link()) {
       GURL url(custom_segment.link());
       if (url.is_valid()) {
         linked_ranges.emplace_back(
-            gfx::Range(curr_index, curr_index + custom_segment.text().length()),
-            url);
+            gfx::Range(offset, offset + custom_segment.text().length()), url);
       }
     }
-    curr_index += custom_segment.text().length();
+    offset += custom_segment.text().length();
   }
   return linked_ranges;
 }
@@ -428,13 +431,69 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 #endif
 }
 
-bool ShouldPromptReviewForDownload(Profile* profile,
-                                   download::DownloadDangerType danger_type) {
-  // Review dialog only appears if custom UI has been set by the admin.
+ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+CreateSampleCustomRuleMessage(const std::u16string& msg,
+                              const std::string& url) {
+  ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+      custom_message;
+  auto* custom_segment = custom_message.add_message_segments();
+  custom_segment->set_text(base::UTF16ToUTF8(msg));
+  custom_segment->set_link(url);
+  return custom_message;
+}
+
+std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
+GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
+                              download::DownloadDangerType danger_type) {
+  if (!download_item) {
+    return std::nullopt;
+  }
+
+  // Custom rule message is currently only present for either warning or block
+  // danger types.
+  TriggeredRule::Action current_action;
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+    current_action = TriggeredRule::WARN;
+  } else if (danger_type ==
+             download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
+    current_action = TriggeredRule::BLOCK;
+  } else {
+    return std::nullopt;
+  }
+
+  enterprise_connectors::ScanResult* scan_result =
+      static_cast<enterprise_connectors::ScanResult*>(
+          download_item->GetUserData(enterprise_connectors::ScanResult::kKey));
+  if (!scan_result) {
+    return std::nullopt;
+  }
+  for (const auto& metadata : scan_result->file_metadata) {
+    for (const auto& result : metadata.scan_response.results()) {
+      for (const auto& rule : result.triggered_rules()) {
+        if (rule.action() == current_action && rule.has_custom_rule_message()) {
+          return rule.custom_rule_message();
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
+
+bool ShouldPromptReviewForDownload(
+    Profile* profile,
+    const download::DownloadItem* download_item) {
+  // Review dialog only appears if custom UI has been set by the admin or custom
+  // rule message present in download item.
+  if (!download_item) {
+    return false;
+  }
+  download::DownloadDangerType danger_type = download_item->GetDangerType();
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
       danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
     return ConnectorsServiceFactory::GetForBrowserContext(profile)
-        ->HasExtraUiToDisplay(AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
+               ->HasExtraUiToDisplay(AnalysisConnector::FILE_DOWNLOADED,
+                                     kDlpTag) ||
+           GetDownloadsCustomRuleMessage(download_item, danger_type);
   } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
@@ -448,10 +507,11 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               Profile* profile,
                               download::DownloadItem* download_item,
                               content::WebContents* web_contents,
-                              download::DownloadDangerType danger_type,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure) {
   auto state = FinalContentAnalysisResult::FAILURE;
+  download::DownloadDangerType danger_type = download_item->GetDangerType();
+
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
     state = FinalContentAnalysisResult::WARNING;
   }
@@ -486,7 +546,10 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
       std::make_unique<ContentAnalysisDownloadsDelegate>(
           filename, custom_message, learn_more_url,
           bypass_justification_required, std::move(keep_closure),
-          std::move(discard_closure), download_item),
+          std::move(discard_closure), download_item,
+          GetDownloadsCustomRuleMessage(download_item, danger_type)
+              .value_or(ContentAnalysisResponse::Result::TriggeredRule::
+                            CustomRuleMessage())),
       true,  // Downloads are always cloud-based for now.
       web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
       /* file_count */ 1, state, download_item);

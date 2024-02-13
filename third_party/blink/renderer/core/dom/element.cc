@@ -143,6 +143,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_controls_collection.h"
@@ -1055,6 +1056,14 @@ void Element::SetElementArrayAttribute(
     stored_elements->insert(element);
   }
 
+  // This |Set| call must occur after our call to |setAttribute| above.
+  //
+  // |setAttribute| will call through to |AttributeChanged| which calls
+  // |SynchronizeContentAttributeAndElementReference| erasing the entry for
+  // |name| from the map.
+  element_attribute_map->Set(name, stored_elements);
+
+  // |HandleAttributeChanged| must be called after updating the attribute map.
   if (isConnected()) {
     if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
       cache->HandleAttributeChanged(name, this);
@@ -5067,14 +5076,13 @@ void Element::SetIsEligibleForElementCapture(bool value) {
     SetElementFlag(ElementFlags::kHasCheckedElementCaptureEligibility, true);
   }
 
-  ConsoleMessage* console_message = nullptr;
   if (has_checked) {
     const bool old_value =
         !HasRareData() ||
         HasElementFlag(ElementFlags::kIsEligibleForElementCapture);
 
     if (value != old_value) {
-      console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kInfo,
           String::Format("restrictTo(): Element %s restriction eligibility. "
@@ -5087,7 +5095,7 @@ void Element::SetIsEligibleForElementCapture(bool value) {
     // We want to issue a different log message if the element is not eligible
     // when first painted.
     if (!value) {
-      console_message = MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kRendering,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "restrictTo(): Element is not eligible for restriction. For "
@@ -5095,11 +5103,6 @@ void Element::SetIsEligibleForElementCapture(bool value) {
           "https://screen-share.github.io/element-capture/"
           "#elements-eligible-for-restriction");
     }
-  }
-
-  if (console_message) {
-    console_message->SetNodes(GetDocument().GetFrame(), {this->GetDomNodeId()});
-    GetDocument().AddConsoleMessage(console_message);
   }
 
   return SetElementFlag(ElementFlags::kIsEligibleForElementCapture, value);
@@ -5261,13 +5264,9 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
       parameters_mismatch |=
           RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
           existing_shadow->serializable() != serializable;
-      // TODO(crbug.com/1521128): We'd like to check for mismatch of clonable
-      // here, but this would break the core use case of *not* breaking
-      // non-DSD-aware web components. Since declarative shadow roots have
-      // clonable:true by default, and old code doesn't know to add
-      // clonable:true to attachShadow() parameters, all old web components
-      // would break. See https://github.com/whatwg/html/issues/10107
-      // For now, this does not check for `clonable` mismatch.
+      parameters_mismatch |=
+          RuntimeEnabledFeatures::ShadowRootClonableEnabled() &&
+          existing_shadow->clonable() != clonable;
       if (parameters_mismatch) {
         exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                           "Parameters used for attachShadow() "
@@ -5293,7 +5292,8 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
                                           ShadowRootType type,
                                           FocusDelegation focus_delegation,
                                           SlotAssignmentMode slot_assignment,
-                                          bool serializable) {
+                                          bool serializable,
+                                          bool clonable) {
   CHECK(type == ShadowRootType::kOpen || type == ShadowRootType::kClosed);
   CHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() ||
         !serializable);
@@ -5312,7 +5312,6 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement& template_element,
 
   // TODO(crbug.com/1523816): Declarative shadow roots should set the registry
   // argument here.
-  bool clonable = true;  // Declarative shadow roots are clonable by default.
   ShadowRoot& shadow_root =
       AttachShadowRootInternal(type, focus_delegation, slot_assignment,
                                /*registry*/ nullptr, serializable, clonable);
@@ -6355,11 +6354,33 @@ void Element::FocusWithinStateChanged() {
   PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
-void Element::SetHasFocusWithinUpToAncestor(bool flag, Element* ancestor) {
-  for (Element* element = this; element && element != ancestor;
+void Element::SetHasFocusWithinUpToAncestor(bool flag,
+                                            Element* ancestor,
+                                            bool need_snap_container_search) {
+  bool reached_ancestor = false;
+  for (Element* element = this;
+       element && (need_snap_container_search || !reached_ancestor);
        element = FlatTreeTraversal::ParentElement(*element)) {
-    element->SetHasFocusWithin(flag);
-    element->FocusWithinStateChanged();
+    if (!reached_ancestor && element != ancestor) {
+      element->SetHasFocusWithin(flag);
+      element->FocusWithinStateChanged();
+    }
+    // If |ancestor| or any of its ancestors is a snap container, that snap
+    // container needs to know which one of its descendants newly gained or lost
+    // focus even if its own HasFocusWithin state has not changed.
+    if (element != this && need_snap_container_search) {
+      if (const auto* box = element->GetLayoutBoxForScrolling()) {
+        if (box->Style() && !box->Style()->GetScrollSnapType().is_none) {
+          if (GetDocument().GetFrame() && GetDocument().GetFrame()->View()) {
+            // Tag the enclosing snap container for an update so it can be
+            // updated with focus information.
+            GetDocument().GetFrame()->View()->AddPendingSnapUpdate(
+                box->GetScrollableArea());
+          }
+        }
+      }
+    }
+    reached_ancestor |= element == ancestor;
   }
 }
 
@@ -9789,6 +9810,12 @@ Element* Element::ImplicitAnchorElement() {
     if (Element* select_list = html_element->popoverOwnerSelectListElement()) {
       return select_list;
     }
+    if (auto* datalist = DynamicTo<HTMLDataListElement>(html_element)) {
+      if (auto* select = datalist->ParentSelect()) {
+        CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+        return select;
+      }
+    }
   } else if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
     switch (pseudo_element->GetPseudoId()) {
       case kPseudoIdBefore:
@@ -9807,6 +9834,15 @@ void Element::setHTMLUnsafe(const String& html,
   CHECK(RuntimeEnabledFeatures::HTMLUnsafeMethodsEnabled());
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
                        ForceHtml::kForce, exception_state);
+}
+
+void Element::AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
+                                mojom::blink::ConsoleMessageLevel level,
+                                const String& message) {
+  auto* console_message =
+      MakeGarbageCollected<ConsoleMessage>(source, level, message);
+  console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
+  GetDocument().AddConsoleMessage(console_message);
 }
 
 }  // namespace blink

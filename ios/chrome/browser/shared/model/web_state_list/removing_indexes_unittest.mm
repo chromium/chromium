@@ -18,13 +18,47 @@ TEST_F(RemovingIndexesTest, Count) {
   EXPECT_EQ(RemovingIndexes({1, 1}).count(), 1);
   EXPECT_EQ(RemovingIndexes({1, 2}).count(), 2);
   EXPECT_EQ(RemovingIndexes({2, 1, 2, 1}).count(), 2);
-  EXPECT_EQ(RemovingIndexes::Range(2, 3).count(), 3);
+  EXPECT_EQ(RemovingIndexes({.start = 2, .count = 3}).count(), 3);
+}
+
+// Tests that Span returns an empty range when no tabs are removed.
+TEST_F(RemovingIndexesTest, SpanEmpty) {
+  const RemovingIndexes removing_indexes({});
+  const RemovingIndexes::Range span = removing_indexes.span();
+  EXPECT_EQ(span.start, -1);
+  EXPECT_EQ(span.count, 0);
+}
+
+// Tests that Span returns an range with one element when one tab is removed.
+TEST_F(RemovingIndexesTest, SpanOneTab) {
+  const RemovingIndexes removing_indexes({4});
+  const RemovingIndexes::Range span = removing_indexes.span();
+  EXPECT_EQ(span.start, 4);
+  EXPECT_EQ(span.count, 1);
+}
+
+// Tests that Span returns the range passed to the constructor when closing
+// a contiguous range of tabs.
+TEST_F(RemovingIndexesTest, SpanRangeOfTabs) {
+  const RemovingIndexes removing_indexes({.start = 2, .count = 3});
+  const RemovingIndexes::Range span = removing_indexes.span();
+  EXPECT_EQ(span.start, 2);
+  EXPECT_EQ(span.count, 3);
+}
+
+// Tests that Span returns the minimum range that cover all closed tabs when
+// a disjoint set of tabs is closed.
+TEST_F(RemovingIndexesTest, SpanMultipleTabs) {
+  const RemovingIndexes removing_indexes({1, 3, 7});
+  const RemovingIndexes::Range span = removing_indexes.span();
+  EXPECT_EQ(span.start, 1);
+  EXPECT_EQ(span.count, 7);
 }
 
 // Tests that RemovingIndexes correctly returns the correct updated value
 // when asked for index if no tabs are removed.
 TEST_F(RemovingIndexesTest, IndexAfterRemovalEmpty) {
-  RemovingIndexes removing_indexes({});
+  const RemovingIndexes removing_indexes({});
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);  // no removal before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), 1);  // no removal before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(2), 2);  // no removal before
@@ -43,7 +77,7 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalEmpty) {
 // Tests that RemovingIndexes correctly returns the correct updated value
 // when asked for index if one tab is removed.
 TEST_F(RemovingIndexesTest, IndexAfterRemovalOneTab) {
-  RemovingIndexes removing_indexes({4});
+  const RemovingIndexes removing_indexes({4});
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), 1);
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(2), 2);
@@ -62,7 +96,7 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalOneTab) {
 // Tests that RemovingIndexes correctly returns the correct updated value
 // when asked for index if a range of tabs are removed.
 TEST_F(RemovingIndexesTest, IndexAfterRemovalRangeOfTabs) {
-  RemovingIndexes removing_indexes = RemovingIndexes::Range(2, 3);
+  const RemovingIndexes removing_indexes({.start = 2, .count = 3});
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), 1);
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(2), WebStateList::kInvalidIndex);
@@ -81,7 +115,7 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalRangeOfTabs) {
 // Tests that RemovingIndexes correctly returns the correct updated value
 // when asked for index if multiple tabs have been removed.
 TEST_F(RemovingIndexesTest, IndexAfterRemovalMultipleTabs) {
-  RemovingIndexes removing_indexes({1, 3, 7});
+  const RemovingIndexes removing_indexes({1, 3, 7});
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(0), 0);  // no removal before
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(1), WebStateList::kInvalidIndex);
   EXPECT_EQ(removing_indexes.IndexAfterRemoval(2), 1);  // one removals before
@@ -100,7 +134,7 @@ TEST_F(RemovingIndexesTest, IndexAfterRemovalMultipleTabs) {
 // Tests that RemovingIndexes correctly returns whether it contains the
 // index when no tabs are removed.
 TEST_F(RemovingIndexesTest, ContainsEmpty) {
-  RemovingIndexes removing_indexes({});
+  const RemovingIndexes removing_indexes({});
   EXPECT_FALSE(removing_indexes.Contains(0));
   EXPECT_FALSE(removing_indexes.Contains(1));
   EXPECT_FALSE(removing_indexes.Contains(2));
@@ -115,7 +149,7 @@ TEST_F(RemovingIndexesTest, ContainsEmpty) {
 // Tests that RemovingIndexes correctly returns whether it contains the
 // index when one tabs is removed.
 TEST_F(RemovingIndexesTest, ContainsOneTab) {
-  RemovingIndexes removing_indexes({4});
+  const RemovingIndexes removing_indexes({4});
   EXPECT_FALSE(removing_indexes.Contains(0));
   EXPECT_FALSE(removing_indexes.Contains(1));
   EXPECT_FALSE(removing_indexes.Contains(2));
@@ -130,7 +164,7 @@ TEST_F(RemovingIndexesTest, ContainsOneTab) {
 // Tests that RemovingIndexes correctly returns whether it contains the
 // index when a range of tabs are removed.
 TEST_F(RemovingIndexesTest, ContainsRangeOfTabs) {
-  RemovingIndexes removing_indexes = RemovingIndexes::Range(2, 3);
+  const RemovingIndexes removing_indexes({.start = 2, .count = 3});
   EXPECT_FALSE(removing_indexes.Contains(0));
   EXPECT_FALSE(removing_indexes.Contains(1));
   EXPECT_TRUE(removing_indexes.Contains(2));
@@ -145,7 +179,7 @@ TEST_F(RemovingIndexesTest, ContainsRangeOfTabs) {
 // Tests that RemovingIndexes correctly returns whether it contains the
 // index when multiple tabs have been removed.
 TEST_F(RemovingIndexesTest, ContainsMultipleTabs) {
-  RemovingIndexes removing_indexes({1, 3, 7});
+  const RemovingIndexes removing_indexes({1, 3, 7});
   EXPECT_FALSE(removing_indexes.Contains(0));
   EXPECT_TRUE(removing_indexes.Contains(1));
   EXPECT_FALSE(removing_indexes.Contains(2));

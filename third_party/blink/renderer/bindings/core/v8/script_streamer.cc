@@ -788,7 +788,8 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
     // code cache yet) and produce new ones.
     CachedMetadataHandler* cache_handler = script_resource_->CacheHandler();
     scoped_refptr<CachedMetadata> cached_metadata =
-        V8CodeCache::GetCachedMetadataForCompileHints(cache_handler);
+        V8CodeCache::GetCachedMetadataForCompileHints(
+            cache_handler, CachedMetadataHandler::kAllowUnchecked);
     local_compile_hints_consumer_ =
         std::make_unique<v8_compile_hints::V8LocalCompileHintsConsumer>(
             cached_metadata.get());

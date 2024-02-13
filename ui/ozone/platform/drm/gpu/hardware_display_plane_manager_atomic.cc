@@ -65,9 +65,9 @@ std::vector<uint32_t> GetCrtcIdsOfPlanes(
 bool AddPendingCrtcProperty(drmModeAtomicReq* property_set,
                             uint32_t crtc_id,
                             DrmWrapper::Property& prop,
-                            absl::optional<ScopedDrmPropertyBlob>& pending_blob,
+                            std::optional<ScopedDrmPropertyBlob>& pending_blob,
                             std::vector<ScopedDrmPropertyBlob>& pending_blobs) {
-  // If `pending_blob` is absl::nullopt then don't change the property.
+  // If `pending_blob` is std::nullopt then don't change the property.
   if (!pending_blob.has_value()) {
     return true;
   }
@@ -75,7 +75,7 @@ bool AddPendingCrtcProperty(drmModeAtomicReq* property_set,
   // Take the pending blob. If we successfully set it, we'll add it to
   // `pending_blobs`.
   ScopedDrmPropertyBlob blob = std::move(pending_blob.value());
-  pending_blob = absl::nullopt;
+  pending_blob = std::nullopt;
   if (!prop.id) {
     return true;
   }

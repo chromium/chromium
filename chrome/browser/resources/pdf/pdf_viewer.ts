@@ -38,7 +38,7 @@ import type {ViewerToolbarElement} from './elements/viewer-toolbar.js';
 import {InkController, InkControllerEventType} from './ink_controller.js';
 //</if>
 import {LocalStorageProxyImpl} from './local_storage_proxy.js';
-import {record, UserAction} from './metrics.js';
+import {record, recordEnumeration, UserAction} from './metrics.js';
 import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navigator.js';
 import {deserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
 import {getTemplate} from './pdf_viewer.html.js';
@@ -46,6 +46,18 @@ import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import type {DestinationMessageData, DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+
+/**
+ * Keep in sync with the values for enum PDFPostMessageDataType in
+ * tools/metrics/histograms/metadata/pdf/enums.xml.
+ * These values are persisted to logs. Entries should not be renumbered, removed
+ * or reused.
+ */
+enum PostMessageDataType {
+  GET_SELECTED_TEXT = 0,
+  PRINT = 1,
+  SELECT_ALL = 2,
+}
 
 interface EmailMessageData {
   type: string;
@@ -710,20 +722,28 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       return true;
     }
 
+    let messageType;
     switch (message.data.type.toString()) {
       case 'getSelectedText':
+        messageType = PostMessageDataType.GET_SELECTED_TEXT;
         this.pluginController_!.getSelectedText().then(
             this.handleSelectedTextReply.bind(this));
         break;
       case 'print':
+        messageType = PostMessageDataType.PRINT;
         this.pluginController_!.print();
         break;
       case 'selectAll':
+        messageType = PostMessageDataType.SELECT_ALL;
         this.pluginController_!.selectAll();
         break;
       default:
         return false;
     }
+
+    recordEnumeration(
+        'PDF.PostMessageDataType', messageType,
+        Object.keys(PostMessageDataType).length);
     return true;
   }
 

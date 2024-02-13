@@ -144,6 +144,7 @@ chrome_ios_eg2_test("ios_chrome_settings_eg2tests_module") {
     "//ios/chrome/browser/ui/settings/clear_browsing_data:eg2_tests",
     "//ios/chrome/browser/ui/settings/content_settings:eg2_tests",
     "//ios/chrome/browser/ui/settings/google_services:eg2_tests",
+    "//ios/chrome/browser/ui/settings/google_services/manage_accounts:eg2_tests",
     "//ios/chrome/browser/ui/settings/language:eg2_tests",
     "//ios/chrome/browser/ui/settings/notifications:eg2_tests",
     "//ios/chrome/browser/ui/settings/notifications/tracking_price:eg2_tests",
@@ -183,6 +184,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
 
   deps = [
     "//ios/chrome/browser/plus_addresses/ui:eg2_tests",
+    "//ios/chrome/browser/qr_scanner/ui_bundled:eg2_tests",
     "//ios/chrome/browser/settings/model/sync/utils:eg2_tests",
     "//ios/chrome/browser/ui/autofill/bottom_sheet:eg2_tests",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:eg2_tests",
@@ -216,7 +218,6 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:eg2_tests",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history:eg2_tests",
     "//ios/chrome/browser/ui/price_notifications:eg2_tests",
-    "//ios/chrome/browser/ui/qr_scanner:eg2_tests",
     "//ios/chrome/browser/ui/reading_list:eg2_tests",
     "//ios/chrome/browser/ui/recent_tabs:eg2_tests",
     "//ios/chrome/browser/ui/sad_tab:eg2_tests",
@@ -240,9 +241,9 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/text_fragments:eg2_tests",
     "//ios/chrome/browser/ui/toolbar:eg2_tests",
     "//ios/chrome/browser/ui/unit_conversion:eg2_tests",
-    "//ios/chrome/browser/ui/webui:eg2_tests",
-    "//ios/chrome/browser/ui/webui/interstitials:eg2_tests",
-    "//ios/chrome/browser/ui/webui/optimization_guide_internals:eg2_tests",
+    "//ios/chrome/browser/webui/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/webui/ui_bundled/interstitials:eg2_tests",
+    "//ios/chrome/browser/webui/ui_bundled/optimization_guide_internals:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }

@@ -374,7 +374,6 @@ PasswordStoreBackendErrorType APIErrorCodeToErrorType(
 
 }  // namespace
 
-
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
@@ -509,7 +508,8 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsInternal(
   // Record FillMatchingLoginsAsync metrics prior to invoking |callback|.
   LoginsOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForLoginsRetrieval(
-          MethodName("FillMatchingLoginsAsync"), std::move(callback));
+          MethodName("FillMatchingLoginsAsync"), std::move(callback),
+          GetStoreType());
 
   // Create a barrier callback that aggregates results of a multiple
   // calls to GetLoginsInternal.
@@ -552,7 +552,8 @@ void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeInternal(
   // Record metrics prior to invoking |callback|.
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
-          MethodName("RemoveLoginsByURLAndTimeAsync"), std::move(callback));
+          MethodName("RemoveLoginsByURLAndTimeAsync"), std::move(callback),
+          GetStoreType());
 
   GetAllLoginsInternal(
       account,
@@ -571,7 +572,8 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenInternal(
   // Record metrics prior to invoking |callback|.
   PasswordChangesOrErrorReply record_metrics_and_reply =
       ReportMetricsAndInvokeCallbackForStoreModifications(
-          MethodName("RemoveLoginsCreatedBetweenAsync"), std::move(callback));
+          MethodName("RemoveLoginsCreatedBetweenAsync"), std::move(callback),
+          GetStoreType());
 
   GetAllLoginsInternal(
       account,
@@ -588,22 +590,22 @@ void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsInternal(
     std::string account,
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
-  // this callback more gracefully when it's implemented.
+  // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to
+  // handle this callback more gracefully when it's implemented.
   PasswordChangesOrErrorReply record_metrics_and_run_completion =
       base::BindOnce(
           [](PasswordStoreBackendMetricsRecorder metrics_recorder,
              base::OnceClosure completion, PasswordChangesOrError changes) {
             // Errors are not recorded at the moment.
-            // TODO(https://crbug.com/1278807): Implement error handling, when
-            // actual store changes will be received from the store.
+            // TODO(https://crbug.com/1278807): Implement error handling,
+            // when actual store changes will be received from the store.
             metrics_recorder.RecordMetrics(SuccessStatus::kSuccess,
                                            /*error=*/std::nullopt);
             std::move(completion).Run();
           },
           PasswordStoreBackendMetricsRecorder(
               BackendInfix("AndroidBackend"),
-              MethodName("DisableAutoSignInForOriginsAsync")),
+              MethodName("DisableAutoSignInForOriginsAsync"), GetStoreType()),
           std::move(completion));
 
   GetAllLoginsInternal(
@@ -896,11 +898,11 @@ void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
                                               base::TimeDelta delay) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   request_for_job_.emplace(
-      job_id, JobReturnHandler(
-                  std::move(callback),
-                  PasswordStoreBackendMetricsRecorder(
-                      BackendInfix("AndroidBackend"), std::move(method_name)),
-                  delay, operation));
+      job_id, JobReturnHandler(std::move(callback),
+                               PasswordStoreBackendMetricsRecorder(
+                                   BackendInfix("AndroidBackend"),
+                                   std::move(method_name), GetStoreType()),
+                               delay, operation));
 }
 
 std::optional<PasswordStoreAndroidBackend::JobReturnHandler>
@@ -993,7 +995,9 @@ void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
 LoginsOrErrorReply
 PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
     const MethodName& method_name,
-    LoginsOrErrorReply callback) {
+    LoginsOrErrorReply callback,
+    PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+        store_type) {
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   return base::BindOnce(
@@ -1007,7 +1011,7 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
         std::move(callback).Run(std::move(results));
       },
       PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
-                                          method_name),
+                                          method_name, store_type),
       std::move(callback));
 }
 
@@ -1015,7 +1019,9 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
 PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
     ReportMetricsAndInvokeCallbackForStoreModifications(
         const MethodName& method_name,
-        PasswordChangesOrErrorReply callback) {
+        PasswordChangesOrErrorReply callback,
+        PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
+            store_type) {
   // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
   // this callback more gracefully when it's implemented.
   return base::BindOnce(
@@ -1029,7 +1035,7 @@ PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
         std::move(callback).Run(std::move(results));
       },
       PasswordStoreBackendMetricsRecorder(BackendInfix("AndroidBackend"),
-                                          method_name),
+                                          method_name, store_type),
       std::move(callback));
 }
 

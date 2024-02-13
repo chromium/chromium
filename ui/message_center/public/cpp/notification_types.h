@@ -7,8 +7,8 @@
 
 namespace message_center {
 
-// Notification types. Note that the values in this enumeration are being
-// recoded in a histogram, updates should not change the entries' values.
+// Notification types. Used to determine the view that will represent a
+// notification.
 enum NotificationType {
   NOTIFICATION_TYPE_SIMPLE = 0,
   DEPRECATED_NOTIFICATION_TYPE_BASE_FORMAT =
@@ -17,9 +17,10 @@ enum NotificationType {
   NOTIFICATION_TYPE_MULTIPLE = 3,
   NOTIFICATION_TYPE_PROGRESS = 4,  // Notification with progress bar.
   NOTIFICATION_TYPE_CUSTOM = 5,
+  NOTIFICATION_TYPE_CONVERSATION = 6,
 
   // Add new values before this line.
-  NOTIFICATION_TYPE_LAST = NOTIFICATION_TYPE_CUSTOM
+  NOTIFICATION_TYPE_LAST = NOTIFICATION_TYPE_CONVERSATION
 };
 
 enum NotificationPriority {

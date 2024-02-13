@@ -463,7 +463,7 @@ void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
   header_year_->SetText(year);
 }
 
-BEGIN_METADATA(CalendarHeaderView, views::View)
+BEGIN_METADATA(CalendarHeaderView)
 END_METADATA
 
 CalendarView::CalendarView(bool for_glanceables_container)
@@ -2521,7 +2521,7 @@ bool CalendarView::IsUpNextViewVisible() const {
   return up_next_view_ && up_next_view_->GetVisible();
 }
 
-BEGIN_METADATA(CalendarView, GlanceableTrayChildBubble)
+BEGIN_METADATA(CalendarView)
 END_METADATA
 
 }  // namespace ash

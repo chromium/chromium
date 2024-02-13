@@ -13,8 +13,7 @@
 
 using ::testing::MatchesRegex;
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 // gmock "regex" support is very basic and doesn't support [] or + operations.
@@ -120,5 +119,4 @@ TEST_F(SmbFileSystemIdTest, GetUserFromFileSystemId_NoUser) {
   EXPECT_FALSE(GetUserFromFileSystemId(file_system_id_3));
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

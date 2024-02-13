@@ -32,10 +32,6 @@ extern NSString* const kDefaultBrowserUtilsKey;
 
 namespace {
 
-// Key in storage containing an NSDate corresponding to the last time
-// an HTTP(S) link was sent and opened by the app.
-NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
-
 // Key in storage containing an array of dates. Each date correspond to
 // a general event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventGeneral = @"lastSignificantUserEvent";
@@ -87,18 +83,6 @@ NSString* const kGenericPromoInteractionCount = @"genericPromoInteractionCount";
 // promo has been displayed.
 NSString* const kTailoredPromoInteractionCount =
     @"tailoredPromoInteractionCount";
-
-// TODO(crbug.com/1445218): Remove in M116+.
-// Key in storage containing an NSDate indicating the last time a user
-// interacted with the "remind me later" panel.
-NSString* const kRemindMeLaterPromoActionInteraction =
-    @"remindMeLaterPromoActionInteraction";
-
-// TODO(crbug.com/1445240): Remove in M116+.
-// Key in storage containing a bool indicating if the user tapped on
-// button to open settings.
-NSString* const kOpenSettingsActionInteraction =
-    @"openSettingsActionInteraction";
 
 // Key in storage containing the timestamp of the last time the user opened the
 // app via first-party intent.
@@ -475,12 +459,20 @@ void StoreCurrentTimestampForKey(NSString* key) {
 }
 
 std::string GetVideoPromoVariant() {
-  return base::GetFieldTrialParamValueByFeature(
-      kDefaultBrowserVideoPromo, "default_browser_video_promo_variant");
+  if (!IsDefaultBrowserVideoPromoEnabled()) {
+    return "";
+  }
+  std::string variant = base::GetFieldTrialParamValueByFeature(
+      kDefaultBrowserVideoPromo, kDefaultBrowserVideoPromoVariant);
+  if (variant != "") {
+    return variant;
+  }
+  return kVideoFullscreenPromo;
 }
 
 }  // namespace
 
+NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
 NSString* const kLastTimeUserInteractedWithNonModalPromo =
     @"lastTimeUserInteractedWithNonModalPromo";
 NSString* const kLastTimeUserInteractedWithFullscreenPromo =
@@ -709,6 +701,15 @@ void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
   });
 }
 
+void CleanupStorageForTriggerExperiment() {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+
+  [defaults removeObjectForKey:kAllTimestampsAppLaunchColdStart];
+  [defaults removeObjectForKey:kAllTimestampsAppLaunchWarmStart];
+  [defaults removeObjectForKey:kAllTimestampsAppLaunchIndirectStart];
+  [defaults removeObjectForKey:kAutofillUseCount];
+}
+
 void LogCopyPasteInOmniboxForDefaultBrowserPromo() {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   StoreCurrentTimestampForKey(kOmniboxUseCount);
@@ -719,7 +720,11 @@ void LogBookmarkUseForDefaultBrowserPromo() {
   StoreCurrentTimestampForKey(kBookmarkUseCount);
 }
 
-void LogAutofillUseForDefaultBrowserPromo() {
+void LogAutofillUseForCriteriaExperiment() {
+  if (!IsDefaultBrowserTriggerCriteraExperimentEnabled()) {
+    CleanupStorageForTriggerExperiment();
+    return;
+  }
   StoreCurrentTimestampForKey(kAutofillUseCount);
 }
 
@@ -895,7 +900,6 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
     kDisplayedFullscreenPromoCount,
     kTailoredPromoInteractionCount,
     kGenericPromoInteractionCount,
-    kRemindMeLaterPromoActionInteraction,
     // clang-format on
   ];
 
@@ -972,15 +976,6 @@ bool IsPostRestoreDefaultBrowserEligibleUser() {
          IsChromeLikelyDefaultBrowser();
 }
 
-void CleanupUnusedStorage() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // TODO(crbug.com/1445240): Remove in M116+.
-  [defaults removeObjectForKey:kOpenSettingsActionInteraction];
-  // TODO(crbug.com/1445218): Remove in M116+.
-  [defaults removeObjectForKey:kRemindMeLaterPromoActionInteraction];
-}
-
 DefaultPromoTypeForUMA GetDefaultPromoTypeForUMA(DefaultPromoType type) {
   switch (type) {
     case DefaultPromoTypeGeneral:
@@ -1034,14 +1029,6 @@ const std::string IOSDefaultBrowserPromoActionToString(
     default:
       NOTREACHED_NORETURN();
   }
-}
-
-void CleanupStorageForTriggerExperiment() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  [defaults removeObjectForKey:kAllTimestampsAppLaunchColdStart];
-  [defaults removeObjectForKey:kAllTimestampsAppLaunchWarmStart];
-  [defaults removeObjectForKey:kAllTimestampsAppLaunchIndirectStart];
 }
 
 void RecordPromoStatsToUMAForActionString(PromoStatistics* promo_stats,

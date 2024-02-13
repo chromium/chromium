@@ -10,6 +10,7 @@ import {AutomationUtil} from '/common/automation_util.js';
 import {constants} from '/common/constants.js';
 import {Cursor} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
@@ -459,3 +460,5 @@ ChromeVoxRange.observers_ = [];
 
 /** @type {ChromeVoxRange} */
 ChromeVoxRange.instance;
+
+TestImportManager.exportForTesting(ChromeVoxRange);

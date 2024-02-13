@@ -17,7 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './firmware_confirmation_dialog.html.js';
 import {FirmwareUpdate} from './firmware_update.mojom-webui.js';
 import {OpenConfirmationDialogEventDetail, OpenUpdateDialogEventDetail} from './firmware_update_types.js';
-import {isAppV2Enabled} from './firmware_update_utils.js';
+import {isTrustedReportsFirmwareEnabled} from './firmware_update_utils.js';
 
 /**
  * @fileoverview
@@ -67,7 +67,7 @@ export class FirmwareConfirmationDialogElement extends
         (e) => this.onOpenConfirmationDialog(
             e as CustomEvent<OpenConfirmationDialogEventDetail>));
 
-    this.shouldShowDisclaimer = isAppV2Enabled();
+    this.shouldShowDisclaimer = isTrustedReportsFirmwareEnabled();
   }
 
   protected openUpdateDialog(): void {

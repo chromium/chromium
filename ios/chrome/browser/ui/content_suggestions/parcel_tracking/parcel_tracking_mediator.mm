@@ -72,7 +72,7 @@
   return _parcelTrackingItems;
 }
 
-- (void)disableParcelTracking {
+- (void)disableModule {
   DisableParcelTracking(GetApplicationContext()->GetLocalState());
   _shoppingService->StopTrackingAllParcels(base::BindOnce(^(bool){
   }));
@@ -103,11 +103,8 @@
 
 - (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
   [self.NTPMetricsDelegate parcelTrackingOpened];
-  ContentSuggestionsModuleType type =
-      [_parcelTrackingItems count] > 2
-          ? ContentSuggestionsModuleType::kParcelTrackingSeeMore
-          : ContentSuggestionsModuleType::kParcelTracking;
-  [self.delegate logMagicStackEngagementForType:type];
+  [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                                    kParcelTracking];
   _URLLoadingBrowserAgent->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
 }
 

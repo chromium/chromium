@@ -11,7 +11,7 @@ import 'chrome://resources/cros_components/button/button.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionApprovalsAfter} from './flows/extension_approvals_after.js';
-import {LocalWebApprovalsAfterElement} from './flows/local_web_approvals_after.js';
+import {LocalWebApprovalsAfter} from './flows/local_web_approvals_after.js';
 import {getTemplate} from './parent_access_after.html.js';
 import {isParentAccessJellyEnabled, ParentAccessEvent} from './parent_access_app.js';
 import {ParentAccessScreen} from './parent_access_screen.js';
@@ -53,7 +53,7 @@ class ParentAccessAfter extends PolymerElement implements ParentAccessScreen {
     switch (response!.params.flowType) {
       case ParentAccessParams_FlowType.kWebsiteAccess:
         this.shadowRoot!.querySelector('#after-screen-body')!.appendChild(
-            new LocalWebApprovalsAfterElement());
+            new LocalWebApprovalsAfter());
         return;
       case ParentAccessParams_FlowType.kExtensionAccess:
         this.shadowRoot!.querySelector('#after-screen-body')!.appendChild(

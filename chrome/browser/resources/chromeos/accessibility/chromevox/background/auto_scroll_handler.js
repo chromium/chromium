@@ -11,6 +11,7 @@ import {constants} from '/common/constants.js';
 import {CursorUnit} from '/common/cursors/cursor.js';
 import {CursorRange} from '/common/cursors/range.js';
 import {EventHandler} from '/common/event_handler.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 import {Command} from '../common/command.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
@@ -449,3 +450,5 @@ const TIMEOUT_FOCUS_EVENT_DROP_MS = 2000;
  * @const {number}
  */
 const DELAY_HANDLE_SCROLLED_MS = 150;
+
+TestImportManager.exportForTesting(AutoScrollHandler);

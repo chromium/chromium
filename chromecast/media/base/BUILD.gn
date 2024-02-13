@@ -41,8 +41,6 @@ cast_source_set("base") {
     "cast_decoder_buffer_impl.h",
     "decrypt_context_impl.cc",
     "decrypt_context_impl.h",
-    "media_caps.cc",
-    "media_caps.h",
     "supported_codec_profile_levels_memo.cc",
     "supported_codec_profile_levels_memo.h",
     "video_mode_switcher.cc",

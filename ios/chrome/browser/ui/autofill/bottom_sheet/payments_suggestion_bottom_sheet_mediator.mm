@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -194,13 +193,13 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
           autofill::CreditCard::CreateVirtualCard(*creditCard);
       [creditCardData
           addObject:[[CreditCardData alloc]
-                        initWithCreditCard:&virtualCard
+                        initWithCreditCard:virtualCard
                                       icon:[self
                                                iconForCreditCard:creditCard]]];
     }
     [creditCardData
         addObject:[[CreditCardData alloc]
-                      initWithCreditCard:creditCard
+                      initWithCreditCard:*creditCard
                                     icon:[self iconForCreditCard:creditCard]]];
     hasNonLocalCard |= !autofill::IsCreditCardLocal(*creditCard);
   }
@@ -211,7 +210,7 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate
 
-- (void)didSelectCreditCard:(NSString*)backendIdentifier {
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
   if (!_webStateList) {
     return;
   }
@@ -220,8 +219,6 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
   if (!activeWebState) {
     return;
   }
-
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 
   FormSuggestionTabHelper* tabHelper =
       FormSuggestionTabHelper::FromWebState(activeWebState);
@@ -249,8 +246,15 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                       minorValue:nil
               displayDescription:nil
                             icon:nil
-                     popupItemId:autofill::PopupItemId::kCreditCardEntry
-               backendIdentifier:backendIdentifier
+                     popupItemId:
+                         ((base::FeatureList::IsEnabled(
+                               autofill::features::
+                                   kAutofillEnableVirtualCards) &&
+                           ([creditCardData recordType] ==
+                            autofill::CreditCard::RecordType::kVirtualCard))
+                              ? autofill::PopupItemId::kVirtualCreditCardEntry
+                              : autofill::PopupItemId::kCreditCardEntry)
+               backendIdentifier:[creditCardData backendIdentifier]
                   requiresReauth:NO
       acceptanceA11yAnnouncement:
           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(

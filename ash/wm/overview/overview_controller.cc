@@ -306,12 +306,6 @@ void OverviewController::OnWindowActivating(ActivationReason reason,
     overview_session_->OnWindowActivating(reason, gained_active, lost_active);
 }
 
-void OverviewController::OnPineWidgetShown() {
-  if (pine_callback_for_test_) {
-    std::move(pine_callback_for_test_).Run();
-  }
-}
-
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   // Pause raster scale updates while the overview is being toggled. This is to
   // handle the case where a mirror view is deleted then recreated when

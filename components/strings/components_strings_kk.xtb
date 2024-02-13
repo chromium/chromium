@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Қауіпсіз емес</translation>
 <translation id="1075079914415273530">Ауыл және орман шаруашылығы</translation>
 <translation id="1075364221219156102">Кіру кілтін пайдалану</translation>
-<translation id="1078033282564106222">Ғимарат нөмірі опциясы таңдалды</translation>
 <translation id="1080116354587839789">Еніне сәйкестендіру</translation>
 <translation id="1081061862829655580">19-науа</translation>
 <translation id="1082026381988252344">Ортақ қойынды мазмұнын айналдыру және масштабтау</translation>
@@ -586,6 +585,7 @@
 <translation id="2075497153347571252">Әкімшіңіз <ph name="ORIGIN" /> сайты үшін <ph name="PERMISSION" /> рұқсатын блоктады.</translation>
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2080021694978766903">Бұл саясаттағы жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2081482239432306393">Үй нөмірі опциясы таңдалды</translation>
 <translation id="20817612488360358">Жүйелік прокси параметрлері пайдалану үшін орнатылған, бірақ анық прокси конфигурациясы да көрсетілген.</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> ішінен <ph name="RESULT_NUMBER" /> нәтиже</translation>
 <translation id="2083256696566019397">Кірген сайын рұқсат ету</translation>
@@ -613,7 +613,6 @@
 <translation id="2126374524350484896">PDF жасаушы:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode саясаты орнатылмағандықтан, сіз көрсеткен үлгілер қолданылмауы мүмкін.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Тіл бумасы (<ph name="LANGUAGE" />) жүктеп алынып жатыр...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Ерлер киімі</translation>
 <translation id="2137891579555018930">Рұқсат күтілуде…</translation>
 <translation id="213826338245044447">Ұялы телефондағы бетбелгілер</translation>
@@ -1386,7 +1385,6 @@
 <translation id="3681007416295224113">Сертификат ақпараты</translation>
 <translation id="3681421644246505351">Chrome браузерді қолдану тарихы бойынша қызықты тақырыптарды көрсетеді.</translation>
 <translation id="3682094733650754138">Мекенжайды толтыру опциясы таңдалды</translation>
-<translation id="3689867156802445220">Ғимарат нөмірі</translation>
 <translation id="3693327506115126094">Сіз екеніңізді растау әдісін таңдаңыз</translation>
 <translation id="3698629142018988477">"Сайт жасау" түймесі, Google Sites-та жылдам жаңа сайт жасау үшін белсендіріңіз</translation>
 <translation id="3701325639446035885">Іс-шара билеттерін сату</translation>
@@ -1411,6 +1409,7 @@
 <translation id="3723663469265383848">Жаңарту кезінде құрылғыны 10 минутқа дейін пайдалана алмайсыз.</translation>
 <translation id="372429172604983730">Мұндай қате тудыратын қолданбаларға антивирустар, брандмауэрлер, вебсүзгілер және прокси-сервер бағдарламалық құралдары жатады.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Slides-да жаңа Google презентациясын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
+<translation id="3727309136762649052">Атау кеңістігі</translation>
 <translation id="3727850735097852673">Google Password Manager қызметін macOS кілттер тізбегімен бірге пайдалану үшін Chrome-ды қайта іске қосып, кілттер тізбегін пайдалануға рұқсат беріңіз. Қайта іске қосқаннан кейін, қойындылар қайта ашылады.</translation>
 <translation id="3733139489341305600">Автономдық көлік құралдары</translation>
 <translation id="3736520371357197498">Қауіпсіздігіңіздің қатерлерін түсінсеңіз, қауіпті бағдарламалар жойылмай жатып, <ph name="BEGIN_LINK" />осы қауіпті сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
@@ -1575,6 +1574,7 @@
 <translation id="4089152113577680600">14-науа</translation>
 <translation id="4092349052316400070">Мекежайды енгізіңіз.</translation>
 <translation id="4096237801206588987">11 x 15 дюйм</translation>
+<translation id="4098306082496067348">Виртуалдық картаны төлеу процесіне қосу үшін түртіңіз.</translation>
 <translation id="4098354747657067197">Жалған сайт</translation>
 <translation id="4099048595830172239">Әкімші саясатына сәйкес құпия контент көрініп тұрғанда, экранды <ph name="APPLICATION_TITLE" /> қолданбасымен бөліспеген жөн:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
@@ -1898,6 +1898,7 @@
 <translation id="4729147136006144950">Қайырымдылық</translation>
 <translation id="4730977633786878901">Пікірлер</translation>
 <translation id="4731638775147756694">Бұл қолданбаны әкімші бөгеді.</translation>
+<translation id="4732860731866514038">Тіл бумасы (<ph name="LANGUAGE" />) жүктеп алынып жатыр... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> құрылғыңыздың орналасқан жер деректерін пайдаланғысы келеді</translation>
 <translation id="4736491186715342415">Моторлы көліктер</translation>
 <translation id="4736825316280949806">Chromium браузерін қайта іске қосу</translation>
@@ -1919,7 +1920,6 @@
 <translation id="4757022425116568383">Chrome профиліңіздің кіру кілті</translation>
 <translation id="4757993714154412917">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chromium сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
 <translation id="4758311279753947758">Контакт ақпаратын қосу</translation>
-<translation id="4761104368405085019">Микрофоныңызды пайдалану</translation>
 <translation id="4761326898079498987">Қосымша мәліметтерді қарап шығу</translation>
 <translation id="4761869838909035636">Chrome қауіпсіздік шарасын іске қосу</translation>
 <translation id="4763196677855776703"><ph name="URL" /> ұсынған шарттар мен талаптар</translation>
@@ -2257,7 +2257,6 @@
           <ph name="LIST_ITEM" />cookie файлдары және сайт деректері;
           <ph name="LIST_ITEM" />үлгілерге енгізілген ақпарат.
         <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> MIDI құрылғыларын (SysEx) басқаруды және қайта бағдарламалауды қалайды</translation>
 <translation id="5443468954631487277">Кері ретпен беткі жағында</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> сайтының олар сіз туралы сақтаған ақпаратты пайдалануына рұқсат етіңіз.</translation>
 <translation id="5447765697759493033">Бұл сайт аударылмайды</translation>
@@ -2470,7 +2469,6 @@
 <translation id="5877831137320480913">Сұлулық және фитнес</translation>
 <translation id="5879989559903563723">Қонақ режимінде рұқсат етілмеген</translation>
 <translation id="5880050725127890683">Chrome қауіпсіздік тексерісіне өту</translation>
-<translation id="5883861433316751031">MIDI құрылғыларын басқару және қайта бағдарламалау керек пе?</translation>
 <translation id="5884465125445718607">Chinese #6 хатқалтасы</translation>
 <translation id="5887400589839399685">Карта сақталды</translation>
 <translation id="5887687176710214216">Соңғы кіру: кеше</translation>
@@ -2821,7 +2819,6 @@
 <translation id="6556866813142980365">Қайта орындау</translation>
 <translation id="6557715786897013164">14 x 17 дюйм</translation>
 <translation id="6560786330438719938">Орнатылған немесе жойылған қолданбалар және олардың пайдаланылу жиілігі</translation>
-<translation id="6567084950885568327">MIDI құрылғысын басқару элементі және қайта бағдарламалау</translation>
 <translation id="6568793038316600992">"Төлеу әдістерін басқару" түймесі, Chrome параметрлерінде төлемдеріңіз және несиелік картаңыз туралы ақпаратты басқару үшін белсендіріңіз</translation>
 <translation id="6569060085658103619">Кеңейтім бетін көрудесіз</translation>
 <translation id="6569366777234823130">Драмалық фильмдер</translation>
@@ -3204,6 +3201,7 @@
 <translation id="733354035281974745">Құрылғының жергілікті аккаунтын қайта анықтау</translation>
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>
 <translation id="7335157162773372339">Камераңызды қолдануға рұқсат сұрай алады</translation>
+<translation id="7336636595549675416">Үй нөмірі</translation>
 <translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
 <translation id="7337706099755338005">Сіздің платформаңызда қолжетімді емес.</translation>
 <translation id="733923710415886693">Сервер сертификаты Сертификат айқындығы саясатымен ашылмады.</translation>
@@ -3910,7 +3908,6 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> мәні өлшем талаптарына сәйкес келмейді.</translation>
 <translation id="867224526087042813">Қолтаңба</translation>
 <translation id="8672264262457010862">Бизнес және өндіріс</translation>
-<translation id="8673776281896298303">MIDI құрылғыларын (SysEx) басқару және қайта бағдарламалау</translation>
 <translation id="8676424191133491403">Кідіріс жоқ</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, жауап, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> мекенжайындағы веб-бетті жүктеу мүмкін болмады, себебі:</translation>
@@ -4150,7 +4147,6 @@
 <translation id="9148507642005240123">&amp;Өзгерту әрекетін кері қайтару</translation>
 <translation id="9148599396704355100">Бағасы төмен</translation>
 <translation id="9150025764986957246">Келесідей нәрселер енгізуге болады:</translation>
-<translation id="9150045010208374699">Камераңызды пайдалану</translation>
 <translation id="9150685862434908345">Браузер реттеуді әкімші қашықтан өзгерте алады. Сонымен қатар құрылғыдағы әрекеттерді Chrome браузерінен тыс басқаруға болады. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Жаңартылды</translation>
 <translation id="9155211586651734179">Жалғанған перифериялық аудиоқұрылғылар</translation>

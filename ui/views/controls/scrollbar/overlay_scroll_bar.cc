@@ -136,7 +136,8 @@ void OverlayScrollBar::Thumb::OnStateChanged() {
 BEGIN_METADATA(OverlayScrollBar, Thumb, BaseScrollBarThumb)
 END_METADATA
 
-OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
+OverlayScrollBar::OverlayScrollBar(Orientation orientation)
+    : ScrollBar(orientation) {
   SetNotifyEnterExitOnChild(true);
   SetPaintToLayer();
   layer()->SetMasksToBounds(true);
@@ -154,8 +155,9 @@ OverlayScrollBar::OverlayScrollBar(bool horizontal) : ScrollBar(horizontal) {
 OverlayScrollBar::~OverlayScrollBar() = default;
 
 gfx::Insets OverlayScrollBar::GetInsets() const {
-  return IsHorizontal() ? gfx::Insets::TLBR(-kThumbHoverOffset, 0, 0, 0)
-                        : gfx::Insets::TLBR(0, -kThumbHoverOffset, 0, 0);
+  return GetOrientation() == Orientation::kHorizontal
+             ? gfx::Insets::TLBR(-kThumbHoverOffset, 0, 0, 0)
+             : gfx::Insets::TLBR(0, -kThumbHoverOffset, 0, 0);
 }
 
 void OverlayScrollBar::OnMouseEntered(const ui::MouseEvent& event) {

@@ -24,11 +24,40 @@ constexpr char kTimeManagementTaskPrefix[] =
 constexpr char kTimeManagementClassroomPrefix[] =
     "Ash.Glanceables.TimeManagement.Classroom";
 
-void RecordTasksUserAction() {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TasksUserAction {
+  kActiveTaskListChanged = 0,
+  kTaskMarkedComplete = 1,
+  kTaskMarkedIncomplete = 2,
+  kAddTaskStarted = 3,
+  kModifyTaskStarted = 4,
+  kHeaderButtonClicked = 5,
+  kAddNewTaskButtonClicked = 6,
+  kFooterButtonClicked = 7,
+  kEditInGoogleTasksButtonClicked = 8,
+  kMaxValue = kEditInGoogleTasksButtonClicked
+};
+
+void RecordTasksUserAction(TasksUserAction action) {
+  base::UmaHistogramEnumeration(
+      base::JoinString({kTimeManagementTaskPrefix, "UserAction"}, "."), action);
   base::RecordAction(base::UserMetricsAction("Glanceables_Tasks_UserAction"));
 }
 
-void RecordClassroomUserAction() {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ClassroomUserAction {
+  kAssignmentListSelected = 0,
+  kHeaderIconPressed = 1,
+  kStudentAssignmentPressed = 2,
+  kMaxValue = kStudentAssignmentPressed,
+};
+
+void RecordClassroomUserAction(ClassroomUserAction action) {
+  base::UmaHistogramEnumeration(
+      base::JoinString({kTimeManagementClassroomPrefix, "UserAction"}, "."),
+      action);
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_UserAction"));
 }
@@ -38,13 +67,14 @@ void RecordClassroomUserAction() {
 namespace ash {
 
 void RecordActiveTaskListChanged() {
-  RecordTasksUserAction();
+  RecordTasksUserAction(TasksUserAction::kActiveTaskListChanged);
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Tasks_ActiveTaskListChanged"));
 }
 
 void RecordTaskMarkedAsCompleted(bool complete) {
-  RecordTasksUserAction();
+  RecordTasksUserAction(complete ? TasksUserAction::kTaskMarkedComplete
+                                 : TasksUserAction::kTaskMarkedIncomplete);
 
   if (complete) {
     base::RecordAction(
@@ -56,7 +86,7 @@ void RecordTaskMarkedAsCompleted(bool complete) {
 }
 
 void RecordUserStartedAddingTask() {
-  RecordTasksUserAction();
+  RecordTasksUserAction(TasksUserAction::kAddTaskStarted);
 
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Tasks_AddTaskStarted"));
@@ -83,7 +113,7 @@ void RecordNumberOfAddedTasks(int add_task_action_count,
 }
 
 void RecordUserModifyingTask() {
-  RecordTasksUserAction();
+  RecordTasksUserAction(TasksUserAction::kModifyTaskStarted);
 
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Tasks_ModifyTaskStarted"));
@@ -95,22 +125,25 @@ void RecordTaskModificationResult(TaskModificationResult result) {
 }
 
 void RecordTasksLaunchSource(TasksLaunchSource source) {
-  RecordTasksUserAction();
 
   switch (source) {
     case TasksLaunchSource::kHeaderButton:
+      RecordTasksUserAction(TasksUserAction::kHeaderButtonClicked);
       base::RecordAction(base::UserMetricsAction(
           "Glanceables_Tasks_LaunchTasksApp_HeaderButton"));
       break;
     case TasksLaunchSource::kAddNewTaskButton:
+      RecordTasksUserAction(TasksUserAction::kAddNewTaskButtonClicked);
       base::RecordAction(base::UserMetricsAction(
           "Glanceables_Tasks_LaunchTasksApp_AddNewTaskButton"));
       break;
     case TasksLaunchSource::kFooterButton:
+      RecordTasksUserAction(TasksUserAction::kFooterButtonClicked);
       base::RecordAction(base::UserMetricsAction(
           "Glanceables_Tasks_LaunchTasksApp_FooterButton"));
       break;
     case TasksLaunchSource::kEditInGoogleTasksButton:
+      RecordTasksUserAction(TasksUserAction::kEditInGoogleTasksButtonClicked);
       base::RecordAction(base::UserMetricsAction(
           "Glanceables_Tasks_LaunchTasksApp_EditInGoogleTasksButton"));
       break;
@@ -261,7 +294,7 @@ void RecordStudentSelectedListChangeCount(int change_count) {
 }
 
 void RecordStudentAssignmentPressed(bool default_list) {
-  RecordClassroomUserAction();
+  RecordClassroomUserAction(ClassroomUserAction::kStudentAssignmentPressed);
 
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_AssignmentPressed"));
@@ -273,14 +306,14 @@ void RecordStudentAssignmentPressed(bool default_list) {
 }
 
 void RecordClassroomHeaderIconPressed() {
-  RecordClassroomUserAction();
+  RecordClassroomUserAction(ClassroomUserAction::kHeaderIconPressed);
 
   base::RecordAction(
       base::UserMetricsAction("Glanceables_Classroom_HeaderIconPressed"));
 }
 
 void RecordStudentAssignmentListSelected(StudentAssignmentsListType list_type) {
-  RecordClassroomUserAction();
+  RecordClassroomUserAction(ClassroomUserAction::kAssignmentListSelected);
 
   base::UmaHistogramEnumeration(
       "Ash.Glanceables.Classroom.Student.ListSelected", list_type);

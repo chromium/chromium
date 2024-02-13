@@ -63,8 +63,7 @@ GridItems GridNode::ConstructGridItems(
       }
 
       auto grid_item = std::make_unique<GridItemData>(
-          To<BlockNode>(child), root_grid_style,
-          parent_grid_style.GetFontBaseline(),
+          To<BlockNode>(child), parent_grid_style, root_grid_style,
           must_consider_grid_items_for_column_sizing,
           must_consider_grid_items_for_row_sizing);
 

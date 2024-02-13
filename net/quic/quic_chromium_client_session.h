@@ -16,6 +16,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -775,7 +776,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // (its own hostname and port fields are ignored). If this is a secure QUIC
   // session, then |hostname| must match the certificate presented during the
   // handshake.
-  bool CanPool(const std::string& hostname,
+  bool CanPool(std::string_view hostname,
                const QuicSessionKey& other_session_key) const;
 
   const quic::QuicServerId& server_id() const {
@@ -895,7 +896,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
  private:
   friend class test::QuicChromiumClientSessionPeer;
 
-  typedef std::set<Handle*> HandleSet;
+  typedef std::set<raw_ptr<Handle, SetExperimental>> HandleSet;
   typedef std::list<StreamRequest*> StreamRequestQueue;
 
   bool WasConnectionEverUsed();

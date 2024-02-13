@@ -73,10 +73,16 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
       backButtonVisible: {
         type: Boolean,
       },
+
+      passwordValue: {
+        type: String,
+        value: null,
+      },
     };
   }
 
   private backButtonVisible: boolean;
+  private passwordValue: string;
 
   constructor() {
     super();
@@ -146,11 +152,17 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
   }
 
   async onSubmit(): Promise<void> {
-    await this.getPasswordInput().validate();
+    const passwordInput = this.getPasswordInput();
+    await passwordInput.validate();
+
+    if (passwordInput.value === null) {
+      return;
+    }
+
     this.setUIStep(LocalPasswordSetupState.PROGRESS);
     this.userActed([
       'inputPassword',
-      this.getPasswordInput().value,
+      passwordInput.value,
     ]);
   }
 
@@ -162,6 +174,10 @@ export class LocalPasswordSetup extends LocalPasswordSetupBase {
     const key =
         isRecoveryFlow ? 'localPasswordResetTitle' : 'localPasswordSetupTitle';
     return this.i18n(key);
+  }
+
+  private isValid(password: string) {
+    return !!password;
   }
 }
 

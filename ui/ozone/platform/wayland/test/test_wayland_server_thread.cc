@@ -50,9 +50,7 @@ TestWaylandServerThread::TestWaylandServerThread(const ServerConfig& config)
       client_destroy_listener_(this),
       config_(config),
       compositor_(config.compositor_version),
-      output_(base::BindRepeating(
-          &TestWaylandServerThread::OnTestOutputMetricsFlush,
-          base::Unretained(this))),
+      output_(this),
       zcr_text_input_extension_v1_(config.text_input_extension_version),
       controller_(FROM_HERE) {
   DETACH_FROM_THREAD(thread_checker_);
@@ -110,9 +108,15 @@ bool TestWaylandServerThread::Start() {
     return false;
 
   if (config_.enable_aura_shell == EnableAuraShellProtocol::kEnabled) {
-    if (config_.use_aura_output_manager) {
-      // zaura_output_manager should be initialized before any wl_output
-      // globals.
+    // The aura output managers should be initialized before any wl_output
+    // globals.
+    if (config_.aura_output_manager_protocol ==
+        AuraOutputManagerProtocol::kEnabledV2) {
+      if (!zaura_output_manager_v2_.Initialize(display_.get())) {
+        return false;
+      }
+    } else if (config_.aura_output_manager_protocol ==
+               AuraOutputManagerProtocol::kEnabledV1) {
       if (!zaura_output_manager_.Initialize(display_.get())) {
         return false;
       }
@@ -233,11 +237,21 @@ TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
   return nullptr;
 }
 
-void TestWaylandServerThread::OnTestOutputMetricsFlush(
-    wl_resource* output_resource,
+void TestWaylandServerThread::OnTestOutputFlush(
+    TestOutput* test_output,
     const TestOutputMetrics& metrics) {
   if (zaura_output_manager_.resource()) {
-    zaura_output_manager_.SendOutputMetrics(output_resource, metrics);
+    zaura_output_manager_.SendOutputMetrics(test_output, metrics);
+  }
+  if (zaura_output_manager_v2_.resource()) {
+    zaura_output_manager_v2_.SendOutputMetrics(test_output, metrics);
+  }
+}
+
+void TestWaylandServerThread::OnTestOutputGlobalDestroy(
+    TestOutput* test_output) {
+  if (zaura_output_manager_v2_.resource()) {
+    zaura_output_manager_v2_.OnTestOutputGlobalDestroy(test_output);
   }
 }
 

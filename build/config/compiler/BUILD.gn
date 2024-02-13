@@ -380,12 +380,7 @@ config("compiler") {
           cflags += [ "-fstack-protector" ]
         }
       } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
-        # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
-        # See also https://crbug.com/533294
-        # The x86 toolchain currently has problems with stack-protector.
-        if (is_android && current_cpu == "x86") {
-          cflags += [ "-fno-stack-protector" ]
-        } else if (current_os != "aix") {
+        if (current_os != "aix") {
           # Not available on aix.
           cflags += [ "-fstack-protector" ]
         }
@@ -494,9 +489,6 @@ config("compiler") {
     # linker_driver.py script runs dsymutil itself, which is set to be the
     # linker for Rust targets as well.
     rustflags += [ "-Csplit-debuginfo=unpacked" ]
-
-    # TODO(crbug.com/1519899): Figure out how to remove this.
-    cflags += [ "-fno-define-target-os-macros" ]
   }
 
   # Linux/Android/Fuchsia common flags setup.
@@ -1853,6 +1845,9 @@ config("default_warnings") {
         cflags_cc += [
           # TODO(https://crbug.com/1474434): fix and reenable
           "-Wno-missing-field-initializers",
+
+          # TODO(https://crbug.com/324953188): fix and reenable
+          "-Wno-extra-qualification",
         ]
       }
 
@@ -1897,6 +1892,7 @@ config("default_warnings") {
       cflags += [
         "-Wno-error=unknown-warning-option",
         "-Wno-error=unused-command-line-argument",
+        "-Wno-error=unknown-pragmas",
       ]
     }
   }

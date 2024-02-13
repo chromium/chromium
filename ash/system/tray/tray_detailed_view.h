@@ -33,8 +33,9 @@ class TriView;
 
 class ASH_EXPORT TrayDetailedView : public views::View,
                                     public ViewClickListener {
+  METADATA_HEADER(TrayDetailedView, views::View)
+
  public:
-  METADATA_HEADER(TrayDetailedView);
   explicit TrayDetailedView(DetailedViewDelegate* delegate);
 
   TrayDetailedView(const TrayDetailedView&) = delete;

@@ -62,7 +62,7 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   StyleRule* RuleForNesting() const { return from_.Get(); }
 
   // https://drafts.csswg.org/css-cascade-6/#implicit-scope
-  bool IsImplicit() const { return contents_ != nullptr; }
+  bool IsImplicit() const { return contents_.Get() != nullptr; }
 
  private:
   // If `contents_` is not nullptr, then this is a prelude-less @scope rule

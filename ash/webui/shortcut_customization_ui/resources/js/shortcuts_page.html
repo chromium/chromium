@@ -1,26 +1,36 @@
 <style include="shortcut-customization-shared cr-shared-style">
-  :host-context(body.jelly-enabled) #container {
+  :host-context(body.jelly-enabled) #contentWrapper {
     background-color: var(--cros-sys-app_base);
-    border-radius: 16px 16px 0 0;
+    border-radius: 16px;
   }
 
-  #container {
+  #contentWrapper {
     align-items: center;
     display: flex;
     flex-direction: column;
-    padding-top: 20px;
+    overflow: auto;
+    padding-block-start: 20px;
     width: 100%;
   }
 
-  #container accelerator-subsection:not(:first-child)::part(container) {
-    margin-top: 20px;
+  #contentWrapper accelerator-subsection:not(:first-child)::part(container) {
+    margin-block-start: 20px;
+  }
+
+  #container {
+    display: flex;
+    flex-direction: column;
+    /* Add 20 px distance at the bottom */
+    height: calc(100% - 20px);
   }
 </style>
 
 <div id="container">
-  <template id="subsections" is="dom-repeat" items="[[subcategories]]">
-    <accelerator-subsection category="[[initialData.category]]"
+  <div id="contentWrapper">
+    <template id="subsections" is="dom-repeat" items="[[subcategories]]">
+      <accelerator-subsection category="[[initialData.category]]"
         subcategory="[[item]]">
-    </accelerator-subsection>
-  </template>
+      </accelerator-subsection>
+      </template>
+  </div>
 </div>

@@ -225,6 +225,9 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
 
     case WGPURequestDeviceStatus_Error:
     case WGPURequestDeviceStatus_Unknown:
+    default:
+      // TODO(dawn:1987): Remove the default case after handling
+      // InstanceDropped.
       if (dawn_device) {
         // Immediately force the device to be lost.
         auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
@@ -245,8 +248,6 @@ void GPUAdapter::OnRequestDeviceCallback(ScriptState* script_state,
                                          StringFromASCIIAndUTF8(error_message));
       }
       break;
-    default:
-      NOTREACHED();
   }
 }
 

@@ -16,7 +16,8 @@ import './cr_profile_avatar_selector_grid.js';
 
 import {assert} from '//resources/js/assert.js';
 import {getImage} from '//resources/js/icon.js';
-import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_profile_avatar_selector.html.js';
 

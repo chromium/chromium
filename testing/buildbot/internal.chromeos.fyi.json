@@ -187,7 +187,8 @@
       {
         "args": [
           "--tast-retries=1",
-          "--magic-vm-cache=magic_cros_vm_cache"
+          "--magic-vm-cache=magic_cros_vm_cache",
+          "--tast-shard-method=hash"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -219,7 +220,7 @@
             }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 20
         },
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/"
@@ -1368,20 +1369,6 @@
         "name": "mojo_unittests BRYA_RELEASE_LKGM",
         "test": "mojo_unittests",
         "test_id_prefix": "ninja://mojo:mojo_unittests/",
-        "use_lkgm": true,
-        "variant_id": "BRYA_RELEASE_LKGM"
-      },
-      {
-        "args": [
-          "--vpython-dir=../../vpython_dir_linux_amd64",
-          "--gtest_filter=-PythonUtils.PythonRunTime"
-        ],
-        "autotest_name": "chromium",
-        "cros_board": "brya",
-        "dut_pool": "chrome",
-        "name": "net_unittests BRYA_RELEASE_LKGM",
-        "test": "net_unittests",
-        "test_id_prefix": "ninja://net:net_unittests/",
         "use_lkgm": true,
         "variant_id": "BRYA_RELEASE_LKGM"
       },

@@ -23,10 +23,6 @@
 #include "ui/ozone/demo/window_manager.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ui/gfx/linux/gbm_util.h"  // nogncheck
-#endif
-
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   base::AtExitManager exit_manager;
@@ -58,10 +54,6 @@ int main(int argc, char** argv) {
   ui::OzonePlatform::InitializeForUI(params);
   ui::KeyboardLayoutEngineManager::GetKeyboardLayoutEngine()
       ->SetCurrentLayoutByName("us");
-
-#if BUILDFLAG(IS_CHROMEOS)
-  ui::EnsureIntelMediaCompressionEnvVarIsSet();
-#endif
 
   auto shutdown_cb =
       base::BindOnce([] { LOG(FATAL) << "Failed to shutdown."; });

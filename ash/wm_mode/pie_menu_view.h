@@ -33,9 +33,9 @@ class PieMenuView;
 
 // Defines a container for buttons representing menu items in a pie menu.
 class ASH_EXPORT PieSubMenuContainerView : public views::View {
- public:
-  METADATA_HEADER(PieSubMenuContainerView);
+  METADATA_HEADER(PieSubMenuContainerView, views::View)
 
+ public:
   PieSubMenuContainerView(const PieSubMenuContainerView&) = delete;
   PieSubMenuContainerView& operator=(const PieSubMenuContainerView&) = delete;
   ~PieSubMenuContainerView() override;
@@ -77,9 +77,9 @@ class ASH_EXPORT PieSubMenuContainerView : public views::View {
 // to the previous sub menu in the stack. There is always a main menu container
 // at all times.
 class ASH_EXPORT PieMenuView : public views::View {
- public:
-  METADATA_HEADER(PieMenuView);
+  METADATA_HEADER(PieMenuView, views::View)
 
+ public:
   // Defines an interface for the delegate of this class which will be informed
   // when a button on this pie view is pressed.
   class Delegate {

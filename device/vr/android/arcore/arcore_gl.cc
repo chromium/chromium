@@ -120,7 +120,7 @@ ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
 
 ArCoreGlInitializeResult::ArCoreGlInitializeResult(
     std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
-    absl::optional<device::mojom::XRDepthConfig> depth_configuration,
+    std::optional<device::mojom::XRDepthConfig> depth_configuration,
     viz::FrameSinkId frame_sink_id)
     : enabled_features(enabled_features),
       depth_configuration(depth_configuration),
@@ -230,7 +230,7 @@ void ArCoreGl::Initialize(
     return;
   }
 
-  absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config;
+  std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config;
   if (depth_options) {
     depth_sensing_config = ArCore::DepthSensingConfiguration(
         depth_options->usage_preferences,
@@ -249,7 +249,7 @@ void ArCoreGl::Initialize(
   }
 
   arcore_ = arcore_factory->Create();
-  absl::optional<ArCore::InitializeResult> maybe_initialize_result =
+  std::optional<ArCore::InitializeResult> maybe_initialize_result =
       arcore_->Initialize(application_context, required_features,
                           optional_features, tracked_images,
                           std::move(depth_sensing_config));
@@ -1442,7 +1442,7 @@ void ArCoreGl::SubscribeToHitTest(
     return;
   }
 
-  absl::optional<uint64_t> maybe_subscription_id = arcore_->SubscribeToHitTest(
+  std::optional<uint64_t> maybe_subscription_id = arcore_->SubscribeToHitTest(
       std::move(native_origin_information), entity_types, std::move(ray));
 
   if (maybe_subscription_id) {
@@ -1465,7 +1465,7 @@ void ArCoreGl::SubscribeToHitTestForTransientInput(
   DVLOG(2) << __func__ << ": ray origin=" << ray->origin.ToString()
            << ", ray direction=" << ray->direction.ToString();
 
-  absl::optional<uint64_t> maybe_subscription_id =
+  std::optional<uint64_t> maybe_subscription_id =
       arcore_->SubscribeToHitTestForTransientInput(profile_name, entity_types,
                                                    std::move(ray));
 

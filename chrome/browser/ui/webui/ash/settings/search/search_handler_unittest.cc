@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +30,9 @@ using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
+
+const bool kIsRevampEnabled =
+    ash::features::IsOsSettingsRevampWayfindingEnabled();
 
 class FakeObserver : public mojom::SearchResultsObserver {
  public:
@@ -81,6 +85,10 @@ const std::vector<SearchConcept>& GetPrintingSearchConcepts() {
 
 // Creates a result with some default values.
 mojom::SearchResultPtr CreateDummyResult() {
+  const mojom::Section kSection = kIsRevampEnabled
+                                      ? mojom::Section::kSystemPreferences
+                                      : mojom::Section::kPrinting;
+
   return mojom::SearchResult::New(
       /*text=*/std::u16string(),
       /*canonical_text=*/std::u16string(), /*url=*/"",
@@ -89,7 +97,7 @@ mojom::SearchResultPtr CreateDummyResult() {
       mojom::SearchResultDefaultRank::kMedium,
       /*was_generated_from_text_match=*/false,
       mojom::SearchResultType::kSection,
-      mojom::SearchResultIdentifier::NewSection(mojom::Section::kPrinting));
+      mojom::SearchResultIdentifier::NewSection(kSection));
 }
 
 }  // namespace
@@ -109,14 +117,17 @@ class SearchHandlerTest : public testing::Test {
   void SetUp() override {
     handler_.BindInterface(handler_remote_.BindNewPipeAndPassReceiver());
 
+    const mojom::Section kSection = kIsRevampEnabled
+                                        ? mojom::Section::kSystemPreferences
+                                        : mojom::Section::kPrinting;
+
     fake_hierarchy_.AddSubpageMetadata(
-        IDS_SETTINGS_PRINTING_CUPS_PRINTERS, mojom::Section::kPrinting,
+        IDS_SETTINGS_PRINTING_CUPS_PRINTERS, kSection,
         mojom::Subpage::kPrintingDetails, mojom::SearchResultIcon::kPrinter,
         mojom::SearchResultDefaultRank::kMedium,
         mojom::kPrintingDetailsSubpagePath);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
-                                       mojom::Setting::kAddPrinter);
-    fake_hierarchy_.AddSettingMetadata(mojom::Section::kPrinting,
+    fake_hierarchy_.AddSettingMetadata(kSection, mojom::Setting::kAddPrinter);
+    fake_hierarchy_.AddSettingMetadata(kSection,
                                        mojom::Setting::kSavedPrinters);
 
     handler_remote_->Observe(observer_.GenerateRemote());
@@ -212,7 +223,11 @@ TEST_F(SearchHandlerTest, UrlModification) {
 
   // The URL should have bee modified according to the FakeOsSettingSection
   // scheme.
-  EXPECT_EQ(std::string("kPrinting::") + mojom::kPrintingDetailsSubpagePath,
+  const std::string kPrefix = kIsRevampEnabled
+                                  ? std::string("kSystemPreferences::")
+                                  : std::string("kPrinting::");
+
+  EXPECT_EQ(kPrefix + mojom::kPrintingDetailsSubpagePath,
             search_results[0]->url_path_with_parameters);
 }
 

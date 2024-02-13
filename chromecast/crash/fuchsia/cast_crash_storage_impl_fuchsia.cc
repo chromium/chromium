@@ -6,6 +6,8 @@
 
 #include <fuchsia/feedback/cpp/fidl.h>
 
+#include <string_view>
+
 #include "base/fuchsia/fuchsia_logging.h"
 #include "chromecast/crash/fuchsia/constants.h"
 
@@ -17,8 +19,8 @@ const char kCurrentApp[] = "app.current";
 const char kPreviousApp[] = "app.previous";
 const char kStadiaSessionId[] = "stadia-session-id";
 
-fuchsia::feedback::Annotation MakeAnnotation(base::StringPiece key,
-                                             base::StringPiece value) {
+fuchsia::feedback::Annotation MakeAnnotation(std::string_view key,
+                                             std::string_view value) {
   fuchsia::feedback::Annotation annotation;
   annotation.key = std::string(key);
   annotation.value = std::string(value);
@@ -35,37 +37,37 @@ CastCrashStorageImplFuchsia::CastCrashStorageImplFuchsia(
 
 CastCrashStorageImplFuchsia::~CastCrashStorageImplFuchsia() = default;
 
-void CastCrashStorageImplFuchsia::SetLastLaunchedApp(base::StringPiece app_id) {
+void CastCrashStorageImplFuchsia::SetLastLaunchedApp(std::string_view app_id) {
   UpsertAnnotations({MakeAnnotation(kLastLaunchedApp, app_id)});
 }
 
 void CastCrashStorageImplFuchsia::ClearLastLaunchedApp() {
-  UpsertAnnotations({MakeAnnotation(kLastLaunchedApp, base::StringPiece())});
+  UpsertAnnotations({MakeAnnotation(kLastLaunchedApp, std::string_view())});
 }
 
-void CastCrashStorageImplFuchsia::SetCurrentApp(base::StringPiece app_id) {
+void CastCrashStorageImplFuchsia::SetCurrentApp(std::string_view app_id) {
   UpsertAnnotations({MakeAnnotation(kCurrentApp, app_id)});
 }
 
 void CastCrashStorageImplFuchsia::ClearCurrentApp() {
-  UpsertAnnotations({MakeAnnotation(kCurrentApp, base::StringPiece())});
+  UpsertAnnotations({MakeAnnotation(kCurrentApp, std::string_view())});
 }
 
-void CastCrashStorageImplFuchsia::SetPreviousApp(base::StringPiece app_id) {
+void CastCrashStorageImplFuchsia::SetPreviousApp(std::string_view app_id) {
   UpsertAnnotations({MakeAnnotation(kPreviousApp, app_id)});
 }
 
 void CastCrashStorageImplFuchsia::ClearPreviousApp() {
-  UpsertAnnotations({MakeAnnotation(kPreviousApp, base::StringPiece())});
+  UpsertAnnotations({MakeAnnotation(kPreviousApp, std::string_view())});
 }
 
 void CastCrashStorageImplFuchsia::SetStadiaSessionId(
-    base::StringPiece session_id) {
+    std::string_view session_id) {
   UpsertAnnotations({MakeAnnotation(kStadiaSessionId, session_id)});
 }
 
 void CastCrashStorageImplFuchsia::ClearStadiaSessionId() {
-  UpsertAnnotations({MakeAnnotation(kStadiaSessionId, base::StringPiece())});
+  UpsertAnnotations({MakeAnnotation(kStadiaSessionId, std::string_view())});
 }
 
 void CastCrashStorageImplFuchsia::UpsertAnnotations(

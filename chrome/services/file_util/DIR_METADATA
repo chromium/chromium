@@ -1,3 +1,6 @@
 monorail: {
   component: "Services>Safebrowsing"
 }
+buganizer_public: {
+  component_id: 1456950
+}

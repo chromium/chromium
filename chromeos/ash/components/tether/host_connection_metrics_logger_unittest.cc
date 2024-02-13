@@ -399,6 +399,31 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
+       RecordConnectionResultFailureClientConnection_WifiFailedToEnable) {
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::INTERNAL_ERROR,
+      test_devices_[0].GetDeviceId(),
+      ConnectionToHostInternalError::CLIENT_CONNECTION_WIFI_FAILED_TO_ENABLE);
+
+  VerifyFailure_ClientConnection(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_FailureClientConnectionEventType::
+              WIFI_FAILED_TO_ENABLED);
+  VerifyFailure(
+      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
+          CLIENT_CONNECTION_ERROR);
+  VerifySuccess(HostConnectionMetricsLogger::
+                    ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyProvisioningFailure(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+  VerifyEndResult(ConnectionToHostResult::INTERNAL_ERROR);
+  VerifyUnavoidableErrorResult(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_UnavoidableErrorEventType::OTHER);
+}
+
+TEST_F(HostConnectionMetricsLoggerTest,
        RecordConnectionResultFailureClientConnection_InternalError) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 

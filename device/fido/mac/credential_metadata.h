@@ -9,6 +9,7 @@
 #define DEVICE_FIDO_MAC_CREDENTIAL_METADATA_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "crypto/hmac.h"
 #include "crypto/symmetric_key.h"
 #include "device/fido/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -141,7 +141,7 @@ std::vector<uint8_t> SealCredentialMetadata(const std::string& secret,
 // UnsealCredentialId attempts to decrypt a CredentialMetadata from a credential
 // id for version <= kV2.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<CredentialMetadata> UnsealMetadataFromLegacyCredentialId(
+std::optional<CredentialMetadata> UnsealMetadataFromLegacyCredentialId(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id);
@@ -149,7 +149,7 @@ absl::optional<CredentialMetadata> UnsealMetadataFromLegacyCredentialId(
 // UnsealMetadataFromApplicationTag attempts to decrypt CredentialMetadata from
 // an kSecAttrApplicationTag attribute for version >= kV3.
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
+std::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> application_tag);
@@ -180,8 +180,8 @@ std::string EncodeRpId(const std::string& secret, const std::string& rp_id);
 // under the given secret without knowing the RP ID (which would be required to
 // unseal a credential ID).
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<std::string> DecodeRpId(const std::string& secret,
-                                       const std::string& ciphertext);
+std::optional<std::string> DecodeRpId(const std::string& secret,
+                                      const std::string& ciphertext);
 
 // Seals a legacy V0, V1 or V2 credential ID.
 COMPONENT_EXPORT(DEVICE_FIDO)

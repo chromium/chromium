@@ -7,11 +7,11 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
@@ -89,7 +89,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // Sets the text colors shown for the non-disabled states to |color|.
   // TODO(crbug.com/1421316): Get rid of SkColor versions of these functions in
   // favor of the ColorId versions.
-  virtual void SetEnabledTextColors(absl::optional<SkColor> color);
+  virtual void SetEnabledTextColors(std::optional<SkColor> color);
 
   // Sets the text colors shown for the non-disabled states to |color_id|.
   void SetEnabledTextColorIds(ui::ColorId color_id);
@@ -337,7 +337,7 @@ VIEW_BUILDER_PROPERTY(std::u16string, Text)
 VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(gfx::Size, MinSize)
 VIEW_BUILDER_PROPERTY(gfx::Size, MaxSize)
-VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, EnabledTextColors)
+VIEW_BUILDER_PROPERTY(std::optional<SkColor>, EnabledTextColors)
 VIEW_BUILDER_PROPERTY(bool, IsDefault)
 VIEW_BUILDER_PROPERTY(int, ImageLabelSpacing)
 VIEW_BUILDER_PROPERTY(bool, ImageCentered)

@@ -233,6 +233,13 @@ extern const char kMagicStackDescription[] =
     "When enabled, a Magic Stack will be shown in the Home surface displaying "
     "a variety of modules.";
 
+const char kMinorModeRestrictionsForHistorySyncOptInName[] =
+    "Minor Mode Restrictions For History Sync Opt In";
+const char kMinorModeRestrictionsForHistorySyncOptInDescription[] =
+    "When enabled, Chrome will present opt in screens for turning on History "
+    "Sync depending on CanShowHistorySyncOptInsWithoutMinorModeRestrictions "
+    "capability value. Otherwise, the opt-in screens are unrestricted.";
+
 const char kCredentialProviderExtensionPromoName[] =
     "Enable the Credential Provider Extension promo.";
 const char kCredentialProviderExtensionPromoDescription[] =
@@ -723,6 +730,12 @@ const char kOmniboxPopupRowContentConfigurationName[] =
     "Omnibox popup row content configuration";
 const char kOmniboxPopupRowContentConfigurationDescription[] =
     "Enables the use of content configuration for the omnibox popup row.";
+
+const char kOmniboxRichAutocompletionName[] =
+    "Omnibox rich inline autocompletion";
+const char kOmniboxRichAutocompletionDescription[] =
+    "Enables omnibox rich inline autocompletion. Expands inline autocomplete "
+    "to any type of input that users repeatedly use to get to specific URLs.";
 
 extern const char kOmniboxSuggestionsRTLImprovementsName[] =
     "Omnibox Improved RTL Suggestion Layout";

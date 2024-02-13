@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -28,7 +29,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -379,10 +379,10 @@ View::Views::const_iterator View::FindChild(const View* view) const {
   return base::ranges::find(children_, view);
 }
 
-absl::optional<size_t> View::GetIndexOf(const View* view) const {
+std::optional<size_t> View::GetIndexOf(const View* view) const {
   const auto i = FindChild(view);
-  return i == children_.cend() ? absl::nullopt
-                               : absl::make_optional(static_cast<size_t>(
+  return i == children_.cend() ? std::nullopt
+                               : std::make_optional(static_cast<size_t>(
                                      std::distance(children_.cbegin(), i)));
 }
 
@@ -566,7 +566,7 @@ int View::GetBaseline() const {
   return -1;
 }
 
-void View::SetPreferredSize(absl::optional<gfx::Size> size) {
+void View::SetPreferredSize(std::optional<gfx::Size> size) {
   if (preferred_size_ == size)
     return;
 
@@ -1958,12 +1958,12 @@ void View::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void View::SetAccessibilityProperties(
-    absl::optional<ax::mojom::Role> role,
-    absl::optional<std::u16string> name,
-    absl::optional<std::u16string> description,
-    absl::optional<std::u16string> role_description,
-    absl::optional<ax::mojom::NameFrom> name_from,
-    absl::optional<ax::mojom::DescriptionFrom> description_from) {
+    std::optional<ax::mojom::Role> role,
+    std::optional<std::u16string> name,
+    std::optional<std::u16string> description,
+    std::optional<std::u16string> role_description,
+    std::optional<ax::mojom::NameFrom> name_from,
+    std::optional<ax::mojom::DescriptionFrom> description_from) {
   base::AutoReset<bool> initializing(&pause_accessibility_events_, true);
   if (role.has_value()) {
     if (role_description.has_value()) {
@@ -3297,7 +3297,7 @@ bool View::ConvertPointFromAncestor(const View* ancestor,
                                     gfx::Point* point) const {
   gfx::Transform trans;
   bool result = GetTransformRelativeTo(ancestor, &trans);
-  if (const absl::optional<gfx::PointF> transformed_point =
+  if (const std::optional<gfx::PointF> transformed_point =
           trans.InverseMapPoint(gfx::PointF(*point))) {
     *point = gfx::ToFlooredPoint(transformed_point.value());
   }
@@ -3428,12 +3428,16 @@ bool View::HasLayoutManager() const {
 }
 
 void View::LayoutImmediately(bool collect_trace) {
-  if (collect_trace) {
-    TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
-  }
   ++layouts_since_last_paint_;
   base::AutoReset allow_layout(&layout_allowed_, true);
-  Layout(PassKey());
+  if (collect_trace) {
+    TRACE_EVENT1("ui", "View::LayoutImmediately", "view class", GetClassName());
+    // Layout run separately in if and else statement since we need to keep the
+    // trace event in the correct scope.
+    Layout(PassKey());
+  } else {
+    Layout(PassKey());
+  }
 }
 
 // Input -----------------------------------------------------------------------

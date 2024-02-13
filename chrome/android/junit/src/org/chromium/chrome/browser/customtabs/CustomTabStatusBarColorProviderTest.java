@@ -4,53 +4,65 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.system.StatusBarColorController.DEFAULT_STATUS_BAR_COLOR;
-import static org.chromium.chrome.browser.ui.system.StatusBarColorController.UNDEFINED_STATUS_BAR_COLOR;
+
+import android.graphics.Color;
+
+import androidx.annotation.ColorInt;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 
 /** Tests for {@link CustomTabStatusBarColorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Batch(Batch.UNIT_TESTS)
-@Config(manifest = Config.NONE)
 public class CustomTabStatusBarColorProviderTest {
-    private static final int USER_PROVIDED_COLOR = 0x99aabbcc;
+    private static final @ColorInt int TOOLBAR_COLOR = Color.YELLOW;
+    private static final @ColorInt int TAB_THEME_COLOR = Color.MAGENTA;
 
-    @Mock public CustomTabIntentDataProvider mCustomTabIntentDataProvider;
-    @Mock public StatusBarColorController mStatusBarColorController;
-    @Mock public Tab mTab;
-    private CustomTabStatusBarColorProvider mStatusBarColorProvider;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
+    @Mock private StatusBarColorController mStatusBarColorController;
+    @Mock private Tab mTab;
     @Mock private ColorProvider mColorProvider;
+    @Mock private TopUiThemeColorProvider mThemeColorProvider;
+    private CustomTabStatusBarColorProvider mStatusBarColorProvider;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mStatusBarColorProvider =
                 Mockito.spy(
                         new CustomTabStatusBarColorProvider(
-                                mCustomTabIntentDataProvider, mStatusBarColorController));
+                                mCustomTabIntentDataProvider,
+                                mThemeColorProvider,
+                                mStatusBarColorController));
+
+        doReturn(TAB_THEME_COLOR)
+                .when(mThemeColorProvider)
+                .getThemeColorOrFallback(any(), anyInt());
 
         when(mCustomTabIntentDataProvider.getColorProvider()).thenReturn(mColorProvider);
 
-        when(mColorProvider.getToolbarColor()).thenReturn(USER_PROVIDED_COLOR);
+        when(mColorProvider.getToolbarColor()).thenReturn(TOOLBAR_COLOR);
         when(mColorProvider.hasCustomToolbarColor()).thenReturn(true);
     }
 
@@ -58,27 +70,27 @@ public class CustomTabStatusBarColorProviderTest {
     public void undefinedWhenOpenedByChromeNoCustom() {
         when(mCustomTabIntentDataProvider.isOpenedByChrome()).thenReturn(true);
         when(mColorProvider.hasCustomToolbarColor()).thenReturn(false);
-        Assert.assertEquals(UNDEFINED_STATUS_BAR_COLOR, getStatusBarColor(mTab));
+        Assert.assertEquals(TAB_THEME_COLOR, getStatusBarColor(mTab));
     }
 
     @Test
     public void openedByChromeWithCustom() {
         when(mCustomTabIntentDataProvider.isOpenedByChrome()).thenReturn(true);
         when(mColorProvider.hasCustomToolbarColor()).thenReturn(true);
-        Assert.assertEquals(USER_PROVIDED_COLOR, getStatusBarColor(mTab));
+        Assert.assertEquals(TOOLBAR_COLOR, getStatusBarColor(mTab));
     }
 
     @Test
     public void useTabThemeColor_enable() {
         mStatusBarColorProvider.setUseTabThemeColor(true);
-        Assert.assertEquals(UNDEFINED_STATUS_BAR_COLOR, getStatusBarColor(mTab));
+        Assert.assertEquals(TAB_THEME_COLOR, getStatusBarColor(mTab));
         verify(mStatusBarColorController).updateStatusBarColor();
     }
 
     @Test
     public void useTabThemeColor_enable_nullTab() {
         mStatusBarColorProvider.setUseTabThemeColor(true);
-        Assert.assertEquals(USER_PROVIDED_COLOR, getStatusBarColor(null));
+        Assert.assertEquals(TOOLBAR_COLOR, getStatusBarColor(null));
 
         when(mColorProvider.hasCustomToolbarColor()).thenReturn(false);
         Assert.assertEquals(DEFAULT_STATUS_BAR_COLOR, getStatusBarColor(null));
@@ -87,11 +99,11 @@ public class CustomTabStatusBarColorProviderTest {
     @Test
     public void useTabThemeColor_disable() {
         mStatusBarColorProvider.setUseTabThemeColor(true);
-        Assert.assertEquals(UNDEFINED_STATUS_BAR_COLOR, getStatusBarColor(mTab));
+        Assert.assertEquals(TAB_THEME_COLOR, getStatusBarColor(mTab));
         verify(mStatusBarColorController).updateStatusBarColor();
 
         mStatusBarColorProvider.setUseTabThemeColor(false);
-        Assert.assertEquals(USER_PROVIDED_COLOR, getStatusBarColor(mTab));
+        Assert.assertEquals(TOOLBAR_COLOR, getStatusBarColor(mTab));
         verify(mStatusBarColorController, times(2)).updateStatusBarColor();
     }
 
@@ -107,7 +119,7 @@ public class CustomTabStatusBarColorProviderTest {
         mStatusBarColorProvider.setUseTabThemeColor(true);
         mStatusBarColorProvider.setUseTabThemeColor(true);
 
-        Assert.assertEquals(UNDEFINED_STATUS_BAR_COLOR, getStatusBarColor(mTab));
+        Assert.assertEquals(TAB_THEME_COLOR, getStatusBarColor(mTab));
         verify(mStatusBarColorController).updateStatusBarColor();
     }
 

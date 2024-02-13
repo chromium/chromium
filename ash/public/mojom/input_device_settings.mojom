@@ -359,6 +359,10 @@ enum CustomizableButton {
   kBack = 4,
   kExtra = 5,
   kSide = 6,
+  // Scroll buttons are for buttons that emit as horizontal scrolling events.
+  // Usually done by shifting the mouse wheel left and right.
+  kScrollLeft = 7,
+  kScrollRight = 8,
 };
 
 // Contains the valid set of mouse button configs.
@@ -400,4 +404,9 @@ enum CustomizationRestriction {
   kAllowAlphabetKeyEventRewrites = 3,
   // Allow Alphabet or Number key event rewrites.
   kAllowAlphabetOrNumberKeyEventRewrites = 4,
+  // Allow horizontal scroll wheel as well as normal mouse buttons. Identical to
+  // kDisableKeyEventRewrites but permits horizontal scroll wheel buttons.
+  kAllowHorizontalScrollWheelRewrites = 5,
+  // Allow tab events in addition to normal mouse events to be rewritten.
+  kAllowTabEventRewrites = 6,
 };

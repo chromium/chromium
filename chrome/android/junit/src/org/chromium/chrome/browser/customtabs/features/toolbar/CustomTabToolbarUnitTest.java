@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -63,6 +64,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.SimpleHandleStrategy;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
@@ -124,6 +126,7 @@ public class CustomTabToolbarUnitTest {
     @Mock View mParentView;
     @Mock WindowAndroid mWindowAndroid;
     private @Mock PageInfoIPHController mPageInfoIPHController;
+    @Mock private CustomTabFeatureOverridesManager mFeatureOverridesManager;
 
     private Activity mActivity;
     private CustomTabToolbar mToolbar;
@@ -159,6 +162,10 @@ public class CustomTabToolbarUnitTest {
                 mHistoryDelegate,
                 mPartnerHomepageEnabledSupplier,
                 mOfflineDownloader);
+
+        when(mFeatureOverridesManager.isFeatureEnabled(anyString())).thenReturn(null);
+        mToolbar.setFeatureOverridesManager(mFeatureOverridesManager);
+
         mLocationBar =
                 (CustomTabLocationBar)
                         mToolbar.createLocationBar(
@@ -376,7 +383,7 @@ public class CustomTabToolbarUnitTest {
     public void testMinimizeButtonEnabled() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
-        MinimizedFeatureUtils.setMinimizeCustomTabAvailableForTesting(true);
+        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
         LinearLayout closeMinimizeLayout = mToolbar.findViewById(R.id.close_minimize_layout);
         var minimizeButton = (ImageButton) mToolbar.findViewById(R.id.custom_tabs_minimize_button);
@@ -439,7 +446,7 @@ public class CustomTabToolbarUnitTest {
     public void testMinimizeButtonEnabled_MultiWindowMode() {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<Activity>(mActivity));
-        MinimizedFeatureUtils.setMinimizeCustomTabAvailableForTesting(true);
+        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
         // Not in multi-window, show minimize button.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
@@ -455,7 +462,7 @@ public class CustomTabToolbarUnitTest {
                 View.VISIBLE,
                 closeMinimizeLayout.getChildAt(1).getVisibility());
 
-        MinimizedFeatureUtils.setMinimizeCustomTabAvailableForTesting(true);
+        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         setup();
         // In multi-window, hide minimize button visibility.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);

@@ -15,18 +15,18 @@ namespace views::test {
 InkDropHighlightTestApi::InkDropHighlightTestApi(
     InkDropHighlight* ink_drop_highlight)
     : ui::test::MultiLayerAnimatorTestController(this),
-      ink_drop_highlight_(ink_drop_highlight) {}
+      ink_drop_highlight_(*ink_drop_highlight) {}
 
 InkDropHighlightTestApi::~InkDropHighlightTestApi() = default;
 
 std::vector<ui::LayerAnimator*> InkDropHighlightTestApi::GetLayerAnimators() {
   std::vector<ui::LayerAnimator*> animators;
-  animators.push_back(ink_drop_highlight()->layer_->GetAnimator());
+  animators.push_back(ink_drop_highlight_->layer_->GetAnimator());
   return animators;
 }
 
 gfx::Transform InkDropHighlightTestApi::CalculateTransform() {
-  return ink_drop_highlight()->CalculateTransform();
+  return ink_drop_highlight_->CalculateTransform();
 }
 
 }  // namespace views::test

@@ -49,7 +49,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string SaveImportedCreditCard(
       const CreditCard& imported_credit_card) override;
   void AddProfile(const AutofillProfile& profile) override;
-  void UpdateProfile(const AutofillProfile& profile) override;
   void RemoveByGUID(const std::string& guid) override;
   bool IsEligibleForAddressAccountStorage() const override;
   void AddCreditCard(const CreditCard& credit_card) override;
@@ -58,7 +57,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
-  void LoadProfiles() override;
   void LoadCreditCards() override;
   void LoadCreditCardCloudTokenData() override;
   void LoadIbans() override;
@@ -66,7 +64,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutofillWalletImportEnabled() const override;
   bool ShouldSuggestServerPaymentMethods() const override;
-  std::string CountryCodeForCurrentTimezone() const override;
   void ClearAllLocalData() override;
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
@@ -123,9 +120,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   void SetNicknameForCardWithGUID(std::string_view guid,
                                   std::string_view nickname);
 
-  void set_timezone_country_code(const std::string& timezone_country_code) {
-    timezone_country_code_ = timezone_country_code;
-  }
   void set_default_country_code(const std::string& default_country_code) {
     default_country_code_ = default_country_code;
   }
@@ -174,7 +168,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   // and not trigger `NotifyPersonalDataObserver()`.
   void RemoveByGuidWithoutNotifications(const std::string& guid);
 
-  std::string timezone_country_code_;
   std::string default_country_code_;
   int num_times_save_imported_credit_card_called_ = 0;
   std::optional<bool> autofill_profile_enabled_;

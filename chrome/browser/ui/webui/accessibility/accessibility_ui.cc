@@ -95,7 +95,7 @@ static const char kHTML[] = "html";
 static const char kInternal[] = "internal";
 static const char kNative[] = "native";
 static const char kPage[] = "page";
-static const char kPDF[] = "pdf";
+static const char kPDFPrinting[] = "pdfPrinting";
 static const char kScreenReader[] = "screenreader";
 static const char kShowOrRefreshTree[] = "showOrRefreshTree";
 static const char kText[] = "text";
@@ -208,7 +208,7 @@ void HandleAccessibilityRequestCallback(
   bool text = mode.has_mode(ui::AXMode::kInlineTextBoxes);
   bool screenreader = mode.has_mode(ui::AXMode::kScreenReader);
   bool html = mode.has_mode(ui::AXMode::kHTML);
-  bool pdf = mode.has_mode(ui::AXMode::kPDF);
+  bool pdf_printing = mode.has_mode(ui::AXMode::kPDFPrinting);
 
   // The "native" and "web" flags are disabled if
   // --disable-renderer-accessibility is set.
@@ -223,8 +223,8 @@ void HandleAccessibilityRequestCallback(
            is_web_enabled ? (screenreader ? kOn : kOff) : kDisabled);
   data.Set(kHTML, is_web_enabled ? (html ? kOn : kOff) : kDisabled);
 
-  // The "pdf" flag is independent of the others.
-  data.Set(kPDF, pdf ? kOn : kOff);
+  // The "pdfPrinting" flag is independent of the others.
+  data.Set(kPDFPrinting, pdf_printing ? kOn : kOff);
 
   // The "Top Level Widgets" section is only relevant if views accessibility is
   // enabled.

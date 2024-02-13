@@ -33,6 +33,7 @@
 #include "extensions/browser/api/content_settings/content_settings_helpers.h"
 #include "extensions/common/api/types.h"
 #include "extensions/common/extension_id.h"
+#include "url/gurl.h"
 
 using content::BrowserThread;
 using content_settings::ConcatenationIterator;
@@ -99,6 +100,44 @@ std::unique_ptr<RuleIterator> ContentSettingsStore::GetRuleIterator(
     return nullptr;
 
   return std::make_unique<ConcatenationIterator>(std::move(iterators));
+}
+
+std::unique_ptr<content_settings::Rule> ContentSettingsStore::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record) const {
+  base::AutoLock entries_lock(lock_);
+  std::unique_ptr<content_settings::Rule> result;
+
+  for (const auto& entry : entries_) {
+    if (off_the_record) {
+      {
+        base::AutoLock lock(entry->incognito_session_only_settings.GetLock());
+        result = entry->incognito_session_only_settings.GetRule(
+            primary_url, secondary_url, content_type);
+        if (result) {
+          return result;
+        }
+      }
+      {
+        base::AutoLock lock(entry->incognito_persistent_settings.GetLock());
+        result = entry->incognito_persistent_settings.GetRule(
+            primary_url, secondary_url, content_type);
+        if (result) {
+          return result;
+        }
+      }
+    } else {
+      base::AutoLock lock(entry->settings.GetLock());
+      result =
+          entry->settings.GetRule(primary_url, secondary_url, content_type);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return nullptr;
 }
 
 void ContentSettingsStore::SetExtensionContentSetting(

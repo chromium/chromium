@@ -3,17 +3,13 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++genericContainer
-++++++++++staticText name='before selection' TreeData.textSelStartOffset=16
+++++++++++staticText name='before selection' TreeData.textSelStartOffset=0
 ++++++++++++inlineTextBox name='before selection'
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='Some ignored text'
 ++++++++genericContainer
 ++++++++++staticText name='this text is not ignored'
 ++++++++++++inlineTextBox name='this text is not ignored'
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible name='this text is ignored'
 ++++++++genericContainer
-++++++++++staticText name='after selection' TreeData.textSelEndOffset=0
+++++++++++staticText name='after selection' TreeData.textSelEndOffset=15
 ++++++++++++inlineTextBox name='after selection'
 ++++++staticText name='Done'
 ++++++++inlineTextBox name='Done'

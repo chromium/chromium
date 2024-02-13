@@ -16,7 +16,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
-#include "components/signin/public/base/wait_for_network_callback_helper.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -51,15 +51,15 @@ bool IsExpectedCookie(
 
 BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    WaitForNetworkCallbackHelper& wait_for_network_callback_helper,
     SessionBindingHelper& session_binding_helper,
     const GURL& cookie_url,
-    base::flat_set<std::string> cookie_names)
+    base::flat_set<std::string> cookie_names,
+    bool is_off_the_record_profile)
     : url_loader_factory_(std::move(url_loader_factory)),
-      wait_for_network_callback_helper_(wait_for_network_callback_helper),
       session_binding_helper_(session_binding_helper),
       expected_cookie_domain_(cookie_url),
-      expected_cookie_names_(std::move(cookie_names)) {}
+      expected_cookie_names_(std::move(cookie_names)),
+      is_off_the_record_profile_(is_off_the_record_profile) {}
 
 BoundSessionRefreshCookieFetcherImpl::~BoundSessionRefreshCookieFetcherImpl() =
     default;
@@ -72,9 +72,7 @@ void BoundSessionRefreshCookieFetcherImpl::Start(
   CHECK(!callback_);
   CHECK(callback);
   callback_ = std::move(callback);
-  wait_for_network_callback_helper_->DelayNetworkCall(
-      base::BindOnce(&BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::nullopt));
+  StartRefreshRequest(/*sec_session_challenge_response=*/std::nullopt);
 }
 
 void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
@@ -149,7 +147,11 @@ void BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest(
   request->trusted_params->cookie_observer = std::move(remote);
 
   url_loader_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+      variations::CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(
+          std::move(request),
+          is_off_the_record_profile_ ? variations::InIncognito::kYes
+                                     : variations::InIncognito::kNo,
+          traffic_annotation);
   url_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
   // TODO(b/273920907): Download the response body to support in refresh DBSC
@@ -334,9 +336,7 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     return;
   }
 
-  wait_for_network_callback_helper_->DelayNetworkCall(
-      base::BindOnce(&BoundSessionRefreshCookieFetcherImpl::StartRefreshRequest,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(assertion)));
+  StartRefreshRequest(std::move(assertion));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnCookiesAccessed(

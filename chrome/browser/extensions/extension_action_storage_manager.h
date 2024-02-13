@@ -14,6 +14,7 @@
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -48,7 +49,7 @@ class ExtensionActionStorageManager : public ExtensionActionAPI::Observer,
 
   // Reads/Writes the ExtensionAction's default values to/from storage.
   void WriteToStorage(ExtensionAction* extension_action);
-  void ReadFromStorage(const std::string& extension_id,
+  void ReadFromStorage(const ExtensionId& extension_id,
                        std::optional<base::Value> value);
 
   // Returns the Extensions StateStore for the |browser_context_|.

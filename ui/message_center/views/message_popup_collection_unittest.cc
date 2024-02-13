@@ -206,7 +206,7 @@ class MockMessagePopupView : public MessagePopupView {
 
   void set_expandable(bool expandable) { expandable_ = expandable; }
 
-  void set_height_after_update(absl::optional<int> height_after_update) {
+  void set_height_after_update(std::optional<int> height_after_update) {
     height_after_update_ = height_after_update;
   }
 
@@ -223,7 +223,7 @@ class MockMessagePopupView : public MessagePopupView {
   bool expandable_ = false;
   std::string title_;
 
-  absl::optional<int> height_after_update_;
+  std::optional<int> height_after_update_;
 };
 
 MessagePopupView* MockMessagePopupCollection::CreatePopup(

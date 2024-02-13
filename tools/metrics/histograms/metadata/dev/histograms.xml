@@ -30,6 +30,15 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
+<histogram base="true" name="DevTools.AidaResponseTime" units="ms"
+    expires_after="2024-07-21">
+  <owner>yangguo@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
+  <summary>
+    Measures the time until a full response from AIDA backend is received.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.AnimationPlaybackRateChanged"
     enum="DevToolsAnimationPlaybackRateChanged" expires_after="2024-08-08">
   <owner>yangguo@chromium.org</owner>

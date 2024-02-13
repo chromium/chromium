@@ -158,8 +158,11 @@ class CookieSettings
     if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
         std::cmp_greater_equal(settings.size(),
                                features::kMetadataGrantsThreshold.Get())) {
-      indexed_settings_for_3pcd_metadata_grants_ =
-          HostIndexedContentSettings(settings);
+      auto indices = HostIndexedContentSettings::Create(settings);
+      // All 3pcd metadata grants should use the same source attribute.
+      CHECK_EQ(indices.size(), 1u);
+      indexed_settings_for_3pcd_metadata_grants_ = std::move(indices.front());
+
       // TODO(b/314800700): clear settings_for_3pcd_metadata_grants_ since we
       // only need one copy.
     } else {

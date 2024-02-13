@@ -208,6 +208,14 @@ void LayerTreeImpl::RecreateTileResources() {
     layer->RecreateTileResources();
 }
 
+void LayerTreeImpl::SetVisible(bool visible) {
+  if (!visible) {
+    for (auto* layer : *this) {
+      layer->SetInInvisibleLayerTree();
+    }
+  }
+}
+
 void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
   // Scrollbar positions depend on the current scroll offset.
   SetScrollbarGeometriesNeedUpdate();

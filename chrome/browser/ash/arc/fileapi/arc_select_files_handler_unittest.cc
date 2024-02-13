@@ -291,9 +291,9 @@ TEST_F(ArcSelectFilesHandlerTest, SelectFiles_InitialDocumentPath) {
   request->initial_document_path->path = {"doc:root", "doc:file1"};
   request->initial_document_path->root_id = "root";
 
-  // "doc:file1" is expected to be ignored.
-  base::FilePath expected_file_path = base::FilePath(
-      "/special/arc-documents-provider/testing.provider/doc:root");
+  // |initial_document_path->path| is expected to be ignored.
+  base::FilePath expected_file_path =
+      base::FilePath("/special/arc-documents-provider/testing.provider/root");
 
   EXPECT_CALL(*mock_dialog_holder_,
               SelectFile(_, FilePathMatcher(expected_file_path), _, _, _, _, _))

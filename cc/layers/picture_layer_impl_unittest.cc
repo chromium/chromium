@@ -6166,8 +6166,7 @@ TEST_F(LegacySWPictureLayerImplTest, AnimatedImages) {
   gfx::Size layer_bounds(1000, 1000);
 
   // Set up a raster source with 2 animated images.
-  auto recording_source = FakeRecordingSource::CreateRecordingSource(
-      gfx::Rect(layer_bounds), layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   std::vector<FrameMetadata> frames = {
       FrameMetadata(true, base::Milliseconds(1)),
       FrameMetadata(true, base::Milliseconds(1))};
@@ -6223,8 +6222,7 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputPaintRecordInvalidation) {
       PaintWorkletInput::NativePropertyType::kClipPath, ElementId());
 
   // Set up a raster source with a PaintWorkletInput.
-  auto recording_source = FakeRecordingSource::CreateRecordingSource(
-      gfx::Rect(layer_bounds), layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input1 =
       base::MakeRefCounted<TestPaintWorkletInput>(key, gfx::SizeF(100, 100));
   PaintImage image1 = CreatePaintWorkletPaintImage(input1);
@@ -6272,8 +6270,7 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
   gfx::Size layer_bounds(1000, 1000);
 
   // Set up a raster source with 2 PaintWorkletInputs.
-  auto recording_source = FakeRecordingSource::CreateRecordingSource(
-      gfx::Rect(layer_bounds), layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input1 =
       base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(100, 100));
   PaintImage image1 = CreatePaintWorkletPaintImage(input1);
@@ -6307,8 +6304,7 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
 
   // Committing new PaintWorkletInputs (in a new raster source) should replace
   // the previous ones.
-  recording_source = FakeRecordingSource::CreateRecordingSource(
-      gfx::Rect(layer_bounds), layer_bounds);
+  recording_source = FakeRecordingSource::Create(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input3 =
       base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(12, 12));
   PaintImage image3 = CreatePaintWorkletPaintImage(input3);
@@ -6324,8 +6320,7 @@ TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputs) {
 TEST_F(LegacySWPictureLayerImplTest, PaintWorkletInputsIdenticalEntries) {
   gfx::Size layer_bounds(1000, 1000);
 
-  auto recording_source = FakeRecordingSource::CreateRecordingSource(
-      gfx::Rect(layer_bounds), layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   scoped_refptr<TestPaintWorkletInput> input =
       base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(100, 100));
   PaintImage image = CreatePaintWorkletPaintImage(input);

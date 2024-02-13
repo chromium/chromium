@@ -505,7 +505,6 @@ include_rules = [
   # TODO(crbug.com/1112591): Remove the exceptions below.
   "-chrome/browser/ui/views",
   "+chrome/browser/ui/views/ash/chrome_browser_main_extra_parts_ash.h",
-  "+chrome/browser/ui/views/bubble/bubble_contents_wrapper_service_factory.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h",
   "+chrome/browser/ui/views/chrome_browser_main_extra_parts_views_linux.h",
@@ -514,6 +513,7 @@ include_rules = [
   "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h",
   "+chrome/browser/ui/views/notifications/request_pin_view_chromeos.h",
+  "+chrome/browser/ui/views/webui/webui_contents_wrapper_service_factory.h",
 
   # Ensure that only the public interface of performance_manager gets used.
   "-chrome/browser/performance_manager",

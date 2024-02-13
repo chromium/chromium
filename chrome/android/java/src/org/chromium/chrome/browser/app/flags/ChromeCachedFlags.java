@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
@@ -125,6 +126,7 @@ public class ChromeCachedFlags {
                         StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
                         StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT,
                         TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS,
+                        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES,
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,

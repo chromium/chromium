@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_reader.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
@@ -390,7 +391,7 @@ void ClipboardPromise::OnReadAvailableFormatNames(
 
   clipboard_item_data_.ReserveInitialCapacity(format_names.size());
   for (const String& format_name : format_names) {
-    if (ClipboardWriter::IsValidType(format_name)) {
+    if (ClipboardItem::supports(format_name)) {
       clipboard_item_data_.emplace_back(format_name,
                                         /* Placeholder value. */ nullptr);
     }
@@ -508,7 +509,7 @@ void ClipboardPromise::HandleWriteWithPermission(
     const String& type = type_and_promise_to_blob.first;
     write_clipboard_item_types_.emplace_back(type);
     promise_list.emplace_back(type_and_promise_to_blob.second);
-    if (!ClipboardWriter::IsValidType(type)) {
+    if (!ClipboardItem::supports(type)) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
           "Type " + type + " not supported on write.");

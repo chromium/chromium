@@ -76,14 +76,6 @@ inline constexpr size_t kMaxTypeMatchingCalls = 5000;
 // upload the form to and request predictions from the Autofill servers.
 inline constexpr size_t kRequiredFieldsForFormsWithOnlyPasswordFields = 2;
 
-// Options bitmask values for AutofillHostMsg_ShowPasswordSuggestions IPC
-enum ShowPasswordSuggestionsOptions {
-  SHOW_ALL = 1 << 0 /* show all credentials, not just ones matching username */,
-  IS_PASSWORD_FIELD = 1 << 1 /* input field is a password field */,
-  ACCEPTS_WEBAUTHN_CREDENTIALS =
-      1 << 2 /* input field is marked to accept webauthn credentials */,
-};
-
 // A refill happens only within `kLimitBeforeRefill` of the original fill.
 inline constexpr base::TimeDelta kLimitBeforeRefill = base::Seconds(1);
 

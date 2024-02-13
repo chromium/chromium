@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -91,7 +91,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
   const NetLogWithSource& NetLog() const override;
   bool WasEverUsed() const override;
   NextProto GetNegotiatedProtocol() const override;
-  absl::optional<base::StringPiece> GetPeerApplicationSettings() const override;
+  std::optional<base::StringPiece> GetPeerApplicationSettings() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
   int64_t GetTotalReceivedBytes() const override;
   void GetSSLCertRequestInfo(
@@ -162,7 +162,7 @@ class SSLClientSocketImpl : public SSLClientSocket,
 
   // Returns a session cache key for this socket.
   SSLClientSessionCache::Key GetSessionCacheKey(
-      absl::optional<IPAddress> dest_ip_addr) const;
+      std::optional<IPAddress> dest_ip_addr) const;
 
   // Returns true if renegotiations are allowed.
   bool IsRenegotiationAllowed() const;

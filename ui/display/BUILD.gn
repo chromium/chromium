@@ -208,6 +208,7 @@ static_library("test_support") {
     "test/display_test_util.h",
     "test/test_screen.cc",
     "test/test_screen.h",
+    "test/virtual_display_util.h",
   ]
   public_deps = [ ":display" ]
   deps = [
@@ -277,6 +278,13 @@ static_library("test_support") {
 
   if (is_chromeos_lacros) {
     public_deps += [ "//ui/display:managed_display_info" ]
+  }
+
+  if (!is_mac) {
+    sources += [
+      # Virtual display util stub for unimplemented platforms.
+      "test/virtual_display_util_stub.cc",
+    ]
   }
 }
 

@@ -206,7 +206,7 @@ struct SpdySessionDependencies {
   SpdySession::TimeFunc time_func;
   bool enable_http2_alternative_service = false;
   bool enable_http2_settings_grease = false;
-  absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
+  std::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame = false;
   raw_ptr<NetLog> net_log = nullptr;
   bool disable_idle_sockets_close_on_memory_pressure = false;
@@ -344,7 +344,7 @@ class SpdyTestUtil {
       spdy::SpdyStreamId stream_id,
       RequestPriority request_priority,
       bool priority_incremental = kDefaultPriorityIncremental,
-      absl::optional<RequestPriority> header_request_priority = absl::nullopt);
+      std::optional<RequestPriority> header_request_priority = std::nullopt);
 
   // Constructs a standard SPDY GET HEADERS frame with header compression.
   // |extra_headers| are the extra header-value pairs, which typically
@@ -356,7 +356,7 @@ class SpdyTestUtil {
       int stream_id,
       RequestPriority request_priority,
       bool priority_incremental = kDefaultPriorityIncremental,
-      absl::optional<RequestPriority> header_request_priority = absl::nullopt);
+      std::optional<RequestPriority> header_request_priority = std::nullopt);
 
   // Constructs a SPDY HEADERS frame for a CONNECT request.
   spdy::SpdySerializedFrame ConstructSpdyConnect(
@@ -386,7 +386,7 @@ class SpdyTestUtil {
       RequestPriority priority,
       bool fin,
       bool priority_incremental = kDefaultPriorityIncremental,
-      absl::optional<RequestPriority> header_request_priority = absl::nullopt);
+      std::optional<RequestPriority> header_request_priority = std::nullopt);
 
   // Construct a reply HEADERS frame carrying exactly the given headers and the
   // default priority.

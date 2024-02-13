@@ -813,9 +813,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   int webStateListIndex = [self webStateListIndexFromItemIndex:index];
 
   self.webStateList->InsertWebState(
-      base::checked_cast<int>(webStateListIndex), std::move(webState),
-      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-      WebStateOpener());
+      std::move(webState),
+      WebStateList::InsertionParams::AtIndex(webStateListIndex).Activate());
 }
 
 #pragma mark - TabCollectionDragDropHandler

@@ -7,14 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 
+@protocol ApplicationCommands;
 @protocol BookmarksCommands;
 class Browser;
+@protocol BrowserCoordinatorCommands;
+@protocol FindInPageCommands;
+@protocol OmniboxCommands;
+@protocol SettingsCommands;
 
 // Handles the keyboard commands registration and handling for the
 // BrowserViewController.
@@ -23,7 +24,7 @@ class Browser;
 // Key command actions are converted to Chrome commands and sent to these
 // handlers.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
-@property(nonatomic, weak) id<ApplicationSettingsCommands> settingsHandler;
+@property(nonatomic, weak) id<SettingsCommands> settingsHandler;
 @property(nonatomic, weak) id<FindInPageCommands> findInPageHandler;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>

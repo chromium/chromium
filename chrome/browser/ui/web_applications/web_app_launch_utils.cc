@@ -750,6 +750,7 @@ void LaunchWebApp(apps::AppLaunchParams params,
       case DisplayMode::kWindowControlsOverlay:
       case DisplayMode::kTabbed:
       case DisplayMode::kBorderless:
+      case DisplayMode::kPictureInPicture:
       case DisplayMode::kStandalone:
         params.container = apps::LaunchContainer::kLaunchContainerWindow;
         break;

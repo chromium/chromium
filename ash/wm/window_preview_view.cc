@@ -190,7 +190,7 @@ gfx::RectF WindowPreviewView::GetUnionRect() const {
   return gfx::RectF(bounds);
 }
 
-BEGIN_METADATA(WindowPreviewView, views::View)
+BEGIN_METADATA(WindowPreviewView)
 END_METADATA
 
 }  // namespace ash

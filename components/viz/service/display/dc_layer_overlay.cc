@@ -434,7 +434,7 @@ bool HasOccludingDamageRect(
   return !occluding_damage_rect.IsEmpty();
 }
 
-bool IsPossibleFullScreenLetterboxing(const QuadList::Iterator& it,
+bool IsPossibleFullScreenLetterboxing(const QuadList::ConstIterator& it,
                                       QuadList::ConstIterator quad_list_end,
                                       const gfx::Rect& display_rect) {
   // Two cases are considered as possible fullscreen letterboxing:
@@ -651,6 +651,99 @@ bool IsPreviousFrameUnderlayRect(
     // power.
     return (previous_frame_overlay_rects[index].rect == quad_rect) &&
            (previous_frame_overlay_rects[index].is_overlay == false);
+  }
+}
+
+// Return value of |ValidateDrawQuad|.
+struct ValidateDrawQuadResult {
+  DCLayerResult code = DC_LAYER_FAILED_UNSUPPORTED_QUAD;
+  bool is_yuv_overlay = false;
+  gpu::Mailbox promotion_hint_mailbox;
+};
+
+ValidateDrawQuadResult ValidateDrawQuad(
+    DisplayResourceProvider* resource_provider,
+    const QuadList::ConstIterator& it,
+    const std::vector<gfx::Rect>& backdrop_filter_rects,
+    const bool is_page_fullscreen_mode,
+    const bool has_overlay_support,
+    const bool has_p010_video_processor_support,
+    const int allowed_yuv_overlay_count,
+    const int processed_yuv_overlay_count,
+    const bool allow_promotion_hinting) {
+  ValidateDrawQuadResult result;
+  switch (it->material) {
+    case DrawQuad::Material::kYuvVideoContent:
+      result.code = ValidateYUVQuad(
+          YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
+          is_page_fullscreen_mode, has_overlay_support,
+          has_p010_video_processor_support, allowed_yuv_overlay_count,
+          processed_yuv_overlay_count, resource_provider);
+      result.is_yuv_overlay = true;
+      break;
+
+    case DrawQuad::Material::kTextureContent: {
+      const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
+
+      if (tex_quad->is_stream_video) {
+        // Stream video quads contain Media Foundation dcomp surface which is
+        // always presented as overlay.
+        result.code = DC_LAYER_SUCCESS;
+      } else {
+        result.code = ValidateTextureQuad(
+            tex_quad, backdrop_filter_rects, is_page_fullscreen_mode,
+            has_overlay_support, has_p010_video_processor_support,
+            allowed_yuv_overlay_count, processed_yuv_overlay_count,
+            resource_provider);
+      }
+
+      result.is_yuv_overlay = tex_quad->is_video_frame;
+
+      if (allow_promotion_hinting) {
+        // If this quad has marked itself as wanting promotion hints then get
+        // the associated mailbox.
+        ResourceId id = tex_quad->resource_id();
+        if (resource_provider->DoesResourceWantPromotionHint(id)) {
+          result.promotion_hint_mailbox = resource_provider->GetMailbox(id);
+        }
+      }
+    } break;
+
+    default:
+      result.code = DC_LAYER_FAILED_UNSUPPORTED_QUAD;
+      break;
+  }
+
+  return result;
+}
+
+void FromDrawQuad(DisplayResourceProvider* resource_provider,
+                  const AggregatedRenderPass* render_pass,
+                  bool is_page_fullscreen_mode,
+                  const QuadList::ConstIterator& it,
+                  int& processed_yuv_overlay_count,
+                  OverlayCandidate& dc_layer) {
+  dc_layer.possible_video_fullscreen_letterboxing =
+      is_page_fullscreen_mode
+          ? IsPossibleFullScreenLetterboxing(it, render_pass->quad_list.end(),
+                                             render_pass->output_rect)
+          : false;
+  switch (it->material) {
+    case DrawQuad::Material::kYuvVideoContent:
+      FromYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
+                  render_pass->transform_to_root_target, &dc_layer);
+      processed_yuv_overlay_count++;
+      break;
+    case DrawQuad::Material::kTextureContent: {
+      const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
+      FromTextureQuad(tex_quad, render_pass->transform_to_root_target,
+                      resource_provider, &dc_layer);
+      if (tex_quad->is_video_frame) {
+        processed_yuv_overlay_count++;
+      }
+    } break;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -887,51 +980,14 @@ void DCLayerOverlayProcessor::CollectCandidates(
       continue;
     }
 
-    gpu::Mailbox promotion_hint_mailbox;
-    DCLayerResult result;
-    bool is_yuv_overlay = false;
-    switch (it->material) {
-      case DrawQuad::Material::kYuvVideoContent:
-        result = ValidateYUVQuad(
-            YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
-            is_page_fullscreen_mode, has_overlay_support_,
-            has_p010_video_processor_support_, allowed_yuv_overlay_count_,
-            global_overlay_state.processed_yuv_overlay_count,
-            resource_provider);
-        is_yuv_overlay = true;
-        break;
-      case DrawQuad::Material::kTextureContent: {
-        const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
+    ValidateDrawQuadResult result = ValidateDrawQuad(
+        resource_provider, it, backdrop_filter_rects, is_page_fullscreen_mode,
+        has_overlay_support_, has_p010_video_processor_support_,
+        allowed_yuv_overlay_count_,
+        global_overlay_state.processed_yuv_overlay_count,
+        allow_promotion_hinting_);
 
-        if (tex_quad->is_stream_video) {
-          // Stream video quads contain Media Foundation dcomp surface which is
-          // always presented as overlay.
-          result = DC_LAYER_SUCCESS;
-        } else {
-          result = ValidateTextureQuad(
-              tex_quad, backdrop_filter_rects, is_page_fullscreen_mode,
-              has_overlay_support_, has_p010_video_processor_support_,
-              allowed_yuv_overlay_count_,
-              global_overlay_state.processed_yuv_overlay_count,
-              resource_provider);
-        }
-
-        is_yuv_overlay = tex_quad->is_video_frame;
-
-        if (allow_promotion_hinting_) {
-          // If this quad has marked itself as wanting promotion hints then get
-          // the associated mailbox.
-          ResourceId id = tex_quad->resource_id();
-          if (resource_provider->DoesResourceWantPromotionHint(id)) {
-            promotion_hint_mailbox = resource_provider->GetMailbox(id);
-          }
-        }
-      } break;
-      default:
-        result = DC_LAYER_FAILED_UNSUPPORTED_QUAD;
-    }
-
-    if (is_yuv_overlay) {
+    if (result.is_yuv_overlay) {
       global_overlay_state.yuv_quads++;
       if (no_undamaged_overlay_promotion_) {
         if (it->shared_quad_state->overlay_damage_index.has_value() &&
@@ -940,30 +996,31 @@ void DCLayerOverlayProcessor::CollectCandidates(
                                                ->overlay_damage_index.value()]
                  .IsEmpty()) {
           global_overlay_state.damaged_yuv_quads++;
-          if (result == DC_LAYER_SUCCESS) {
+          if (result.code == DC_LAYER_SUCCESS) {
             global_overlay_state.processed_yuv_overlay_count++;
           }
         }
       } else {
-        if (result == DC_LAYER_SUCCESS) {
+        if (result.code == DC_LAYER_SUCCESS) {
           global_overlay_state.processed_yuv_overlay_count++;
         }
       }
     }
 
-    if (!promotion_hint_mailbox.IsZero()) {
+    if (!result.promotion_hint_mailbox.IsZero()) {
       DCHECK(allow_promotion_hinting_);
-      bool promoted = result == DC_LAYER_SUCCESS;
+      bool promoted = result.code == DC_LAYER_SUCCESS;
       auto* overlay_state_service = OverlayStateService::GetInstance();
       // The OverlayStateService should always be initialized by GpuServiceImpl
       // at creation - DCHECK here just to assert there aren't any corner cases
       // where this isn't true.
       DCHECK(overlay_state_service->IsInitialized());
-      overlay_state_service->SetPromotionHint(promotion_hint_mailbox, promoted);
+      overlay_state_service->SetPromotionHint(result.promotion_hint_mailbox,
+                                              promoted);
     }
 
-    if (result != DC_LAYER_SUCCESS) {
-      RecordDCLayerResult(result, it);
+    if (result.code != DC_LAYER_SUCCESS) {
+      RecordDCLayerResult(result.code, it);
       continue;
     }
 
@@ -1240,28 +1297,8 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   RecordDCLayerResult(DC_LAYER_SUCCESS, it);
 
   OverlayCandidate dc_layer;
-  dc_layer.possible_video_fullscreen_letterboxing =
-      is_page_fullscreen_mode
-          ? IsPossibleFullScreenLetterboxing(it, render_pass->quad_list.end(),
-                                             render_pass->output_rect)
-          : false;
-  switch (it->material) {
-    case DrawQuad::Material::kYuvVideoContent:
-      FromYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
-                  render_pass->transform_to_root_target, &dc_layer);
-      global_overlay_state.processed_yuv_overlay_count++;
-      break;
-    case DrawQuad::Material::kTextureContent: {
-      const TextureDrawQuad* tex_quad = TextureDrawQuad::MaterialCast(*it);
-      FromTextureQuad(tex_quad, render_pass->transform_to_root_target,
-                      resource_provider, &dc_layer);
-      if (tex_quad->is_video_frame) {
-        global_overlay_state.processed_yuv_overlay_count++;
-      }
-    } break;
-    default:
-      NOTREACHED();
-  }
+  FromDrawQuad(resource_provider, render_pass, is_page_fullscreen_mode, it,
+               global_overlay_state.processed_yuv_overlay_count, dc_layer);
 
   // Underlays are less efficient, so attempt regular overlays first. We can
   // only check for occlusion within a render pass.

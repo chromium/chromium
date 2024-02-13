@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
@@ -120,11 +119,11 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   bool IsPopupCreated() { return GetFullscreenControlHost()->IsPopupCreated(); }
 
   void EnterActiveTabFullscreen() {
-    FullscreenNotificationObserver fullscreen_observer(browser());
+    ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
     auto* delegate = static_cast<content::WebContentsDelegate*>(browser());
     delegate->EnterFullscreenModeForTab(
         GetActiveWebContents()->GetPrimaryMainFrame(), {});
-    fullscreen_observer.Wait();
+    waiter.Wait();
     ASSERT_TRUE(delegate->IsFullscreenForTabOrPending(GetActiveWebContents()));
   }
 

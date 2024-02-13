@@ -40,6 +40,11 @@ struct ViewTransitionElement {
   // shared element. The map is from (a subset of) CSSPropertyIDs to the css
   // computed value (as string).
   map<ViewTransitionPropertyId, string> captured_css_properties;
+
+  // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
+  // The class-list needs to be serialized between documents, because exit transitions
+  // would use the class list from the old document.
+  array<string> class_list;
 };
 
 // This represents a document state necessary to initiate a view transition for

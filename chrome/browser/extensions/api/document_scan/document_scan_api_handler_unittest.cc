@@ -150,7 +150,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   // job handle.  After calling this, a test can use the returned job handle for
   // further operations.
   std::string StartScanForExtension(scoped_refptr<const Extension> extension) {
-    return StartScanForScannerHandle(extension,
+    return StartScanForScannerHandle(extension, /*user_gesture=*/false,
                                      OpenScannerForExtension(extension));
   }
 
@@ -177,6 +177,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
   // handle for further operations.
   std::string StartScanForScannerHandle(
       scoped_refptr<const Extension> extension,
+      bool user_gesture,
       const std::string& scanner_handle) {
     if (scanner_handle.empty()) {
       return "";
@@ -187,7 +188,7 @@ class DocumentScanAPIHandlerTest : public testing::Test {
     api::document_scan::StartScanOptions options;
     StartScanFuture future;
     document_scan_api_handler_->StartScan(
-        /*native_window=*/nullptr, extension, scanner_handle,
+        /*native_window=*/nullptr, extension, user_gesture, scanner_handle,
         std::move(options), future.GetCallback());
 
     const api::document_scan::StartScanResponse& response = future.Get();
@@ -976,8 +977,8 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_PermissionDenied) {
   api::document_scan::StartScanOptions options;
   StartScanFuture future;
   document_scan_api_handler_->StartScan(
-      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      scanner_handle, std::move(options), future.GetCallback());
 
   const api::document_scan::StartScanResponse& response = future.Get();
   EXPECT_EQ(response.result,
@@ -995,8 +996,8 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_PermissionApproved) {
   api::document_scan::StartScanOptions options;
   StartScanFuture future;
   document_scan_api_handler_->StartScan(
-      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle, std::move(options), future.GetCallback());
 
   const api::document_scan::StartScanResponse& response = future.Get();
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
@@ -1004,9 +1005,8 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_PermissionApproved) {
   EXPECT_TRUE(response.job.has_value());
 }
 
-TEST_F(DocumentScanAPIHandlerTest,
-       StartScan_PermissionApprovedConfirmationSaved) {
-  std::string scanner_handle = OpenScannerForExtension(extension_);
+TEST_F(DocumentScanAPIHandlerTest, StartScan_PermissionApprovedSameHandle) {
+  const std::string scanner_handle = OpenScannerForExtension(extension_);
   EXPECT_FALSE(scanner_handle.empty());
 
   base::AutoReset<std::optional<bool>> testing_scope =
@@ -1014,8 +1014,8 @@ TEST_F(DocumentScanAPIHandlerTest,
   api::document_scan::StartScanOptions options;
   StartScanFuture future;
   document_scan_api_handler_->StartScan(
-      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle, std::move(options), future.GetCallback());
 
   const api::document_scan::StartScanResponse& response = future.Get();
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
@@ -1028,13 +1028,75 @@ TEST_F(DocumentScanAPIHandlerTest,
       StartScanRunner::SetStartScanConfirmationResultForTesting(false);
   StartScanFuture future2;
   document_scan_api_handler_->StartScan(
-      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
-      future2.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle, std::move(options), future2.GetCallback());
 
   const api::document_scan::StartScanResponse& response2 = future2.Get();
   EXPECT_EQ(response2.result, api::document_scan::OperationResult::kSuccess);
   EXPECT_EQ(response2.scanner_handle, scanner_handle);
   EXPECT_TRUE(response2.job.has_value());
+}
+
+TEST_F(DocumentScanAPIHandlerTest,
+       StartScan_PermissionApprovedSameScannerNewHandle) {
+  const std::string scanner_id = CreateScannerIdForExtension(extension_);
+  const std::string scanner_handle1 = OpenScannerWithId(extension_, scanner_id);
+  EXPECT_FALSE(scanner_handle1.empty());
+
+  base::AutoReset<std::optional<bool>> testing_scope =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(true);
+  api::document_scan::StartScanOptions options;
+  StartScanFuture future;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle1, std::move(options), future.GetCallback());
+
+  const api::document_scan::StartScanResponse& response = future.Get();
+  EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response.scanner_handle, scanner_handle1);
+  EXPECT_TRUE(response.job.has_value());
+
+  // New handle pointing to the same scanner.
+  const std::string scanner_handle2 = OpenScannerWithId(extension_, scanner_id);
+  EXPECT_FALSE(scanner_handle2.empty());
+  EXPECT_NE(scanner_handle2, scanner_handle1);
+
+  // Set the confirmation result to false.  Starting subsequent scans will be
+  // denied unless they come from a user gesture.
+  base::AutoReset<std::optional<bool>> testing_scope2 =
+      StartScanRunner::SetStartScanConfirmationResultForTesting(false);
+
+  // Denied because the scan isn't initiated by a user gesture.
+  StartScanFuture future2;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle2, std::move(options), future2.GetCallback());
+  const api::document_scan::StartScanResponse& response2 = future2.Get();
+  EXPECT_EQ(response2.scanner_handle, scanner_handle2);
+  EXPECT_NE(response2.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_FALSE(response2.job.has_value());
+
+  // Allowed because the same scanner was previously approved and this is a user
+  // gesture.
+  StartScanFuture future3;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      scanner_handle2, std::move(options), future3.GetCallback());
+  const api::document_scan::StartScanResponse& response3 = future3.Get();
+  EXPECT_EQ(response3.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response3.scanner_handle, scanner_handle2);
+  EXPECT_TRUE(response3.job.has_value());
+
+  // Allowed without a user gesture because the previous call marked the handle
+  // as approved.
+  StartScanFuture future4;
+  document_scan_api_handler_->StartScan(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle2, std::move(options), future4.GetCallback());
+  const api::document_scan::StartScanResponse& response4 = future4.Get();
+  EXPECT_EQ(response4.result, api::document_scan::OperationResult::kSuccess);
+  EXPECT_EQ(response4.scanner_handle, scanner_handle2);
+  EXPECT_TRUE(response4.job.has_value());
 }
 
 TEST_F(DocumentScanAPIHandlerTest, StartScan_ExtensionTrusted) {
@@ -1050,8 +1112,8 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_ExtensionTrusted) {
   api::document_scan::StartScanOptions options;
   StartScanFuture future;
   document_scan_api_handler_->StartScan(
-      /*native_window=*/nullptr, extension_, scanner_handle, std::move(options),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      scanner_handle, std::move(options), future.GetCallback());
 
   const api::document_scan::StartScanResponse& response = future.Get();
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
@@ -1066,8 +1128,8 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_HandleNotOpen) {
   api::document_scan::StartScanOptions options;
   StartScanFuture future;
   document_scan_api_handler_->StartScan(
-      /*native_window=*/nullptr, extension_, "scanner-handle",
-      std::move(options), future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      "scanner-handle", std::move(options), future.GetCallback());
 
   const api::document_scan::StartScanResponse& response = future.Get();
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
@@ -1091,8 +1153,8 @@ TEST_F(DocumentScanAPIHandlerTest, StartScan_HandleNotMine) {
   api::document_scan::StartScanOptions options;
   StartScanFuture future;
   document_scan_api_handler_->StartScan(
-      /*native_window=*/nullptr, extension2, scanner_handle, std::move(options),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension2, /*user_gesture=*/false,
+      scanner_handle, std::move(options), future.GetCallback());
 
   const api::document_scan::StartScanResponse& response = future.Get();
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kInvalid);
@@ -1195,8 +1257,8 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromOpenHandleSucceeds) {
 
   std::string scanner_handle = OpenScannerForExtension(extension_);
   EXPECT_FALSE(scanner_handle.empty());
-  std::string job_handle =
-      StartScanForScannerHandle(extension_, scanner_handle);
+  std::string job_handle = StartScanForScannerHandle(
+      extension_, /*user_gesture=*/false, scanner_handle);
   EXPECT_FALSE(job_handle.empty());
 
   // First read succeeds because the job is open.
@@ -1249,8 +1311,8 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromClosedScannerFails) {
 
   std::string scanner_handle = OpenScannerForExtension(extension_);
   EXPECT_FALSE(scanner_handle.empty());
-  std::string job_handle =
-      StartScanForScannerHandle(extension_, scanner_handle);
+  std::string job_handle = StartScanForScannerHandle(
+      extension_, /*user_gesture=*/false, scanner_handle);
   EXPECT_FALSE(job_handle.empty());
 
   // First read succeeds because the job is open.
@@ -1299,8 +1361,8 @@ TEST_F(DocumentScanAPIHandlerTest, ReadScanData_ReadFromReopenedScannerFails) {
   ASSERT_TRUE(open_response1.scanner_handle.has_value());
   EXPECT_FALSE(open_response1.scanner_handle->empty());
 
-  const std::string job_handle =
-      StartScanForScannerHandle(extension_, *open_response1.scanner_handle);
+  const std::string job_handle = StartScanForScannerHandle(
+      extension_, /*user_gesture=*/false, *open_response1.scanner_handle);
   EXPECT_FALSE(job_handle.empty());
 
   // First read succeeds because the job is open.

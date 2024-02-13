@@ -96,6 +96,80 @@ We've created an API around `content`, similar to our WebKit API. This isolates
 embedders from content's inner workings, and makes it clear to people working on
 content which methods are used by embedders.
 
+## Content OWNERS
+Top-level `content` OWNERS are reviewers who are qualified to review changes
+across all of `content` and are responsible for its architecture. In general,
+`content` subdirectories will have specific owners who are the experts in
+reviewing that code, and top-level owners will defer to subdirectory owners as
+needed. For large architectural changes to `content`, all owners should loop in
+content-owners@chromium.org to give others a chance to post suggestions. This
+applies to changes large enough to warrant a design doc.
+
+To become a content/OWNER, candidates are expected to show substantial
+contributions to `content` in recent past that demonstrate knowledge of the core
+architecture and design principles, including both the browser process side and
+the renderer side.  To become a top-level owner, please follow the following
+process:
+
+1. Become an owner in a few `content` subdirectories and establish yourself as
+   an expert reviewer in those areas.
+
+2. Find 1-2 current top-level owners who can become your "sponsors" for an owner
+   nomination. Work with them to (1) review your technical changes in `content`
+   to gain trust in your technical work and (2) shadow-review `content` changes
+   that you also review to gain trust in you as a reviewer. Once ready, your
+   sponsors will nominate you for ownership by sending an email to
+   the current top-level owners.
+
+A typical nomination includes:
+- Projects that you worked on that involved `content`, and which concepts they
+  covered.
+- Some representative CLs contributed and/or reviewed. This can also include
+  aggregate statistics, e.g. via `git shortlog -s --author=<username>
+  content/browser`.
+- Significant improvements to documentation of the above concepts
+
+For reference, a top-level `content` OWNER is expected to be familiar with most
+(but not necessarily all) of the following core parts of `content`:
+- [Navigation](https://chromium.googlesource.com/chromium/src/+/main/docs/navigation.md)
+- [Process model](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md)
+- [Session history](https://chromium.googlesource.com/chromium/src/+/main/docs/session_history.md)
+- Loading, interactions with the network stack
+- Manipulating pages, documents, frames, and frame trees.
+- [MPArch](https://chromium.googlesource.com/chromium/src/+/main/docs/frame_trees.md)
+  concepts like inner FrameTrees, primary vs non-primary pages.
+- How `content` interacts with compositing and input handling.
+- Mojo interfaces between `content/browser` and `content/renderer` and/or
+  `blink/renderer`.
+- Security checks (e.g., `ChildProcessSecurityPolicy`).
+- [content/public APIs](public/README.md): rules for adding them, common APIs
+  like `WebContentsObserver`, `ContentBrowserClient`, and `NavigationThrottle`.
+- Know that there are `content` embedders beyond //chrome (e.g., Android Webview).
+- DEPS rules, what should and should not depend on //content.
+
+Correspondingly, a top-level `content` OWNER is typically familiar with most of
+the following core `content` classes:
+- `Render(Frame|FrameProxy|Process|Widget|View)Host`
+- `Render(Frame|Widget|Thread)`
+- `WebContents` and `WebContentsObserver`
+- `FrameTree` and `FrameTreeNode`
+- `RenderFrameHostManager`
+- `NavigationHandle` and `NavigationRequest`, their ownership and lifetime
+- `Page` vs `RenderFrameHost` vs blink's `Document`,
+  `RenderDocumentHostUserData`/`NavigationHandleUserData`, and associated
+  lifetime issues.
+- `SiteInstance` and `BrowsingInstance`, `SiteInfo`
+- `NavigationController`, `NavigationEntry` vs `FrameNavigationEntry`
+- `ChildProcessSecurityPolicy`
+- `BrowserContext`, `StoragePartition`
+- `ContentBrowserClient`
+
 ## Further documentation
 
 * [Bluetooth](browser/bluetooth/README.md)
+* [content/browser/renderer_host](browser/renderer_host/README.md)
+* [Frame trees](https://chromium.googlesource.com/chromium/src/+/main/docs/frame_trees.md)
+* [Navigation](https://chromium.googlesource.com/chromium/src/+/main/docs/navigation.md)
+* [Process model](https://chromium.googlesource.com/chromium/src/+/main/docs/process_model_and_site_isolation.md)
+* [RenderDocument](https://chromium.googlesource.com/chromium/src/+/main/docs/render_document.md)
+* [Session history](https://chromium.googlesource.com/chromium/src/+/main/docs/session_history.md)

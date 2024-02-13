@@ -37,7 +37,7 @@ import * as Common from 'devtools/core/common/common.js';
   function onNodeSelected() {
     TestRunner.addResult('HTML comments shown:');
     ElementsTestRunner.dumpElementsTree();
-    Common.Settings.settingForTest('showHTMLComments').set(false);
+    Common.Settings.settingForTest('show-html-comments').set(false);
     TestRunner.addResult('\nHTML comments hidden:');
     ElementsTestRunner.dumpElementsTree();
     TestRunner.completeTest();

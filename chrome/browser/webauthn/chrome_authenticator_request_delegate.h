@@ -23,6 +23,7 @@
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 class EnclaveManager;
@@ -185,6 +186,7 @@ class ChromeAuthenticatorRequestDelegate
       RequestSource request_source,
       device::FidoRequestType request_type,
       std::optional<device::ResidentKeyRequirement> resident_key_requirement,
+      device::UserVerificationRequirement user_verification_requirement,
       base::span<const device::CableDiscoveryData> pairings_from_extension,
       bool is_enclave_authenticator_available,
       device::FidoDiscoveryFactory* discovery_factory) override;
@@ -388,6 +390,9 @@ class ChromeAuthenticatorRequestDelegate
       pending_transport_availability_info_;
 
   absl::optional<device::FidoRequestType> request_type_;
+
+  std::optional<device::UserVerificationRequirement>
+      user_verification_requirement_;
 
   // The set of pertinent synced passkeys for this request. Persisted here
   // so that a consistent set of passkeys is used throughout the transaction.

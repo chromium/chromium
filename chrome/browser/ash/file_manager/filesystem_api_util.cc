@@ -304,18 +304,17 @@ void GetNonNativeLocalPathMimeType(
       }
 
       std::string authority;
-      std::string root_document_id;
-      if (!arc::ParseDocumentsProviderPath(path, &authority,
-                                           &root_document_id)) {
+      std::string root_id;
+      if (!arc::ParseDocumentsProviderPath(path, &authority, &root_id)) {
         LOG(ERROR) << "Failed to parse documents provider path: " << path;
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
         return;
       }
-      auto* root = root_map->Lookup(authority, root_document_id);
+      auto* root = root_map->Lookup(authority, root_id);
       if (!root) {
         LOG(ERROR) << "No root found for authority: " << authority
-                   << " document_id: " << root_document_id;
+                   << " document_id: " << root_id;
         content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
         return;

@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
+import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
@@ -192,6 +194,32 @@ public class TabTest {
         attachOnUiThread(tab);
         assertNull(tab.getWebContents());
         assertFalse(tab.isDetached());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testRestoreTabState() {
+        TabState tabState =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return TabStateExtractor.from(mTab);
+                        });
+        tabState.timestampMillis = 437289L;
+        tabState.lastNavigationCommittedTimestampMillis = 748932L;
+        tabState.rootId = 5;
+        tabState.tabGroupId = new Token(1L, 2L);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabTestUtils.restoreFieldsFromState(mTab, tabState);
+                });
+        assertEquals(tabState.timestampMillis, mTab.getTimestampMillis());
+        assertEquals(
+                tabState.lastNavigationCommittedTimestampMillis,
+                mTab.getLastNavigationCommittedTimestampMillis());
+        assertEquals(tabState.rootId, mTab.getRootId());
+        assertEquals(tabState.tabGroupId, mTab.getTabGroupId());
     }
 
     private void detachOnUiThread(Tab tab) {

@@ -14,7 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 
-namespace base {
+namespace base::android {
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kOnPreFreezeMemoryTrim);
 
@@ -40,16 +40,16 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::Location& from_here,
       base::OnceClosure task,
-      base::TimeDelta delay);
+      base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
 
   static void SetIsRespectingModernTrimForTesting(bool is_respecting);
-  size_t GetNumberOfPendingBackgroundTasksForTesting();
+  size_t GetNumberOfPendingBackgroundTasksForTesting() LOCKS_EXCLUDED(lock_);
 
-  static void OnPreFreezeForTesting() { OnPreFreeze(); }
+  static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock_) { OnPreFreeze(); }
 
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
-  static void OnPreFreeze();
+  static void OnPreFreeze() LOCKS_EXCLUDED(lock_);
 
  private:
   friend class base::NoDestructor<PreFreezeBackgroundMemoryTrimmer>;
@@ -84,7 +84,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   PreFreezeBackgroundMemoryTrimmer();
 
-  static void UnregisterBackgroundTask(BackgroundTask*);
+  static void UnregisterBackgroundTask(BackgroundTask*) LOCKS_EXCLUDED(lock_);
 
   void UnregisterBackgroundTaskInternal(BackgroundTask*) LOCKS_EXCLUDED(lock_);
 
@@ -94,20 +94,25 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::Location& from_here,
       base::OnceClosure task,
-      base::TimeDelta delay);
+      base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
   void PostDelayedBackgroundTaskModern(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::Location& from_here,
       base::OnceClosure task,
-      base::TimeDelta delay);
+      base::TimeDelta delay) LOCKS_EXCLUDED(lock_);
 
-  void OnPreFreezeInternal();
+  void OnPreFreezeInternal() LOCKS_EXCLUDED(lock_);
+
+  void PostMetricsTask(std::optional<uint64_t> pmf_before);
 
   mutable base::Lock lock_;
   std::deque<std::unique_ptr<BackgroundTask>> background_tasks_
       GUARDED_BY(lock_);
+  // Keeps track of whether any tasks have been registered so far (set to true
+  // once the first task is registered).
+  bool did_register_task_ GUARDED_BY(lock_) = false;
   bool is_respecting_modern_trim_;
 };
-}  // namespace base
+}  // namespace base::android
 
 #endif  // BASE_ANDROID_PRE_FREEZE_BACKGROUND_MEMORY_TRIMMER_H_

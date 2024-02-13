@@ -10,12 +10,14 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
+#include "chrome/browser/ui/webui/ash/emoji/emoji_search_proxy.h"
 #include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.h"
 #include "chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal.mojom.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/emoji/emoji_search.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -58,6 +60,9 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<emoji_search::mojom::EmojiSearch> receiver);
+
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
@@ -83,6 +88,7 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
   std::unique_ptr<EmojiPageHandler> page_handler_;
   std::unique_ptr<ash::NewWindowProxy> new_window_proxy_;
   std::unique_ptr<ash::SealService> seal_service_;
+  std::unique_ptr<EmojiSearchProxy> emoji_search_;
 
   mojo::Receiver<emoji_picker::mojom::PageHandlerFactory>
       page_factory_receiver_{this};

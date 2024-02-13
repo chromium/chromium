@@ -34,6 +34,7 @@ source_set("ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util/image",
@@ -41,5 +42,6 @@ source_set("ui") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
+    "//ui/base",
   ]
 }

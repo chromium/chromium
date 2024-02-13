@@ -4576,6 +4576,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AvatarToolbarButtonHighlighted">
+  <obsolete>Removed in M123</obsolete>
   <owner>siyua@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <description>
@@ -23160,6 +23161,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileSaveToPhotosManageStorage">
+  <owner>qpubert@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <description>
+    Reported when the user selects &quot;Manage Storage&quot; in the alert
+    presented when attempting to upload an image to a Google Photos account with
+    insufficient storage.
+  </description>
+</action>
+
 <action name="MobileSearchEngineSettingsBack">
   <owner>gambard@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
@@ -32345,6 +32357,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Learn more is clicked in the Manage Topics Page.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.PageOpened">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Manage Topics page is opened.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicBlocked">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Topic blocked from the Manage Topics page.</description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicBlockingCanceled">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Topic blocking operation canceled from the confirmation dialog.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicBlockingConfirmed">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>
+    Topic blocking operation confirmed from the confirmation dialog.
+  </description>
+</action>
+
+<action name="Settings.PrivacySandbox.Topics.Manage.TopicEnabled">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <description>Topic enabled from the Manage Topics page.</description>
+</action>
+
 <action name="Settings.PrivacySandbox.Topics.Opened">
   <owner>rubindl@google.com</owner>
   <owner>sauski@google.com</owner>
@@ -34368,6 +34420,14 @@ should be able to be added at any place in this file.
   <description>Recorded when showing sign in entry in the menu.</description>
 </action>
 
+<action name="Signin_Impression_FromNotificationsOptInScreenContentToggle">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded when showing sign in entry in the notifications opt-in screen.
+  </description>
+</action>
+
 <action name="Signin_Impression_FromNTP" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -34506,6 +34566,15 @@ should be able to be added at any place in this file.
   <owner>bzanotti@chromium.org</owner>
   <description>
     Recorded when showing sign in entry in the tab switcher.
+  </description>
+</action>
+
+<action name="Signin_Impression_FromTipsNotification">
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded when sign-in is shown after the user interacts with a Tips
+    Notification on iOS.
+    (signin_metrics::AccessPoint::signin_metrics::AccessPoint)
   </description>
 </action>
 
@@ -34971,6 +35040,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromCloudPrint">
+  <obsolete>
+    Removed by clean-up in M123 but was deprecated even long before that.
+  </obsolete>
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
@@ -35078,6 +35150,15 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_MENU.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromNotificationsOptInScreenContentToggle">
+  <owner>hiramahmood@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE.
   </description>
 </action>
 
@@ -35289,6 +35370,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromTipsNotification">
+  <owner>scottyoder@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION. iOS Only.
   </description>
 </action>
 
@@ -41295,8 +41384,6 @@ should be able to be added at any place in this file.
       label="For iOSDockingPromoRemindMeLater feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
-  <suffix name="iOSInlinePromoEnhancedSafeBrowsing"
-      label="For iOSInlinePromoEnhancedSafeBrowsing feature"/>
   <suffix name="iOSNewTabToolbarItemFeature"
       label="For iOSNewTabToolbarItemFeature feature"/>
   <suffix name="iOSOmniboxPositionFeature"
@@ -41305,6 +41392,8 @@ should be able to be added at any place in this file.
       label="For the iOSParcelTrackingFeature feature"/>
   <suffix name="iOSPasswordPromoDesktop"
       label="For iOSPasswordPromoDesktop feature"/>
+  <suffix name="iOSPostDefaultAbandonmentPromo"
+      label="For iOSPostDefaultAbandonmentPromo feature"/>
   <suffix name="iOSPromoAppStore" label="For iOSPromoAppStore feature"/>
   <suffix name="iOSPromoCredentialProviderExtension"
       label="For iOSPromoCredentialProviderExtension feature"/>
@@ -41499,6 +41588,10 @@ should be able to be added at any place in this file.
       label="For ShoppingListMenuItem feature."/>
   <suffix name="ShoppingListSaveFlow"
       label="For ShoppingListSaveFlow feature."/>
+  <suffix name="SidePanelGenericMenuFeature"
+      label="For Side Panel Pinning menu entries."/>
+  <suffix name="SidePanelGenericPinnableFeature"
+      label="For Side Panel Pinning pin feature."/>
   <suffix name="SideSearch" label="For the side search feature."/>
   <suffix name="SideSearchAutoTriggering"
       label="For side search feature automatic triggering."/>
@@ -42034,6 +42127,9 @@ should be able to be added at any place in this file.
   <suffix name="HomeButton" label="Home button"/>
   <suffix name="MediaButton" label="Media button"/>
   <suffix name="NewTabButton" label="New tab button for thumbnail tab strip"/>
+  <suffix name="PinnedNewIncognitoWindowButton"
+      label="Pinned new incognito window button"/>
+  <suffix name="PinnedPrintButton" label="Pinned print button"/>
   <suffix name="PinnedShowBookmarkSidePanelButton"
       label="Pinned show bookmark side panel button"/>
   <suffix name="PinnedShowHistorySidePanelButton"

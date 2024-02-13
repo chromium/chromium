@@ -17,8 +17,7 @@
 
 class Profile;
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 class SmbProvider : public file_system_provider::ProviderInterface {
  public:
@@ -49,7 +48,6 @@ class SmbProvider : public file_system_provider::ProviderInterface {
   file_system_provider::IconSet icon_set_;
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_PROVIDER_H_

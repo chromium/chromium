@@ -38,9 +38,9 @@ namespace ash {
 // network" dialog.
 class ASH_EXPORT VpnDetailedView : public NetworkStateListDetailedView,
                                    public VpnList::Observer {
- public:
-  METADATA_HEADER(VpnDetailedView);
+  METADATA_HEADER(VpnDetailedView, NetworkStateListDetailedView)
 
+ public:
   using VpnProviderPtr = chromeos::network_config::mojom::VpnProviderPtr;
 
   VpnDetailedView(DetailedViewDelegate* delegate, LoginStatus login);

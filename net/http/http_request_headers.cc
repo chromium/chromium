@@ -26,7 +26,7 @@ namespace net {
 namespace {
 
 bool SupportsStreamType(
-    const absl::optional<base::flat_set<SourceStream::SourceType>>&
+    const std::optional<base::flat_set<SourceStream::SourceType>>&
         accepted_stream_types,
     SourceStream::SourceType type) {
   if (!accepted_stream_types)
@@ -243,7 +243,7 @@ base::Value::Dict HttpRequestHeaders::NetLogParams(
 
 void HttpRequestHeaders::SetAcceptEncodingIfMissing(
     const GURL& url,
-    const absl::optional<base::flat_set<SourceStream::SourceType>>&
+    const std::optional<base::flat_set<SourceStream::SourceType>>&
         accepted_stream_types,
     bool enable_brotli,
     bool enable_zstd) {

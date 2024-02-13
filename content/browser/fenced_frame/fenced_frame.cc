@@ -103,6 +103,7 @@ void FencedFrame::Navigate(
       bad_message::ReceivedBadMessage(
           owner_render_frame_host_->GetProcess(),
           bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
+      return;
     }
   }
 
@@ -328,10 +329,6 @@ void FencedFrame::ActivateAndShowRepostFormWarningDialog() {
 
 bool FencedFrame::ShouldPreserveAbortedURLs() {
   return false;
-}
-
-WebContents* FencedFrame::DeprecatedGetWebContents() {
-  return web_contents_;
 }
 
 void FencedFrame::UpdateOverridingUserAgent() {}

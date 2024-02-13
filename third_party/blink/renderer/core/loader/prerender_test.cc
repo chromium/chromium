@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -176,6 +177,7 @@ class PrerenderTest : public testing::Test {
         ->GetFrame()
         ->GetBrowserInterfaceBroker();
   }
+  test::TaskEnvironment task_environment_;
 
   std::vector<std::unique_ptr<MockNoStatePrefetchProcessor>> processors_;
 

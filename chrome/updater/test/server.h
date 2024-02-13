@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "chrome/updater/test/request_matcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -58,6 +59,12 @@ class ScopedServer {
   std::string update_path() const { return "/update"; }
   GURL update_url() const { return test_server_->GetURL(update_path()); }
 
+  std::string download_path() const { return "/download"; }
+  GURL download_url() const { return test_server_->GetURL(download_path()); }
+  void set_download_delay(const base::TimeDelta& delay) {
+    download_delay_ = delay;
+  }
+
   std::string crash_report_path() const { return "/crash"; }
   GURL crash_upload_url() const {
     return test_server_->GetURL(crash_report_path());
@@ -77,6 +84,7 @@ class ScopedServer {
   std::list<request::MatcherGroup> request_matcher_groups_;
   std::list<std::string> response_bodies_;
   scoped_refptr<IntegrationTestCommands> integration_test_commands_;
+  base::TimeDelta download_delay_;
 };
 
 }  // namespace test

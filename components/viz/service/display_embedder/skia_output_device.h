@@ -157,8 +157,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
   // Enable or disable DC layers. Must be called before DC layers are scheduled.
   virtual void SetEnableDCLayers(bool enabled);
 
-  virtual void SetGpuVSyncEnabled(bool enabled);
-
   virtual void SetVSyncDisplayID(int64_t display_id) {}
 
   // Whether the output device's primary plane is an overlay. This returns true

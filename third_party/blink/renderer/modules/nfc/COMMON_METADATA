@@ -1,4 +1,7 @@
-monorail {
+monorail: {
   component: "Blink>NFC"
 }
 team_email: "device-dev@chromium.org"
+buganizer_public: {
+  component_id: 1456179
+}

@@ -10,12 +10,13 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="topics_toggle"
         android:title="@string/settings_topics_page_toggle_label"
-        android:summary="@string/settings_topics_page_toggle_sub_label"
+        android:summary="@string/settings_topics_page_toggle_sub_label_v2"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_explanation"
-        android:summary="@string/settings_topics_page_explanation_description" />
+        android:summary="@string/settings_topics_page_explanation_description"
+        android:layout="@layout/topics_explanation_summary" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="active_topics"

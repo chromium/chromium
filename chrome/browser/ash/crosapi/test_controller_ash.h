@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/wm/splitview/split_view_types.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -18,6 +19,13 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/models/simple_menu_model.h"
+
+namespace mojo {
+template <>
+struct TypeConverter<ash::SnapPosition, crosapi::mojom::SnapPosition> {
+  static ash::SnapPosition Convert(crosapi::mojom::SnapPosition position);
+};
+}  // namespace mojo
 
 namespace crosapi {
 
@@ -144,6 +152,12 @@ class TestControllerAsh : public mojom::TestController,
 
   void IsToastShown(const std::string& toast_id,
                     IsToastShownCallback callback) override;
+
+  void SnapWindow(const std::string& window_id,
+                  mojom::SnapPosition position,
+                  SnapWindowCallback callback) override;
+
+  void IsShelfVisible(IsShelfVisibleCallback callback) override;
 
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {

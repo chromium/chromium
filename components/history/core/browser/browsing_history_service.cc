@@ -120,7 +120,8 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
     bool blocked_visit,
     const GURL& remote_icon_url_for_uma,
     int visit_count,
-    int typed_count)
+    int typed_count,
+    absl::optional<std::string> app_id)
     : entry_type(entry_type),
       url(url),
       title(title),
@@ -131,7 +132,8 @@ BrowsingHistoryService::HistoryEntry::HistoryEntry(
       blocked_visit(blocked_visit),
       remote_icon_url_for_uma(remote_icon_url_for_uma),
       visit_count(visit_count),
-      typed_count(typed_count) {
+      typed_count(typed_count),
+      app_id(app_id) {
   all_timestamps.insert(time.ToInternalValue());
 }
 
@@ -416,6 +418,8 @@ void BrowsingHistoryService::RemoveVisits(
     global_id_directive->set_end_time_usec(
         (end_time - base::Time::UnixEpoch()).InMicroseconds() - 1);
 
+    expire_args->restrict_app_id = entry.app_id;
+
     // TODO(dubroy): Figure out the proper way to handle an error here.
     if (web_history && local_history_)
       local_history_->ProcessLocalDeleteDirective(delete_directive);
@@ -591,7 +595,8 @@ void BrowsingHistoryService::QueryComplete(
     output.emplace_back(HistoryEntry(
         HistoryEntry::LOCAL_ENTRY, page.url(), page.title(), page.visit_time(),
         std::string(), !state->search_text.empty(), page.snippet().text(),
-        page.blocked_visit(), GURL(), page.visit_count(), page.typed_count()));
+        page.blocked_visit(), GURL(), page.visit_count(), page.typed_count(),
+        page.app_id()));
   }
 
   state->local_status =
@@ -728,7 +733,8 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
           state->remote_results.emplace_back(HistoryEntry(
               HistoryEntry::REMOTE_ENTRY, gurl, title, time, client_id,
               !state->search_text.empty(), std::u16string(),
-              /* blocked_visit */ false, GURL(favicon_url), 0, 0));
+              /* blocked_visit */ false, GURL(favicon_url), 0, 0,
+              /*app_id= */ absl::nullopt));
         }
       }
     }

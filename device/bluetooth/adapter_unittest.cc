@@ -379,7 +379,7 @@ TEST_F(
   // change where the device has no RSSI. This will result in a failed
   // connect-to-service result.
   EXPECT_CALL(*mock_unknown_bluetooth_device_, GetInquiryRSSI())
-      .WillRepeatedly(Return(absl::nullopt));
+      .WillRepeatedly(Return(std::nullopt));
   adapter_->DeviceChanged(mock_bluetooth_adapter_.get(),
                           mock_unknown_bluetooth_device_.get());
   run_loop.Run();

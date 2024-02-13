@@ -114,8 +114,6 @@ base::StringPiece GetExtensionPrefNameForPref(mojom::PrefPath path) {
             ash::prefs::kAccessibilitySwitchAccessEnabled},
            {mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled,
             ash::prefs::kAccessibilityVirtualKeyboardEnabled},
-           {mojom::PrefPath::kProtectedContentDefault,
-            prefs::kProtectedContentDefault},
            {mojom::PrefPath::kProxy, ash::prefs::kProxy}});
   auto* pref_name = kExtensionPrefPathToName.find(path);
   DCHECK(pref_name != kExtensionPrefPathToName.end());
@@ -272,6 +270,7 @@ void PrefsAsh::OnProfileAdded(Profile* profile) {
 std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   switch (path) {
     case mojom::PrefPath::kUnknown:
+    case mojom::PrefPath::kProtectedContentDefaultDeprecated:
       LOG(WARNING) << "Unknown pref path: " << path;
       return std::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
@@ -347,7 +346,6 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kAccessibilityStickyKeysEnabled:
     case mojom::PrefPath::kAccessibilitySwitchAccessEnabled:
     case mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled:
-    case mojom::PrefPath::kProtectedContentDefault:
     case mojom::PrefPath::kProxy: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";

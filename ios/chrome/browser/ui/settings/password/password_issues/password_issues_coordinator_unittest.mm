@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_coordinator.h"
@@ -74,17 +75,17 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
             browser_state_.get());
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
-    // ApplicationSettingsCommands, it must be mocked as well.
+    // SettingsCommands, it must be mocked as well.
     mocked_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
     id mocked_application_settings_command_handler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+        OCMProtocolMock(@protocol(SettingsCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mocked_application_settings_command_handler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+                     forProtocol:@protocol(SettingsCommands)];
 
     // Init navigation controller with a root vc.
     base_navigation_controller_ = [[UINavigationController alloc]

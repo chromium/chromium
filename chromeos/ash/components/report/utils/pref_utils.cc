@@ -109,6 +109,11 @@ void RestoreLocalStateWithPreservedFile(PrefService* local_state,
           local_state->SetBoolean(
               prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2,
               active_status.period_status().is_active_current_period_minus_2());
+          local_state->SetBoolean(
+              prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata,
+              active_status.period_status()
+                  .is_first_powerwash_in_observation_period());
+
           WriteObservationLastPingTimestampIfValid(
               local_state,
               prefs::kDeviceActiveChurnObservationMonthlyPingTimestamp,
@@ -143,6 +148,8 @@ SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1);
   bool period_2 = local_state->GetBoolean(
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2);
+  bool is_first_observed_new_churn_metadata = local_state->GetBoolean(
+      prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata);
 
   SaveStatusRequest save_request;
 
@@ -191,6 +198,8 @@ SaveStatusRequest CreatePreservedFileContents(PrefService* local_state) {
       period_status->set_is_active_current_period_minus_0(period_0);
       period_status->set_is_active_current_period_minus_1(period_1);
       period_status->set_is_active_current_period_minus_2(period_2);
+      period_status->set_is_first_powerwash_in_observation_period(
+          is_first_observed_new_churn_metadata);
       *save_request.add_active_status() = observation_status;
     }
   }

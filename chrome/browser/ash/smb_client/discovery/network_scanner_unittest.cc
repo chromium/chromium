@@ -12,8 +12,7 @@
 #include "chrome/browser/ash/smb_client/discovery/in_memory_host_locator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 namespace {
 
@@ -197,5 +196,4 @@ TEST_F(NetworkScannerTest, HostsAreStoredAsLowercase) {
   ExpectResolvedHostEquals("21.22.23.24", "share3");
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

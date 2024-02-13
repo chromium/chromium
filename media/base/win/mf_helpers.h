@@ -110,11 +110,7 @@ using ChannelConfig = uint32_t;
 // Converts Microsoft's channel configuration to ChannelLayout.
 // This mapping is not perfect but the best we can do given the current
 // ChannelLayout enumerator and the Windows-specific speaker configurations
-// defined in ksmedia.h. Don't assume that the channel ordering in
-// ChannelLayout is exactly the same as the Windows specific configuration.
-// As an example: KSAUDIO_SPEAKER_7POINT1_SURROUND is mapped to
-// CHANNEL_LAYOUT_7_1 but the positions of Back L, Back R and Side L, Side R
-// speakers are different in these two definitions.
+// defined in ksmedia.h.
 MEDIA_EXPORT ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config);
 
 // Converts a GUID (little endian) to a bytes array (big endian).

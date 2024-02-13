@@ -12,7 +12,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++STATIC_TEXT hidden label='<newline>    '
 ++++++++++STATIC_TEXT hidden label='<newline>    '
 ++++++++++PARAGRAPH hidden
-++++++++++++STATIC_TEXT hidden label='The details tag specifies additional details that the user can view or hide on demand.'
 ++++++++++STATIC_TEXT hidden label='<newline>  '
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden

@@ -86,7 +86,8 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
     SpdySessionKey key(HostPortPair::FromURL(url_), PRIVACY_MODE_DISABLED,
                        ProxyChain::Direct(), SessionUsage::kDestination,
                        SocketTag(), NetworkAnonymizationKey(),
-                       SecureDnsPolicy::kAllow);
+                       SecureDnsPolicy::kAllow,
+                       /*disable_cert_verification_network_fetches=*/false);
     return CreateSpdySession(session_.get(), key, NetLogWithSource());
   }
 

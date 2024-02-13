@@ -18,6 +18,7 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
@@ -49,9 +50,11 @@ bound_session_credentials::Credential CreateCookieCredential(
 BoundSessionRegistrationFetcherImpl::BoundSessionRegistrationFetcherImpl(
     BoundSessionRegistrationFetcherParam registration_params,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    unexportable_keys::UnexportableKeyService& key_service)
+    unexportable_keys::UnexportableKeyService& key_service,
+    bool is_off_the_record_profile)
     : registration_params_(std::move(registration_params)),
       key_service_(key_service),
+      is_off_the_record_profile_(is_off_the_record_profile),
       url_loader_factory_(std::move(loader_factory)) {}
 
 BoundSessionRegistrationFetcherImpl::~BoundSessionRegistrationFetcherImpl() =
@@ -216,8 +219,11 @@ void BoundSessionRegistrationFetcherImpl::StartFetchingRegistration(
 
   std::string content_type = "application/jwt";
 
-  url_loader_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  url_loader_ = CreateSimpleURLLoaderWithVariationsHeaderUnknownSignedIn(
+      std::move(request),
+      is_off_the_record_profile_ ? variations::InIncognito::kYes
+                                 : variations::InIncognito::kNo,
+      traffic_annotation);
   url_loader_->AttachStringForUpload(registration_token, content_type);
   url_loader_->SetRetryOptions(
       3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);

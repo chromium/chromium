@@ -110,11 +110,11 @@ int TableColumnAlignmentToCanvasAlignment(
   NOTREACHED_NORETURN();
 }
 
-absl::optional<size_t> GetClosestVisibleColumnIndex(const TableView& table,
-                                                    int x) {
+std::optional<size_t> GetClosestVisibleColumnIndex(const TableView& table,
+                                                   int x) {
   const std::vector<TableView::VisibleColumn>& columns(table.visible_columns());
   if (columns.empty())
-    return absl::nullopt;
+    return std::nullopt;
   for (size_t i = 0; i < columns.size(); ++i) {
     if (x <= columns[i].x + columns[i].width)
       return i;

@@ -49,7 +49,7 @@ TEST(GeometryCacheTest, ConstructAndDestruct) {
                       gfx::Rect(12, 34, 56, 78));
   GeometryCache geometry_cache(
       connection, window.id(),
-      base::BindRepeating([](const absl::optional<gfx::Rect>& old_bounds,
+      base::BindRepeating([](const std::optional<gfx::Rect>& old_bounds,
                              const gfx::Rect& new_bounds) {}));
 }
 
@@ -59,7 +59,7 @@ TEST(GeometryCacheTest, GetBounds) {
   ScopedWindow window(connection, connection->default_root(), bounds);
   GeometryCache geometry_cache(
       connection, window.id(),
-      base::BindRepeating([](const absl::optional<gfx::Rect>& old_bounds,
+      base::BindRepeating([](const std::optional<gfx::Rect>& old_bounds,
                              const gfx::Rect& new_bounds) {}));
 
   // Calling GetBoundsPx() should return the initial bounds of the window.
@@ -86,9 +86,9 @@ TEST(GeometryCacheTest, BoundsChangedCallback) {
   gfx::Rect bounds(12, 34, 56, 78);
   ScopedWindow window(connection, connection->default_root(), bounds);
 
-  absl::optional<gfx::Rect> last_bounds;
-  auto bounds_changed_callback = [](absl::optional<gfx::Rect>* last_bounds,
-                                    const absl::optional<gfx::Rect>& old_bounds,
+  std::optional<gfx::Rect> last_bounds;
+  auto bounds_changed_callback = [](std::optional<gfx::Rect>* last_bounds,
+                                    const std::optional<gfx::Rect>& old_bounds,
                                     const gfx::Rect& new_bounds) {
     *last_bounds = new_bounds;
   };
@@ -104,7 +104,7 @@ TEST(GeometryCacheTest, BoundsChangedCallback) {
   // `last_bounds` should have gotten set after the call to GetBoundsPx().
   // Reset it for the next part of the test.
   EXPECT_TRUE(last_bounds.has_value());
-  last_bounds = absl::nullopt;
+  last_bounds = std::nullopt;
 
   // Simulate setting window geometry.
   gfx::Rect new_geometry(10, 10, 100, 100);
@@ -135,7 +135,7 @@ TEST(GeometryCacheTest, NestedWindows) {
   // Set up the GeometryCache for the child window.
   GeometryCache child_geometry_cache(
       connection, child_window.id(),
-      base::BindRepeating([](const absl::optional<gfx::Rect>& old_bounds,
+      base::BindRepeating([](const std::optional<gfx::Rect>& old_bounds,
                              const gfx::Rect& new_bounds) {}));
 
   // Initial bounds should be the sum of child window position and parent window

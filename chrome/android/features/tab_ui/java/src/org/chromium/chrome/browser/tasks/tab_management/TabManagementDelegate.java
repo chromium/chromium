@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -41,6 +42,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 import java.util.function.DoubleConsumer;
 
 /** Interface to get access to components concerning tab management. */
@@ -199,4 +201,32 @@ public interface TabManagementDelegate {
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange);
+
+    /**
+     * Create a {@link TabGroupCreationDialog} when creating a new tab group.
+     *
+     * @param activity The {@link Activity} that hosts this dialog.
+     * @param modalDialogManager The modal dialog manager for the activity.
+     * @param tabModelSelectorSupplier The supplier for the {@link TabModelSelector}.
+     */
+    TabGroupCreationDialog createTabGroupCreationDialogDelegate(
+            @NonNull Activity activity,
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier);
+
+    /**
+     * Create a {@link ColorPicker} when creating a custom color picker component.
+     *
+     * @param activity The current Android's context.
+     * @param colors The list of colors used for this color picker component.
+     * @param colorPickerLayout The layout resource to be inflated.
+     * @param colorPickerType The {@link ColorPickerType} that this color picker use.
+     * @param isIncognito Whether the current tab model is in incognito mode.
+     */
+    ColorPicker createColorPickerCoordinator(
+            @NonNull Context context,
+            @NonNull List<Integer> colors,
+            @NonNull @LayoutRes int colorPickerLayout,
+            @NonNull @ColorPickerType int colorPickerType,
+            @NonNull boolean isIncognito);
 }

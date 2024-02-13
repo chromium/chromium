@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -70,6 +72,7 @@ const CGFloat kSeparatorHeight = 0.5;
   UIStackView* _titleStackView;
     MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
     NSLayoutConstraint* _containerHeightAnchor;
+    NSLayoutConstraint* _contentStackViewBottomMarginAnchor;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -190,60 +193,16 @@ const CGFloat kSeparatorHeight = 0.5;
     [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
 
     [self addSubview:_stackView];
-    AddSameConstraintsWithInsets(_stackView, self, [self contentMargins]);
-  }
-  return self;
-}
-
-- (instancetype)initWithContentView:(UIView*)contentView
-                               type:(ContentSuggestionsModuleType)type
-                           delegate:
-                               (id<MagicStackModuleContainerDelegate>)delegate {
-  if (self = [self initWithFrame:CGRectZero]) {
-    _type = type;
-    _delegate = delegate;
-    if ([self allowsLongPress]) {
-      [self addInteraction:[[UIContextMenuInteraction alloc]
-                               initWithDelegate:self]];
-    }
-
-    _title.text = [MagicStackModuleContainer titleStringForModule:_type];
-    _title.accessibilityIdentifier =
-        [MagicStackModuleContainer accessibilityIdentifierForModule:_type];
-
-    _seeMoreButton.hidden = ![self shouldShowSeeMore];
-
-    if ([self shouldShowSubtitle]) {
-      // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
-      // config in its initializer so the container can build itself from a
-      // passed config/state object.
-      NSString* subtitle = [_delegate subtitleStringForModule:_type];
-      _subtitle.text = subtitle;
-      _subtitle.accessibilityIdentifier = subtitle;
-    }
-
-    _title.hidden = [_title.text length] == 0;
-
-    _separator.hidden = ![self shouldShowSeparator];
-
-    _contentView = contentView;
-    [_stackView addArrangedSubview:_contentView];
-
-    // Configures `contentView` to be the view willing to expand if needed to
-    // fill extra vertical space in the container.
-    [_contentView
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                        forAxis:UILayoutConstraintAxisVertical];
-
-    NSMutableArray* accessibilityElements =
-        [[NSMutableArray alloc] initWithObjects:_title, nil];
-    if ([self shouldShowSeeMore]) {
-      [accessibilityElements addObject:_seeMoreButton];
-    } else if ([self shouldShowSubtitle]) {
-      [accessibilityElements addObject:_subtitle];
-    }
-    [accessibilityElements addObject:_contentView];
-    self.accessibilityElements = accessibilityElements;
+    AddSameConstraintsToSidesWithInsets(
+        _stackView, self,
+        (LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing),
+        NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
+                                    0, kContentHorizontalInset));
+    _contentStackViewBottomMarginAnchor =
+        [_stackView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor
+                                                constant:-kContentBottomInset];
+    [NSLayoutConstraint
+        activateConstraints:@[ _contentStackViewBottomMarginAnchor ]];
   }
   return self;
 }
@@ -288,7 +247,7 @@ const CGFloat kSeparatorHeight = 0.5;
     // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
     // config in its initializer so the container can build itself from a
     // passed config/state object.
-    NSString* subtitle = [_delegate subtitleStringForModule:_type];
+    NSString* subtitle = [self subtitleStringForConfig:config];
     _subtitle.text = subtitle;
     _subtitle.accessibilityIdentifier = subtitle;
   }
@@ -308,9 +267,11 @@ const CGFloat kSeparatorHeight = 0.5;
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisVertical];
 
+  [self updateBottomContentMarginsForConfig:config];
+
   NSMutableArray* accessibilityElements =
       [[NSMutableArray alloc] initWithObjects:_title, nil];
-  if ([self shouldShowSeeMore]) {
+  if (config.shouldShowSeeMore) {
     [accessibilityElements addObject:_seeMoreButton];
   } else if ([self shouldShowSubtitle]) {
     [accessibilityElements addObject:_subtitle];
@@ -341,11 +302,8 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSetUpListNotifications:
       return content_suggestions::SetUpListTitleString();
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
     case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
     default:
@@ -378,22 +336,27 @@ const CGFloat kSeparatorHeight = 0.5;
   return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
 }
 
-// Returns the content insets.
-- (NSDirectionalEdgeInsets)contentMargins {
-  NSDirectionalEdgeInsets contentMargins =
-      NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
-                                  kContentBottomInset, kContentHorizontalInset);
-  switch (_type) {
+// Updates the bottom content margins if the module contents need it.
+- (void)updateBottomContentMarginsForConfig:(MagicStackModule*)config {
+  switch (config.type) {
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
-      contentMargins.bottom = kReducedContentBottomInset;
+      _contentStackViewBottomMarginAnchor.constant =
+          -kReducedContentBottomInset;
       break;
+    case ContentSuggestionsModuleType::kSafetyCheck: {
+      SafetyCheckState* safetyCheckConfig =
+          static_cast<SafetyCheckState*>(config);
+      if ([safetyCheckConfig numberOfIssues] > 1) {
+        _contentStackViewBottomMarginAnchor.constant =
+            -kReducedContentBottomInset;
+      }
+      break;
+    }
+
     default:
       break;
   }
-  return contentMargins;
 }
 
 #pragma mark - UITraitEnvironment
@@ -476,15 +439,12 @@ const CGFloat kSeparatorHeight = 0.5;
   switch (_type) {
     case ContentSuggestionsModuleType::kTabResumption:
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return YES;
     default:
       return NO;
@@ -496,24 +456,21 @@ const CGFloat kSeparatorHeight = 0.5;
 - (BOOL)shouldShowSubtitle {
   switch (_type) {
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
       return YES;
     default:
       return NO;
   }
 }
 
-// Based on ContentSuggestionsModuleType, returns YES if a "See More" button
-// should be displayed in the module.
-- (BOOL)shouldShowSeeMore {
-  switch (_type) {
-    case ContentSuggestionsModuleType::kCompactedSetUpList:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
-      return YES;
-    default:
-      return NO;
+// Returns the module's subtitle, if any, given the Magic Stack module `type`.
+- (NSString*)subtitleStringForConfig:(MagicStackModule*)config {
+  if (config.type == ContentSuggestionsModuleType::kSafetyCheck) {
+    SafetyCheckState* safetyCheckConfig =
+        static_cast<SafetyCheckState*>(config);
+    return FormatElapsedTimeSinceLastSafetyCheck(safetyCheckConfig.lastRunTime);
   }
+
+  return @"";
 }
 
 // Based on ContentSuggestionsModuleType, returns YES if a separator should be
@@ -540,8 +497,6 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kTabResumption:
       return l10n_util::GetNSString(IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
@@ -551,7 +506,6 @@ const CGFloat kSeparatorHeight = 0.5;
       return l10n_util::GetNSString(
           IDS_IOS_SET_UP_LIST_HIDE_MODULE_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
     default:
       NOTREACHED_NORETURN();
@@ -565,8 +519,6 @@ const CGFloat kSeparatorHeight = 0.5;
       return l10n_util::GetNSString(
           IDS_IOS_TAB_RESUMPTION_CONTEXT_MENU_DESCRIPTION);
     case ContentSuggestionsModuleType::kSafetyCheck:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       return l10n_util::GetNSString(
           IDS_IOS_SAFETY_CHECK_CONTEXT_MENU_DESCRIPTION);
     case ContentSuggestionsModuleType::kSetUpListSync:
@@ -579,7 +531,6 @@ const CGFloat kSeparatorHeight = 0.5;
           l10n_util::GetStringUTF16(
               content_suggestions::SetUpListTitleStringID()));
     case ContentSuggestionsModuleType::kParcelTracking:
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
       return l10n_util::GetNSStringF(
           IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_DESCRIPTION,
           base::SysNSStringToUTF16(l10n_util::GetNSString(

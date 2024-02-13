@@ -139,7 +139,8 @@ chromium-metrics-reviews@google.com.
 
 <enum name="CustomTabsMinimizedFeatureAvailability">
   <int value="0" label="Available"/>
-  <int value="1" label="Unavailable: API level is too low"/>
+  <int value="1"
+      label="(Obsolete) Unavailable: API level is too low. Removed 2024/02."/>
   <int value="2" label="Unavailable: Low-end device"/>
   <int value="3" label="Unavailable: System doesn't have PiP feature"/>
   <int value="4" label="Unavailable: PiP permission isn't granted"/>

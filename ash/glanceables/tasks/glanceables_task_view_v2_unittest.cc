@@ -74,8 +74,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, FormatsDueDate) {
     base::Time due;
     EXPECT_TRUE(base::Time::FromString(tc.due.c_str(), &due));
 
-    const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                                /*due=*/due,
+    const auto task = api::Task("task-id", "Task title",
+                                /*due=*/due, /*completed=*/false,
                                 /*has_subtasks=*/false,
                                 /*has_email_link=*/false, /*has_notes=*/false,
                                 /*updated=*/due);
@@ -95,8 +95,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, FormatsDueDate) {
 
 TEST_F(GlanceablesTaskViewStableLaunchTest,
        AppliesStrikeThroughStyleAfterMarkingAsComplete) {
-  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/std::nullopt,
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -131,8 +131,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {
-  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/std::nullopt,
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -172,8 +172,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
-  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/std::nullopt,
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -262,8 +262,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterAdding) {
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesSaveCallbackAfterEditing) {
-  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/std::nullopt,
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -324,8 +324,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, SupportsEditingRightAfterAdding) {
 
     // Simulate reply, the view should update itself with the new task id.
     const auto created_task =
-        api::Task("task-id", "New", /*completed=*/false,
-                  /*due=*/absl::nullopt,
+        api::Task("task-id", "New",
+                  /*due=*/absl::nullopt, /*completed=*/false,
                   /*has_subtasks=*/false,
                   /*has_email_link=*/false, /*has_notes=*/false,
                   /*updated=*/base::Time::Now());
@@ -391,8 +391,8 @@ TEST_F(GlanceablesTaskViewStableLaunchTest,
 
   // Simulate reply, this should re-enable the checkbox and title buttons.
   const auto created_task =
-      api::Task("task-id", "New", /*completed=*/false,
-                /*due=*/absl::nullopt,
+      api::Task("task-id", "New",
+                /*due=*/absl::nullopt, /*completed=*/false,
                 /*has_subtasks=*/false,
                 /*has_email_link=*/false, /*has_notes=*/false,
                 /*updated=*/base::Time::Now());

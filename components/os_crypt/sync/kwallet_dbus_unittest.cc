@@ -675,9 +675,9 @@ TEST_P(KWalletDBusTest, WriteEntry) {
       .WillOnce(Return(ByMove(RespondInt32(0))));
 
   int ret;
-  EXPECT_EQ(KWalletDBus::Error::SUCCESS,
-            kwallet_dbus_.WriteEntry(123, "folder", "realm", "app",
-                                     bytes.data(), bytes.size(), &ret));
+  EXPECT_EQ(
+      KWalletDBus::Error::SUCCESS,
+      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
   EXPECT_EQ(0, ret);
 }
 
@@ -688,9 +688,9 @@ TEST_P(KWalletDBusTest, WriteEntryErrorRead) {
       .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
 
   int ret;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
-            kwallet_dbus_.WriteEntry(123, "folder", "realm", "app",
-                                     bytes.data(), bytes.size(), &ret));
+  EXPECT_EQ(
+      KWalletDBus::Error::CANNOT_READ,
+      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
 }
 
 TEST_P(KWalletDBusTest, WriteEntryErrorContact) {
@@ -700,9 +700,9 @@ TEST_P(KWalletDBusTest, WriteEntryErrorContact) {
       .WillOnce(Return(ByMove(base::unexpected(dbus::Error()))));
 
   int ret;
-  EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
-            kwallet_dbus_.WriteEntry(123, "folder", "realm", "app",
-                                     bytes.data(), bytes.size(), &ret));
+  EXPECT_EQ(
+      KWalletDBus::Error::CANNOT_CONTACT,
+      kwallet_dbus_.WriteEntry(123, "folder", "realm", "app", bytes, &ret));
 }
 
 TEST_P(KWalletDBusTest, HasFolder) {

@@ -464,7 +464,7 @@ void CalendarUpNextView::AnimateScrollToShowXCoordinate(const int start_edge,
   scrolling_animation_->Start();
 }
 
-BEGIN_METADATA(CalendarUpNextView, views::View);
+BEGIN_METADATA(CalendarUpNextView);
 END_METADATA
 
 }  // namespace ash

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -19,6 +20,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_types.h"
+#include "components/history_clusters/core/similar_visit.h"
 
 namespace history {
 class HistoryService;
@@ -78,6 +80,8 @@ class QueryClustersState {
  private:
   friend class QueryClustersStateTest;
   FRIEND_TEST_ALL_PREFIXES(QueryClustersStateTest, GetUngroupedVisits);
+  FRIEND_TEST_ALL_PREFIXES(QueryClustersStateTest,
+                           GetUngroupedVisitsDoesCrossBatchDeduplication);
 
   // Private class containing state that's only accessed on
   // `post_processing_task_runner`.
@@ -143,6 +147,11 @@ class QueryClustersState {
   // The number of clusters that have already been sent to the page. This is
   // updated AFTER the callback for each batch.
   size_t number_clusters_sent_to_page_ = 0;
+
+  // Tracks the visits that we've seen so far. This is only used for when we
+  // are also aggregating ungrouped visits, i.e. when `query_` is non-empty.
+  std::unordered_set<SimilarVisit, SimilarVisit::Hash, SimilarVisit::Equals>
+      seen_visits_for_deduping_ungrouped_visits_;
 
   // Used only to fast-cancel tasks in case we are destroyed.
   std::unique_ptr<HistoryClustersServiceTask> query_clusters_task_;

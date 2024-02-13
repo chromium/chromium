@@ -47,14 +47,14 @@ TEST(DataPackTest, LoadFromPath) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(base::StringPiece{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            absl::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(base::StringPiece{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), absl::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), absl::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -79,14 +79,14 @@ TEST(DataPackTest, LoadFromPathCompressed) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(base::StringPiece{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            absl::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(base::StringPiece{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), absl::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), absl::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -112,14 +112,14 @@ TEST(DataPackTest, LoadFromFile) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(base::StringPiece{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            absl::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(base::StringPiece{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), absl::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), absl::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -149,14 +149,14 @@ TEST(DataPackTest, LoadFromFileRegion) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(base::StringPiece{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            absl::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(base::StringPiece{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), absl::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), absl::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -170,14 +170,14 @@ TEST(DataPackTest, LoadFromBufferV4) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(base::StringPiece{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            absl::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(base::StringPiece{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), absl::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), absl::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -192,13 +192,13 @@ TEST(DataPackTest, LoadFromBufferV5) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(base::StringPiece{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_TRUE(pack.GetStringPiece(6).has_value());
   ASSERT_TRUE(pack.HasResource(8));
   ASSERT_TRUE(pack.GetStringPiece(8).has_value());
   ASSERT_EQ(pack.GetStringPiece(10),
-            absl::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(base::StringPiece{"this is id 4"}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -248,16 +248,14 @@ TEST_P(DataPackTest, Write) {
   ASSERT_TRUE(pack.LoadFromPath(file));
   EXPECT_EQ(pack.GetTextEncodingType(), GetParam());
 
-  ASSERT_EQ(pack.GetStringPiece(1),
-            absl::make_optional(base::StringPiece{one}));
-  ASSERT_EQ(pack.GetStringPiece(2),
-            absl::make_optional(base::StringPiece{two}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{one}));
+  ASSERT_EQ(pack.GetStringPiece(2), std::make_optional(base::StringPiece{two}));
   ASSERT_EQ(pack.GetStringPiece(3),
-            absl::make_optional(base::StringPiece{three}));
+            std::make_optional(base::StringPiece{three}));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{four}));
+            std::make_optional(base::StringPiece{four}));
   ASSERT_EQ(pack.GetStringPiece(15),
-            absl::make_optional(base::StringPiece{fifteen}));
+            std::make_optional(base::StringPiece{fifteen}));
 
   EXPECT_EQ(5U, pack.GetResourceTableSizeForTesting());
   EXPECT_EQ(0U, pack.GetAliasTableSize());
@@ -289,20 +287,18 @@ TEST_P(DataPackTest, WriteWithAliases) {
   ASSERT_TRUE(pack.LoadFromPath(file));
   EXPECT_EQ(pack.GetTextEncodingType(), GetParam());
 
-  ASSERT_EQ(pack.GetStringPiece(1),
-            absl::make_optional(base::StringPiece{one}));
-  ASSERT_EQ(pack.GetStringPiece(2),
-            absl::make_optional(base::StringPiece{two}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{one}));
+  ASSERT_EQ(pack.GetStringPiece(2), std::make_optional(base::StringPiece{two}));
   ASSERT_EQ(pack.GetStringPiece(3),
-            absl::make_optional(base::StringPiece{three}));
+            std::make_optional(base::StringPiece{three}));
   ASSERT_EQ(pack.GetStringPiece(4),
-            absl::make_optional(base::StringPiece{four}));
+            std::make_optional(base::StringPiece{four}));
   ASSERT_EQ(pack.GetStringPiece(15),
-            absl::make_optional(base::StringPiece{fifteen}));
+            std::make_optional(base::StringPiece{fifteen}));
   ASSERT_EQ(pack.GetStringPiece(10),
-            absl::make_optional(base::StringPiece{one}));
+            std::make_optional(base::StringPiece{one}));
   ASSERT_EQ(pack.GetStringPiece(11),
-            absl::make_optional(base::StringPiece{three}));
+            std::make_optional(base::StringPiece{three}));
 
   ASSERT_EQ(pack.GetStringPiece(1)->data(), pack.GetStringPiece(10)->data());
   ASSERT_EQ(pack.GetStringPiece(3)->data(), pack.GetStringPiece(11)->data());

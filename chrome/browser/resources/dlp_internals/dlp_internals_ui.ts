@@ -11,7 +11,8 @@ import './strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentRestriction, DataTransferEndpoint, DlpEvent, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination, FileDatabaseEntry, Level, PageHandler, PageHandlerInterface, ReportingObserverReceiver, WebContentsInfo} from './dlp_internals.mojom-webui.js';
+import type {ContentRestriction, DataTransferEndpoint, DlpEvent, DlpEvent_Mode, DlpEvent_Restriction, DlpEvent_UserType, EndpointType, EventDestination, FileDatabaseEntry, Level, PageHandlerInterface, WebContentsInfo} from './dlp_internals.mojom-webui.js';
+import {PageHandler, ReportingObserverReceiver} from './dlp_internals.mojom-webui.js';
 import {getTemplate} from './dlp_internals_ui.html.js';
 import {ContentRestrictionMap, DestinationComponentMap, EndpointTypeMap, EventModeMap, EventRestrictionMap, EventUserTypeMap, LevelMap, WebContentsElement} from './dlp_utils.js';
 

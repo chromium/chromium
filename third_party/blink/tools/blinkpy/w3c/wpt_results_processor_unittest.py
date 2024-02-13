@@ -151,7 +151,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                              'Default'),
             expectations=None,
             test_file_location=self.path_finder.path_from_web_tests(
-                'external', 'wpt', 'reftest.html'))
+                'external', 'wpt', 'reftest.html'),
+            html_summary=None)
 
         result = report_mock.call_args.kwargs['result']
         self.assertEqual(result.name, 'external/wpt/reftest.html')
@@ -181,7 +182,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                              'Default'),
             expectations=None,
             test_file_location=self.path_finder.path_from_web_tests(
-                'wpt_internal', 'reftest.html'))
+                'wpt_internal', 'reftest.html'),
+            html_summary=mock.ANY)
 
         result = report_mock.call_args.kwargs['result']
         self.assertEqual(result.name, 'wpt_internal/reftest.html')
@@ -191,6 +193,14 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertAlmostEqual(result.took, 0.5)
         # `{expected,actual}_text` is not produced for WPT reftests.
         self.assertEqual(result.artifacts, {})
+        summary = report_mock.call_args.kwargs['html_summary']
+        self.assertRegex(
+            summary,
+            'This WPT was run against .*chrome.* using .*chromedriver')
+        self.assertRegex(
+            summary, 'See .*these instructions.* about running '
+            'these tests locally and triaging failures')
+        self.assertNotIn('wpt.fyi', summary)
 
     def test_report_pass_on_retry(self):
         self._event(action='suite_start', time=0)
@@ -228,7 +238,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                                        'Default'),
                       expectations=None,
                       test_file_location=self.path_finder.path_from_web_tests(
-                          'external', 'wpt', 'variant.html')),
+                          'external', 'wpt', 'variant.html'),
+                      html_summary=mock.ANY),
         ] * 2)
 
         fail, ok = [
@@ -256,6 +267,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
                                  'wpt', 'variant_foo=bar_abc-stderr.txt'),
                 ],
             })
+        fail_summary = report_mock.call_args_list[0].kwargs['html_summary']
+        self.assertRegex(
+            fail_summary,
+            'https://wpt.fyi/results/variant.html%3Ffoo%3Dbar%2Fabc')
 
     def test_report_subtest_fail_all_expected(self):
         """Subtest failures should be promoted to the test level.

@@ -708,7 +708,7 @@ void DesktopWindowTreeHostWin::ReleaseCapture() {
 }
 
 bool DesktopWindowTreeHostWin::CaptureSystemKeyEventsImpl(
-    absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
+    std::optional<base::flat_set<ui::DomCode>> dom_codes) {
   // Only one KeyboardHook should be active at a time, otherwise there will be
   // problems with event routing (i.e. which Hook takes precedence) and
   // destruction ordering.

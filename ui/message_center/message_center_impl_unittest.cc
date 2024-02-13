@@ -121,8 +121,8 @@ class TestDelegate : public NotificationDelegate {
   TestDelegate(const TestDelegate&) = delete;
   TestDelegate& operator=(const TestDelegate&) = delete;
 
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {
     if (button_index) {
       if (!reply) {
         log_ += "ButtonClick_";
@@ -155,8 +155,8 @@ class DeleteOnCloseDelegate : public NotificationDelegate {
     // Removing the same notification inside Close should be a noop.
     message_center_->RemoveNotification(notification_id_, false /* by_user */);
   }
-  void Click(const absl::optional<int>& button_index,
-             const absl::optional<std::u16string>& reply) override {}
+  void Click(const std::optional<int>& button_index,
+             const std::optional<std::u16string>& reply) override {}
 
  private:
   ~DeleteOnCloseDelegate() override = default;
@@ -1355,7 +1355,7 @@ TEST_F(MessageCenterImplTest, FindNotificationsByAppId) {
   }
 
   for (std::string app_id : {app_id1, app_id2}) {
-    for (auto* notification :
+    for (Notification* notification :
          message_center()->FindNotificationsByAppId(app_id)) {
       EXPECT_EQ(app_id, notification->notifier_id().id);
     }

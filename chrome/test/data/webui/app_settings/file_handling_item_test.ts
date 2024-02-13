@@ -6,9 +6,9 @@
 import 'chrome://app-settings/file_handling_item.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppManagementFileHandlingItemElement} from 'chrome://app-settings/file_handling_item.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppManagementFileHandlingItemElement} from 'chrome://app-settings/file_handling_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

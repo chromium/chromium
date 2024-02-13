@@ -369,7 +369,7 @@ export class SettingsCrostiniSubpageElement extends
    */
   private onRemoveClick_(): void {
     this.browserProxy_.requestRemoveCrostini();
-    recordSettingChange();
+    recordSettingChange(Setting.kUninstallCrostini);
   }
 
   /**
@@ -377,6 +377,7 @@ export class SettingsCrostiniSubpageElement extends
    */
   private onContainerUpgradeClick_(): void {
     this.browserProxy_.requestCrostiniContainerUpgradeView();
+    recordSettingChange(Setting.kCrostiniContainerUpgrade);
   }
 
   private onSharedPathsClick_(): void {

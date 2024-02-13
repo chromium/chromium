@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller.h"
@@ -72,7 +73,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -325,6 +325,8 @@ std::string ConvertToString(message_center::NotificationType type) {
       return "progress";
     case message_center::NOTIFICATION_TYPE_CUSTOM:
       return "custom";
+    case message_center::NOTIFICATION_TYPE_CONVERSATION:
+      return "conversation";
   }
   return "unknown";
 }
@@ -1512,10 +1514,10 @@ ExtensionFunction::ResponseAction
 AutotestPrivateGetAllEnterprisePoliciesFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetAllEnterprisePoliciesFunction";
 
-  auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
-      browser_context());
   base::Value::Dict all_policies_dict =
-      policy::DictionaryPolicyConversions(std::move(client))
+      policy::PolicyConversions(
+          std::make_unique<policy::ChromePolicyConversionsClient>(
+              browser_context()))
           .EnableDeviceLocalAccountPolicies(true)
           .EnableDeviceInfo(true)
           .ToValueDict();
@@ -1822,7 +1824,7 @@ AutotestPrivateGetVisibleNotificationsFunction::Run() {
   message_center::NotificationList::Notifications notification_set =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   base::Value::List values;
-  for (auto* notification : notification_set) {
+  for (message_center::Notification* notification : notification_set) {
     values.Append(MakeDictionaryFromNotification(*notification));
   }
   return RespondNow(WithArguments(std::move(values)));
@@ -6664,7 +6666,7 @@ void AutotestPrivateInstallBruschettaFunction::OnInstallerFinish(
   if (result == bruschetta::BruschettaInstallResult::kSuccess) {
     Respond(NoArguments());
   } else {
-    Respond(Error(base::UTF16ToUTF8(base::StringPiece16(
+    Respond(Error(base::UTF16ToUTF8(std::u16string_view(
         bruschetta::BruschettaInstallResultString(result)))));
   }
 }

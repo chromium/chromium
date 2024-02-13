@@ -773,7 +773,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   uint8_t has_last_baseline_ : 1;                               // NOLINT
   uint8_t use_last_baseline_for_inline_baseline_ : 1;           // NOLINT
   const uint8_t has_fragmented_out_of_flow_data_ : 1;           // NOLINT
-  const uint8_t has_out_of_flow_fragment_child_ : 1;            // NOLINT
+  uint8_t has_out_of_flow_fragment_child_ : 1;                  // NOLINT
   const uint8_t has_out_of_flow_in_fragmentainer_subtree_ : 1;  // NOLINT
 
   // The following are only used by PhysicalLineBoxFragment.

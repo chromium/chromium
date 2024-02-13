@@ -223,10 +223,6 @@ using base::UserMetricsAction;
   [self presentScreen:[_screenProvider nextScreenType]];
 }
 
-- (void)skipAllScreens {
-  [self finishPresentingScreens];
-}
-
 #pragma mark - SigninCoordinator
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action

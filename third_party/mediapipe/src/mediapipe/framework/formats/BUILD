@@ -487,7 +487,7 @@ config_setting(
         "MEDIAPIPE_NO_JNI": "1",
     },
     values = {"crosstool_top": "//external:android/crosstool"},
-    visibility = ["//visibility:private"],
+    visibility = ["//mediapipe/framework:__pkg__"],
 )
 
 cc_library(
@@ -511,16 +511,6 @@ cc_library(
         ],
         "//conditions:default": [],
     }),
-    defines = select({
-        # Excludes AHardwareBuffer features from vendor processes
-        "//mediapipe/framework:android_no_jni": ["MEDIAPIPE_NO_JNI"],
-        # unless they're linked against nativewindow.
-        ":android_link_native_window": [
-            "MEDIAPIPE_ANDROID_LINK_NATIVE_WINDOW",
-            "MEDIAPIPE_NO_JNI",
-        ],
-        "//conditions:default": [],
-    }),
     linkopts = select({
         "//mediapipe:apple": [
             "-framework CoreVideo",
@@ -537,6 +527,7 @@ cc_library(
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
         "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/synchronization",
     ] + select({
         "//mediapipe/gpu:disable_gpu": [],

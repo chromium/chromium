@@ -29,7 +29,7 @@
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithDelegate:
-        (id<CRWWebControllerContainerViewDelegate>)delegate {
+    (id<CRWWebControllerContainerViewDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     DCHECK(delegate);
@@ -69,7 +69,7 @@
   if (![_webViewContentView isEqual:webViewContentView]) {
     [_webViewContentView removeFromSuperview];
     _webViewContentView = webViewContentView;
-    [_webViewContentView setFrame:self.bounds];
+    [self updateWebViewContentViewFrame];
     [self addSubview:_webViewContentView];
   }
 }
@@ -108,7 +108,7 @@
 
   // webViewContentView layout.  `-setNeedsLayout` is called in case any webview
   // layout updates need to occur despite the bounds size staying constant.
-  self.webViewContentView.frame = self.bounds;
+  [self updateWebViewContentViewFrame];
   [self.webViewContentView setNeedsLayout];
 }
 
@@ -133,7 +133,7 @@
   if (containerWindow ||
       ![_delegate shouldKeepRenderProcessAliveForContainerView:self]) {
     if (self.webViewContentView.superview != self) {
-      [_webViewContentView setFrame:self.bounds];
+      [self updateWebViewContentViewFrame];
       // Insert the content view on the back of the container view so any view
       // that was presented on top of the content view can still appear.
       [self insertSubview:_webViewContentView atIndex:0];
@@ -176,6 +176,30 @@
 - (void)drawRect:(CGRect)rect
     forViewPrintFormatter:(UIViewPrintFormatter*)formatter {
   [self.webViewContentView.webView drawRect:rect];
+}
+
+#pragma mark - UIView overrides
+
+- (void)safeAreaInsetsDidChange {
+  // Update the frame to take into account the safe area inset as they are set
+  // fractionally later than the rest of the view loading.
+  [self updateWebViewContentViewFrame];
+}
+
+#pragma mark - Private helpers
+
+// Update the content view frame.
+- (void)updateWebViewContentViewFrame {
+  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+    [self.webViewContentView setFrame:self.bounds];
+  } else {
+    if (self.cover) {
+      [self.webViewContentView setFrame:self.bounds];
+    } else {
+      [self.webViewContentView
+          setFrame:UIEdgeInsetsInsetRect(self.bounds, self.safeAreaInsets)];
+    }
+  }
 }
 
 @end

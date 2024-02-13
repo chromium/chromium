@@ -4,7 +4,8 @@
 
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsRuntimeHostsDialogElement, getMatchingUserSpecifiedSites, getPatternFromSite} from 'chrome://extensions/extensions.js';
+import type {ExtensionsRuntimeHostsDialogElement} from 'chrome://extensions/extensions.js';
+import {getMatchingUserSpecifiedSites, getPatternFromSite} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';

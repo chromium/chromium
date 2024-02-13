@@ -1012,6 +1012,9 @@ void DiceWebSigninInterceptor::OnChromeSigninChoice(
     case SigninInterceptionResult::kNotDisplayed:
       // Can happen if the web contents is destroyed between the time the bubble
       // was requested to be displayed and actually being displayed.
+    case SigninInterceptionResult::kDismissed:
+      // Happens if the user closed the bubble without explicitly accepting or
+      // declining.
       break;
     case SigninInterceptionResult::kDeclined:
       // The user declined the bubble.

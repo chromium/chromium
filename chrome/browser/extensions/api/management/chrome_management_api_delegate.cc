@@ -61,6 +61,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/management.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -244,7 +245,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
   }
 
   extensions::api::management::ExtensionInfo CreateExtensionInfoFromWebApp(
-      const std::string& app_id,
+      const extensions::ExtensionId& app_id,
       content::BrowserContext* context) override {
     auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
@@ -291,6 +292,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
       case web_app::DisplayMode::kWindowControlsOverlay:
       case web_app::DisplayMode::kTabbed:
       case web_app::DisplayMode::kBorderless:
+      case web_app::DisplayMode::kPictureInPicture:
       case web_app::DisplayMode::kUndefined:
         info.launch_type = extensions::api::management::LaunchType::kNone;
         break;
@@ -556,7 +558,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
 
 void ChromeManagementAPIDelegate::EnableExtension(
     content::BrowserContext* context,
-    const std::string& extension_id) const {
+    const extensions::ExtensionId& extension_id) const {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(context)->GetExtensionById(
           extension_id, extensions::ExtensionRegistry::EVERYTHING);
@@ -583,7 +585,7 @@ void ChromeManagementAPIDelegate::EnableExtension(
 void ChromeManagementAPIDelegate::DisableExtension(
     content::BrowserContext* context,
     const extensions::Extension* source_extension,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     extensions::disable_reason::DisableReason disable_reason) const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   extensions::SupervisedUserExtensionsDelegate* extensions_delegate =
@@ -598,7 +600,7 @@ void ChromeManagementAPIDelegate::DisableExtension(
 
 bool ChromeManagementAPIDelegate::UninstallExtension(
     content::BrowserContext* context,
-    const std::string& transient_extension_id,
+    const extensions::ExtensionId& transient_extension_id,
     extensions::UninstallReason reason,
     std::u16string* error) const {
   return extensions::ExtensionSystem::Get(context)
@@ -608,7 +610,7 @@ bool ChromeManagementAPIDelegate::UninstallExtension(
 
 void ChromeManagementAPIDelegate::SetLaunchType(
     content::BrowserContext* context,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     extensions::LaunchType launch_type) const {
   extensions::SetLaunchType(context, extension_id, launch_type);
 }

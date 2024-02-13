@@ -70,12 +70,15 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
      */
     private static final String SHOW_GAIA_SERVICE_TYPE_EXTRA = "ShowGAIAServiceType";
 
+    private static final String PREF_IDENTITY_ERROR_CARD_PREFERENCE = "identity_error_card";
     private static final String PREF_ACCOUNTS_CATEGORY = "accounts_category";
     private static final String PREF_PARENT_ACCOUNT_CATEGORY = "parent_account_category";
     private static final String PREF_SIGN_OUT = "sign_out";
     private static final String PREF_SIGN_OUT_DIVIDER = "sign_out_divider";
 
     private @GAIAServiceType int mGaiaServiceType = GAIAServiceType.GAIA_SERVICE_TYPE_NONE;
+
+    private IdentityErrorCardPreference mIdentityErrorCardPreference;
 
     private CoreAccountInfo mSignedInCoreAccountInfo;
     private ProfileDataCache mProfileDataCache;
@@ -169,6 +172,11 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         AccountManagerFacadeProvider.getInstance()
                 .getCoreAccountInfos()
                 .then(this::updateAccountsList);
+
+        // TODO(crbug.com/1503649): Figure out the behaviour for child accounts.
+        mIdentityErrorCardPreference =
+                (IdentityErrorCardPreference) findPreference(PREF_IDENTITY_ERROR_CARD_PREFERENCE);
+        mIdentityErrorCardPreference.initialize(SyncServiceFactory.getForProfile(getProfile()));
     }
 
     /**

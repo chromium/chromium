@@ -57,5 +57,10 @@
       rights: [ "r*" ],
       path: "/config/ssl",
     },
+    {
+      directory: "tzdata-icu",
+      rights: [ "r*" ],
+      path: "/config/tzdata/icu",
+    },
   ],
 }

@@ -1220,4 +1220,26 @@ TEST_F(PermissionManagerTest,
   UnsubscribeFromPermissionStatusChange(subscription_id);
 }
 
+TEST_F(PermissionManagerTest,
+       GetPermissionContextForNotAddedPermissionContext) {
+  PermissionContextBase* context =
+      GetPermissionManager()->GetPermissionContextForTesting(
+          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
+
+  // Context is null because it is not added to PermissionContextMap.
+  EXPECT_TRUE(!context);
+}
+
+TEST_F(PermissionManagerTest,
+       SubscribeUnsubscribeForNotAddedPermissionContext) {
+  content::PermissionControllerDelegate::SubscriptionId subscription_id =
+      SubscribeToPermissionStatusChange(
+          PermissionType::TOP_LEVEL_STORAGE_ACCESS,
+          /*render_process_host=*/nullptr, main_rfh(), url(),
+          base::BindRepeating(&PermissionManagerTest::OnPermissionChange,
+                              base::Unretained(this)));
+
+  UnsubscribeFromPermissionStatusChange(subscription_id);
+}
+
 }  // namespace permissions

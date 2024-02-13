@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -36,72 +37,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 
 using content::WebContents;
-
-BrowserFullscreenModeWaiter::BrowserFullscreenModeWaiter(
-    Browser* browser,
-    bool wait_until_exit_fullscreen_mode)
-    : wait_until_exit_fullscreen_mode_(wait_until_exit_fullscreen_mode),
-      controller_(
-          browser->exclusive_access_manager()->fullscreen_controller()) {
-  CHECK(controller_);
-  CHECK_EQ(wait_until_exit_fullscreen_mode_,
-           controller_->IsFullscreenForBrowser());
-  observation_.Observe(controller_);
-}
-
-BrowserFullscreenModeWaiter::~BrowserFullscreenModeWaiter() = default;
-
-void BrowserFullscreenModeWaiter::OnFullscreenStateChanged() {
-  // Note: In Lacros, when full screen mode changes, FullscreenController
-  // triggers WindowFullscreenStateChanged twice for the same change
-  // asynchronously. If the test code toggles fullscreen mode on and off, there
-  // is a race between the second notification of fullscreen mode on and test
-  // code toggle fullscreen mode off. Wait until the fullscreen state changes to
-  // the expected mode. See details in crbug.com/1481727.
-  if (wait_until_exit_fullscreen_mode_ &&
-      controller_->IsFullscreenForBrowser()) {
-    return;
-  }
-  if (!wait_until_exit_fullscreen_mode_ &&
-      !controller_->IsFullscreenForBrowser()) {
-    return;
-  }
-
-  observed_change_ = true;
-  if (run_loop_.running()) {
-    run_loop_.Quit();
-  }
-}
-
-void BrowserFullscreenModeWaiter::Wait() {
-  if (observed_change_) {
-    return;
-  }
-
-  run_loop_.Run();
-}
-
-FullscreenNotificationObserver::FullscreenNotificationObserver(
-    Browser* browser) {
-  observation_.Observe(
-      browser->exclusive_access_manager()->fullscreen_controller());
-}
-
-FullscreenNotificationObserver::~FullscreenNotificationObserver() = default;
-
-void FullscreenNotificationObserver::OnFullscreenStateChanged() {
-  observed_change_ = true;
-  if (run_loop_.running()) {
-    run_loop_.Quit();
-  }
-}
-
-void FullscreenNotificationObserver::Wait() {
-  if (observed_change_)
-    return;
-
-  run_loop_.Run();
-}
 
 const char ExclusiveAccessTest::kFullscreenKeyboardLockHTML[] =
     "/fullscreen_keyboardlock/fullscreen_keyboardlock.html";
@@ -242,23 +177,18 @@ void ExclusiveAccessTest::Reload() {
 
 void ExclusiveAccessTest::EnterActiveTabFullscreen() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  FullscreenNotificationObserver fullscreen_observer(browser());
+  ui_test_utils::FullscreenWaiter waiter(browser(), {.tab_fullscreen = true});
   browser()->EnterFullscreenModeForTab(tab->GetPrimaryMainFrame(), {});
-  fullscreen_observer.Wait();
-}
-
-void ExclusiveAccessTest::ToggleBrowserFullscreen() {
-  FullscreenNotificationObserver fullscreen_observer(browser());
-  chrome::ToggleFullscreenMode(browser());
-  fullscreen_observer.Wait();
+  waiter.Wait();
 }
 
 void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
-  FullscreenNotificationObserver fullscreen_observer(browser());
+  ui_test_utils::FullscreenWaiter waiter(browser(),
+                                         {.browser_fullscreen = true});
   static const char kExtensionId[] = "extension-id";
   browser()->ToggleFullscreenModeWithExtension(
       extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
-  fullscreen_observer.Wait();
+  waiter.Wait();
 }
 
 void ExclusiveAccessTest::SetEscRepeatWindowLength(

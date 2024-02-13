@@ -22,6 +22,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -178,6 +179,9 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
           features::kTrustSafetySentimentSurvey,
           companion::visual_query::features::kVisualQuerySuggestions,
 #endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+          switches::kEnableBoundSessionCredentials,
+#endif  // BUILDFLAG(IS_WIN)
           blink::features::kBrowsingTopics,
           net::features::kTpcdMetadataGrants,
           net::features::kTpcdTrialSettings,
@@ -244,6 +248,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BluetoothSocketEventDispatcher",
     "BrowsingDataLifetimeManager",
     "CookieSettings",
+#if BUILDFLAG(IS_WIN)
+    "BoundSessionCookieRefreshService",
+#endif  // BUILDFLAG(IS_WIN)
     "ExtensionSystem",
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "FederatedIdentityPermissionContext",
@@ -298,6 +305,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "TrackingProtectionSettings",
     "UDPSocketEventDispatcher",
     "UkmBackgroundRecorderService",
+#if BUILDFLAG(IS_WIN)
+    "UnexportableKeyService",
+#endif  // BUILDFLAG(IS_WIN)
     "UpdaterService",
     "UsbDeviceManager",
     "UsbDeviceResourceManager",

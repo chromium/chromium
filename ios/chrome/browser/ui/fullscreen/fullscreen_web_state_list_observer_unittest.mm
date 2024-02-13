@@ -82,9 +82,9 @@ TEST_F(FullscreenWebStateListObserverTest, ObserveActiveWebState) {
   web::FakeNavigationManager* navigation_manager =
       passed_navigation_manager.get();
   web_state->SetNavigationManager(std::move(passed_navigation_manager));
-  web_state_list().InsertWebState(0, std::move(inserted_web_state),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list().InsertWebState(
+      std::move(inserted_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
   // Simulate a scroll to 0.5 progress.
   SetUpFullscreenModelForTesting(&model(), 100.0);
   SimulateFullscreenUserScrollForProgress(&model(), 0.5);

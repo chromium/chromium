@@ -41,6 +41,7 @@ import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
+import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -52,6 +53,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
@@ -99,6 +101,7 @@ public class ReadAloudController
     @Nullable private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
     @Nullable private Highlighter mHighlighter;
     @Nullable private Highlighter.Config mHighlighterConfig;
+    @Nullable private Extractor mExtractor;
 
     // Information tied to a playback. When playback is reset it should be set to null together
     //  with the mCurrentlyPlayingTab and mGlobalRenderFrameId
@@ -107,8 +110,9 @@ public class ReadAloudController
     @Nullable private GlobalRenderFrameHostId mGlobalRenderFrameId;
     // Current tab playback data, or null if there is no playback.
     @Nullable private PlaybackData mCurrentPlaybackData;
+    private long mDateModified;
 
-    // Playback for voice previews.
+    // Playback for voice previews
     @Nullable private Playback mVoicePreviewPlayback;
 
     // TODO(b/322052505): Remove this and just observe mProfileSupplier.
@@ -126,6 +130,8 @@ public class ReadAloudController
         private final long mOffsetNanos;
         // True if audio should start playing immediately when this state is restored.
         private final boolean mPlaying;
+        // Value of dateModified tag or 0
+        private final long mDateModified;
 
         /**
          * Constructor.
@@ -133,8 +139,13 @@ public class ReadAloudController
          * @param tab Tab to play.
          * @param data Current PlaybackData which may be null if playback hasn't started yet.
          */
-        RestoreState(Tab tab, @Nullable PlaybackData data) {
-            this(tab, data, /* useOffsetInParagraph= */ true, /* shouldPlayOverride= */ null);
+        RestoreState(Tab tab, @Nullable PlaybackData data, long dateModified) {
+            this(
+                    tab,
+                    data,
+                    /* useOffsetInParagraph= */ true,
+                    /* shouldPlayOverride= */ null,
+                    dateModified);
         }
 
         /**
@@ -147,8 +158,10 @@ public class ReadAloudController
                 Tab tab,
                 @Nullable PlaybackData data,
                 boolean useOffsetInParagraph,
-                @Nullable Boolean shouldPlayOverride) {
+                @Nullable Boolean shouldPlayOverride,
+                long dateModified) {
             mTab = tab;
+            mDateModified = dateModified;
             if (data == null) {
                 mParagraphIndex = 0;
                 mOffsetNanos = 0L;
@@ -166,7 +179,7 @@ public class ReadAloudController
 
         /** Apply the saved playback state. */
         void restore() {
-            createTabPlayback(mTab)
+            createTabPlayback(mTab, mDateModified)
                     .then(
                             playback -> {
                                 if (mPlaying) {
@@ -238,11 +251,13 @@ public class ReadAloudController
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
                     ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
 
-                    // isPlaybackEnabled() should only be checked if isReadable == true.
-                    isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
+                    // Register _KnownReadable trial before checking more playback conditions
                     if (isReadable) {
                         ReadAloudFeatures.activateKnownReadableTrial();
                     }
+
+                    // isPlaybackEnabled() should only be checked if isReadable == true.
+                    isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
 
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
@@ -327,6 +342,14 @@ public class ReadAloudController
                         }
 
                         @Override
+                        public void onActivityAttachmentChanged(
+                                Tab tab, @Nullable WindowAndroid window) {
+                            super.onActivityAttachmentChanged(tab, window);
+                            Log.d(TAG, "onActivityAttachmentChanged");
+                            maybeStopPlayback(tab);
+                        }
+
+                        @Override
                         protected void onTabSelected(Tab tab) {
                             super.onTabSelected(tab);
                             if (tab != null && tab.getUrl() != null) {
@@ -347,6 +370,7 @@ public class ReadAloudController
 
                         @Override
                         public void willCloseTab(Tab tab) {
+                            Log.d(TAG, "WillCloseTab");
                             maybeStopPlayback(tab);
                         }
                     };
@@ -467,9 +491,23 @@ public class ReadAloudController
      * @param tab Tab to play.
      */
     public void playTab(Tab tab) {
-        createTabPlayback(tab)
+        extractDateModified(tab)
+                .then(
+                        timestamp -> {
+                            ReadAloudMetrics.recordHasDateModified(true);
+                            playTabWithDateModified(tab, timestamp);
+                        },
+                        exception -> {
+                            ReadAloudMetrics.recordHasDateModified(false);
+                            playTabWithDateModified(tab, 0L);
+                        });
+    }
+
+    private void playTabWithDateModified(Tab tab, long dateModified) {
+        createTabPlayback(tab, dateModified)
                 .then(
                         playback -> {
+                            mDateModified = dateModified;
                             mPlayerCoordinator.playbackReady(playback, PLAYING);
                             playback.play();
                             ReadAloudMetrics.recordPlaybackStarted();
@@ -479,7 +517,7 @@ public class ReadAloudController
                         });
     }
 
-    private Promise<Playback> createTabPlayback(Tab tab) {
+    private Promise<Long> extractDateModified(Tab tab) {
         assert tab.getUrl().isValid();
         if (mPlaybackHooks == null) {
             mPlaybackHooks =
@@ -489,6 +527,14 @@ public class ReadAloudController
             mPlayerCoordinator = mPlaybackHooks.createPlayer(/* delegate= */ this);
             mPlayerCoordinator.addObserver(this);
         }
+        if (mExtractor == null) {
+            mExtractor = mPlaybackHooks.createExtractor();
+        }
+        return mExtractor.getDateModified(tab);
+    }
+
+    private Promise<Playback> createTabPlayback(Tab tab, long dateModified) {
+        assert tab.getUrl().isValid();
         // only start a new playback if different URL or no active playback for that url
         if (mCurrentlyPlayingTab != null && tab.getUrl().equals(mCurrentlyPlayingTab.getUrl())) {
             var promise = new Promise<Playback>();
@@ -526,7 +572,7 @@ public class ReadAloudController
                         isTranslated ? playbackLanguage : null,
                         mPlaybackHooks.getPlaybackVoiceList(
                                 ReadAloudPrefs.getVoices(getPrefService())),
-                        /* dateModifiedMsSinceEpoch= */ 0);
+                        /* dateModifiedMsSinceEpoch= */ dateModified);
         Log.d(TAG, "Creating playback with args: %s", args);
 
         Promise<Playback> promise = createPlayback(args);
@@ -585,6 +631,7 @@ public class ReadAloudController
         mGlobalRenderFrameId = null;
         mCurrentPlaybackData = null;
         mPausedForIncognito = false;
+        mDateModified = 0L;
     }
 
     /** Cleanup: unregister listeners. */
@@ -803,7 +850,8 @@ public class ReadAloudController
         mSelectedVoiceId.set(voice.getVoiceId());
 
         if (mCurrentlyPlayingTab != null && mPlayback != null) {
-            RestoreState state = new RestoreState(mCurrentlyPlayingTab, mCurrentPlaybackData);
+            RestoreState state =
+                    new RestoreState(mCurrentlyPlayingTab, mCurrentPlaybackData, mDateModified);
             resetCurrentPlayback();
             // This should re-request playback with the same playback state and paragraph
             // and the new voice.
@@ -817,7 +865,7 @@ public class ReadAloudController
         // cleaned up. May be null if the most recent playback was a voice preview.
         if (mCurrentlyPlayingTab != null) {
             mStateToRestoreOnVoiceMenuClose =
-                    new RestoreState(mCurrentlyPlayingTab, mCurrentPlaybackData);
+                    new RestoreState(mCurrentlyPlayingTab, mCurrentPlaybackData, mDateModified);
             resetCurrentPlayback();
         }
 
@@ -865,10 +913,9 @@ public class ReadAloudController
     private Promise<Playback> createPlayback(PlaybackArgs args) {
         final var promise = new Promise<Playback>();
         if (mProfile == null || !mProfile.isNativeInitialized()) {
-            promise.reject();
+            promise.reject(new Exception("missing profile"));
             return promise;
         }
-
         mPlaybackHooks.createPlayback(
                 args,
                 new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
@@ -1011,7 +1058,8 @@ public class ReadAloudController
                                 mCurrentlyPlayingTab,
                                 mCurrentPlaybackData,
                                 /* useOffsetInParagraph= */ true,
-                                /* shouldPlayOverride= */ false);
+                                /* shouldPlayOverride= */ false,
+                                mDateModified);
             }
             resetCurrentPlayback();
         } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES

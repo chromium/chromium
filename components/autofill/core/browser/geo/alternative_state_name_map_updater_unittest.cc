@@ -53,7 +53,8 @@ class AlternativeStateNameMapUpdaterTest : public ::testing::Test {
                                 /*history_service=*/nullptr,
                                 /*sync_service=*/nullptr,
                                 /*strike_database=*/nullptr,
-                                /*image_fetcher=*/nullptr);
+                                /*image_fetcher=*/nullptr,
+                                /*shared_storage_handler=*/nullptr);
     alternative_state_name_map_updater_ =
         std::make_unique<AlternativeStateNameMapUpdater>(
             autofill_client_.GetPrefs(), &personal_data_manager_);
@@ -278,10 +279,8 @@ TEST_F(AlternativeStateNameMapUpdaterTest,
   MockAlternativeStateNameMapUpdater mock_alternative_state_name_updater(
       run_loop.QuitClosure(), autofill_client_.GetPrefs(),
       &personal_data_manager_);
-  personal_data_manager_.AddObserver(&mock_alternative_state_name_updater);
   personal_data_manager_.AddProfile(profile);
   run_loop.Run();
-  personal_data_manager_.RemoveObserver(&mock_alternative_state_name_updater);
 
   EXPECT_FALSE(
       AlternativeStateNameMap::GetInstance()->IsLocalisedStateNamesMapEmpty());

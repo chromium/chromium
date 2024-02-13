@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_util.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_client.h"
@@ -134,6 +135,7 @@ lorgnette::ScannerInfo ScannerInfoFromScanner(const Scanner& scanner) {
       break;
     }
   }
+  info.set_protocol_type(ProtocolTypeForScanner(info));
 
   return info;
 }

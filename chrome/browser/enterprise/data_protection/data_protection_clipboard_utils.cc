@@ -93,20 +93,20 @@ void HandleStringData(
       safe_browsing::DeepScanAccessPoint::PASTE);
 }
 
-bool SkipDataControlOrContentAnalysisPasteChecks(
-    const content::ClipboardEndpoint& destination) {
-  // Data Controls and content analysis paste checks require an active tab to be
-  // meaningful, so if it's gone they can be skipped.
-  auto* web_contents = destination.web_contents();
+bool SkipDataControlOrContentAnalysisChecks(
+    const content::ClipboardEndpoint& main_endpoint) {
+  // Data Controls and content analysis copy/paste checks require an active tab
+  // to be meaningful, so if it's gone they can be skipped.
+  auto* web_contents = main_endpoint.web_contents();
   if (!web_contents) {
     return true;
   }
 
-  // Data Controls and content analysis paste checks are only meaningful in
+  // Data Controls and content analysis copy/paste checks are only meaningful in
   // Chrome tabs, so they should always be skipped for source-only checks (ex.
   // copy prevention checks).
-  if (!destination.data_transfer_endpoint().has_value() ||
-      !destination.data_transfer_endpoint()->IsUrlType()) {
+  if (!main_endpoint.data_transfer_endpoint().has_value() ||
+      !main_endpoint.data_transfer_endpoint()->IsUrlType()) {
     return true;
   }
 
@@ -120,7 +120,7 @@ void PasteIfAllowedByContentAnalysis(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   DCHECK(web_contents);
-  DCHECK(!SkipDataControlOrContentAnalysisPasteChecks(destination));
+  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
 
   Profile* profile = Profile::FromBrowserContext(destination.browser_context());
   if (!profile) {
@@ -170,18 +170,26 @@ void PasteIfAllowedByDataControls(
     const content::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  DCHECK(!SkipDataControlOrContentAnalysisPasteChecks(destination));
+  DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
 
   auto verdict = data_controls::RulesServiceFactory::GetForBrowserContext(
                      destination.browser_context())
                      ->GetPasteVerdict(source, destination, metadata);
+  if (source.browser_context() &&
+      source.browser_context() != destination.browser_context()) {
+    verdict = data_controls::Verdict::Merge(
+        data_controls::RulesServiceFactory::GetForBrowserContext(
+            source.browser_context())
+            ->GetPasteVerdict(source, destination, metadata),
+        std::move(verdict));
+  }
 
   // TODO(b/302340176): Add support for verdicts other than "block".
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     data_controls::DataControlsDialog::Show(
         destination.web_contents(),
         data_controls::DataControlsDialog::Type::kClipboardPasteBlock);
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -200,14 +208,67 @@ void OnDlpRulesCheckDone(
   // If DLP rules blocked the action or if there are no further policy checks
   // required, return null to indicate the pasting is blocked or no longer
   // applicable.
-  if (!allowed || SkipDataControlOrContentAnalysisPasteChecks(destination)) {
-    std::move(callback).Run(absl::nullopt);
+  if (!allowed || SkipDataControlOrContentAnalysisChecks(destination)) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   PasteIfAllowedByDataControls(source, destination, metadata,
                                std::move(clipboard_paste_data),
                                std::move(callback));
+}
+
+void IsCopyToOSClipboardRestricted(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const std::u16string& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    std::move(callback).Run(data, std::nullopt);
+    return;
+  }
+
+  auto verdict = data_controls::RulesServiceFactory::GetForBrowserContext(
+                     source.browser_context())
+                     ->GetCopyToOSClipboardVerdict(
+                         *source.data_transfer_endpoint()->GetURL());
+
+  // TODO(b/302340176): Add support for verdicts other than "block".
+  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+    std::u16string replacement_data = l10n_util::GetStringUTF16(
+        IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
+    std::move(callback).Run(data, std::move(replacement_data));
+    return;
+  }
+
+  std::move(callback).Run(data, std::nullopt);
+}
+
+void IsCopyRestrictedByDialog(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const std::u16string& data,
+    content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  if (SkipDataControlOrContentAnalysisChecks(source)) {
+    std::move(callback).Run(data, std::nullopt);
+    return;
+  }
+
+  auto verdict = data_controls::RulesServiceFactory::GetForBrowserContext(
+                     source.browser_context())
+                     ->GetCopyRestrictedBySourceVerdict(
+                         *source.data_transfer_endpoint()->GetURL());
+
+  // TODO(b/302340176): Add support for verdicts other than "block".
+  // TODO(b/303640183): Add reporting logic.
+  if (verdict.level() == data_controls::Rule::Level::kBlock) {
+    data_controls::DataControlsDialog::Show(
+        source.web_contents(),
+        data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+    return;
+  }
+
+  IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
 }
 
 }  // namespace
@@ -228,8 +289,7 @@ void PasteIfAllowedByPolicy(
       pasted_content = clipboard_paste_data.file_paths;
     }
 
-    absl::optional<ui::DataTransferEndpoint> destination_endpoint =
-        absl::nullopt;
+    std::optional<ui::DataTransferEndpoint> destination_endpoint = std::nullopt;
     if (destination.browser_context() &&
         !destination.browser_context()->IsOffTheRecord()) {
       destination_endpoint = destination.data_transfer_endpoint();
@@ -252,34 +312,27 @@ void PasteIfAllowedByPolicy(
 }
 
 void IsClipboardCopyAllowedByPolicy(
-    content::BrowserContext* browser_context,
-    const GURL& url,
-    size_t data_size_in_bytes,
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardMetadata& metadata,
+    const std::u16string& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
+  DCHECK(source.web_contents());
+  DCHECK(source.browser_context());
+  DCHECK(source.data_transfer_endpoint());
+  DCHECK(source.data_transfer_endpoint()->IsUrlType());
+  const GURL& url = *source.data_transfer_endpoint()->GetURL();
+
   std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
-          browser_context);
-  if (!service->IsUrlAllowedToCopy(url, data_size_in_bytes,
+          source.browser_context());
+  if (!service->IsUrlAllowedToCopy(url, metadata.size.value_or(0),
                                    &replacement_data)) {
-    std::move(callback).Run(std::move(replacement_data));
+    std::move(callback).Run(data, std::move(replacement_data));
     return;
   }
 
-  auto verdict =
-      data_controls::RulesServiceFactory::GetForBrowserContext(browser_context)
-          ->GetCopyToOSClipboardVerdict(url);
-
-  // TODO(b/302340176): Add support for verdicts other than "block".
-  // TODO(b/303640183): Add reporting logic.
-  if (verdict.level() == data_controls::Rule::Level::kBlock) {
-    replacement_data = l10n_util::GetStringUTF16(
-        IDS_ENTERPRISE_DATA_CONTROLS_COPY_PREVENTION_WARNING_MESSAGE);
-    std::move(callback).Run(std::move(replacement_data));
-    return;
-  }
-
-  std::move(callback).Run(std::nullopt);
+  IsCopyRestrictedByDialog(source, metadata, data, std::move(callback));
 }
 
 }  // namespace enterprise_data_protection

@@ -59,6 +59,15 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LoginEventRecorder::Get()->AddLoginTimeMarker("OnAuthSuccess", false);
   delegate_->ReportOnAuthSuccessMetrics();
+  auto mount_state = user_context.GetMountState();
+  if (mount_state && *mount_state == UserContext::MountState::kNewPersistent) {
+    // In rare cases (e.g. due to disk cleanup mechanism) it is possible that
+    // user's cryptohome is deleted, but information in `Local State` still
+    // assumes that user exists.
+    // Remove all such stale information at this point.
+    user_manager::UserManager::Get()->CleanStaleUserInformationFor(
+        user_context.GetAccountId());
+  }
 
   const bool is_known_user = user_manager::UserManager::Get()->IsKnownUser(
       user_context.GetAccountId());

@@ -204,24 +204,20 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
   return exit_code;
 }
 
-ProcessExitResult BuildInstallerCommandLineArguments(
-    const wchar_t* cmd_line,
+ProcessExitResult BuildInstallerCommandLineArgumentsInternal(
     wchar_t* cmd_line_args,
-    size_t cmd_line_args_capacity) {
-  CHECK(cmd_line);
+    size_t cmd_line_args_capacity,
+    base::CommandLine args = GetCommandLineLegacyCompatible()) {
   CHECK(cmd_line_args);
   CHECK(cmd_line_args_capacity);
 
   *cmd_line_args = '\0';
 
-  // Append the command line arguments in `cmd_line` first.
-  base::CommandLine args = base::CommandLine::FromString(cmd_line);
-
-  // Handle the tag. Use the tag from the --tag command line argument if such
-  // argument exists. If --tag is present in `argv`, then it is going to be
-  // handed over to the updater, along with the other arguments. Otherwise, try
-  // extracting a tag embedded in the program image of the meta installer.
-  if (!args.HasSwitch(kTagSwitch)) {
+  // Use the tag from the --tag/--install command line argument if such argument
+  // exists. Otherwise, try extracting a tag embedded in the program image of
+  // the meta installer.
+  if (args.GetSwitchValueASCII(kTagSwitch).empty() &&
+      args.GetSwitchValueASCII(kInstallSwitch).empty()) {
     const std::string tag = ExtractTag();
     if (!tag.empty()) {
       args.AppendSwitchASCII(kTagSwitch, tag.c_str());
@@ -249,6 +245,17 @@ ProcessExitResult BuildInstallerCommandLineArguments(
 
   SafeStrCopy(cmd_line_args, cmd_line_args_capacity, args_str.c_str());
   return ProcessExitResult(SUCCESS_EXIT_CODE);
+}
+
+ProcessExitResult BuildInstallerCommandLineArguments(
+    const wchar_t* cmd_line,
+    wchar_t* cmd_line_args,
+    size_t cmd_line_args_capacity) {
+  CHECK(cmd_line);
+
+  return BuildInstallerCommandLineArgumentsInternal(
+      cmd_line_args, cmd_line_args_capacity,
+      base::CommandLine::FromString(cmd_line));
 }
 
 // Executes updater.exe, waits for it to finish and returns the exit code.
@@ -329,8 +336,8 @@ ProcessExitResult InstallerMain(HMODULE module) {
   }
 
   CommandString cmd_line_args;
-  ProcessExitResult args_result = BuildInstallerCommandLineArguments(
-      ::GetCommandLineW(), cmd_line_args.get(), cmd_line_args.capacity());
+  ProcessExitResult args_result = BuildInstallerCommandLineArgumentsInternal(
+      cmd_line_args.get(), cmd_line_args.capacity());
   if (args_result.exit_code != SUCCESS_EXIT_CODE) {
     return args_result;
   }

@@ -205,7 +205,35 @@ export class SettingsPrivacyHubAppPermissionRow extends
     this.togglePermissionState_();
   }
 
-  private onToggleChangeByUser_(): void {
+  private onToggleClick_(e: Event): void {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+
+    this.togglePermissionState_();
+  }
+
+  private onKeyup_(e: KeyboardEvent): void {
+    if (e.key !== ' ') {
+      return;
+    }
+
+    e.stopImmediatePropagation();
+    e.preventDefault();
+
+    this.togglePermissionState_();
+  }
+
+  private onKeydown_(e: KeyboardEvent): void {
+    if (e.key !== 'Enter') {
+      return;
+    }
+
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    if (e.repeat) {
+      return;
+    }
+
     this.togglePermissionState_();
   }
 

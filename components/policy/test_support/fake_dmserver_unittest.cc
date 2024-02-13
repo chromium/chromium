@@ -140,6 +140,8 @@ class FakeDMServerTest : public testing::Test {
     if (response_body) {
       LOG(INFO) << "Response body: " << *response_body;
     }
+    LOG(INFO) << "Response headers: "
+              << url_loader->ResponseInfo()->headers->raw_headers();
     return url_loader->ResponseInfo()->headers->response_code();
   }
 

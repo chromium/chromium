@@ -40,12 +40,12 @@ bool LayerTreeDebugState::ShowMemoryStats() const {
 }
 
 bool LayerTreeDebugState::ShouldDrawHudInfo() const {
-  return show_fps_counter || show_web_vital_metrics || show_smoothness_metrics;
+  return show_fps_counter || show_web_vital_metrics ||
+         show_smoothness_metrics || debugger_paused;
 }
 
 void LayerTreeDebugState::TurnOffHudInfoDisplay() {
-  // Turn off all types of HUD info display. ShouldDrawHudInfo() would return
-  // false after this function.
+  // Turn off all types of HUD info display. We do not reset `debugger_paused`.
   show_fps_counter = false;
   show_web_vital_metrics = false;
   show_smoothness_metrics = false;
@@ -54,6 +54,7 @@ void LayerTreeDebugState::TurnOffHudInfoDisplay() {
 bool LayerTreeDebugState::Equal(const LayerTreeDebugState& a,
                                 const LayerTreeDebugState& b) {
   return (
+      a.debugger_paused == b.debugger_paused &&
       a.show_fps_counter == b.show_fps_counter &&
       a.show_debug_borders == b.show_debug_borders &&
       a.show_layout_shift_regions == b.show_layout_shift_regions &&

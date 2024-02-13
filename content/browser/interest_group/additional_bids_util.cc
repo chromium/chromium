@@ -26,6 +26,7 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
@@ -377,8 +378,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   const blink::InterestGroup::Ad* bid_ad =
       &result.bid_state->bidder->interest_group.ads.value()[0];
   result.bid = std::make_unique<InterestGroupAuction::Bid>(
-      InterestGroupAuction::Bid::BidRole::kBothKAnonModes, ad_metadata,
-      *bid_val,
+      auction_worklet::mojom::BidRole::kBothKAnonModes, ad_metadata, *bid_val,
       /*bid_currency=*/bid_currency,
       /*ad_cost=*/ad_cost,
       /*ad_descriptor=*/blink::AdDescriptor(GURL(bid_ad->render_url())),

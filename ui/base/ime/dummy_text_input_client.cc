@@ -183,14 +183,14 @@ bool DummyTextInputClient::SetAutocorrectRange(
   return autocorrect_enabled_;
 }
 
-absl::optional<GrammarFragment>
+std::optional<GrammarFragment>
 DummyTextInputClient::GetGrammarFragmentAtCursor() const {
   for (const auto& fragment : grammar_fragments_) {
     if (fragment.range.Contains(cursor_range_)) {
       return fragment;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool DummyTextInputClient::ClearGrammarFragments(const gfx::Range& range) {
@@ -208,8 +208,8 @@ bool DummyTextInputClient::AddGrammarFragments(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void DummyTextInputClient::GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {}
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {}
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -23,7 +23,6 @@ import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
-import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -56,11 +55,11 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
     @FloatRange(from = 0.0F, to = 1.0F)
     private static final float QUICK_DELETE_ANIMATION_INTERSECTION_MULTIPLIER = 0.5F;
 
-    @IntRange(from = 0L, to = 255L)
-    private static final int QUICK_DELETE_WIPE_GRADIENT_ALPHA = 200;
+    private static final int QUICK_DELETE_GRADIENT_EASING_POINTS_NUM = 20;
+    private static final int QUICK_DELETE_GRADIENT_MAX_ALPHA = 255;
     private static final Interpolator QUICK_DELETE_WIPE_ANIMATION_INTERPOLATOR =
             PathInterpolatorCompat.create(0.25F, 0F, 0.15F, 1F);
-    private static final int QUICK_DELETE_WIPE_ANIMATION_TIME_MS = 2100;
+    private static final int QUICK_DELETE_WIPE_ANIMATION_TIME_MS = 1200;
     private static final int QUICK_DELETE_FADE_ANIMATION_TIME_MS = 230;
     private final @NonNull Paint mPaint;
     private final @NonNull LinearGradient mShader;
@@ -78,18 +77,19 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
     public static QuickDeleteAnimationGradientDrawable createQuickDeleteWipeAnimationDrawable(
             @NonNull Context context, int tabGridHeight) {
         int gradientColor = MaterialColors.getColor(context, R.attr.colorSecondaryContainer, TAG);
-        int diffuseColor =
-                ColorUtils.setAlphaComponent(gradientColor, QUICK_DELETE_WIPE_GRADIENT_ALPHA / 2);
-        int transparentGradientColor =
-                ColorUtils.setAlphaComponent(gradientColor, QUICK_DELETE_WIPE_GRADIENT_ALPHA);
-        int[] colors =
-                new int[] {
-                    Color.TRANSPARENT,
-                    diffuseColor,
-                    transparentGradientColor,
-                    diffuseColor,
-                    Color.TRANSPARENT
-                };
+
+        int h = QUICK_DELETE_GRADIENT_EASING_POINTS_NUM;
+        int k = QUICK_DELETE_GRADIENT_MAX_ALPHA;
+        int[] colors = new int[h + 1];
+        for (int i = 0; i <= h; ++i) {
+            // Quadratic equation to calculate the alpha value at each easing point to achieve a
+            // smoother transition between the colors of the gradient. This should map to an
+            // inverted parabola where the vertical shift corresponds to the maximum alpha value and
+            // the horizontal shift corresponds to the number of easing points (number of colors) of
+            // the gradient, while maintaining an intersection point at (0,0).
+            float alphaValue = -4F * k / (h * h) * (i - h / 2F) * (i - h / 2F) + k;
+            colors[i] = ColorUtils.setAlphaComponent(gradientColor, Math.round(alphaValue));
+        }
 
         int gradientHeight = (int) (tabGridHeight * QUICK_DELETE_WIPE_GRADIENT_HEIGHT_MULTIPLIER);
 

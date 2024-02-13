@@ -29,13 +29,6 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_names.h"
-#endif
-
 // These tests are disabled because WebUsbDetector::Initialize is a noop on
 // Windows due to jank and hangs caused by enumerating devices.
 // https://crbug.com/656702
@@ -63,12 +56,6 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
   ~WebUsbDetectorTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Inject UserManager to BrowserWithTestWindowTest.
-    // TODO(crbug.com/1494005): Merge into BrowserWithTestWindow.
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
-#endif
     BrowserWithTestWindowTest::SetUp();
 
     BrowserList::SetLastActive(browser());
@@ -86,33 +73,13 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
-    BrowserWithTestWindowTest::TearDown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    user_manager_enabler_.reset();
-#endif
     web_usb_detector_.reset();
+    BrowserWithTestWindowTest::TearDown();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1494005): Merge into BrowserWithTestWindowTest.
-  void LogIn(const std::string& email) override {
-    const AccountId account_id = AccountId::FromUserEmail(email);
-    GetFakeUserManager()->AddUser(account_id);
-    GetFakeUserManager()->LoginUser(account_id);
-  }
-#endif
   void Initialize() { web_usb_detector_->Initialize(); }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* GetFakeUserManager() {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-#endif
-
   device::FakeUsbDeviceManager device_manager_;
   std::unique_ptr<WebUsbDetector> web_usb_detector_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;

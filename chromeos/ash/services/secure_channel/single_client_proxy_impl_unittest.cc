@@ -21,7 +21,9 @@
 #include "chromeos/ash/services/secure_channel/fake_client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/fake_file_payload_listener.h"
 #include "chromeos/ash/services/secure_channel/fake_message_receiver.h"
+#include "chromeos/ash/services/secure_channel/fake_nearby_connection_state_listener.h"
 #include "chromeos/ash/services/secure_channel/fake_single_client_proxy.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -42,7 +44,11 @@ class SecureChannelSingleClientProxyImplTest : public testing::Test {
       const SecureChannelSingleClientProxyImplTest&) = delete;
   SecureChannelSingleClientProxyImplTest& operator=(
       const SecureChannelSingleClientProxyImplTest&) = delete;
-  ~SecureChannelSingleClientProxyImplTest() override = default;
+  ~SecureChannelSingleClientProxyImplTest() override {
+    fake_client_connection_parameters_ = nullptr;
+    fake_message_receiver_ = nullptr;
+    fake_nearby_connection_state_listener_ = nullptr;
+  }
 
   void SetUp() override {
     fake_proxy_delegate_ = std::make_unique<FakeSingleClientProxyDelegate>();
@@ -50,12 +56,19 @@ class SecureChannelSingleClientProxyImplTest : public testing::Test {
     auto fake_message_receiver = std::make_unique<FakeMessageReceiver>();
     fake_message_receiver_ = fake_message_receiver.get();
 
+    auto fake_nearby_connection_state_listener =
+        std::make_unique<FakeNearbyConnectionStateListener>();
+    fake_nearby_connection_state_listener_ =
+        fake_nearby_connection_state_listener.get();
+
     auto fake_client_connection_parameters =
         std::make_unique<FakeClientConnectionParameters>(kTestFeature);
     fake_client_connection_parameters_ =
         fake_client_connection_parameters.get();
     fake_client_connection_parameters_->set_message_receiver(
         std::move(fake_message_receiver));
+    fake_client_connection_parameters_->set_nearby_connection_state_listener(
+        std::move(fake_nearby_connection_state_listener));
 
     proxy_ = SingleClientProxyImpl::Factory::Create(
         fake_proxy_delegate_.get(),
@@ -125,6 +138,18 @@ class SecureChannelSingleClientProxyImplTest : public testing::Test {
     // Otherwise, a message should have been passed.
     EXPECT_EQ(num_received_messages_before_call + 1u, received_messages.size());
     EXPECT_EQ(payload, received_messages.back());
+  }
+
+  void HandleNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep nearby_connection_step,
+      mojom::NearbyConnectionStepResult result) {
+    proxy_->HandleNearbyConnectionStateChanged(nearby_connection_step, result);
+    CompletePendingMojoCalls();
+
+    EXPECT_EQ(nearby_connection_step,
+              fake_nearby_connection_state_listener_->nearby_connection_step());
+    EXPECT_EQ(result, fake_nearby_connection_state_listener_
+                          ->nearby_connection_step_result());
   }
 
   FakeSingleClientProxyDelegate* fake_proxy_delegate() {
@@ -252,9 +277,10 @@ class SecureChannelSingleClientProxyImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<FakeSingleClientProxyDelegate> fake_proxy_delegate_;
-  raw_ptr<FakeClientConnectionParameters, DanglingUntriaged>
-      fake_client_connection_parameters_;
-  raw_ptr<FakeMessageReceiver, DanglingUntriaged> fake_message_receiver_;
+  raw_ptr<FakeClientConnectionParameters> fake_client_connection_parameters_;
+  raw_ptr<FakeMessageReceiver> fake_message_receiver_;
+  raw_ptr<FakeNearbyConnectionStateListener>
+      fake_nearby_connection_state_listener_;
 
   int next_message_counter_ = 0;
   std::unordered_set<int> sent_message_counters_;
@@ -305,6 +331,13 @@ TEST_F(SecureChannelSingleClientProxyImplTest,
        ReceiveMessagesFromMultipleFeatures) {
   HandleReceivedMessageAndVerifyState(kTestFeature, "message1");
   HandleReceivedMessageAndVerifyState("otherFeature", "message2");
+  DisconnectFromRemoteDeviceSide();
+}
+
+TEST_F(SecureChannelSingleClientProxyImplTest, NearbyConnectionStateChanged) {
+  HandleNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep::kUpgradedToWebRtc,
+      mojom::NearbyConnectionStepResult::kSuccess);
   DisconnectFromRemoteDeviceSide();
 }
 

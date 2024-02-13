@@ -522,6 +522,7 @@ class FormDataImporterTest : public testing::Test {
   FormDataImporterTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
+         features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
@@ -554,13 +555,13 @@ class FormDataImporterTest : public testing::Test {
         /*history_service=*/nullptr,
         /*sync_service=*/&sync_service_,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr);
+        /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
 
     // Init the `form_data_importer()` with `personal_data_manager_`.
     autofill_client_->set_test_form_data_importer(
         std::make_unique<FormDataImporter>(
-            autofill_client_.get(),
-            personal_data_manager_.get(), kLocale));
+            autofill_client_.get(), personal_data_manager_.get(),
+            /*history_service=*/nullptr, kLocale));
 
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
@@ -1288,10 +1289,6 @@ TEST_F(FormDataImporterTest, ImportThirdAddressProfiles) {
 // Test that with dependent locality parsing enabled, dependent locality fields
 // are imported.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_DependentLocality) {
-  base::test::ScopedFeatureList dependent_locality_feature;
-  dependent_locality_feature.InitAndEnableFeature(
-      features::kAutofillEnableDependentLocalityParsing);
-
   // The Mexican address format contains a dependent locality.
   TypeValuePairs mx_profile =
       GetDefaultProfileTypeValuePairsWithOverriddenCountry("MX");
@@ -1710,6 +1707,92 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  // Verify that no profile is imported.
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+// Tests that an address can be imported from an Indian address form without
+// synthesized field types.
+TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillUseINAddressModel,
+       features::kAutofillEnableDependentLocalityParsing},
+      {});
+  // The address does not contain synthesized types.
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, "INFirst INSecond"},
+      {ADDRESS_HOME_STREET_LOCATION, "12/110, Flat no. 504, Raja Apartments"},
+      {ADDRESS_HOME_LANDMARK, "Opp to Ayyappa Swamy temple"},
+      {ADDRESS_HOME_DEPENDENT_LOCALITY, "Kondapur"},
+      {ADDRESS_HOME_CITY, "Hyderabad"},
+      {ADDRESS_HOME_STATE, "Telangana"},
+      {ADDRESS_HOME_ZIP, "500084"},
+      {ADDRESS_HOME_COUNTRY, "IN"},
+  };
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  form_structure->field(1)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_STREET_LOCATION));
+  form_structure->field(2)->SetTypeTo(AutofillType(ADDRESS_HOME_LANDMARK));
+  form_structure->field(3)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY));
+  // Verify that the profile is imported.
+  AutofillProfile in_profile(AddressCountryCode("IN"));
+  in_profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"INFirst INSecond",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_LOCATION, u"12/110, Flat no. 504, Raja Apartments",
+      VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK,
+                                              u"Opp to Ayyappa Swamy temple",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                              u"Kondapur",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Hyderabad",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"Telangana",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"500084",
+                                              VerificationStatus::kObserved);
+
+  in_profile.FinalizeAfterImport();
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {in_profile});
+}
+
+// Tests that an address cannot be imported from an Indian address form which
+// contains synthesized fields. We don't allow that because the address will
+// likely look incomplete when shown to the user.
+TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillUseINAddressModel,
+       features::kAutofillEnableDependentLocalityParsing},
+      {});
+  // The address contains synthesized types which are not supported during
+  // form import.
+  ASSERT_TRUE(i18n_model_definition::IsSynthesizedType(
+      ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK, AddressCountryCode("IN")));
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_STREET_LOCATION, "12/110, Flat no. 504, Raja Apartments"},
+      // ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK is a synthesized field
+      // type.
+      {ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
+       "Kondapur, Opp to Ayyappa Swamy temple"},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, "IN"},
+  };
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  form_structure->field(1)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_STREET_LOCATION));
+  form_structure->field(2)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
   // Verify that no profile is imported.
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
@@ -3877,7 +3960,7 @@ TEST_F(FormDataImporterTest, MultiStepImport_DeleteOnBrowsingHistoryCleared) {
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
 
-  personal_data_manager_->OnURLsDeleted(
+  form_data_importer().OnURLsDeleted(
       /*history_service=*/nullptr,
       history::DeletionInfo::ForUrls(
           {history::URLRow(form_structure->source_url())},
@@ -4100,8 +4183,8 @@ TEST_F(FormDataImporterTest,
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   form_data_importer()
-      .SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-          CreditCard::RecordType::kVirtualCard);
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kVirtualCard);
   test_api(form_data_importer())
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kVirtualCard);
@@ -4126,15 +4209,15 @@ TEST_F(FormDataImporterTest,
 }
 
 // Test that in the case where the MandatoryReauthManager denotes we should
-// offer re-auth opt-in, we start the opt-in flow.
+// offer re-auth opt-in, we start the opt-in in credit card processing flow.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_MandatoryReauthOffered) {
   CreditCard extracted_credit_card = test::GetCreditCard2();
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   form_data_importer()
-      .SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-          CreditCard::RecordType::kLocalCard);
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kLocalCard);
   test_api(form_data_importer())
       .set_credit_card_import_type(
           FormDataImporter::CreditCardImportType::kVirtualCard);
@@ -4160,9 +4243,65 @@ TEST_F(FormDataImporterTest,
   // Ensure that we reset the record type at the end of the flow.
   EXPECT_FALSE(
       form_data_importer()
-          .GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted()
+          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
           .has_value());
 }
+
+// This test is disabled for Android because the implementation for IBAN on
+// Clank, will remove the flag once the IBAN on Clank is ready.
+#if !BUILDFLAG(IS_ANDROID)
+// Test that in the case where the MandatoryReauthManager denotes we should
+// offer re-auth opt-in, we start the opt-in in IBAN processing flow.
+TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
+  FormStructure form_structure(CreateTestIbanFormData());
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                         nullptr);
+  form_data_importer()
+      .SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+          NonInteractivePaymentMethodType::kLocalIban);
+
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              ShouldOfferOptin)
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              StartOptInFlow);
+
+  EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
+
+  // Ensure that we reset the record type at the end of the flow.
+  EXPECT_FALSE(
+      form_data_importer()
+          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
+}
+
+// Test that in the case where the MandatoryReauthManager denotes we should not
+// offer re-auth opt-in, we do not start the opt-in in IBAN processing flow.
+TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
+  FormStructure form_structure(CreateTestIbanFormData());
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                         nullptr);
+
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              ShouldOfferOptin)
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*autofill_client_->GetOrCreatePaymentsMandatoryReauthManager(),
+              StartOptInFlow)
+      .Times(0);
+
+  EXPECT_TRUE(ExtractFormDataAndProcessIbanCandidates(
+      form_structure, /*profile_autofill_enabled=*/true,
+      /*payment_methods_autofill_enabled=*/true));
+
+  // Ensure that we reset the record type at the end of the flow.
+  EXPECT_FALSE(
+      form_data_importer()
+          .GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted()
+          .has_value());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 // Test that ProceedWithSavingIfApplicable gets called for server cards with the

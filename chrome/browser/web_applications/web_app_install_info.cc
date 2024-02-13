@@ -250,6 +250,72 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
   return base::Value(std::move(root));
 }
 
+// IconsWithSizeAny
+IconsWithSizeAny::IconsWithSizeAny() = default;
+IconsWithSizeAny::~IconsWithSizeAny() = default;
+IconsWithSizeAny::IconsWithSizeAny(
+    const IconsWithSizeAny& icons_with_size_any) = default;
+IconsWithSizeAny& IconsWithSizeAny::operator=(
+    const IconsWithSizeAny& icons_with_size_any) = default;
+bool IconsWithSizeAny::operator==(
+    const IconsWithSizeAny& icons_with_size_any) const = default;
+
+base::Value IconsWithSizeAny::ToDebugValue() const {
+  base::Value::Dict icons;
+  base::Value::Dict manifest;
+  for (const auto& icon : manifest_icons) {
+    manifest.Set(ConvertToString(icon.first), icon.second.spec());
+  }
+  icons.Set("manifest_icons", base::Value(std::move(manifest)));
+  base::Value::List manifest_sizes;
+  for (const auto& size : manifest_icon_provided_sizes) {
+    manifest_sizes.Append(size.ToString());
+  }
+  icons.Set("manifest_provided_sizes", base::Value(std::move(manifest_sizes)));
+
+  base::Value::Dict shortcut_icon;
+  for (const auto& shicon : shortcut_menu_icons) {
+    shortcut_icon.Set(ConvertToString(shicon.first), shicon.second.spec());
+  }
+  icons.Set("shortcut_icons", base::Value(std::move(shortcut_icon)));
+  base::Value::List shortcut_sizes;
+  for (const auto& size : shortcut_menu_icons_provided_sizes) {
+    shortcut_sizes.Append(size.ToString());
+  }
+  icons.Set("shortcut_menu_icons_provided_sizes",
+            base::Value(std::move(shortcut_sizes)));
+
+  base::Value::Dict file_handlers;
+  for (const auto& fhicon : file_handling_icons) {
+    file_handlers.Set(ConvertToString(fhicon.first), fhicon.second.spec());
+  }
+  icons.Set("file_handling_icons", base::Value(std::move(file_handlers)));
+  base::Value::List file_handling_sizes;
+  for (const auto& size : file_handling_icon_provided_sizes) {
+    file_handling_sizes.Append(size.ToString());
+  }
+  icons.Set("file_handling_icons_manifest_provided_sizes",
+            base::Value(std::move(file_handling_sizes)));
+
+  base::Value::Dict tab_icons;
+  for (const auto& thicon : home_tab_icons) {
+    tab_icons.Set(ConvertToString(thicon.first), thicon.second.spec());
+  }
+  icons.Set("home_tab_icons", base::Value(std::move(tab_icons)));
+  base::Value::List home_tab_sizes;
+  for (const auto& size : home_tab_icon_provided_sizes) {
+    home_tab_sizes.Append(size.ToString());
+  }
+  icons.Set("home_tab_icons_manifest_provided_sizes",
+            base::Value(std::move(home_tab_sizes)));
+
+  return base::Value(std::move(icons));
+}
+
+std::string IconsWithSizeAny::ToString() const {
+  return ToDebugValue().DebugString();
+}
+
 // WebAppInstallInfo
 
 // static

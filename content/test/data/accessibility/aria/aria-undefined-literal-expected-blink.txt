@@ -25,4 +25,3 @@ rootWebArea
 ++++++grid
 ++++++++columnHeader name='Sort undefined'
 ++++++group name='Hidden undefined, display block'
-++++++genericContainer ignored invisible

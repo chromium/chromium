@@ -16,10 +16,10 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   consoleModel.addMessage(new SDK.ConsoleModel.ConsoleMessage(
       TestRunner.runtimeModel, Protocol.Log.LogEntrySource.Other,
       Protocol.Log.LogEntryLevel.Info, 'PASS'));
-  Common.Settings.settingForTest('preserveConsoleLog').set(true);
+  Common.Settings.settingForTest('preserve-console-log').set(true);
   TestRunner.reloadPage(async function() {
     await ConsoleTestRunner.dumpConsoleMessages();
-    Common.Settings.settingForTest('preserveConsoleLog').set(false);
+    Common.Settings.settingForTest('preserve-console-log').set(false);
     TestRunner.completeTest();
   });
 })();

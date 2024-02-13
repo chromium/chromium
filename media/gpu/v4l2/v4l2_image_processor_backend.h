@@ -58,11 +58,13 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
       delete;
 
   // ImageProcessor implementation.
-  void Process(scoped_refptr<VideoFrame> input_frame,
-               scoped_refptr<VideoFrame> output_frame,
-               FrameReadyCB cb) override;
+  void ProcessFrame(scoped_refptr<FrameResource> input_frame,
+                    scoped_refptr<FrameResource> output_frame,
+                    FrameResourceReadyCB cb) override;
   void ProcessLegacy(scoped_refptr<VideoFrame> frame,
                      LegacyFrameReadyCB cb) override;
+  void ProcessLegacyFrame(scoped_refptr<FrameResource> frame,
+                          LegacyFrameResourceReadyCB cb) override;
   void Reset() override;
 
   // Returns true if image processing is supported on this platform.
@@ -97,15 +99,17 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
 
   // Job record. Jobs are processed in a FIFO order. |input_frame| will be
   // processed and the result written into |output_frame|. Once processing is
-  // complete, |ready_cb| or |legacy_ready_cb| will be called depending on which
-  // Process() method has been used to create that JobRecord.
+  // complete, |ready_cb|, |legacy_ready_cb|, or |legacy_frame_ready_cb| will be
+  // called depending on which Process() method has been used to create that
+  // JobRecord.
   struct JobRecord {
     JobRecord();
     ~JobRecord();
-    scoped_refptr<VideoFrame> input_frame;
-    FrameReadyCB ready_cb;
+    scoped_refptr<FrameResource> input_frame;
+    FrameResourceReadyCB ready_cb;
     LegacyFrameReadyCB legacy_ready_cb;
-    scoped_refptr<VideoFrame> output_frame;
+    LegacyFrameResourceReadyCB legacy_frame_ready_cb;
+    scoped_refptr<FrameResource> output_frame;
     size_t output_buffer_id;
 
     // This is filled only if chrome tracing in "media" category is enabled.
@@ -135,7 +139,7 @@ class MEDIA_GPU_EXPORT V4L2ImageProcessorBackend
   // Reconfigure the |type| queue for |size|.
   bool ReconfigureV4L2Format(const gfx::Size& size, enum v4l2_buf_type type);
 
-  // Callback of VideoFrame destruction. Since VideoFrame destruction
+  // Callback of FrameResource destruction. Since FrameResource destruction
   // callback might be executed on any sequence, we use a thunk to post the
   // task to |device_task_runner_|.
   static void V4L2VFRecycleThunk(

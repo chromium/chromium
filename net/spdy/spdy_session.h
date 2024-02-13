@@ -10,8 +10,10 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -53,7 +55,6 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/scheme_host_port.h"
@@ -318,8 +319,8 @@ class NET_EXPORT SpdySession
   static bool CanPool(TransportSecurityState* transport_security_state,
                       const SSLInfo& ssl_info,
                       const SSLConfigService& ssl_config_service,
-                      const std::string& old_hostname,
-                      const std::string& new_hostname);
+                      std::string_view old_hostname,
+                      std::string_view new_hostname);
 
   // Create a new SpdySession.
   // |spdy_session_key| is the host/port that this session connects to, privacy
@@ -338,7 +339,7 @@ class NET_EXPORT SpdySession
               int session_max_queued_capped_frames,
               const spdy::SettingsMap& initial_settings,
               bool enable_http2_settings_grease,
-              const absl::optional<SpdySessionPool::GreasedHttp2Frame>&
+              const std::optional<SpdySessionPool::GreasedHttp2Frame>&
                   greased_http2_frame,
               bool http2_end_stream_with_data_frame,
               bool enable_priority_update,
@@ -391,7 +392,7 @@ class NET_EXPORT SpdySession
   // TODO(wtc): rename this function and the Net.SpdyIPPoolDomainMatch
   // histogram because this function does more than verifying domain
   // authentication now.
-  bool VerifyDomainAuthentication(const std::string& domain) const;
+  bool VerifyDomainAuthentication(std::string_view domain) const;
 
   // Pushes the given producer into the write queue for
   // |stream|. |stream| is guaranteed to be activated before the
@@ -626,7 +627,7 @@ class NET_EXPORT SpdySession
   using PendingStreamRequestQueue =
       base::circular_deque<base::WeakPtr<SpdyStreamRequest>>;
   using ActiveStreamMap = std::map<spdy::SpdyStreamId, SpdyStream*>;
-  using CreatedStreamSet = std::set<SpdyStream*>;
+  using CreatedStreamSet = std::set<raw_ptr<SpdyStream, SetExperimental>>;
 
   enum AvailabilityState {
     // The session is available in its socket pool and can be used
@@ -1109,7 +1110,7 @@ class NET_EXPORT SpdySession
   // If set, an HTTP/2 frame with a reserved frame type will be sent after
   // every HTTP/2 SETTINGS frame and before every HTTP/2 DATA frame. See
   // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
-  const absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
+  const std::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame_;
 
   // If set, the HEADERS frame carrying a request without body will not have the
   // END_STREAM flag set.  The stream will be closed by a subsequent empty DATA

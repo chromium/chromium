@@ -30,6 +30,7 @@
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/print_management/print_management_ui.h"
+#include "ash/webui/print_preview_cros/print_preview_cros_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
@@ -281,6 +282,8 @@ void RegisterAshChromeWebUIConfigs() {
           base::BindRepeating(
               &printing::print_management::PrintingManagerFactory::
                   CreatePrintManagementUIController)));
+  map.AddWebUIConfig(
+      std::make_unique<printing::print_preview::PrintPreviewCrosUIConfig>());
   map.AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
   map.AddWebUIConfig(

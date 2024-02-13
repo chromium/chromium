@@ -26,9 +26,9 @@ class FeaturePodControllerBase;
 // slider is clicked. This view contains a night light feature tile, a dark mode
 // feature tile, and a brightness slider.
 class ASH_EXPORT DisplayDetailedView : public TrayDetailedView {
- public:
-  METADATA_HEADER(DisplayDetailedView);
+  METADATA_HEADER(DisplayDetailedView, TrayDetailedView)
 
+ public:
   DisplayDetailedView(DetailedViewDelegate* delegate,
                       UnifiedSystemTrayController* tray_controller);
   DisplayDetailedView(const DisplayDetailedView&) = delete;

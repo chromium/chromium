@@ -1,17 +1,10 @@
 UNKNOWN focusable
 ++UNKNOWN hidden
+++++UNKNOWN focusable
+++++++STATIC_TEXT label='The dialog subtree should be the only text content in the accessibility tree. '
+++++++++UNKNOWN label='The dialog subtree should be the only text content in the accessibility tree. '
+++++++LINK focusable has_input_focus label='Link inside the dialog.' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Link inside the dialog.' actions='{DEFAULT}'
+++++++++++UNKNOWN label='Link inside the dialog.'
 ++++UNKNOWN hidden
-++++++UNKNOWN hidden
-++++++++UNKNOWN focusable
-++++++++++STATIC_TEXT label='The dialog subtree should be the only text content in the accessibility tree. '
-++++++++++++UNKNOWN label='The dialog subtree should be the only text content in the accessibility tree. '
-++++++++++LINK focusable has_input_focus label='Link inside the dialog.' actions='{DEFAULT}'
-++++++++++++STATIC_TEXT label='Link inside the dialog.' actions='{DEFAULT}'
-++++++++++++++UNKNOWN label='Link inside the dialog.'
-++++++++UNKNOWN hidden
-++++++++++UNKNOWN hidden
-++++++BUTTON hidden
-++++++++STATIC_TEXT hidden label='Choose File'
-++++++UNKNOWN hidden
-++++++++STATIC_TEXT hidden label='No file chosen'
 ++++++UNKNOWN hidden

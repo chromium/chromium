@@ -98,7 +98,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   ~NavigationControllerImpl() override;
 
   // NavigationController implementation:
-  WebContents* DeprecatedGetWebContents() override;
   BrowserContext* GetBrowserContext() override;
   void Restore(int selected_navigation,
                RestoreType type,
@@ -907,7 +906,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   //
   // This is meant to avoid a class of URL spoofs where the navigation is
   // canceled, but the stale pending NavigationEntry is left in place.
-  std::set<PendingEntryRef*> pending_entry_refs_;
+  std::set<raw_ptr<PendingEntryRef, SetExperimental>> pending_entry_refs_;
 
   // If a new entry fails loading, details about it are temporarily held here
   // until the error page is shown (or 0 otherwise).

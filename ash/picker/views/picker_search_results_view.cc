@@ -18,6 +18,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
@@ -31,9 +32,11 @@
 namespace ash {
 
 PickerSearchResultsView::PickerSearchResultsView(
+    int picker_view_width,
     SelectSearchResultCallback select_search_result_callback,
     PickerAssetFetcher* asset_fetcher)
-    : select_search_result_callback_(std::move(select_search_result_callback)),
+    : picker_view_width_(picker_view_width),
+      select_search_result_callback_(std::move(select_search_result_callback)),
       asset_fetcher_(asset_fetcher) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -49,7 +52,8 @@ void PickerSearchResultsView::SetSearchResults(
   RemoveAllChildViews();
   for (const auto& section : search_results_.sections()) {
     auto* section_view =
-        AddChildView(std::make_unique<PickerSectionView>(section.heading()));
+        AddChildView(std::make_unique<PickerSectionView>(picker_view_width_));
+    section_view->AddTitleLabel(section.heading());
     for (const auto& result : section.results()) {
       AddResultToSection(result, section_view);
     }
@@ -101,7 +105,7 @@ void PickerSearchResultsView::AddResultToSection(
             auto gif_view = std::make_unique<PickerGifView>(
                 base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher_), data.url),
-                data.dimensions);
+                data.dimensions, /*accessible_name=*/data.content_description);
             auto gif_item_view = std::make_unique<PickerImageItemView>(
                 std::move(select_result_callback), std::move(gif_view));
             section_view->AddImageItem(std::move(gif_item_view));
@@ -109,7 +113,8 @@ void PickerSearchResultsView::AddResultToSection(
           [&](const PickerSearchResult::BrowsingHistoryData& data) {
             auto item_view = std::make_unique<PickerItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(base::UTF8ToUTF16(data.url.spec()));
+            item_view->SetPrimaryText(data.title);
+            item_view->SetSecondaryText(base::UTF8ToUTF16(data.url.spec()));
             item_view->SetLeadingIcon(data.icon);
             section_view->AddListItem(std::move(item_view));
           },
@@ -117,7 +122,7 @@ void PickerSearchResultsView::AddResultToSection(
       result.data());
 }
 
-BEGIN_METADATA(PickerSearchResultsView, views::View)
+BEGIN_METADATA(PickerSearchResultsView)
 END_METADATA
 
 }  // namespace ash

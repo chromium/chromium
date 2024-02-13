@@ -7,9 +7,10 @@
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
@@ -75,4 +76,4 @@ std::set<const PageNode*> GetWorkerClientPages(const WorkerNode* worker_node,
   return client_pages;
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

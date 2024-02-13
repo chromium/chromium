@@ -20,6 +20,8 @@
 #include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -218,7 +220,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     std::optional<uint32_t> deadline_in_frames;
     bool use_default_lower_bound_deadline = false;
     viz::CompositorRenderPassList render_passes;
-    raw_ptr<const RenderSurfaceList> render_surface_list = nullptr;
+    // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
+    // stacks.
+    RAW_PTR_EXCLUSION const RenderSurfaceList* render_surface_list = nullptr;
     LayerImplList will_draw_layers;
     bool has_no_damage = false;
     bool may_contain_video = false;
@@ -1164,7 +1168,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   std::unique_ptr<MutatorHost> mutator_host_;
   std::unique_ptr<MutatorEvents> mutator_events_;
-  std::set<VideoFrameController*> video_frame_controllers_;
+  std::set<raw_ptr<VideoFrameController, SetExperimental>>
+      video_frame_controllers_;
   const raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
 
   // Map from scroll element ID to scrollbar animation controller.
@@ -1185,7 +1190,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   raw_ptr<TaskGraphRunner> task_graph_runner_;
   int id_;
 
-  std::set<LatencyInfoSwapPromiseMonitor*> latency_info_swap_promise_monitor_;
+  std::set<raw_ptr<LatencyInfoSwapPromiseMonitor, SetExperimental>>
+      latency_info_swap_promise_monitor_;
 
   bool requires_high_res_to_draw_ = false;
   bool is_likely_to_require_a_draw_ = false;

@@ -10,7 +10,9 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -48,7 +50,8 @@ public interface Tab extends TabLifecycle {
         /** NavigationHandle for the loaded url. */
         public final @Nullable NavigationHandle navigationHandle;
 
-        LoadUrlResult(
+        @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+        public LoadUrlResult(
                 @TabLoadStatus int tabLoadStatus, @Nullable NavigationHandle navigationHandle) {
             this.tabLoadStatus = tabLoadStatus;
             this.navigationHandle = navigationHandle;
@@ -310,13 +313,35 @@ public interface Tab extends TabLifecycle {
      */
     int getParentId();
 
+    // TODO(crbug/1524345): deprecate RootId once TabGroupId has finished replacing it.
     /**
-     * @return root identifier for the {@link Tab}
+     * Returns the root identifier for the {@link Tab}. This method will be replaced by {@link
+     * getTabGroupId()} as part of https://crbug.com/1523745.
      */
     int getRootId();
 
-    /** Set the root identifier for the {@link Tab} */
+    /**
+     * Set the root identifier for the {@link Tab}. This method will be replaced by {@link
+     * setTabGroupId()} as part of https://crbug.com/1523745.
+     *
+     * @param rootId The root identifier to use.
+     */
     void setRootId(int rootId);
+
+    /**
+     * Returns the tab group ID of the {@link Tab} or null if not part of a group. Note that during
+     * migration from root ID the TabGroupId may be null until tab state is initialized.
+     */
+    @Nullable
+    Token getTabGroupId();
+
+    /**
+     * Sets the tab group ID of the {@link Tab}.
+     *
+     * @param tabGroupId The {@link Token} to use as the tab group ID or null if not part of a tab
+     *     group.
+     */
+    void setTabGroupId(@Nullable Token tabGroupId);
 
     /**
      * @return user agent type for the {@link Tab}

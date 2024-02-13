@@ -728,8 +728,8 @@ void AppListFolderView::CreateScrollableAppsGrid(bool tablet_mode) {
   // Set up scroll bars.
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
-  auto vertical_scroll =
-      std::make_unique<RoundedScrollBar>(/*horizontal=*/false);
+  auto vertical_scroll = std::make_unique<RoundedScrollBar>(
+      views::ScrollBar::Orientation::kVertical);
   vertical_scroll->SetInsets(kVerticalScrollInsets);
   scroll_view_->SetVerticalScrollBar(std::move(vertical_scroll));
 

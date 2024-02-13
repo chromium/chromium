@@ -33,6 +33,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/notification_view_controller.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout.h"
@@ -128,10 +129,8 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
   void UpdateBackground(int top_radius, int bottom_radius) {
     message_view_->UpdateCornerRadius(top_radius, bottom_radius);
-    // Do not set background for arc notifications since they have their own
-    // custom background logic.
-    if (!features::IsRenderArcNotificationsByChromeEnabled() &&
-        !message_center_utils::IsAshNotificationView(message_view_)) {
+
+    if (disable_default_background_) {
       return;
     }
     message_view_->SetBackground(
@@ -357,6 +356,10 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
 
   void set_is_removed() { is_removed_ = true; }
 
+  void set_disable_default_background(bool disable_default_background) {
+    disable_default_background_ = disable_default_background;
+  }
+
   bool is_slid_out() { return is_slid_out_; }
 
   MessageView* message_view() { return message_view_; }
@@ -402,6 +405,10 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
   // radius of the view when sliding.
   bool need_update_corner_radius_ = true;
 
+  // Indicates if this view should not draw a background, used for custom
+  // notification views which handle their own background.
+  bool disable_default_background_ = false;
+
   const raw_ptr<NotificationListView> list_view_;
   raw_ptr<NotificationSwipeControlView> control_view_;
   raw_ptr<MessageView> message_view_;
@@ -434,7 +441,8 @@ void NotificationListView::Init(
   for (auto* notification : notifications) {
     auto message_view_container = std::make_unique<MessageViewContainer>(
         CreateMessageView(*notification), this);
-
+    message_view_container->set_disable_default_background(
+        notification->type() == message_center::NOTIFICATION_TYPE_CUSTOM);
     // The insertion order for notifications is reversed.
     AddChildViewAt(std::move(message_view_container), children().size());
     MessageCenter::Get()->DisplayedNotification(
@@ -1218,7 +1226,7 @@ double NotificationListView::GetCurrentValue() const {
   return gfx::Tween::CalculateValue(tween, animation_->GetCurrentValue());
 }
 
-BEGIN_METADATA(NotificationListView, views::View);
+BEGIN_METADATA(NotificationListView);
 END_METADATA
 
 }  // namespace ash

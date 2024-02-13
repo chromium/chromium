@@ -32,6 +32,8 @@ DeskNameView::DeskNameView(DeskMiniView* mini_view)
 
   set_use_default_focus_manager(mini_view_->owner_bar()->type() ==
                                 DeskBarViewBase::Type::kDeskButton);
+
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_NAME));
 }
 
 DeskNameView::~DeskNameView() = default;
@@ -58,7 +60,7 @@ void DeskNameView::OnFocusableViewFocused() {
   mini_view_->owner_bar()->ScrollToShowViewIfNecessary(mini_view_);
 }
 
-BEGIN_METADATA(DeskNameView, DeskTextfield)
+BEGIN_METADATA(DeskNameView)
 END_METADATA
 
 }  // namespace ash

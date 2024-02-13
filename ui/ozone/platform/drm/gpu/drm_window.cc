@@ -65,7 +65,7 @@ void DrmWindow::SetBounds(const gfx::Rect& bounds) {
 }
 
 void DrmWindow::SetCursor(const std::vector<SkBitmap>& bitmaps,
-                          const absl::optional<gfx::Point>& location,
+                          const std::optional<gfx::Point>& location,
                           base::TimeDelta frame_delay) {
   cursor_bitmaps_ = bitmaps;
   if (location.has_value()) {

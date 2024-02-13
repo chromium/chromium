@@ -48,8 +48,10 @@ namespace {
 
 class RoundedCornerBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(RoundedCornerBubbleDialogDelegateView,
+                  views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(RoundedCornerBubbleDialogDelegateView);
   explicit RoundedCornerBubbleDialogDelegateView(int corner_radius)
       : corner_radius_(corner_radius) {}
 
@@ -70,8 +72,7 @@ class RoundedCornerBubbleDialogDelegateView
       this};
 };
 
-BEGIN_METADATA(RoundedCornerBubbleDialogDelegateView,
-               views::BubbleDialogDelegateView)
+BEGIN_METADATA(RoundedCornerBubbleDialogDelegateView)
 END_METADATA
 
 }  // namespace

@@ -407,7 +407,11 @@ void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
                                        "The size is out of range");
       break;
     default:
-      NOTREACHED();
+      // TODO(dawn:1987): Remove the default case after handling
+      // InstanceDropped.
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       "Device is lost");
+      break;
   }
 }
 

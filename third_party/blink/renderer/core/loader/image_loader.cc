@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -452,119 +453,139 @@ void ImageLoader::DoUpdateFromElement(
   const KURL url = ImageSourceToKURL(image_source_url);
   ImageResourceContent* new_image_content = nullptr;
   if (!url.IsNull() && !url.IsEmpty()) {
-    // Unlike raw <img>, we block mixed content inside of <picture> or
-    // <img srcset>.
-    ResourceLoaderOptions resource_loader_options(std::move(world));
-    resource_loader_options.initiator_info.name = GetElement()->localName();
-    ResourceRequest resource_request(url);
-    if (update_behavior == kUpdateForcedReload) {
-      resource_request.SetCacheMode(mojom::blink::FetchCacheMode::kBypassCache);
-    }
-
-    network::mojom::ReferrerPolicy referrer_policy =
-        network::mojom::ReferrerPolicy::kDefault;
-    AtomicString referrer_policy_attribute =
-        element_->FastGetAttribute(html_names::kReferrerpolicyAttr);
-    if (!referrer_policy_attribute.IsNull()) {
-      SecurityPolicy::ReferrerPolicyFromString(
-          referrer_policy_attribute, kSupportReferrerPolicyLegacyKeywords,
-          &referrer_policy);
-    }
-    resource_request.SetReferrerPolicy(referrer_policy);
-
-    // Correct the RequestContext if necessary.
-    if (IsA<HTMLPictureElement>(GetElement()->parentNode()) ||
-        !GetElement()->FastGetAttribute(html_names::kSrcsetAttr).IsNull()) {
-      resource_request.SetRequestContext(
-          mojom::blink::RequestContextType::IMAGE_SET);
-      resource_request.SetRequestDestination(
-          network::mojom::RequestDestination::kImage);
-    } else if (IsA<HTMLObjectElement>(GetElement())) {
-      resource_request.SetRequestContext(
-          mojom::blink::RequestContextType::OBJECT);
-      resource_request.SetRequestDestination(
-          network::mojom::RequestDestination::kObject);
-    } else if (IsA<HTMLEmbedElement>(GetElement())) {
-      resource_request.SetRequestContext(
-          mojom::blink::RequestContextType::EMBED);
-      resource_request.SetRequestDestination(
-          network::mojom::RequestDestination::kEmbed);
-    }
-
-    DCHECK(document.GetFrame());
-    auto* frame = document.GetFrame();
-
-    if (IsA<HTMLImageElement>(GetElement())) {
-      if (GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
-          frame->GetAttributionSrcLoader()->CanRegister(
-              url, To<HTMLImageElement>(GetElement()),
-              /*request_id=*/std::nullopt)) {
-        resource_request.SetAttributionReportingEligibility(
-            network::mojom::AttributionReportingEligibility::
-                kEventSourceOrTrigger);
+    // If this is a known transparent placeholder image, we can bypass the
+    // request and decoding the data, instead using a simple placeholder image.
+    if (base::FeatureList::IsEnabled(
+            features::kSimplifyLoadingTransparentPlaceholderImage) &&
+        url.ProtocolIsData()) {
+      if (auto transparent_image =
+              BitmapImage::MaybeCreateTransparentPlaceholderImage(url)) {
+        new_image_content = MakeGarbageCollected<ImageResourceContent>(
+            std::move(transparent_image));
       }
-      bool shared_storage_writable_opted_in =
-          GetElement()->FastHasAttribute(
-              html_names::kSharedstoragewritableAttr) &&
-          RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
-              GetElement()->GetExecutionContext()) &&
-          GetElement()->GetExecutionContext()->IsSecureContext() &&
-          !GetElement()->GetExecutionContext()->GetSecurityOrigin()->IsOpaque();
-      resource_request.SetSharedStorageWritableOptedIn(
-          shared_storage_writable_opted_in);
     }
+    if (!new_image_content) {
+      // Unlike raw <img>, we block mixed content inside of <picture> or
+      // <img srcset>.
+      ResourceLoaderOptions resource_loader_options(std::move(world));
+      resource_loader_options.initiator_info.name = GetElement()->localName();
+      ResourceRequest resource_request(url);
+      if (update_behavior == kUpdateForcedReload) {
+        resource_request.SetCacheMode(
+            mojom::blink::FetchCacheMode::kBypassCache);
+      }
 
-    bool page_is_being_dismissed =
-        document.PageDismissalEventBeingDispatched() != Document::kNoDismissal;
-    if (page_is_being_dismissed) {
-      resource_request.SetHttpHeaderField(http_names::kCacheControl,
-                                          AtomicString("max-age=0"));
-      resource_request.SetKeepalive(true);
-      resource_request.SetRequestContext(
-          mojom::blink::RequestContextType::PING);
-      UseCounter::Count(document, WebFeature::kImageLoadAtDismissalEvent);
-    }
+      network::mojom::ReferrerPolicy referrer_policy =
+          network::mojom::ReferrerPolicy::kDefault;
+      AtomicString referrer_policy_attribute =
+          element_->FastGetAttribute(html_names::kReferrerpolicyAttr);
+      if (!referrer_policy_attribute.IsNull()) {
+        SecurityPolicy::ReferrerPolicyFromString(
+            referrer_policy_attribute, kSupportReferrerPolicyLegacyKeywords,
+            &referrer_policy);
+      }
+      resource_request.SetReferrerPolicy(referrer_policy);
 
-    // Plug-ins should not load via service workers as plug-ins may have their
-    // own origin checking logic that may get confused if service workers
-    // respond with resources from another origin.
-    // https://w3c.github.io/ServiceWorker/#implementer-concerns
-    auto* html_element = DynamicTo<HTMLElement>(GetElement());
-    if (html_element && html_element->IsPluginElement()) {
-      resource_request.SetSkipServiceWorker(true);
-    }
+      // Correct the RequestContext if necessary.
+      if (IsA<HTMLPictureElement>(GetElement()->parentNode()) ||
+          !GetElement()->FastGetAttribute(html_names::kSrcsetAttr).IsNull()) {
+        resource_request.SetRequestContext(
+            mojom::blink::RequestContextType::IMAGE_SET);
+        resource_request.SetRequestDestination(
+            network::mojom::RequestDestination::kImage);
+      } else if (IsA<HTMLObjectElement>(GetElement())) {
+        resource_request.SetRequestContext(
+            mojom::blink::RequestContextType::OBJECT);
+        resource_request.SetRequestDestination(
+            network::mojom::RequestDestination::kObject);
+      } else if (IsA<HTMLEmbedElement>(GetElement())) {
+        resource_request.SetRequestContext(
+            mojom::blink::RequestContextType::EMBED);
+        resource_request.SetRequestDestination(
+            network::mojom::RequestDestination::kEmbed);
+      }
 
-    FetchParameters params(std::move(resource_request),
-                           resource_loader_options);
+      DCHECK(document.GetFrame());
+      auto* frame = document.GetFrame();
 
-    ConfigureRequest(params, *element_, frame->GetClientHintsPreferences());
+      if (IsA<HTMLImageElement>(GetElement())) {
+        if (GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
+            frame->GetAttributionSrcLoader()->CanRegister(
+                url, To<HTMLImageElement>(GetElement()),
+                /*request_id=*/std::nullopt)) {
+          resource_request.SetAttributionReportingEligibility(
+              network::mojom::AttributionReportingEligibility::
+                  kEventSourceOrTrigger);
+        }
+        bool shared_storage_writable_opted_in =
+            GetElement()->FastHasAttribute(
+                html_names::kSharedstoragewritableAttr) &&
+            RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+                GetElement()->GetExecutionContext()) &&
+            GetElement()->GetExecutionContext()->IsSecureContext() &&
+            !GetElement()
+                 ->GetExecutionContext()
+                 ->GetSecurityOrigin()
+                 ->IsOpaque();
+        resource_request.SetSharedStorageWritableOptedIn(
+            shared_storage_writable_opted_in);
+      }
 
-    if (update_behavior != kUpdateForcedReload &&
-        lazy_image_load_state_ != LazyImageLoadState::kFullImage) {
-      if (auto* html_image = DynamicTo<HTMLImageElement>(GetElement())) {
-        if (LazyImageHelper::ShouldDeferImageLoad(*frame, html_image)) {
-          LazyImageHelper::StartMonitoringVisibilityMetrics(html_image);
-          lazy_image_load_state_ = LazyImageLoadState::kDeferred;
-          params.SetLazyImageDeferred();
+      bool page_is_being_dismissed =
+          document.PageDismissalEventBeingDispatched() !=
+          Document::kNoDismissal;
+      if (page_is_being_dismissed) {
+        resource_request.SetHttpHeaderField(http_names::kCacheControl,
+                                            AtomicString("max-age=0"));
+        resource_request.SetKeepalive(true);
+        resource_request.SetRequestContext(
+            mojom::blink::RequestContextType::PING);
+        UseCounter::Count(document, WebFeature::kImageLoadAtDismissalEvent);
+      }
+
+      // Plug-ins should not load via service workers as plug-ins may have their
+      // own origin checking logic that may get confused if service workers
+      // respond with resources from another origin.
+      // https://w3c.github.io/ServiceWorker/#implementer-concerns
+      auto* html_element = DynamicTo<HTMLElement>(GetElement());
+      if (html_element && html_element->IsPluginElement()) {
+        resource_request.SetSkipServiceWorker(true);
+      }
+
+      FetchParameters params(std::move(resource_request),
+                             resource_loader_options);
+
+      ConfigureRequest(params, *element_, frame->GetClientHintsPreferences());
+
+      if (update_behavior != kUpdateForcedReload &&
+          lazy_image_load_state_ != LazyImageLoadState::kFullImage) {
+        if (auto* html_image = DynamicTo<HTMLImageElement>(GetElement())) {
+          if (LazyImageHelper::ShouldDeferImageLoad(*frame, html_image)) {
+            LazyImageHelper::StartMonitoringVisibilityMetrics(html_image);
+            lazy_image_load_state_ = LazyImageLoadState::kDeferred;
+            params.SetLazyImageDeferred();
+          }
         }
       }
+
+      // If we're now loading in a once-deferred image, make sure it doesn't
+      // block the load event.
+      if (lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
+          !force_blocking) {
+        params.SetLazyImageNonBlocking();
+      }
+
+      new_image_content =
+          ImageResourceContent::Fetch(params, document.Fetcher());
+
+      // If this load is starting while navigating away, treat it as an auditing
+      // keepalive request, and don't report its results back to the element.
+      if (page_is_being_dismissed) {
+        new_image_content = nullptr;
+      }
+
+      ClearFailedLoadURL();
     }
-
-    // If we're now loading in a once-deferred image, make sure it doesn't block
-    // the load event.
-    if (lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
-        !force_blocking) {
-      params.SetLazyImageNonBlocking();
-    }
-
-    new_image_content = ImageResourceContent::Fetch(params, document.Fetcher());
-
-    // If this load is starting while navigating away, treat it as an auditing
-    // keepalive request, and don't report its results back to the element.
-    if (page_is_being_dismissed)
-      new_image_content = nullptr;
-
-    ClearFailedLoadURL();
   } else {
     if (!image_source_url.IsNull()) {
       // Fire an error event if the url string is not empty, but the KURL is.

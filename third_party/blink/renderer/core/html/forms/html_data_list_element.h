@@ -50,6 +50,10 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
 
   void OptionElementChildrenChanged();
 
+  HTMLSelectElement* ParentSelect() const;
+  Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
+  void RemovedFrom(ContainerNode&) override;
+
  private:
   void ChildrenChanged(const ChildrenChange&) override;
   void FinishParsingChildren() override;

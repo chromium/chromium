@@ -6,7 +6,6 @@ RootWebArea
       main
         article
           *none
-          *none
 {
     childIds : <object>
     chromeRole : {

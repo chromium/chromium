@@ -12,6 +12,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/overview/overview_item.h"
@@ -41,7 +42,7 @@ class PresentationTimeRecorder;
 
 namespace ash {
 
-class IconButton;
+class FasterSplitView;
 class LegacyDeskBarView;
 class OverviewDropTarget;
 class OverviewGridEventHandler;
@@ -385,6 +386,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   bool IsSaveDeskAsTemplateButtonVisible() const;
   bool IsSaveDeskForLaterButtonVisible() const;
 
+  // Called by `OverviewSession` when tablet mode changes to update necessary UI
+  // if needed.
+  void OnTabletModeChanged();
+
   // This is different from `item_list_.size()` which contains the drop target
   // if it exists, and if two windows are in a snap group, they are a single
   // item.
@@ -399,6 +404,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Returns the save button container if available, otherwise null.
   SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
   const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
+
+  FasterSplitView* GetFasterSplitView();
 
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
@@ -429,6 +436,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Returns the root window in which the grid displays the windows.
   aura::Window* root_window() { return root_window_; }
+  const aura::Window* root_window() const { return root_window_; }
 
   OverviewSession* overview_session() { return overview_session_; }
 
@@ -467,6 +475,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return save_desk_button_container_widget_.get();
   }
 
+  views::Widget* faster_splitview_widget() {
+    return faster_splitview_widget_.get();
+  }
+
   int num_incognito_windows() const { return num_incognito_windows_; }
 
   int num_unsupported_windows() const { return num_unsupported_windows_; }
@@ -474,7 +486,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   const gfx::Rect bounds_for_testing() const { return bounds_; }
   float scroll_offset_for_testing() const { return scroll_offset_; }
   views::Widget* pine_widget_for_testing() const { return pine_widget_.get(); }
-  const IconButton* GetSettingsButtonForTesting() const;
 
  private:
   friend class DesksTemplatesTest;
@@ -585,17 +596,15 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                          size_t position,
                          bool animate);
 
-  // Creates and shows the `pine_widget_`. The given `pine_image` will be shown
-  // if it exists, otherwise some other data like apps info will be shown
-  // instead.
-  void CreateAndShowPine(const gfx::ImageSkia& pine_image);
+  // Called when the faster splitview toast skip button is pressed.
+  void OnSkipButtonPressed();
 
-  // Called when the partial overview settings button is pressed.
+  // Called when the faster splitview settings button is pressed.
   void OnSettingsButtonPressed();
 
-  // Updates the visibility of `settings_widget_`. The widget will only be shown
-  // if automatic partial overview was started.
-  void UpdateSettingsButton();
+  // Updates the visibility of `faster_splitview_widget_`. The widget will
+  // only be shown if faster splitview setup is in session.
+  void UpdateFasterSplitViewWidget();
 
   // The drop target is created when a window or overview item is being dragged,
   // and is destroyed when the drag ends or overview mode is ended. The drop
@@ -628,8 +637,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The contents view of the above |desks_widget_| if created.
   raw_ptr<LegacyDeskBarView, DanglingUntriaged> desks_bar_view_ = nullptr;
 
-  // Faster splitscreen settings widget.
-  std::unique_ptr<views::Widget> settings_widget_;
+  // Widget that appears during faster splitview setup. Contains the faster
+  // splitview toast and the overview settings button.
+  std::unique_ptr<views::Widget> faster_splitview_widget_;
 
   // True if the overview grid should animate when exiting overview mode. Note
   // even if it's true, it doesn't mean all window items in the grid should

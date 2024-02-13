@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -37,7 +38,7 @@ struct WaylandFrame {
  public:
   // A frame originated from gpu process, and hence, requires acknowledgements.
   WaylandFrame(uint32_t frame_id,
-               int64_t seq,
+               const gfx::FrameData& data,
                WaylandSurface* root_surface,
                wl::WaylandOverlayConfig root_config,
                base::circular_deque<
@@ -86,13 +87,16 @@ struct WaylandFrame {
   wl::Object<struct wp_presentation_feedback> pending_feedback;
   // The actual presentation feedback. May be missing if the callback from the
   // Wayland server has not arrived yet.
-  absl::optional<gfx::PresentationFeedback> feedback = absl::nullopt;
+  std::optional<gfx::PresentationFeedback> feedback = std::nullopt;
   // Whether this frame has had OnPresentation sent for it.
   bool presentation_acked;
 
   // The sequence ID for this frame. This is used to know when the proper
   // buffers associated with a configure arrive.
   [[maybe_unused]] int64_t seq = -1;
+
+  // Trace ID for tracking submission of the current frame.
+  int64_t trace_id = -1;
 };
 
 // This is the frame update manager that configures graphical window/surface

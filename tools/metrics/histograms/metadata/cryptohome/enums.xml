@@ -26,6 +26,14 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="BackendCertProviderUpdateCertResult">
+  <int value="0" label="Update success"/>
+  <int value="1" label="Update not needed"/>
+  <int value="2" label="Parse version failed"/>
+  <int value="3" label="Verify failed"/>
+  <int value="4" label="Persist failed"/>
+</enum>
+
 <enum name="BooleanCodePathUsage">
   <summary>The result if a code path is being used.</summary>
   <int value="0" label="Unused Code Path"/>
@@ -1565,6 +1573,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Restart on migration failure"/>
   <int value="3" label="Restart on low storage"/>
   <int value="4" label="Report an issue"/>
+</enum>
+
+<enum name="VerifyAndParseBackendCertResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Parse signature file failed"/>
+  <int value="2" label="Verify signature file failed"/>
+  <int value="3" label="Verify certificate file's signature failed"/>
+  <int value="4" label="Parse certificate file failed"/>
+  <int value="5" label="Verify certificate file failed"/>
+  <int value="6" label="Encode certificate failed"/>
 </enum>
 
 <enum name="VkToUssMigrationStatus">

@@ -8,6 +8,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -56,8 +57,13 @@ void UpdaterService::OnMetadataReady() {
 
     base::Value value(ContentSetting::CONTENT_SETTING_ALLOW);
 
+    content_settings::RuleMetaData rm = content_settings::RuleMetaData();
+    rm.set_tpcd_metadata_rule_source(
+        Parser::ToRuleSource(metadata_entry.source()));
+
     tpcd_metadata_grants.emplace_back(primary_pattern, secondary_pattern,
-                                      std::move(value), std::string(), false);
+                                      std::move(value), std::string(), false,
+                                      std::move(rm));
   }
 
   cookie_settings_->SetContentSettingsFor3pcdMetadataGrants(

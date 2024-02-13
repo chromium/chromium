@@ -42,8 +42,8 @@ struct ASH_EXPORT TaskList {
 struct ASH_EXPORT Task {
   Task(const std::string& id,
        const std::string& title,
-       bool completed,
        const std::optional<base::Time>& due,
+       bool completed,
        bool has_subtasks,
        bool has_email_link,
        bool has_notes,
@@ -58,12 +58,12 @@ struct ASH_EXPORT Task {
   // Title of the task.
   std::string title;
 
-  // Indicates whether the task is completed (has "status" field equals to
-  // "completed" on the API side).
-  const bool completed;
-
   // Optional due date of the task.
   const std::optional<base::Time> due;
+
+  // Indicates whether the task is completed (has "status" field equals to
+  // "completed" on the API side).
+  bool completed;
 
   // Indicates whether the task has subtasks in it.
   const bool has_subtasks;

@@ -105,7 +105,8 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
                                  /*history_service=*/nullptr,
                                  /*sync_service=*/nullptr,
                                  /*strike_database=*/nullptr,
-                                 /*image_fetcher=*/nullptr);
+                                 /*image_fetcher=*/nullptr,
+                                 /*shared_storage_handler=*/nullptr);
     personal_data_manager().SetPrefService(autofill_client_.GetPrefs());
 
     autofill_driver_.SetAuthenticator(new TestInternalAuthenticator());

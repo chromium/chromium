@@ -684,13 +684,6 @@ class AutofillClient {
                                         bool should_show_prompt,
                                         SaveIbanPromptCallback callback);
 
-  // Called after credit card upload is finished. Will show upload result to
-  // users. |card_saved| indicates if the card is successfully saved.
-  // TODO(crbug.com/932818): This function is overridden in iOS codebase and in
-  // the desktop codebase. If iOS is not using it to do anything, please keep
-  // this function for desktop.
-  virtual void CreditCardUploadCompleted(bool card_saved);
-
   // Will show an infobar to get user consent for Credit Card assistive filling.
   // Will run |callback| on success.
   virtual void ConfirmCreditCardFillAssist(const CreditCard& card,

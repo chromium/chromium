@@ -23,11 +23,19 @@
 
 namespace content {
 
-// Use DCHECK_CURRENTLY_ON(BrowserThread::ID) to assert that a function can only
+// Use DCHECK_CURRENTLY_ON(BrowserThread::ID) to DCHECK that a function can only
 // be called on the named BrowserThread.
-#define DCHECK_CURRENTLY_ON(thread_identifier)                       \
-  DCHECK(::content::BrowserThread::CurrentlyOn(thread_identifier))   \
-      << ::content::BrowserThread::GetDCheckCurrentlyOnErrorMessage( \
+#define DCHECK_CURRENTLY_ON(thread_identifier)                     \
+  DCHECK(::content::BrowserThread::CurrentlyOn(thread_identifier)) \
+      << ::content::BrowserThread::GetCurrentlyOnErrorMessage(     \
+             thread_identifier)
+
+// Use CHECK_CURRENTLY_ON(BrowserThread::ID) to CHECK that a function can only
+// be called on the named BrowserThread.
+#define CHECK_CURRENTLY_ON(thread_identifier, ...)               \
+  CHECK(::content::BrowserThread::CurrentlyOn(thread_identifier) \
+            __VA_OPT__(, ) __VA_ARGS__)                          \
+      << ::content::BrowserThread::GetCurrentlyOnErrorMessage(   \
              thread_identifier)
 
 // The main entry point to post tasks to the UI thread. Tasks posted with the
@@ -186,7 +194,7 @@ class CONTENT_EXPORT BrowserThread {
   struct DeleteOnIOThread : public DeleteOnThread<IO> {};
 
   // Returns an appropriate error message for when DCHECK_CURRENTLY_ON() fails.
-  static std::string GetDCheckCurrentlyOnErrorMessage(ID expected);
+  static std::string GetCurrentlyOnErrorMessage(ID expected);
 
   // Runs all pending tasks for the given thread. Tasks posted after this method
   // is called (in particular any task posted from within any of the pending

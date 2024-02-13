@@ -31,6 +31,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/input/pointer_id.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animatable.h"
@@ -735,7 +736,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                                    ShadowRootType,
                                    FocusDelegation,
                                    SlotAssignmentMode,
-                                   bool serializable);
+                                   bool serializable,
+                                   bool clonable);
 
   ShadowRoot& CreateUserAgentShadowRoot();
   ShadowRoot& AttachShadowRootInternal(ShadowRootType,
@@ -850,7 +852,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void Focus(const FocusOptions*);
 
   virtual void SetFocused(bool received, mojom::blink::FocusType);
-  void SetHasFocusWithinUpToAncestor(bool, Element* ancestor);
+  void SetHasFocusWithinUpToAncestor(bool,
+                                     Element* ancestor,
+                                     bool need_snap_container_search = false);
   void FocusStateChanged();
   void FocusVisibleStateChanged();
   void FocusWithinStateChanged();
@@ -1340,6 +1344,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // This function clears the "nonce" attribute whenever conditions (1) and (2)
   // are met.
   void HideNonce();
+
+  // This method calls Document::AddConsoleMessage but also attaches this
+  // element to the console message so developers can see the relevant element
+  // in DevTools.
+  void AddConsoleMessage(mojom::blink::ConsoleMessageSource source,
+                         mojom::blink::ConsoleMessageLevel level,
+                         const String& message);
 
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }

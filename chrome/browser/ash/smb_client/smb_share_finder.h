@@ -16,8 +16,7 @@
 #include "chrome/browser/ash/smb_client/smb_url.h"
 #include "chromeos/ash/components/dbus/smbprovider/smb_provider_client.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 // The callback run to indicate the scan for hosts on the network is complete.
 using HostDiscoveryResponse = base::OnceClosure;
@@ -108,7 +107,6 @@ class SmbShareFinder final {
   base::WeakPtrFactory<SmbShareFinder> weak_ptr_factory_{this};
 };
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client
 
 #endif  // CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SHARE_FINDER_H_

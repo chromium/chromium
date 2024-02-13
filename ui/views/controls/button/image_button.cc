@@ -152,7 +152,7 @@ std::unique_ptr<ImageButton> ImageButton::CreateIconButton(
     const gfx::VectorIcon& icon,
     const std::u16string& accessible_name,
     MaterialIconStyle icon_style,
-    absl::optional<gfx::Insets> insets) {
+    std::optional<gfx::Insets> insets) {
   const int kSmallIconSize = 16;
   const int kLargeIconSize = 20;
   int icon_size = (icon_style == MaterialIconStyle::kLarge) ? kLargeIconSize

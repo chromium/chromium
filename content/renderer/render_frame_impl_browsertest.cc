@@ -419,6 +419,24 @@ TEST_F(RenderFrameImplTest, NoCrashWhenDeletingFrameDuringFind) {
       ->Delete(mojom::FrameDeleteIntention::kNotMainFrame);
 }
 
+TEST_F(RenderFrameImplTest, NoCrashOnReceiveTitleWhenNavigatingToJavascript) {
+  LoadHTML(
+      "<html>"
+      "  <everything id='outer'>"
+      "    <title><empty></title>"
+      "    <body>"
+      "      <iframe id='iframe'></iframe>"
+      "      <script>"
+      "        iframe.contentWindow.onunload = () => {"
+      "          document.adoptNode(outer);"
+      "        };"
+      "        window.location = 'javascript:\"PASS.\"';"
+      "      </script>"
+      "    </body>"
+      "  </everything>"
+      "</html> ");
+}
+
 TEST_F(RenderFrameImplTest, AutoplayFlags) {
   // Add autoplay flags to the page.
   GetMainRenderFrame()->AddAutoplayFlags(

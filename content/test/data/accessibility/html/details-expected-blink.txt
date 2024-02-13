@@ -12,7 +12,6 @@ rootWebArea
 ++++++++++staticText ignored invisible name='<newline>    '
 ++++++++++staticText ignored invisible name='<newline>    '
 ++++++++++paragraph ignored invisible
-++++++++++++staticText ignored invisible name='The details tag specifies additional details that the user can view or hide on demand.'
 ++++++++++staticText ignored invisible name='<newline>  '
 ++++++details
 ++++++++genericContainer ignored

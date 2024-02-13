@@ -88,6 +88,7 @@ android_resources("java_resources") {
     "java/res/layout/tab_list_editor_toolbar.xml",
     "java/res/layout/tab_list_recycler_view_layout.xml",
     "java/res/layout/tab_strip_item.xml",
+    "java/res/values-night/colors.xml",
     "java/res/values-night/dimens.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",

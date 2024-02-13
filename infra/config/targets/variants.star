@@ -155,6 +155,14 @@ targets.variant(
 )
 
 targets.variant(
+    name = "NVIDIA_GEFORCE_GTX_1660",
+    identifier = "NVIDIA GeForce GTX 1660",
+    mixins = [
+        "nvidia_geforce_gtx_1660",
+    ],
+)
+
+targets.variant(
     name = "SIM_IPAD_AIR_2_15_5",
     identifier = "iPad Air 2 15.5",
     mixins = [

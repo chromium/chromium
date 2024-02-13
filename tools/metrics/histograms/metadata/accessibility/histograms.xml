@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.CrosDictation.ListeningDuration.OnDeviceRecognition"
-    units="ms" expires_after="2024-06-02">
+    units="ms" expires_after="2024-08-04">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -775,7 +775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.PumpkinSucceeded"
-    enum="BooleanUsage" expires_after="2024-06-02">
+    enum="BooleanUsage" expires_after="2024-08-04">
   <owner>akihiroota@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -793,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosDictation.UsedOnDeviceSpeech"
-    enum="BooleanUsage" expires_after="2024-06-02">
+    enum="BooleanUsage" expires_after="2024-08-04">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -957,7 +957,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.SentenceNavigationMethod"
-    enum="CrosSelectToSpeakActivationMethod" expires_after="2024-06-02">
+    enum="CrosSelectToSpeakActivationMethod" expires_after="2024-08-04">
   <owner>ajitnarayanan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1162,8 +1162,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.EventProcessingTime{Variation}"
-    units="microseconds" expires_after="2024-07-25">
+<histogram name="Accessibility.EventProcessingTime2{Variation}" units="ms"
+    expires_after="2024-08-12">
   <owner>grt@chromium.org</owner>
   <owner>aleventhal@chromium.org</owner>
   <summary>
@@ -1172,10 +1172,6 @@ chromium-metrics-reviews@google.com.
     updates and events. Recorded once each time the browser process receives the
     first set of updates and events from a renderer following {Variation} call
     to RenderAccessibility::SetMode.
-
-    Drops reports on clients with low-resolution clocks, biasing to a portion of
-    the population on Windows. See Windows.HasHighResolutionTimeTicks for the
-    affected sample.
   </summary>
   <token key="Variation">
     <variant name=".First" summary="the very first"/>
@@ -1247,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.ModalDialogAccepted"
-    enum="BooleanAccepted" expires_after="2024-04-28">
+    enum="BooleanAccepted" expires_after="2024-08-11">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <summary>
@@ -1777,7 +1773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.InaccessiblePdfPageCount" units="count"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1787,7 +1783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.MostDetectedLanguageInOcrData"
-    enum="LocaleCodeISO639" expires_after="2024-06-01">
+    enum="LocaleCodeISO639" expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1797,7 +1793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.PDFImages" enum="PdfOcrRequestStatus"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1811,7 +1807,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.PdfOcr.UserAcceptLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-06-01">
+    enum="LocaleCodeISO639" expires_after="2024-08-04">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1847,7 +1843,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Accessibility.Performance.AXObjectCacheImpl.Incremental.{DataType}"
-    units="bytes" expires_after="2024-02-11">
+    units="bytes" expires_after="2024-07-21">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>

@@ -223,6 +223,12 @@ template <typename OutType, typename... FinishArgs>
 
   if (auto terminal_url_loader_factory =
           terminal_params.TakeURLLoaderFactory()) {
+    if (GetTestingInterceptor()) {
+      // TODO(crbug.com/324458368): Plumb a process ID here.
+      GetTestingInterceptor().Run(network::mojom::kInvalidProcessId,
+                                  factory_builder);
+    }
+
     return absl::visit(
         [&factory_builder, &finish_args...](auto&& terminal) {
           return std::move(factory_builder)
@@ -236,6 +242,8 @@ template <typename OutType, typename... FinishArgs>
   if (!header_client && terminal_params.storage_partition()) {
     CHECK(!factory_override);
     CHECK(!disable_secure_dns);
+    // `GetTestingInterceptor()` isn't used here because it is anyway used
+    // inside `GetURLLoaderFactoryForBrowserProcess()`.
     return std::move(factory_builder)
         .template Finish<OutType>(std::forward<FinishArgs>(finish_args)...,
                                   terminal_params.storage_partition()
@@ -249,18 +257,8 @@ template <typename OutType, typename... FinishArgs>
   factory_params->factory_override = std::move(factory_override);
   factory_params->disable_secure_dns = disable_secure_dns;
 
-  if (url_loader_factory::GetTestingInterceptor()) {
-    switch (type) {
-      case ContentBrowserClient::URLLoaderFactoryType::kPrefetch:
-        // Do not intercept `kPrefetch` requests to preserve the existing
-        // behavior.
-        // TODO(crbug.com/1506871): Revisit this.
-        break;
-      default:
-        url_loader_factory::GetTestingInterceptor().Run(
-            factory_params->process_id, factory_builder);
-        break;
-    }
+  if (GetTestingInterceptor()) {
+    GetTestingInterceptor().Run(factory_params->process_id, factory_builder);
   }
 
   return std::move(factory_builder)

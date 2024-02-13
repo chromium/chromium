@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -219,11 +219,10 @@ class OSCryptTestWin : public testing::Test {
 // If this test ever breaks do not ignore it as it might result in data loss for
 // users.
 TEST_F(OSCryptTestWin, DPAPIHeader) {
-  std::string plaintext;
-  std::string ciphertext;
-
   OSCryptMocker::SetLegacyEncryption(true);
-  crypto::RandBytes(base::WriteInto(&plaintext, 11), 10);
+  std::string plaintext(10, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(plaintext));
+  std::string ciphertext;
   ASSERT_TRUE(OSCrypt::EncryptString(plaintext, &ciphertext));
 
   using std::string_literals::operator""s;

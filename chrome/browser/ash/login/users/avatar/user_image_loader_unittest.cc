@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,7 +26,7 @@ namespace {
 
 // Points to a webp file with 3 frames of red, green, blue solid colors,
 // respectively.
-constexpr base::StringPiece kUserAvatarWebpRelativePath =
+constexpr std::string_view kUserAvatarWebpRelativePath =
     "chromeos/avatars/avatar.webp";
 
 }  // namespace

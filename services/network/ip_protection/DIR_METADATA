@@ -1,4 +1,7 @@
+monorail: {
+  component: "Privacy>Fingerprinting>IPProtection"
+}
 team_email: "ip-protection-trio@google.com"
-monorail {
-   component: "Privacy>Fingerprinting>IPProtection"
+buganizer_public: {
+  component_id: 1456782
 }

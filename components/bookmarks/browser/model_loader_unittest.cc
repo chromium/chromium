@@ -328,6 +328,63 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereBothHaveInternalIdCollisions) {
   EXPECT_EQ(14, account_folder_b1->id());
 }
 
+TEST(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file1 =
+      GetTestDataDir().AppendASCII("bookmarks/inexistent_file.json");
+  const base::FilePath test_file2 =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  ASSERT_FALSE(base::PathExists(test_file1));
+  ASSERT_TRUE(base::PathExists(test_file2));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file1,
+      /*account_file_path=*/test_file2,
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
+
+  ASSERT_NE(nullptr, details);
+  ASSERT_NE(nullptr, details->bb_node());
+  ASSERT_NE(nullptr, details->other_folder_node());
+  ASSERT_NE(nullptr, details->mobile_folder_node());
+  ASSERT_NE(nullptr, details->account_bb_node());
+  ASSERT_NE(nullptr, details->account_other_folder_node());
+  ASSERT_NE(nullptr, details->account_mobile_folder_node());
+
+  // The JSON file used to load account nodes uses specific IDs that are
+  // actually important for this test. One behavior being tested here is that
+  // local-or-syncable bookmarks (inexistent file) will not be treated as
+  // collision.
+  ASSERT_EQ(1, details->account_bb_node()->id());
+  ASSERT_EQ(2, details->account_other_folder_node()->id());
+  ASSERT_EQ(10, details->account_mobile_folder_node()->id());
+
+  EXPECT_FALSE(details->required_recovery());
+  EXPECT_FALSE(details->ids_reassigned());
+
+  EXPECT_EQ(1u, details->account_bb_node()->children().size());
+  EXPECT_EQ(1u, details->account_other_folder_node()->children().size());
+  EXPECT_EQ(1u, details->account_mobile_folder_node()->children().size());
+
+  EXPECT_TRUE(details->bb_node()->children().empty());
+  EXPECT_TRUE(details->other_folder_node()->children().empty());
+  EXPECT_TRUE(details->mobile_folder_node()->children().empty());
+
+  // Local-or-syncable permanent nodes should have been assigned new IDs that
+  // do not conflict with account nodes.
+  EXPECT_EQ(11, details->bb_node()->id());
+  EXPECT_EQ(12, details->other_folder_node()->id());
+  EXPECT_EQ(13, details->mobile_folder_node()->id());
+
+  EXPECT_EQ(14, details->max_id());
+
+  EXPECT_EQ("", details->local_or_syncable_sync_metadata_str());
+  EXPECT_EQ("dummy-sync-metadata-1", details->account_sync_metadata_str());
+}
+
 }  // namespace
 
 }  // namespace bookmarks

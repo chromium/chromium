@@ -16,8 +16,8 @@
 namespace blink {
 
 namespace {
+
 using V8JobStateEnum = V8WebPrintJobState::Enum;
-}  // namespace
 
 bool AreFurtherStateUpdatesPossible(V8JobStateEnum state) {
   switch (state) {
@@ -33,12 +33,15 @@ bool AreFurtherStateUpdatesPossible(V8JobStateEnum state) {
   }
 }
 
+}  // namespace
+
 WebPrintJob::WebPrintJob(ExecutionContext* execution_context,
                          mojom::blink::WebPrintJobInfoPtr print_job_info)
     : ActiveScriptWrappable<WebPrintJob>({}),
       ExecutionContextClient(execution_context),
       attributes_(MakeGarbageCollected<WebPrintJobAttributes>()),
-      observer_(this, execution_context) {
+      observer_(this, execution_context),
+      controller_(execution_context) {
   attributes_->setJobName(print_job_info->job_name);
   attributes_->setJobPages(print_job_info->job_pages);
   attributes_->setJobPagesCompleted(0);
@@ -46,9 +49,23 @@ WebPrintJob::WebPrintJob(ExecutionContext* execution_context,
 
   observer_.Bind(std::move(print_job_info->observer),
                  execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  controller_.Bind(
+      std::move(print_job_info->controller),
+      execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
 
 WebPrintJob::~WebPrintJob() = default;
+
+void WebPrintJob::cancel() {
+  // There's no sense in cancelling a job that has either already been cancelled
+  // or is in a terminal state.
+  if (cancel_called_ ||
+      !AreFurtherStateUpdatesPossible(attributes_->jobState().AsEnum())) {
+    return;
+  }
+  cancel_called_ = true;
+  controller_->Cancel();
+}
 
 ExecutionContext* WebPrintJob::GetExecutionContext() const {
   return ExecutionContextClient::GetExecutionContext();
@@ -81,6 +98,7 @@ bool WebPrintJob::HasPendingActivity() const {
 void WebPrintJob::Trace(Visitor* visitor) const {
   visitor->Trace(attributes_);
   visitor->Trace(observer_);
+  visitor->Trace(controller_);
   ExecutionContextClient::Trace(visitor);
   EventTarget::Trace(visitor);
 }

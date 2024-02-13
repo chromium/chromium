@@ -83,8 +83,7 @@ void SetKioskLaunchStateCrashKey(KioskLaunchState state);
 //
 // It is all encompassed within the combination of two states -- AppState and
 // NetworkUI state.
-class KioskLaunchController : public KioskProfileLoader::Delegate,
-                              public KioskAppLauncher::Observer,
+class KioskLaunchController : public KioskAppLauncher::Observer,
                               public NetworkUiController::Observer {
  public:
   class KioskProfileLoadFailedObserver : public base::CheckedObserver {
@@ -112,6 +111,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   KioskLaunchController(
       LoginDisplayHost* host,
       AppLaunchSplashScreenView* splash_screen,
+      LoadProfileCallback profile_loader,
       KioskAppLauncherFactory app_launcher_factory,
       std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
       std::unique_ptr<AcceleratorController> accelerator_controller);
@@ -119,8 +119,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   KioskLaunchController& operator=(const KioskLaunchController&) = delete;
   ~KioskLaunchController() override;
 
-  [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
-  DisableLoginOperationsForTesting();
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
   SkipSplashScreenWaitForTesting();
   [[nodiscard]] static std::unique_ptr<base::AutoReset<bool>>
@@ -182,11 +180,9 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnAppDataUpdated() override;
   void OnAppWindowCreated(const std::optional<std::string>& app_name) override;
 
-  // `KioskProfileLoader::Delegate`
-  void OnProfileLoaded(Profile* profile) override;
-  void OnProfileLoadFailed(KioskAppLaunchError::Error error) override;
-  void OnOldEncryptionDetected(
-      std::unique_ptr<UserContext> user_context) override;
+  void StartAppLaunch(Profile& profile);
+  void HandleProfileLoadError(KioskProfileLoader::ErrorResult error);
+  void HandleOldEncryption(std::unique_ptr<UserContext> user_context);
 
   // Returns the `Data` struct used to populate the splash screen.
   AppLaunchSplashScreenView::Data GetSplashScreenAppData();
@@ -225,8 +221,10 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   // Whether the controller has already been cleaned-up.
   bool cleaned_up_ = false;
 
-  // Used to login into kiosk user profile.
-  std::unique_ptr<KioskProfileLoader> kiosk_profile_loader_;
+  // Handle to the job returned by `profile_loader_`.
+  std::unique_ptr<CancellableJob> profile_loader_handle_;
+  // The function used to load the Kiosk profile. Overridable in tests.
+  LoadProfileCallback profile_loader_;
 
   std::unique_ptr<app_mode::LacrosLauncher> lacros_launcher_;
 

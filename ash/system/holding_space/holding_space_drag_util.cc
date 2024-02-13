@@ -35,6 +35,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -453,9 +454,9 @@ class DragImageView : public views::View {
   }
 
   void InitLayout(const std::vector<const HoldingSpaceItem*>& items) {
-    auto* layout = SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetLayoutManager(std::make_unique<views::FillLayout>());
     AddDragImageItemViews(items);
-    AddDragImageOverflowBadge(layout, items.size());
+    AddDragImageOverflowBadge(items.size());
   }
 
   void AddDragImageItemViews(
@@ -490,16 +491,17 @@ class DragImageView : public views::View {
     first_drag_image_item_view_ = container->children()[0].get();
   }
 
-  void AddDragImageOverflowBadge(views::FillLayout* layout, size_t count) {
+  void AddDragImageOverflowBadge(size_t count) {
     if (count <= kDragImageViewMaxItemsToPaint)
       return;
 
     drag_image_overflow_badge_ = AddChildView(
         std::make_unique<DragImageOverflowBadge>(count, color_provider_));
 
-    // This view's `layout` manager ignores `drag_image_overflow_badge_` as it
-    // is manually positioned relative to the `first_drag_image_item_view_`.
-    layout->SetChildViewIgnoredByLayout(drag_image_overflow_badge_, true);
+    // `drag_image_overflow_badge_` is manually positioned relative to the
+    // `first_drag_image_item_view_`.
+    drag_image_overflow_badge_->SetProperty(views::kViewIgnoredByLayoutKey,
+                                            true);
   }
 
   const raw_ptr<const ui::ColorProvider> color_provider_;

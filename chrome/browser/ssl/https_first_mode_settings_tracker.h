@@ -128,6 +128,14 @@ class HttpsFirstModeService
       const std::vector<site_engagement::mojom::SiteEngagementDetails>&
           details);
 
+  // If true, will not clear the HTTP allowlist when the HFM pref changes next
+  // time. Will be set to false again upon pref change.
+  // The HFM pref can be changed by the UI setting or the Typically Secure User
+  // heuristic. We only need to clear the allowlist if the UI setting is. The
+  // pref observer has no way of knowing how the pref was changed, so we use
+  // this bool to tell it to clear or keep the allowlist.
+  bool keep_http_allowlist_on_next_pref_change_ = false;
+
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<base::Clock> clock_;

@@ -137,7 +137,16 @@ enum SecureChannelState {
   kValidatedResponderAuth,
   kSentInitiatorAuth,
   kAuthenticationSuccess,
-  kAuthenticationFailure
+  kFailureNotConnectedToRemoteDevice,
+  kFailedToGenerateSessionKeys,
+  kFailedToGenerateHelloMessage,
+  kFailedToSendHelloMessage,
+  kFailedToWaitForResponderAuth,
+  kReceivedUnexpectedMessage,
+  kFailedToValidateReponderAuth,
+  kFailedToGenerateInitiatorAuth,
+  kFailedToSendInitiatorAuth,
+  kFailureDisconnectDuringAuthentication
 };
 
 struct BluetoothConnectionMetadata {
@@ -217,8 +226,12 @@ interface ConnectionDelegate {
   // |channel| to be notified when it has been invalidated due to a dropped
   // connection. Note that clients are expected to hold the reference to
   // |channel| until they are done using the connection.
+  // |nearby_connection_state_listener_receiver| will only be invoked if the
+  // channel is over Nearby Connection.
   OnConnection(pending_remote<Channel> channel,
-               pending_receiver<MessageReceiver> message_receiver_receiver);
+               pending_receiver<MessageReceiver> message_receiver_receiver,
+               pending_receiver<NearbyConnectionStateListener>
+               nearby_connection_state_listener_receiver);
 };
 
 // The interface used to log state of each step during Secure Channel connection

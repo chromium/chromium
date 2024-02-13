@@ -43,47 +43,6 @@ namespace {
     }                                                  \
   } while (0)
 
-// Split 16-bit UV plane to 16bit U plane and 16 bit V plane.
-void SplitUVRow_16(const uint16_t* src_uv,
-                   uint16_t* dst_u,
-                   uint16_t* dst_v,
-                   int width_in_samples) {
-  for (int i = 0; i < width_in_samples; i++) {
-    dst_u[i] = src_uv[0];
-    dst_v[i] = src_uv[1];
-    src_uv += 2;
-  }
-}
-
-// Convert 16 bit NV12 to 16 bit I420. The strides in these arguments are in
-// bytes.
-void P016LEToI420P016(const uint8_t* src_y,
-                      int src_stride_y,
-                      const uint8_t* src_uv,
-                      int src_stride_uv,
-                      uint8_t* dst_y,
-                      int dst_stride_y,
-                      uint8_t* dst_u,
-                      int dst_stride_u,
-                      uint8_t* dst_v,
-                      int dst_stride_v,
-                      int width,
-                      int height) {
-  libyuv::CopyPlane_16(reinterpret_cast<const uint16_t*>(src_y),
-                       src_stride_y / 2, reinterpret_cast<uint16_t*>(dst_y),
-                       dst_stride_y / 2, width, height);
-  const int half_width = (width + 1) / 2;
-  const int half_height = (height + 1) / 2;
-  for (int i = 0; i < half_height; i++) {
-    SplitUVRow_16(reinterpret_cast<const uint16_t*>(src_uv),
-                  reinterpret_cast<uint16_t*>(dst_u),
-                  reinterpret_cast<uint16_t*>(dst_v), half_width);
-    dst_u += dst_stride_u;
-    dst_v += dst_stride_v;
-    src_uv += src_stride_uv;
-  }
-}
-
 bool ConvertVideoFrameToI420(const VideoFrame* src_frame,
                              VideoFrame* dst_frame) {
   ASSERT_TRUE_OR_RETURN(src_frame->visible_rect() == dst_frame->visible_rect(),
@@ -141,23 +100,40 @@ bool ConvertVideoFrameToYUV420P10(const VideoFrame* src_frame,
                << VideoPixelFormatToString(src_frame->format());
     return false;
   }
+  // Both P016LE and I010 store 10 bit pixels unpacked as 16-bit little endian
+  // values. In P016LE the pixel data is stored in the MSB. It is a bi-planar
+  // format with the same Y U/V layout as NV12. I010 is a tri-planar format with
+  // the same layout as YUV420.
+  // P010 is P016LE with the lower 6 bits zeroed out.
+  // |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
+  // |          valid data         | 0| 0| 0| 0| 0| 0|
+  //
+  // I010 has the upper 6 bits zeroed out and the pixel data in the LSB.
+  // |15|14|13|12|11|10| 9| 8| 7| 6| 5| 4| 3| 2| 1| 0|
+  // | 0| 0| 0| 0| 0| 0|          valid data         |
 
-  // Convert the visible area.
-  const auto& visible_rect = src_frame->visible_rect();
-  const int width = visible_rect.width();
-  const int height = visible_rect.height();
-  uint8_t* const dst_y = dst_frame->GetWritableVisibleData(VideoFrame::kYPlane);
-  uint8_t* const dst_u = dst_frame->GetWritableVisibleData(VideoFrame::kUPlane);
-  uint8_t* const dst_v = dst_frame->GetWritableVisibleData(VideoFrame::kVPlane);
-  const int dst_stride_y = dst_frame->stride(VideoFrame::kYPlane);
-  const int dst_stride_u = dst_frame->stride(VideoFrame::kUPlane);
-  const int dst_stride_v = dst_frame->stride(VideoFrame::kVPlane);
-  P016LEToI420P016(src_frame->visible_data(VideoFrame::kYPlane),
-                   src_frame->stride(VideoFrame::kYPlane),
-                   src_frame->visible_data(VideoFrame::kUVPlane),
-                   src_frame->stride(VideoFrame::kUVPlane), dst_y, dst_stride_y,
-                   dst_u, dst_stride_u, dst_v, dst_stride_v, width, height);
-  return true;
+  // libyuv conversions take stride as the number of pixels while |VideoFrame|
+  // stores the stride as the number of bytes. For 16 pixels that means the
+  // stride needs to be converted from bytes to pixels by dividing by 2.
+  const int conversion_result = libyuv::P010ToI010(
+      reinterpret_cast<const uint16_t*>(
+          src_frame->visible_data(VideoFrame::kYPlane)),
+      src_frame->stride(VideoFrame::kYPlane) >> 1,
+      reinterpret_cast<const uint16_t*>(
+          src_frame->visible_data(VideoFrame::kUVPlane)),
+      src_frame->stride(VideoFrame::kUVPlane) >> 1,
+      reinterpret_cast<uint16_t*>(
+          dst_frame->GetWritableVisibleData(VideoFrame::kYPlane)),
+      dst_frame->stride(VideoFrame::kYPlane) >> 1,
+      reinterpret_cast<uint16_t*>(
+          dst_frame->GetWritableVisibleData(VideoFrame::kUPlane)),
+      dst_frame->stride(VideoFrame::kUPlane) >> 1,
+      reinterpret_cast<uint16_t*>(
+          dst_frame->GetWritableVisibleData(VideoFrame::kVPlane)),
+      dst_frame->stride(VideoFrame::kVPlane) >> 1,
+      src_frame->visible_rect().width(), src_frame->visible_rect().height());
+
+  return conversion_result == 0;
 }
 
 bool ConvertVideoFrameToARGB(const VideoFrame* src_frame,

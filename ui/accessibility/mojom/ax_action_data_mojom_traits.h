@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/mojom/ax_action_data.mojom-shared.h"
@@ -70,7 +70,7 @@ struct StructTraits<ax::mojom::AXActionDataDataView, ui::AXActionData> {
   static ax::mojom::ScrollBehavior scroll_behavior(const ui::AXActionData& a) {
     return a.scroll_behavior;
   }
-  static const absl::optional<ui::AXTreeID> child_tree_id(
+  static const std::optional<ui::AXTreeID> child_tree_id(
       const ui::AXActionData& a) {
     return a.child_tree_id;
   }

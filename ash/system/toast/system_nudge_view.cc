@@ -411,7 +411,7 @@ void SystemNudgeView::HandleOnMouseHovered(const bool mouse_entered) {
   close_button_->SetVisible(mouse_entered);
 }
 
-BEGIN_METADATA(SystemNudgeView, views::View)
+BEGIN_METADATA(SystemNudgeView)
 END_METADATA
 
 }  // namespace ash

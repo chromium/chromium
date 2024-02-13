@@ -150,8 +150,7 @@ void UnifiedSliderBubbleController::HideBubble(
 void UnifiedSliderBubbleController::DisplayMicrophoneMuteToast() {
   // We will not display the microphone mute toast if no microphone is connected
   // to the device, or if the video conference controls tray is visible.
-  if (features::IsMicMuteNotificationsEnabled() &&
-      CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage() &&
+  if (CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage() &&
       !ShouldVideoConferenceTrayBeShown()) {
     ShowBubble(SLIDER_TYPE_MIC);
   }

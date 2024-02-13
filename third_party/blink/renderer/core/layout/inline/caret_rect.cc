@@ -128,6 +128,9 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const InlineCursor& cursor,
   LayoutUnit caret_top;
 
   LayoutUnit caret_left = cursor.CaretInlinePositionForOffset(offset);
+  if (cursor.CurrentItem()->IsSvgText()) {
+    caret_left /= cursor.CurrentItem()->SvgScalingFactor();
+  }
   if (!cursor.Current().IsLineBreak())
     caret_left -= caret_width / 2;
 

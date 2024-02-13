@@ -16,6 +16,7 @@
 #include "base/containers/stack.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -310,7 +311,7 @@ class CONTENT_EXPORT IndexedDBTransaction
   // See crbug.com/1493696 for discussion of how this should be improved.
   int64_t preliminary_size_estimate_ = 0;
 
-  std::set<IndexedDBCursor*> open_cursors_;
+  std::set<raw_ptr<IndexedDBCursor, SetExperimental>> open_cursors_;
 
   // This timer is started after requests have been processed. If no subsequent
   // requests are processed before the timer fires, assume the script is

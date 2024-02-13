@@ -13,67 +13,133 @@ js_files = [
 
   # File Manager.
   "file_manager/background.js",
-  "file_manager/breadcrumbs.js",
   "file_manager/context_menu.js",
-  "file_manager/copy_between_windows.js",
   "file_manager/create_new_folder.js",
   "file_manager/crostini.js",
-  "file_manager/directory_tree.js",
   "file_manager/directory_tree_context_menu.js",
   "file_manager/dlp.js",
   "file_manager/dlp_enterprise_connectors.js",
   "file_manager/drive_specific.js",
   "file_manager/file_dialog.js",
-  "file_manager/file_display.js",
-  "file_manager/file_list.js",
   "file_manager/file_transfer_connector.js",
-  "file_manager/files_tooltip.js",
   "file_manager/folder_shortcuts.js",
-  "file_manager/format_dialog.js",
   "file_manager/gear_menu.js",
-  "file_manager/grid_view.js",
-  "file_manager/guest_os.js",
   "file_manager/holding_space.js",
   "file_manager/install_linux_package_dialog.js",
-  "file_manager/keyboard_operations.js",
-  "file_manager/metadata.js",
   "file_manager/metrics.js",
-  "file_manager/my_files.js",
-  "file_manager/navigation.js",
-  "file_manager/office.js",
-  "file_manager/open_audio_media_app.js",
-  "file_manager/open_files_in_web_drive.js",
-  "file_manager/open_image_media_app.js",
-  "file_manager/open_media_app.js",
-  "file_manager/open_sniffed_files.js",
-  "file_manager/open_video_media_app.js",
-  "file_manager/providers.js",
-  "file_manager/quick_view.js",
   "file_manager/recents.js",
   "file_manager/restore_prefs.js",
   "file_manager/search.js",
-  "file_manager/share.js",
-  "file_manager/share_and_manage_dialog.js",
-  "file_manager/sort_columns.js",
   "file_manager/tab_index.js",
-  "file_manager/tasks.js",
   "file_manager/test_data.js",
-  "file_manager/toolbar.js",
   "file_manager/transfer.js",
-  "file_manager/trash.js",
-  "file_manager/traverse.js",
-  "file_manager/zip_files.js",
 
   # Page Objects.
   "file_manager/page_objects/directory_tree.js",
 ]
 
 ts_files = [
-  "file_manager/android_photos.ts",
   "testcase.ts",
 
+  # "remote_call.ts",
+
+  # "test_util.ts",
+
+  # File Manager.
+  "file_manager/android_photos.ts",
+
+  # "file_manager/background.ts",
+
+  "file_manager/breadcrumbs.ts",
   "file_manager/choose_entry.ts",
   "file_manager/choose_entry_const.ts",
+
+  # "file_manager/context_menu.ts",
+
+  "file_manager/copy_between_windows.ts",
+
+  # "file_manager/create_new_folder.ts",
+
+  # "file_manager/crostini.ts",
+
+  "file_manager/directory_tree.ts",
+
+  # "file_manager/directory_tree_context_menu.ts",
+
+  # "file_manager/dlp.ts",
+
+  # "file_manager/dlp_enterprise_connectors.ts",
+
+  # "file_manager/drive_specific.ts",
+
+  # "file_manager/file_dialog.ts",
+
+  "file_manager/file_display.ts",
+
+  "file_manager/file_list.ts",
+
+  # "file_manager/file_transfer_connector.ts",
+
+  "file_manager/files_tooltip.ts",
+
+  # "file_manager/folder_shortcuts.ts",
+
+  "file_manager/format_dialog.ts",
+
+  # "file_manager/gear_menu.ts",
+
+  "file_manager/grid_view.ts",
+
+  "file_manager/guest_os.ts",
+
+  # "file_manager/holding_space.ts",
+
+  # "file_manager/install_linux_package_dialog.ts",
+
+  "file_manager/keyboard_operations.ts",
+  "file_manager/manage_dialog.ts",
+  "file_manager/metadata.ts",
+
+  # "file_manager/metrics.ts",
+
+  "file_manager/my_files.ts",
+  "file_manager/navigation.ts",
+  "file_manager/office.ts",
+  "file_manager/open_audio_media_app.ts",
+  "file_manager/open_files_in_web_drive.ts",
+  "file_manager/open_image_media_app.ts",
+  "file_manager/open_media_app.ts",
+  "file_manager/open_sniffed_files.ts",
+  "file_manager/open_video_media_app.ts",
+  "file_manager/providers.ts",
+  "file_manager/quick_view.ts",
+
+  # "file_manager/recents.ts",
+
+  # "file_manager/restore_prefs.ts",
+
+  # "file_manager/search.ts",
+
+  "file_manager/share.ts",
+  "file_manager/sort_columns.ts",
+
+  # "file_manager/tab_index.ts",
+
+  "file_manager/tasks.ts",
+
+  # "file_manager/test_data.ts",
+
+  "file_manager/toolbar.ts",
+
+  # "file_manager/transfer.ts",
+
+  "file_manager/trash.ts",
+  "file_manager/traverse.ts",
+
+  "file_manager/zip_files.ts",
+
+  # Page Objects.
+  # "file_manager/page_objects/directory_tree.ts",
 ]
 
 # TS/JS files.

@@ -77,7 +77,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Cellular.AllowTextMessages.Policy.SuppressionState"
-    enum="PolicyTextMessageSuppressionState" expires_after="2024-06-01">
+    enum="PolicyTextMessageSuppressionState" expires_after="2024-08-04">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Cellular.AllowTextMessages.TextMessageNotificationSuppressionState"
-    enum="NotificationSuppressionState" expires_after="2024-06-01">
+    enum="NotificationSuppressionState" expires_after="2024-08-04">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -359,7 +359,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Network.Ash.Cellular.ESim.SmdsScanDuration.{SmdsType}.{DurationType}"
+    name="Network.Ash.Cellular.ESim.SmdsScanDuration2.{SmdsType}.{DurationType}"
     units="ms" expires_after="2024-09-30">
   <owner>chadduffin@google.com</owner>
   <owner>tjohnsonkanu@google.com</owner>
@@ -368,7 +368,7 @@ chromium-metrics-reviews@google.com.
     Tracks the time taken to perform a single SM-DS scan of a single SM-DS
     server. The {SmdsType} token indicates the type of SM-DS server that was
     scanned, and the {DurationType} token indicates whether this duration was
-    for a scan that ompleted with an Hermes result that indicates a non-fatal
+    for a scan that completed with a Hermes result that indicates a non-fatal
     error occurred. An error does not necessarily indicate that the scan failed,
     but does indicate that there was an issue when performing the scan, e.g.,
     there was an issue with one of the profiles discovered.
@@ -460,6 +460,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.Ash.DefaultNetwork.MeterSubtype"
+    enum="NetworkTechnologyMeterSubtype" expires_after="2025-01-28">
+  <owner>hsuregan@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the technology type of the default network, which considers the
+    technology type and whether the network is metered. The default network here
+    means the first default/active non VPN network. Note that this metric is
+    recorded whenever the default network changes or when the metered property
+    changes. Note that if the default/active network drops and then reconnects
+    without another network taking its place, this metric will not be emitted.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.Hotspot.SetConfig.OperationResult"
     enum="HotspotSetConfigResult" expires_after="2024-06-02">
   <owner>jiajunz@google.com</owner>
@@ -471,7 +485,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Hotspot.Upstream.Cellular.Capability.AllowStatus"
-    enum="HotspotAllowStatus" expires_after="2024-04-01">
+    enum="HotspotAllowStatus" expires_after="2024-08-04">
   <owner>jiajunz@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -484,7 +498,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.Capability.AllowStatusAtLogin"
-    enum="HotspotAllowStatus" expires_after="2024-04-01">
+    enum="HotspotAllowStatus" expires_after="2024-08-04">
   <owner>jiajunz@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -497,7 +511,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.CheckReadiness.OperationResult"
-    enum="HotspotCheckReadinessResult" expires_after="2024-04-01">
+    enum="HotspotCheckReadinessResult" expires_after="2024-08-04">
   <owner>jiajunz@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -508,7 +522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Hotspot.Upstream.Cellular.Disabled.Reason"
-    enum="HotspotDisableReason" expires_after="2024-06-02">
+    enum="HotspotDisableReason" expires_after="2024-08-04">
   <owner>jiajunz@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -605,7 +619,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.{Operation}.OperationResult"
-    enum="HotspotSetEnabledResult" expires_after="2024-06-02">
+    enum="HotspotSetEnabledResult" expires_after="2024-08-04">
   <owner>jiajunz@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1903,7 +1917,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ethernet.Policy.OncRecommendedFieldsWorkaroundAction"
-    enum="OncRecommendedFieldsWorkaroundAction" expires_after="2024-06-02">
+    enum="OncRecommendedFieldsWorkaroundAction" expires_after="2024-08-04">
   <owner>pmarko@google.com</owner>
   <owner>suprnet@google.com</owner>
   <summary>
@@ -1916,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Mdns.{ServiceType}" enum="MdnsQueryType"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>nmuggli@google.com</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -2588,7 +2602,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.PortalDector.CAPPORTAdvertised.{Technology}"
+<histogram name="Network.Shill.PortalDector.CAPPORTAdvertised"
     enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2601,13 +2615,13 @@ chromium-metrics-reviews@google.com.
     This metric is a redefinition of the same portal detection metric
     (&quot;Network.Shill.PortalDetector.CAPPORTAdvertised&quot;), but with a
     name matching the typo existing in the platform for m121 and m122 and fixed
-    in crrev/c/5223768. This metric can be removed once captive portal metrics
-    data on m121 and m121 is not needed anymore.
+    in crrev/c/5223768, and without the shill network Technology suffix. This
+    metric can be removed once captive portal metrics data on m121 and m121 is
+    not needed anymore.
   </summary>
-  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
-<histogram name="Network.Shill.PortalDector.CAPPORTSupported.{Technology}"
+<histogram name="Network.Shill.PortalDector.CAPPORTSupported"
     enum="NetworkCAPPORTSupport" expires_after="2024-12-31">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2619,10 +2633,10 @@ chromium-metrics-reviews@google.com.
     This metric is a redefinition of the same portal detection metric
     (&quot;Network.Shill.PortalDetector.CAPPORTAdvertised&quot;), but with a
     name matching the typo existing in the platform for m121 and m122 and fixed
-    in crrev/c/5223768. This metric can be removed once captive portal metrics
-    data on m121 and m121 is not needed anymore.
+    in crrev/c/5223768, and without the shill network Technology suffix. This
+    metric can be removed once captive portal metrics data on m121 and m121 is
+    not needed anymore.
   </summary>
-  <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
 
 <histogram name="Network.Shill.PortalDetector.AggregateResult.{Technology}"
@@ -2696,6 +2710,56 @@ chromium-metrics-reviews@google.com.
     Indicates if the network advertises supports for the CAPPORT protocol
     (RFC8908) using RFC8908. This metric is recorded once for every network
     connection where a captive portal was found with an HTTP redirect.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram name="Network.Shill.PortalDetector.HTTPReponseCode.{Technology}"
+    units="response code" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    HTTP response code received by an HTTP probe used for network validation.
+    Response codes received for encrypted HTTPS probes are ignored because it is
+    assumed that HTTPS probes cannot be spoofed and always receive the expected
+    204 result.
+
+    Possible values are HTTP response codes in the [100, 599] range or one of
+    the three special values: 0 to indicate a bad response with an invalid
+    response code, 1 to indicate a 302 or 307 redirect response without a
+    Location header or with an invalid Location header which was not a URL, 2
+    for a 200 response without a Content-Length header or with an invalid
+    Content-Lenght header.
+
+    This metric is a redefinition of the same portal detection metric
+    (&quot;Network.Shill.PortalDetector.HTTPResponseCode&quot;), but with a name
+    matching the typo existing in the platform for m121 and m122 and fixed in
+    crrev/c/5267618. This metric can be removed once captive portal metrics data
+    on m121 and m121 is not needed anymore.
+  </summary>
+  <token key="Technology" variants="PhysicalTechnology"/>
+</histogram>
+
+<histogram
+    name="Network.Shill.PortalDetector.HTTPReponseContentLength.{Technology}"
+    units="bytes" expires_after="2024-12-31">
+  <owner>hugobenichi@google.com</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Length in bytes of 200 responses received by a network validation HTTP probe
+    during a network validation attempt. 200 responses with no content or a
+    single byte of content are treated as 204 answers. These events are expected
+    to be recorded only once for a given network connection (network with
+    Internet acess). 200 responses with some actual content are treated as a
+    suspected portal redirect and trigger the portal sign-in flow. These events
+    are expected to be recorded multiple times until the user has signed into
+    the portal.
+
+    This metric is a redefinition of the same portal detection metric
+    (&quot;Network.Shill.PortalDetector.HTTPResponseContentLength&quot;), but
+    with a name matching the typo existing in the platform for m121 and m122 and
+    fixed in crrev/c/5267618. This metric can be removed once captive portal
+    metrics data on m121 and m121 is not needed anymore.
   </summary>
   <token key="Technology" variants="PhysicalTechnology"/>
 </histogram>
@@ -3101,6 +3165,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS network metric sampling the number of Wireless Access Points that
     support the 802.11r standard, sampled on successful connections to an AP.
+  </summary>
+</histogram>
+
+<histogram name="Network.Shill.WiFi.Ap80211uANQPSupport"
+    enum="WiFiAp80211uANQPSupport" expires_after="2024-12-31">
+  <owner>damiendejean@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS network metric sampling the number of Wireless Access Points that
+    support ANQP request protocol, sampled on successful connections to an AP.
   </summary>
 </histogram>
 
@@ -4167,7 +4241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.Connection.Result" enum="BooleanSuccess"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>jonmann@chromium.org</owner>
   <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -4237,7 +4311,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Wifi.Synced.UpdateOperation.GenerateLocalNetworkConfig.Result"
-    enum="BooleanSuccess" expires_after="2024-06-01">
+    enum="BooleanSuccess" expires_after="2024-08-04">
   <owner>jonmann@chromium.org</owner>
   <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -4408,6 +4482,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.IpProtection.ProxyChainFallback"
+    enum="IpProtectionProxyChainId" expires_after="2024-05-12">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Logged when a proxy chain failure is detected in the proxy delegate's
+    `OnFallback` method, with values defined by the `chain_id` value given in
+    the GetProxyInfo RPC response.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.IpProtection.RequestIsEligibleForProtection"
     enum="IpProtectionEligibility" expires_after="2024-07-29">
   <owner>ashleynewson@chromium.org</owner>
@@ -4535,7 +4620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.NetworkLoaderCompletionTime.{Source}"
-    units="ms" expires_after="2024-05-30">
+    units="ms" expires_after="2024-08-04">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

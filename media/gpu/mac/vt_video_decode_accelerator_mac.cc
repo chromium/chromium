@@ -2258,7 +2258,7 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
 
     DVLOG(3) << "ProvidePictureBuffers(" << kNumPictureBuffers
              << frame.image_size.ToString() << ")";
-    client_->ProvidePictureBuffers(kNumPictureBuffers, picture_format_, 1,
+    client_->ProvidePictureBuffers(kNumPictureBuffers, picture_format_,
                                    frame.image_size,
                                    gpu::GetPlatformSpecificTextureTarget());
     return false;

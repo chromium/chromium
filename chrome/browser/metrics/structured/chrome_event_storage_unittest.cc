@@ -37,11 +37,11 @@ class ChromeEventStorageTest : public testing::Test {
   void Wait() { task_environment_.RunUntilIdle(); }
 
   StructuredDataProto GetReport(ChromeEventStorage* storage) {
-    ChromeUserMetricsExtension uma;
+    StructuredDataProto structured_data;
 
-    storage->MoveEvents(uma);
+    *structured_data.mutable_events() = storage->TakeEvents();
 
-    return uma.structured_data();
+    return structured_data;
   }
 
   void ExpectNoErrors() {

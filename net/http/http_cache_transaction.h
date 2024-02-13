@@ -609,7 +609,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // If a pending async HTTPCache transaction takes longer than the parallel
   // Network IO, this will store the result of the Network IO operation until
   // the cache transaction completes (or times out).
-  absl::optional<int> pending_io_result_ = absl::nullopt;
+  std::optional<int> pending_io_result_ = std::nullopt;
 
   // Used for tracing.
   const uint64_t trace_id_;
@@ -647,7 +647,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // and modifies the members for future transactions. Then,
   // WriteResponseInfoToEntry() writes |updated_prefetch_response_| to the cache
   // entry if it is populated, or |response_| otherwise. Finally,
-  // WriteResponseInfoToEntry() resets this to absl::nullopt.
+  // WriteResponseInfoToEntry() resets this to std::nullopt.
   std::unique_ptr<HttpResponseInfo> updated_prefetch_response_;
 
   raw_ptr<const HttpResponseInfo, AcrossTasksDanglingUntriaged> new_response_ =

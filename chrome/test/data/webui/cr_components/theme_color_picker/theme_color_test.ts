@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
 
-import {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
+import type {ThemeColorElement} from 'chrome://resources/cr_components/theme_color_picker/theme_color.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {hasStyle, isVisible} from 'chrome://webui-test/test_util.js';
 

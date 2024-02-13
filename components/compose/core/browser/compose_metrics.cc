@@ -22,8 +22,8 @@ const char kComposeDialogInnerTextSize[] = "Compose.Dialog.InnerTextSize";
 const char kComposeDialogOpenLatency[] = "Compose.Dialog.OpenLatency";
 const char kComposeDialogSelectionLength[] = "Compose.Dialog.SelectionLength";
 const char kComposeRequestReason[] = "Compose.Request.Reason";
-const char kComposeRequestDurationOk[] = "Compose.Request.Duration.Ok";
-const char kComposeRequestDurationError[] = "Compose.Request.Duration.Error";
+const char kComposeRequestDurationOkSuffix[] = ".Request.Duration.Ok";
+const char kComposeRequestDurationErrorSuffix[] = ".Request.Duration.Error";
 const char kComposeRequestStatus[] = "Compose.Request.Status";
 const char kComposeSessionComposeCount[] = "Compose.Session.ComposeCount";
 const char kComposeSessionCloseReason[] = "Compose.Session.CloseReason";
@@ -149,6 +149,14 @@ void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kCloseClicked);
   }
+  if (session_events.did_click_edit) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kEditClicked);
+  }
+  if (session_events.did_click_cancel_on_edit) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kCancelEditClicked);
+  }
 }
 
 }  // namespace
@@ -231,13 +239,13 @@ void LogComposeRequestStatus(EvalLocation eval_location,
 
 void LogComposeRequestDuration(base::TimeDelta duration,
                                EvalLocation eval_location,
-                               bool is_valid) {
+                               bool is_ok) {
+  std::string_view suffix =
+      is_ok ? std::string_view(kComposeRequestDurationOkSuffix)
+            : std::string_view(kComposeRequestDurationErrorSuffix);
+  base::UmaHistogramMediumTimes(base::StrCat({"Compose", suffix}), duration);
   base::UmaHistogramMediumTimes(
-      is_valid ? kComposeRequestDurationOk : kComposeRequestDurationError,
-      duration);
-  base::UmaHistogramMediumTimes(
-      base::StrCat({"Compose.", EvalLocationString(eval_location),
-                    is_valid ? ".Duration.Ok" : ".Duration.Error"}),
+      base::StrCat({"Compose.", EvalLocationString(eval_location), suffix}),
       duration);
 }
 
@@ -426,6 +434,14 @@ void LogComposeSessionDuration(base::TimeDelta session_duration,
   } else {
     base::UmaHistogramBoolean(kComposeSessionOverOneDay, false);
   }
+}
+
+void LogComposeRequestFeedback(EvalLocation eval_location,
+                               ComposeRequestFeedback feedback) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"Compose.", EvalLocationString(eval_location), ".Request.Feedback"}),
+      feedback);
 }
 
 }  // namespace compose

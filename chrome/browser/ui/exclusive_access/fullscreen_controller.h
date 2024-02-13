@@ -66,6 +66,8 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   void AddObserver(FullscreenObserver* observer);
   void RemoveObserver(FullscreenObserver* observer);
 
+  static int64_t GetDisplayId(const content::WebContents& web_contents);
+
   // Browser/User Fullscreen ///////////////////////////////////////////////////
 
   // Returns true if the window is currently fullscreen and was initially

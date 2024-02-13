@@ -26,19 +26,16 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "url/origin.h"
 
 namespace signin {
-class AccessTokenFetcher;
-struct AccessTokenInfo;
 class IdentityManager;
 }  // namespace signin
 
 namespace network {
-struct ResourceRequest;
-class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
@@ -69,14 +66,12 @@ inline constexpr int kUnmaskPaymentMethodBillableServiceNumber = 70154;
 inline constexpr int kUploadPaymentMethodBillableServiceNumber = 70073;
 inline constexpr int kMigrateCardsBillableServiceNumber = 70264;
 
-class PaymentsRequest;
-
 // PaymentsNetworkInterface issues Payments RPCs and manages responses and failure
 // conditions. Only one request may be active at a time. Initiating a new
 // request will cancel a pending request.
 // Tests are located in
 // src/components/autofill/content/browser/payments/payments_network_interface_unittest.cc.
-class PaymentsNetworkInterface {
+class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
  public:
   // The names of the fields used to send non-location elements as part of an
   // address. Used in the implementation and in tests which verify that these
@@ -460,7 +455,7 @@ class PaymentsNetworkInterface {
   PaymentsNetworkInterface(const PaymentsNetworkInterface&) = delete;
   PaymentsNetworkInterface& operator=(const PaymentsNetworkInterface&) = delete;
 
-  virtual ~PaymentsNetworkInterface();
+  ~PaymentsNetworkInterface() override;
 
   // Starts fetching the OAuth2 token in anticipation of future Payments
   // requests. Called as an optimization, but not strictly necessary. Should
@@ -596,79 +591,8 @@ class PaymentsNetworkInterface {
       const UpdateVirtualCardEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
 
-  // Cancels and clears the current |request_|.
-  void CancelRequest();
-
-  // Exposed for testing.
-  void set_url_loader_factory_for_testing(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  void set_access_token_for_testing(std::string access_token);
-
  private:
   friend class PaymentsNetworkInterfaceTest;
-
-  // Initiates a Payments request using the state in `request`, ensuring that an
-  // OAuth token is available first. Takes ownership of `request`.
-  void IssueRequest(std::unique_ptr<PaymentsRequest> request);
-
-  // Creates `resource_request_` to be used later in
-  // SetOAuth2TokenAndStartRequest().
-  void InitializeResourceRequest();
-
-  // Callback from |simple_url_loader_|.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
-  void OnSimpleLoaderCompleteInternal(int response_code,
-                                      const std::string& data);
-
-  // Callback that handles a completed access token request.
-  void AccessTokenFetchFinished(GoogleServiceAuthError error,
-                                signin::AccessTokenInfo access_token_info);
-
-  // Handles a completed access token request in the case of failure.
-  void AccessTokenError(const GoogleServiceAuthError& error);
-
-  // Initiates a new OAuth2 token request.
-  void StartTokenFetch(bool invalidate_old);
-
-  // Creates `simple_url_loader_`, adds the token to it, and starts the request.
-  void SetOAuth2TokenAndStartRequest();
-
-  // The URL loader factory for the request.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Provided in constructor; not owned by PaymentsNetworkInterface.
-  const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  // Provided in constructor; not owned by PaymentsNetworkInterface.
-  const raw_ptr<AccountInfoGetter> account_info_getter_;
-
-  // The current request.
-  std::unique_ptr<PaymentsRequest> request_;
-
-  // The resource request being used to issue the current request.
-  std::unique_ptr<network::ResourceRequest> resource_request_;
-
-  // The URL loader being used to issue the current request.
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-
-  // The OAuth2 token fetcher for any account.
-  std::unique_ptr<signin::AccessTokenFetcher> token_fetcher_;
-
-  // The OAuth2 token, or empty if not fetched.
-  std::string access_token_;
-
-  // Denotes incognito mode.
-  // TODO(crbug.com/1409158): Remove this variable, as it should not be the
-  // PaymentsNetworkInterface's responsibility to check if the user is off the record. The
-  // sole responsibility of the PaymentsNetworkInterface is to send requests to the Google
-  // Payments server.
-  bool is_off_the_record_;
-
-  // True if |request_| has already retried due to a 401 response from the
-  // server.
-  bool has_retried_authorization_;
-
-  base::WeakPtrFactory<PaymentsNetworkInterface> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

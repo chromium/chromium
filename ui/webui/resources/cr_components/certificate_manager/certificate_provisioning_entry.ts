@@ -12,13 +12,13 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import './certificate_shared.css.js';
 
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
-import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+import type {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 import {getTemplate} from './certificate_provisioning_entry.html.js';
 
 export interface CertificateProvisioningEntryElement {

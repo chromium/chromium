@@ -48,7 +48,7 @@ void ErrorScreenHandler::SetShowConnectingIndicator(bool value) {
 }
 
 void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
-  CallExternalAPI("setUIState", static_cast<int>(ui_state));
+  CallExternalAPI("setUiState", static_cast<int>(ui_state));
 }
 
 void ErrorScreenHandler::DeclareLocalizedValues(

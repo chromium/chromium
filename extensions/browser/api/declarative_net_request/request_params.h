@@ -77,9 +77,10 @@ struct RequestParams {
   // Lower cased url, used for regex matching. Cached for performance.
   mutable std::optional<std::string> lower_cased_url_spec;
 
-  // Map from RegexRulesMatcher to a vector of potential matches for this
-  // request. Cached for performance.
-  mutable base::flat_map<const RegexRulesMatcher*, std::vector<RegexRuleInfo>>
+  // Map from a (RegexRulesMatcher, ruleset matching stage) pair to a vector of
+  // potential matches for this request. Cached for performance.
+  mutable base::flat_map<RegexRulesMatcher::RegexMatchKey,
+                         std::vector<RegexRuleInfo>>
       potential_regex_matches;
 };
 

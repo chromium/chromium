@@ -302,7 +302,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kPasswordsPrefWithNewLabelUsed, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kOfferToSavePasswordsEnabledGMS, true);
-  registry->RegisterBooleanPref(prefs::kSavePasswordsSuspendedByError, false);
   registry->RegisterBooleanPref(prefs::kAutoSignInEnabledGMS, true);
   registry->RegisterBooleanPref(prefs::kSettingsMigratedToUPMLocal, false);
   registry->RegisterIntegerPref(
@@ -621,7 +620,7 @@ void PasswordManager::OnPasswordFormCleared(
     return;
   }
   // If a password form was cleared, login is successful.
-  if (form_data.is_form_tag) {
+  if (!form_data.renderer_id.is_null()) {
     manager->UpdateSubmissionIndicatorEvent(
         SubmissionIndicatorEvent::CHANGE_PASSWORD_FORM_CLEARED);
     OnLoginSuccessful();
@@ -1148,8 +1147,7 @@ void PasswordManager::OnLoginSuccessful() {
     logger->LogSuccessfulSubmissionIndicatorEvent(submission_event);
 
   bool able_to_save_passwords =
-      client_->GetProfilePasswordStore() &&
-      client_->GetProfilePasswordStore()->IsAbleToSavePasswords();
+      password_manager_util::IsAbleToSavePasswords(client_);
   UMA_HISTOGRAM_BOOLEAN("PasswordManager.AbleToSavePasswordsOnSuccessfulLogin",
                         able_to_save_passwords);
   if (!able_to_save_passwords)
@@ -1408,8 +1406,7 @@ void PasswordManager::ShowManualFallbackForSaving(
   if (!form_manager->is_submitted())
     return;
 
-  if (!client_->GetProfilePasswordStore() ||
-      !client_->GetProfilePasswordStore()->IsAbleToSavePasswords() ||
+  if (!password_manager_util::IsAbleToSavePasswords(client_) ||
       !client_->IsSavingAndFillingEnabled(form_data.url) ||
       ShouldBlockPasswordForSameOriginButDifferentScheme(form_data.url)) {
     return;

@@ -6,6 +6,7 @@
 
 #include "content/public/renderer/render_frame.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/csp_info.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/renderer/extension_web_view_helper.h"
@@ -24,7 +25,7 @@ ExtensionInjectionHost::~ExtensionInjectionHost() {
 
 // static
 std::unique_ptr<const InjectionHost> ExtensionInjectionHost::Create(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   const Extension* extension =
       RendererExtensionRegistry::Get()->GetByID(extension_id);
   if (!extension)

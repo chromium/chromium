@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/i18n/case_conversion.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -123,9 +124,7 @@ void MaybeAppendManagePasswordsEntry(
   bool has_no_fillable_suggestions = base::ranges::none_of(
       *suggestions,
       [](autofill::PopupItemId id) {
-        return id == autofill::PopupItemId::kUsernameEntry ||
-               id == autofill::PopupItemId::kPasswordEntry ||
-               id == autofill::PopupItemId::kAccountStorageUsernameEntry ||
+        return id == autofill::PopupItemId::kPasswordEntry ||
                id == autofill::PopupItemId::kAccountStoragePasswordEntry ||
                id == autofill::PopupItemId::kGeneratePasswordEntry ||
                id == autofill::PopupItemId::kWebauthnCredential;
@@ -169,15 +168,13 @@ void AppendSuggestionIfMatching(
     const std::u16string& field_contents,
     const gfx::Image& custom_icon,
     const std::string& signon_realm,
-    bool show_all,
-    bool is_password_field,
     bool from_account_store,
     size_t password_length,
     std::vector<autofill::Suggestion>* suggestions) {
   std::u16string lower_suggestion = base::i18n::ToLower(field_suggestion);
   std::u16string lower_contents = base::i18n::ToLower(field_contents);
-  if (show_all || base::StartsWith(lower_suggestion, lower_contents,
-                                   base::CompareCase::SENSITIVE)) {
+  if (base::StartsWith(lower_suggestion, lower_contents,
+                       base::CompareCase::SENSITIVE)) {
     bool replaced_username;
     autofill::Suggestion suggestion(
         ReplaceEmptyUsername(field_suggestion, &replaced_username));
@@ -197,16 +194,9 @@ void AppendSuggestionIfMatching(
       *suggestion.voice_over += u", ";
       *suggestion.voice_over += suggestion.labels[0][0].value;
     }
-    if (from_account_store) {
-      suggestion.popup_item_id =
-          is_password_field
-              ? autofill::PopupItemId::kAccountStoragePasswordEntry
-              : autofill::PopupItemId::kAccountStorageUsernameEntry;
-    } else {
-      suggestion.popup_item_id = is_password_field
-                                     ? autofill::PopupItemId::kPasswordEntry
-                                     : autofill::PopupItemId::kUsernameEntry;
-    }
+    suggestion.popup_item_id =
+        from_account_store ? autofill::PopupItemId::kAccountStoragePasswordEntry
+                           : autofill::PopupItemId::kPasswordEntry;
     suggestion.custom_icon = custom_icon;
     // The UI code will pick up an icon from the resources based on the string.
     suggestion.icon = autofill::Suggestion::Icon::kGlobe;
@@ -221,33 +211,73 @@ void AppendSuggestionIfMatching(
 }
 
 // This function attempts to fill |suggestions| from |fill_data| based on
-// |current_username| that is the current value of the field. If |show_all|
-// is true, we do not match suggestions with field content.
+// |current_username| that is the current value of the field.
 void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                     const std::u16string& current_username,
                     const gfx::Image& custom_icon,
-                    bool show_all,
-                    bool is_password_field,
                     std::vector<autofill::Suggestion>* suggestions) {
   AppendSuggestionIfMatching(
       fill_data.preferred_login.username_value, current_username, custom_icon,
-      fill_data.preferred_login.realm, show_all, is_password_field,
+      fill_data.preferred_login.realm,
       fill_data.preferred_login.uses_account_store,
       fill_data.preferred_login.password_value.size(), suggestions);
 
   int prefered_match = suggestions->size();
 
   for (const auto& login : fill_data.additional_logins) {
-    AppendSuggestionIfMatching(login.username_value, current_username,
-                               custom_icon, login.realm, show_all,
-                               is_password_field, login.uses_account_store,
-                               login.password_value.size(), suggestions);
+    AppendSuggestionIfMatching(
+        login.username_value, current_username, custom_icon, login.realm,
+        login.uses_account_store, login.password_value.size(), suggestions);
   }
 
   std::sort(suggestions->begin() + prefered_match, suggestions->end(),
             [](const autofill::Suggestion& a, const autofill::Suggestion& b) {
               return a.main_text.value < b.main_text.value;
             });
+}
+
+void AddPasswordUsernameChildSuggestion(const std::u16string& username,
+                                        autofill::Suggestion& suggestion) {
+  suggestion.children.push_back(autofill::Suggestion(
+      username, autofill::PopupItemId::kPasswordFieldByFieldFilling));
+}
+
+void AddFillPasswordChildSuggestion(autofill::Suggestion& suggestion) {
+  suggestion.children.push_back(autofill::Suggestion(
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_FILL_PASSWORD_ENTRY),
+      autofill::PopupItemId::kFillPassword));
+}
+
+void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
+  autofill::Suggestion view_password_details(
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_VIEW_DETAILS_ENTRY),
+      autofill::PopupItemId::kViewPasswordDetails);
+  view_password_details.icon = autofill::Suggestion::Icon::kKey;
+  suggestion.children.push_back(view_password_details);
+}
+
+autofill::Suggestion GetManualFallbackSuggestion(
+    const CredentialUIEntry& credential) {
+  autofill::Suggestion suggestion(
+      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
+      autofill::PopupItemId::kPasswordEntry);
+  bool replaced;
+  const std::u16string maybe_username =
+      ReplaceEmptyUsername(credential.username, &replaced);
+  suggestion.additional_label = maybe_username;
+  suggestion.icon = autofill::Suggestion::Icon::kGlobe;
+
+  if (!replaced) {
+    AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
+  }
+  AddFillPasswordChildSuggestion(suggestion);
+  suggestion.children.push_back(
+      autofill::Suggestion(autofill::PopupItemId::kSeparator));
+  AddViewPasswordDetailsChildSuggestion(suggestion);
+
+  return suggestion;
 }
 
 }  // namespace
@@ -263,8 +293,6 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
     base::optional_ref<const autofill::PasswordFormFillData> fill_data,
     const gfx::Image& page_favicon,
     const std::u16string& username_filter,
-    ForPasswordField for_password_field,
-    ShowAllPasswords show_all_passwords,
     OffersGeneration offers_generation,
     ShowPasswordSuggestions show_password_suggestions,
     ShowWebAuthnCredentials show_webauthn_credentials) const {
@@ -313,9 +341,7 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
   // Add password suggestions if they exist and were requested.
   if (show_password_suggestions && fill_data.has_value()) {
-    GetSuggestions(*fill_data, username_filter, page_favicon,
-                   show_all_passwords.value(), for_password_field.value(),
-                   &suggestions);
+    GetSuggestions(*fill_data, username_filter, page_favicon, &suggestions);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -344,6 +370,25 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
   if (show_account_storage_resignin) {
     suggestions.push_back(CreateEntryToReSignin());
   }
+
+  // Add "Manage all passwords" link to settings.
+  MaybeAppendManagePasswordsEntry(&suggestions);
+
+  return suggestions;
+}
+
+std::vector<autofill::Suggestion>
+PasswordSuggestionGenerator::GetManualFallbackSuggestions(
+    const std::vector<CredentialUIEntry>& credentials) const {
+  std::vector<autofill::Suggestion> suggestions;
+  for (const CredentialUIEntry& credential : credentials) {
+    suggestions.push_back(GetManualFallbackSuggestion(credential));
+  }
+
+  base::ranges::sort(suggestions, [](const autofill::Suggestion& a,
+                                     const autofill::Suggestion& b) {
+    return a.main_text.value < b.main_text.value;
+  });
 
   // Add "Manage all passwords" link to settings.
   MaybeAppendManagePasswordsEntry(&suggestions);

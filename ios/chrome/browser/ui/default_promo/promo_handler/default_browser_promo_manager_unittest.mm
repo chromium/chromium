@@ -131,6 +131,7 @@ TEST_F(DefaultBrowserPromoManagerTest, ShowTailoredPromoAllTabs) {
 // Tests that the DefaultPromoTypeGeneral promo is shown when it was detected
 // that the user is likely interested in the promo.
 TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
+  feature_list_.InitWithFeatures({}, {kDefaultBrowserVideoPromo});
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
@@ -145,7 +146,7 @@ TEST_F(DefaultBrowserPromoManagerTest, showDefaultBrowserFullscreenPromo) {
 TEST_F(DefaultBrowserPromoManagerTest,
        showDefaultBrowserFullscreenPromo_TriggerExpEnabled) {
   feature_list_.InitWithFeatures({kDefaultBrowserTriggerCriteriaExperiment},
-                                 {});
+                                 {kDefaultBrowserVideoPromo});
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
 
@@ -158,4 +159,18 @@ TEST_F(DefaultBrowserPromoManagerTest,
   [default_browser_promo_manager_ start];
   EXPECT_OCMOCK_VERIFY(mock);
 }
+
+// Tests that the DefaultPromoTypeVideo promo is shown instead of the generic
+// promo when the video promo is enabled.
+TEST_F(DefaultBrowserPromoManagerTest, showVideoPromo) {
+  feature_list_.InitWithFeatures({kDefaultBrowserVideoPromo}, {});
+  TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
+  id mock = [OCMockObject mockForClass:[DefaultBrowserPromoManager class]];
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+  SignIn();
+  [[mock expect] showPromoForTesting:DefaultPromoTypeVideo];
+  [default_browser_promo_manager_ start];
+  EXPECT_OCMOCK_VERIFY(mock);
+}
+
 }  // namespace

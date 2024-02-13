@@ -511,9 +511,7 @@ void FindBadPatterns(clang::ASTContext& ast_context,
   }
 
   WeakPtrToGCedMatcher weak_ptr_to_gced(diagnostics);
-  if (options.enable_weak_ptrs_check) {
-    weak_ptr_to_gced.Register(match_finder);
-  }
+  weak_ptr_to_gced.Register(match_finder);
 
   match_finder.matchAST(ast_context);
 }

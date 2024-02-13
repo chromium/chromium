@@ -50,7 +50,7 @@ void AnimatedImageView::SetAnimatedImage(
 }
 
 void AnimatedImageView::Play(
-    absl::optional<lottie::Animation::PlaybackConfig> playback_config) {
+    std::optional<lottie::Animation::PlaybackConfig> playback_config) {
   DCHECK(animated_image_);
   if (state_ == State::kPlaying)
     return;

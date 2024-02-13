@@ -5,7 +5,8 @@
 import 'chrome://performance-side-panel.top-chrome/app.js';
 
 import {PerformancePageCallbackRouter, PerformancePageHandlerRemote} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
-import {PerformancePageApiProxy, PerformancePageApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy.js';
+import type {PerformancePageApiProxy} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy.js';
+import {PerformancePageApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 

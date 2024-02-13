@@ -336,7 +336,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         use_k_means ? GetCurrentKMeanColor() : *celebi_seed_color;
     // Schemes need to be copied as the underlying memory for the span could go
     // out of scope.
-    std::vector<const style::mojom::ColorScheme> schemes_copy(
+    const std::vector<style::mojom::ColorScheme> schemes_copy(
         color_scheme_buttons.begin(), color_scheme_buttons.end());
     const auto barrier_callback = base::BarrierCallback<SampleColorScheme>(
         color_scheme_buttons.size(),

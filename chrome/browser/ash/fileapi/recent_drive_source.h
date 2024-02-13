@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/id_map.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -24,7 +25,7 @@ namespace ash {
 
 class RecentFile;
 
-// RecentSource implementation for Drive files.
+// RecentSource implementation for Google Drive files.
 //
 // All member functions must be called on the UI thread.
 //
@@ -41,6 +42,9 @@ class RecentDriveSource : public RecentSource {
   // RecentSource overrides:
   void GetRecentFiles(Params params, GetRecentFilesCallback callback) override;
 
+  // Overrides the Stop method to implement search interruption.
+  std::vector<RecentFile> Stop(const int32_t call_id) override;
+
   // Generates type filters based on the file_type parameter. This is done so
   // that this code can be shared between recent files and file search.
   static std::vector<std::string> CreateTypeFilters(
@@ -49,23 +53,47 @@ class RecentDriveSource : public RecentSource {
  private:
   static const char kLoadHistogramName[];
 
-  void OnComplete(GetRecentFilesCallback callback);
+  // The context for a single GetRecentFiles call. Multiple, parallel calls can
+  // be issued and each receives its unique context, stored in the map using the
+  // call_id parameter.
+  struct CallContext {
+    explicit CallContext(GetRecentFilesCallback callback);
+    // Move constructor necessary due to move-only callback type.
+    CallContext(CallContext&& callcontext);
+    ~CallContext();
+
+    // The callback on which the results are delivered.
+    GetRecentFilesCallback callback;
+
+    // The time the GetRecentFiles request was started.
+    base::TimeTicks build_start_time;
+
+    // The list of files built up by the request.
+    std::vector<RecentFile> files;
+
+    // The mojo remote that performs Drive search.
+    mojo::Remote<drivefs::mojom::SearchQuery> search_query;
+  };
+
+  void OnComplete(const int32_t call_id);
 
   void GotSearchResults(
       const Params& params,
-      GetRecentFilesCallback callback,
       drive::FileError error,
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> results);
 
+  // The current profile for which this source was constructed. This class does
+  // not own the Profile object. Instead it uses it to fetch a drive integration
+  // service for fetching matched files.
   const raw_ptr<Profile> profile_;
 
-  base::TimeTicks build_start_time_;
+  // A map from call_id to the call context.
+  base::IDMap<std::unique_ptr<CallContext>> context_map_;
 
-  std::vector<RecentFile> files_;
-
+  // The maximum number of files to be returned as a result of the
+  // GetRecentFiles. This is established at the construction time and never
+  // changed.
   const size_t max_files_;
-
-  mojo::Remote<drivefs::mojom::SearchQuery> search_query_;
 
   base::WeakPtrFactory<RecentDriveSource> weak_ptr_factory_{this};
 };

@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
@@ -57,11 +58,6 @@
 namespace {
 
 using ::ui::mojom::DragOperation;
-
-// Flex behavior precedence for the container's views.
-constexpr int kFlexOrderExtensionsButton = 1;
-constexpr int kFlexOrderRequestAccessButton = 2;
-constexpr int kFlexOrderActionView = 3;
 
 base::OnceClosure& GetOnVisibleCallbackForTesting() {
   static base::NoDestructor<base::OnceClosure> callback;
@@ -194,11 +190,15 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
       // order preference.
       extensions_button_->SetProperty(
           views::kFlexBehaviorKey,
-          hide_icon_flex_specification.WithOrder(kFlexOrderExtensionsButton));
+          hide_icon_flex_specification.WithOrder(
+              ExtensionsToolbarContainerViewController::
+                  kFlexOrderExtensionsButton));
       if (request_access_button_) {
         request_access_button_->SetProperty(
-            views::kFlexBehaviorKey, hide_icon_flex_specification.WithOrder(
-                                         kFlexOrderRequestAccessButton));
+            views::kFlexBehaviorKey,
+            hide_icon_flex_specification.WithOrder(
+                ExtensionsToolbarContainerViewController::
+                    kFlexOrderRequestAccessButton));
       }
       break;
   }
@@ -505,7 +505,8 @@ void ExtensionsToolbarContainer::UpdateIconVisibility(
             views::FlexSpecification(min_flex_rule,
                                      views::MaximumFlexSizeRule::kPreferred)
                 .WithWeight(0)
-                .WithOrder(kFlexOrderActionView));
+                .WithOrder(ExtensionsToolbarContainerViewController::
+                               kFlexOrderActionView));
         break;
     }
   } else {
@@ -970,27 +971,6 @@ void ExtensionsToolbarContainer::OnMenuOpening() {
 
 void ExtensionsToolbarContainer::OnMenuClosed() {
   UpdateContainerVisibility();
-}
-
-void ExtensionsToolbarContainer::WindowControlsOverlayEnabledChanged(
-    bool enabled) {
-  if (!main_item())
-    return;
-
-  UpdateContainerVisibility();
-
-  main_item()->ClearProperty(views::kFlexBehaviorKey);
-  views::MinimumFlexSizeRule min_flex_rule =
-      views::MinimumFlexSizeRule::kPreferredSnapToZero;
-
-  if (enabled)
-    min_flex_rule = views::MinimumFlexSizeRule::kPreferred;
-
-  main_item()->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(min_flex_rule,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(kFlexOrderExtensionsButton));
 }
 
 void ExtensionsToolbarContainer::UpdateSidePanelState(bool is_active) {

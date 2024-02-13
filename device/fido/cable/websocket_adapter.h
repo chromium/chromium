@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_CABLE_WEBSOCKET_ADAPTER_H_
 #define DEVICE_FIDO_CABLE_WEBSOCKET_ADAPTER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -17,7 +18,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace cablev2 {
@@ -48,10 +48,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
 
   using TunnelReadyCallback = base::OnceCallback<void(
       Result,
-      absl::optional<std::array<uint8_t, kRoutingIdSize>>,
+      std::optional<std::array<uint8_t, kRoutingIdSize>>,
       ConnectSignalSupport)>;
   using TunnelDataCallback =
-      base::RepeatingCallback<void(absl::optional<base::span<const uint8_t>>)>;
+      base::RepeatingCallback<void(std::optional<base::span<const uint8_t>>)>;
   WebSocketAdapter(
       // on_tunnel_ready is called once with a boolean that indicates whether
       // the WebSocket successfully connected and an optional routing ID.

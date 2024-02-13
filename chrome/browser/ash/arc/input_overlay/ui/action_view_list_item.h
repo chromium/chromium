@@ -15,7 +15,6 @@ namespace arc::input_overlay {
 // ----------------------------
 // | |Name tag|        |keys| |
 // ----------------------------
-
 class ActionViewListItem : public ActionEditView {
   METADATA_HEADER(ActionViewListItem, views::View)
 
@@ -36,6 +35,8 @@ class ActionViewListItem : public ActionEditView {
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnFocus() override;
 };
 
 }  // namespace arc::input_overlay

@@ -84,7 +84,7 @@ void CaptureModeAshNotificationView::CreateExtraView() {
           : capture_mode_util::CreatePlayIconView());
 }
 
-BEGIN_METADATA(CaptureModeAshNotificationView, AshNotificationView)
+BEGIN_METADATA(CaptureModeAshNotificationView)
 END_METADATA
 
 }  // namespace ash

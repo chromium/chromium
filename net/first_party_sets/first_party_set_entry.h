@@ -48,7 +48,7 @@ class NET_EXPORT FirstPartySetEntry {
   // entry.
   FirstPartySetEntry(SchemefulSite primary,
                      SiteType site_type,
-                     absl::optional<SiteIndex> site_index);
+                     std::optional<SiteIndex> site_index);
   FirstPartySetEntry(SchemefulSite primary,
                      SiteType site_type,
                      uint32_t site_index);
@@ -63,7 +63,7 @@ class NET_EXPORT FirstPartySetEntry {
   bool operator==(const FirstPartySetEntry& other) const;
   bool operator!=(const FirstPartySetEntry& other) const;
 
-  static absl::optional<net::SiteType> DeserializeSiteType(int value);
+  static std::optional<net::SiteType> DeserializeSiteType(int value);
 
   std::string GetDebugString() const;
 
@@ -71,7 +71,7 @@ class NET_EXPORT FirstPartySetEntry {
 
   SiteType site_type() const { return site_type_; }
 
-  const absl::optional<SiteIndex>& site_index() const { return site_index_; }
+  const std::optional<SiteIndex>& site_index() const { return site_index_; }
 
  private:
   // The primary site associated with this site's set.
@@ -81,7 +81,7 @@ class NET_EXPORT FirstPartySetEntry {
   // The index of this site in the set declaration, if a meaningful index
   // exists. Primary sites do not have indices, nor do sites that were defined
   // or affected by an enterprise policy set.
-  absl::optional<SiteIndex> site_index_;
+  std::optional<SiteIndex> site_index_;
 };
 
 NET_EXPORT std::ostream& operator<<(

@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel.ContextualSearchPromoHost;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSettingsFragment;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchUma;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -140,12 +139,6 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
      */
     void onContextualSearchPrefChanged(boolean isEnabled) {
         if (!mIsVisible || !mOverlayPanel.isShowing()) return;
-
-        if (isEnabled) {
-            mHost.onPromoOptIn();
-        } else {
-            mHost.onPromoOptOut();
-        }
 
         collapse();
     }
@@ -368,7 +361,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
     private void handlePromoChoice(boolean hasEnabled) {
         if (!mHasHandledChoice) {
             mHasHandledChoice = true;
-            ContextualSearchManager.setContextualSearchPromoCardSelection(hasEnabled);
+            mHost.setContextualSearchPromoCardSelection(hasEnabled);
             ContextualSearchUma.logPromoCardChoice(hasEnabled);
         }
     }
@@ -426,7 +419,7 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
         // The Promo can only be interacted when the View is being displayed.
         mWasInteractive = true;
 
-        ContextualSearchManager.onPromoShown();
+        mHost.onPromoShown();
 
         updatePromoHeight();
     }

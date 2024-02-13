@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-forward.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 
@@ -51,6 +52,10 @@ class SingleClientProxy {
   // Should be called when any message is received over the connection.
   virtual void HandleReceivedMessage(const std::string& feature,
                                      const std::string& payload) = 0;
+
+  virtual void HandleNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) = 0;
 
   // Should be called when the underlying connection to the remote device has
   // been disconnected (e.g., because the other device closed the connection or

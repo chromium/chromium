@@ -7,6 +7,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -16,7 +17,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/microsoft_webauthn/webauthn.h"
 
 namespace device {
@@ -26,12 +26,12 @@ enum class GetAssertionStatus;
 enum class MakeCredentialStatus;
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<AuthenticatorMakeCredentialResponse>
+std::optional<AuthenticatorMakeCredentialResponse>
 ToAuthenticatorMakeCredentialResponse(
     const WEBAUTHN_CREDENTIAL_ATTESTATION& credential_attestation);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<AuthenticatorGetAssertionResponse>
+std::optional<AuthenticatorGetAssertionResponse>
 ToAuthenticatorGetAssertionResponse(
     const WEBAUTHN_ASSERTION& credential_attestation,
     const CtapGetAssertionOptions& request_options);
@@ -95,7 +95,7 @@ WinCredentialDetailsListToCredentialMetadata(
     const WEBAUTHN_CREDENTIAL_DETAILS_LIST& credentials);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<FidoTransportProtocol> FromWinTransportsMask(
+std::optional<FidoTransportProtocol> FromWinTransportsMask(
     const DWORD transport);
 
 COMPONENT_EXPORT(DEVICE_FIDO)

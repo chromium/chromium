@@ -1,8 +1,6 @@
 // The Shared Storage API.
 // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md
 
-typedef (USVString or FencedFrameConfig) SharedStorageResponse;
-
 [
   RuntimeEnabled=SharedStorageAPI,
   Exposed=(Window, SharedStorageWorklet)
@@ -73,6 +71,14 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
     RaisesException,
     MeasureAs=SharedStorageAPI_Run_Method
   ] Promise<any> run(DOMString name, optional SharedStorageRunOperationMethodOptions options);
+
+  [
+    RuntimeEnabled=SharedStorageAPIM123,
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=SharedStorageAPI_CreateWorklet_Method
+  ] Promise<SharedStorageWorklet> createWorklet(USVString moduleURL,
+                                                optional WorkletOptions options = {});
 
   [
     Exposed=Window,

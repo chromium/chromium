@@ -44,8 +44,7 @@ suite('SpellCheck', function() {
   setup(function() {
     const settingsPrefs = document.createElement('settings-prefs');
     const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(
-        settingsPrivate as unknown as typeof chrome.settingsPrivate);
+    settingsPrefs.initialize(settingsPrivate);
     document.body.appendChild(settingsPrefs);
     return CrSettingsPrefs.initialized.then(function() {
       // Set up test browser proxy.

@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/syslog_logging.h"
@@ -46,7 +45,7 @@ bool IsTestOrLinuxChromeOS() {
   return !base::SysInfo::IsRunningOnChromeOS();
 }
 
-KioskAppLaunchError::Error LoginFailureToKioskAppLaunchError(
+KioskAppLaunchError::Error LoginFailureToKioskLaunchError(
     const AuthFailure& error) {
   switch (error.reason()) {
     case AuthFailure::COULD_NOT_MOUNT_TMPFS:
@@ -247,28 +246,63 @@ class SessionStarter : public CancellableJob,
   base::WeakPtrFactory<SessionStarter> weak_ptr_factory_{this};
 };
 
+void LogErrorToSyslog(KioskAppLaunchError::Error error) {
+  switch (error) {
+    case KioskAppLaunchError::Error::kCryptohomedNotRunning:
+      SYSLOG(ERROR) << "Cryptohome not available when loading Kiosk profile.";
+      break;
+    case KioskAppLaunchError::Error::kAlreadyMounted:
+      SYSLOG(ERROR) << "Cryptohome already mounted when loading Kiosk profile.";
+      break;
+    case KioskAppLaunchError::Error::kUserNotAllowlisted:
+      SYSLOG(ERROR) << "LoginPerformer disallowed Kiosk user sign in.";
+      break;
+    default:
+      SYSLOG(ERROR) << "Unexpected error " << (int)error;
+  }
+}
+
 }  // namespace
+
+std::unique_ptr<CancellableJob> LoadProfile(
+    const AccountId& app_account_id,
+    KioskAppType app_type,
+    KioskProfileLoader::ResultCallback on_done) {
+  return KioskProfileLoader::Run(app_account_id, app_type, std::move(on_done));
+}
+
+std::unique_ptr<CancellableJob> KioskProfileLoader::Run(
+    const AccountId& app_account_id,
+    KioskAppType app_type,
+    ResultCallback on_done) {
+  auto loader = base::WrapUnique(
+      new KioskProfileLoader(app_account_id, app_type, std::move(on_done)));
+  loader->CheckCryptohomeIsNotMounted();
+  return loader;
+}
 
 KioskProfileLoader::KioskProfileLoader(const AccountId& app_account_id,
                                        KioskAppType app_type,
-                                       Delegate* delegate)
-    : account_id_(app_account_id), app_type_(app_type), delegate_(delegate) {}
+                                       ResultCallback on_done)
+    : account_id_(app_account_id),
+      app_type_(app_type),
+      on_done_(std::move(on_done)) {}
 
 KioskProfileLoader::~KioskProfileLoader() = default;
 
-void KioskProfileLoader::Start() {
+void KioskProfileLoader::CheckCryptohomeIsNotMounted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ = CheckCryptohome(base::BindOnce(
       [](KioskProfileLoader* self, std::optional<MountedState> result) {
         if (!result.has_value()) {
-          return self->ReportLaunchResult(
+          return self->ReturnError(
               KioskAppLaunchError::Error::kCryptohomedNotRunning);
         }
         switch (result.value()) {
           case MountedState::kNotMounted:
             return self->LoginAsKioskAccount();
           case MountedState::kMounted:
-            return self->ReportLaunchResult(
+            return self->ReturnError(
                 KioskAppLaunchError::Error::kAlreadyMounted);
         }
       },
@@ -287,17 +321,15 @@ void KioskProfileLoader::LoginAsKioskAccount() {
               return self->PrepareProfile(result.value());
             } else if (auto* error = std::get_if<SigninPerformer::LoginError>(
                            &result.error())) {
-              return self->ReportLaunchResult(
-                  SigninErrorToKioskLaunchError(*error));
+              return self->ReturnError(SigninErrorToKioskLaunchError(*error));
             } else if (auto* auth_failure =
                            std::get_if<AuthFailure>(&result.error())) {
-              return self->ReportLaunchResult(
-                  LoginFailureToKioskAppLaunchError(*auth_failure));
+              return self->ReturnError(
+                  LoginFailureToKioskLaunchError(*auth_failure));
             } else if (auto* user_context =
                            std::get_if<OldEncryptionUserContext>(
                                &result.error())) {
-              return self->ReportOldEncryptionUserContext(
-                  std::move(*user_context));
+              return self->ReturnError(std::move(*user_context));
             }
             NOTREACHED_NORETURN();
           },
@@ -308,37 +340,24 @@ void KioskProfileLoader::LoginAsKioskAccount() {
 void KioskProfileLoader::PrepareProfile(const UserContext& user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_ = SessionStarter::Run(
-      user_context, base::BindOnce(&KioskProfileLoader::ReportProfileLoaded,
+      user_context, base::BindOnce(&KioskProfileLoader::ReturnSuccess,
+                                   // Safe because `this` owns `current_step_`
                                    base::Unretained(this)));
 }
 
-void KioskProfileLoader::ReportProfileLoaded(Profile& profile) {
+void KioskProfileLoader::ReturnSuccess(Profile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_.reset();
-  delegate_->OnProfileLoaded(&profile);
+  std::move(on_done_).Run(&profile);
 }
 
-void KioskProfileLoader::ReportLaunchResult(KioskAppLaunchError::Error error) {
+void KioskProfileLoader::ReturnError(ErrorResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_step_.reset();
-
-  if (error == KioskAppLaunchError::Error::kCryptohomedNotRunning) {
-    SYSLOG(ERROR) << "Cryptohome not available when loading Kiosk profile.";
-  } else if (error == KioskAppLaunchError::Error::kAlreadyMounted) {
-    SYSLOG(ERROR) << "Cryptohome already mounted when loading Kiosk profile.";
-  } else if (error == KioskAppLaunchError::Error::kUserNotAllowlisted) {
-    SYSLOG(ERROR) << "LoginPerformer disallowed Kiosk user sign in.";
+  if (auto* error = std::get_if<KioskAppLaunchError::Error>(&result)) {
+    LogErrorToSyslog(*error);
   }
-
-  if (error != KioskAppLaunchError::Error::kNone) {
-    delegate_->OnProfileLoadFailed(error);
-  }
-}
-
-void KioskProfileLoader::ReportOldEncryptionUserContext(
-    OldEncryptionUserContext user_context) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  delegate_->OnOldEncryptionDetected(std::move(user_context));
+  std::move(on_done_).Run(base::unexpected(std::move(result)));
 }
 
 }  // namespace ash

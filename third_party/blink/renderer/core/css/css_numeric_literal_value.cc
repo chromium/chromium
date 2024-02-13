@@ -137,6 +137,11 @@ double CSSNumericLiteralValue::ComputeNumber() const {
   return ClampTo<double>(num_);
 }
 
+double CSSNumericLiteralValue::ComputePercentage() const {
+  DCHECK(IsPercentage());
+  return ClampTo<double>(num_);
+}
+
 bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                                    double multiplier) const {
   LengthUnitType length_type;

@@ -22,7 +22,8 @@ bool StructTraits<blink::mojom::ViewTransitionElementDataView,
       !data.ReadSnapshotId(&out->snapshot_id) ||
       !data.ReadCapturedRectInLayoutSpace(
           &out->captured_rect_in_layout_space) ||
-      !data.ReadCapturedCssProperties(&out->captured_css_properties)) {
+      !data.ReadCapturedCssProperties(&out->captured_css_properties) ||
+      !data.ReadClassList(&out->class_list)) {
     return false;
   }
 

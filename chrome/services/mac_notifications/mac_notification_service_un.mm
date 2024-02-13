@@ -357,7 +357,7 @@ void MacNotificationServiceUN::CloseAllNotifications() {
 void MacNotificationServiceUN::OkayToTerminateService(
     OkayToTerminateServiceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (permission_request_is_pending_) {
+  if (!pending_permission_requests_.empty()) {
     std::move(callback).Run(false);
     return;
   }
@@ -370,40 +370,74 @@ void MacNotificationServiceUN::OkayToTerminateService(
       }).Then(std::move(callback)));
 }
 
-void MacNotificationServiceUN::RequestPermission() {
+void MacNotificationServiceUN::RequestPermission(
+    RequestPermissionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If there already is a pending permission request, just return. Since the
   // outcome of the permission request isn't reported back, there is no point
   // in doing more than this.
-  if (permission_request_is_pending_) {
+  pending_permission_requests_.push_back(std::move(callback));
+  if (pending_permission_requests_.size() > 1) {
     return;
   }
 
-  permission_request_is_pending_ = true;
-  __block auto update_pending_status_callback =
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          [](base::WeakPtr<MacNotificationServiceUN> service) {
-            if (service) {
-              DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
-              service->permission_request_is_pending_ = false;
-            }
-          },
-          weak_factory_.GetWeakPtr()));
+  // First query current permission state, to distinguish previously
+  // granted/denied states from newly grante/denied states.
+  auto lambda = [](base::WeakPtr<MacNotificationServiceUN> service,
+                   UNAuthorizationStatus status) {
+    if (!service) {
+      return;
+    }
+    DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
+    switch (status) {
+      case UNAuthorizationStatusDenied:
+        service->ReportRequestPermissionResult(
+            mojom::RequestPermissionResult::kPermissionPreviouslyDenied);
+        break;
+      case UNAuthorizationStatusAuthorized:
+        service->ReportRequestPermissionResult(
+            mojom::RequestPermissionResult::kPermissionPreviouslyGranted);
+        break;
+      default:
+        service->DoRequestPermission();
+    }
+  };
+  __block auto block_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(lambda, weak_factory_.GetWeakPtr()));
+  [notification_center_ getNotificationSettingsWithCompletionHandler:^(
+                            UNNotificationSettings* settings) {
+    std::move(block_callback).Run(settings.authorizationStatus);
+  }];
+}
+
+void MacNotificationServiceUN::ReportRequestPermissionResult(
+    mojom::RequestPermissionResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  LogUNNotificationRequestPermissionResult(result);
+  std::vector<RequestPermissionCallback> callbacks = std::exchange(
+      pending_permission_requests_, std::vector<RequestPermissionCallback>());
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(result);
+  }
+}
+
+void MacNotificationServiceUN::DoRequestPermission() {
+  __block auto block_callback = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&MacNotificationServiceUN::ReportRequestPermissionResult,
+                     weak_factory_.GetWeakPtr()));
 
   UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert |
                                        UNAuthorizationOptionSound |
                                        UNAuthorizationOptionBadge;
 
   auto resultHandler = ^(BOOL granted, NSError* _Nullable error) {
-    auto result = UNNotificationRequestPermissionResult::kRequestFailed;
+    auto result = mojom::RequestPermissionResult::kRequestFailed;
     if (!error) {
-      result = granted
-                   ? UNNotificationRequestPermissionResult::kPermissionGranted
-                   : UNNotificationRequestPermissionResult::kPermissionDenied;
+      result = granted ? mojom::RequestPermissionResult::kPermissionGranted
+                       : mojom::RequestPermissionResult::kPermissionDenied;
     }
-    LogUNNotificationRequestPermissionResult(result);
-    std::move(update_pending_status_callback).Run();
+    std::move(block_callback).Run(result);
   };
 
   [notification_center_ requestAuthorizationWithOptions:authOptions

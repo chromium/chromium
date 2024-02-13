@@ -11,9 +11,10 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
-import '../../components/dialogs/oobe_adaptive_dialog.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -114,6 +115,13 @@ export class FactorSetupSuccessScreen extends FactorSetupSuccessBase {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override getOobeUIInitialState(): OOBE_UI_STATE {
     return OOBE_UI_STATE.BLOCKING;
+  }
+
+  /** Returns a control which should receive an initial focus. */
+  override get defaultControl(): HTMLElement {
+    const dialog =  this.shadowRoot?.querySelector('#factorSetupSuccessDialog');
+    assert(dialog instanceof OobeAdaptiveDialog);
+    return dialog;
   }
 
   /**

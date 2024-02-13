@@ -75,7 +75,9 @@ Points à prendre en compte :
 <translation id="2689064829982324496">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
 <translation id="2702250627063295552">Ajouter un élément de liste de lecture à Chrome</translation>
+<translation id="2703746758996815929">Pour recevoir des conseils pratiques sur Chrome, activez les notifications dans les réglages iOS.</translation>
 <translation id="2736805085127235148">Les notifications Chrome sont actuellement désactivées dans les paramètres de votre appareil.</translation>
+<translation id="2750626042242931740">Vous pouvez modifier vos sélections à tout moment dans les paramètres Chrome.</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2789947168960170215">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Effacer les données de navigation dans Chrome</translation>
@@ -297,6 +299,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="8865415417596392024">Données Chrome de votre compte</translation>
+<translation id="8874688701962049679">Conseils pour exploiter tout le potentiel de Chrome.</translation>
 <translation id="8891935667620843985">Vous pouvez ouvrir automatiquement des liens dans Chrome en le définissant comme navigateur par défaut.</translation>
 <translation id="8897749957032330183">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil.</translation>
 <translation id="8949681853939555434">Définir Chrome comme navigateur par défaut</translation>

@@ -15,14 +15,15 @@ import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/lib/elements/dom-repeat.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeThemesBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './customize_themes.html.js';
-import {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerInterface, Theme, ThemeType} from './customize_themes.mojom-webui.js';
-import {ThemeIconElement} from './theme_icon.js';
+import type {ChromeTheme, CustomizeThemesClientCallbackRouter, CustomizeThemesHandlerInterface, Theme} from './customize_themes.mojom-webui.js';
+import {ThemeType} from './customize_themes.mojom-webui.js';
+import type {ThemeIconElement} from './theme_icon.js';
 
 export interface CustomizeThemesElement {
   $: {

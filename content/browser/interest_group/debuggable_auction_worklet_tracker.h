@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -61,7 +62,7 @@ class CONTENT_EXPORT DebuggableAuctionWorkletTracker {
   void NotifyDestroyed(DebuggableAuctionWorklet* worklet);
 
   base::ObserverList<Observer> observer_list_;
-  std::set<DebuggableAuctionWorklet*> live_worklets_;
+  std::set<raw_ptr<DebuggableAuctionWorklet, SetExperimental>> live_worklets_;
 };
 
 }  // namespace content

@@ -17,6 +17,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -63,7 +64,7 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
         safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   }
 
-  void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
+  void PerformActionBasedOnOmahaAttributes(const ExtensionId& extension_id,
                                            bool is_malware,
                                            bool is_allowlisted) {
     auto attributes = base::Value::Dict().Set("_esbAllowlist", is_allowlisted);
@@ -74,15 +75,15 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
     service()->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   }
 
-  bool IsEnabled(const std::string& extension_id) {
+  bool IsEnabled(const ExtensionId& extension_id) {
     return registry()->enabled_extensions().Contains(extension_id);
   }
 
-  bool IsDisabled(const std::string& extension_id) {
+  bool IsDisabled(const ExtensionId& extension_id) {
     return registry()->disabled_extensions().Contains(extension_id);
   }
 
-  bool IsBlocklisted(const std::string& extension_id) {
+  bool IsBlocklisted(const ExtensionId& extension_id) {
     return registry()->blocklisted_extensions().Contains(extension_id);
   }
 

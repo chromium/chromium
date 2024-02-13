@@ -1146,4 +1146,15 @@ class TabSwitcherMediator
                 ? null
                 : mTabListEditorControllerSupplier.get();
     }
+
+    /**
+     * Refresh the tab switcher's tab list and perform an out-of-band update on the UI. If the tab
+     * switcher is not visible, this will no-op.
+     */
+    public void refreshTabList() {
+        if (!mContainerViewModel.get(IS_VISIBLE)) return;
+
+        mResetHandler.resetWithTabList(
+                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter(), false);
+    }
 }

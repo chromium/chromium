@@ -1032,8 +1032,9 @@ LayoutUnit LayoutBox::ClientHeightWithTableSpecialBehavior() const {
 
 bool LayoutBox::UsesOverlayScrollbars() const {
   NOT_DESTROYED();
-  if (StyleRef().HasCustomScrollbarStyle())
+  if (StyleRef().HasCustomScrollbarStyle(GetDocument())) {
     return false;
+  }
   if (GetFrame()->GetPage()->GetScrollbarTheme().UsesOverlayScrollbars())
     return true;
   return false;
@@ -1256,7 +1257,7 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {
 
   const bool apply_fixed_size = StyleRef().ApplyControlFixedSize(&element);
   const auto* select = DynamicTo<HTMLSelectElement>(element);
-  if (UNLIKELY(select && select->UsesMenuList())) {
+  if (UNLIKELY(select && select->UsesMenuList() && !select->SlottedButton())) {
     return apply_fixed_size ? MenuListIntrinsicInlineSize(*select, *this)
                             : kIndefiniteSize;
   }
@@ -1312,10 +1313,13 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
     return kIndefiniteSize;
   }
   if (const auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
-    if (select->UsesMenuList())
-      return MenuListIntrinsicBlockSize(*select, *this);
-    return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
-           ComputeLogicalScrollbars().BlockSum();
+    if (!select->SlottedButton()) {
+      if (select->UsesMenuList()) {
+        return MenuListIntrinsicBlockSize(*select, *this);
+      }
+      return ListBoxItemBlockSize(*select, *this) * select->ListBoxSize() -
+             ComputeLogicalScrollbars().BlockSum();
+    }
   }
   if (IsTextField()) {
     return TextFieldIntrinsicBlockSize(*To<HTMLInputElement>(GetNode()), *this);

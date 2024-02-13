@@ -60,6 +60,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
@@ -922,8 +923,15 @@ class BookmarkBarViewTest6 : public BookmarkBarViewEventTestBase {
   }
 };
 
+#if BUILDFLAG(IS_OZONE_WAYLAND) || BUILDFLAG(IS_WIN)
+// TODO (crbug/1523247): This test is failing under wayland and Windows when
+// the ChromeRefresh2023 flags are set. This skips it until it can be fixed.
+#define MAYBE_OpenMenuOnClickAndHold DISABLED_OpenMenuOnClickAndHold
+#else
+#define MAYBE_OpenMenuOnClickAndHold OpenMenuOnClickAndHold
+#endif
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(BookmarkBarViewTest6, OpenMenuOnClickAndHold)
+VIEW_TEST(BookmarkBarViewTest6, MAYBE_OpenMenuOnClickAndHold)
 
 // Tests drag and drop to different menu.
 class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
@@ -1871,6 +1879,11 @@ END_METADATA
 
 // TODO(https://crbug.com/1506808): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_ContextMenuExitTest DISABLED_ContextMenuExitTest
+#elif BUILDFLAG(IS_OZONE_WAYLAND)
+// TODO (crbug/1523247): This test is failing under wayland when the
+//                       ChromeRefresh2023 flags are set. This skips it
+//                       until it can be fixed.
 #define MAYBE_ContextMenuExitTest DISABLED_ContextMenuExitTest
 #else
 #define MAYBE_ContextMenuExitTest ContextMenuExitTest

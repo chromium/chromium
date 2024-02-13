@@ -26,12 +26,10 @@ PasswordFeatureManagerImpl::PasswordFeatureManagerImpl(
 
 bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   switch (password_manager::sync_util::GetPasswordSyncState(sync_service_)) {
-    case SyncState::kNotSyncing:
+    case sync_util::SyncState::kNotActive:
       return ShouldShowAccountStorageOptIn();
-    case SyncState::kSyncingWithCustomPassphrase:
-    case SyncState::kSyncingNormalEncryption:
-    case SyncState::kAccountPasswordsActiveNormalEncryption:
-    case SyncState::kAccountPasswordsActiveWithCustomPassphrase:
+    case sync_util::SyncState::kActiveWithNormalEncryption:
+    case sync_util::SyncState::kActiveWithCustomPassphrase:
       return true;
   }
 }
@@ -97,6 +95,10 @@ PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 void PasswordFeatureManagerImpl::OptInToAccountStorage() {
   features_util::OptInToAccountStorage(pref_service_, sync_service_);
+}
+
+void PasswordFeatureManagerImpl::OptOutOfAccountStorage() {
+  features_util::OptOutOfAccountStorage(pref_service_, sync_service_);
 }
 
 void PasswordFeatureManagerImpl::OptOutOfAccountStorageAndClearSettings() {

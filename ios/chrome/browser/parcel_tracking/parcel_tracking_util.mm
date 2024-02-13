@@ -24,6 +24,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 
+namespace {
+const CGFloat parcelLimit = 5;
+}  // namespace
+
 bool IsIOSParcelTrackingEnabled() {
   return base::FeatureList::IsEnabled(kIOSParcelTracking) &&
          GetApplicationContext()->GetLocalState()->GetBoolean(
@@ -104,19 +108,20 @@ void FilterParcelsAndShowParcelTrackingUI(
             [parcel_numbers removeObject:tracking_id];
           }
         }
+        // Add the remaining parcels to filtered_parcels array.
         NSMutableArray<CustomTextCheckingResult*>* filtered_parcels =
             [[NSMutableArray alloc] init];
-        // Add the remaining parcels to filtered_parcels array.
         for (CustomTextCheckingResult* parcel : parcels) {
           if ([parcel_numbers containsObject:parcel.carrierNumber]) {
             [filtered_parcels addObject:parcel];
           }
         }
-        if (filtered_parcels.count == 0) {
-          return;
+        // Only track or offer to track when number of packages is less than 6.
+        if (filtered_parcels.count > 0 &&
+            filtered_parcels.count <= parcelLimit) {
+          [parcel_tracking_commands_handler
+              showTrackingForFilteredParcels:filtered_parcels];
         }
-        [parcel_tracking_commands_handler
-            showTrackingForFilteredParcels:filtered_parcels];
       },
       parcel_tracking_commands_handler, parcels));
 }

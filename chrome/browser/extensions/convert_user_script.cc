@@ -29,6 +29,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
+#include "extensions/common/utils/extension_types_utils.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -134,14 +135,7 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   content_script.js.emplace();
   content_script.js->push_back("script.js");
 
-  if (script.run_location() == mojom::RunLocation::kDocumentStart) {
-    content_script.run_at = api::content_scripts::RunAt::kDocumentStart;
-  } else if (script.run_location() == mojom::RunLocation::kDocumentEnd) {
-    content_script.run_at = api::content_scripts::RunAt::kDocumentEnd;
-  } else if (script.run_location() == mojom::RunLocation::kDocumentIdle) {
-    // This is the default, but store it just in case we change that.
-    content_script.run_at = api::content_scripts::RunAt::kDocumentIdle;
-  }
+  content_script.run_at = ConvertRunLocationForAPI(script.run_location());
 
   base::Value::List content_scripts;
   content_scripts.Append(content_script.ToValue());

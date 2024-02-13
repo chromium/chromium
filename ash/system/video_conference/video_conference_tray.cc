@@ -553,7 +553,7 @@ void VideoConferenceTray::SetBackgroundReplaceUiVisible(bool visible) {
   }
 }
 
-BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)
+BEGIN_METADATA(VideoConferenceTray)
 END_METADATA
 
 }  // namespace ash

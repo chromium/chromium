@@ -1,3 +1,6 @@
-monorail {
+monorail: {
   component: "Blink>Internals>WTF"
+}
+buganizer_public: {
+  component_id: 1456147
 }

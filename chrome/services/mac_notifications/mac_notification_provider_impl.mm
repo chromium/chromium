@@ -38,7 +38,7 @@ void MacNotificationProviderImpl::BindNotificationService(
     auto* service_un = static_cast<MacNotificationServiceUN*>(service_.get());
     service_un->Bind(std::move(service));
     // TODO(crbug.com/1129366): Determine when to ask for permissions.
-    service_un->RequestPermission();
+    service_un->RequestPermission(base::DoNothing());
     return;
   }
 

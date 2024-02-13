@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,17 +18,18 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace {
-class TestBubbleContentsWrapper
-    : public BubbleContentsWrapper,
-      public base::SupportsWeakPtr<TestBubbleContentsWrapper> {
+class TestWebUIContentsWrapper : public WebUIContentsWrapper {
  public:
-  explicit TestBubbleContentsWrapper(Profile* profile)
-      : BubbleContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
+  explicit TestWebUIContentsWrapper(Profile* profile)
+      : WebUIContentsWrapper(GURL(""), profile, 0, true, true, "Test") {}
   void ReloadWebContents() override {}
 
-  base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
-    return AsWeakPtr();
+  base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
+
+ private:
+  base::WeakPtrFactory<TestWebUIContentsWrapper> weak_ptr_factory_{this};
 };
 }  // namespace
 
@@ -52,7 +53,7 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
     Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Init(std::move(params));
     contents_wrapper_ =
-        std::make_unique<TestBubbleContentsWrapper>(profile_.get());
+        std::make_unique<TestWebUIContentsWrapper>(profile_.get());
 
     auto bubble_view = std::make_unique<WebUIBubbleDialogView>(
         anchor_widget_->GetContentsView(), contents_wrapper_->GetWeakPtr());
@@ -70,7 +71,7 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
  protected:
   WebUIBubbleDialogView* bubble_dialog_view() { return bubble_view_; }
   Widget* bubble_widget() { return bubble_widget_; }
-  BubbleContentsWrapper* contents_wrapper() {
+  WebUIContentsWrapper* contents_wrapper() {
     return bubble_view_->get_contents_wrapper_for_testing();
   }
   views::WebView* web_view() { return bubble_view_->web_view(); }
@@ -78,7 +79,7 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<TestingProfile> profile_;
   views::UniqueWidgetPtr anchor_widget_;
-  std::unique_ptr<TestBubbleContentsWrapper> contents_wrapper_;
+  std::unique_ptr<TestWebUIContentsWrapper> contents_wrapper_;
   raw_ptr<Widget, DanglingUntriaged> bubble_widget_ = nullptr;
   raw_ptr<WebUIBubbleDialogView, DanglingUntriaged> bubble_view_ = nullptr;
 };
@@ -135,7 +136,7 @@ TEST_F(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
   anchor_widget->Init(std::move(params));
   auto profile = std::make_unique<TestingProfile>();
   auto contents_wrapper =
-      std::make_unique<TestBubbleContentsWrapper>(profile.get());
+      std::make_unique<TestWebUIContentsWrapper>(profile.get());
 
   gfx::Rect anchor(666, 666, 0, 0);
   auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
@@ -152,7 +153,7 @@ TEST_F(WebUIBubbleDialogViewTest, DestroyingContentsWrapperDoesNotSegfault) {
   anchor_widget->Init(std::move(params));
   auto profile = std::make_unique<TestingProfile>();
   auto contents_wrapper =
-      std::make_unique<TestBubbleContentsWrapper>(profile.get());
+      std::make_unique<TestWebUIContentsWrapper>(profile.get());
 
   gfx::Rect anchor(666, 666, 0, 0);
   auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(

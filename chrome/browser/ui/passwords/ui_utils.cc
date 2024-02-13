@@ -49,6 +49,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
+#include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 #endif
 
 namespace {
@@ -256,12 +258,14 @@ void NavigateToManagePasswordsPage(Browser* browser,
 }
 
 void NavigateToManagePasswordsSettingsAccountStoreToggle(Browser* browser) {
-  GURL url(chrome::kChromeUIPasswordManagerSettingsURL);
-  url = net::AppendQueryParameter(url, "accountStoreIPH", "true");
+  ShowPromoInPage::Params params;
+  params.target_url = GURL(chrome::kChromeUIPasswordManagerSettingsURL);
+  params.bubble_anchor_id = PasswordManagerUI::kAccountStoreToggleElementId;
+  params.bubble_arrow = user_education::HelpBubbleArrow::kTopRight;
+  params.bubble_text = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_IPH_ACCOUNT_STORAGE_TOGGLE);
 
-  NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  Navigate(&params);
+  ShowPromoInPage::Start(browser, std::move(params));
 }
 
 void NavigateToPasswordCheckupPage(Profile* profile) {

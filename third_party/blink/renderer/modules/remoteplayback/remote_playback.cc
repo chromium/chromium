@@ -467,6 +467,15 @@ void RemotePlayback::UpdateAvailabilityUrlsAndStartListening() {
     return;
   }
 
+  // If the video is too short, it's unlikely to be cast. Disable availability
+  // monitoring so that the cast buttons are hidden from the video player.
+  if (!media_element_ || std::isnan(media_element_->duration()) ||
+      media_element_->duration() <= kMinRemotingMediaDurationInSec) {
+    StopListeningForAvailability();
+    availability_urls_.clear();
+    return;
+  }
+
   KURL current_url =
       availability_urls_.empty() ? KURL() : availability_urls_[0];
   KURL new_url = GetAvailabilityUrl(source_, is_source_supported_, video_codec_,

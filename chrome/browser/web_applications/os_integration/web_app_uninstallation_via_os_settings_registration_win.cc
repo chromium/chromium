@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/hash/md5.h"
 #include "base/path_service.h"
@@ -39,7 +40,7 @@ std::wstring GetUninstallStringKey(const base::FilePath& profile_path,
   std::wstring key =
       base::StrCat({profile_path.value(), base::ASCIIToWide(app_id)});
   base::MD5Digest digest;
-  base::MD5Sum(key.c_str(), key.size() * sizeof(wchar_t), &digest);
+  base::MD5Sum(base::as_byte_span(key), &digest);
   return base::ASCIIToWide(base::MD5DigestToBase16(digest));
 }
 

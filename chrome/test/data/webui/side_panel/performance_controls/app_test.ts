@@ -4,7 +4,7 @@
 
 import 'chrome://performance-side-panel.top-chrome/app.js';
 
-import {PerformanceAppElement} from 'chrome://performance-side-panel.top-chrome/app.js';
+import type {PerformanceAppElement} from 'chrome://performance-side-panel.top-chrome/app.js';
 import {PerformanceSidePanelNotification} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
 import {PerformancePageApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/performance_page_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

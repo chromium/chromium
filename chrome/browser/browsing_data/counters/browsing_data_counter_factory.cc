@@ -105,7 +105,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
             profile, ServiceAccessType::EXPLICIT_ACCESS),
         AccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
-        SyncServiceFactory::GetForProfile(profile),
+        profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile),
         std::move(credential_store));
   }
 

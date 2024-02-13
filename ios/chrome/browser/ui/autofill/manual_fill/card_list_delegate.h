@@ -7,17 +7,22 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
 
+@class CrURL;
+
 // Delegate for actions in manual fallback's cards list.
 @protocol CardListDelegate
 
-// Open feature to add a credit card.
+// Opens feature to add a credit card.
 - (void)openAddCreditCard;
 
-// Open cards settings.
+// Opens cards settings.
 - (void)openCardSettings;
 
-// Open credit card unlock, through CVC, prompt.
+// Opens credit card unlock, through CVC, prompt.
 - (void)requestFullCreditCard:(ManualFillCreditCard*)card;
+
+// Opens URL when a link is tapped.
+- (void)openURL:(CrURL*)url;
 
 @end
 

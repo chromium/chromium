@@ -285,6 +285,15 @@ class COMPONENT_EXPORT(URL) GURL {
   //
   // It is an error to get the content of an invalid URL: the result will be an
   // empty string.
+  //
+  // Important note: The feature flag,
+  // url::kStandardCompliantNonSpecialSchemeURLParsing, changes the behavior of
+  // GetContent() and GetContentPiece() for some non-special URLs. See
+  // GURLTest::ContentForNonStandardURLs for the differences.
+  //
+  // Until the flag becomes enabled by default, you'll need to manually check
+  // the flag when using GetContent() and GetContentPiece() for non-special
+  // URLs. See http://crbug.com/40063064 for more details.
   std::string GetContent() const;
   std::string_view GetContentPiece() const;
 

@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_H_
 
 #include "base/component_export.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -14,6 +15,7 @@
 namespace ui {
 
 class AXModeObserver;
+class AXPlatformNode;
 
 // Process-wide accessibility platform state.
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
@@ -49,10 +51,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   // Returns the process-wide accessibility mode.
   AXMode GetMode() { return delegate_->GetProcessMode(); }
 
-  // Sets the process-wide accessibility mode.
-  // TODO(grt): Remove all non-test callers and rename to SetModeForTesting.
-  void SetMode(AXMode new_mode) { delegate_->SetProcessMode(new_mode); }
-
   void AddModeObserver(AXModeObserver* observer);
   void RemoveModeObserver(AXModeObserver* observer);
 
@@ -61,6 +59,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatform {
   void NotifyModeAdded(AXMode mode);
 
  private:
+  friend class ::ui::AXPlatformNode;
+  FRIEND_TEST_ALL_PREFIXES(AXPlatformTest, Observer);
+
+  // Sets the process-wide accessibility mode.
+  void SetMode(AXMode new_mode) { delegate_->SetProcessMode(new_mode); }
+
   // The embedder's delegate.
   const raw_ref<Delegate> delegate_;
 

@@ -94,13 +94,13 @@ class TopAlignedBoxLayout : public views::BoxLayout {
 
  private:
   // views::BoxLayout:
-  void LayoutImpl() override {
-    if (host_view()->height() >= host_view()->GetPreferredSize().height()) {
-      views::BoxLayout::LayoutImpl();
+  void Layout(views::View* host) override {
+    if (host->height() >= host->GetPreferredSize().height()) {
+      views::BoxLayout::Layout(host);
       return;
     }
 
-    gfx::Rect contents_bounds(host_view()->GetContentsBounds());
+    gfx::Rect contents_bounds(host->GetContentsBounds());
     contents_bounds.Inset(inside_border_insets());
 
     const int width = contents_bounds.width();
@@ -112,7 +112,7 @@ class TopAlignedBoxLayout : public views::BoxLayout {
     // `available_height` is tracked to later determine if there will be
     // vertical overflow of `contents_bounds`.
     int available_height = contents_bounds.height();
-    for (views::View* child : host_view()->children()) {
+    for (views::View* child : host->children()) {
       if (!child->GetVisible())
         continue;
 
@@ -130,7 +130,7 @@ class TopAlignedBoxLayout : public views::BoxLayout {
 
     // Perform child layouts, ceding height where possible to fit within
     // `contents_bounds`. Note: this does not guarantee that `contents_bounds`
-    // will not be exceeded. Overflow will be clipped by the `host_view()` view.
+    // will not be exceeded. Overflow will be clipped by the `host` view.
     for (auto& [child, height] : children_with_heights) {
       // A `child` view is willing to cede height if it does not specify a
       // minimum size. This is the case for the `PinnedFilesSection` which

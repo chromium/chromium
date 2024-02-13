@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_selection.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -224,7 +225,7 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   raw_ptr<Button> button_ = nullptr;
   raw_ptr<Label> label_ = nullptr;
   raw_ptr<Textfield> textfield_ = nullptr;
-  ScopedAXModeSetter ax_mode_setter_;
+  ::ui::ScopedAXModeSetter ax_mode_setter_;
 };
 
 class ViewAXPlatformNodeDelegateTableTest
@@ -1065,9 +1066,9 @@ TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasHeader) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTableTest, TableHasCell) {
-  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(0, 0));
-  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(0, 3));
-  EXPECT_NE(absl::nullopt, table_accessibility()->GetCellId(9, 3));
+  EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(0, 0));
+  EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(0, 3));
+  EXPECT_NE(std::nullopt, table_accessibility()->GetCellId(9, 3));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(-1, 0));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(0, -1));
   EXPECT_DCHECK_DEATH(table_accessibility()->GetCellId(10, 0));

@@ -4,6 +4,8 @@
 
 #include "net/http/http_response_info.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -16,7 +18,6 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 using base::Time;
@@ -348,7 +349,7 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
     int64_t id;
     if (!iter.ReadInt64(&id))
       return false;
-    browser_run_id = absl::make_optional(id);
+    browser_run_id = std::make_optional(id);
   }
 
   did_use_shared_dictionary =

@@ -60,7 +60,8 @@ class ProcessManager : public KeyedService,
                        public content::RenderProcessHostObserver,
                        public ExtensionHostObserver {
  public:
-  using ExtensionHostSet = std::set<extensions::ExtensionHost*>;
+  using ExtensionHostSet =
+      std::set<raw_ptr<extensions::ExtensionHost, SetExperimental>>;
 
   // A struct representing an active service worker keepalive.
   struct ServiceWorkerKeepaliveData {

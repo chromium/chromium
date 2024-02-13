@@ -238,7 +238,7 @@ float InkDropHost::GetVisibleOpacity() const {
   return ink_drop_visible_opacity_;
 }
 
-void InkDropHost::SetHighlightOpacity(absl::optional<float> opacity) {
+void InkDropHost::SetHighlightOpacity(std::optional<float> opacity) {
   if (opacity == ink_drop_highlight_opacity_) {
     return;
   }
@@ -347,7 +347,7 @@ InkDropEventHandler* InkDropHost::GetEventHandler() {
 }
 
 bool InkDropHost::AddInkDropClip(ui::Layer* ink_drop_layer) {
-  absl::optional<gfx::RRectF> clipping_data =
+  std::optional<gfx::RRectF> clipping_data =
       HighlightPathGenerator::GetRoundRectForView(host_view_);
   if (!clipping_data) {
     return false;

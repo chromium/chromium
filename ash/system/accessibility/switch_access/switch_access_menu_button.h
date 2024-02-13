@@ -22,9 +22,9 @@ class Label;
 namespace ash {
 
 class SwitchAccessMenuButton : public views::Button {
- public:
-  METADATA_HEADER(SwitchAccessMenuButton);
+  METADATA_HEADER(SwitchAccessMenuButton, views::Button)
 
+ public:
   SwitchAccessMenuButton(std::string action_name,
                          const gfx::VectorIcon& icon,
                          int accessible_name_id);

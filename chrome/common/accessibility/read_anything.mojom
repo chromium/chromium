@@ -212,6 +212,5 @@ interface UntrustedPage {
                            read_anything.mojom.HighlightGranularity granularity);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.
-  [EnableIf=enable_screen_ai_service]
   ScreenAIServiceReady();
 };

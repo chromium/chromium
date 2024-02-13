@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store/password_store_change.h"
@@ -20,13 +21,26 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace browsing_data {
 namespace {
 
 // This predicate is only about profile (non-account) passwords, so it is only
 // concerned about whether sync-the-feature is on or off. Account passwords are
 // counted separately.
-bool IsProfilePasswordSyncEnabled(const syncer::SyncService* sync_service) {
+bool IsProfilePasswordSyncEnabled(PrefService* pref_service,
+                                  const syncer::SyncService* sync_service) {
+#if BUILDFLAG(IS_ANDROID)
+  // If UsesSplitStoresAndUPMForLocal() is true, the profile store is never
+  // synced, only the account store is.
+  if (password_manager::UsesSplitStoresAndUPMForLocal(pref_service)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // TODO(crbug.com/1464264): Migrate away from `ConsentLevel::kSync` on desktop
   // platforms, including APIs that depend on sync-the-feature.
   return password_manager::sync_util::IsSyncFeatureActiveIncludingPasswords(
@@ -188,8 +202,9 @@ PasswordsCounter::PasswordsResult::~PasswordsResult() = default;
 PasswordsCounter::PasswordsCounter(
     scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
     scoped_refptr<password_manager::PasswordStoreInterface> account_store,
+    PrefService* pref_service,
     syncer::SyncService* sync_service)
-    : sync_tracker_(this, sync_service) {
+    : sync_tracker_(this, sync_service), pref_service_(pref_service) {
   profile_store_fetcher_ = std::make_unique<PasswordStoreFetcher>(
       profile_store,
       base::BindRepeating(&PasswordsCounter::Restart, base::Unretained(this))),
@@ -219,7 +234,7 @@ const std::vector<std::string>& PasswordsCounter::account_domain_examples() {
 
 void PasswordsCounter::OnInitialized() {
   sync_tracker_.OnInitialized(
-      base::BindRepeating(&IsProfilePasswordSyncEnabled));
+      base::BindRepeating(&IsProfilePasswordSyncEnabled, pref_service_));
 }
 
 const char* PasswordsCounter::GetPrefName() const {

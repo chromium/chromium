@@ -163,6 +163,7 @@ All changes to this list should go through Blink's feature review process: http:
     display
     dominant-baseline
     empty-cells
+    field-sizing
     fill
     fill-opacity
     fill-rule

@@ -13,11 +13,15 @@
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
+#include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/style/system_shadow.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -32,6 +36,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_utils.h"
@@ -44,15 +49,19 @@ namespace {
 
 constexpr gfx::Size kPickerSize(320, 340);
 constexpr int kBorderRadius = 12;
-constexpr int kShadowElevation = 3;
+constexpr SystemShadow::Type kShadowType = SystemShadow::Type::kElevation12;
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevated;
 
+// Padding to separate the Picker window from the caret.
+constexpr gfx::Outsets kPaddingAroundCaret(4);
+// Padding to separate the Picker window from the screen edge.
+constexpr gfx::Insets kPaddingFromScreenEdge(16);
+
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+      views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
   border->SetCornerRadius(kBorderRadius);
-  border->set_md_shadow_elevation(kShadowElevation);
   return border;
 }
 
@@ -63,62 +72,72 @@ std::unique_ptr<views::Separator> CreateSeparator() {
       .Build();
 }
 
-// Gets the preferred layout to use given `caret_bounds` in screen coordinates.
-PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& caret_bounds) {
-  return caret_bounds.bottom() + kPickerSize.height() <=
+// Gets the anchor bounds to use for positioning the Picker. We prefer to anchor
+// at `caret_bounds`, but may use `cursor_point` as a fallback. `caret_bounds`,
+// `cursor_point`, `focused_window_bounds` and returned anchor bounds should be
+// in screen coordinates.
+gfx::Rect GetPickerAnchorBounds(const gfx::Rect& caret_bounds,
+                                const gfx::Point& cursor_point,
+                                const gfx::Rect& focused_window_bounds) {
+  if (caret_bounds != gfx::Rect() &&
+      focused_window_bounds.Contains(caret_bounds)) {
+    gfx::Rect anchor_rect = caret_bounds;
+    anchor_rect.Outset(kPaddingAroundCaret);
+    return anchor_rect;
+  } else {
+    return gfx::Rect(cursor_point, gfx::Size());
+  }
+}
+
+// Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
+PickerView::PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds) {
+  return anchor_bounds.bottom() + kPickerSize.height() <=
                  display::Screen::GetScreen()
-                     ->GetDisplayMatching(caret_bounds)
+                     ->GetDisplayMatching(anchor_bounds)
                      .work_area()
                      .bottom()
              ? PickerView::PickerLayoutType::kResultsBelowSearchField
              : PickerView::PickerLayoutType::kResultsAboveSearchField;
 }
 
-// Gets the preferred Picker widget bounds given the preferred client bounds
-// (i.e. Picker view bounds), in screen coordinates.
-gfx::Rect GetPickerWidgetBoundsForClientBounds(const gfx::Rect& client_bounds) {
-  gfx::Rect non_client_frame_view_bounds = client_bounds;
-  non_client_frame_view_bounds.Inset(-CreateBorder()->GetInsets());
-  return non_client_frame_view_bounds;
-}
-
 // Gets the preferred Picker view bounds in screen coordinates. We try to place
-// the Picker view close to `caret_bounds`, while taking into account
+// the Picker view close to `anchor_bounds`, while taking into account
 // `layout_type`, `picker_view_size` and available space on the screen.
 // `picker_view_search_field_vertical_offset` is the vertical offset from the
 // top of the Picker view to the center of the search field, which we use to try
-// to align the search field with the center of the caret bounds.
-gfx::Rect GetPickerViewBounds(const gfx::Rect& caret_bounds,
+// to vertically align the search field with the center of the anchor bounds.
+// `anchor_bounds` and returned bounds should be in screen coordinates.
+gfx::Rect GetPickerViewBounds(const gfx::Rect& anchor_bounds,
                               PickerView::PickerLayoutType layout_type,
                               const gfx::Size& picker_view_size,
                               int picker_view_search_field_vertical_offset) {
-  // Place the Picker in available screen space near the caret bounds.
-  const gfx::Rect screen_work_area = display::Screen::GetScreen()
-                                         ->GetDisplayMatching(caret_bounds)
-                                         .work_area();
+  gfx::Rect screen_work_area = display::Screen::GetScreen()
+                                   ->GetDisplayMatching(anchor_bounds)
+                                   .work_area();
+  screen_work_area.Inset(kPaddingFromScreenEdge);
   gfx::Rect picker_view_bounds(picker_view_size);
-  if (caret_bounds.right() + picker_view_size.width() <=
+  if (anchor_bounds.right() + picker_view_size.width() <=
       screen_work_area.right()) {
-    // If there is space, place the Picker to the right of the caret, vertically
-    // aligning the center of the Picker search field with the center of the
-    // caret.
-    picker_view_bounds.set_origin(caret_bounds.right_center());
+    // If there is space, place the Picker to the right of the anchor,
+    // vertically aligning the center of the Picker search field with the center
+    // of the anchor.
+    picker_view_bounds.set_origin(anchor_bounds.right_center());
     picker_view_bounds.Offset(0, -picker_view_search_field_vertical_offset);
   } else {
     switch (layout_type) {
       case PickerView::PickerLayoutType::kResultsBelowSearchField:
-        // Try to place the Picker at the right edge of the screen, below
-        // the caret.
+        // Try to place the Picker at the right edge of the screen, below the
+        // anchor.
         picker_view_bounds.set_origin(
             {screen_work_area.right() - picker_view_size.width(),
-             caret_bounds.bottom()});
+             anchor_bounds.bottom()});
         break;
       case PickerView::PickerLayoutType::kResultsAboveSearchField:
-        // Try to place the Picker at the right edge of the screen, above
-        // the caret.
+        // Try to place the Picker at the right edge of the screen, above the
+        // anchor.
         picker_view_bounds.set_origin(
             {screen_work_area.right() - picker_view_size.width(),
-             caret_bounds.y() - picker_view_size.height()});
+             anchor_bounds.y() - picker_view_size.height()});
         break;
     }
   }
@@ -137,7 +156,13 @@ PickerView::PickerView(PickerViewDelegate* delegate,
                        PickerLayoutType layout_type)
     : session_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
-  SetBackground(views::CreateThemedSolidBackground(kBackgroundColor));
+  SetBackground(views::CreateThemedRoundedRectBackground(kBackgroundColor,
+                                                         kBorderRadius));
+  SetBorder(std::make_unique<views::HighlightBorder>(
+      kBorderRadius, views::HighlightBorder::Type::kHighlightBorderOnShadow));
+  shadow_ =
+      SystemShadow::CreateShadowOnNinePatchLayerForView(this, kShadowType);
+  shadow_->SetRoundedCornerRadius(kBorderRadius);
   SetPreferredSize(kPickerSize);
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -147,10 +172,10 @@ PickerView::PickerView(PickerViewDelegate* delegate,
     case PickerLayoutType::kResultsBelowSearchField:
       AddSearchFieldView();
       AddChildView(CreateSeparator());
-      AddContentsView();
+      AddContentsView(layout_type);
       break;
     case PickerLayoutType::kResultsAboveSearchField:
-      AddContentsView();
+      AddContentsView(layout_type);
       AddChildView(CreateSeparator());
       AddSearchFieldView();
       break;
@@ -166,12 +191,16 @@ PickerView::~PickerView() = default;
 
 views::UniqueWidgetPtr PickerView::CreateWidget(
     const gfx::Rect& caret_bounds,
+    const gfx::Point& cursor_point,
+    const gfx::Rect& focused_window_bounds,
     PickerViewDelegate* delegate,
     const base::TimeTicks trigger_event_timestamp) {
   // Create the Picker view and set its size. This will trigger a layout, so
   // that the position of the Picker view's search field can be used when
   // setting the Picker widget bounds below.
-  const auto layout_type = GetLayoutType(caret_bounds);
+  const gfx::Rect anchor_bounds =
+      GetPickerAnchorBounds(caret_bounds, cursor_point, focused_window_bounds);
+  const PickerLayoutType layout_type = GetLayoutType(anchor_bounds);
   auto picker_view = std::make_unique<PickerView>(
       delegate, trigger_event_timestamp, layout_type);
   picker_view->SetSize(kPickerSize);
@@ -182,8 +211,7 @@ views::UniqueWidgetPtr PickerView::CreateWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.type = views::Widget::InitParams::TYPE_BUBBLE;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.bounds = GetPickerWidgetBoundsForClientBounds(
-      picker_view->GetTargetBounds(caret_bounds, layout_type));
+  params.bounds = picker_view->GetTargetBounds(anchor_bounds, layout_type);
   // TODO(b/309706053): Replace this with the finalized string.
   params.name = "Picker";
   params.delegate = picker_view.release();
@@ -200,12 +228,6 @@ bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
   }
   return true;
-}
-
-void PickerView::PaintChildren(const views::PaintInfo& paint_info) {
-  if (delegate_->ShouldPaint()) {
-    views::View::PaintChildren(paint_info);
-  }
 }
 
 std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
@@ -231,9 +253,9 @@ void PickerView::RemovedFromWidget() {
   bubble_event_filter_.reset();
 }
 
-gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& caret_bounds,
+gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
-  return GetPickerViewBounds(caret_bounds, layout_type, size(),
+  return GetPickerViewBounds(anchor_bounds, layout_type, size(),
                              search_field_view_->bounds().CenterPoint().y());
 }
 
@@ -263,6 +285,15 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 
 void PickerView::SelectCategory(PickerCategory category) {
   selected_category_ = category;
+  if (category == PickerCategory::kEmojis) {
+    if (auto* widget = GetWidget()) {
+      widget->Close();
+    }
+    ui::ShowEmojiPanel();
+    return;
+  }
+  search_field_view_->SetPlaceholderText(
+      GetSearchFieldPlaceholderTextForPickerCategory(category));
   contents_view_->SetActivePage(category_view_);
   delegate_->GetResultsForCategory(
       category, base::BindRepeating(&PickerView::PublishCategoryResults,
@@ -284,11 +315,12 @@ void PickerView::AddSearchFieldView() {
   // `search_field_view_`.
   search_field_view_ = AddChildView(std::make_unique<PickerSearchFieldView>(
       base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
-      &session_metrics_));
+      &session_metrics_, kSearchFieldDebouncingDelay));
 }
 
-void PickerView::AddContentsView() {
-  contents_view_ = AddChildView(std::make_unique<PickerContentsView>());
+void PickerView::AddContentsView(PickerLayoutType layout_type) {
+  contents_view_ =
+      AddChildView(std::make_unique<PickerContentsView>(layout_type));
   contents_view_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
@@ -297,21 +329,24 @@ void PickerView::AddContentsView() {
 
   // `base::Unretained` is safe here because this class owns
   // `zero_state_view_`, `category_view_` and `search_results_view`_.
-  zero_state_view_ = contents_view_->AddPage(
-      std::make_unique<PickerZeroStateView>(base::BindRepeating(
-          &PickerView::SelectCategory, base::Unretained(this))));
+  zero_state_view_ =
+      contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
+          kPickerSize.width(), base::BindRepeating(&PickerView::SelectCategory,
+                                                   base::Unretained(this))));
   category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
+      kPickerSize.width(),
       base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this)),
       delegate_->GetAssetFetcher()));
   search_results_view_ =
       contents_view_->AddPage(std::make_unique<PickerSearchResultsView>(
+          kPickerSize.width(),
           base::BindOnce(&PickerView::SelectSearchResult,
                          base::Unretained(this)),
           delegate_->GetAssetFetcher()));
   contents_view_->SetActivePage(zero_state_view_);
 }
 
-BEGIN_METADATA(PickerView, views::View)
+BEGIN_METADATA(PickerView)
 END_METADATA
 
 }  // namespace ash

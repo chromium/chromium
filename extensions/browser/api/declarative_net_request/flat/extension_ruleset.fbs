@@ -99,7 +99,7 @@ table EmbedderConditions {
   /// UrlPatternIndex for more complex conditions from requests and responses,
   /// especially if future components may reuse these conditions.
   response_headers: [HeaderCondition];
-  excluded_response_headers: [string];
+  excluded_response_headers: [HeaderCondition];
 }
 
 /// This provides a mapping from an index type to its index within

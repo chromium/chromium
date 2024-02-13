@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -17,7 +18,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -84,7 +84,7 @@ class ViewsComboboxModel : public ui::ComboboxModel, public ViewObserver {
   // ui::ComboboxModel overrides.
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
   View* GetViewItemAt(size_t index) const;
 
@@ -124,7 +124,7 @@ std::u16string ViewsComboboxModel::GetItemAt(size_t index) const {
   return u"<Unknown>";
 }
 
-absl::optional<size_t> ViewsComboboxModel::GetDefaultIndex() const {
+std::optional<size_t> ViewsComboboxModel::GetDefaultIndex() const {
   return {0};
 }
 
@@ -510,7 +510,7 @@ void ActionsExample::CreateControl(actions::ActionItem* action,
                                    actions::ActionInvocationContext context) {
   static int control_num = 0;
   std::unique_ptr<View> new_view;
-  const absl::optional<size_t> selected_index =
+  const std::optional<size_t> selected_index =
       available_controls_->GetSelectedIndex();
   switch (selected_index.value_or(0)) {
     case 0:

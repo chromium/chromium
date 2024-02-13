@@ -6,11 +6,12 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
 
@@ -239,7 +240,7 @@ TEST_F(ComponentExtensionIMEManagerTest,
                           Property(&InputMethodDescriptor::handwriting_language,
                                    Optional(Eq(""))),
                           Property(&InputMethodDescriptor::handwriting_language,
-                                   absl::nullopt)));
+                                   std::nullopt)));
 }
 
 }  // namespace

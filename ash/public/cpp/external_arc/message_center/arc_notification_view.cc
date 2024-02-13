@@ -6,11 +6,15 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/notification_center/message_center_constants.h"
+#include "ash/system/notification_center/message_center_utils.h"
+#include "ash/system/notification_center/notification_grouping_controller.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -26,11 +30,12 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
-#include "ui/message_center/views/notification_background_painter.h"
-#include "ui/message_center/views/notification_control_buttons_view.h"
+#include "ui/message_center/views/notification_view_base.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::ArcNotificationView*)
@@ -40,6 +45,32 @@ namespace {
 // Android side.
 constexpr base::TimeDelta kArcNotificationAnimationDuration =
     base::Milliseconds(360);
+
+// Create a view containing the title and message for the notification in a
+// single line. This is used when a grouped child notification is in a
+// collapsed parent notification.
+views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
+    const message_center::Notification& notification) {
+  return views::Builder<views::BoxLayoutView>()
+      .SetID(
+          message_center::NotificationViewBase::ViewId::kCollapsedSummaryView)
+      .SetInsideBorderInsets(ash::kGroupedCollapsedSummaryInsets)
+      .SetBetweenChildSpacing(ash::kGroupedCollapsedSummaryLabelSpacing)
+      .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+      .SetVisible(false)
+      .AddChild(views::Builder<views::Label>()
+                    .SetText(notification.title())
+                    .SetFontList(
+                        ash::TypographyProvider::Get()->ResolveTypographyToken(
+                            ash::TypographyToken::kCrosButton2)))
+      .AddChild(views::Builder<views::Label>()
+                    .SetText(notification.message())
+                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
+                    .SetTextStyle(views::style::STYLE_SECONDARY)
+                    .SetFontList(
+                        ash::TypographyProvider::Get()->ResolveTypographyToken(
+                            ash::TypographyToken::kCrosBody2)));
+}
 }  // namespace
 
 namespace ash {
@@ -70,6 +101,13 @@ ArcNotificationView::ArcNotificationView(
   item_->AddObserver(this);
 
   AddChildView(content_view_.get());
+
+  AddChildView(CreateCollapsedSummaryBuilder(notification)
+                   .CopyAddressTo(&collapsed_summary_view_)
+                   .Build());
+
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets()));
 
   if (shown_in_popup) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
@@ -116,6 +154,7 @@ void ArcNotificationView::OnContentBlurred() {
 void ArcNotificationView::UpdateWithNotification(
     const message_center::Notification& notification) {
   message_center::MessageView::UpdateWithNotification(notification);
+  is_group_child_ = notification.group_child();
   content_view_->Update(notification);
 }
 
@@ -148,8 +187,13 @@ void ArcNotificationView::UpdateControlButtonsVisibility() {
 }
 
 void ArcNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // This data is never used since this view is never focused when the content
-  // view is focusable.
+  if (content_view_->IsFocusable()) {
+    // This data is never used since this view is never focused when the content
+    // view is focusable.
+    return;
+  }
+  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
+  message_center::MessageView::GetAccessibleNodeData(node_data);
 }
 
 message_center::NotificationControlButtonsView*
@@ -221,17 +265,127 @@ base::TimeDelta ArcNotificationView::GetBoundsAnimationDuration(
   return kArcNotificationAnimationDuration;
 }
 
+void ArcNotificationView::SetGroupedChildExpanded(bool expanded) {
+  if (!collapsed_summary_view_) {
+    return;
+  }
+  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
+
+  collapsed_summary_view_->SetVisible(!expanded);
+  content_view_->SetVisible(expanded);
+  if (expanded) {
+    content_view_->EnsureSurfaceAttached();
+  } else {
+    content_view_->EnsureSurfaceDetached();
+  }
+}
+
+void ArcNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
+  if (!collapsed_summary_view_) {
+    return;
+  }
+  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
+
+  message_center_utils::InitLayerForAnimations(collapsed_summary_view_);
+  message_center_utils::InitLayerForAnimations(content_view_);
+  // Fade out `collapsed_summary_view_`, then fade in `content_view_` in
+  // expanded state and vice versa in collapsed state.
+  if (expanded) {
+    message_center_utils::FadeOutView(
+        collapsed_summary_view_,
+        base::BindRepeating(
+            [](base::WeakPtr<ash::ArcNotificationView> parent,
+               views::View* collapsed_summary_view) {
+              if (parent) {
+                collapsed_summary_view->layer()->SetOpacity(1.0f);
+                collapsed_summary_view->SetVisible(false);
+              }
+            },
+            weak_factory_.GetWeakPtr(), collapsed_summary_view_),
+        0, kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
+        "Arc.NotificationView.CollapsedSummaryView.FadeOut."
+        "AnimationSmoothness");
+    message_center_utils::FadeInView(
+        content_view_, kCollapsedSummaryViewAnimationDurationMs,
+        kChildMainViewFadeInAnimationDurationMs, gfx::Tween::LINEAR,
+        "Arc.NotificationView.ContentView.FadeIn.AnimationSmoothness");
+    return;
+  }
+
+  message_center_utils::FadeOutView(
+      content_view_,
+      base::BindRepeating(
+          [](base::WeakPtr<ash::ArcNotificationView> parent,
+             views::View* content_view) {
+            if (parent) {
+              content_view->layer()->SetOpacity(1.0f);
+              content_view->SetVisible(false);
+            }
+          },
+          weak_factory_.GetWeakPtr(), content_view_),
+      0, kChildMainViewFadeOutAnimationDurationMs, gfx::Tween::LINEAR,
+      "Arc.NotificationView.ContentView.FadeOut.AnimationSmoothness");
+  message_center_utils::FadeInView(
+      collapsed_summary_view_, kChildMainViewFadeOutAnimationDurationMs,
+      kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
+      "Arc.NotificationView.CollapsedSummaryView.FadeIn.AnimationSmoothness");
+}
+
+void ArcNotificationView::AnimateSingleToGroup(
+    const std::string& notification_id,
+    std::string parent_id) {
+  if (!collapsed_summary_view_) {
+    return;
+  }
+  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
+
+  auto on_animation_ended = base::BindOnce(
+      [](base::WeakPtr<ash::ArcNotificationView> parent,
+         const std::string& notification_id, std::string parent_id) {
+        if (!parent) {
+          return;
+        }
+
+        auto* parent_notification =
+            message_center::MessageCenter::Get()->FindNotificationById(
+                parent_id);
+        auto* child_notification =
+            message_center::MessageCenter::Get()->FindNotificationById(
+                notification_id);
+        // The child and parent notifications are not guaranteed to exist.
+        //  If they were deleted avoid the animation cleanup.
+        if (!parent_notification || !child_notification) {
+          return;
+        }
+
+        auto* grouping_controller =
+            message_center_utils::GetGroupingControllerForNotificationView(
+                parent.get());
+        if (grouping_controller) {
+          grouping_controller
+              ->ConvertFromSingleToGroupNotificationAfterAnimation(
+                  notification_id, parent_id, parent_notification);
+        }
+        parent->DeprecatedLayoutImmediately();
+      },
+      weak_factory_.GetWeakPtr(), notification_id, parent_id);
+
+  std::pair<base::OnceClosure, base::OnceClosure> split =
+      base::SplitOnceCallback(std::move(on_animation_ended));
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .SetDuration(
+          base::Milliseconds(kConvertFromSingleToGroupFadeOutDurationMs));
+}
+
 void ArcNotificationView::OnSlideChanged(bool in_progress) {
   MessageView::OnSlideChanged(in_progress);
   content_view_->OnSlideChanged(in_progress);
-}
-
-gfx::Size ArcNotificationView::CalculatePreferredSize() const {
-  const gfx::Insets insets = GetInsets();
-  const int contents_width = kNotificationInMessageCenterWidth;
-  const int contents_height = content_view_->GetHeightForWidth(contents_width);
-  return gfx::Size(contents_width + insets.width(),
-                   contents_height + insets.height());
 }
 
 void ArcNotificationView::Layout(PassKey) {
@@ -308,7 +462,7 @@ aura::Window* ArcNotificationView::GetNativeContainerWindowForTest() const {
   return content_view_->GetNativeViewContainer();
 }
 
-BEGIN_METADATA(ArcNotificationView, message_center::MessageView)
+BEGIN_METADATA(ArcNotificationView)
 END_METADATA
 
 }  // namespace ash

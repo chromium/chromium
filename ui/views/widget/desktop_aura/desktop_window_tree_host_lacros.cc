@@ -323,7 +323,7 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
     opaque_region.push_back({{}, widget_size_px});
   }
   // TODO(crbug.com/1306688): Instead of setting OpaqueRegion, set the rounded
-  // corners in dp.
+  // corners in dp. This should probably be the input region not opaque region.
   platform_window()->SetOpaqueRegion(opaque_region);
 
   // If the window is rounded, we hint the platform to match the drop shadow's

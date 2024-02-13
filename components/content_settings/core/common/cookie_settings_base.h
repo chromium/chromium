@@ -302,30 +302,33 @@ class CookieSettingsBase {
                                            ContentSettingsType content_type,
                                            SettingInfo* info) const = 0;
 
-  bool IsAllowedByStorageAccessGrant(const GURL& url,
-                                     const GURL& first_party_url) const;
-
-  bool IsAllowedByTopLevel3pcdTrialSetting(const GURL& first_party_url) const;
-
-  bool ShouldConsider3pcdTrialSettings(
+  bool IsAllowedByStorageAccessGrant(
+      const GURL& url,
+      const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
-  bool ShouldConsiderTopLevel3pcdTrialSettings(
+  bool IsAllowedByTopLevelStorageAccessGrant(
+      const GURL& url,
+      const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
-  bool ShouldConsider3pcdHeuristicsGrantsSettings(
+  bool IsAllowedBy3pcdTrialSettings(
+      const GURL& url,
+      const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
-  // Returns true iff the query should consider Storage Access API permission
-  // grants.
-  bool ShouldConsiderStorageAccessGrants(
+  bool IsAllowedByTopLevel3pcdTrialSettings(
+      const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
-  // Returns true iff the query should consider top-level Storage Access API
-  // permission grants. Note that this is handled similarly to storage access
-  // grants, but applies to subresources more broadly (at the top-level rather
-  // than only for a single frame).
-  bool ShouldConsiderTopLevelStorageAccessGrants(
+  bool IsAllowedBy3pcdHeuristicsGrantsSettings(
+      const GURL& url,
+      const GURL& first_party_url,
+      net::CookieSettingOverrides overrides) const;
+
+  bool IsAllowedBy3pcdMetadataGrantsSettings(
+      const GURL& url,
+      const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;
 
   struct AllowAllCookies {

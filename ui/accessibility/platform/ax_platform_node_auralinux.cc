@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
-#include "base/memory/raw_ptr.h"
 
 #include <dlfcn.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -17,6 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
@@ -26,7 +27,6 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -34,6 +34,7 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_atk_hyperlink.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
@@ -1186,7 +1187,7 @@ int GetNSelections(AtkText* atk_text) {
   if (obj->HasSelection())
     return 1;
 
-  absl::optional<FindInPageResultInfo> result =
+  std::optional<FindInPageResultInfo> result =
       obj->GetSelectionOffsetsFromFindInPage();
   if (result.has_value() && result->node == ATK_OBJECT(atk_text))
     return 1;
@@ -1910,7 +1911,7 @@ GPtrArray* GetColumnHeaderCells(AtkTableCell* cell) {
   if (obj->GetAtkRole() != ATK_ROLE_TABLE_CELL)
     return array;
 
-  absl::optional<int> col_index = obj->GetTableColumn();
+  std::optional<int> col_index = obj->GetTableColumn();
   if (!col_index)
     return array;
 
@@ -1934,8 +1935,8 @@ gboolean GetCellPosition(AtkTableCell* cell, gint* row, gint* column) {
       FALSE);
 
   if (auto* obj = AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(cell))) {
-    absl::optional<int> row_index = obj->GetTableRow();
-    absl::optional<int> col_index = obj->GetTableColumn();
+    std::optional<int> row_index = obj->GetTableRow();
+    std::optional<int> col_index = obj->GetTableColumn();
     if (!row_index || !col_index)
       return false;
 
@@ -1980,7 +1981,7 @@ GPtrArray* GetRowHeaderCells(AtkTableCell* cell) {
   if (obj->GetAtkRole() != ATK_ROLE_TABLE_CELL)
     return array;
 
-  absl::optional<int> row_index = obj->GetTableRow();
+  std::optional<int> row_index = obj->GetTableRow();
   if (!row_index)
     return array;
 
@@ -2529,7 +2530,7 @@ bool AXPlatformNodeAuraLinux::IsWebDocumentForRelations() {
 AtkObject* AXPlatformNodeAuraLinux::CreateAtkObject() {
   if (GetRole() != ax::mojom::Role::kApplication &&
       !GetDelegate()->IsToplevelBrowserWindow() &&
-      !GetAccessibilityMode().has_mode(AXMode::kNativeAPIs)) {
+      !AXPlatform::GetInstance().GetMode().has_mode(AXMode::kNativeAPIs)) {
     return nullptr;
   }
   if (GetDelegate()->IsChildOfLeaf())
@@ -3040,7 +3041,7 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
 // it's possible that the state we want to expose and/or emit an event for
 // is not present. This will generate a runtime error.
 bool PlatformSupportsState(AtkStateType atk_state_type) {
-  static absl::optional<int> max_state_type = absl::nullopt;
+  static std::optional<int> max_state_type = std::nullopt;
   if (!max_state_type.has_value()) {
     GEnumClass* enum_class =
         G_ENUM_CLASS(g_type_class_ref(atk_state_type_get_type()));
@@ -3172,20 +3173,20 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
 struct AtkIntRelation {
   ax::mojom::IntAttribute attribute;
   AtkRelationType relation;
-  absl::optional<AtkRelationType> reverse_relation;
+  std::optional<AtkRelationType> reverse_relation;
 };
 
 static AtkIntRelation kIntRelations[] = {
     {ax::mojom::IntAttribute::kMemberOfId, ATK_RELATION_MEMBER_OF,
-     absl::nullopt},
+     std::nullopt},
     {ax::mojom::IntAttribute::kPopupForId, ATK_RELATION_POPUP_FOR,
-     absl::nullopt},
+     std::nullopt},
 };
 
 struct AtkIntListRelation {
   ax::mojom::IntListAttribute attribute;
   AtkRelationType relation;
-  absl::optional<AtkRelationType> reverse_relation;
+  std::optional<AtkRelationType> reverse_relation;
 };
 
 static AtkIntListRelation kIntListRelations[] = {
@@ -3217,7 +3218,7 @@ void AXPlatformNodeAuraLinux::AddRelationToSet(AtkRelationSet* relation_set,
   // it's possible that we might try to add a relation that doesn't exist in
   // the runtime version of the AtkRelationType enum. This will cause a runtime
   // error, so return early here if we are about to do that.
-  static absl::optional<int> max_relation_type = absl::nullopt;
+  static std::optional<int> max_relation_type = std::nullopt;
   if (!max_relation_type.has_value()) {
     GEnumClass* enum_class =
         G_ENUM_CLASS(g_type_class_ref(atk_relation_type_get_type()));
@@ -3328,7 +3329,7 @@ bool AXPlatformNodeAuraLinux::IsPlatformCheckable() const {
   return AXPlatformNodeBase::IsPlatformCheckable();
 }
 
-absl::optional<size_t> AXPlatformNodeAuraLinux::GetIndexInParent() {
+std::optional<size_t> AXPlatformNodeAuraLinux::GetIndexInParent() {
   AXPlatformNode* parent =
       AXPlatformNode::FromNativeViewAccessible(GetParent());
   // Even though the node doesn't have its parent, GetParent() could return the
@@ -3337,7 +3338,7 @@ absl::optional<size_t> AXPlatformNodeAuraLinux::GetIndexInParent() {
   if (parent == AXPlatformNodeAuraLinux::application() &&
       GetRole() == ax::mojom::Role::kUnknown &&
       GetData().GetRestriction() == ax::mojom::Restriction::kDisabled) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return AXPlatformNodeBase::GetIndexInParent();
@@ -4120,28 +4121,28 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
   }
 }
 
-absl::optional<std::pair<int, int>>
+std::optional<std::pair<int, int>>
 AXPlatformNodeAuraLinux::GetEmbeddedObjectIndicesForId(int id) {
   auto iterator = base::ranges::find(hypertext_.hyperlinks, id);
   if (iterator == hypertext_.hyperlinks.end())
-    return absl::nullopt;
+    return std::nullopt;
   int hyperlink_index = std::distance(hypertext_.hyperlinks.begin(), iterator);
 
   auto offset =
       base::ranges::find(hypertext_.hyperlink_offset_to_index, hyperlink_index,
                          &AXLegacyHypertext::OffsetToIndex::value_type::second);
   if (offset == hypertext_.hyperlink_offset_to_index.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return std::make_pair(UTF16ToUnicodeOffsetInText(offset->first),
                         UTF16ToUnicodeOffsetInText(offset->first + 1));
 }
 
-absl::optional<std::pair<int, int>>
+std::optional<std::pair<int, int>>
 AXPlatformNodeAuraLinux::GetEmbeddedObjectIndices() {
   auto* parent = FromAtkObject(GetParent());
   if (!parent)
-    return absl::nullopt;
+    return std::nullopt;
   return parent->GetEmbeddedObjectIndicesForId(GetUniqueId());
 }
 
@@ -4155,7 +4156,7 @@ void AXPlatformNodeAuraLinux::UpdateHypertext() {
   base::OffsetAdjuster::Adjustments old_adjustments = GetHypertextAdjustments();
 
   UpdateComputedHypertext();
-  text_unicode_adjustments_ = absl::nullopt;
+  text_unicode_adjustments_ = std::nullopt;
   offset_to_text_attributes_.clear();
 
   if ((!HasState(ax::mojom::State::kEditable) ||
@@ -4607,7 +4608,7 @@ bool AXPlatformNodeAuraLinux::IsNameExposed() {
 
 int AXPlatformNodeAuraLinux::GetCaretOffset() {
   if (!HasVisibleCaretOrSelection()) {
-    absl::optional<FindInPageResultInfo> result =
+    std::optional<FindInPageResultInfo> result =
         GetSelectionOffsetsFromFindInPage();
     AtkObject* atk_object = GetOrCreateAtkObject();
     if (!atk_object)
@@ -4717,7 +4718,7 @@ gchar* AXPlatformNodeAuraLinux::GetSelectionWithText(int* start_offset,
 
   if (selection_start < 0 || selection_end < 0 ||
       selection_start == selection_end) {
-    absl::optional<FindInPageResultInfo> find_in_page_result =
+    std::optional<FindInPageResultInfo> find_in_page_result =
         GetSelectionOffsetsFromFindInPage();
     if (!find_in_page_result.has_value() ||
         find_in_page_result->node != atk_object) {
@@ -4825,7 +4826,7 @@ void AXPlatformNodeAuraLinux::ScrollNodeIntoView(
 #endif  // defined(ATK_230)
 
 #if defined(ATK_232)
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 AXPlatformNodeAuraLinux::GetUnclippedHypertextRangeBoundsRect(int start_offset,
                                                               int end_offset) {
   start_offset = UnicodeToUTF16OffsetInText(start_offset);
@@ -4833,9 +4834,9 @@ AXPlatformNodeAuraLinux::GetUnclippedHypertextRangeBoundsRect(int start_offset,
 
   std::u16string text = GetHypertext();
   if (start_offset < 0 || start_offset > static_cast<int>(text.length()))
-    return absl::nullopt;
+    return std::nullopt;
   if (end_offset < 0 || end_offset > static_cast<int>(text.length()))
-    return absl::nullopt;
+    return std::nullopt;
 
   if (end_offset < start_offset)
     std::swap(start_offset, end_offset);
@@ -4850,7 +4851,7 @@ bool AXPlatformNodeAuraLinux::ScrollSubstringIntoView(
     AtkScrollType atk_scroll_type,
     int start_offset,
     int end_offset) {
-  absl::optional<gfx::Rect> optional_rect =
+  std::optional<gfx::Rect> optional_rect =
       GetUnclippedHypertextRangeBoundsRect(start_offset, end_offset);
   if (!optional_rect.has_value())
     return false;
@@ -4870,7 +4871,7 @@ bool AXPlatformNodeAuraLinux::ScrollSubstringToPoint(
     AtkCoordType atk_coord_type,
     int x,
     int y) {
-  absl::optional<gfx::Rect> optional_rect =
+  std::optional<gfx::Rect> optional_rect =
       GetUnclippedHypertextRangeBoundsRect(start_offset, end_offset);
   if (!optional_rect.has_value())
     return false;
@@ -4991,7 +4992,7 @@ void AXPlatformNodeAuraLinux::ActivateFindInPageResult(int start_offset,
                         UTF16ToUnicodeOffsetInText(end_offset));
 }
 
-absl::optional<std::pair<int, int>>
+std::optional<std::pair<int, int>>
 AXPlatformNodeAuraLinux::GetHypertextExtentsOfChild(
     AXPlatformNodeAuraLinux* child_to_find) {
   int current_offset = 0;
@@ -5011,7 +5012,7 @@ AXPlatformNodeAuraLinux::GetHypertextExtentsOfChild(
     current_offset += size;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void AXPlatformNodeAuraLinux::ActivateFindInPageInParent(int start_offset,
@@ -5020,7 +5021,7 @@ void AXPlatformNodeAuraLinux::ActivateFindInPageInParent(int start_offset,
   if (!parent)
     return;
 
-  absl::optional<std::pair<int, int>> extents_in_parent =
+  std::optional<std::pair<int, int>> extents_in_parent =
       parent->GetHypertextExtentsOfChild(this);
   if (!extents_in_parent.has_value())
     return;
@@ -5040,21 +5041,21 @@ void AXPlatformNodeAuraLinux::ForgetCurrentFindInPageResult() {
     GetActiveFindInPageResults().erase(parent_doc);
 }
 
-absl::optional<FindInPageResultInfo>
+std::optional<FindInPageResultInfo>
 AXPlatformNodeAuraLinux::GetSelectionOffsetsFromFindInPage() {
   AtkObject* atk_object = GetOrCreateAtkObject();
   if (!atk_object)
-    return absl::nullopt;
+    return std::nullopt;
 
   AtkObject* parent_doc = FindAtkObjectToplevelParentDocument(atk_object);
   if (!parent_doc)
-    return absl::nullopt;
+    return std::nullopt;
 
   std::map<AtkObject*, FindInPageResultInfo>& active_results =
       GetActiveFindInPageResults();
   auto iterator = active_results.find(parent_doc);
   if (iterator == active_results.end())
-    return absl::nullopt;
+    return std::nullopt;
 
   return iterator->second;
 }

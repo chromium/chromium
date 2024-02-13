@@ -30,7 +30,7 @@ import * as Common from 'devtools/core/common/common.js';
       setupEventListeners();
   `);
 
-  Common.Settings.settingForTest('showEventListenersForAncestors').set(false);
+  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(false);
 
 
   function step1() {

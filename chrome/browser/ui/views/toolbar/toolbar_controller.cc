@@ -267,6 +267,8 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kToolbarMediaButtonElementId, "MediaButton"},
           {kToolbarNewTabButtonElementId, "NewTabButton"},
           {kToolbarSidePanelButtonElementId, "SidePanelButton"},
+          {kActionNewIncognitoWindow, "PinnedNewIncognitoWindowButton"},
+          {kActionPrint, "PinnedPrintButton"},
           {kActionSidePanelShowBookmarks, "PinnedShowBookmarkSidePanelButton"},
           {kActionSidePanelShowReadAnything,
            "PinnedShowReadAnythingSidePanelButton"},

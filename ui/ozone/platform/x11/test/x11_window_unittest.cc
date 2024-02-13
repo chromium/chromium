@@ -267,7 +267,7 @@ class X11WindowTest : public testing::Test {
   std::unique_ptr<base::test::TaskEnvironment> task_env_;
   std::unique_ptr<X11EventSource> event_source_;
 
-  absl::optional<TestScreen> test_screen_;
+  std::optional<TestScreen> test_screen_;
 };
 
 // https://crbug.com/898742: Test is flaky.

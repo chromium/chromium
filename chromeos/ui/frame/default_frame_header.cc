@@ -56,11 +56,8 @@ void TileRoundRect(gfx::Canvas* canvas,
 // the window is a system web app.
 bool ShouldApplyDynamicColor(aura::Window* window) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (window->GetProperty(aura::client::kAppType) !=
-      static_cast<int>(ash::AppType::SYSTEM_APP)) {
-    return false;
-  }
-  return true;
+  return window->GetProperty(aura::client::kAppType) ==
+         static_cast<int>(ash::AppType::SYSTEM_APP);
 #else
   // Default frame is used for non-browser frames in Lacros. In Lacros, we
   // never need dynamic colors as we don't display SWAs. This will need to be

@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20;
 }  // namespace
@@ -45,7 +45,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       initWithPlusAddressService:plusAddressService
                        activeUrl:activeWebState->GetLastCommittedURL()
                 autofillCallback:bottomSheetTabHelper
-                                     ->GetPendingPlusAddressFillCallback()];
+                                     ->GetPendingPlusAddressFillCallback()
+                       urlLoader:UrlLoadingBrowserAgent::FromBrowser(
+                                     self.browser)
+                       incognito:self.browser->GetBrowserState()
+                                     ->IsOffTheRecord()];
   _viewController = [[PlusAddressBottomSheetViewController alloc]
                     initWithDelegate:_mediator
       withBrowserCoordinatorCommands:HandlerForProtocol(

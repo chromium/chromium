@@ -9,6 +9,7 @@ source_set("android") {
   sources = [
     "password_edit_dialog_bridge.cc",
     "password_edit_dialog_bridge.h",
+    "password_edit_dialog_bridge_delegate.h",
   ]
 
   deps = [

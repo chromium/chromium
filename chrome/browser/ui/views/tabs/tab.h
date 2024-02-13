@@ -187,6 +187,10 @@ class Tab : public gfx::AnimationDelegate,
 
   TabIcon* GetTabIconForTesting() const { return icon_; }
 
+  AlertIndicatorButton* alert_indicator_button_for_testing() {
+    return alert_indicator_button_;
+  }
+
  private:
   class TabCloseButtonObserver;
   friend class AlertIndicatorButtonTest;

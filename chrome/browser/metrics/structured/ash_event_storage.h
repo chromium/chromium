@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/metrics/structured/event_storage.h"
-#include "components/metrics/structured/persistent_proto.h"
+#include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 
 namespace metrics::structured {
@@ -34,8 +34,9 @@ class AshEventStorage : public EventStorage {
 
   // EventStorage:
   void OnReady() override;
-  void AddEvent(StructuredEventProto&& event) override;
-  void MoveEvents(ChromeUserMetricsExtension& uma_proto) override;
+  void AddEvent(StructuredEventProto event) override;
+  ::google::protobuf::RepeatedPtrField<StructuredEventProto> TakeEvents()
+      override;
   int RecordedEventsCount() const override;
   void Purge() override;
   void OnProfileAdded(const base::FilePath& path) override;

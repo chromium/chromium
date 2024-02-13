@@ -7,6 +7,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
@@ -49,7 +50,8 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
     return session_restore_events_;
   }
 
-  const std::set<content::WebContents*>& tabs_restoring() const {
+  const std::set<raw_ptr<content::WebContents, SetExperimental>>&
+  tabs_restoring() const {
     return tabs_restoring_;
   }
 
@@ -72,7 +74,7 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
 
  private:
   std::vector<SessionRestoreEvent> session_restore_events_;
-  std::set<content::WebContents*> tabs_restoring_;
+  std::set<raw_ptr<content::WebContents, SetExperimental>> tabs_restoring_;
 };
 
 class SessionRestoreObserverTest : public ChromeRenderViewHostTestHarness {

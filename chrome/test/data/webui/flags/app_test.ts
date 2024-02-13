@@ -4,8 +4,9 @@
 
 import 'chrome://flags/app.js';
 
-import {FlagsAppElement} from 'chrome://flags/app.js';
-import {ExperimentalFeaturesData, Feature, FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
+import type {FlagsAppElement} from 'chrome://flags/app.js';
+import type {ExperimentalFeaturesData, Feature} from 'chrome://flags/flags_browser_proxy.js';
+import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 

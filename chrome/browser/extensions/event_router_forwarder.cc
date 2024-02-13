@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -55,7 +56,7 @@ void EventRouterForwarder::DispatchEventToRenderers(
 }
 
 void EventRouterForwarder::HandleEvent(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
     base::Value::List event_args,
@@ -121,7 +122,7 @@ void EventRouterForwarder::HandleEvent(
 
 void EventRouterForwarder::CallEventRouter(
     Profile* profile,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
     base::Value::List event_args,

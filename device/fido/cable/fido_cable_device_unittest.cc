@@ -7,6 +7,7 @@
 #include <array>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -23,7 +24,6 @@
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -33,7 +33,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Test;
 using TestDeviceCallbackReceiver =
-    test::ValueCallbackReceiver<absl::optional<std::vector<uint8_t>>>;
+    test::ValueCallbackReceiver<std::optional<std::vector<uint8_t>>>;
 using NiceMockBluetoothAdapter = ::testing::NiceMock<MockBluetoothAdapter>;
 
 // Sufficiently large test control point length as we are not interested

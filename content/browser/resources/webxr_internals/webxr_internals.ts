@@ -10,10 +10,10 @@ import './session_info_table.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {ActiveRuntimeInfoTableElement} from './active_runtime_info_table.js';
+import type {ActiveRuntimeInfoTableElement} from './active_runtime_info_table.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {RuntimeInfo, SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
-import {XRDeviceId} from './xr_device.mojom-webui.js';
+import type {RuntimeInfo, SessionRejectedRecord, SessionRequestedRecord, SessionStartedRecord, SessionStoppedRecord} from './webxr_internals.mojom-webui.js';
+import type {XRDeviceId} from './xr_device.mojom-webui.js';
 
 let browserProxy: BrowserProxy;
 

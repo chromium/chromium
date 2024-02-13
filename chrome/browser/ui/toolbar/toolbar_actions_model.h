@@ -109,9 +109,13 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Returns true if `action_id` is in the toolbar model.
   bool HasAction(const ActionId& action_id) const;
 
-  // Returns true if `url` is restricted for all extensions with actions in the
-  // toolbar.ß
+  // Returns if `url` is restricted for all extensions with actions in the
+  // toolbar.
   bool IsRestrictedUrl(const GURL& url) const;
+
+  // Returns if `url` is a policy-blocked url for all non-enterprise extensions
+  // with actions in the toolbar.
+  bool IsPolicyBlockedHost(const GURL& url) const;
 
   // Returns true if the action is pinned to the toolbar.
   bool IsActionPinned(const ActionId& action_id) const;

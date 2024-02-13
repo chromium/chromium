@@ -46,6 +46,7 @@ class AidaClient {
       std::string request,
       base::OnceCallback<void(const std::string&)> callback,
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      base::TimeTicks start_time,
       std::unique_ptr<std::string> response_body);
 
   const raw_ref<Profile> profile_;

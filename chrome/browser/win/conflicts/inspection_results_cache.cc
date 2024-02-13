@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -119,7 +120,7 @@ base::Pickle SerializeInspectionResultsCache(
 
   // Append the md5 digest of the data to detect serializations errors.
   base::MD5Digest md5_digest;
-  base::MD5Sum(pickle.payload(), pickle.payload_size(), &md5_digest);
+  base::MD5Sum(pickle.payload_bytes(), &md5_digest);
   pickle.WriteBytes(&md5_digest, sizeof(md5_digest));
 
   return pickle;
@@ -167,8 +168,8 @@ ReadCacheResult DeserializeInspectionResultsCache(
 
   // Check if the md5 checksum matches.
   base::MD5Digest md5_digest;
-  base::MD5Sum(pickle.payload(), pickle.payload_size() - sizeof(md5_digest),
-               &md5_digest);
+  base::span<const uint8_t> payload = pickle.payload_bytes();
+  base::MD5Sum(payload.first(payload.size() - sizeof(md5_digest)), &md5_digest);
   if (!base::ranges::equal(read_md5_digest->a, md5_digest.a))
     return ReadCacheResult::kFailInvalidMD5;
 

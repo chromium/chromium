@@ -92,7 +92,7 @@ class NET_EXPORT CertVerifyProc
     std::vector<scoped_refptr<const net::CTLogVerifier>> ct_logs;
     scoped_refptr<net::CTPolicyEnforcer> ct_policy_enforcer;
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    absl::optional<net::ChromeRootStoreData> root_store_data;
+    std::optional<net::ChromeRootStoreData> root_store_data;
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
     bool use_chrome_root_store;
@@ -196,6 +196,9 @@ class NET_EXPORT CertVerifyProc
   //
   // |flags| is bitwise OR'd of VerifyFlags:
   //
+  // If |time_now| is set it will be used as the current time, otherwise the
+  // system time will be used.
+  //
   // If VERIFY_REV_CHECKING_ENABLED is set in |flags|, online certificate
   // revocation checking is performed (i.e. OCSP and downloading CRLs). CRLSet
   // based revocation checking is always enabled, regardless of this flag.
@@ -205,7 +208,8 @@ class NET_EXPORT CertVerifyProc
              const std::string& sct_list,
              int flags,
              CertVerifyResult* verify_result,
-             const NetLogWithSource& net_log);
+             const NetLogWithSource& net_log,
+             std::optional<base::Time> time_now = std::nullopt);
 
  protected:
   explicit CertVerifyProc(scoped_refptr<CRLSet> crl_set);
@@ -246,6 +250,11 @@ class NET_EXPORT CertVerifyProc
   // |verify_result->cert_status| should be non-zero, indicating an
   // error occurred.
   //
+  // If |time_now| is not nullopt, it will be used as the current time for
+  // certificate verification, if it is nullopt, the system time will be used
+  // instead. If a certificate verification fails with a NotBefore/NotAfter
+  // error when |time_now| is set, it will be retried with the system time.
+  //
   // On success, net::OK should be returned, with |verify_result| updated to
   // reflect the successfully verified chain.
   virtual int VerifyInternal(X509Certificate* cert,
@@ -254,7 +263,8 @@ class NET_EXPORT CertVerifyProc
                              const std::string& sct_list,
                              int flags,
                              CertVerifyResult* verify_result,
-                             const NetLogWithSource& net_log) = 0;
+                             const NetLogWithSource& net_log,
+                             std::optional<base::Time> time_now) = 0;
 
   // HasNameConstraintsViolation returns true iff one of |public_key_hashes|
   // (which are hashes of SubjectPublicKeyInfo structures) has name constraints

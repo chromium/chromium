@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/common/extension.h"
 
@@ -188,7 +189,7 @@ class ManagementPolicy {
   typedef bool (Provider::*ProviderFunction)(const Extension*,
                                              std::u16string*) const;
 
-  typedef std::set<Provider*> ProviderList;
+  typedef std::set<raw_ptr<Provider, SetExperimental>> ProviderList;
 
   // This is a helper to apply a method in the Provider interface to each of
   // the Provider objects in |providers_|. The return value of this function

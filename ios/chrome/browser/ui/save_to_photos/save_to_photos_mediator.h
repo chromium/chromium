@@ -7,8 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol ApplicationCommands;
 class ChromeAccountManagerService;
 class GURL;
+@protocol ManageStorageAlertCommands;
 class PhotosService;
 class PrefService;
 @protocol SaveToPhotosMediatorDelegate;
@@ -54,7 +56,11 @@ extern NSString* const kGooglePhotosAppURLScheme;
                           prefService:(PrefService*)prefService
                 accountManagerService:
                     (ChromeAccountManagerService*)accountManagerService
-                      identityManager:(signin::IdentityManager*)identityManager;
+                      identityManager:(signin::IdentityManager*)identityManager
+            manageStorageAlertHandler:
+                (id<ManageStorageAlertCommands>)manageStorageAlertHandler
+                   applicationHandler:
+                       (id<ApplicationCommands>)applicationHandler;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts the process of saving the image.
@@ -88,6 +94,9 @@ extern NSString* const kGooglePhotosAppURLScheme;
 
 // Disconnect the mediator from services.
 - (void)disconnect;
+
+// Shows the "Manage Storage" web page for `identity` in a new tab.
+- (void)showManageStorageForIdentity:(id<SystemIdentity>)identity;
 
 @end
 

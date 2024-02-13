@@ -14,10 +14,14 @@ namespace browsing_data {
 SigninDataCounter::SigninDataCounter(
     scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
     scoped_refptr<password_manager::PasswordStoreInterface> account_store,
+    PrefService* pref_service,
     syncer::SyncService* sync_service,
     std::unique_ptr<::device::fido::PlatformCredentialStore>
         opt_platform_credential_store)
-    : PasswordsCounter(profile_store, account_store, sync_service),
+    : PasswordsCounter(profile_store,
+                       account_store,
+                       pref_service,
+                       sync_service),
       credential_store_(std::move(opt_platform_credential_store)) {}
 
 SigninDataCounter::~SigninDataCounter() = default;
@@ -58,7 +62,6 @@ void SigninDataCounter::OnPasswordsFetchDone() {
 
 std::unique_ptr<PasswordsCounter::PasswordsResult>
 SigninDataCounter::MakeResult() {
-  DCHECK(!(is_sync_active() && num_account_passwords() > 0));
   return std::make_unique<SigninDataResult>(
       this, num_passwords(), num_account_passwords(), num_webauthn_credentials_,
       is_sync_active(), domain_examples(), account_domain_examples());

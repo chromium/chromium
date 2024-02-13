@@ -15,8 +15,10 @@
 #include "net/quic/quic_http_utils.h"
 #include "net/spdy/spdy_http_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
+#include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_instruction_encoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_stream.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
@@ -82,6 +84,10 @@ quic::QuicFrames CloneFrames(const quic::QuicFrames& frames) {
         frame.ack_frequency_frame =
             new quic::QuicAckFrequencyFrame(*frame.ack_frequency_frame);
         break;
+      case quic::RESET_STREAM_AT_FRAME:
+        frame.reset_stream_at_frame =
+            new quic::QuicResetStreamAtFrame(*frame.reset_stream_at_frame);
+        break;
 
       case quic::NUM_FRAME_TYPES:
         DCHECK(false) << "Cannot clone frame type: " << frame.type;
@@ -104,7 +110,8 @@ QuicTestPacketMaker::QuicTestPacketMaker(quic::ParsedQuicVersion version,
       connection_id_(connection_id),
       clock_(clock),
       host_(host),
-      qpack_encoder_(&decoder_stream_error_delegate_),
+      qpack_encoder_(&decoder_stream_error_delegate_,
+                     quic::HuffmanEncoding::kEnabled),
       perspective_(perspective),
       client_priority_uses_incremental_(client_priority_uses_incremental),
       use_priority_header_(use_priority_header) {
@@ -663,9 +670,10 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::MakeAckPacket(
     uint64_t packet_number,
     uint64_t first_received,
     uint64_t largest_received,
-    uint64_t smallest_received) {
+    uint64_t smallest_received,
+    std::optional<quic::QuicEcnCounts> ecn) {
   InitializeHeader(packet_number);
-  AddQuicAckFrame(first_received, largest_received, smallest_received);
+  AddQuicAckFrame(first_received, largest_received, smallest_received, ecn);
   return BuildPacket();
 }
 
@@ -1137,21 +1145,24 @@ void QuicTestPacketMaker::AddQuicAckFrame(uint64_t largest_received,
   AddQuicAckFrame(1, largest_received, smallest_received);
 }
 
-void QuicTestPacketMaker::AddQuicAckFrame(uint64_t first_received,
-                                          uint64_t largest_received,
-                                          uint64_t smallest_received) {
+void QuicTestPacketMaker::AddQuicAckFrame(
+    uint64_t first_received,
+    uint64_t largest_received,
+    uint64_t smallest_received,
+    std::optional<quic::QuicEcnCounts> ecn) {
   auto* ack_frame = new quic::QuicAckFrame;
   ack_frame->largest_acked = quic::QuicPacketNumber(largest_received);
   ack_frame->ack_delay_time = quic::QuicTime::Delta::Zero();
   for (uint64_t i = smallest_received; i <= largest_received; ++i) {
-    ack_frame->received_packet_times.push_back(
-        std::make_pair(quic::QuicPacketNumber(i), clock_->Now()));
+    ack_frame->received_packet_times.emplace_back(quic::QuicPacketNumber(i),
+                                                  clock_->Now());
   }
   if (largest_received > 0) {
     DCHECK_GE(largest_received, first_received);
     ack_frame->packets.AddRange(quic::QuicPacketNumber(first_received),
                                 quic::QuicPacketNumber(largest_received + 1));
   }
+  ack_frame->ecn_counters = ecn;
   frames_.push_back(quic::QuicFrame(ack_frame));
   DVLOG(1) << "Adding frame: " << frames_.back();
 }
@@ -1289,7 +1300,8 @@ std::unique_ptr<quic::QuicReceivedPacket> QuicTestPacketMaker::BuildPacketImpl(
                             buffer, quic::kMaxOutgoingPacketSize);
   EXPECT_NE(0u, encrypted_size);
   quic::QuicReceivedPacket encrypted(buffer, encrypted_size, clock_->Now(),
-                                     false);
+                                     false, 0, true, nullptr, 0, false,
+                                     ecn_codepoint_);
   if (save_packet_frames_) {
     saved_frames_[header_.packet_number] = frames_copy;
   } else {

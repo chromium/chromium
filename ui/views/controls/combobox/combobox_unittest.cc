@@ -74,7 +74,7 @@ class TestComboboxModel : public ui::ComboboxModel {
     return separators_.find(index) != separators_.end();
   }
 
-  absl::optional<size_t> GetDefaultIndex() const override {
+  std::optional<size_t> GetDefaultIndex() const override {
     // Return the first index that is not a separator.
     for (size_t index = 0; index < kItemCount; ++index) {
       if (separators_.find(index) == separators_.end())
@@ -124,7 +124,7 @@ class VectorComboboxModel : public ui::ComboboxModel {
     return ASCIIToUTF16((*values_)[index]);
   }
   bool IsItemSeparatorAt(size_t index) const override { return false; }
-  absl::optional<size_t> GetDefaultIndex() const override {
+  std::optional<size_t> GetDefaultIndex() const override {
     return default_index_;
   }
 
@@ -174,7 +174,7 @@ class TestComboboxListener {
     actions_performed_++;
   }
 
-  absl::optional<size_t> perform_action_index() const {
+  std::optional<size_t> perform_action_index() const {
     return perform_action_index_;
   }
 
@@ -184,7 +184,7 @@ class TestComboboxListener {
 
  private:
   raw_ptr<Combobox> combobox_;
-  absl::optional<size_t> perform_action_index_ = absl::nullopt;
+  std::optional<size_t> perform_action_index_ = std::nullopt;
   int actions_performed_ = 0;
 };
 
@@ -931,7 +931,7 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
     DCHECK_LT(index, item_count_);
     return base::NumberToString16(index);
   }
-  absl::optional<size_t> GetDefaultIndex() const override {
+  std::optional<size_t> GetDefaultIndex() const override {
     return default_index_;
   }
 
@@ -942,7 +942,7 @@ class ConfigurableComboboxModel final : public ui::ComboboxModel {
  private:
   const raw_ptr<bool> destroyed_;
   size_t item_count_ = 0;
-  absl::optional<size_t> default_index_;
+  std::optional<size_t> default_index_;
 };
 
 }  // namespace

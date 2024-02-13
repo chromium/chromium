@@ -83,6 +83,7 @@
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/http_error_observer/http_error_tab_helper.h"
 #include "chrome/browser/tpcd/metadata/devtools_observer.h"
+#include "chrome/browser/tpcd/support/validity_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -180,6 +181,7 @@
 #include "chrome/browser/ui/javascript_dialogs/javascript_tab_modal_dialog_manager_delegate_android.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/features/features.h"
+#include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "content/public/common/content_features.h"
 #else
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
@@ -237,10 +239,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hats/hats_helper.h"
 #include "chrome/browser/ui/shared_highlighting/shared_highlighting_promo.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -519,6 +517,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   tasks::TaskTabHelper::CreateForWebContents(web_contents);
   tpcd::metadata::TpcdMetadataDevtoolsObserver::CreateForWebContents(
       web_contents);
+  tpcd::trial::ValidityService::MaybeCreateForWebContents(web_contents);
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
   v8_compile_hints::V8CompileHintsTabHelper::MaybeCreateForWebContents(
@@ -540,7 +539,9 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   {
     // Remove after fixing https://crbug/905919
     TRACE_EVENT0("browser", "AppBannerManagerAndroid::CreateForWebContents");
-    webapps::ChromeAppBannerManagerAndroid::CreateForWebContents(web_contents);
+    webapps::AppBannerManagerAndroid::CreateForWebContents(
+        web_contents, std::make_unique<webapps::ChromeAppBannerManagerAndroid>(
+                          *web_contents));
   }
   ContextMenuHelper::CreateForWebContents(web_contents);
   FastCheckoutTabHelper::CreateForWebContents(web_contents);
@@ -646,12 +647,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   // being turned on, even if it is not enabled yet.
   if (!profile->IsOffTheRecord()) {
     ChromeComposeClient::CreateForWebContents(web_contents);
-  }
-#endif
-
-#if BUILDFLAG(IS_MAC)
-  if (screentime::TabHelper::IsScreentimeEnabledForProfile(profile)) {
-    screentime::TabHelper::CreateForWebContents(web_contents);
   }
 #endif
 

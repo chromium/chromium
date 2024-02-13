@@ -14,14 +14,6 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
-// Default size from Figma spec. The size of the view will follow the requested
-// size of the WebUI, once these are connected.
-namespace {
-
-const char kComposeURL[] = "chrome://compose/";
-
-}
-
 namespace chrome {
 
 std::unique_ptr<compose::ComposeDialogController> ShowComposeDialog(
@@ -56,8 +48,10 @@ void ChromeComposeDialogController::ShowComposeDialog(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  auto bubble_wrapper = std::make_unique<BubbleContentsWrapperT<ComposeUI>>(
-      GURL(kComposeURL), profile, IDS_COMPOSE_DIALOG_TITLE);
+  auto bubble_wrapper =
+      std::make_unique<WebUIContentsWrapperT<ComposeUntrustedUI>>(
+          GURL(chrome::kChromeUIUntrustedComposeUrl), profile,
+          IDS_COMPOSE_DIALOG_TITLE);
   bubble_wrapper->ReloadWebContents();
 
   // This WebUI needs to know the calling BrowserContents so that the compose
@@ -102,7 +96,7 @@ void ChromeComposeDialogController::ShowComposeDialog(
   }
 }
 
-BubbleContentsWrapperT<ComposeUI>*
+WebUIContentsWrapperT<ComposeUntrustedUI>*
 ChromeComposeDialogController::GetBubbleWrapper() const {
   if (bubble_) {
     return bubble_->bubble_wrapper();

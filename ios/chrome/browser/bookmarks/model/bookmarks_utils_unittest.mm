@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

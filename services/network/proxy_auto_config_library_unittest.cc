@@ -185,8 +185,12 @@ class MockUDPSocket : public net::DatagramClientSocket {
     ADD_FAILURE() << "Called SetDoNotFragment()";
     return net::ERR_UNEXPECTED;
   }
-  int SetRecvEcn() override {
-    ADD_FAILURE() << "Called SetRecvEcn()";
+  int SetRecvTos() override {
+    ADD_FAILURE() << "Called SetRecvTos()";
+    return net::ERR_UNEXPECTED;
+  }
+  int SetTos(net::DiffServCodePoint dscp, net::EcnCodePoint ecn) override {
+    ADD_FAILURE() << "Called SetTos()";
     return net::ERR_UNEXPECTED;
   }
   void SetMsgConfirm(bool confirm) override {
@@ -258,6 +262,11 @@ class MockUDPSocket : public net::DatagramClientSocket {
   void SetAsyncConnect(base::OnceClosure* connect_callback) {
     connect_async_ = true;
     connect_callback_ = connect_callback;
+  }
+
+  net::DscpAndEcn GetLastTos() const override {
+    ADD_FAILURE() << "Called GetLastTos()";
+    return {net::DSCP_DEFAULT, net::ECN_DEFAULT};
   }
 
  private:

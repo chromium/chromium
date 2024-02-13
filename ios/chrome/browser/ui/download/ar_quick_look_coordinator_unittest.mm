@@ -58,9 +58,7 @@ class ARQuickLookCoordinatorTest : public PlatformTest {
     auto web_state = std::make_unique<web::FakeWebState>();
     auto* web_state_ptr = web_state.get();
     ARQuickLookTabHelper::CreateForWebState(web_state_ptr);
-    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                                WebStateList::INSERT_NO_FLAGS,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(std::move(web_state));
     [coordinator_ start];
   }
 
@@ -93,9 +91,7 @@ TEST_F(ARQuickLookCoordinatorTest, InstallDelegates) {
   auto* web_state_ptr2 = web_state2.get();
   ARQuickLookTabHelper::CreateForWebState(web_state_ptr2);
   EXPECT_FALSE(ARQuickLookTabHelper::FromWebState(web_state_ptr2)->delegate());
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state2),
-                                              WebStateList::INSERT_NO_FLAGS,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state2));
   EXPECT_TRUE(ARQuickLookTabHelper::FromWebState(web_state_ptr2)->delegate());
 
   // Coordinator should install itself as delegate for a web state replacing an

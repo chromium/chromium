@@ -70,6 +70,8 @@ class AllocatorState {
   static_assert(kInvalidMetadataIdx >= kMaxMetadata,
                 "kInvalidMetadataIdx can not reference a real index");
 
+  // These should not be renumbered and should be kept in sync with
+  // Crash::ErrorType in crash.proto
   enum class ErrorType {
     kUseAfterFree = 0,
     kBufferUnderflow = 1,

@@ -55,7 +55,8 @@ TargetNtCreateSection(NtCreateSectionFunction orig_CreateSection,
     // because the heap may not be available.
     constexpr ULONG path_buffer_size =
         (MAX_PATH * sizeof(wchar_t)) + sizeof(OBJECT_NAME_INFORMATION);
-    char path_buffer[path_buffer_size];
+    // Avoid memset inserted by -ftrivial-auto-var-init=pattern.
+    STACK_UNINITIALIZED char path_buffer[path_buffer_size];
     OBJECT_NAME_INFORMATION* path =
         reinterpret_cast<OBJECT_NAME_INFORMATION*>(path_buffer);
     ULONG out_buffer_size = 0;
@@ -77,7 +78,10 @@ TargetNtCreateSection(NtCreateSectionFunction orig_CreateSection,
     if (!ValidParameter(section_handle, sizeof(HANDLE), WRITE))
       break;
 
-    CrossCallReturn answer = {0};
+    // Avoid memset inserted by -ftrivial-auto-var-init=pattern on debug builds.
+    STACK_UNINITIALIZED CrossCallReturn answer;
+    Memset(&answer, 0, sizeof(answer));
+
     answer.nt_status = STATUS_INVALID_IMAGE_HASH;
     SharedMemIPCClient ipc(memory);
     ResultCode code =

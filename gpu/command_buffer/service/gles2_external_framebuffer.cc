@@ -7,6 +7,7 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/texture_base.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_restore_texture.h"

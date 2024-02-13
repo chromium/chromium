@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace ash::printing::oauth2 {
 
-base::StringPiece ToStringPiece(StatusCode status) {
+std::string_view ToStringPiece(StatusCode status) {
   switch (status) {
     case StatusCode::kOK:
       return "OK";

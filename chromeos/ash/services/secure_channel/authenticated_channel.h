@@ -5,11 +5,13 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_AUTHENTICATED_CHANNEL_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_AUTHENTICATED_CHANNEL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
@@ -26,6 +28,9 @@ class AuthenticatedChannel {
     virtual void OnDisconnected() = 0;
     virtual void OnMessageReceived(const std::string& feature,
                                    const std::string& payload) = 0;
+    virtual void OnNearbyConnectionStateChanged(
+        mojom::NearbyConnectionStep step,
+        mojom::NearbyConnectionStepResult result) = 0;
   };
 
   AuthenticatedChannel(const AuthenticatedChannel&) = delete;
@@ -93,6 +98,9 @@ class AuthenticatedChannel {
   void NotifyDisconnected();
   void NotifyMessageReceived(const std::string& feature,
                              const std::string& payload);
+  void NotifyNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result);
 
  private:
   base::ObserverList<Observer>::Unchecked observer_list_;

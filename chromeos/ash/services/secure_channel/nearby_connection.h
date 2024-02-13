@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
@@ -12,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/secure_channel/connection.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,7 +38,8 @@ namespace ash::secure_channel {
 // updates for file payloads registered via RegisterPayloadFile.
 class NearbyConnection : public Connection,
                          public mojom::NearbyMessageReceiver,
-                         public mojom::FilePayloadListener {
+                         public mojom::FilePayloadListener,
+                         public mojom::NearbyConnectionStateListener {
  public:
   class Factory {
    public:
@@ -77,6 +81,11 @@ class NearbyConnection : public Connection,
   // mojom::NearbyMessageReceiver:
   void OnMessageReceived(const std::string& message) override;
 
+  // mojom::NearbyConnectionStateListener:
+  void OnNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
+
   // mojom::FilePayloadListener:
   void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override;
 
@@ -100,6 +109,8 @@ class NearbyConnection : public Connection,
 
   raw_ptr<mojom::NearbyConnector> nearby_connector_;
   mojo::Receiver<mojom::NearbyMessageReceiver> message_receiver_{this};
+  mojo::Receiver<mojom::NearbyConnectionStateListener>
+      nearby_connection_state_listener_{this};
   mojo::Remote<mojom::NearbyMessageSender> message_sender_;
   mojo::Remote<mojom::NearbyFilePayloadHandler> file_payload_handler_;
   // Set of receivers created to listen to file payload transfer updates, one

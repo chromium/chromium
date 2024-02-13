@@ -8,8 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "components/metrics/structured/key_data.h"
-#include "components/metrics/structured/key_data_file_delegate.h"
+#include "components/metrics/structured/lib/key_data.h"
+#include "components/metrics/structured/lib/key_data_file_delegate.h"
 #include "components/metrics/structured/recorder.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
 

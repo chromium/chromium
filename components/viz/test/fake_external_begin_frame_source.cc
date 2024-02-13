@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/viz/test/begin_frame_args_test.h"
@@ -29,9 +30,11 @@ FakeExternalBeginFrameSource::~FakeExternalBeginFrameSource() {
 void FakeExternalBeginFrameSource::SetPaused(bool paused) {
   if (paused != paused_) {
     paused_ = paused;
-    std::set<BeginFrameObserver*> observers(observers_);
-    for (auto* obs : observers)
+    std::set<raw_ptr<BeginFrameObserver, SetExperimental>> observers(
+        observers_);
+    for (BeginFrameObserver* obs : observers) {
       obs->OnBeginFrameSourcePausedChanged(paused_);
+    }
   }
 }
 
@@ -103,8 +106,8 @@ void FakeExternalBeginFrameSource::TestOnBeginFrame(
     const BeginFrameArgs& args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   current_args_ = args;
-  std::set<BeginFrameObserver*> observers(observers_);
-  for (auto* obs : observers) {
+  std::set<raw_ptr<BeginFrameObserver, SetExperimental>> observers(observers_);
+  for (BeginFrameObserver* obs : observers) {
     pending_frames_[obs]++;
     obs->OnBeginFrame(current_args_);
   }

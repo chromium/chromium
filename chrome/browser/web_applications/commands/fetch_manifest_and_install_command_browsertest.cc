@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdlib>
 #include <memory>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -17,14 +20,17 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
 
@@ -65,6 +71,32 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, SuccessInstall) {
           }),
       /*use_fallback=*/false);
   loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleManifests) {
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "multiple_manifest_test_page.html");
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
+
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(), install_future.GetCallback(),
+      /*use_fallback=*/false);
+  ASSERT_TRUE(install_future.Wait());
+  EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+
+  // multiple_manifest_test_page.html includes both manifest_with_id.json and
+  // manifest.json. Section 4.6.7.10 of the HTML spec says the first manifest
+  // should be used.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppManifestId(app_id),
+            https_server()->GetURL("/some_id"));
 }
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
@@ -282,5 +314,85 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   EXPECT_TRUE(
       app_view->toolbar()->custom_tab_bar()->IsShowingCloseButtonForTesting());
 }
+
+// Tests that when an SVG icon is passed in the manifest with a size of |any|,
+// the icon is downloaded correctly for the web app during installation.
+// Parameterized to work with SVG icons that have an intrinsic size (width and
+// height defined) as well as no intrinsic size.
+class FetchManifestAndInstallCommandTestWithSVG
+    : public FetchManifestAndInstallCommandTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  GURL GetSiteUrlBasedOnSVGParams() {
+    if (GetParam()) {
+      return https_server()->GetURL(
+          "/banners/"
+          "manifest_test_page.html?manifest=manifest_svg_icon_any.json");
+    } else {
+      return https_server()->GetURL(
+          "/banners/"
+          "manifest_test_page.html?manifest=manifest_svg_icon_no_intrinsic_"
+          "size.json");
+    }
+  }
+
+  // There is a minor loss in image quality during resizing that leads to colors
+  // being not equal for precision for 2-3 decimal places. This is a helper
+  // function to work around that behavior by verifying that the difference is
+  // within some error margin.
+  bool VerifyColorsMatchWithinErrorPrecision(SkColor read_color,
+                                             SkColor expected_color) {
+    bool colors_match = true;
+    std::array<float, 4> read_colors = SkColor4f::FromColor(read_color).array();
+    std::array<float, 4> expected_colors =
+        SkColor4f::FromColor(expected_color).array();
+    float precision = 0.02f;
+    for (int i = 0; i < 4; i++) {
+      colors_match =
+          colors_match &&
+          (std::abs(read_colors[i] - expected_colors[i]) < precision);
+    }
+
+    return colors_match;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(FetchManifestAndInstallCommandTestWithSVG,
+                       SuccessInstallSVGIcons) {
+  EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(
+      browser(), GetSiteUrlBasedOnSVGParams()));
+
+  base::RunLoop loop;
+  webapps::AppId installed_app_id;
+  provider().scheduler().FetchManifestAndInstall(
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+      CreateDialogCallback(),
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id,
+                                     webapps::InstallResultCode code) {
+        EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
+        EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+        installed_app_id = app_id;
+        loop.Quit();
+      }),
+      /*use_fallback=*/false);
+  loop.Run();
+
+  for (const int& icon_size : web_app::SizesToGenerate()) {
+    SkColor small_icon_color = IconManagerReadAppIconPixel(
+        provider().icon_manager(), installed_app_id, icon_size,
+        /*x=*/icon_size / 2, /*y=*/icon_size / 2);
+    EXPECT_TRUE(
+        VerifyColorsMatchWithinErrorPrecision(small_icon_color, SK_ColorRED));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FetchManifestAndInstallCommandTestWithSVG,
+                         ::testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SVGIconIntrinsicSize"
+                                             : "SVGIconNoIntrinsicSize";
+                         });
 
 }  // namespace web_app

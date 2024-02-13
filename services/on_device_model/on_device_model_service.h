@@ -5,11 +5,13 @@
 #ifndef SERVICES_ON_DEVICE_MODEL_ON_DEVICE_MODEL_SERVICE_H_
 #define SERVICES_ON_DEVICE_MODEL_ON_DEVICE_MODEL_SERVICE_H_
 
+#include <set>
+
 #include "base/component_export.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/cpp/on_device_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -48,12 +50,17 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) OnDeviceModelService
   void GetEstimatedPerformanceClass(
       GetEstimatedPerformanceClassCallback callback) override;
 
+  size_t NumModelsForTesting() const { return models_.size(); }
+
  private:
   static base::expected<std::unique_ptr<OnDeviceModel>, mojom::LoadModelResult>
   CreateModel(mojom::LoadModelParamsPtr params);
 
+  void DeleteModel(mojom::OnDeviceModel* model);
+
   mojo::Receiver<mojom::OnDeviceModelService> receiver_;
-  mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;
+  std::set<std::unique_ptr<mojom::OnDeviceModel>, base::UniquePtrComparator>
+      models_;
 };
 
 }  // namespace on_device_model

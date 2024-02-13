@@ -171,6 +171,59 @@ BASE_FEATURE(kEnableCsrssLockdownFeature,
              "EnableCsrssLockdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Helper to recording timing information during process creation.
+class SandboxLaunchTimer {
+ public:
+  SandboxLaunchTimer() = default;
+  SandboxLaunchTimer(const SandboxLaunchTimer&) = delete;
+  SandboxLaunchTimer& operator=(const SandboxLaunchTimer&) = delete;
+
+  // Call after the policy base object is created.
+  void OnPolicyCreated() { policy_created_ = timer_.Elapsed(); }
+
+  // Call after the delegate has generated policy settings.
+  void OnPolicyGenerated() { policy_generated_ = timer_.Elapsed(); }
+
+  // Call after CreateProcess() has returned a suspended process.
+  void OnProcessSpawned() { process_spawned_ = timer_.Elapsed(); }
+
+  // Call after unsuspending the process.
+  void OnProcessResumed() { process_resumed_ = timer_.Elapsed(); }
+
+  // Call once to record histograms for a successful process launch.
+  void RecordHistograms() {
+    // If these parameters change the histograms should be renamed.
+    // We're interested in the happy fast case so have a low maximum.
+    const auto kLowBound = base::Microseconds(5);
+    const auto kHighBound = base::Microseconds(100000);
+    const int kBuckets = 50;
+
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Process.Sandbox.StartSandboxedWin.CreatePolicyDuration",
+        policy_created_, kLowBound, kHighBound, kBuckets);
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Process.Sandbox.StartSandboxedWin.GeneratePolicyDuration",
+        policy_generated_ - policy_created_, kLowBound, kHighBound, kBuckets);
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Process.Sandbox.StartSandboxedWin.SpawnTargetDuration",
+        process_spawned_ - policy_generated_, kLowBound, kHighBound, kBuckets);
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Process.Sandbox.StartSandboxedWin.PostSpawnTargetDuration",
+        process_resumed_ - process_spawned_, kLowBound, kHighBound, kBuckets);
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Process.Sandbox.StartSandboxedWin.TotalDuration", process_resumed_,
+        kLowBound, kHighBound, kBuckets);
+  }
+
+ private:
+  // `timer_` starts when this object is created.
+  const base::ElapsedTimer timer_;
+  base::TimeDelta policy_created_;
+  base::TimeDelta policy_generated_;
+  base::TimeDelta process_spawned_;
+  base::TimeDelta process_resumed_;
+};
+
 // Adds the policy rules to allow read-only access to the windows system fonts
 // directory, and any subdirectories. Used by PDF renderers.
 bool AddWindowsFontsDir(TargetConfig* config) {
@@ -962,7 +1015,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
     base::Process* process) {
-  const base::ElapsedTimer timer;
+  SandboxLaunchTimer timer;
 
   // Avoid making a policy if we won't use it.
   if (IsUnsandboxedProcess(delegate->GetSandboxType(), cmd_line,
@@ -972,10 +1025,13 @@ ResultCode SandboxWin::StartSandboxedProcess(
   }
 
   auto policy = g_broker_services->CreatePolicy(delegate->GetSandboxTag());
+  timer.OnPolicyCreated();
+
   ResultCode result = GeneratePolicyForSandboxedProcess(
       cmd_line, process_type, handles_to_inherit, delegate, policy.get());
   if (SBOX_ALL_OK != result)
     return result;
+  timer.OnPolicyGenerated();
 
   TRACE_EVENT_BEGIN0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
 
@@ -985,6 +1041,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
       cmd_line.GetProgram().value().c_str(),
       cmd_line.GetCommandLineString().c_str(), std::move(policy), &last_error,
       &temp_process_info);
+  timer.OnProcessSpawned();
 
   base::win::ScopedProcessInformation target(temp_process_info);
 
@@ -1001,13 +1058,11 @@ ResultCode SandboxWin::StartSandboxedProcess(
 
   delegate->PostSpawnTarget(target.process_handle());
   CHECK(ResumeThread(target.thread_handle()) != static_cast<DWORD>(-1));
+  timer.OnProcessResumed();
 
   // Record timing histogram on sandboxed & launched success.
-  // We're interested in the happy fast case so have a low maximum.
   if (SBOX_ALL_OK == result) {
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.TotalDuration", timer.Elapsed(),
-        base::Microseconds(5), base::Microseconds(100000), 50);
+    timer.RecordHistograms();
   }
 
   *process = base::Process(target.TakeProcessHandle());

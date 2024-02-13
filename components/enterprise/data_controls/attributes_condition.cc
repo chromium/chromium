@@ -34,6 +34,7 @@ AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
 
   incognito_ = value.FindBool(kKeyIncognito);
   os_clipboard_ = value.FindBool(kKeyOsClipboard);
+  other_profile_ = value.FindBool(kKeyOtherProfile);
 
 #if BUILDFLAG(IS_CHROMEOS)
   const base::Value::List* components_value = value.FindList(kKeyComponents);
@@ -58,7 +59,8 @@ AttributesCondition::AttributesCondition(AttributesCondition&& other) = default;
 
 bool AttributesCondition::IsValid() const {
   bool valid = (url_matcher_ && !url_matcher_->IsEmpty()) ||
-               incognito_.has_value() || os_clipboard_.has_value();
+               incognito_.has_value() || os_clipboard_.has_value() ||
+               other_profile_.has_value();
 #if BUILDFLAG(IS_CHROMEOS)
   valid |= !components_.empty();
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -107,6 +109,14 @@ bool AttributesCondition::OsClipboardMatches(bool os_clipboard) const {
   return os_clipboard == os_clipboard_.value();
 }
 
+bool AttributesCondition::OtherProfileMatches(bool other_profile) const {
+  if (!other_profile_.has_value()) {
+    return true;
+  }
+
+  return other_profile == other_profile_.value();
+}
+
 bool AttributesCondition::is_os_clipboard_condition() const {
   return os_clipboard_.has_value();
 }
@@ -140,10 +150,9 @@ bool SourceAttributesCondition::IsTriggered(
     return OsClipboardMatches(action_context.source.os_clipboard);
   }
 
-  if (!IncognitoMatches(action_context.source.incognito)) {
-    return false;
-  }
-  return URLMatches(action_context.source.url);
+  return IncognitoMatches(action_context.source.incognito) &&
+         OtherProfileMatches(action_context.source.other_profile) &&
+         URLMatches(action_context.source.url);
 }
 
 SourceAttributesCondition::SourceAttributesCondition(
@@ -184,15 +193,12 @@ bool DestinationAttributesCondition::IsTriggered(
     return OsClipboardMatches(action_context.destination.os_clipboard);
   }
 
-  if (!IncognitoMatches(action_context.destination.incognito)) {
-    return false;
-  }
+  return IncognitoMatches(action_context.destination.incognito) &&
+         OtherProfileMatches(action_context.destination.other_profile) &&
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!ComponentMatches(action_context.destination.component)) {
-    return false;
-  }
+         ComponentMatches(action_context.destination.component) &&
 #endif
-  return URLMatches(action_context.destination.url);
+         URLMatches(action_context.destination.url);
 }
 
 DestinationAttributesCondition::DestinationAttributesCondition(

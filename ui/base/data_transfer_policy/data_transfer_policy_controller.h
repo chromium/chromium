@@ -5,6 +5,7 @@
 #ifndef UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_POLICY_CONTROLLER_H_
 #define UI_BASE_DATA_TRANSFER_POLICY_DATA_TRANSFER_POLICY_CONTROLLER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -12,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/optional_ref.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(UI_BASE_DATA_TRANSFER_POLICY)
   virtual bool IsClipboardReadAllowed(
       base::optional_ref<const DataTransferEndpoint> data_src,
       base::optional_ref<const DataTransferEndpoint> data_dst,
-      absl::optional<size_t> size) = 0;
+      std::optional<size_t> size) = 0;
 
   // nullptr can be passed instead of `data_src` or `data_dst`. If clipboard
   // data is set to be in warning mode, this function will show a notification

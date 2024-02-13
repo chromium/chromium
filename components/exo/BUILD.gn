@@ -225,6 +225,10 @@ source_set("test_support") {
     "test/surface_tree_host_test_util.h",
     "test/test_data_device_delegate.cc",
     "test/test_data_device_delegate.h",
+    "test/test_data_offer_delegate.cc",
+    "test/test_data_offer_delegate.h",
+    "test/test_data_source_delegate.cc",
+    "test/test_data_source_delegate.h",
     "test/test_security_delegate.cc",
     "test/test_security_delegate.h",
   ]

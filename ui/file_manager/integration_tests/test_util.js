@@ -157,7 +157,7 @@ export function pending(caller, message, ..._var_args) {
  * Waits until the checkFunction returns a value but a pending marker.
  * @param {function():*} checkFunction Function to check a condition. It can
  *     return a pending marker created by a pending function.
- * @return {!Promise<unknown>} Promise to be fulfilled with the return value of
+ * @return {!Promise<any>} Promise to be fulfilled with the return value of
  *     checkFunction when the checkFunction returns a value but a pending
  *     marker.
  */
@@ -222,7 +222,8 @@ export async function sendBrowserTestCommand(command, callback, opt_debug) {
  * Get all the browser windows.
  * @param {number} expectedInitialCount The number of windows expected before
  *     opening a new one.
- * @return {Promise<Object>} Object returned from chrome.windows.getAll().
+ * @return {Promise<chrome.windows.Window[]>} Object returned from
+ *     chrome.windows.getAll().
  */
 export async function getBrowserWindows(expectedInitialCount = 0) {
   const caller = getCaller();

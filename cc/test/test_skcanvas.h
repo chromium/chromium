@@ -76,6 +76,8 @@ class MockCanvas : public SkNoDrawCanvas {
   MOCK_METHOD2(didTranslate, void(SkScalar, SkScalar));
   MOCK_METHOD2(onDrawOval, void(const SkRect&, const SkPaint&));
   MOCK_METHOD2(onCustomCallback, void(SkCanvas*, uint32_t));
+  MOCK_METHOD2(onDrawGlyphRunList,
+               void(const sktext::GlyphRunList&, const SkPaint&));
 
   sk_sp<GrDirectContext> context_;
 };

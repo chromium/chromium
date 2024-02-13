@@ -4,6 +4,8 @@
 
 #include "chromecast/crash/cast_crash_storage_impl.h"
 
+#include <string_view>
+
 #include "chromecast/crash/cast_crash_keys.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -21,7 +23,7 @@ crash_reporter::CrashKeyString<64> stadia_session_id(
 CastCrashStorageImpl::CastCrashStorageImpl() = default;
 CastCrashStorageImpl::~CastCrashStorageImpl() = default;
 
-void CastCrashStorageImpl::SetLastLaunchedApp(base::StringPiece app_id) {
+void CastCrashStorageImpl::SetLastLaunchedApp(std::string_view app_id) {
   last_app.Set(app_id);
 }
 
@@ -29,7 +31,7 @@ void CastCrashStorageImpl::ClearLastLaunchedApp() {
   last_app.Clear();
 }
 
-void CastCrashStorageImpl::SetCurrentApp(base::StringPiece app_id) {
+void CastCrashStorageImpl::SetCurrentApp(std::string_view app_id) {
   current_app.Set(app_id);
 }
 
@@ -37,7 +39,7 @@ void CastCrashStorageImpl::ClearCurrentApp() {
   current_app.Clear();
 }
 
-void CastCrashStorageImpl::SetPreviousApp(base::StringPiece app_id) {
+void CastCrashStorageImpl::SetPreviousApp(std::string_view app_id) {
   previous_app.Set(app_id);
 }
 
@@ -45,7 +47,7 @@ void CastCrashStorageImpl::ClearPreviousApp() {
   previous_app.Clear();
 }
 
-void CastCrashStorageImpl::SetStadiaSessionId(base::StringPiece session_id) {
+void CastCrashStorageImpl::SetStadiaSessionId(std::string_view session_id) {
   stadia_session_id.Set(session_id);
 }
 

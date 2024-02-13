@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/desk_action_context_menu.h"
 
+#include <string>
+
 #include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -18,6 +20,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
@@ -88,6 +91,9 @@ DeskActionContextMenu::DeskActionContextMenu(Config config)
     }
   };
 
+  // Set the accessible name for menu items here and then pipe the information
+  // to the view instances during `ShowContextMenuForViewImpl()`.
+
   if (config_.profiles.size() > 1) {
     for (size_t i = 0; i != config_.profiles.size(); ++i) {
       const auto& summary = config_.profiles[i];
@@ -97,51 +103,64 @@ DeskActionContextMenu::DeskActionContextMenu(Config config)
           gfx::Size(kIconProfileSize, kIconProfileSize));
 
       context_menu_model_.AddItemWithIcon(
-          static_cast<int>(kDynamicProfileStart + i),
-          base::UTF8ToUTF16(summary.name),
+          static_cast<int>(kDynamicProfileStart + i), summary.name,
           ui::ImageModel::FromImageSkia(
               gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
                   kIconProfileSize, icon)));
 
       auto entry_index = context_menu_model_.GetItemCount() - 1;
-      context_menu_model_.SetMinorText(entry_index,
-                                       base::UTF8ToUTF16(summary.email));
+      context_menu_model_.SetMinorText(entry_index, summary.email);
 
+      int profile_a11y_id = IDS_ASH_DESKS_MENU_ITEM_PROFILE_NOT_CHECKED;
       if (summary.profile_id == config_.current_lacros_profile_id) {
         context_menu_model_.SetMinorIcon(
             entry_index, ui::ImageModel::FromVectorIcon(
                              kHollowCheckCircleIcon,
                              cros_tokens::kCrosSysPrimary, kCheckButtonSize));
+        profile_a11y_id = IDS_ASH_DESKS_MENU_ITEM_PROFILE_CHECKED;
       }
+
+      context_menu_model_.SetAccessibleNameAt(
+          entry_index, l10n_util::GetStringFUTF16(profile_a11y_id, summary.name,
+                                                  summary.email));
     }
 
     context_menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    const std::u16string profile_manager_a11y =
+        l10n_util::GetStringUTF16(IDS_ASH_DESKS_OPEN_PROFILE_MANAGER);
     context_menu_model_.AddItemWithIcon(
-        CommandId::kShowProfileManager,
-        l10n_util::GetStringUTF16(IDS_ASH_DESKS_OPEN_PROFILE_MANAGER),
+        CommandId::kShowProfileManager, profile_manager_a11y,
         ui::ImageModel::FromVectorIcon(
             kSettingsIcon, cros_tokens::kCrosSysOnSurface, kCheckButtonSize));
+    context_menu_model_.SetAccessibleNameAt(
+        context_menu_model_.GetItemCount() - 1, profile_manager_a11y);
 
     separator_needed = true;
   }
 
   if (config_.combine_desks_target_name) {
     maybe_add_separator();
-    context_menu_model_.AddItemWithIcon(
-        CommandId::kCombineDesks,
+    const std::u16string combine_desks_a11y =
         l10n_util::GetStringFUTF16(IDS_ASH_DESKS_COMBINE_DESKS_DESCRIPTION,
-                                   *config_.combine_desks_target_name),
+                                   *config_.combine_desks_target_name);
+    context_menu_model_.AddItemWithIcon(
+        CommandId::kCombineDesks, combine_desks_a11y,
         ui::ImageModel::FromVectorIcon(kCombineDesksIcon,
                                        ui::kColorAshSystemUIMenuIcon));
+    context_menu_model_.SetAccessibleNameAt(
+        context_menu_model_.GetItemCount() - 1, combine_desks_a11y);
   }
 
-  if (config_.close_all_callback) {
+  if (config_.close_all_target_name) {
     maybe_add_separator();
+    const std::u16string close_all_a11y = l10n_util::GetStringFUTF16(
+        IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION, *config_.close_all_target_name);
     context_menu_model_.AddItemWithIcon(
-        CommandId::kCloseAll,
-        l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION),
+        CommandId::kCloseAll, close_all_a11y,
         ui::ImageModel::FromVectorIcon(kMediumOrLargeCloseButtonIcon,
                                        ui::kColorAshSystemUIMenuIcon));
+    context_menu_model_.SetAccessibleNameAt(
+        context_menu_model_.GetItemCount() - 1, close_all_a11y);
   }
 
   menu_model_adapter_ =
@@ -198,6 +217,20 @@ void DeskActionContextMenu::ShowContextMenuForViewImpl(
                                   /*button_controller=*/nullptr,
                                   /*bounds=*/gfx::Rect(point, gfx::Size()),
                                   config_.anchor_position, source_type);
+
+  // Pipe accessible names from the menu model to the view instances. Please
+  // note, a separator in menu model does *not* end up being represented by a
+  // view instance.
+  auto item_views = root_menu_item_view_->GetSubmenu()->GetMenuItems();
+  const size_t model_count = context_menu_model_.GetItemCount();
+  CHECK_LE(item_views.size(), model_count);
+  for (size_t view_index = 0, model_index = 0; model_index < model_count;
+       model_index++) {
+    if (auto a11y_name = context_menu_model_.GetAccessibleNameAt(model_index);
+        !a11y_name.empty()) {
+      item_views[view_index++]->SetAccessibleName(a11y_name);
+    }
+  }
 }
 
 void DeskActionContextMenu::MaybeSetLacrosProfileId(int command_id) {

@@ -63,7 +63,9 @@ class BASE_EXPORT ThreadPoolInstance {
     ~InitParams();
 
     // Maximum number of unblocked tasks that can run concurrently in the
-    // foreground thread group.
+    // foreground thread group. This is capped at 256 (and should likely not be
+    // configured anywhere close to this in a browser, approaching that limit is
+    // most useful on compute farms running tests or compiles in parallel).
     size_t max_num_foreground_threads;
 
     // Maximum number of unblocked tasks that can run concurrently in the

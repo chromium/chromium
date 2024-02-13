@@ -5,11 +5,14 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_MANAGER_IMPL_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_MANAGER_IMPL_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/secure_channel/ble_scanner.h"
 #include "chromeos/ash/services/secure_channel/device_id_pair.h"
 #include "chromeos/ash/services/secure_channel/nearby_connection_manager.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/secure_channel.h"
 
@@ -74,6 +77,13 @@ class NearbyConnectionManagerImpl : public NearbyConnectionManager,
       SecureChannel* secure_channel,
       const SecureChannel::Status& old_status,
       const SecureChannel::Status& new_status) override;
+  void OnNearbyConnectionStateChanged(
+      SecureChannel* secure_channel,
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
+  void OnSecureChannelAuthenticationStateChanged(
+      SecureChannel* secure_channel,
+      mojom::SecureChannelState secure_channel_state) override;
 
   // Returns whether a channel exists connecting to |remote_device_id|,
   // regardless of the local device ID used to create the connection.
@@ -119,6 +129,7 @@ class NearbyConnectionManagerImpl : public NearbyConnectionManager,
   base::flat_map<std::string, std::unique_ptr<SecureChannel>>
       remote_device_id_to_secure_channel_map_;
   std::optional<std::string> notifying_remote_device_id_;
+  base::flat_set<DeviceIdPair> discovered_device_id_pair_;
 };
 
 }  // namespace ash::secure_channel

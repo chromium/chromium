@@ -44,14 +44,14 @@ public class InternalAuthenticator {
             RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
+        WebauthnModeProvider.getInstance().setWebauthnMode(WebauthnMode.CHROME);
         mAuthenticator =
                 new AuthenticatorImpl(
                         context,
                         intentSender,
                         /* createConfirmationUiDelegate= */ null,
                         renderFrameHost,
-                        topOrigin,
-                        WebauthnMode.CHROME);
+                        topOrigin);
     }
 
     public static InternalAuthenticator createForTesting(
@@ -161,7 +161,7 @@ public class InternalAuthenticator {
      */
     @CalledByNative
     public boolean isGetMatchingCredentialIdsSupported() {
-        return mAuthenticator.isGetMatchingCredentialIdsSupported();
+        return GmsCoreUtils.isGetMatchingCredentialIdsSupported();
     }
 
     /**

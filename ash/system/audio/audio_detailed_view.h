@@ -44,9 +44,9 @@ class ASH_EXPORT AudioDetailedView
       public SessionObserver,
       public speech::SodaInstaller::Observer,
       public TrayDetailedView {
- public:
-  METADATA_HEADER(AudioDetailedView);
+  METADATA_HEADER(AudioDetailedView, TrayDetailedView)
 
+ public:
   explicit AudioDetailedView(DetailedViewDelegate* delegate);
 
   AudioDetailedView(const AudioDetailedView&) = delete;

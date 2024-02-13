@@ -11,6 +11,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "skia/ext/image_operations.h"
@@ -42,7 +43,8 @@ void ExtensionIconManager::LoadIcon(content::BrowserContext* context,
                      weak_ptr_factory_.GetWeakPtr(), extension->id()));
 }
 
-gfx::Image ExtensionIconManager::GetIcon(const std::string& extension_id) {
+gfx::Image ExtensionIconManager::GetIcon(
+    const extensions::ExtensionId& extension_id) {
   auto iter = icons_.find(extension_id);
   gfx::Image* result = nullptr;
   if (iter == icons_.end()) {
@@ -58,13 +60,15 @@ gfx::Image ExtensionIconManager::GetIcon(const std::string& extension_id) {
   return *result;
 }
 
-void ExtensionIconManager::RemoveIcon(const std::string& extension_id) {
+void ExtensionIconManager::RemoveIcon(
+    const extensions::ExtensionId& extension_id) {
   icons_.erase(extension_id);
   pending_icons_.erase(extension_id);
 }
 
-void ExtensionIconManager::OnImageLoaded(const std::string& extension_id,
-                                         const gfx::Image& image) {
+void ExtensionIconManager::OnImageLoaded(
+    const extensions::ExtensionId& extension_id,
+    const gfx::Image& image) {
   if (!image.IsEmpty()) {
     // We may have removed the icon while waiting for it to load. In that case,
     // do nothing.

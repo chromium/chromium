@@ -24,7 +24,7 @@ MockBluetoothDevice::MockBluetoothDevice(MockBluetoothAdapter* adapter,
                                          bool connected)
     : BluetoothDevice(adapter),
       bluetooth_class_(bluetooth_class),
-      name_(name ? absl::optional<std::string>(name) : absl::nullopt),
+      name_(name ? std::optional<std::string>(name) : std::nullopt),
       address_(address),
       connected_(connected),
       paired_(initially_paired) {

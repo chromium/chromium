@@ -63,14 +63,6 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    gn_args = gn_args.config(
-        configs = [
-            "chromeos_with_codecs",
-            "release_builder",
-            "reclient",
-            "use_cups",
-        ],
-    ),
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(

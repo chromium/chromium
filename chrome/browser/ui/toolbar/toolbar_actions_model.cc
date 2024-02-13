@@ -239,6 +239,40 @@ bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   });
 }
 
+bool ToolbarActionsModel::IsPolicyBlockedHost(const GURL& url) const {
+  extensions::ManagementPolicy* policy =
+      extensions::ExtensionSystem::Get(profile_)->management_policy();
+  auto is_enterprise_extension =
+      [policy](const extensions::Extension& extension) {
+        return !policy->UserMayModifySettings(&extension, nullptr) ||
+               policy->MustRemainInstalled(&extension, nullptr);
+      };
+
+  // `url` is NOT a policy-blockedsite when there are no extensions installed.
+  if (action_ids().empty()) {
+    return false;
+  }
+
+  for (auto& action_id : action_ids()) {
+    // Skip enterprise extensions since they could still access policy-blocked
+    // sites.
+    const extensions::Extension* extension = GetExtensionById(action_id);
+    if (is_enterprise_extension(*extension)) {
+      continue;
+    }
+
+    // `url` is NOT a policy-blocked sit when it's allowed for any
+    // non-enterprise extension.
+    if (!extension->permissions_data()->IsPolicyBlockedHost(url)) {
+      return false;
+    }
+  }
+
+  // `url` is a policy-blocked site when it's blocked for every non-enterprise
+  // extension.
+  return true;
+}
+
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
   return base::Contains(pinned_action_ids_, action_id);
 }

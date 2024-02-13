@@ -6,13 +6,13 @@
 #define UI_GL_GL_IMPLEMENTATION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/angle_implementation.h"
 #include "ui/gl/buildflags.h"
@@ -175,7 +175,7 @@ GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
 
 // Return requested GL implementation by checking commandline. If there isn't
 // gl related argument, nullopt is returned.
-GL_EXPORT absl::optional<GLImplementationParts>
+GL_EXPORT std::optional<GLImplementationParts>
 GetRequestedGLImplementationFromCommandLine(
     const base::CommandLine* command_line,
     bool* fallback_to_software_gl);

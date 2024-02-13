@@ -67,7 +67,7 @@ bool AccountChecker::IsSignedIn() {
            identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   }
   // The feature is not enabled, fallback to old behavior.
-  // TODO(crbug.com/1462978): Delete ConsentLevel::kSync usage once
+  // TODO(crbug.com/40067058): Delete ConsentLevel::kSync usage once
   // kReplaceSyncPromosWithSignInPromos is launched on all platforms. See
   // ConsentLevel::kSync documentation for details.
   return identity_manager_ &&
@@ -82,7 +82,7 @@ bool AccountChecker::IsSyncingBookmarks() {
                                 syncer::UploadState::ACTIVE;
   }
   // The feature is not enabled, fallback to old behavior.
-  // TODO(crbug.com/1462978): Delete IsSyncFeatureActive() usage once
+  // TODO(crbug.com/40067058): Delete IsSyncFeatureActive() usage once
   // kReplaceSyncPromosWithSignInPromos is launched on all platforms. See
   // ConsentLevel::kSync documentation for details.
   return sync_service_ && sync_service_->IsSyncFeatureActive() &&
@@ -286,7 +286,7 @@ std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
     const base::TimeDelta& timeout,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
-  // TODO(crbug.com/1462978): Delete ConsentLevel::kSync usage once
+  // TODO(crbug.com/40067058): Delete ConsentLevel::kSync usage once
   // kReplaceSyncPromosWithSignInPromos is launched on all platforms. See
   // ConsentLevel::kSync documentation for details.
   signin::ConsentLevel consent_level =

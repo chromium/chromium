@@ -4,8 +4,6 @@
 
 package org.chromium.net.telemetry;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import android.os.Build;
 import android.util.Log;
 
@@ -14,9 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.impl.CronetLogger;
 
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,19 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiresApi(Build.VERSION_CODES.R)
 public class CronetLoggerImpl extends CronetLogger {
     private static final String TAG = CronetLoggerImpl.class.getSimpleName();
-
-    private static final MessageDigest MD5_MESSAGE_DIGEST;
-
-    static {
-        MessageDigest messageDigest;
-        try {
-            messageDigest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            Log.d(TAG, "Error while instantiating messageDigest", e);
-            messageDigest = null;
-        }
-        MD5_MESSAGE_DIGEST = messageDigest;
-    }
 
     private final AtomicInteger mSamplesRateLimited = new AtomicInteger();
     private final RateLimiter mRateLimiter;
@@ -57,6 +40,39 @@ public class CronetLoggerImpl extends CronetLogger {
         // be confused with values people may think of as sentinels.
         long id = ThreadLocalRandom.current().nextLong(Long.MIN_VALUE + 1, Long.MAX_VALUE - 2);
         return id >= -1 ? id + 2 : id;
+    }
+
+    @Override
+    public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {
+        CronetStatsLog.write(
+                CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED,
+                info.cronetInitializationRef,
+                convertToProtoCronetEngineBuilderInitializedAuthor(info.author),
+                info.engineBuilderCreatedLatencyMillis,
+                convertToProtoCronetSource(info.source),
+                OptionalBoolean.fromBoolean(info.creationSuccessful).getValue(),
+                info.apiVersion.getMajorVersion(),
+                info.apiVersion.getMinorVersion(),
+                info.apiVersion.getBuildVersion(),
+                info.apiVersion.getPatchVersion(),
+                info.implVersion.getMajorVersion(),
+                info.implVersion.getMinorVersion(),
+                info.implVersion.getBuildVersion(),
+                info.implVersion.getPatchVersion(),
+                info.uid);
+    }
+
+    @Override
+    public void logCronetInitializedInfo(CronetInitializedInfo info) {
+        CronetStatsLog.write(
+                CronetStatsLog.CRONET_INITIALIZED,
+                info.cronetInitializationRef,
+                info.engineCreationLatencyMillis,
+                info.engineAsyncLatencyMillis,
+                info.httpFlagsLatencyMillis,
+                OptionalBoolean.fromBoolean(info.httpFlagsSuccessful).getValue(),
+                longListToLongArray(info.httpFlagsNames),
+                longListToLongArray(info.httpFlagsValues));
     }
 
     @Override
@@ -137,7 +153,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     experimentalOptions.getStaleDnsPersistDelayMillisOption(),
                     experimentalOptions.getStaleDnsUseStaleOnNameNotResolvedOption().getValue(),
                     experimentalOptions.getDisableIpv6OnWifiOption().getValue(),
-                    /* cronet_initialization_ref= */ -1);
+                    builder.getCronetInitializationRef());
         } catch (Exception e) { // catching all exceptions since we don't want to crash the client
             Log.d(
                     TAG,
@@ -163,7 +179,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     SizeBuckets.calcResponseBodySizeBucket(
                             trafficInfo.getResponseBodySizeInBytes()),
                     trafficInfo.getResponseStatusCode(),
-                    hashNegotiatedProtocol(trafficInfo.getNegotiatedProtocol()),
+                    Hash.hash(trafficInfo.getNegotiatedProtocol()),
                     (int) trafficInfo.getHeadersLatency().toMillis(),
                     (int) trafficInfo.getTotalLatency().toMillis(),
                     trafficInfo.wasConnectionMigrationAttempted(),
@@ -187,6 +203,17 @@ public class CronetLoggerImpl extends CronetLogger {
                             "Failed to log cronet traffic sample for CronetEngine %s: %s",
                             cronetEngineId, e.getMessage()));
         }
+    }
+
+    private static int convertToProtoCronetEngineBuilderInitializedAuthor(
+            CronetEngineBuilderInitializedInfo.Author author) {
+        switch (author) {
+            case API:
+                return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_API;
+            case IMPL:
+                return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_IMPL;
+        }
+        return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED;
     }
 
     private static int convertToProtoCronetSource(CronetSource source) {
@@ -221,12 +248,13 @@ public class CronetLoggerImpl extends CronetLogger {
         }
     }
 
-    private static long hashNegotiatedProtocol(String protocol) {
-        if (MD5_MESSAGE_DIGEST == null || protocol == null || protocol.isEmpty()) {
-            return 0L;
+    // Shamelessly copy-pasted from //base/android/java/src/org/chromium/base/CollectionUtil.java
+    // to avoid adding a large dependency on //base.
+    private static long[] longListToLongArray(List<Long> list) {
+        long[] array = new long[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
         }
-
-        byte[] md = MD5_MESSAGE_DIGEST.digest(protocol.getBytes(UTF_8));
-        return ByteBuffer.wrap(md).getLong();
+        return array;
     }
 }

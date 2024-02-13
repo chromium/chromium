@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 
-#include "testing/gtest/include/gtest/gtest.h"
 #include <string>
+
+#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(PagePopupClientTest, AddJavaScriptString) {
+  test::TaskEnvironment task_environment;
   scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create();
   PagePopupClient::AddJavaScriptString(
       String::FromUTF8("abc\r\n'\"</script>\t\f\v\xE2\x80\xA8\xE2\x80\xA9"),

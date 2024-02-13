@@ -41,6 +41,7 @@ ServiceWorkerHost::ServiceWorkerHost(
     ServiceWorkerVersion* version,
     base::WeakPtr<ServiceWorkerContextCore> context)
     : version_(version),
+      token_(blink::ServiceWorkerToken()),
       broker_(this),
       container_host_(std::make_unique<content::ServiceWorkerContainerHost>(
           std::move(context))),

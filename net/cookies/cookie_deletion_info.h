@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_COOKIE_DELETION_INFO_H_
 #define NET_COOKIES_COOKIE_DELETION_INFO_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -12,7 +13,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key_collection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -111,14 +111,14 @@ struct NET_EXPORT CookieDeletionInfo {
   SessionControl session_control = SessionControl::IGNORE_CONTROL;
 
   // If has a value then cookie.Host() must equal |host|.
-  absl::optional<std::string> host;
+  std::optional<std::string> host;
 
   // If has a value then cookie.Name() must equal |name|.
-  absl::optional<std::string> name;
+  std::optional<std::string> name;
 
   // If has a value then will match if the cookie being evaluated would be
   // included for a request of |url|.
-  absl::optional<GURL> url;
+  std::optional<GURL> url;
 
   // If has a value then any cookie with a domain/ip contained in this set
   // will be deleted (assuming other fields match).
@@ -128,7 +128,7 @@ struct NET_EXPORT CookieDeletionInfo {
   // Note: |domains_and_ips_to_ignore| takes precedence. For example if this
   // has a value of ["A", "B"] and |domains_and_ips_to_ignore| is ["B", "C"]
   // then only "A" will be deleted.
-  absl::optional<std::set<std::string>> domains_and_ips_to_delete;
+  std::optional<std::set<std::string>> domains_and_ips_to_delete;
 
   // If has a value then any cookie with a domain/ip contained in this set
   // will be ignored (and not deleted).
@@ -136,10 +136,10 @@ struct NET_EXPORT CookieDeletionInfo {
   // ".example.com".
   //
   // See precedence note above.
-  absl::optional<std::set<std::string>> domains_and_ips_to_ignore;
+  std::optional<std::set<std::string>> domains_and_ips_to_ignore;
 
   // Used only for testing purposes.
-  absl::optional<std::string> value_for_testing;
+  std::optional<std::string> value_for_testing;
 
   // Cookie partition collection. Partitioned cookies are not deleted if their
   // partition key is not in the collection. By default, it clears cookies in

@@ -344,7 +344,7 @@ void AuthenticationService::GrantSyncConsent(
     signin_metrics::AccessPoint access_point) {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
-    // TODO(crbug.com/1462858): Turn sync on was deprecated. Remove
+    // TODO(crbug.com/40067025): Turn sync on was deprecated. Remove
     // `GrantSyncConsent()` as it is obsolete.
     DUMP_WILL_BE_CHECK(access_point !=
                        signin_metrics::AccessPoint::

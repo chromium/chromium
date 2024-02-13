@@ -308,7 +308,7 @@ BASE_FEATURE(kNtpRealboxPedals,
 // Feature used to enable the simplified actions UI design.
 BASE_FEATURE(kOmniboxActionsUISimplification,
              "OmniboxActionsUISimplification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Feature used to enable the new keyword mode behavior.
 BASE_FEATURE(kOmniboxKeywordModeRefresh,
@@ -463,7 +463,7 @@ BASE_FEATURE(kLogUrlScoringSignals,
 
 // If enabled, runs the ML scoring model to assign new relevance scores to the
 // URL suggestions and reranks them.
-BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", enabled_by_default_desktop_only);
 
 // If enabled, specifies how URL model scores integrate with search traditional
 // scores.
@@ -475,7 +475,7 @@ BASE_FEATURE(kMlUrlSearchBlending,
 // `kMlUrlScoring` & `kMlUrlSearchBlending`.
 BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // If enabled, appends additional Trending and Recent Search Related Queries to
 // the suggestion list on the NTP and SRP.

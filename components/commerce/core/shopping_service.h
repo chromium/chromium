@@ -335,7 +335,7 @@ class ShoppingService : public KeyedService,
   // and sync opt-in state, returns either LocalOrSyncable or Account bookmark
   // model instance.
   //
-  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   //     See ConsentLevel::kSync documentation for details.
   virtual bookmarks::BookmarkModel* GetBookmarkModelUsedForSync();
 
@@ -710,7 +710,7 @@ class ShoppingService : public KeyedService,
   // The object for local extractions of commerce information.
   std::unique_ptr<commerce::WebExtractor> web_extractor_;
 
-  // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is deleted.
+  // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   //     See ConsentLevel::kSync documentation for details.
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};

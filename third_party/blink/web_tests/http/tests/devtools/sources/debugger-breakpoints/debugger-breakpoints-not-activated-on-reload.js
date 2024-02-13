@@ -36,7 +36,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
 
   function step3() {
     TestRunner.addResult('Main resource was shown.');
-    if (!Common.Settings.moduleSetting('breakpointsActive').get())
+    if (!Common.Settings.moduleSetting('breakpoints-active').get())
       TestRunner.addResult('Breakpoints are deactivated.');
     else
       TestRunner.addResult('Error: breakpoints are activated.');

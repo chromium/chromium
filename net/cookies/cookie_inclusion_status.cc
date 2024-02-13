@@ -52,10 +52,9 @@ bool CookieInclusionStatus::operator<(
                 "use .ullong() instead");
   static_assert(NUM_WARNING_REASONS <= sizeof(unsigned long) * CHAR_BIT,
                 "use .ullong() instead");
-  return std::make_pair(exclusion_reasons_.to_ulong(),
-                        warning_reasons_.to_ulong()) <
-         std::make_pair(other.exclusion_reasons_.to_ulong(),
-                        other.warning_reasons_.to_ulong());
+  return std::pair(exclusion_reasons_.to_ulong(), warning_reasons_.to_ulong()) <
+         std::pair(other.exclusion_reasons_.to_ulong(),
+                   other.warning_reasons_.to_ulong());
 }
 
 bool CookieInclusionStatus::IsInclude() const {

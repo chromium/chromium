@@ -46,6 +46,10 @@ bool ProgressIndicatorAnimation::IsAnimating() const {
   return is_cyclic_ && !start_time_.is_null();
 }
 
+void ProgressIndicatorAnimation::Init() {
+  UpdateAnimatableProperties(/*fraction=*/0.f);
+}
+
 void ProgressIndicatorAnimation::AnimationProgressed(
     const gfx::Animation* animation) {
   UpdateAnimatableProperties(animation->GetCurrentValue());

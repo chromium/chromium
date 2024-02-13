@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
@@ -509,15 +510,8 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public void loadUrl(String url, int transition, long inputStart, boolean openInNewTab) {
-        mLocationBarMediator.loadUrl(url, transition, inputStart, openInNewTab);
-    }
-
-    @Override
-    public void loadUrlWithPostData(
-            String url, int transition, long inputStart, String postDataType, byte[] postData) {
-        mLocationBarMediator.loadUrlWithPostData(
-                url, transition, inputStart, postDataType, postData, /* openInNewTab= */ false);
+    public void loadUrl(OmniboxLoadUrlParams omniboxLoadUrlParams) {
+        mLocationBarMediator.loadUrl(omniboxLoadUrlParams);
     }
 
     @Override

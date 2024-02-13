@@ -59,6 +59,7 @@ RulesetMatcher::RulesetMatcher(std::string ruleset_data,
       regex_matcher_(extension_id,
                      id,
                      root_->before_request_regex_rules(),
+                     root_->headers_received_regex_rules(),
                      root_->extension_metadata()) {
   if (!IsRulesetStatic(id)) {
     unsafe_rule_count_ = ComputeUnsafeRuleCount(root_->extension_metadata());

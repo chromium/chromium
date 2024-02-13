@@ -84,16 +84,6 @@ if (is_win) {
   }
 }
 
-if (is_mac) {
-  source_set("notification_metrics") {
-    sources = [
-      "notification_metrics.cc",
-      "notification_metrics.h",
-    ]
-    deps = [ "//base" ]
-  }
-}
-
 if (is_android) {
   android_generated_java_resources =
       [ "java/res/values/generated_resources.xml" ] +
@@ -213,10 +203,7 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    deps += [
-      "//chromeos/dbus/constants",
-      "//ui/gfx/linux:gbm",
-    ]
+    deps += [ "//chromeos/dbus/constants" ]
   }
 
   if (is_chromeos_ash) {

@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -29,6 +30,8 @@ namespace ash {
 namespace {
 
 constexpr base::TimeDelta kMaxLastModifiedOrViewedTime = base::Days(8);
+
+constexpr char kBaseHistogramName[] = "Ash.Search.FileSuggestions.DriveRecents";
 
 drivefs::mojom::QueryParametersPtr CreateRecentlyModifiedQuery() {
   auto query = drivefs::mojom::QueryParameters::New();
@@ -96,7 +99,7 @@ FileSuggestData CreateFileSuggestionWithJustification(
       primary_timestamp, secondary_timestamp, /*new_score=*/std::nullopt);
 }
 
-FileSuggestData CreateFileSuggestion(
+std::optional<FileSuggestData> CreateFileSuggestion(
     const base::FilePath& path,
     const drivefs::mojom::FileMetadata& file_metadata) {
   const base::Time& modified_time = file_metadata.modification_time;
@@ -107,6 +110,11 @@ FileSuggestData CreateFileSuggestion(
   if (const absl::optional<base::Time>& shared_time =
           file_metadata.shared_with_me_time;
       shared_time && !shared_time->is_null() && viewed_time.is_null()) {
+    if ((base::Time::Now() - *shared_time).magnitude() >
+        kMaxLastModifiedOrViewedTime) {
+      return std::nullopt;
+    }
+
     return CreateFileSuggestionWithJustification(
         path, app_list::JustificationType::kShared, *shared_time,
         features::IsShowSharingUserInLauncherContinueSectionEnabled()
@@ -120,6 +128,11 @@ FileSuggestData CreateFileSuggestion(
         path, app_list::JustificationType::kViewed, viewed_time,
         /*user_info=*/nullptr);
   }
+
+  base::UmaHistogramBoolean(
+      base::JoinString({kBaseHistogramName, "ModifyingUserMetadataPresent"},
+                       "."),
+      !!file_metadata.last_modifying_user);
 
   // Last modification was by the user.
   if (file_metadata.modified_by_me_time &&
@@ -171,16 +184,35 @@ void DriveRecentFileSuggestionProvider::GetSuggestFileData(
     return;
   }
 
+  search_start_time_ = base::Time::Now();
+
   base::RepeatingClosure search_callback = base::BarrierClosure(
       3, base::BindOnce(
              &DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted,
              weak_factory_.GetWeakPtr()));
-  PerformSearch(CreateRecentlyModifiedQuery(), drive_service, search_callback);
-  PerformSearch(CreateRecentlyViewedQuery(), drive_service, search_callback);
-  PerformSearch(CreateSharedWithMeQuery(), drive_service, search_callback);
+  PerformSearch(SearchType::kLastModified, CreateRecentlyModifiedQuery(),
+                drive_service, search_callback);
+  PerformSearch(SearchType::kLastViewed, CreateRecentlyViewedQuery(),
+                drive_service, search_callback);
+  PerformSearch(SearchType::kSharedWithUser, CreateSharedWithMeQuery(),
+                drive_service, search_callback);
+}
+
+// static
+std::string DriveRecentFileSuggestionProvider::GetHistogramSuffix(
+    SearchType search_type) {
+  switch (search_type) {
+    case SearchType::kLastViewed:
+      return "Viewed";
+    case SearchType::kLastModified:
+      return "Modified";
+    case SearchType::kSharedWithUser:
+      return "Shared";
+  }
 }
 
 void DriveRecentFileSuggestionProvider::PerformSearch(
+    SearchType search_type,
     drivefs::mojom::QueryParametersPtr query,
     drive::DriveIntegrationService* drive_service,
     base::RepeatingClosure callback) {
@@ -189,7 +221,7 @@ void DriveRecentFileSuggestionProvider::PerformSearch(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
               &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
-              weak_factory_.GetWeakPtr(), std::move(callback)),
+              weak_factory_.GetWeakPtr(), search_type, std::move(callback)),
           drive::FileError::FILE_ERROR_ABORT, /*items=*/std::nullopt));
 }
 
@@ -197,14 +229,40 @@ void DriveRecentFileSuggestionProvider::MaybeUpdateItemSuggestCache(
     base::PassKey<FileSuggestKeyedService>) {}
 
 void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
+    SearchType search_type,
     base::RepeatingClosure callback,
     drive::FileError error,
     std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
+  // `error` is an enum, but has negative values, so UmaEnumeration does not
+  // work - record it as a count instead.
+  base::UmaHistogramCounts100(
+      base::JoinString(
+          {kBaseHistogramName, "QueryResult", GetHistogramSuffix(search_type)},
+          "."),
+      std::abs(error));
+
   if (error == drive::FileError::FILE_ERROR_OK && items) {
+    base::UmaHistogramTimes(
+        base::JoinString({kBaseHistogramName, "DurationOnSuccess",
+                          GetHistogramSuffix(search_type)},
+                         "."),
+        base::Time::Now() - search_start_time_);
+    base::UmaHistogramCounts100(
+        base::JoinString(
+            {kBaseHistogramName, "ItemCount", GetHistogramSuffix(search_type)},
+            "."),
+        items->size());
+
     for (auto& item : *items) {
       query_result_files_by_path_.emplace(item->path,
                                           std::move(item->metadata));
     }
+  } else {
+    base::UmaHistogramTimes(
+        base::JoinString({kBaseHistogramName, "DurationOnError",
+                          GetHistogramSuffix(search_type)},
+                         "."),
+        base::Time::Now() - search_start_time_);
   }
   callback.Run();
 }
@@ -227,7 +285,11 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
       continue;
     }
 
-    results.push_back(CreateFileSuggestion(path, *item.second));
+    std::optional<FileSuggestData> suggestion =
+        CreateFileSuggestion(path, *item.second);
+    if (suggestion) {
+      results.push_back(*suggestion);
+    }
   }
 
   query_result_files_by_path_.clear();
@@ -240,6 +302,24 @@ void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
     return lhs.timestamp.value_or(base::Time()) >
            rhs.timestamp.value_or(base::Time());
   });
+
+  base::UmaHistogramTimes(
+      base::JoinString({kBaseHistogramName, "DurationOnSuccess.Total"}, "."),
+      base::Time::Now() - search_start_time_);
+  base::UmaHistogramCounts100(
+      base::JoinString({kBaseHistogramName, "ItemCount.Total"}, "."),
+      results.size());
+
+  for (size_t i = 0; i < results.size(); ++i) {
+    if (!results[i].timestamp) {
+      base::UmaHistogramCounts100(
+          base::JoinString({kBaseHistogramName, "FirstSharedSuggestionIndex"},
+                           "."),
+          i);
+      break;
+    }
+  }
+
   on_drive_results_ready_callback_list_.Notify(results);
 }
 

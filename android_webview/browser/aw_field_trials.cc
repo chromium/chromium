@@ -95,6 +95,14 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable fenced frames on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kFencedFrames);
 
+  // Disable low latency overlay for WebView. There is currently no plan to
+  // enable these optimizations in WebView though they are not fundamentally
+  // impossible.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kLowLatencyCanvas2dImageChromium);
+  aw_feature_overrides.DisableFeature(
+      blink::features::kLowLatencyWebGLImageChromium);
+
   // Disable Shared Storage on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kSharedStorageAPI);
 

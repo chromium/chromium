@@ -1257,7 +1257,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldDownloadNewKeysWithV1Registration) {
+       ShouldDownloadKeysWithV1Registration) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
   const int kInitialLastKeyVersion = 1;
@@ -1308,8 +1308,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(fetch_keys_callback,
               Run(/*keys=*/ElementsAre(kInitialVaultKey, kNewVaultKey)));
   std::move(download_keys_callback)
-      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
-           kNewLastKeyVersion);
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess,
+           {kInitialVaultKey, kNewVaultKey}, kNewLastKeyVersion);
 
   histogram_tester.ExpectUniqueSample(
       "Sync.TrustedVaultDownloadKeysStatus",
@@ -1319,6 +1319,49 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       "Sync.TrustedVaultDownloadKeysStatusV1",
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
       /*expected_bucket_count=*/1);
+}
+
+// The server may clean up some stale keys eventually, client should clean them
+// up as well to ensure that the state doesn't diverge. In particular, this may
+// cause problems with registering authentication factors, since the server will
+// reject request with stale keys.
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldCleanUpOldKeysWhenDownloadingNew) {
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
+                                      kInitialLastKeyVersion, account_info);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
+  SetPrimaryAccountWithUnknownAuthError(account_info);
+
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  ON_CALL(*connection(), DownloadNewKeys)
+      .WillByDefault(
+          [&](const CoreAccountInfo&,
+              const std::optional<TrustedVaultKeyAndVersion>&,
+              std::unique_ptr<SecureBoxKeyPair> key_pair,
+              TrustedVaultConnection::DownloadNewKeysCallback callback) {
+            download_keys_callback = std::move(callback);
+            return std::make_unique<TrustedVaultConnection::Request>();
+          });
+
+  EXPECT_CALL(*connection(), DownloadNewKeys);
+  // FetchKeys() should trigger keys downloading.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  ASSERT_FALSE(download_keys_callback.is_null());
+
+  const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+
+  // Note that |fetch_keys_callback| should not receive kInitialVaultKey.
+  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kNewVaultKey)));
+
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
+           kInitialLastKeyVersion + 1);
 }
 
 // Regression test for crbug.com/1500258: second FetchKeys() is triggered, while
@@ -1367,8 +1410,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   base::HistogramTester histogram_tester;
   std::move(download_keys_callback)
-      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
-           kInitialLastKeyVersion + 1);
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess,
+           {kInitialVaultKey, kNewVaultKey}, kInitialLastKeyVersion + 1);
 
   // Download keys status should be recorded for every fetch.
   histogram_tester.ExpectUniqueSample(
@@ -2101,7 +2144,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       Run(/*keys*/ ElementsAre(kInitialTrustedVaultKey, kNewTrustedVaultKey)));
   ASSERT_FALSE(download_keys_callback.is_null());
   std::move(download_keys_callback)
-      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewTrustedVaultKey},
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess,
+           {kInitialTrustedVaultKey, kNewTrustedVaultKey},
            kInitialLastKeyVersion + 1);
 }
 

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
+
 namespace autofill {
 
 // Interface that exposes controller functionality to
@@ -33,6 +35,8 @@ class AutofillProgressDialogController {
   // Text displayed below the progress bar.
   virtual std::u16string GetLoadingMessage() const = 0;
   virtual std::u16string GetConfirmationMessage() const = 0;
+
+  virtual base::WeakPtr<AutofillProgressDialogController> GetWeakPtr() = 0;
 
  protected:
   virtual ~AutofillProgressDialogController() = default;

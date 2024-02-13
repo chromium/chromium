@@ -31,6 +31,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1530,19 +1531,16 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsAndExtensions) {
                                    ImeIdFromEngineId(kNaclMozcJpId)));
 }
 
-TEST_F(InputMethodManagerImplTest, EnableAllowedInputMethodsInKiosk) {
-  // Login as a kiosk app user.
-  const std::string user_id = "kiosk@account.user";
-  const std::string user_email = user_id;
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId(user_email, user_id);
+class InputMethodManagerImplKioskTest : public InputMethodManagerImplTest {
+ public:
+  void LogIn(const std::string& email) override {
+    chromeos::SetUpFakeKioskSession(email);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(
+        email, user_manager::UserType::kKioskApp);
+  }
+};
 
-  ash::FakeChromeUserManager* fake_user_manager =
-      static_cast<ash::FakeChromeUserManager*>(
-          user_manager::UserManager::Get());
-  fake_user_manager->AddKioskAppUser(account_id);
-  fake_user_manager->LoginUser(account_id);
-
+TEST_F(InputMethodManagerImplKioskTest, EnableAllowedInputMethods) {
   // First, setup xkb:fr::fra input method
   std::string original_input_method(ImeIdFromEngineId("xkb:fr::fra"));
   ASSERT_TRUE(
@@ -1567,8 +1565,6 @@ TEST_F(InputMethodManagerImplTest, EnableAllowedInputMethodsInKiosk) {
   EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
               testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng"),
                                    ImeIdFromEngineId("xkb:de::ger")));
-  // Logout kiosk app user.
-  fake_user_manager->RemoveUserFromList(account_id);
 }
 
 TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedInputMethods) {

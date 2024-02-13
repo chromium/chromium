@@ -1075,9 +1075,9 @@ TEST_F(SiteEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
 
     base::CancelableTaskTracker task_tracker;
     // Expire origin1, origin2, origin2a, and origin4's most recent visit.
-    history->ExpireHistoryBetween(std::set<GURL>(), yesterday, today,
-                                  /*user_initiated*/ true, base::DoNothing(),
-                                  &task_tracker);
+    history->ExpireHistoryBetween(
+        std::set<GURL>(), history::kNoAppIdFilter, yesterday, today,
+        /*user_initiated*/ true, base::DoNothing(), &task_tracker);
     waiter.Wait();
 
     // origin2 is cleaned up because all its urls are deleted. origin1a and

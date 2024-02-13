@@ -85,6 +85,8 @@ void HotspotNotifier::OnHotspotTurnedOff(
       break;
     case hotspot_config::mojom::DisableReason::kInternalError:
     case hotspot_config::mojom::DisableReason::kUpstreamNoInternet:
+    case hotspot_config::mojom::DisableReason::kDownstreamLinkDisconnect:
+    case hotspot_config::mojom::DisableReason::kDownstreamNetworkDisconnect:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_INTERNAL_ERROR_MESSAGE;
       notification_id = kInternalErrorNotificationId;

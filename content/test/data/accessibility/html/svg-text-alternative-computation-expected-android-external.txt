@@ -1,4 +1,4 @@
-WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
 ++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
 ++++Image actions:[AX_FOCUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
 ++++++View text:"null" hint:"Link (from title)" contentDescription:"Link (from aria-labelledby)" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="link", clickableScore="300", hint="Link (from title)", roleDescription="link", targetUrl="file:///storage/emulated/0/chromium_tests_root/content/test/data/accessibility/html/foo.html"]

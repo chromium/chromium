@@ -92,7 +92,7 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
 
 void AndroidNotificationHandler::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
-  std::vector<const SendTabToSelfEntry> vector_copy;
+  std::vector<SendTabToSelfEntry> vector_copy;
 
   for (const SendTabToSelfEntry* entry : new_entries) {
     vector_copy.push_back(*entry);
@@ -105,7 +105,7 @@ void AndroidNotificationHandler::DisplayNewEntries(
 }
 
 void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
-    const std::vector<const SendTabToSelfEntry>& new_entries) {
+    const std::vector<SendTabToSelfEntry>& new_entries) {
   for (const SendTabToSelfEntry& entry : new_entries) {
     if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2)) {
       if (profile_ != nullptr &&

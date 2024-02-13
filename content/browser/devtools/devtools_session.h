@@ -33,6 +33,7 @@ namespace protocol {
 class DevToolsDomainHandler;
 class AuditsHandler;
 class DOMHandler;
+class DeviceOrientationHandler;
 class EmulationHandler;
 class InputHandler;
 class InspectorHandler;
@@ -190,21 +191,23 @@ class DevToolsSession : public protocol::FrontendChannel,
 
   template <typename T>
   bool IsDomainAvailableToUntrustedClient() {
-    return std::disjunction_v<std::is_same<T, protocol::AuditsHandler>,
-                              std::is_same<T, protocol::DOMHandler>,
-                              std::is_same<T, protocol::EmulationHandler>,
-                              std::is_same<T, protocol::InputHandler>,
-                              std::is_same<T, protocol::InspectorHandler>,
-                              std::is_same<T, protocol::IOHandler>,
-                              std::is_same<T, protocol::OverlayHandler>,
-                              std::is_same<T, protocol::NetworkHandler>,
-                              std::is_same<T, protocol::FetchHandler>,
-                              std::is_same<T, protocol::StorageHandler>,
-                              std::is_same<T, protocol::TargetHandler>,
-                              std::is_same<T, protocol::PageHandler>,
-                              std::is_same<T, protocol::TracingHandler>,
-                              std::is_same<T, protocol::LogHandler>,
-                              std::is_same<T, protocol::WebAuthnHandler>>;
+    return std::disjunction_v<
+        std::is_same<T, protocol::AuditsHandler>,
+        std::is_same<T, protocol::DOMHandler>,
+        std::is_same<T, protocol::DeviceOrientationHandler>,
+        std::is_same<T, protocol::EmulationHandler>,
+        std::is_same<T, protocol::InputHandler>,
+        std::is_same<T, protocol::InspectorHandler>,
+        std::is_same<T, protocol::IOHandler>,
+        std::is_same<T, protocol::OverlayHandler>,
+        std::is_same<T, protocol::NetworkHandler>,
+        std::is_same<T, protocol::FetchHandler>,
+        std::is_same<T, protocol::StorageHandler>,
+        std::is_same<T, protocol::TargetHandler>,
+        std::is_same<T, protocol::PageHandler>,
+        std::is_same<T, protocol::TracingHandler>,
+        std::is_same<T, protocol::LogHandler>,
+        std::is_same<T, protocol::WebAuthnHandler>>;
   }
   void AddHandler(std::unique_ptr<protocol::DevToolsDomainHandler> handler);
 

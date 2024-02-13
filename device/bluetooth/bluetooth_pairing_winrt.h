@@ -9,13 +9,13 @@
 #include <windows.foundation.h>
 #include <wrl/client.h>
 
+#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -27,7 +27,7 @@ class BluetoothPairingWinrt {
  public:
   // On error |error_code| will have a value, otherwise successful.
   using ConnectCallback = base::OnceCallback<void(
-      absl::optional<BluetoothDevice::ConnectErrorCode> error_code)>;
+      std::optional<BluetoothDevice::ConnectErrorCode> error_code)>;
 
   BluetoothPairingWinrt(
       BluetoothDeviceWinrt* device,
@@ -94,7 +94,7 @@ class BluetoothPairingWinrt {
       custom_pairing_;
   ConnectCallback callback_;
 
-  absl::optional<EventRegistrationToken> pairing_requested_token_;
+  std::optional<EventRegistrationToken> pairing_requested_token_;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IDeferral> pairing_deferral_;
   Microsoft::WRL::ComPtr<

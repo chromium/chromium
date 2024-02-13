@@ -271,7 +271,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   friend class views::test::NativeWidgetMacTest;
   class ZoomFocusMonitor;
 
-  raw_ptr<internal::NativeWidgetDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<internal::NativeWidgetDelegate> delegate_;
   std::unique_ptr<NativeWidgetMacNSWindowHost> ns_window_host_;
 
   Widget::InitParams::Ownership ownership_ =

@@ -40,6 +40,14 @@ void WaylandZAuraOutputManager::Instantiate(WaylandConnection* connection,
     return;
   }
 
+  // zaura_output_manager_v2 will be advertised first by the server. If
+  // supported and bound by this client skip binding the older interface.
+  if (connection->zaura_output_manager_v2_) {
+    LOG(WARNING) << "Skipping bind to zaura_output_manager, "
+                    "zaura_output_manager_v2 has already been bound.";
+    return;
+  }
+
   auto output_manager = wl::Bind<struct zaura_output_manager>(
       registry, name, std::min(version, kMaxVersion));
   if (!output_manager) {

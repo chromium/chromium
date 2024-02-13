@@ -9,8 +9,9 @@ namespace ash::file_system_provider {
 
 // A singleton that is the hub for all FileSystemProvider extensions that are
 // enabled with a content cache. Currently this is just an experiment hidden
-// behind the FileSystemProviderContentCache flag and only enabled on ODFS when
-// the flag is toggled on.
+// behind both the `FileSystemProviderCloudFileSystem` and
+// `FileSystemProviderContentCache` flags and only enabled on ODFS when the
+// flags are toggled on.
 class ContentCache {
  public:
   ContentCache();

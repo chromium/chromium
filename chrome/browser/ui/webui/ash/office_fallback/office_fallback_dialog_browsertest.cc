@@ -108,13 +108,13 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an
 // `OfficeFallbackElement`. Tests that the correct title is displayed when the
-// fallback reason is that Drive is unavailable.
+// fallback reason is that Drive authentication is not ready.
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
-                       OfficeFallbackDialogWhenDriveUnavailable) {
+                       OfficeFallbackDialogWhenDriveAuthenticationNotReady) {
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContents(
-          files_, FallbackReason::kDriveDisabled,
+          files_, FallbackReason::kDriveAuthenticationNotReady,
           file_manager::file_tasks::kActionIdWebDriveOfficeWord,
           base::DoNothing());
 
@@ -124,8 +124,70 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                       ".$('#title').innerText");
   EXPECT_EQ(eval_result.ExtractString(),
             l10n_util::GetStringFUTF8(
-                IDS_OFFICE_FALLBACK_TITLE_DRIVE_UNAVAILABLE,
+                IDS_OFFICE_FALLBACK_TITLE_OFFLINE,
                 files_.front().path().BaseName().LossyDisplayName()));
+}
+
+// Test which launches an `OfficeFallbackDialog` which in turn creates an
+// `OfficeFallbackElement`. Tests that the correct instructions are displayed
+// when the fallback reason is that the disable Drive preference is set.
+IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
+                       OfficeFallbackDialogWhenDisableDrivePreferenceSet) {
+  // Launch Office Fallback dialog.
+  content::WebContents* web_contents =
+      LaunchOfficeFallbackDialogAndGetWebContents(
+          files_, FallbackReason::kDisableDrivePreferenceSet,
+          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          base::DoNothing());
+
+  content::EvalJsResult eval_result =
+      content::EvalJs(web_contents,
+                      "document.querySelector('office-fallback')"
+                      ".$('#instructions-message').innerText");
+  EXPECT_EQ(eval_result.ExtractString(),
+            l10n_util::GetStringUTF8(
+                IDS_OFFICE_FALLBACK_INSTRUCTIONS_DISABLE_DRIVE_PREFERENCE));
+}
+
+// Test which launches an `OfficeFallbackDialog` which in turn creates an
+// `OfficeFallbackElement`. Tests that the correct instructions are displayed
+// when the fallback reason is that Drive is unavailable for the account type.
+IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
+                       OfficeFallbackDialogWhenDriveDisabledForAccountType) {
+  // Launch Office Fallback dialog.
+  content::WebContents* web_contents =
+      LaunchOfficeFallbackDialogAndGetWebContents(
+          files_, FallbackReason::kDriveDisabledForAccountType,
+          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          base::DoNothing());
+
+  content::EvalJsResult eval_result =
+      content::EvalJs(web_contents,
+                      "document.querySelector('office-fallback')"
+                      ".$('#instructions-message').innerText");
+  EXPECT_EQ(eval_result.ExtractString(),
+            l10n_util::GetStringUTF8(
+                IDS_OFFICE_FALLBACK_INSTRUCTIONS_DRIVE_DISABLED_FOR_ACCOUNT));
+}
+
+// Test which launches an `OfficeFallbackDialog` which in turn creates an
+// `OfficeFallbackElement`. Tests that the correct instructions are displayed
+// when the fallback reason is that Drive has not service.
+IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
+                       OfficeFallbackDialogWhenNoDriveService) {
+  // Launch Office Fallback dialog.
+  content::WebContents* web_contents =
+      LaunchOfficeFallbackDialogAndGetWebContents(
+          files_, FallbackReason::kNoDriveService,
+          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          base::DoNothing());
+
+  content::EvalJsResult eval_result =
+      content::EvalJs(web_contents,
+                      "document.querySelector('office-fallback')"
+                      ".$('#instructions-message').innerText");
+  EXPECT_EQ(eval_result.ExtractString(),
+            l10n_util::GetStringUTF8(IDS_OFFICE_FALLBACK_INSTRUCTIONS));
 }
 
 // Test which launches an `OfficeFallbackDialog` which in turn creates an

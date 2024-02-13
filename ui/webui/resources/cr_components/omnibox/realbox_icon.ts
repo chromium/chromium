@@ -6,7 +6,7 @@ import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch} from './omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from './omnibox.mojom-webui.js';
 import {getTemplate} from './realbox_icon.html.js';
 
 const CALCULATOR: string = 'search-calculator-answer';

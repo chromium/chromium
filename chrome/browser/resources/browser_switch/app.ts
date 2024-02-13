@@ -12,7 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {BrowserSwitchProxy, BrowserSwitchProxyImpl} from './browser_switch_proxy.js';
+import type {BrowserSwitchProxy} from './browser_switch_proxy.js';
+import {BrowserSwitchProxyImpl} from './browser_switch_proxy.js';
 
 const MS_PER_SECOND: number = 1000;
 

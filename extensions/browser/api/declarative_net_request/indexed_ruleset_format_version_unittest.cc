@@ -61,7 +61,7 @@ table EmbedderConditions {
   tab_ids_included : [int];
   tab_ids_excluded : [int];
   response_headers: [HeaderCondition];
-  excluded_response_headers: [string];
+  excluded_response_headers: [HeaderCondition];
 }
 enum IndexType : ubyte {
   before_request_except_allow_all_requests = 0,
@@ -163,7 +163,7 @@ TEST_F(IndexedRulesetFormatVersionTest, CheckVersionUpdated) {
   EXPECT_EQ(StripCommentsAndWhitespace(kFlatbufferSchemaExpected),
             StripCommentsAndWhitespace(flatbuffer_schema))
       << "Schema change detected; update this test and the schema version.";
-  EXPECT_EQ(30, GetIndexedRulesetFormatVersionForTesting())
+  EXPECT_EQ(31, GetIndexedRulesetFormatVersionForTesting())
       << "Update this test if you update the schema version.";
 }
 

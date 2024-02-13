@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -245,7 +246,7 @@ void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
 #if !BUILDFLAG(IS_ANDROID)
   // To prevent corrupted dictionary data from causing a renderer crash, scan
   // the dictionary data and verify it is sane before save it to a file.
-  if (!hunspell::BDict::Verify(data->data(), data->size())) {
+  if (!hunspell::BDict::Verify(base::as_byte_span(*data))) {
     // Let PostTaskAndReply caller send to InformListenersOfInitialization
     // through SaveDictionaryDataComplete().
     SaveDictionaryDataComplete(false);
@@ -365,11 +366,9 @@ SpellcheckHunspellDictionary::OpenDictionaryFile(base::TaskRunner* task_runner,
 
   {
     base::MemoryMappedFile map;
-    bdict_is_valid =
-        base::PathExists(dictionary.path) &&
-        map.Initialize(dictionary.path) &&
-        hunspell::BDict::Verify(reinterpret_cast<const char*>(map.data()),
-                                map.length());
+    bdict_is_valid = base::PathExists(dictionary.path) &&
+                     map.Initialize(dictionary.path) &&
+                     hunspell::BDict::Verify(map.bytes());
   }
 
   if (bdict_is_valid) {

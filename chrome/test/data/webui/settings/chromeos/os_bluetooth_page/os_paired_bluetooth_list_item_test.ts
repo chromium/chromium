@@ -195,6 +195,32 @@ suite('<os-settings-paired-bluetooth-list-item>', () => {
             getItemA11yLabel());
       });
 
+  test('Device name is set correctly', async () => {
+    const getDeviceName = () => {
+      const deviceName =
+          pairedBluetoothListItem.shadowRoot!.querySelector<HTMLElement>(
+              '#deviceName');
+      assertTrue(!!deviceName);
+      return deviceName;
+    };
+
+    const publicName = 'BeatsX';
+    const nameWithHtml = '<a>testname</a>';
+    const device = createDefaultBluetoothDevice(
+        /*id=*/ '123456789', /*publicName=*/ publicName,
+        /*connectionState=*/
+        DeviceConnectionState.kConnected);
+    pairedBluetoothListItem.set('device', device);
+    await flushTasks();
+    assertEquals(publicName, getDeviceName().innerText);
+
+    device.nickname = nameWithHtml;
+    pairedBluetoothListItem.set('device', {...device});
+    await flushTasks();
+    assertTrue(!!getDeviceName());
+    assertEquals(nameWithHtml, getDeviceName().innerText);
+  });
+
   test('Battery percentage out of bounds', async () => {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',

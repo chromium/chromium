@@ -31,6 +31,7 @@
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -590,6 +591,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       FileSystemAccessPermissionContext::HandleType type,
       const base::FilePath& root_permission_path);
 
+  void FilePickerDeactivated(GlobalRenderFrameHostId global_rfh_id);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const scoped_refptr<storage::FileSystemContext> context_;
@@ -659,6 +662,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
            base::Uuid,
            storage::FileSystemURL::Comparator>
       directory_ids_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::set<GlobalRenderFrameHostId> rfhs_with_active_file_pickers_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::optional<FileSystemChooser::ResultEntry>
       auto_file_picker_result_for_test_ GUARDED_BY_CONTEXT(sequence_checker_);

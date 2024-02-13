@@ -428,17 +428,9 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 // connections that _would_ have been proxied, but were not.
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyDirectOnly;
 
-// Controls whether the BlindSignAuth library used by IP Protection should use
-// the privacy pass token format.
-NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyBsaEnablePrivacyPass;
-
 // The PSK added to connections to proxyB with `Proxy-Authorization: Preshared
 // $PSK`.
 NET_EXPORT extern const base::FeatureParam<std::string> kIpPrivacyProxyBPsk;
-
-// If true, use the `proxy_chains` provided by Phosphor. Otherwise, use the
-// `first_hop_hostnames` (and thus always single-proxy chains).
-NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyUseProxyChains;
 
 // If true, pass OAuth token to Phosphor in GetProxyConfig API for IP
 // Protection.

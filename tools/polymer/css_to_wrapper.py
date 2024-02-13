@@ -75,6 +75,13 @@ _TEMPLATE_MAP = {
     'vars-lit': _LIT_VARS_TEMPLATE,
 }
 
+# A suffix used for style files that are copies of Polymer styles ported into
+# Lit. It is treated specially below so that the Polymer file acts as a source
+# of truth, to avoid duplication while both files styles need to be available.
+# TODO(crbug.com/40943652): Remove special handling when having the same styles
+# available in both Polymer and Lit is no longer needed.
+_LIT_SUFFIX = "_lit.css"
+
 
 def _parse_style_line(line, metadata):
   include_match = re.search(_INCLUDE_REGEX, line)
@@ -218,9 +225,21 @@ def main(argv):
     # only exist there.
     metadata = _extract_metadata(path.join(in_folder, in_file))
 
-    # Extract the CSS content from either the original or the minified files.
-    content = _extract_content(path.join(wrapper_in_folder, in_file), metadata,
-                               args.minify)
+    content = ''
+
+    if in_file.endswith(_LIT_SUFFIX):
+      # Treat the _LIT_SUFFIX in a special way, so that the CSS content is
+      # actually extracted from the equivalent Polymer file instead.
+      polymer_in_file = in_file.replace(_LIT_SUFFIX, '.css')
+      assert polymer_in_file in args.in_files
+      polymer_metadata = _extract_metadata(path.join(in_folder,
+                                                     polymer_in_file))
+      content = _extract_content(path.join(wrapper_in_folder, polymer_in_file),
+                                 polymer_metadata, args.minify)
+    else:
+      # Extract the CSS content from either the original or the minified files.
+      content = _extract_content(path.join(wrapper_in_folder, in_file),
+                                 metadata, args.minify)
 
     # Extract the URL scheme that should be used for absolute URL imports.
     scheme = None

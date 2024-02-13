@@ -39,6 +39,14 @@ id<GREYMatcher> ButtonWithAccessibilityLabelId(int message_id) {
   return [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:message_id];
 }
 
+id<GREYMatcher> ButtonWithForegroundColor(NSString* colorName) {
+  return [ChromeMatchersAppInterface buttonWithForegroundColor:colorName];
+}
+
+id<GREYMatcher> ButtonWithBackgroundColor(NSString* colorName) {
+  return [ChromeMatchersAppInterface buttonWithBackgroundColor:colorName];
+}
+
 id<GREYMatcher> ContextMenuItemWithAccessibilityLabel(NSString* label) {
   return
       [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabel:label];
@@ -151,6 +159,14 @@ id<GREYMatcher> StopButton() {
 
 id<GREYMatcher> Omnibox() {
   return [ChromeMatchersAppInterface omnibox];
+}
+
+id<GREYMatcher> OmniboxAtBottom() {
+  return [ChromeMatchersAppInterface omniboxAtBottom];
+}
+
+id<GREYMatcher> OmniboxOnTop() {
+  return [ChromeMatchersAppInterface omniboxOnTop];
 }
 
 id<GREYMatcher> OmniboxPopupRow() {

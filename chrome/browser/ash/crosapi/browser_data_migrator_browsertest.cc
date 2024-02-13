@@ -35,6 +35,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 
@@ -291,8 +292,8 @@ class BrowserDataMigratorRestartInSession
     // `BrowserDataMigrator::RestartToMigrate()`.
     base::Value::List users;
     users.Append(base::Value(std::string(kUserIdHash) + "@gmail.com"));
-    g_browser_process->local_state()->SetList(user_manager::kRegularUsersPref,
-                                              std::move(users));
+    g_browser_process->local_state()->SetList(
+        user_manager::prefs::kRegularUsersPref, std::move(users));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

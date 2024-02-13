@@ -279,7 +279,7 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
 
   // For Chrome browser app windows, sets the state for each tab window instance
   // in this browser.
-  for (auto* it : browser_window_to_tab_windows_[window]) {
+  for (aura::Window* it : browser_window_to_tab_windows_[window]) {
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;
@@ -357,7 +357,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
 
   // For Chrome browser app windows, sets the state for each tab window instance
   // in this browser.
-  for (auto* it : browser_window_to_tab_windows_[window]) {
+  for (aura::Window* it : browser_window_to_tab_windows_[window]) {
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;

@@ -91,11 +91,13 @@ void CreatePasswordGenerationUIData(
 void CreatePasswordSuggestionRequest(PasswordSuggestionRequest* data) {
   data->element_id = FieldRendererId(123);
   data->form_data = test::CreateTestAddressFormData();
+  data->trigger_source =
+      AutofillSuggestionTriggerSource::kFormControlElementClicked;
   data->username_field_index = 0ul;
   data->password_field_index = 1ul;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
   data->typed_username = u"username";
-  data->options = SHOW_ALL | IS_PASSWORD_FIELD | ACCEPTS_WEBAUTHN_CREDENTIALS;
+  data->show_webauthn_credentials = true;
   data->form_data = test::CreateTestAddressFormData();
 }
 
@@ -130,11 +132,13 @@ void CheckEqualPasswordSuggestionRequest(
   EXPECT_EQ(expected.element_id, actual.element_id);
   EXPECT_TRUE(test::WithoutUnserializedData(expected.form_data)
                   .SameFormAs(actual.form_data));
+  EXPECT_EQ(expected.trigger_source, actual.trigger_source);
   EXPECT_EQ(expected.username_field_index, actual.username_field_index);
   EXPECT_EQ(expected.password_field_index, actual.password_field_index);
   EXPECT_EQ(expected.text_direction, actual.text_direction);
   EXPECT_EQ(expected.typed_username, actual.typed_username);
-  EXPECT_EQ(expected.options, actual.options);
+  EXPECT_EQ(expected.show_webauthn_credentials,
+            actual.show_webauthn_credentials);
   EXPECT_EQ(expected.bounds, actual.bounds);
 }
 

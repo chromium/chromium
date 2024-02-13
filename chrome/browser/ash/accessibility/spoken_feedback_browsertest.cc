@@ -705,6 +705,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_OpenContextMenu) {
 // announcements should not be stacked when mouse goes over many Shelf buttons
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
   SetMouseSourceDeviceId(1);
+  AccessibilityManager::Get()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityChromeVoxSpeakTextUnderMouse, true);
   // Add the ShelfItem to the ShelfModel after enabling the ChromeVox. Because
   // when an extension is enabled, the ShelfItems which are not recorded as
   // pinned apps in user preference will be removed.
@@ -723,9 +725,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
           std::make_unique<AppShortcutShelfItemController>(ShelfID(app_id)),
           STATUS_CLOSED, /*pinned=*/true, base::ASCIIToUTF16(app_title));
     }
-
-    // Enable the function of speaking text under mouse.
-    EventRewriterController::Get()->SetSendMouseEvents(true);
 
     // Focus on the Shelf because voice text for focusing on Shelf is fixed.
     // Wait until voice announcements are finished.
@@ -754,6 +753,9 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
 }
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderSynthesizedMouse) {
+  AccessibilityManager::Get()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityChromeVoxSpeakTextUnderMouse, true);
+
   EnableChromeVox();
 
   AutomationTestUtils test_utils(extension_misc::kChromeVoxExtensionId);
@@ -2334,7 +2336,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
   // TODO(crbug.com/1360638): Remove the conditional here when the Save & Recall
   // flag flip has landed since it will always be true.
-  if (saved_desk_util::IsSavedDesksEnabled()) {
+  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
     sm_.Call([this]() { SendKeyPressWithShift(ui::VKEY_TAB); });
     sm_.ExpectSpeechPattern("Save desk for later");
     sm_.ExpectSpeech("Button");

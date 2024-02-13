@@ -29,6 +29,10 @@ namespace indexed_db {
 // 4 - Adds size & last_modified to 'file' blob_info encodings.
 // 5 - One time verification that blob files exist on disk.
 const constexpr int64_t kLatestKnownSchemaVersion = 5;
+// Migration from version 2 to 3 occurred in 2014, and migration to version 4
+// began in early 2020, so we currently continue to support schema that are as
+// old as 2014.
+const constexpr int64_t kEarliestSupportedSchemaVersion = 3;
 }  // namespace indexed_db
 
 CONTENT_EXPORT extern const unsigned char kMinimumIndexId;
@@ -317,7 +321,7 @@ class DatabaseMetaDataKey {
   };
 
   CONTENT_EXPORT static const int64_t kAllBlobsNumber;
-  static const int64_t kBlobNumberGeneratorInitialNumber;
+  CONTENT_EXPORT static const int64_t kBlobNumberGeneratorInitialNumber;
   // All keys <= 0 are invalid.  This one's just a convenient example.
   static const int64_t kInvalidBlobNumber;
 

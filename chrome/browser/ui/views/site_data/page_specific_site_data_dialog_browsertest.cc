@@ -58,10 +58,6 @@ class PageSpecificSiteDataDialogBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PageSpecificSiteDataDialogBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {net::features::kPartitionedCookies, {}}};
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -152,7 +148,6 @@ class PageSpecificSiteDataDialogBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
@@ -431,6 +426,11 @@ class PageSpecificSiteDataDialogPre3pcdBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogPre3pcdBrowserTest,
                        PartitionedCookiesAndAllowedThirdParty) {
+  // Allow third-party cookies.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+
   content::CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 8);
 

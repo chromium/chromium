@@ -316,11 +316,8 @@ target(link_target_type, "gles2_sources") {
 
   if (!is_android) {
     sources += [
+      "abstract_texture.cc",
       "abstract_texture.h",
-      "passthrough_abstract_texture_impl.cc",
-      "passthrough_abstract_texture_impl.h",
-      "validating_abstract_texture_impl.cc",
-      "validating_abstract_texture_impl.h",
     ]
   } else {
     sources += [

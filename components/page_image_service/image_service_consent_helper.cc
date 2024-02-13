@@ -47,7 +47,8 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
   if (base::FeatureList::IsEnabled(kImageServiceObserveSyncDownloadStatus)) {
     sync_service_observer_.Observe(sync_service);
   } else if (model_type == syncer::ModelType::BOOKMARKS) {
-    // TODO(crbug.com/1463438): Migrate to require_sync_feature_enabled = false.
+    // TODO(crbug.com/40067770): Migrate to require_sync_feature_enabled =
+    // false.
     consent_throttle_ = std::make_unique<unified_consent::ConsentThrottle>(
         unified_consent::UrlKeyedDataCollectionConsentHelper::
             NewPersonalizedBookmarksDataCollectionConsentHelper(

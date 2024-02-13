@@ -16,9 +16,9 @@ class HUDTabStrip;
 
 // HUDHeaderView renders header (with buttons and tabs) of the HUD.
 class HUDHeaderView : public views::View {
- public:
-  METADATA_HEADER(HUDHeaderView);
+  METADATA_HEADER(HUDHeaderView, views::View)
 
+ public:
   explicit HUDHeaderView(HUDDisplayView* hud);
 
   HUDHeaderView(const HUDHeaderView&) = delete;

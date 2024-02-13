@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
@@ -82,7 +83,8 @@ class ClientGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
   mojo::Remote<mojom::GpuMemoryBufferFactory> gpu_;
   mojo::Remote<gpu::mojom::ClientGmbInterface> gpu_direct_;
   base::WeakPtr<ClientGpuMemoryBufferManager> weak_ptr_;
-  std::set<base::WaitableEvent*> pending_allocation_waiters_;
+  std::set<raw_ptr<base::WaitableEvent, SetExperimental>>
+      pending_allocation_waiters_;
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support_;
 
   scoped_refptr<base::UnsafeSharedMemoryPool> pool_;

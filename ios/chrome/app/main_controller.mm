@@ -123,10 +123,10 @@
 #import "ios/chrome/browser/ui/appearance/appearance_customization.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
-#import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/model/certificate_policy_app_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/webui/ui_bundled/chrome_web_ui_ios_controller_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/app_group/app_group_field_trial_version.h"
 #import "ios/chrome/common/app_group/app_group_utils.h"
@@ -1459,12 +1459,16 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       if (willShowActivityIndicator) {
         // User interaction still needs to be disabled as a way to
         // force reload all the web states and to reset NTPs.
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.mainBrowserProvider.browser)
-            ->SetWebUsageEnabled(false);
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.incognitoBrowserProvider.browser)
-            ->SetWebUsageEnabled(false);
+        if (Browser* mainBrowser =
+                browserProviderInterface.mainBrowserProvider.browser) {
+          WebUsageEnablerBrowserAgent::FromBrowser(mainBrowser)
+              ->SetWebUsageEnabled(false);
+        }
+        if (Browser* incognitoBrowser =
+                browserProviderInterface.incognitoBrowserProvider.browser) {
+          WebUsageEnablerBrowserAgent::FromBrowser(incognitoBrowser)
+              ->SetWebUsageEnabled(false);
+        }
 
         if (didShowActivityIndicator &&
             browserProviderInterface.mainBrowserProvider.browser) {
@@ -1475,14 +1479,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           [handler hideActivityOverlay];
         }
       }
-      if (browserProviderInterface.mainBrowserProvider.browser) {
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.mainBrowserProvider.browser)
+      if (Browser* mainBrowser =
+              browserProviderInterface.mainBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(mainBrowser)
             ->SetWebUsageEnabled(true);
       }
-      if (browserProviderInterface.incognitoBrowserProvider.browser) {
-        WebUsageEnablerBrowserAgent::FromBrowser(
-            browserProviderInterface.incognitoBrowserProvider.browser)
+      if (Browser* incognitoBrowser =
+              browserProviderInterface.incognitoBrowserProvider.browser) {
+        WebUsageEnablerBrowserAgent::FromBrowser(incognitoBrowser)
             ->SetWebUsageEnabled(true);
       }
       [browserProviderInterface.currentBrowserProvider setPrimary:YES];

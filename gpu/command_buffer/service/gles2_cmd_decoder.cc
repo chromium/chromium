@@ -114,10 +114,6 @@
 #include "ui/gl/init/create_gr_gl_interface.h"
 #include "ui/gl/scoped_make_current.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "gpu/command_buffer/service/validating_abstract_texture_impl.h"
-#endif
-
 // Note: this undefs far and near so include this after other Windows headers.
 #include "third_party/angle/src/image_util/loadimage.h"
 
@@ -662,7 +658,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   ErrorState* GetErrorState() override;
   const ContextState* GetContextState() override { return &state_; }
-#if !BUILDFLAG(IS_ANDROID)
+  #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AbstractTexture> CreateAbstractTexture(GLenum target,
                                                          GLenum internal_format,
                                                          GLsizei width,
@@ -670,7 +666,10 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                                          GLsizei depth,
                                                          GLint border,
                                                          GLenum format,
-                                                         GLenum type) override;
+                                                         GLenum type) override {
+    NOTREACHED();
+    return nullptr;
+  }
 #endif
 
   scoped_refptr<ShaderTranslatorInterface> GetTranslator(GLenum type) override;
@@ -2447,11 +2446,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void UnbindTexture(TextureRef* texture_ref,
                      bool supports_separate_framebuffer_binds);
 
-#if !BUILDFLAG(IS_ANDROID)
-  void OnAbstractTextureDestroyed(ValidatingAbstractTextureImpl* texture,
-                                  scoped_refptr<TextureRef> texture_ref);
-#endif
-
   void ReadBackBuffersIntoShadowCopies(
       base::flat_set<scoped_refptr<Buffer>> buffers_to_shadow_copy);
 
@@ -2667,15 +2661,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   GLfloat line_width_range_[2] = {0.0, 1.0};
 
   SamplerState default_sampler_state_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // All currently outstanding AbstractTextures that we've created.
-  std::set<ValidatingAbstractTextureImpl*> abstract_textures_;
-
-  // Set of texture refs that are pending destruction, at some point in the
-  // future when our context is current.
-  std::set<scoped_refptr<TextureRef>> texture_refs_pending_destruction_;
-#endif
 
   base::WeakPtrFactory<GLES2DecoderImpl> weak_ptr_factory_{this};
 };
@@ -3276,6 +3261,7 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   GLint alpha_bits = 0;
 
   if (offscreen) {
+    // NOTE: `attrib_helper.need_alpha` is defined only on Android.
 #if BUILDFLAG(IS_ANDROID)
     offscreen_buffer_should_have_alpha_ = attrib_helper.need_alpha;
 #else
@@ -3429,14 +3415,12 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   UpdateFramebufferSRGB(nullptr);
 
   bool call_gl_clear = !surfaceless_ && !offscreen;
-#if BUILDFLAG(IS_ANDROID)
   // Temporary workaround for Android WebView because this clear ignores the
   // clip and corrupts that external UI of the App. Not calling glClear is ok
   // because the system already clears the buffer before each draw. Proper
   // fix might be setting the scissor clip properly before initialize. See
   // crbug.com/259023 for details.
   call_gl_clear = surface_->GetHandle();
-#endif
   if (call_gl_clear) {
     // On configs where we report no alpha, if the underlying surface has
     // alpha, clear the surface alpha to 1.0 to be correct on ReadPixels/etc.
@@ -3578,10 +3562,6 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   // Technically, YUV readback is handled on the client side, but enable it here
   // so that clients can use this to detect support.
   caps.supports_yuv_readback = true;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  PopulateDRMCapabilities(&caps, feature_info_.get());
-#endif
 
   return caps;
 }
@@ -4213,12 +4193,6 @@ bool GLES2DecoderImpl::MakeCurrent() {
   // Rebind textures if the service ids may have changed.
   RestoreAllExternalTextureBindingsIfNeeded();
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Since we have a context now, take the opportunity to drop any TextureRefs
-  // that are pending destruction.
-  texture_refs_pending_destruction_.clear();
-#endif
-
   return true;
 }
 
@@ -4687,20 +4661,6 @@ void GLES2DecoderImpl::Destroy(bool have_context) {
 
   DCHECK(!have_context || context_->IsCurrent(nullptr));
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Destroy any textures that are pending destruction.
-  if (!have_context) {
-    for (auto iter : texture_refs_pending_destruction_)
-      iter->ForceContextLost();
-  }
-  texture_refs_pending_destruction_.clear();
-
-  // Notify any AbstractTextures to drop their texture ref.
-  for (auto* iter : abstract_textures_)
-    iter->OnDecoderWillDestroy(have_context);
-  abstract_textures_.clear();
-#endif
-
   if (external_default_framebuffer_) {
     external_default_framebuffer_->Destroy(have_context);
     external_default_framebuffer_.reset();
@@ -5167,15 +5127,6 @@ error::Error GLES2DecoderImpl::DoCommandsImpl(unsigned int num_commands,
       cmd_data += size;
     }
   }
-
-#if BUILDFLAG(IS_MAC)
-  // Aggressively call glFlush on macOS. This is the only fix that has been
-  // found so far to avoid crashes on Intel drivers. The workaround
-  // isn't needed for WebGL contexts, though.
-  // https://crbug.com/863817
-  if (!feature_info_->IsWebGLContext())
-    context_->FlushForDriverCrashWorkaround();
-#endif
 
   *entries_processed = process_pos;
 
@@ -12932,10 +12883,6 @@ bool GLES2DecoderImpl::ClearLevel(Texture* texture,
   // https://crbug.com/848952 (slow uploads on macOS)
   // https://crbug.com/883276 (buggy clears on Android)
   bool prefer_use_gl_clear = false;
-#if BUILDFLAG(IS_MAC)
-  const uint32_t kMinSizeForGLClear = 4 * 1024;
-  prefer_use_gl_clear = size > kMinSizeForGLClear;
-#endif
   if (must_use_gl_clear || prefer_use_gl_clear) {
     if (ClearLevelUsingGL(texture, channels, target, level, xoffset, yoffset,
                           width, height)) {
@@ -16022,10 +15969,6 @@ void GLES2DecoderImpl::ProcessDescheduleUntilFinished() {
 bool GLES2DecoderImpl::HasMoreIdleWork() const {
   bool has_more_idle_work =
       !pending_readpixel_fences_.empty() || gpu_tracer_->HasTracesToProcess();
-#if !BUILDFLAG(IS_ANDROID)
-  has_more_idle_work =
-      has_more_idle_work || !texture_refs_pending_destruction_.empty();
-#endif
   return has_more_idle_work;
 }
 
@@ -16816,18 +16759,6 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
       source_type, dest_binding_target, dest_level, dest_internal_format,
       unpack_flip_y == GL_TRUE, unpack_premultiply_alpha == GL_TRUE,
       unpack_unmultiply_alpha == GL_TRUE);
-#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_FAMILY)
-  // glDrawArrays is faster than glCopyTexSubImage2D on IA Mesa driver,
-  // although opposite in Android.
-  // TODO(dshwang): After Mesa fixes this issue, remove this hack.
-  // https://bugs.freedesktop.org/show_bug.cgi?id=98478,
-  // https://crbug.com/535198.
-  if (Texture::ColorRenderable(GetFeatureInfo(), dest_internal_format,
-                               dest_texture->IsImmutable()) &&
-      method == CopyTextureMethod::DIRECT_COPY) {
-    method = CopyTextureMethod::DIRECT_DRAW;
-  }
-#endif
 
   // Use DRAW instead of COPY if the workaround is enabled.
   if (method == CopyTextureMethod::DIRECT_COPY &&
@@ -18169,56 +18100,6 @@ void GLES2DecoderImpl::DoWindowRectanglesEXT(GLenum mode,
   state_.SetWindowRectangles(mode, n, box_copy.data());
   state_.UpdateWindowRectangles();
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-std::unique_ptr<AbstractTexture> GLES2DecoderImpl::CreateAbstractTexture(
-    GLenum target,
-    GLenum internal_format,
-    GLsizei width,
-    GLsizei height,
-    GLsizei depth,
-    GLint border,
-    GLenum format,
-    GLenum type) {
-  GLuint service_id = 0;
-  api()->glGenTexturesFn(1, &service_id);
-  scoped_refptr<gpu::gles2::TextureRef> texture_ref =
-      TextureRef::Create(texture_manager(), 0, service_id);
-  texture_manager()->SetTarget(texture_ref.get(), target);
-  const GLint level = 0;
-  // Mark the texture as "not cleared".
-  gfx::Rect cleared_rect = gfx::Rect();
-  texture_manager()->SetLevelInfo(texture_ref.get(), target, level,
-                                  internal_format, width, height, depth, border,
-                                  format, type, cleared_rect);
-
-  // Unretained is safe, because of the destruction cb.
-  std::unique_ptr<ValidatingAbstractTextureImpl> abstract_texture =
-      std::make_unique<ValidatingAbstractTextureImpl>(
-          std::move(texture_ref), this,
-          base::BindOnce(&GLES2DecoderImpl::OnAbstractTextureDestroyed,
-                         base::Unretained(this)));
-  abstract_textures_.insert(abstract_texture.get());
-
-  return abstract_texture;
-}
-
-void GLES2DecoderImpl::OnAbstractTextureDestroyed(
-    ValidatingAbstractTextureImpl* abstract_texture,
-    scoped_refptr<TextureRef> texture_ref) {
-  DCHECK(texture_ref);
-  abstract_textures_.erase(abstract_texture);
-  // Keep |texture_ref| until we have a current context to destroy it, unless
-  // the context is current.  In that case, clear everything that's pending
-  // destruction and let |texture_ref| go out of scope.
-  // TODO(liberato): Consider moving this to the context group, so that any
-  // context in our group can delete textures sooner.
-  if (context_->IsCurrent(nullptr))
-    texture_refs_pending_destruction_.clear();
-  else
-    texture_refs_pending_destruction_.insert(std::move(texture_ref));
-}
-#endif
 
 void GLES2DecoderImpl::DoSetReadbackBufferShadowAllocationINTERNAL(
     GLuint buffer_id,

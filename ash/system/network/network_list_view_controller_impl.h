@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,6 +44,7 @@ class NetworkDetailedNetworkView;
 class ASH_EXPORT NetworkListViewControllerImpl
     : public TrayNetworkStateObserver,
       public NetworkListViewController,
+      public multidevice_setup::mojom::HostStatusObserver,
       public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
   NetworkListViewControllerImpl(
@@ -81,6 +83,11 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // Map of network guids and their corresponding list item views.
   using NetworkIdToViewMap =
       base::flat_map<std::string, NetworkListNetworkItemView*>;
+
+  // multidevice_setup::mojom::HostStatusObserver:
+  void OnHostStatusChanged(
+      multidevice_setup::mojom::HostStatus host_status,
+      const std::optional<multidevice::RemoteDevice>& host_device) override;
 
   // TrayNetworkStateObserver:
   void ActiveNetworkStateChanged() override;
@@ -217,6 +224,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
       remote_cros_bluetooth_config_;
   mojo::Receiver<bluetooth_config::mojom::SystemPropertiesObserver>
       cros_system_properties_observer_receiver_{this};
+  mojo::Remote<multidevice_setup::mojom::MultiDeviceSetup>
+      multidevice_setup_remote_;
+  mojo::Receiver<multidevice_setup::mojom::HostStatusObserver>
+      host_status_observer_receiver_{this};
 
   bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
@@ -283,6 +294,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // Indicates whether the proxy associated with `connected_vpn_guid_` is
   // managed.
   bool is_vpn_managed_ = false;
+
+  // Indicates whether the user has a phone which could be set up via the
+  // cross-device suite of features.
+  bool has_phone_eligible_for_setup_ = false;
 
   raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged>
       network_detailed_network_view_;

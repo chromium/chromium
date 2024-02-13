@@ -361,6 +361,8 @@ std::string SupervisedUserURLFilter::WebFilterTypeToDisplayString(
       return "allow_certain_sites";
     case WebFilterType::kTryToBlockMatureSites:
       return "block_mature_sites";
+    case WebFilterType::kMixed:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -679,6 +681,10 @@ void SupervisedUserURLFilter::SetManualHosts(
       blocked_host_list_.emplace(host_entry.first);
     }
   }
+}
+
+bool SupervisedUserURLFilter::IsManualHostsEmpty() const {
+  return allowed_host_list_.empty() && blocked_host_list_.empty();
 }
 
 void SupervisedUserURLFilter::SetManualURLs(std::map<GURL, bool> url_map) {

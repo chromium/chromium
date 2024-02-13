@@ -26,6 +26,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.DisplayMode;
@@ -36,7 +37,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.UpdateRequestQueued;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -71,6 +71,11 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     // Maximum wait time for WebAPK update to be scheduled.
     private static final long UPDATE_TIMEOUT_MILLISECONDS = DateUtils.SECOND_IN_MILLIS * 30;
+
+    // Number of milliseconds that a WebAPK shell is outdated from last
+    // install/update and should be updated again.
+    @VisibleForTesting
+    static final long OLD_SHELL_NEEDS_UPDATE_INTERVAL = DateUtils.DAY_IN_MILLIS * 360;
 
     // Flags for AppIdentity Update dialog histograms.
     private static final int CHANGING_NOTHING = 0;
@@ -529,7 +534,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                                 mStorage, WebApkInstallResult.FAILURE, /* relaxUpdates= */ false);
                         return;
                     }
-                    scheduleUpdate();
+                    scheduleUpdate(info.shellApkVersion());
                 };
         String updateRequestPath = mStorage.createAndSetUpdateRequestFilePath(info);
         encodeIconsInBackground(
@@ -559,8 +564,8 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     /** Schedules update for when WebAPK is not running. */
     @VisibleForTesting
-    protected void scheduleUpdate() {
-        WebApkUmaRecorder.recordUpdateRequestQueued(UpdateRequestQueued.TWICE);
+    protected void scheduleUpdate(int shellApkVersion) {
+        WebApkUmaRecorder.recordQueuedUpdateShellVersion(shellApkVersion);
         TaskInfo updateTask;
         if (mStorage.shouldForceUpdate()) {
             // Start an update task ASAP for forced updates.
@@ -621,9 +626,12 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         return sWebApkTargetShellVersion;
     }
 
-    /** Whether there is a new version of the //chrome/android/webapk/shell_apk code. */
+    /** Whether the shell version is outdated. */
     private static boolean isShellApkVersionOutOfDate(WebappInfo info) {
-        return info.shellApkVersion() < webApkTargetShellVersion();
+        return info.shellApkVersion() < webApkTargetShellVersion()
+                || (info.lastUpdateTime() > 0
+                        && TimeUtils.currentTimeMillis() - info.lastUpdateTime()
+                                > OLD_SHELL_NEEDS_UPDATE_INTERVAL);
     }
 
     /**

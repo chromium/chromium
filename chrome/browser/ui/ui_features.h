@@ -60,8 +60,6 @@ BASE_DECLARE_FEATURE(kHaTSWebUI);
 BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 #endif
 
-BASE_DECLARE_FEATURE(kQuickCommands);
-
 BASE_DECLARE_FEATURE(kResponsiveToolbar);
 
 BASE_DECLARE_FEATURE(kScrollableTabStrip);
@@ -212,6 +210,8 @@ extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
 BASE_DECLARE_FEATURE(kTabSearchUseMetricsReporter);
 
 BASE_DECLARE_FEATURE(kTearOffWebAppTabOpensWebAppWindow);
+
+BASE_DECLARE_FEATURE(kToolbarPinning);
 
 // Determines how screenshots of the toolbar uses Software or Hardware drawing.
 // Works on Android 10+.

@@ -9,7 +9,7 @@ import '../icons.html.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
+import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
 import {getTemplate} from './cr_feedback_buttons.html.js';
 

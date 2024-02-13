@@ -10,6 +10,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/lib/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
 namespace metrics::structured {

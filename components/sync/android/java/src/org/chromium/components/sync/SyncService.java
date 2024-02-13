@@ -134,6 +134,15 @@ public interface SyncService {
      */
     public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
 
+    /**
+     * Sets an individual type selection. For Sync-the-feature mode, invoking this function is only
+     * allowed while IsSyncEverythingEnabled() returns false.
+     *
+     * @param type The type that should be enabled or disabled.
+     * @param isTypeOn Set to true if the type should be enabled, false otherwise.
+     */
+    public void setSelectedType(@UserSelectableType int type, boolean isTypeOn);
+
     public void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource);
 
     public boolean isInitialSyncFeatureSetupComplete();

@@ -249,6 +249,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // Returns the GpuMemoryBufferHandle if present.
   virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle();
 
+  // True for images in Ash that were imported from Exo clients.
+  virtual bool IsImportedFromExo();
+
   // Helper to determine if the entire SharedImage is cleared.
   bool IsCleared() const { return ClearedRect() == gfx::Rect(size()); }
 

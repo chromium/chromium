@@ -15,9 +15,6 @@ CGFloat CurrentScreenHeight();
 // Returns the width of the screen in the current orientation.
 CGFloat CurrentScreenWidth();
 
-// Returns the approximate corner radius of the current device.
-CGFloat DeviceCornerRadius();
-
 // Returns the closest pixel-aligned value less than `value`, taking the scale
 // factor into account. At a scale of 1, equivalent to floor().
 CGFloat AlignValueToPixel(CGFloat value);

@@ -65,6 +65,10 @@ BASE_FEATURE(kPreventNavigationWithoutUserInteraction,
              "PreventNavigationWithoutUserInteraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAllowCrossWindowExternalAppNavigation,
+             "kAllowCrossWindowExternalAppNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableWebInspector,
              "EnableWebInspector",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -101,6 +105,10 @@ bool IsWebInspectorSupportEnabled() {
   }
   return false;
 }
+
+BASE_FEATURE(kDisableRaccoon,
+             "DisableRaccoon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace web

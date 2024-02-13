@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/modules/readaloud/Player.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooks.java",
     "java/src/org/chromium/chrome/modules/readaloud/ReadAloudPlaybackHooksProvider.java",
+    "java/src/org/chromium/chrome/modules/readaloud/contentjs/Extractor.java",
     "java/src/org/chromium/chrome/modules/readaloud/contentjs/Highlighter.java",
   ]
   deps = [

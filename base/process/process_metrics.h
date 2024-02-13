@@ -250,7 +250,7 @@ class BASE_EXPORT ProcessMetrics {
       uint64_t absolute_package_idle_wakeups);
 
   // Queries the port provider if it's set.
-  mach_port_t TaskForPid(ProcessHandle process) const;
+  mach_port_t TaskForHandle(ProcessHandle process_handle) const;
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -420,6 +420,12 @@ BASE_EXPORT extern const char kProcSelfExe[];
 // Exposed for testing.
 BASE_EXPORT bool ParseProcMeminfo(StringPiece input,
                                   SystemMemoryInfoKB* meminfo);
+
+// Returns the memory committed by the system in KBytes, as from
+// GetSystemCommitCharge(), using data from `meminfo` instead of /proc/meminfo.
+// Exposed for testing.
+BASE_EXPORT size_t
+GetSystemCommitChargeFromMeminfo(const SystemMemoryInfoKB& meminfo);
 
 // Data from /proc/vmstat.
 struct BASE_EXPORT VmStatInfo {

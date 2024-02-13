@@ -91,7 +91,7 @@ void PhoneDisconnectedView::ButtonPressed(InterstitialScreenEvent event,
   std::move(callback).Run();
 }
 
-BEGIN_METADATA(PhoneDisconnectedView, views::View)
+BEGIN_METADATA(PhoneDisconnectedView)
 END_METADATA
 
 }  // namespace ash

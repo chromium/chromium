@@ -6,9 +6,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
-#include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/lib/histogram_util.h"
 
 namespace metrics::structured {
+
+using ::google::protobuf::RepeatedPtrField;
 
 AshEventStorage::AshEventStorage(base::TimeDelta write_delay,
                                  const base::FilePath& pre_user_event_path)
@@ -32,37 +34,34 @@ void AshEventStorage::OnReady() {
   }
 }
 
-void AshEventStorage::AddEvent(StructuredEventProto&& event) {
+void AshEventStorage::AddEvent(StructuredEventProto event) {
   PersistentProto<EventsProto>* event_store_to_write =
       GetStoreToWriteEvent(event);
 
   if (!event_store_to_write) {
-    pre_storage_events_.emplace_back(event);
+    pre_storage_events_.emplace_back(std::move(event));
     return;
   }
 
-  *event_store_to_write->get()->add_non_uma_events() = event;
+  event_store_to_write->get()->mutable_non_uma_events()->Add(std::move(event));
   event_store_to_write->QueueWrite();
 }
 
-void AshEventStorage::MoveEvents(ChromeUserMetricsExtension& uma_proto) {
-  StructuredDataProto* proto = uma_proto.mutable_structured_data();
-
-  if (IsPreUserStorageReadable() &&
-      pre_user_events()->non_uma_events_size() > 0) {
-    proto->mutable_events()->MergeFrom(pre_user_events()->non_uma_events());
-    pre_user_events()->clear_non_uma_events();
+RepeatedPtrField<StructuredEventProto> AshEventStorage::TakeEvents() {
+  if (IsPreUserStorageReadable()) {
+    RepeatedPtrField<StructuredEventProto> events =
+        std::move(*pre_user_events()->mutable_non_uma_events());
     pre_user_events_->QueueWrite();
-  }
-  if (IsProfileReady() && user_events()->non_uma_events_size() > 0) {
-    proto->mutable_events()->MergeFrom(user_events()->non_uma_events());
-    user_events()->clear_non_uma_events();
-    user_events_->QueueWrite();
+    return events;
   }
 
-  // TODO(b/312292811): Cleanup |pre_user_events_| after the first upload as it
-  // is not needed. This cannot be done currently because the dtor will trigger
-  // a blocking call on a non-blocking thread.
+  // Profile must be ready if |pre_user_events| has been cleanedup.
+  CHECK(IsProfileReady());
+
+  RepeatedPtrField<StructuredEventProto> events =
+      std::move(*user_events()->mutable_non_uma_events());
+  user_events_->QueueWrite();
+  return events;
 }
 
 int AshEventStorage::RecordedEventsCount() const {
@@ -137,8 +136,6 @@ void AshEventStorage::CopyEvents(EventsProto* events_proto) const {
 }
 
 void AshEventStorage::OnWrite(const WriteStatus status) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
   switch (status) {
     case WriteStatus::kOk:
       break;
@@ -152,8 +149,6 @@ void AshEventStorage::OnWrite(const WriteStatus status) {
 }
 
 void AshEventStorage::OnRead(const ReadStatus status) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
   switch (status) {
     case ReadStatus::kOk:
     case ReadStatus::kMissing:
@@ -170,8 +165,6 @@ void AshEventStorage::OnRead(const ReadStatus status) {
 }
 
 void AshEventStorage::OnProfileRead(const ReadStatus status) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
   switch (status) {
     case ReadStatus::kOk:
     case ReadStatus::kMissing:
@@ -190,6 +183,40 @@ void AshEventStorage::OnProfileRead(const ReadStatus status) {
 void AshEventStorage::OnProfileReady() {
   CHECK(user_events_.get());
   is_user_initialized_ = true;
+
+  // Move any events that are current in |pre_user_events_| into the
+  // |user_events_|.
+  if (pre_user_events() && pre_user_events()->non_uma_events_size() > 0) {
+    RepeatedPtrField<StructuredEventProto>* users_events =
+        user_events()->mutable_non_uma_events();
+    RepeatedPtrField<StructuredEventProto>* pre_users_events =
+        pre_user_events()->mutable_non_uma_events();
+
+    // Moving events from |pre_users_events| to |users_events|.
+    users_events->Reserve(users_events->size() + pre_users_events->size());
+
+    // Temporary buffer to extract the |pre_users_events| into.
+    std::vector<StructuredEventProto*> extracted(pre_users_events->size(),
+                                                 nullptr);
+
+    // Extract and add the elements into |users_events|
+    pre_users_events->ExtractSubrange(0, pre_users_events->size(),
+                                      extracted.data());
+
+    for (auto* element : extracted) {
+      users_events->AddAllocated(element);
+    }
+  }
+
+  // Regardless of if there are any events cleanup the storage.
+  if (pre_user_events()) {
+    (*pre_user_events_)->Clear();
+    pre_user_events_->QueueWrite();
+  }
+
+  // The write is fine because it will add to a task that is not tied to the
+  // lifetime of |pre_user_events_|.
+  pre_user_events_.reset();
 
   // Dealloc any memory that the vector is occupying as it will not be used
   // anymore.

@@ -8,12 +8,12 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -204,8 +204,8 @@ class VIEWS_EXPORT FlexLayout : public LayoutManagerBase {
   // Calculates the preferred spacing between two child views, or between a
   // view edge and the first or last visible child views.
   int CalculateChildSpacing(const FlexLayoutData& layout,
-                            absl::optional<size_t> child1_index,
-                            absl::optional<size_t> child2_index) const;
+                            std::optional<size_t> child1_index,
+                            std::optional<size_t> child2_index) const;
 
   // Calculates the position of each child view and the size of the overall
   // layout based on tentative visibilities and sizes for each child.

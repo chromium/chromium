@@ -54,7 +54,7 @@ int EventFlagsToWebEventModifiers(int flags);
 std::unique_ptr<blink::WebInputEvent> ScaleWebInputEvent(
     const blink::WebInputEvent& event,
     float scale,
-    absl::optional<int64_t> trace_id = absl::nullopt);
+    std::optional<int64_t> trace_id = std::nullopt);
 
 // Transforms coordinates and other properties of |event|, by
 // 1) translating / shifting by |delta| and
@@ -65,7 +65,7 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     const blink::WebInputEvent& event,
     const gfx::Vector2dF& delta,
     float scale,
-    absl::optional<int64_t> trace_id = absl::nullopt);
+    std::optional<int64_t> trace_id = std::nullopt);
 
 blink::WebInputEvent::Type ToWebMouseEventType(MotionEvent::Action action);
 

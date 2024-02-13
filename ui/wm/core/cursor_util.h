@@ -5,8 +5,9 @@
 #ifndef UI_WM_CORE_CURSOR_UTIL_H_
 #define UI_WM_CORE_CURSOR_UTIL_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/display/display.h"
 
@@ -30,11 +31,11 @@ namespace wm {
 // scale the bitmap and hotspot to match `scale`. The bitmap and hotspot are
 // both in physical pixels.
 COMPONENT_EXPORT(UI_WM)
-absl::optional<ui::CursorData> GetCursorData(
+std::optional<ui::CursorData> GetCursorData(
     ui::mojom::CursorType type,
     ui::CursorSize size,
     float scale,
-    absl::optional<int> target_cursor_size_in_px,
+    std::optional<int> target_cursor_size_in_px,
     display::Display::Rotation rotation);
 
 // Scale and rotate the cursor's bitmap and hotpoint.

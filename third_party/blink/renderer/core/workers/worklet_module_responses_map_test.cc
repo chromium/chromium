@@ -34,12 +34,21 @@ namespace blink {
 class WorkletModuleResponsesMapTest : public PageTestBase {
  public:
   WorkletModuleResponsesMapTest()
-      : url_("https://example.test"),
-        security_origin_(SecurityOrigin::Create(url_)) {}
+      : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        url_("https://example.test"),
+        security_origin_(SecurityOrigin::Create(url_)) {
+    if (!task_environment()) {
+      // TODO(crbug.com/1315595): Remove once TaskEnvironment becomes the
+      // default in blink_unittests_v2
+      test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+          base::TestMockTimeTaskRunner::Type::kStandalone);
+      test_task_runner_->AdvanceMockTickClock(
+          base::Seconds(1));  // For non-zero DocumentParserTimings
+    }
+  }
 
   void SetUp() override {
     PageTestBase::SetUp();
-    platform_->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     auto* context = MakeGarbageCollected<MockFetchContext>();
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
@@ -77,10 +86,6 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
     global_scope_->Dispose();
     global_scope_->NotifyContextDestroyed();
     PageTestBase::TearDown();
-  }
-
-  const base::TickClock* GetTickClock() override {
-    return platform_->test_task_runner()->GetMockTickClock();
   }
 
   class ClientImpl final : public GarbageCollected<ClientImpl>,
@@ -130,7 +135,15 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
         ->RunUntilIdle();
   }
 
+  const base::TickClock* GetTickClock() override {
+    if (test_task_runner_) {
+      return test_task_runner_->GetMockTickClock();
+    }
+    return PageTestBase::GetTickClock();
+  }
+
  protected:
+  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
 
   const KURL url_;

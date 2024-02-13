@@ -211,7 +211,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // this transparently.
     virtual void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                                        VideoPixelFormat format,
-                                       uint32_t textures_per_buffer,
                                        const gfx::Size& dimensions,
                                        uint32_t texture_target) = 0;
 
@@ -223,7 +222,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     virtual void ProvidePictureBuffersWithVisibleRect(
         uint32_t requested_num_of_buffers,
         VideoPixelFormat format,
-        uint32_t textures_per_buffer,
         const gfx::Size& dimensions,
         const gfx::Rect& visible_rect,
         uint32_t texture_target);

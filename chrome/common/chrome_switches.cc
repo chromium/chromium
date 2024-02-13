@@ -556,6 +556,13 @@ const char kSimulateUpgrade[] = "simulate-upgrade";
 // possible) for testing purposes.
 const char kSimulateIdleTimeout[] = "simulate-idle-timeout";
 
+// Causes password_manager_android_util::SetUsesSplitStoresAndUPMForLocal() to
+// ignore the min GmsCore version requirement.
+// TODO(crbug.com/324370397): Remove once min GmsCore version running on the
+// bots is above the checked value.
+const char kSkipLocalUpmGmsCoreVersionCheckForTesting[] =
+    "skip-local-upm-gms-core-version-check-for-testing";
+
 // Specifies the maximum SSL/TLS version ("tls1.2" or "tls1.3").
 const char kSSLVersionMax[] = "ssl-version-max";
 
@@ -789,6 +796,10 @@ const char kEnableProfileShortcutManager[] = "enable-profile-shortcut-manager";
 // browser behaviors for this specific launch, such as a welcome announcement
 // for accessibility software (see https://crbug.com/1072735).
 extern const char kFromInstaller[] = "from-installer";
+
+// Indicates that this launch of the browser originated from the Legacy Browser
+// Support for Edge extension's native host. This is recorded in UMA.
+extern const char kFromBrowserSwitcher[] = "from-browser-switcher";
 
 // Makes Windows happy by allowing it to show "Enable access to this program"
 // checkbox in Add/Remove Programs->Set Program Access and Defaults. This only

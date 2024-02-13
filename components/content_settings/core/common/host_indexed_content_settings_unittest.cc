@@ -20,11 +20,11 @@ namespace content_settings {
 
 namespace {
 
-ContentSettingPatternSource CreateSetting(
-    const std::string& primary_pattern,
-    const std::string& secondary_pattern,
-    ContentSetting setting,
-    base::Time expiration = base::Time()) {
+ContentSettingPatternSource CreateSetting(const std::string& primary_pattern,
+                                          const std::string& secondary_pattern,
+                                          ContentSetting setting,
+                                          base::Time expiration = base::Time(),
+                                          std::string source = std::string()) {
   content_settings::RuleMetaData metadata;
   metadata.SetExpirationAndLifetime(
       expiration, expiration.is_null() ? base::TimeDelta()
@@ -32,7 +32,7 @@ ContentSettingPatternSource CreateSetting(
   return ContentSettingPatternSource(
       ContentSettingsPattern::FromString(primary_pattern),
       ContentSettingsPattern::FromString(secondary_pattern),
-      base::Value(setting), std::string(), false /* incognito */, metadata);
+      base::Value(setting), source, false /* incognito */, metadata);
 }
 
 ContentSettingsForOneType ToVector(const HostIndexedContentSettings& index) {
@@ -46,6 +46,13 @@ ContentSettingsForOneType ToVector(const HostIndexedContentSettings& index) {
     v.push_back(std::move(source));
   }
   return v;
+}
+
+HostIndexedContentSettings FromVector(
+    const ContentSettingsForOneType& settings) {
+  auto indices = HostIndexedContentSettings::Create(settings);
+  EXPECT_EQ(1u, indices.size());
+  return std::move(indices.front());
 }
 
 class HostIndexedContentSettingsTest : public testing::Test {
@@ -80,7 +87,7 @@ TEST_F(HostIndexedContentSettingsTest, Sorting) {
       CreateSetting("*:8080", "*", CONTENT_SETTING_ALLOW),
       CreateSetting("*", "*", CONTENT_SETTING_ALLOW),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
   EXPECT_THAT(ToVector(index), testing::ContainerEq(test_settings));
 }
 
@@ -95,7 +102,7 @@ TEST_F(HostIndexedContentSettingsTest, DomainWildcardMatchFound) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(ValueToContentSetting(
                 index.Find(test_primary_url, test_secondary_url)->second.value),
@@ -116,7 +123,7 @@ TEST_F(HostIndexedContentSettingsTest, MostSpecificMatchBlocks) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_ALLOW),
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_ALLOW),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(ValueToContentSetting(
                 index.Find(test_primary_url, test_secondary_url)->second.value),
@@ -179,7 +186,7 @@ TEST_F(HostIndexedContentSettingsTest, ExactDomainMatchFound) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_ALLOW),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(ValueToContentSetting(
                 index.Find(test_primary_url, test_secondary_url)->second.value),
@@ -200,7 +207,7 @@ TEST_F(HostIndexedContentSettingsTest, NotFirstDomainMatchFound) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(ValueToContentSetting(
                 index.Find(test_primary_url, test_secondary_url)->second.value),
@@ -219,7 +226,7 @@ TEST_F(HostIndexedContentSettingsTest, WildcardMatchFound) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("*", "[*.]toplevel.com", CONTENT_SETTING_ALLOW),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(ValueToContentSetting(
                 index.Find(test_primary_url, test_secondary_url)->second.value),
@@ -238,7 +245,7 @@ TEST_F(HostIndexedContentSettingsTest, NoMatchFound) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(index.Find(test_primary_url, test_secondary_url), nullptr);
   EXPECT_THAT(ToVector(index), testing::ContainerEq(test_settings));
@@ -256,7 +263,7 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatch) {
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(ValueToContentSetting(
                 index.Find(test_primary_url, test_secondary_url)->second.value),
@@ -276,7 +283,7 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatchIsBlock) {
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(ValueToContentSetting(
                 index.Find(test_primary_url, test_secondary_url)->second.value),
@@ -296,7 +303,7 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesNoMatch) {
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings index(test_settings);
+  HostIndexedContentSettings index = FromVector(test_settings);
 
   EXPECT_EQ(index.Find(test_primary_url, test_secondary_url), nullptr);
   EXPECT_THAT(ToVector(index), testing::ContainerEq(test_settings));
@@ -341,6 +348,33 @@ TEST_F(FindContentSettingTest, NoMatchInSingleItemVector) {
       FindContentSetting(GURL("https://www.example.com/"),
                          GURL("http://toplevel.com"), not_matching_vector),
       nullptr);
+}
+
+TEST_F(FindContentSettingTest, VectorOfIndices) {
+  ContentSettingsForOneType settings = {
+      CreateSetting("https://example.com:*/*", "*", CONTENT_SETTING_BLOCK,
+                    base::Time(), "policy"),
+      CreateSetting("*", "*", CONTENT_SETTING_ALLOW, base::Time(), "policy"),
+      CreateSetting("[*.]example.com", "[*.]example.com", CONTENT_SETTING_BLOCK,
+                    base::Time(), "pref"),
+      CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY, base::Time(),
+                    "default")};
+  auto indices = HostIndexedContentSettings::Create(settings);
+
+  EXPECT_EQ(3u, indices.size());
+
+  ContentSettingsForOneType expected_0 = {
+      CreateSetting("https://example.com:*/*", "*", CONTENT_SETTING_BLOCK),
+      CreateSetting("*", "*", CONTENT_SETTING_ALLOW)};
+  EXPECT_EQ(ToVector(indices[0]), expected_0);
+
+  ContentSettingsForOneType expected_1 = {CreateSetting(
+      "[*.]example.com", "[*.]example.com", CONTENT_SETTING_BLOCK)};
+  EXPECT_EQ(ToVector(indices[1]), expected_1);
+
+  ContentSettingsForOneType expected_2 = {
+      CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)};
+  EXPECT_EQ(ToVector(indices[2]), expected_2);
 }
 
 }  // namespace

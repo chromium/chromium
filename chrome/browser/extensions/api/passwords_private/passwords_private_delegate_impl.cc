@@ -832,8 +832,13 @@ void PasswordsPrivateDelegateImpl::SetAccountStorageOptIn(
     return;
   }
   if (!opt_in) {
-    client->GetPasswordFeatureManager()
-        ->OptOutOfAccountStorageAndClearSettings();
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kButterOnDesktopFollowup)) {
+      client->GetPasswordFeatureManager()->OptOutOfAccountStorage();
+    } else {
+      client->GetPasswordFeatureManager()
+          ->OptOutOfAccountStorageAndClearSettings();
+    }
     return;
   }
   // The opt in pref is automatically set upon successful reauth.

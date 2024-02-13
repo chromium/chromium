@@ -2,3 +2,6 @@ monorail: {
   component: "Internals>Images>Codecs"
 }
 team_email: "webp-discuss@webmproject.org"
+buganizer_public: {
+  component_id: 1456316
+}

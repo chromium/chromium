@@ -211,6 +211,7 @@ TEST_F(ParserTest, ParseMetadata_NonEmptyList) {
   ASSERT_EQ(me.size(), 1u);
   ASSERT_EQ(me.front().primary_pattern_spec(), primary_pattern_spec);
   ASSERT_EQ(me.front().secondary_pattern_spec(), secondary_pattern_spec);
+  ASSERT_EQ(me.front().source(), Parser::kSourceTest);
 }
 
 TEST_F(ParserTest, GetMetadata_ComponentUpdaterOnly) {

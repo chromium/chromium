@@ -8,11 +8,6 @@
 
 namespace content {
 
-std::optional<SubresourceLoaderParams>
-NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams() {
-  return std::nullopt;
-}
-
 bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
     const network::URLLoaderCompletionStatus& status,
     const network::ResourceRequest& request,
@@ -24,5 +19,19 @@ bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(
     bool* skip_other_interceptors) {
   return false;
 }
+
+NavigationLoaderInterceptor::Result::Result(
+    scoped_refptr<network::SharedURLLoaderFactory> single_request_factory,
+    SubresourceLoaderParams subresource_loader_params,
+    ResponseHeadUpdateParams response_head_update_params)
+    : single_request_factory(std::move(single_request_factory)),
+      subresource_loader_params(std::move(subresource_loader_params)),
+      response_head_update_params(std::move(response_head_update_params)) {}
+NavigationLoaderInterceptor::Result::Result(
+    NavigationLoaderInterceptor::Result&&) = default;
+NavigationLoaderInterceptor::Result&
+NavigationLoaderInterceptor::Result::operator=(
+    NavigationLoaderInterceptor::Result&&) = default;
+NavigationLoaderInterceptor::Result::~Result() = default;
 
 }  // namespace content

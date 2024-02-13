@@ -8,7 +8,8 @@
  * chrome.developerPrivate API.
  */
 
-import {ExtensionsManagerElement, navigation, Page, Service} from 'chrome://extensions/extensions.js';
+import type {ExtensionsManagerElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

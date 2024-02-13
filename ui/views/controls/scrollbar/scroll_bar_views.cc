@@ -69,8 +69,9 @@ void ScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
                           GetNativeThemePart(), theme_state, local_bounds,
                           extra_params);
   const ui::NativeTheme::Part gripper_part =
-      scroll_bar_->IsHorizontal() ? ui::NativeTheme::kScrollbarHorizontalGripper
-                                  : ui::NativeTheme::kScrollbarVerticalGripper;
+      scroll_bar_->GetOrientation() == ScrollBar::Orientation::kHorizontal
+          ? ui::NativeTheme::kScrollbarHorizontalGripper
+          : ui::NativeTheme::kScrollbarVerticalGripper;
   GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), gripper_part,
                           theme_state, local_bounds, extra_params);
 }
@@ -88,8 +89,9 @@ ui::NativeTheme::ExtraParams ScrollBarThumb::GetNativeThemeParams() const {
 }
 
 ui::NativeTheme::Part ScrollBarThumb::GetNativeThemePart() const {
-  if (scroll_bar_->IsHorizontal())
+  if (scroll_bar_->GetOrientation() == ScrollBar::Orientation::kHorizontal) {
     return ui::NativeTheme::kScrollbarHorizontalThumb;
+  }
   return ui::NativeTheme::kScrollbarVerticalThumb;
 }
 
@@ -113,13 +115,15 @@ END_METADATA
 
 }  // namespace
 
-ScrollBarViews::ScrollBarViews(bool horizontal) : ScrollBar(horizontal) {
+ScrollBarViews::ScrollBarViews(Orientation orientation)
+    : ScrollBar(orientation) {
   SetFlipCanvasOnPaintForRTLUI(true);
   state_ = ui::NativeTheme::kNormal;
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
-  if (!horizontal)
+  if (orientation == ScrollBar::Orientation::kVertical) {
     layout->SetOrientation(views::LayoutOrientation::kVertical);
+  }
 
   const auto scroll_func = [](ScrollBarViews* scrollbar, ScrollAmount amount) {
     scrollbar->ScrollByAmount(amount);
@@ -128,7 +132,8 @@ ScrollBarViews::ScrollBarViews(bool horizontal) : ScrollBar(horizontal) {
   prev_button_ = AddChildView(std::make_unique<ScrollBarButton>(
       base::BindRepeating(scroll_func, base::Unretained(this),
                           ScrollAmount::kPrevLine),
-      horizontal ? Type::kLeft : Type::kUp));
+      orientation == ScrollBar::Orientation::kHorizontal ? Type::kLeft
+                                                         : Type::kUp));
   prev_button_->set_context_menu_controller(this);
 
   SetThumb(new ScrollBarThumb(this));
@@ -143,10 +148,12 @@ ScrollBarViews::ScrollBarViews(bool horizontal) : ScrollBar(horizontal) {
   next_button_ = AddChildView(std::make_unique<ScrollBarButton>(
       base::BindRepeating(scroll_func, base::Unretained(this),
                           ScrollBar::ScrollAmount::kNextLine),
-      horizontal ? Type::kRight : Type::kDown));
+      orientation == ScrollBar::Orientation::kHorizontal ? Type::kRight
+                                                         : Type::kDown));
   next_button_->set_context_menu_controller(this);
-  part_ = horizontal ? ui::NativeTheme::kScrollbarHorizontalTrack
-                     : ui::NativeTheme::kScrollbarVerticalTrack;
+  part_ = orientation == ScrollBar::Orientation::kHorizontal
+              ? ui::NativeTheme::kScrollbarHorizontalTrack
+              : ui::NativeTheme::kScrollbarVerticalTrack;
 }
 
 ScrollBarViews::~ScrollBarViews() = default;
@@ -184,22 +191,24 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   scrollbar_track.is_upper = true;
   ui::NativeTheme::ExtraParams params(scrollbar_track);
   gfx::Rect upper_bounds = bounds;
-  if (IsHorizontal())
+  if (GetOrientation() == ScrollBar::Orientation::kHorizontal) {
     upper_bounds.set_width(thumb->x() - upper_bounds.x());
-  else
+  } else {
     upper_bounds.set_height(thumb->y() - upper_bounds.y());
+  }
   if (!upper_bounds.IsEmpty()) {
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
                             state_, upper_bounds, params);
   }
 
   scrollbar_track.is_upper = false;
-  if (IsHorizontal())
+  if (GetOrientation() == ScrollBar::Orientation::kHorizontal) {
     bounds.Inset(
         gfx::Insets::TLBR(0, thumb->bounds().right() - bounds.x(), 0, 0));
-  else
+  } else {
     bounds.Inset(
         gfx::Insets::TLBR(thumb->bounds().bottom() - bounds.y(), 0, 0, 0));
+  }
   if (!bounds.IsEmpty()) {
     GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
                             state_, bounds, params);
@@ -208,7 +217,8 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
 
 int ScrollBarViews::GetThickness() const {
   const gfx::Size size = GetPreferredSize();
-  return IsHorizontal() ? size.height() : size.width();
+  return GetOrientation() == ScrollBar::Orientation::kHorizontal ? size.height()
+                                                                 : size.width();
 }
 
 gfx::Rect ScrollBarViews::GetTrackBounds() const {
@@ -216,7 +226,7 @@ gfx::Rect ScrollBarViews::GetTrackBounds() const {
   gfx::Size size = prev_button_->GetPreferredSize();
   BaseScrollBarThumb* thumb = GetThumb();
 
-  if (IsHorizontal()) {
+  if (GetOrientation() == ScrollBar::Orientation::kHorizontal) {
     bounds.set_x(bounds.x() + size.width());
     bounds.set_width(std::max(0, bounds.width() - 2 * size.width()));
     bounds.set_height(thumb->GetPreferredSize().height());

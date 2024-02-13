@@ -109,7 +109,7 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
   std::u16string GetNotificationString() {
     message_center::NotificationList::Notifications notification_set =
         message_center::MessageCenter::Get()->GetVisibleNotifications();
-    for (auto* notification : notification_set) {
+    for (message_center::Notification* notification : notification_set) {
       if (notification->id() == kNotificationId) {
         return notification->title();
       }

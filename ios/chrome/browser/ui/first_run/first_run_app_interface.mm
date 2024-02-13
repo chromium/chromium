@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_util.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 @implementation FirstRunAppInterface
@@ -43,7 +44,9 @@
 }
 
 + (BOOL)isOmniboxPositionChoiceEnabled {
-  return IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE);
+  return IsBottomOmniboxPromoFlagEnabled(BottomOmniboxPromoType::kFRE) &&
+         ShouldShowOmniboxPositionChoiceInFRE(
+             chrome_test_util::GetOriginalBrowserState());
 }
 
 @end

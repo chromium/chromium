@@ -44,7 +44,8 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
-  void close(const String& return_value = String());
+  void close(const String& return_value = String(),
+             bool ignore_open_attribute = false);
   void show(ExceptionState&);
   void showModal(ExceptionState&);
   void RemovedFrom(ContainerNode&) override;
@@ -78,10 +79,15 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   static void SetFocusForDialogLegacy(HTMLDialogElement* dialog);
 
  private:
+  void ParseAttribute(const AttributeModificationParams&) override;
+
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();
 
   bool is_modal_;
+  // is_closing_ is set to true at the beginning of close() and is reset to
+  // false after the call to close() finishes.
+  bool is_closing_ = false;
   String return_value_;
   WeakMember<Element> previously_focused_element_;
 

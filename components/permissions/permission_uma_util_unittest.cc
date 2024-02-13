@@ -853,7 +853,8 @@ class UkmRecorderPermissionUmaUtilTest
       simulated_has_source_id_ = source_id;
     }
 
-    void GetUkmSourceId(content::BrowserContext* browser_context,
+    void GetUkmSourceId(ContentSettingsType permission_type,
+                        content::BrowserContext* browser_context,
                         content::WebContents* web_contents,
                         const GURL& requesting_origin,
                         GetUkmSourceIdCallback callback) override {
@@ -862,7 +863,7 @@ class UkmRecorderPermissionUmaUtilTest
         std::move(callback).Run(std::nullopt);
       } else {
         ukm::SourceId fake_source_id =
-            ukm::ConvertToSourceId(1, ukm::SourceIdType::NAVIGATION_ID);
+            ukm::ConvertToSourceId(1, ukm::SourceIdType::NOTIFICATION_ID);
         std::move(callback).Run(fake_source_id);
       }
     }

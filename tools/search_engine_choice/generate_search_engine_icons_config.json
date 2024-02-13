@@ -58,16 +58,12 @@
     "yandex_ru": "yandex",
     "yandex_tr": "yandex"
   },
-  // The default icon filenames are '{engine}_xxxhdpi.png' and 'xxxhdpi.png'.
+  // The default icon filenames are '{engine}_xxxhdpi.png',
+  // '{engine}_icon_xxxhdpi.png' and 'xxxhdpi.png'.
   "non_default_icon_filenames": {
     "brave": "brave_logo_",
     "duckduckgo": "logo_",
-    "ecosia": "logo_",
     "info": "ic_launcher_",
-    "lilo": "ic_launcher_blue_round_",
-    "metager": "ic_launcher_round_",
-    "yahoo": "favicon_y19_",
-    "yandex": "yandex_icon_",
     "yep": "yep-widget-icon-"
   }
 }

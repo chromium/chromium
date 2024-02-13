@@ -95,7 +95,7 @@ void SwitchAccessMenuButton::OnButtonPressed() {
                            /*send_native_event=*/false);
 }
 
-BEGIN_METADATA(SwitchAccessMenuButton, views::Button)
+BEGIN_METADATA(SwitchAccessMenuButton)
 END_METADATA
 
 }  // namespace ash

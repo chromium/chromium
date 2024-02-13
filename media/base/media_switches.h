@@ -360,6 +360,7 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoToolboxAv1Decoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kVideoToolboxVideoDecoder);
 #endif  // BUILDFLAG(IS_APPLE)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCastVideoEncoderFrameDrop);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebCodecsVideoEncoderFrameDrop);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebRTCColorAccuracy);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kWebContentsCaptureHiDpi);
@@ -513,6 +514,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kTheoraVideoCodec);
 #if BUILDFLAG(IS_CHROMEOS)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSLegacyMediaFormats);
 #endif
+#endif
+
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D12VideoDecoder);
 #endif
 
 // Based on a |command_line| and the current platform, returns the effective

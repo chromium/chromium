@@ -49,7 +49,7 @@ bool ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   base::win::RegKey key;
   if (key.Open(rootkey, key_name.c_str(),
                Wow6432(KEY_QUERY_VALUE | KEY_SET_VALUE)) != ERROR_SUCCESS) {
-    VLOG(2) << "Failed to open activity key with write for " << key_name;
+    VLOG(3) << "Failed to open activity key with write for " << key_name;
     return false;
   }
 

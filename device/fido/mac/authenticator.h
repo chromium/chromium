@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdAuthenticator
   AuthenticatorType GetType() const override;
   std::string GetId() const override;
   const AuthenticatorSupportedOptions& Options() const override;
-  absl::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
+  std::optional<FidoTransportProtocol> AuthenticatorTransport() const override;
   void GetTouch(base::OnceClosure callback) override;
   base::WeakPtr<FidoAuthenticator> GetWeakPtr() override;
 

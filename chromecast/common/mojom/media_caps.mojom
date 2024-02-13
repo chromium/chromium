@@ -14,27 +14,10 @@ struct CodecProfileLevel {
 interface MediaCaps {
   // Adds an `observer` to monitor media capability changes.
   AddObserver(pending_remote<MediaCapsObserver> observer);
-
-  // Notifies the observers of the change to the screen resolution.
-  ScreenResolutionChanged(uint32 width, uint32 height);
-
-  // Notifies the observers of the change to the screen info.
-  ScreenInfoChanged(int32 hdcp_version, int32 supported_eotfs,
-                    int32 dolby_vision_flags, int32 screen_width_mm,
-                    int32 screen_height_mm, bool current_mode_supports_hdr,
-                    bool current_mode_supports_dolby_vision);
 };
 
 // Observes changes in media capabilities that apply to all applications.
 interface MediaCapsObserver {
-  ScreenResolutionChanged(uint32 width, uint32 height);
-
-  // EOTFs and Dolby Vision flags defined in avsettings.h
-  ScreenInfoChanged(int32 hdcp_version, int32 supported_eotfs,
-                    int32 dolby_vision_flags, int32 screen_width_mm,
-                    int32 screen_height_mm, bool current_mode_supports_hdr,
-                    bool current_mode_supports_dolby_vision);
-
   // Add supported codec profiles and levels. May not be called on all
   // platforms, but can be used to infer whether a video config is supported.
   AddSupportedCodecProfileLevel(CodecProfileLevel codec_profile_level);

@@ -16,7 +16,7 @@ namespace performance_manager {
 class WorkerNode;
 }  // namespace performance_manager
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 class WorkerContext {
  public:
@@ -39,20 +39,21 @@ class WorkerContext {
 
   // Returns the WorkerNode for this context, or a null WeakPtr if it no longer
   // exists.
-  base::WeakPtr<WorkerNode> GetWeakWorkerNode() const;
+  base::WeakPtr<performance_manager::WorkerNode> GetWeakWorkerNode() const;
 
   // PM sequence methods.
 
   // Returns the WorkerContext for `node`. Equivalent to
   // node->GetResourceContext().
-  static WorkerContext FromWorkerNode(const WorkerNode* node);
+  static WorkerContext FromWorkerNode(
+      const performance_manager::WorkerNode* node);
 
   // Returns the WorkerContext for `node`, or nullopt if `node` is null.
   static std::optional<WorkerContext> FromWeakWorkerNode(
-      base::WeakPtr<WorkerNode> node);
+      base::WeakPtr<performance_manager::WorkerNode> node);
 
   // Returns the WorkerNode for this context, or nullptr if it no longer exists.
-  WorkerNode* GetWorkerNode() const;
+  performance_manager::WorkerNode* GetWorkerNode() const;
 
   // Returns a string representation of the context for debugging. This matches
   // the interface of base::TokenType and base::UnguessableToken, for
@@ -73,12 +74,12 @@ class WorkerContext {
 
  private:
   WorkerContext(const blink::WorkerToken& token,
-                base::WeakPtr<WorkerNode> weak_node);
+                base::WeakPtr<performance_manager::WorkerNode> weak_node);
 
   blink::WorkerToken token_;
-  base::WeakPtr<WorkerNode> weak_node_;
+  base::WeakPtr<performance_manager::WorkerNode> weak_node_;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_WORKER_CONTEXT_H_

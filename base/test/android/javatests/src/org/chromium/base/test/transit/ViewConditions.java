@@ -35,7 +35,7 @@ public class ViewConditions {
      * Provides a View that has been matched previously.
      *
      * <p>Used by Conditions that want to check elements that had been matched by another
-     * Conditions, e.g. a {@link DoesNotExistAnymoreCondition} needs to check the View matched by a
+     * Conditions, e.g. a {@link NotDisplayedAnymoreCondition} needs to check the View matched by a
      * {@link DisplayedCondition} does not exist anymore.
      */
     public interface MatchedViewProvider {
@@ -152,16 +152,16 @@ public class ViewConditions {
         }
     }
 
-    /** Fulfilled when no matching Views exist. */
-    public static class DoesNotExistAnymoreCondition extends InstrumentationThreadCondition {
+    /** Fulfilled when no matching Views exist and are displayed. */
+    public static class NotDisplayedAnymoreCondition extends InstrumentationThreadCondition {
         private final Matcher<View> mMatcher;
         private Matcher<View> mStricterMatcher;
         private final MatchedViewProvider mMatchedViewProvider;
 
-        public DoesNotExistAnymoreCondition(
+        public NotDisplayedAnymoreCondition(
                 Matcher<View> matcher, MatchedViewProvider matchedViewProvider) {
             super();
-            mMatcher = matcher;
+            mMatcher = allOf(matcher, isDisplayed());
             mMatchedViewProvider = matchedViewProvider;
         }
 
@@ -183,7 +183,7 @@ public class ViewConditions {
             if (mStricterMatcher != null) {
                 matcherToUse = mStricterMatcher;
             } else if (mMatchedViewProvider.getViewMatched() != null) {
-                mStricterMatcher = is(mMatchedViewProvider.getViewMatched());
+                mStricterMatcher = allOf(is(mMatchedViewProvider.getViewMatched()), isDisplayed());
                 rebuildDescription();
                 matcherToUse = mStricterMatcher;
             } else {

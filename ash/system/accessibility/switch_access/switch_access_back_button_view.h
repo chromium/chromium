@@ -17,9 +17,9 @@ class FloatingMenuButton;
 
 // View for the Switch Access Back Button.
 class SwitchAccessBackButtonView : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(SwitchAccessBackButtonView);
+  METADATA_HEADER(SwitchAccessBackButtonView, views::BoxLayoutView)
 
+ public:
   explicit SwitchAccessBackButtonView(bool for_menu);
   ~SwitchAccessBackButtonView() override = default;
 

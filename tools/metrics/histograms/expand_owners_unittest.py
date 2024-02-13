@@ -66,8 +66,11 @@ class ExpandOwnersTest(unittest.TestCase):
 
   def setUp(self):
     super(ExpandOwnersTest, self).setUp()
+    # Create the temporary directory in tools/ so that the tests won't be
+    # affected by tools/metrics/DIR_METADATA.
+    # TODO(arielzhang): Check if there's a better way to handle this.
     self.temp_dir = tempfile.mkdtemp(
-        dir=os.path.abspath(os.path.join(os.path.dirname(__file__))))
+        dir=os.path.abspath(os.path.join(os.path.dirname(__file__) + '/../..')))
 
     # The below construction is used rather than __file__.endswith() because
     # the file extension could be .py or .pyc.
@@ -115,7 +118,7 @@ class ExpandOwnersTest(unittest.TestCase):
   <owner>amy@chromium.org</owner>
   <owner>rae@chromium.org</owner>
   <summary>I like coffee.</summary>
-  <component>Bees</component>
+  <component>1456832</component>
 </histogram>
 
 <histogram name="Maple.Syrup" units="units">
@@ -124,7 +127,64 @@ class ExpandOwnersTest(unittest.TestCase):
   <owner>rae@chromium.org</owner>
   <owner>kim@chromium.org</owner>
   <summary>I like maple syrup, too.</summary>
-  <component>Bees</component>
+  <component>1456832</component>
+</histogram>
+
+</histograms>
+""")
+
+    expand_owners.ExpandHistogramsOWNERS(histograms)
+    self.assertMultiLineEqual(histograms.toxml(), expected_histograms.toxml())
+
+  def testExpandOwnersUsesBuganizerOverMonorail(self):
+    """Checks that DIR_METADATA is used if available"""
+    with open(os.path.join(self.temp_dir, 'DIR_METADATA'), "w+") as md:
+      md.write("\n".join([
+          'monorail {', 'component: "Bees"', '}', 'buganizer_public {',
+          'component_id:123456', '}'
+      ]))
+    absolute_path = _MakeOwnersFile('simple_OWNERS', self.temp_dir)
+    with open(absolute_path, 'w') as owners_file:
+      owners_file.write('\n'.join(['amy@chromium.org', 'rae@chromium.org']))
+    self.maxDiff = None
+    src_relative_path = _GetSrcRelativePath(absolute_path)
+    histograms = xml.dom.minidom.parseString("""
+<histograms>
+
+<histogram name="Caffeination" units="mg">
+  <owner>joe@chromium.org</owner>
+  <owner>{path}</owner>
+  <summary>I like coffee.</summary>
+</histogram>
+
+<histogram name="Maple.Syrup" units="units">
+  <owner>joe@chromium.org</owner>
+  <owner>{path}</owner>
+  <owner>kim@chromium.org</owner>
+  <summary>I like maple syrup, too.</summary>
+</histogram>
+
+</histograms>
+""".format(path=src_relative_path))
+
+    expected_histograms = xml.dom.minidom.parseString("""
+<histograms>
+
+<histogram name="Caffeination" units="mg">
+  <owner>joe@chromium.org</owner>
+  <owner>amy@chromium.org</owner>
+  <owner>rae@chromium.org</owner>
+  <summary>I like coffee.</summary>
+  <component>123456</component>
+</histogram>
+
+<histogram name="Maple.Syrup" units="units">
+  <owner>joe@chromium.org</owner>
+  <owner>amy@chromium.org</owner>
+  <owner>rae@chromium.org</owner>
+  <owner>kim@chromium.org</owner>
+  <summary>I like maple syrup, too.</summary>
+  <component>123456</component>
 </histogram>
 
 </histograms>

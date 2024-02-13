@@ -6,10 +6,12 @@
 #define ASH_WM_DESKS_DESK_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -175,8 +177,11 @@ class ASH_EXPORT Desk {
 
   // Sets the desk's lacros profile id to `lacros_profile_id`. The value 0
   // (which is the default value) indicates that the desk is associated with the
-  // primary user.  When `skip_prefs_update` is true, prefs are not updated.
+  // primary user. `source` should be specified when the action is directly
+  // initiated by a user (metrics will be emitted). When `skip_prefs_update` is
+  // true, prefs are not updated.
   void SetLacrosProfileId(uint64_t lacros_profile_id,
+                          std::optional<DeskProfilesSelectProfileSource> source,
                           bool skip_prefs_update = false);
 
   // Prepares for the animation to activate this desk (i.e. this desk is not

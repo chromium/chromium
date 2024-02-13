@@ -206,7 +206,7 @@ TEST_F(SlimLayerTreeTest, NeedsBeginFrame) {
   layer_tree_->SetNeedsAnimate();
   ExpectNeedsBeginFrameThenReset(weak_frame_sink);
 
-  layer_tree_->SetNeedsRedraw();
+  layer_tree_->SetNeedsAnimate();
   ExpectNeedsBeginFrameThenReset(weak_frame_sink);
 
   layer_tree_->set_background_color(SkColors::kGreen);
@@ -285,7 +285,7 @@ TEST_F(SlimLayerTreeTest, MaxPendingFrame) {
   EXPECT_TRUE(weak_frame_sink->GetDidSubmitAndReset());
   EXPECT_FALSE(weak_frame_sink->GetDidNotProduceFrameAndReset());
 
-  layer_tree_->SetNeedsRedraw();
+  layer_tree_->SetNeedsAnimate();
   BeginFrame(weak_frame_sink);
   EXPECT_FALSE(weak_frame_sink->GetDidSubmitAndReset());
   EXPECT_TRUE(weak_frame_sink->GetDidNotProduceFrameAndReset());
@@ -304,7 +304,7 @@ TEST_F(SlimLayerTreeTest, MaxPendingResetWithFrameSink) {
   EXPECT_TRUE(weak_frame_sink->GetDidSubmitAndReset());
   EXPECT_FALSE(weak_frame_sink->GetDidNotProduceFrameAndReset());
 
-  layer_tree_->SetNeedsRedraw();
+  layer_tree_->SetNeedsAnimate();
   BeginFrame(weak_frame_sink);
   EXPECT_FALSE(weak_frame_sink->GetDidSubmitAndReset());
   EXPECT_TRUE(weak_frame_sink->GetDidNotProduceFrameAndReset());

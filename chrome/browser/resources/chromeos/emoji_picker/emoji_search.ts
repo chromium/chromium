@@ -7,10 +7,11 @@ import './emoji_category_button.js';
 import './emoji_group.js';
 
 import {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
-import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NO_INTERNET_SEARCH_ERROR_MSG} from './constants.js';
 import {Status} from './emoji_picker.mojom-webui.js';
@@ -63,6 +64,7 @@ export class EmojiSearch extends PolymerElement {
       nextGifPos: {type: String, value: ''},
       errorMessage: {type: String, value: NO_INTERNET_SEARCH_ERROR_MSG},
       closeGifNudgeOverlay: {type: Object},
+      useMojoSearch: {type: Boolean, value: false},
       useGroupedPreference: {type: Boolean, value: false},
       globalTone: {type: Number, value: null, readonly: true},
       globalGender: {type: Number, value: null, readonly: true},
@@ -78,6 +80,7 @@ export class EmojiSearch extends PolymerElement {
   private sealSupport: boolean;
   private status: Status|null;
   private closeGifNudgeOverlay: () => void;
+  private useMojoSearch = false;
   private useGroupedPreference: boolean;
   private globalTone: Tone|null = null;
   private globalGender: Gender|null = null;
@@ -115,13 +118,16 @@ export class EmojiSearch extends PolymerElement {
     this.addEventListener(GIF_ERROR_TRY_AGAIN, this.onClickTryAgain);
   }
 
-  private onSearch(newSearch: string): void {
+  private async onSearch(newSearch: string): Promise<void> {
     this.sealMode = this.isSealMode(newSearch);
     if (this.sealMode) {
       return;
     }
 
-    const localSearchResults = this.computeLocalSearchResults(newSearch);
+    const localSearchResults = this.useMojoSearch ?
+        await this.computeEmojiSearchResults(newSearch) :
+        this.computeLocalSearchResults(newSearch);
+
     if (!this.gifSupport) {
       this.set('searchResults', localSearchResults);
     } else {
@@ -271,6 +277,48 @@ export class EmojiSearch extends PolymerElement {
           category, new Fuse(indexableEmojis, this.fuseConfig));
     }
     this.needIndexing = false;
+  }
+
+  private findEmoji(category: CategoryEnum, emojiString: string):
+      EmojiVariants {
+    for (const group of this.categoriesData) {
+      if (group.category !== category) {
+        continue;
+      }
+      for (const emoji of group.emoji) {
+        if (emoji.base.string === emojiString) {
+          return emoji;
+        }
+      }
+    }
+    assertNotReached('Not able to find matching emoji');
+  }
+
+  private async computeEmojiSearchResults(search: string):
+      Promise<EmojiGroupData> {
+    const results =
+        await EmojiPickerApiProxyImpl.getInstance().searchEmoji(search);
+
+    return [
+      {
+        category: CategoryEnum.EMOJI,
+        group: '',
+        emoji: results.emojiResults.results.map(
+            (emoji) => this.findEmoji(CategoryEnum.EMOJI, emoji)),
+      },
+      {
+        category: CategoryEnum.SYMBOL,
+        group: '',
+        emoji: results.symbolResults.results.map(
+            (emoji) => this.findEmoji(CategoryEnum.SYMBOL, emoji)),
+      },
+      {
+        category: CategoryEnum.EMOTICON,
+        group: '',
+        emoji: results.emoticonResults.results.map(
+            (emoji) => this.findEmoji(CategoryEnum.EMOTICON, emoji)),
+      },
+    ];
   }
 
   /**

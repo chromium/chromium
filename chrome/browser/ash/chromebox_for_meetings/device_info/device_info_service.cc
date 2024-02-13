@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -246,7 +247,7 @@ void DeviceInfoService::GetMachineStatisticsInfo(
 
   auto stat_info = mojom::MachineStatisticsInfo::New();
 
-  if (const std::optional<base::StringPiece> hwid =
+  if (const std::optional<std::string_view> hwid =
           system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               system::kHardwareClassKey)) {
     stat_info->hwid = std::string(hwid.value());

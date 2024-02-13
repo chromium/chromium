@@ -51,6 +51,7 @@ class FuzzedDatagramClientSocket : public DatagramClientSocket {
                                       CompletionOnceCallback callback) override;
   handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
+  DscpAndEcn GetLastTos() const override;
 
   // DatagramSocket implementation:
   void Close() override;
@@ -72,7 +73,8 @@ class FuzzedDatagramClientSocket : public DatagramClientSocket {
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
   int SetDoNotFragment() override;
-  int SetRecvEcn() override;
+  int SetRecvTos() override;
+  int SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) override;
   void SetMsgConfirm(bool confirm) override {}
 
  private:

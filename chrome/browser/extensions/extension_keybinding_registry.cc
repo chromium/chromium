@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/command.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -135,7 +136,8 @@ bool ExtensionKeybindingRegistry::NotifyEventTargets(
 }
 
 void ExtensionKeybindingRegistry::CommandExecuted(
-    const std::string& extension_id, const std::string& command) {
+    const ExtensionId& extension_id,
+    const std::string& command) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(extension_id);
@@ -193,7 +195,7 @@ bool ExtensionKeybindingRegistry::IsAcceleratorRegistered(
 
 void ExtensionKeybindingRegistry::AddEventTarget(
     const ui::Accelerator& accelerator,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const std::string& command_name) {
   event_targets_[accelerator].push_back(
       std::make_pair(extension_id, command_name));
@@ -225,7 +227,7 @@ void ExtensionKeybindingRegistry::AddEventTarget(
 
 bool ExtensionKeybindingRegistry::GetFirstTarget(
     const ui::Accelerator& accelerator,
-    std::string* extension_id,
+    ExtensionId* extension_id,
     std::string* command_name) const {
   auto targets = event_targets_.find(accelerator);
   if (targets == event_targets_.end())
@@ -258,7 +260,7 @@ void ExtensionKeybindingRegistry::OnExtensionUnloaded(
 }
 
 void ExtensionKeybindingRegistry::OnExtensionCommandAdded(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Command& command) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
@@ -279,7 +281,7 @@ void ExtensionKeybindingRegistry::OnExtensionCommandAdded(
 }
 
 void ExtensionKeybindingRegistry::OnExtensionCommandRemoved(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Command& command) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
@@ -317,7 +319,7 @@ bool ExtensionKeybindingRegistry::ExtensionMatchesFilter(
 
 bool ExtensionKeybindingRegistry::ExecuteCommands(
     const ui::Accelerator& accelerator,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   auto targets = event_targets_.find(accelerator);
   if (targets == event_targets_.end() || targets->second.empty())
     return false;

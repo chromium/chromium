@@ -350,6 +350,7 @@ namespace http://www.w3.org/1999/xhtml
     property webkitMatchesSelector
     property webkitRequestFullScreen
     property webkitRequestFullscreen
+    property writingSuggestions
 html element a
     property attributionSrc
     property charset

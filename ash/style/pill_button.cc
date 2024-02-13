@@ -460,7 +460,7 @@ int PillButton::GetHorizontalSpacingWithIcon() const {
   return std::max(horizontal_spacing_ - padding_reduction_for_icon_, 0);
 }
 
-BEGIN_METADATA(PillButton, views::LabelButton)
+BEGIN_METADATA(PillButton)
 END_METADATA
 
 }  // namespace ash

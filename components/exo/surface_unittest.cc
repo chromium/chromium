@@ -1583,6 +1583,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   auto sub_surface_a =
       std::make_unique<SubSurface>(child_surface_a.get(), surface.get());
   child_surface_a->Attach(child_buffer_a.get());
+  child_surface_a->SetOverlayPriorityHint(OverlayPriority::LOW);
   sub_surface_a->SetPosition(gfx::PointF(20, 10));
   child_surface_a->SetViewport(gfx::SizeF(20, 10));
   child_surface_a->Commit();
@@ -1593,6 +1594,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   auto sub_surface_b =
       std::make_unique<SubSurface>(child_surface_b.get(), surface.get());
   child_surface_b->Attach(child_buffer_b.get());
+  child_surface_b->SetOverlayPriorityHint(OverlayPriority::LOW);
   sub_surface_b->SetPosition(gfx::PointF(40, 10));
   child_surface_b->SetViewport(gfx::SizeF(20, 10));
   child_surface_b->Commit();
@@ -1684,7 +1686,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
     ASSERT_EQ(3u, frame.render_pass_list.back()->shared_quad_state_list.size());
   }
 
-  // Finally let us prove that we can join more than 2 rects by having 3 rects
+  // Let us prove that we can join more than 2 rects by having 3 rects
   // that should form a single layer.
   sub_surface_a->SetPosition(gfx::PointF(20, 10));
   child_surface_a->SetViewport(gfx::SizeF(20, 10));
@@ -1702,6 +1704,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   child_surface_c->Attach(child_buffer_c.get());
   sub_surface_c->SetPosition(gfx::PointF(20, 30));
   child_surface_c->SetViewport(gfx::SizeF(20, 10));
+  child_surface_c->SetOverlayPriorityHint(OverlayPriority::LOW);
   child_surface_c->Commit();
 
   surface->Commit();
@@ -1711,6 +1714,39 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
         GetFrameFromSurface(shell_surface.get());
     bool const is_canonical_form = canonical_form_check(frame);
     auto const kExpectedNumSQSs = is_canonical_form ? 2u : 4u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // Setting overlay on the middle quad should cause all to get a unique sqs.
+  child_surface_a->Commit();
+  child_surface_b->SetOverlayPriorityHint(OverlayPriority::REGULAR);
+  child_surface_b->Commit();
+  child_surface_c->Commit();
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    auto const kExpectedNumSQSs = 4u;
+    ASSERT_EQ(kExpectedNumSQSs,
+              frame.render_pass_list.back()->shared_quad_state_list.size());
+  }
+
+  // Setting overlay on the first quad should cause quad b and quad c to still
+  // use the same sqs.
+  child_surface_a->SetOverlayPriorityHint(OverlayPriority::REGULAR);
+  child_surface_a->Commit();
+  child_surface_b->SetOverlayPriorityHint(OverlayPriority::LOW);
+  child_surface_b->Commit();
+  child_surface_c->Commit();
+  surface->Commit();
+  test::WaitForLastFrameAck(shell_surface.get());
+  {
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    bool const is_canonical_form = canonical_form_check(frame);
+    auto const kExpectedNumSQSs = is_canonical_form ? 3u : 4u;
     ASSERT_EQ(kExpectedNumSQSs,
               frame.render_pass_list.back()->shared_quad_state_list.size());
   }

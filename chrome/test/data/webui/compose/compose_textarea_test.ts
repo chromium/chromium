@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compose/textarea.js';
+import 'chrome-untrusted://compose/textarea.js';
 
-import {ComposeTextareaElement} from 'chrome://compose/textarea.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import type {ComposeTextareaElement} from 'chrome-untrusted://compose/textarea.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {eventToPromise, isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 suite('ComposeTextarea', () => {
   let textarea: ComposeTextareaElement;

@@ -177,6 +177,11 @@ class ContextRecyclerTest : public testing::Test {
       ig_params2->priority_vector.emplace();
       ig_params2->priority_vector->insert(
           std::pair<std::string, double>("a", 42.0));
+      ig_params2->ads = {{{GURL("https://ad.test/1"), absl::nullopt},
+                          {GURL("https://ad.test/2"), {"\"metadata 1\""}}}};
+      ig_params2->ad_components = {
+          {{GURL("https://ad-component.test/1"), {"\"metadata 2\""}},
+           {GURL("https://ad-component.test/2"), absl::nullopt}}};
 
       mojom::BiddingBrowserSignalsPtr bs_params2 =
           mojom::BiddingBrowserSignals::New();
@@ -193,8 +198,14 @@ class ContextRecyclerTest : public testing::Test {
           bs_params2.get(), now2);
 
       v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
-      context_recycler.interest_group_lazy_filler()->FillInObject(arg);
-      context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(arg);
+      // Exclude no ads.
+      base::RepeatingCallback<bool(const std::string&)> ad_callback =
+          base::BindRepeating([](const std::string&) { return false; });
+      ASSERT_TRUE(context_recycler.interest_group_lazy_filler()->FillInObject(
+          arg, ad_callback, ad_callback));
+      ASSERT_TRUE(
+          context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(
+              arg));
 
       std::vector<std::string> error_msgs;
       Run(scope, script, "test", error_msgs, arg);
@@ -215,11 +226,16 @@ class ContextRecyclerTest : public testing::Test {
 
       v8::Local<v8::Object> arg(v8::Object::New(helper_->isolate()));
       if (ig_params) {
-        context_recycler.interest_group_lazy_filler()->FillInObject(arg);
+        // Use a new, short-lived callback that excludes no ads, to make sure
+        // its lifetime doesn't unexpectedly matter.
+        base::RepeatingCallback<bool(const std::string&)> ad_callback =
+            base::BindRepeating([](const std::string&) { return false; });
+        ASSERT_TRUE(context_recycler.interest_group_lazy_filler()->FillInObject(
+            arg, ad_callback, ad_callback));
       }
       if (bs_params) {
-        context_recycler.bidding_browser_signals_lazy_filler()->FillInObject(
-            arg);
+        ASSERT_TRUE(context_recycler.bidding_browser_signals_lazy_filler()
+                        ->FillInObject(arg));
       }
 
       std::vector<std::string> error_msgs;
@@ -908,6 +924,9 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
   ig_params->priority_vector.emplace();
   ig_params->priority_vector->insert(std::pair<std::string, double>("e", 12.0));
   ig_params->enable_bidding_signals_prioritization = true;
+  ig_params->ads = {{{GURL("https://ad2.test/"), {"\"metadata 3\""}}}};
+  ig_params->ad_components = {
+      {{GURL("https://ad-component2.test/"), absl::nullopt}}};
 
   mojom::BiddingBrowserSignalsPtr bs_params =
       mojom::BiddingBrowserSignals::New();
@@ -931,6 +950,17 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller) {
       "\"trustedBiddingSignalsKeys\":[\"c\",\"d\"],"
       "\"priorityVector\":{\"e\":12},"
       "\"useBiddingSignalsPrioritization\":true,"
+      "\"ads\":"
+      "[{\"renderURL\":\"https://ad.test/1\","
+      "\"renderUrl\":\"https://ad.test/1\"},"
+      "{\"renderURL\":\"https://ad.test/2\","
+      "\"renderUrl\":\"https://ad.test/2\",\"metadata\":\"metadata 1\"}],"
+      "\"adComponents\":"
+      "[{\"renderURL\":\"https://ad-component.test/1\","
+      "\"renderUrl\":\"https://ad-component.test/1\","
+      "\"metadata\":\"metadata 2\"},"
+      "{\"renderURL\":\"https://ad-component.test/2\","
+      "\"renderUrl\":\"https://ad-component.test/2\"}],"
       "\"prevWins\":[[240,[\"d\"]],[180,[\"c\"]]],"
       "\"prevWinsMs\":[[240000,[\"d\"]],[180000,[\"c\"]]]}");
 }
@@ -963,6 +993,18 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
       "\"trustedBiddingSignalsKeys\":null,"
       "\"priorityVector\":null,"
       "\"useBiddingSignalsPrioritization\":false,"
+      "\"ads\":"
+      "[{\"renderURL\":\"https://ad.test/1\","
+      "\"renderUrl\":\"https://ad.test/1\"},"
+      "{\"renderURL\":\"https://ad.test/2\","
+      "\"renderUrl\":\"https://ad.test/2\","
+      "\"metadata\":\"metadata 1\"}],"
+      "\"adComponents\":"
+      "[{\"renderURL\":\"https://ad-component.test/1\","
+      "\"renderUrl\":\"https://ad-component.test/1\","
+      "\"metadata\":\"metadata 2\"},"
+      "{\"renderURL\":\"https://ad-component.test/2\","
+      "\"renderUrl\":\"https://ad-component.test/2\"}],"
       "\"prevWins\":[],"
       "\"prevWinsMs\":[]}");
 }
@@ -975,22 +1017,35 @@ TEST_F(ContextRecyclerTest, BidderLazyFiller2) {
 // never invoked is accessed when a context is reused, without populating bidder
 // lazy fillers.
 TEST_F(ContextRecyclerTest, BidderLazyFiller3) {
-  RunBidderLazyFilterReuseTest(nullptr, nullptr, base::Time(),
-                               "{\"userBiddingSignals\":null,"
-                               "\"biddingLogicURL\":null,"
-                               "\"biddingLogicUrl\":null,"
-                               "\"biddingWasmHelperURL\":null,"
-                               "\"biddingWasmHelperUrl\":null,"
-                               "\"updateURL\":null,"
-                               "\"updateUrl\":null,"
-                               "\"dailyUpdateUrl\":null,"
-                               "\"trustedBiddingSignalsURL\":null,"
-                               "\"trustedBiddingSignalsUrl\":null,"
-                               "\"trustedBiddingSignalsKeys\":null,"
-                               "\"priorityVector\":null,"
-                               "\"useBiddingSignalsPrioritization\":null,"
-                               "\"prevWins\":null,"
-                               "\"prevWinsMs\":null}");
+  RunBidderLazyFilterReuseTest(
+      nullptr, nullptr, base::Time(),
+      "{\"userBiddingSignals\":null,"
+      "\"biddingLogicURL\":null,"
+      "\"biddingLogicUrl\":null,"
+      "\"biddingWasmHelperURL\":null,"
+      "\"biddingWasmHelperUrl\":null,"
+      "\"updateURL\":null,"
+      "\"updateUrl\":null,"
+      "\"dailyUpdateUrl\":null,"
+      "\"trustedBiddingSignalsURL\":null,"
+      "\"trustedBiddingSignalsUrl\":null,"
+      "\"trustedBiddingSignalsKeys\":null,"
+      "\"priorityVector\":null,"
+      "\"useBiddingSignalsPrioritization\":null,"
+      "\"ads\":"
+      "[{\"renderURL\":\"https://ad.test/1\","
+      "\"renderUrl\":\"https://ad.test/1\"},"
+      "{\"renderURL\":\"https://ad.test/2\","
+      "\"renderUrl\":\"https://ad.test/2\","
+      "\"metadata\":\"metadata 1\"}],"
+      "\"adComponents\":"
+      "[{\"renderURL\":\"https://ad-component.test/1\","
+      "\"renderUrl\":\"https://ad-component.test/1\","
+      "\"metadata\":\"metadata 2\"},"
+      "{\"renderURL\":\"https://ad-component.test/2\","
+      "\"renderUrl\":\"https://ad-component.test/2\"}],"
+      "\"prevWins\":null,"
+      "\"prevWinsMs\":null}");
 }
 
 TEST_F(ContextRecyclerTest, SharedStorageMethods) {

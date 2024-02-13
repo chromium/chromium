@@ -34,9 +34,9 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
                                          public FocusModeController::Observer,
                                          public views::ViewObserver,
                                          public ClockObserver {
- public:
-  METADATA_HEADER(FocusModeDetailedView);
+  METADATA_HEADER(FocusModeDetailedView, TrayDetailedView)
 
+ public:
   explicit FocusModeDetailedView(DetailedViewDelegate* delegate);
   FocusModeDetailedView(const FocusModeDetailedView&) = delete;
   FocusModeDetailedView& operator=(const FocusModeDetailedView&) = delete;

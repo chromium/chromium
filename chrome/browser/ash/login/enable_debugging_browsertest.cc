@@ -217,7 +217,9 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     WaitForOobeUI();
     test::OobeJS().ExpectHidden(kDebuggingScreenId);
     InvokeEnableDebuggingScreen();
-    test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
+    test::OobeJS()
+        .CreateVisibilityWaiter(true, kRemoveProtectionDialog)
+        ->Wait();
     test::OobeJS().ExpectVisiblePath(kRemoveProtectionButton);
     test::OobeJS().ExpectVisiblePath(kHelpLink);
     debug_daemon_client_->WaitUntilCalled();
@@ -230,7 +232,7 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     WaitForOobeUI();
     test::OobeJS().ExpectHidden(kDebuggingScreenId);
     InvokeEnableDebuggingScreen();
-    test::OobeJS().ExpectVisiblePath(kSetupDialog);
+    test::OobeJS().CreateVisibilityWaiter(true, kSetupDialog)->Wait();
     debug_daemon_client_->WaitUntilCalled();
     base::RunLoop().RunUntilIdle();
 
@@ -255,16 +257,7 @@ class EnableDebuggingDevTest : public EnableDebuggingTestBase {
 };
 
 // Show remove protection screen, click on [Cancel] button.
-// TODO(https://crbug.com/1521436) Leaky on ChromeOS
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_ShowAndCancelRemoveProtection \
-  DISABLED_ShowAndCancelRemoveProtection
-#else
-#define MAYBE_ShowAndCancelRemoveProtection ShowAndCancelRemoveProtection
-#endif
-IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest,
-                       MAYBE_ShowAndCancelRemoveProtection) {
+IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndCancelRemoveProtection) {
   ShowRemoveProtectionScreen();
   CloseEnableDebuggingScreen();
   test::OobeJS().ExpectHidden(kDebuggingScreenId);
@@ -276,14 +269,7 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest,
 
 // Show remove protection, click on [Remove protection] button and wait for
 // reboot.
-// TODO(https://crbug.com/1521436) Leaky on ChromeOS
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_ShowAndRemoveProtection DISABLED_ShowAndRemoveProtection
-#else
-#define MAYBE_ShowAndRemoveProtection ShowAndRemoveProtection
-#endif
-IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, MAYBE_ShowAndRemoveProtection) {
+IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndRemoveProtection) {
   // Disarm faked reboot, otherwise Chrome just stops and there's nothing to
   // verify.
   chromeos::FakePowerManagerClient* fake_power_manager_client =
@@ -318,14 +304,7 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowSetup) {
 
 // Show setup screen. Type in matching passwords.
 // Click on [Enable] button. Wait until done screen is shown.
-// TODO(b/311477912): enable the flaky test.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_SetupMatchingPasswords DISABLED_SetupMatchingPasswords
-#else
-#define MAYBE_SetupMatchingPasswords SetupMatchingPasswords
-#endif
-IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, MAYBE_SetupMatchingPasswords) {
+IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, SetupMatchingPasswords) {
   ShowSetupScreen();
   debug_daemon_client_->ResetWait();
   test::OobeJS().TypeIntoPath("test0000", kPasswordInput);
@@ -362,21 +341,14 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, SetupNotMatchingPasswords) {
 
 // Test images come with some features enabled but still has rootfs protection.
 // Invoking debug screen should show remove protection screen.
-// TODO(https://crbug.com/1521436) Leaky on ChromeOS
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) && \
-    defined(LEAK_SANITIZER)
-#define MAYBE_ShowOnTestImages DISABLED_ShowOnTestImages
-#else
-#define MAYBE_ShowOnTestImages ShowOnTestImages
-#endif
-IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, MAYBE_ShowOnTestImages) {
+IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowOnTestImages) {
   debug_daemon_client_->SetDebuggingFeaturesStatus(
       debugd::DevFeatureFlag::DEV_FEATURE_SSH_SERVER_CONFIGURED |
       debugd::DevFeatureFlag::DEV_FEATURE_SYSTEM_ROOT_PASSWORD_SET);
   WaitForOobeUI();
   test::OobeJS().ExpectHidden(kDebuggingScreenId);
   InvokeEnableDebuggingScreen();
-  test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
+  test::OobeJS().CreateVisibilityWaiter(true, kRemoveProtectionDialog)->Wait();
   debug_daemon_client_->WaitUntilCalled();
   base::RunLoop().RunUntilIdle();
 

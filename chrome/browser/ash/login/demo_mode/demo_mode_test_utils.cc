@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -79,7 +81,7 @@ bool SetupDummyOfflinePolicyDir(const std::string& account_id,
   }
 
   if (!base::WriteFile(policy_dir.AppendASCII("device_policy"),
-                       base::StringPiece())) {
+                       std::string_view())) {
     LOG(ERROR) << "Failed to create device_policy file";
     return false;
   }

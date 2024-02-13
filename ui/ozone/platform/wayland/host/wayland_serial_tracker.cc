@@ -4,23 +4,23 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 
+#include <optional>
 #include <sstream>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace wl {
 
 SerialTracker::SerialTracker()
     : base_time_(base::TimeTicks::Now()),
-      serials_(base::MakeFixedFlatMap<SerialType, absl::optional<Serial>>({
-          {SerialType::kMouseEnter, absl::nullopt},
-          {SerialType::kMousePress, absl::nullopt},
-          {SerialType::kTouchPress, absl::nullopt},
-          {SerialType::kKeyPress, absl::nullopt},
+      serials_(base::MakeFixedFlatMap<SerialType, std::optional<Serial>>({
+          {SerialType::kMouseEnter, std::nullopt},
+          {SerialType::kMousePress, std::nullopt},
+          {SerialType::kTouchPress, std::nullopt},
+          {SerialType::kKeyPress, std::nullopt},
       })) {}
 
 SerialTracker::~SerialTracker() = default;
@@ -34,18 +34,18 @@ void SerialTracker::UpdateSerial(SerialType type, uint32_t serial) {
 
 void SerialTracker::ResetSerial(SerialType type) {
   DCHECK(base::Contains(serials_, type));
-  serials_.at(type) = absl::nullopt;
+  serials_.at(type) = std::nullopt;
 }
 
-absl::optional<Serial> SerialTracker::GetSerial(SerialType type) const {
+std::optional<Serial> SerialTracker::GetSerial(SerialType type) const {
   DCHECK(base::Contains(serials_, type));
   return serials_.at(type);
 }
 
-absl::optional<Serial> SerialTracker::GetSerial(
+std::optional<Serial> SerialTracker::GetSerial(
     const std::vector<SerialType>& types) const {
   DCHECK(!types.empty());
-  absl::optional<Serial> most_recent;
+  std::optional<Serial> most_recent;
   for (const auto& type : types) {
     if (auto serial = GetSerial(type)) {
       if (!most_recent || serial->timestamp > most_recent->timestamp)

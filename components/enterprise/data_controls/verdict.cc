@@ -8,6 +8,29 @@
 
 namespace data_controls {
 
+namespace {
+
+base::OnceClosure MergedReportClosure(
+    base::OnceClosure source_report_closure,
+    base::OnceClosure destination_report_closure) {
+  if (source_report_closure) {
+    if (destination_report_closure) {
+      return base::BindOnce(
+          [](base::OnceClosure source_report_closure,
+             base::OnceClosure destination_report_closure) {
+            std::move(source_report_closure).Run();
+            std::move(destination_report_closure).Run();
+          },
+          std::move(source_report_closure),
+          std::move(destination_report_closure));
+    }
+    return source_report_closure;
+  }
+  return destination_report_closure;
+}
+
+}  // namespace
+
 // static
 Verdict Verdict::NotSet() {
   return Verdict(Rule::Level::kNotSet);
@@ -35,16 +58,29 @@ Verdict Verdict::Allow() {
   return Verdict(Rule::Level::kAllow);
 }
 
+// static
+Verdict Verdict::Merge(Verdict source_profile_verdict,
+                       Verdict destination_profile_verdict) {
+  Rule::Level level = source_profile_verdict.level();
+  if (destination_profile_verdict.level() > level) {
+    level = destination_profile_verdict.level();
+  }
+
+  return Verdict(level,
+                 MergedReportClosure(
+                     source_profile_verdict.TakeInitialReportClosure(),
+                     destination_profile_verdict.TakeInitialReportClosure()),
+                 MergedReportClosure(
+                     source_profile_verdict.TakeBypassReportClosure(),
+                     destination_profile_verdict.TakeBypassReportClosure()));
+}
+
 Verdict::Verdict(Rule::Level level,
                  base::OnceClosure initial_report_closure,
                  base::OnceClosure bypass_report_closure)
     : level_(level),
       initial_report_closure_(std::move(initial_report_closure)),
-      bypass_report_closure_(std::move(bypass_report_closure)) {
-  DCHECK_EQ(level == Rule::Level::kNotSet || level == Rule::Level::kAllow,
-            initial_report_closure_.is_null());
-  DCHECK_EQ(level == Rule::Level::kWarn, !bypass_report_closure_.is_null());
-}
+      bypass_report_closure_(std::move(bypass_report_closure)) {}
 
 Verdict::~Verdict() = default;
 Verdict::Verdict(Verdict&& other) = default;

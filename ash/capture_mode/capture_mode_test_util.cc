@@ -349,7 +349,7 @@ IconButton* GetCloseButton() {
 const message_center::Notification* GetPreviewNotification() {
   const message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
-  for (const auto* notification : notifications) {
+  for (const message_center::Notification* notification : notifications) {
     if (notification->id() == kScreenCaptureNotificationId) {
       return notification;
     }

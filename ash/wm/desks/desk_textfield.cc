@@ -135,7 +135,7 @@ void DeskTextfield::OnFocusableViewBlurred() {
   SetShowFocusRing(false);
 }
 
-BEGIN_METADATA(DeskTextfield, views::Textfield)
+BEGIN_METADATA(DeskTextfield)
 END_METADATA
 
 }  // namespace ash

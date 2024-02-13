@@ -455,15 +455,15 @@ size_t SubmenuView::GetRowCount() {
   return GetMenuItems().size();
 }
 
-absl::optional<size_t> SubmenuView::GetSelectedRow() {
+std::optional<size_t> SubmenuView::GetSelectedRow() {
   const auto menu_items = GetMenuItems();
   const auto i = base::ranges::find_if(menu_items, &MenuItemView::IsSelected);
-  return (i == menu_items.cend()) ? absl::nullopt
-                                  : absl::make_optional(static_cast<size_t>(
+  return (i == menu_items.cend()) ? std::nullopt
+                                  : std::make_optional(static_cast<size_t>(
                                         std::distance(menu_items.cbegin(), i)));
 }
 
-void SubmenuView::SetSelectedRow(absl::optional<size_t> row) {
+void SubmenuView::SetSelectedRow(std::optional<size_t> row) {
   parent_menu_item_->GetMenuController()->SetSelection(
       GetMenuItemAt(row.value()), MenuController::SELECTION_DEFAULT);
 }
@@ -693,7 +693,7 @@ bool SubmenuView::OnScroll(float dx, float dy) {
   return false;
 }
 
-void SubmenuView::SetBorderColorId(absl::optional<ui::ColorId> color_id) {
+void SubmenuView::SetBorderColorId(std::optional<ui::ColorId> color_id) {
   if (scroll_view_container_) {
     scroll_view_container_->SetBorderColorId(color_id);
   }

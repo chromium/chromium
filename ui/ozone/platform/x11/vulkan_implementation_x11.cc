@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/x11/vulkan_implementation_x11.h"
 
+#include <optional>
+
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -15,7 +17,6 @@
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_surface.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -37,10 +38,10 @@ bool VulkanImplementationX11::InitializeVulkanInstance(bool using_surface) {
   using_surface_ = using_surface;
   // Unset DISPLAY env, so the vulkan can be initialized successfully, if the X
   // server doesn't support Vulkan surface.
-  absl::optional<base::ScopedEnvironmentVariableOverride> unset_display;
+  std::optional<base::ScopedEnvironmentVariableOverride> unset_display;
   if (!using_surface_) {
     unset_display =
-        absl::optional<base::ScopedEnvironmentVariableOverride>("DISPLAY");
+        std::optional<base::ScopedEnvironmentVariableOverride>("DISPLAY");
   }
 
   std::vector<const char*> required_extensions = {

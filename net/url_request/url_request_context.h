@@ -9,7 +9,9 @@
 #define NET_URL_REQUEST_URL_REQUEST_CONTEXT_H_
 
 #include <stdint.h>
+
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -26,7 +28,6 @@
 #include "net/net_buildflags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class CertVerifier;
@@ -120,8 +121,8 @@ class NET_EXPORT URLRequestContext final {
       URLRequest::Delegate* delegate,
       NetworkTrafficAnnotationTag traffic_annotation,
       bool is_for_websockets = false,
-      const absl::optional<net::NetLogSource> net_log_source =
-          absl::nullopt) const;
+      const std::optional<net::NetLogSource> net_log_source =
+          std::nullopt) const;
 
   NetLog* net_log() const { return net_log_; }
 
@@ -181,7 +182,7 @@ class NET_EXPORT URLRequestContext final {
 
   // Gets the URLRequest objects that hold a reference to this
   // URLRequestContext.
-  std::set<const URLRequest*>* url_requests() const {
+  std::set<raw_ptr<const URLRequest, SetExperimental>>* url_requests() const {
     return url_requests_.get();
   }
 
@@ -236,11 +237,11 @@ class NET_EXPORT URLRequestContext final {
     job_factory_ = job_factory;
   }
 
-  const absl::optional<std::string>& cookie_deprecation_label() const {
+  const std::optional<std::string>& cookie_deprecation_label() const {
     return cookie_deprecation_label_;
   }
 
-  void set_cookie_deprecation_label(const absl::optional<std::string>& label) {
+  void set_cookie_deprecation_label(const std::optional<std::string>& label) {
     cookie_deprecation_label_ = label;
   }
 
@@ -307,7 +308,7 @@ class NET_EXPORT URLRequestContext final {
   void set_transport_security_persister(
       std::unique_ptr<TransportSecurityPersister> transport_security_persister);
 
-  raw_ptr<NetLog, DanglingUntriaged> net_log_ = nullptr;
+  raw_ptr<NetLog> net_log_ = nullptr;
 
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<CertVerifier> cert_verifier_;
@@ -354,7 +355,8 @@ class NET_EXPORT URLRequestContext final {
 
   std::unique_ptr<TransportSecurityPersister> transport_security_persister_;
 
-  std::unique_ptr<std::set<const URLRequest*>> url_requests_;
+  std::unique_ptr<std::set<raw_ptr<const URLRequest, SetExperimental>>>
+      url_requests_;
 
   // Enables Brotli Content-Encoding support.
   bool enable_brotli_ = false;
@@ -368,7 +370,7 @@ class NET_EXPORT URLRequestContext final {
   // provided to a request when true.
   bool require_network_anonymization_key_ = false;
 
-  absl::optional<std::string> cookie_deprecation_label_;
+  std::optional<std::string> cookie_deprecation_label_;
 
   handles::NetworkHandle bound_network_;
 

@@ -244,10 +244,6 @@ source_set("common_sources") {
     ":main_function_params",
     ":renderer_type",
     ":switches",
-
-    # TODO(crbug.com/977637): Remove when
-    # content::LaunchUtilityProcessServiceDeprecated() gets removed.
-    "//build:chromecast_buildflags",
     "//content/common",
     "//content/public/common/zygote:buildflags",
     "//ipc",

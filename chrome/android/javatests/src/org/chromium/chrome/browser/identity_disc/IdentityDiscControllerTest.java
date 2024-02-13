@@ -19,6 +19,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -36,17 +38,23 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.signin.SigninAndHistoryOptInActivity;
 import org.chromium.chrome.browser.signin.SyncConsentActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -57,6 +65,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -88,6 +97,8 @@ public class IdentityDiscControllerTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
+    @Rule public JUnitProcessor mFeaturesProcessorRule = new JUnitProcessor();
 
     private Tab mTab;
 
@@ -128,7 +139,8 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void testIdentityDiscSignedOut() {
+    @DisableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testIdentityDiscSignedOut_replaceSyncBySigninDisabled() {
         // When user is signed out, a signed-out avatar should be visible on the NTP.
         ViewUtils.waitForVisibleView(
                 allOf(
@@ -142,6 +154,38 @@ public class IdentityDiscControllerTest {
                 InstrumentationRegistry.getInstrumentation(),
                 SyncConsentActivity.class,
                 () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+    public void testIdentityDiscSignedOut_replaceSyncBySigninEnabled() throws Exception {
+        // When user is signed out, a signed-out avatar should be visible on the NTP.
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        withContentDescription(
+                                R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
+
+        // Clicking the signed-out avatar should lead to the correct sign-in screen.
+        // TODO(crbug.com/1523958): Implement the new sign-in flow for automotive and update the
+        // verification below.
+        if (!BuildInfo.getInstance().isAutomotive) {
+            Activity signinActivity =
+                    ActivityTestUtils.waitForActivity(
+                            InstrumentationRegistry.getInstrumentation(),
+                            SigninAndHistoryOptInActivity.class,
+                            () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+            if (signinActivity != null) {
+                ApplicationTestUtils.finishActivity(signinActivity);
+            }
+        } else {
+            ActivityTestUtils.waitForActivity(
+                    InstrumentationRegistry.getInstrumentation(),
+                    SyncConsentActivity.class,
+                    () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
+        }
     }
 
     @Test
@@ -271,8 +315,7 @@ public class IdentityDiscControllerTest {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
         CoreAccountInfo coreAccountInfo = addAccountWithNonDisplayableEmail(NAME);
         SigninTestUtil.signinAndEnableSync(
-                coreAccountInfo,
-                TestThreadUtils.runOnUiThreadBlockingNoException(SyncServiceFactory::get));
+                coreAccountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()

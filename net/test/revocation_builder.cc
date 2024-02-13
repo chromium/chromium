@@ -326,7 +326,7 @@ std::string BuildOCSPResponse(
 std::string BuildOCSPResponseWithResponseData(
     EVP_PKEY* responder_key,
     const std::string& tbs_response_data,
-    absl::optional<bssl::SignatureAlgorithm> signature_algorithm) {
+    std::optional<bssl::SignatureAlgorithm> signature_algorithm) {
   //    For a basic OCSP responder, responseType will be id-pkix-ocsp-basic.
   //
   //    id-pkix-ocsp           OBJECT IDENTIFIER ::= { id-ad-ocsp }
@@ -468,7 +468,7 @@ std::string BuildCrl(
     const std::string& crl_issuer_subject,
     EVP_PKEY* crl_issuer_key,
     const std::vector<uint64_t>& revoked_serials,
-    absl::optional<bssl::SignatureAlgorithm> signature_algorithm) {
+    std::optional<bssl::SignatureAlgorithm> signature_algorithm) {
   if (!signature_algorithm) {
     signature_algorithm =
         CertBuilder::DefaultSignatureAlgorithmForKey(crl_issuer_key);

@@ -258,9 +258,11 @@ void OldLaunchModeRecorder::SetLaunchMode(OldLaunchMode mode) {
 
 namespace {
 
-void RecordLaunchMode(std::optional<LaunchMode> mode) {
-  if (mode.value_or(LaunchMode::kNone) == LaunchMode::kNone)
+void RecordLaunchMode(const base::CommandLine command_line,
+                      std::optional<LaunchMode> mode) {
+  if (mode.value_or(LaunchMode::kNone) == LaunchMode::kNone) {
     return;
+  }
   base::UmaHistogramEnumeration("Launch.Mode2", mode.value());
 #if BUILDFLAG(IS_WIN)
   if (mode == LaunchMode::kShortcutTaskbar) {
@@ -270,6 +272,9 @@ void RecordLaunchMode(std::optional<LaunchMode> mode) {
                                 installer_pinned.value());
     }
   }
+  base::UmaHistogramBoolean(
+      "BrowserSwitcher.ChromeLaunch.IsFromBrowserSwitcher",
+      command_line.HasSwitch(switches::kFromBrowserSwitcher));
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -420,7 +425,8 @@ std::optional<LaunchMode> GetLaunchModeFast(
 }  // namespace
 
 void ComputeAndRecordLaunchMode(const base::CommandLine& command_line) {
-  ComputeLaunchMode(command_line, base::BindOnce(&RecordLaunchMode));
+  ComputeLaunchMode(command_line,
+                    base::BindOnce(&RecordLaunchMode, command_line));
 }
 
 // Computes the launch mode based on `command_line` and process state. Runs
@@ -444,5 +450,6 @@ void ComputeLaunchMode(
 
 base::OnceCallback<void(std::optional<LaunchMode>)>
 GetRecordLaunchModeForTesting() {
-  return base::BindOnce(&RecordLaunchMode);
+  return base::BindOnce(&RecordLaunchMode,
+                        base::CommandLine(base::CommandLine::NO_PROGRAM));
 }

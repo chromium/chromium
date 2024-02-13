@@ -390,14 +390,14 @@ CertStatus CertVerifyProcIOS::GetCertFailureStatusFromTrust(SecTrustRef trust) {
 
 CertVerifyProcIOS::~CertVerifyProcIOS() = default;
 
-int CertVerifyProcIOS::VerifyInternal(
-    X509Certificate* cert,
-    const std::string& hostname,
-    const std::string& ocsp_response,
-    const std::string& sct_list,
-    int flags,
-    CertVerifyResult* verify_result,
-    const NetLogWithSource& net_log) {
+int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
+                                      const std::string& hostname,
+                                      const std::string& ocsp_response,
+                                      const std::string& sct_list,
+                                      int flags,
+                                      CertVerifyResult* verify_result,
+                                      const NetLogWithSource& net_log,
+                                      std::optional<base::Time> time_now) {
   ScopedCFTypeRef<CFArrayRef> trust_policies;
   OSStatus status = CreateTrustPolicies(&trust_policies);
   if (status)

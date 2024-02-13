@@ -203,6 +203,15 @@ class CORE_EXPORT HTMLSelectElement final
   bool HandleInvokeInternal(HTMLElement& invoker,
                             AtomicString& action) override;
 
+  // SlottedButton and SlottedDatalist return the first child <button> or
+  // <datalist> in the light dom tree. If this select is in a state where the
+  // <button> or <datalist> won't be rendered, such as a <select multiple>, then
+  // nullptr will be returned.
+  HTMLButtonElement* SlottedButton() const;
+  HTMLDataListElement* SlottedDatalist() const;
+
+  void DefaultEventHandler(Event&) override;
+
  private:
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
@@ -240,8 +249,6 @@ class CORE_EXPORT HTMLSelectElement final
   void AppendToFormData(FormData&) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void ManuallyAssignSlots() override;
-
-  void DefaultEventHandler(Event&) override;
 
   void SetRecalcListItems();
   void RecalcListItems() const;

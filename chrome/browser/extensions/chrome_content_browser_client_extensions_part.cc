@@ -63,6 +63,7 @@
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -143,12 +144,12 @@ RenderProcessHostPrivilege GetProcessPrivilege(
     content::RenderProcessHost* process_host,
     ProcessMap* process_map,
     ExtensionRegistry* registry) {
-  std::set<std::string> extension_ids =
+  std::set<ExtensionId> extension_ids =
       process_map->GetExtensionsInProcess(process_host->GetID());
   if (extension_ids.empty())
     return PRIV_NORMAL;
 
-  for (const std::string& extension_id : extension_ids) {
+  for (const ExtensionId& extension_id : extension_ids) {
     const Extension* extension =
         registry->enabled_extensions().GetByID(extension_id);
     if (extension && extension->is_hosted_app())
@@ -472,7 +473,7 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   bool is_guest =
       WebViewRendererState::GetInstance()->IsGuest(process_host->GetID());
   if (is_guest) {
-    std::string owner_extension_id;
+    ExtensionId owner_extension_id;
     int owner_process_id = -1;
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
         process_host->GetID(), &owner_process_id, &owner_extension_id);

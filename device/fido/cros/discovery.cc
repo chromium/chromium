@@ -16,7 +16,7 @@ namespace device {
 
 FidoChromeOSDiscovery::FidoChromeOSDiscovery(
     base::RepeatingCallback<std::string()> generate_request_id_callback,
-    absl::optional<CtapGetAssertionRequest> get_assertion_request)
+    std::optional<CtapGetAssertionRequest> get_assertion_request)
     : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       generate_request_id_callback_(generate_request_id_callback),
       get_assertion_request_(std::move(get_assertion_request)),

@@ -12,6 +12,7 @@ namespace blink {
 class JSONDocument : public HTMLDocument {
  public:
   JSONDocument(const DocumentInit&);
+  bool IsJSONDocument() const override { return true; }
 
  private:
   DocumentParser* CreateParser() override;

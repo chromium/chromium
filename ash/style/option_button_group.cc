@@ -68,7 +68,7 @@ void OptionButtonGroup::OnEnableChanged() {
   }
 }
 
-BEGIN_METADATA(OptionButtonGroup, views::View)
+BEGIN_METADATA(OptionButtonGroup)
 END_METADATA
 
 }  // namespace ash

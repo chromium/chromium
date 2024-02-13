@@ -184,6 +184,10 @@ inline bool IsAllBreakableSpaces(const String& string,
       .IsAllSpecialCharacters<IsBreakableSpace>();
 }
 
+inline bool IsBidiTrailingSpace(UChar c) {
+  return u_charDirection(c) == UCharDirection::U_WHITE_SPACE_NEUTRAL;
+}
+
 inline LayoutUnit HyphenAdvance(const ComputedStyle& style,
                                 bool is_ltr,
                                 const HyphenResult& hyphen_result,
@@ -760,6 +764,7 @@ void LineBreaker::NextLine(LineInfo* line_info) {
   if (UNLIKELY(HasHyphen()))
     FinalizeHyphen(line_info->MutableResults());
   RemoveTrailingCollapsibleSpace(line_info);
+  SplitTrailingBidiPreservedSpace(line_info);
 
   const InlineItemResults& item_results = line_info->Results();
 #if DCHECK_IS_ON()
@@ -1192,7 +1197,7 @@ void LineBreaker::HandleText(const InlineItem& item,
     }
 
     // Hanging trailing spaces may resolve the overflow.
-    if (item_result->has_only_trailing_spaces) {
+    if (item_result->has_only_pre_wrap_trailing_spaces) {
       state_ = LineBreakState::kTrailing;
       if (item_result->item->Style()->ShouldPreserveWhiteSpaces() &&
           IsBreakableSpace(Text()[item_result->EndOffset() - 1])) {
@@ -1465,7 +1470,8 @@ LineBreaker::BreakResult LineBreaker::BreakText(
     }
     item_result->text_offset.end = result.break_offset;
     item_result->text_offset.AssertNotEmpty();
-    item_result->has_only_trailing_spaces = result.has_trailing_spaces;
+    item_result->has_only_pre_wrap_trailing_spaces = result.has_trailing_spaces;
+    item_result->has_only_bidi_trailing_spaces = result.has_trailing_spaces;
     item_result->shape_result = shape_result;
     break;
   }
@@ -2170,7 +2176,8 @@ void LineBreaker::HandleTrailingSpaces(const InlineItem& item,
     DCHECK(shape_result);
     InlineItemResult* item_result = AddItem(item, end, line_info);
     item_result->should_create_line_box = true;
-    item_result->has_only_trailing_spaces = true;
+    item_result->has_only_pre_wrap_trailing_spaces = true;
+    item_result->has_only_bidi_trailing_spaces = true;
     item_result->shape_result = ShapeResultView::Create(shape_result);
     if (item_result->StartOffset() == item.StartOffset() &&
         item_result->EndOffset() == item.EndOffset()) {
@@ -2351,6 +2358,99 @@ void LineBreaker::ComputeTrailingCollapsibleSpace(LineInfo* line_info) {
   trailing_collapsible_space_.reset();
 }
 
+// Per UAX#9 L1, any spaces logically at the end of a line must be reset to the
+// paragraph's bidi level. If there are any such trailing spaces in an item
+// result together with other non-space characters, this method splits them into
+// their own item result.
+//
+// Furthermore, item results can't override their item's bidi level, so this
+// method instead marks all such item results with `has_only_trailing_spaces`,
+// which will cause them to be treated as having the base bidi level in
+// InlineLayoutAlgorithm::BidiReorder.
+void LineBreaker::SplitTrailingBidiPreservedSpace(LineInfo* line_info) {
+  DCHECK(trailing_whitespace_ == WhitespaceState::kLeading ||
+         trailing_whitespace_ == WhitespaceState::kNone ||
+         trailing_whitespace_ == WhitespaceState::kCollapsed ||
+         trailing_whitespace_ == WhitespaceState::kPreserved);
+
+  if (trailing_whitespace_ == WhitespaceState::kLeading ||
+      trailing_whitespace_ == WhitespaceState::kNone) {
+    return;
+  }
+
+  if (!node_.IsBidiEnabled()) {
+    return;
+  }
+
+  // At this point, all trailing collapsible spaces have been collapsed, and all
+  // remaining trailing spaces must be preserved.
+
+  const String& text = Text();
+  wtf_size_t result_index = line_info->Results().size();
+  for (auto& item_result : base::Reversed(*line_info->MutableResults())) {
+    result_index--;
+    DCHECK(item_result.item);
+    const InlineItem& item = *item_result.item;
+
+    if (item_result.has_only_bidi_trailing_spaces ||
+        item.EndCollapseType() == InlineItem::kOpaqueToCollapsing ||
+        item.TextType() == TextItemType::kForcedLineBreak) {
+      continue;
+    }
+
+    if (item.Type() != InlineItem::kText &&
+        item.Type() != InlineItem::kControl) {
+      return;
+    }
+
+    DCHECK_GT(item_result.EndOffset(), 0u);
+
+    wtf_size_t i = item_result.EndOffset();
+    for (; i > item_result.StartOffset() &&
+           (IsBreakableSpace(text[i - 1]) || IsBidiTrailingSpace(text[i - 1]));
+         i--) {
+    }
+
+    if (i == item_result.StartOffset()) {
+      item_result.has_only_bidi_trailing_spaces = true;
+    } else if (i == item_result.EndOffset()) {
+      break;
+    } else {
+      // Only split the item if its bidi level doesn't match the paragraph's.
+      // We check the item's bidi level, rather than its direction, because
+      // higher bidi levels with the same direction (i.e. level 2 on an LTR
+      // paragraph) must also be reset.
+      if (item.BidiLevel() != (UBiDiLevel)base_direction_) {
+        const ShapeResultView* source_shape_result =
+            item_result.shape_result.Get();
+        LayoutUnit prev_inline_size = item_result.inline_size;
+        wtf_size_t start = item_result.StartOffset();
+        wtf_size_t end = item_result.EndOffset();
+
+        item_result.text_offset.end = i;
+        item_result.shape_result =
+            ShapeResultView::Create(source_shape_result, start, i);
+        item_result.inline_size = item_result.shape_result->SnappedWidth();
+        DCHECK_LE(item_result.inline_size, prev_inline_size);
+
+        InlineItemResult spaces_result(&item, item_result.item_index,
+                                       TextOffsetRange(i, end),
+                                       item_result.break_anywhere_if_overflow,
+                                       item_result.should_create_line_box,
+                                       item_result.has_unpositioned_floats);
+        spaces_result.has_only_bidi_trailing_spaces = true;
+        spaces_result.shape_result =
+            ShapeResultView::Create(source_shape_result, i, end);
+        spaces_result.inline_size = prev_inline_size - item_result.inline_size;
+
+        line_info->MutableResults()->insert(result_index + 1,
+                                            std::move(spaces_result));
+      }
+      break;
+    }
+  }
+}
+
 // |item| is |nullptr| if this is an implicit forced break.
 void LineBreaker::HandleForcedLineBreak(const InlineItem* item,
                                         LineInfo* line_info) {
@@ -2403,7 +2503,8 @@ void LineBreaker::HandleForcedLineBreak(const InlineItem* item,
 
     InlineItemResult* item_result = AddItem(*item, line_info);
     item_result->should_create_line_box = true;
-    item_result->has_only_trailing_spaces = true;
+    item_result->has_only_pre_wrap_trailing_spaces = true;
+    item_result->has_only_bidi_trailing_spaces = true;
     item_result->can_break_after = true;
     MoveToNextOf(*item);
 

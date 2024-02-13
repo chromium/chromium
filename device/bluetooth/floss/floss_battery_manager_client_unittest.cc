@@ -106,7 +106,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
     std::move(*cb).Run(response.get(), nullptr);
   }
 
-  void HandleGetBatteryInfo(DBusResult<absl::optional<BatterySet>> result) {
+  void HandleGetBatteryInfo(DBusResult<std::optional<BatterySet>> result) {
     callback_count_++;
   }
 

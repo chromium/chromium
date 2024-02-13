@@ -1360,9 +1360,10 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
           existing_app_instance_window)) {
     // The uuid of the target desk is found in `app_restore_data`. If it isn't
     // set, or is invalid, then we default to the rightmost desk.
-    Desk* target_desk = app_restore_data.desk_guid.is_valid()
-                            ? GetDeskByUuid(app_restore_data.desk_guid)
-                            : desks_.back().get();
+    Desk* target_desk = GetDeskByUuid(app_restore_data.window_info.desk_guid);
+    if (!target_desk) {
+      target_desk = desks_.back().get();
+    }
 
     DCHECK(src_desk);
     if (src_desk != target_desk) {
@@ -1387,14 +1388,14 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
   }
 
   // Now that the window is on the correct desk, we can apply window properties.
-  if (app_restore_data.current_bounds) {
-    existing_app_instance_window->SetBounds(*app_restore_data.current_bounds);
+  const app_restore::WindowInfo& window_info = app_restore_data.window_info;
+  if (window_info.current_bounds) {
+    existing_app_instance_window->SetBounds(*window_info.current_bounds);
   }
 
   // Handle window state and window bounds.
-  if (app_restore_data.window_state_type) {
-    chromeos::WindowStateType target_state =
-        *app_restore_data.window_state_type;
+  if (window_info.window_state_type) {
+    chromeos::WindowStateType target_state = *window_info.window_state_type;
 
     // Not all window states are supported.
     const bool restoreable_state =
@@ -1457,15 +1458,15 @@ bool DesksController::OnSingleInstanceAppLaunchingFromSavedDesk(
       // For states with restore bounds (maximized, snapped, minimized), the
       // restore bounds are stored in `current_bounds`.
       const gfx::Rect restore_bounds =
-          app_restore_data.current_bounds.value_or(gfx::Rect());
+          window_info.current_bounds.value_or(gfx::Rect());
       if (!restore_bounds.IsEmpty())
         window_state->SetRestoreBoundsInScreen(restore_bounds);
     }
   }
 
-  if (app_restore_data.activation_index) {
-    existing_app_instance_window->SetProperty(
-        app_restore::kActivationIndexKey, *app_restore_data.activation_index);
+  if (window_info.activation_index) {
+    existing_app_instance_window->SetProperty(app_restore::kActivationIndexKey,
+                                              *window_info.activation_index);
   }
 
   WindowRestoreController::Get()->StackWindow(existing_app_instance_window);
@@ -1655,7 +1656,7 @@ void DesksController::OnProfileRemoved(uint64_t profile_id) {
     // If this desk's profile has been removed, revert it to the primary user's
     // profile (which cannot be deleted).
     if (desk->lacros_profile_id() == profile_id) {
-      desk->SetLacrosProfileId(primary_profile_id);
+      desk->SetLacrosProfileId(primary_profile_id, /*source=*/std::nullopt);
     }
   }
 }
@@ -1721,27 +1722,27 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   auto* shell = Shell::Get();
   auto* overview_controller = shell->overview_controller();
   const bool was_in_overview = overview_controller->InOverviewSession();
-  if (animation_) {
-    // The order here matters. Overview must end before ending tablet split view
-    // before switching desks. (If clamshell split view is active on one or more
-    // displays, then it simply will end when we end overview.) That's because
-    // we don't want `TabletModeWindowManager` maximizing all windows because we
-    // cleared the snapped ones in `SplitViewController` first. See
-    // `TabletModeWindowManager::OnOverviewModeEndingAnimationComplete`.
-    // See also test coverage for this case in
-    // `TabletModeDesksTest.SnappedStateRetainedOnSwitchingDesksFromOverview`.
-    if (was_in_overview) {
-      // Exit overview mode immediately without any animations before taking the
-      // ending desk screenshot. This makes sure that the ending desk screenshot
-      // will only show the windows in that desk, not overview stuff.
-      overview_controller->EndOverview(OverviewEndAction::kDeskActivation,
-                                       OverviewEnterExitType::kImmediateExit);
-    }
-    SplitViewController* split_view_controller =
-        SplitViewController::Get(Shell::GetPrimaryRootWindow());
-    split_view_controller->EndSplitView(
-        SplitViewController::EndReason::kDesksChange);
+  // The order here matters. Overview must end before ending tablet split view
+  // before switching desks. (If clamshell split view is active on one or more
+  // displays, then it simply will end when we end overview.) That's because
+  // we don't want `TabletModeWindowManager` maximizing all windows because we
+  // cleared the snapped ones in `SplitViewController` first. See
+  // `TabletModeWindowManager::OnOverviewModeEndingAnimationComplete`.
+  // See also test coverage for this case in
+  // `TabletModeDesksTest.SnappedStateRetainedOnSwitchingDesksFromOverview`.
+  if (animation_ && was_in_overview) {
+    // Exit overview mode immediately without any animations before taking the
+    // ending desk screenshot. This makes sure that the ending desk screenshot
+    // will only show the windows in that desk, not overview stuff.
+    overview_controller->EndOverview(OverviewEndAction::kDeskActivation,
+                                     OverviewEnterExitType::kImmediateExit);
   }
+  // We should always end split view during a desk change in order to update the
+  // divider widget.
+  SplitViewController* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  split_view_controller->EndSplitView(
+      SplitViewController::EndReason::kDesksChange);
 
   MoveVisibleOnAllDesksWindowsFromActiveDeskTo(const_cast<Desk*>(desk));
   active_desk_ = const_cast<Desk*>(desk);

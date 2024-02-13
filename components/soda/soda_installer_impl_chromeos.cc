@@ -197,8 +197,20 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
 
 void SodaInstallerImplChromeOS::UninstallLanguage(const std::string& language,
                                                   PrefService* global_prefs) {
-  // TODO(crbug.com/1161569): SODA is only available for en-US right now.
-  // Update this to uninstall the language pack.
+  SodaInstaller::UnregisterLanguage(language, global_prefs);
+  const auto& language_info = available_languages_.find(language);
+  if (language_info == available_languages_.end()) {
+    LOG(FATAL) << "Unable to uninstall language " << language
+               << " as it is not in the list of available languages.";
+  }
+  const auto& dlc_name = language_info->second.dlc_name;
+  installed_languages_.erase(language_info->second.language_code);
+  installed_language_paths_.erase(language_info->second.language_code);
+  language_pack_progress_.erase(language_info->second.language_code);
+
+  ash::DlcserviceClient::Get()->Uninstall(
+      dlc_name, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
+                               base::Unretained(this), dlc_name));
 }
 
 std::vector<std::string> SodaInstallerImplChromeOS::GetAvailableLanguages()
@@ -216,14 +228,22 @@ void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   ash::DlcserviceClient::Get()->Uninstall(
       kSodaDlcName, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
                                    base::Unretained(this), kSodaDlcName));
+  // We iterate through all languages and check for installation, in order to
+  // decide what's happened.
+  for (const auto& it : available_languages_) {
+    const auto path = GetLanguagePath(it.first);
+    if (!path.empty()) {
+      const auto dlc_name = it.second.dlc_name;
+      LOG(ERROR) << "Removing dlc " << dlc_name << " for " << it.first;
+      ash::DlcserviceClient::Get()->Uninstall(
+          dlc_name, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
+                                   base::Unretained(this), dlc_name));
+    }
+  }
   installed_languages_.clear();
   language_pack_progress_.clear();
   SodaInstaller::UnregisterLanguages(global_prefs);
   installed_language_paths_.clear();
-  ash::DlcserviceClient::Get()->Uninstall(
-      kSodaEnglishUsDlcName,
-      base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
-                     base::Unretained(this), kSodaEnglishUsDlcName));
   global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
 }
 
@@ -332,6 +352,8 @@ void SodaInstallerImplChromeOS::OnDlcUninstalled(const std::string& dlc_id,
                                                  const std::string& err) {
   if (err != dlcservice::kErrorNone) {
     LOG(ERROR) << "Failed to uninstall DLC " << dlc_id << ". Error: " << err;
+  } else {
+    LOG(ERROR) << "Successful uninstall of dlc " << dlc_id;
   }
 }
 

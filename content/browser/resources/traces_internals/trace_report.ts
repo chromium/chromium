@@ -10,13 +10,14 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
-import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
+import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
+import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './trace_report.html.js';
-import {ClientTraceReport, SkipUploadReason} from './trace_report.mojom-webui.js';
+import type {ClientTraceReport} from './trace_report.mojom-webui.js';
+import {SkipUploadReason} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
 import {Notification, NotificationTypeEnum} from './trace_report_list.js';
 
@@ -197,6 +198,8 @@ export class TraceReportElement extends PolymerElement {
     if (!success) {
       this.dispatchToast_(
           `Failed to delete ${this.tokenToString_(this.trace.uuid)}.`);
+    } else {
+      this.dispatchReloadRequest_();
     }
     this.isLoading = false;
   }
@@ -209,6 +212,8 @@ export class TraceReportElement extends PolymerElement {
     if (!success) {
       this.dispatchToast_(
           `Failed to upload trace ${this.tokenToString_(this.trace.uuid)}.`);
+    } else {
+      this.dispatchReloadRequest_();
     }
     this.isLoading = false;
   }
@@ -232,6 +237,13 @@ export class TraceReportElement extends PolymerElement {
   private isDownloadDisabled_(isLoading: boolean, uploadState: UploadState):
       boolean {
     return isLoading || uploadState === UploadState.UPLOADED;
+  }
+
+  private dispatchReloadRequest_(): void {
+    this.dispatchEvent(new CustomEvent('refresh-traces-request', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 

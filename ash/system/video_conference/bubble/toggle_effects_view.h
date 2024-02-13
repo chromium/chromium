@@ -34,9 +34,9 @@ namespace video_conference {
 // label. WARNING: `callback` provided must not destroy the button or the bubble
 // (i.e. close the bubble) as it would result in a crash in `OnButtonClicked()`.
 class ToggleEffectsButton : public views::Button {
- public:
-  METADATA_HEADER(ToggleEffectsButton);
+  METADATA_HEADER(ToggleEffectsButton, views::Button)
 
+ public:
   ToggleEffectsButton(views::Button::PressedCallback callback,
                       const gfx::VectorIcon* vector_icon,
                       bool toggle_state,
@@ -90,9 +90,9 @@ class ToggleEffectsButton : public views::Button {
 // `VideoConferenceTrayEffectsManager`, which is in turn owned by the passed-in
 // controller.
 class ToggleEffectsView : public views::View {
- public:
-  METADATA_HEADER(ToggleEffectsView);
+  METADATA_HEADER(ToggleEffectsView, views::View)
 
+ public:
   explicit ToggleEffectsView(VideoConferenceTrayController* controller);
   ToggleEffectsView(const ToggleEffectsView&) = delete;
   ToggleEffectsView& operator=(const ToggleEffectsView&) = delete;

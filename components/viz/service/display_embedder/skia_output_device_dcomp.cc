@@ -128,7 +128,6 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
           features::kDirectCompositionUnlimitedOverlays)) {
     capabilities_.allowed_yuv_overlay_count = INT_MAX;
   }
-  capabilities_.supports_gpu_vsync = true;
   capabilities_.supports_dc_layers = true;
   capabilities_.supports_post_sub_buffer = true;
   capabilities_.supports_delegated_ink = presenter_->SupportsDelegatedInk();
@@ -140,7 +139,6 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   DCHECK(context_state_->gr_context() || context_state_->graphite_context());
   DCHECK(context_state_->context());
   DCHECK(presenter_);
-  DCHECK(presenter_->SupportsGpuVSync());
 
   // SRGB
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::RGBA_8888)] =
@@ -278,10 +276,6 @@ bool SkiaOutputDeviceDComp::Reshape(const SkImageInfo& image_info,
 
 bool SkiaOutputDeviceDComp::SetDrawRectangle(const gfx::Rect& draw_rectangle) {
   return presenter_->SetDrawRectangle(draw_rectangle);
-}
-
-void SkiaOutputDeviceDComp::SetGpuVSyncEnabled(bool enabled) {
-  presenter_->SetGpuVSyncEnabled(enabled);
 }
 
 SkSurface* SkiaOutputDeviceDComp::BeginPaint(

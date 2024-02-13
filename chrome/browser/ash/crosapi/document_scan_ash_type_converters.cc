@@ -50,6 +50,7 @@ struct TypeConverter<crosapi::mojom::ScannerInfoPtr, lorgnette::ScannerInfo> {
     for (const std::string& format : input.image_format()) {
       output->image_formats.emplace_back(format);
     }
+    output->protocol_type = input.protocol_type();
     return output;
   }
 };

@@ -45,22 +45,4 @@ class TestViewAndroidDelegate extends ViewAndroidDelegate {
     protected int getViewportInsetBottom() {
         return mApplicationViewportInsetBottomPx;
     }
-
-    private int[] mDisplayFeature;
-
-    /**
-     * Sets the display feature in order to return it just like the real {@code
-     * TabViewAndroidDelegate does.
-     * @param display_feature int array representing the top, left, right, bottom of display feature
-     *         rect.
-     */
-    @CalledByNative
-    private void setDisplayFeature(int left, int top, int right, int bottom) {
-        mDisplayFeature = new int[] {left, top, right, bottom};
-    }
-
-    @Override
-    protected int[] getDisplayFeature() {
-        return mDisplayFeature;
-    }
 }

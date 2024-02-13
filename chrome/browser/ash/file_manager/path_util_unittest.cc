@@ -1114,10 +1114,10 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
   volume_manager->RegisterAndroidFilesDirectoryForTesting(
       base::FilePath("/mount_path/android"));
 
-  volume_manager->RegisterMediaViewForTesting(arc::kAudioRootDocumentId);
-  volume_manager->RegisterMediaViewForTesting(arc::kImagesRootDocumentId);
-  volume_manager->RegisterMediaViewForTesting(arc::kVideosRootDocumentId);
-  volume_manager->RegisterMediaViewForTesting(arc::kDocumentsRootDocumentId);
+  volume_manager->RegisterMediaViewForTesting(arc::kAudioRootId);
+  volume_manager->RegisterMediaViewForTesting(arc::kImagesRootId);
+  volume_manager->RegisterMediaViewForTesting(arc::kVideosRootId);
+  volume_manager->RegisterMediaViewForTesting(arc::kDocumentsRootId);
 
   volume_manager->AddVolumeForTesting(
       Volume::CreateForDrive(base::FilePath("/mount_path/drive")));
@@ -1147,8 +1147,8 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
       MOUNT_CONTEXT_USER));
 
   volume_manager->AddVolumeForTesting(Volume::CreateForDocumentsProvider(
-      "authority", "root_id", "document_id", "documents_provider_label",
-      "summary", {}, false, /*optional_fusebox_subdir=*/std::string()));
+      "authority", "root_id", "documents_provider_label", "summary", {}, false,
+      /*optional_fusebox_subdir=*/std::string()));
 
   volume_manager->AddVolumeForTesting(Volume::CreateForSftpGuestOs(
       "guest_os_label", base::FilePath("/mount_path/guest_os"),
@@ -1222,21 +1222,21 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
           "My files/foo/bar",
       },
       {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                          arc::kAudioRootDocumentId)
+                                          arc::kAudioRootId)
            .value(),
        "Audio"},
       {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                          arc::kImagesRootDocumentId)
+                                          arc::kImagesRootId)
            .Append("foo")
            .value(),
        "Images/foo"},
       {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                          arc::kVideosRootDocumentId)
+                                          arc::kVideosRootId)
            .Append("foo/bar")
            .value(),
        "Videos/foo/bar"},
       {arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                          arc::kDocumentsRootDocumentId)
+                                          arc::kDocumentsRootId)
            .Append("bar")
            .value(),
        "Documents/bar"},
@@ -1269,8 +1269,7 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
           "removable_label/foo",
       },
       {
-          arc::GetDocumentsProviderMountPath("authority", "document_id")
-              .value(),
+          arc::GetDocumentsProviderMountPath("authority", "root_id").value(),
           "documents_provider_label",
       },
       {

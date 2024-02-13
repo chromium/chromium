@@ -77,7 +77,7 @@
           </settings-section>
         </template>
         <template is="dom-if"
-            if="[[showPerformancePage_(pageVisibility.performance)]]"
+            if="[[showPage_(pageVisibility.performance)]]"
             restamp>
           <settings-section page-title="$i18n{memoryPageTitle}"
 <if expr="_google_chrome">
@@ -88,10 +88,6 @@
             <settings-performance-page prefs="{{prefs}}">
             </settings-performance-page>
           </settings-section>
-        </template>
-        <template is="dom-if"
-            if="[[showBatteryPage_(pageVisibility.performance)]]"
-            restamp>
           <settings-section page-title="$i18n{batteryPageTitle}"
               section="battery" nest-under-section="performance"
 <if expr="_google_chrome">
@@ -102,10 +98,6 @@
             <settings-battery-page prefs="{{prefs}}">
             </settings-battery-page>
           </settings-section>
-        </template>
-        <template is="dom-if"
-            if="[[showSpeedPage_(pageVisibility.performance)]]"
-            restamp>
           <settings-section page-title="$i18n{speedPageTitle}"
               section="speed" nest-under-section="performance"
 <if expr="_google_chrome">

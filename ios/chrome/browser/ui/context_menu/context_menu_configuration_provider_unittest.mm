@@ -63,9 +63,9 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
-    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                                WebStateList::INSERT_ACTIVATE,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     base_view_controller_ = [[UIViewController alloc] init];
     configuration_provider_ = [[ContextMenuConfigurationProvider alloc]

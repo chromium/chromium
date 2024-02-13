@@ -678,7 +678,7 @@ TEST_F(ResourceBundleImageTest, Lottie) {
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
   resource_bundle->AddDataPackFromPath(data_unscaled_path, kScaleFactorNone);
 
-  absl::optional<std::vector<uint8_t>> data = resource_bundle->GetLottieData(3);
+  std::optional<std::vector<uint8_t>> data = resource_bundle->GetLottieData(3);
   ASSERT_TRUE(data.has_value());
   EXPECT_TRUE(base::ranges::equal(*data, kLottieExpected));
 

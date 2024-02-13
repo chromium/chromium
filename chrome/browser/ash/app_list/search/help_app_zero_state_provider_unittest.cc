@@ -7,11 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/app_list_notifier_impl.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -43,11 +40,7 @@ void ExpectReleaseNotesChip(ChromeSearchResult* result,
 
 class HelpAppZeroStateProviderTest : public AppListTestBase {
  public:
-  HelpAppZeroStateProviderTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kReleaseNotesSuggestionChip},
-        /*disabled_features=*/{});
-  }
+  HelpAppZeroStateProviderTest() = default;
   ~HelpAppZeroStateProviderTest() override = default;
 
   void SetUp() override {
@@ -81,7 +74,6 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
   TestSearchController search_controller_;
   raw_ptr<HelpAppZeroStateProvider> provider_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test for empty query.

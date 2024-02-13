@@ -70,10 +70,10 @@ inline std::array<uint8_t, kSignCounterLength> MarshalSignCounter(
 }  // namespace
 
 // static
-absl::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
+std::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
     base::span<const uint8_t> auth_data) {
   if (auth_data.size() < kAttestedCredentialDataOffset) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   auto application_parameter = auth_data.first<kRpIdHashLength>();
   uint8_t flag_byte = auth_data[kRpIdHashLength];
@@ -81,17 +81,17 @@ absl::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
       auth_data.subspan<kRpIdHashLength + kFlagsLength, kSignCounterLength>();
 
   auth_data = auth_data.subspan(kAttestedCredentialDataOffset);
-  absl::optional<AttestedCredentialData> attested_credential_data;
+  std::optional<AttestedCredentialData> attested_credential_data;
   if (flag_byte & static_cast<uint8_t>(Flag::kAttestation)) {
     auto maybe_result =
         AttestedCredentialData::ConsumeFromCtapResponse(auth_data);
     if (!maybe_result) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::tie(attested_credential_data, auth_data) = std::move(*maybe_result);
   }
 
-  absl::optional<cbor::Value> extensions;
+  std::optional<cbor::Value> extensions;
   if (flag_byte & static_cast<uint8_t>(Flag::kExtensionDataIncluded)) {
     cbor::Reader::DecoderError error;
     extensions = cbor::Reader::Read(auth_data, &error);
@@ -100,16 +100,16 @@ absl::optional<AuthenticatorData> AuthenticatorData::DecodeAuthenticatorData(
           << "CBOR decoding of authenticator data extensions failed ("
           << cbor::Reader::ErrorCodeToString(error) << ") from "
           << base::HexEncode(auth_data);
-      return absl::nullopt;
+      return std::nullopt;
     }
     if (!extensions->is_map()) {
       FIDO_LOG(ERROR)
           << "Incorrect CBOR structure of authenticator data extensions: "
           << cbor::DiagnosticWriter::Write(*extensions);
-      return absl::nullopt;
+      return std::nullopt;
     }
   } else if (!auth_data.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return AuthenticatorData(application_parameter, flag_byte, counter,
@@ -121,8 +121,8 @@ AuthenticatorData::AuthenticatorData(
     base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
     uint8_t flags,
     base::span<const uint8_t, kSignCounterLength> counter,
-    absl::optional<AttestedCredentialData> data,
-    absl::optional<cbor::Value> extensions)
+    std::optional<AttestedCredentialData> data,
+    std::optional<cbor::Value> extensions)
     : flags_(flags),
       application_parameter_(fido_parsing_utils::Materialize(rp_id_hash)),
       counter_(fido_parsing_utils::Materialize(counter)),
@@ -135,8 +135,8 @@ AuthenticatorData::AuthenticatorData(
     base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
     std::initializer_list<Flag> flags,
     uint32_t sign_counter,
-    absl::optional<AttestedCredentialData> data,
-    absl::optional<cbor::Value> extensions)
+    std::optional<AttestedCredentialData> data,
+    std::optional<cbor::Value> extensions)
     : AuthenticatorData(rp_id_hash,
                         CombineAuthenticatorDataFlags(flags),
                         MarshalSignCounter(sign_counter),
@@ -150,8 +150,8 @@ AuthenticatorData::AuthenticatorData(
     bool backup_eligible,
     bool backup_state,
     uint32_t sign_counter,
-    absl::optional<AttestedCredentialData> attested_credential_data,
-    absl::optional<cbor::Value> extensions)
+    std::optional<AttestedCredentialData> attested_credential_data,
+    std::optional<cbor::Value> extensions)
     : flags_(AuthenticatorDataFlags(user_present,
                                     user_verified,
                                     backup_eligible,

@@ -9,7 +9,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -109,7 +108,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
       const base::RepeatingCallback<void(ScriptContext*)>& callback);
 
   // Cleans up contexts belonging to an unloaded extension.
-  void OnExtensionUnloaded(const std::string& extension_id);
+  void OnExtensionUnloaded(const ExtensionId& extension_id);
 
   void set_is_lock_screen_context(bool is_lock_screen_context) {
     is_lock_screen_context_ = is_lock_screen_context;
@@ -141,7 +140,7 @@ class ScriptContextSet : public ScriptContextSetIterable {
   raw_ptr<ExtensionIdSet, ExperimentalRenderer> active_extension_ids_;
 
   // The set of all ScriptContexts we own.
-  std::set<ScriptContext*> contexts_;
+  std::set<raw_ptr<ScriptContext, SetExperimental>> contexts_;
 
   // Whether the script context set is associated with the renderer active on
   // the Chrome OS lock screen.

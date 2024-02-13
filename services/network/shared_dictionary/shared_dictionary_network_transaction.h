@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryNetworkTransaction
   scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
   std::unique_ptr<SharedDictionary> shared_dictionary_;
   // The Structured Field sf-binary hash of sha256 of dictionary calculated when
-  // sending a HTTP request. This is not used when V1 backend is used.
+  // sending a HTTP request.
   std::string dictionary_hash_base64_;
 
   DictionaryStatus dictionary_status_ = DictionaryStatus::kNoDictionary;

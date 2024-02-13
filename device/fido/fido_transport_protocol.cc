@@ -13,7 +13,7 @@ const char kCable[] = "hybrid";
 const char kHybrid[] = "hybrid";
 const char kInternal[] = "internal";
 
-absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
+std::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     std::string_view protocol) {
   if (protocol == kUsbHumanInterfaceDevice)
     return FidoTransportProtocol::kUsbHumanInterfaceDevice;
@@ -29,7 +29,7 @@ absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
   else if (protocol == kInternal)
     return FidoTransportProtocol::kInternal;
   else
-    return absl::nullopt;
+    return std::nullopt;
 }
 
 std::string_view ToString(FidoTransportProtocol protocol) {

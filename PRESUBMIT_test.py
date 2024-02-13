@@ -3389,6 +3389,23 @@ class StringTest(unittest.TestCase):
              </release>
            </grit>
         """.splitlines()
+  # A grd file with multiple ICU syntax messages without syntax errors.
+  NEW_GRD_CONTENTS_ICU_SYNTAX_OK3 = """<?xml version="1.0" encoding="UTF-8"?>
+           <grit latest_public_release="1" current_release="1">
+             <release seq="1">
+               <messages>
+                 <message name="IDS_TEST1">
+                   {NUM, plural,
+                    =0 {New test text for numeric zero}
+                    =1 {Different test text for numeric one}
+                    =2 {New test text for numeric two}
+                    =3 {New test text for numeric three}
+                    other {Different test text for plural with {NUM} as number}}
+                 </message>
+               </messages>
+             </release>
+           </grit>
+        """.splitlines()
   # A grd file with one ICU syntax message with syntax errors (misses a comma).
   NEW_GRD_CONTENTS_ICU_SYNTAX_ERROR = """<?xml version="1.0" encoding="UTF-8"?>
            <grit latest_public_release="1" current_release="1">
@@ -3481,9 +3498,22 @@ class StringTest(unittest.TestCase):
             'other {Different test text for plural with {NUM} as number}}',
         '</message>',
     '</grit-part>')
+  # A grdp file with multiple ICU syntax messages without syntax errors.
+  NEW_GRDP_CONTENTS_ICU_SYNTAX_OK3 = (
+    '<?xml version="1.0" encoding="utf-8"?>',
+      '<grit-part>',
+        '<message name="IDS_PART_TEST1">',
+           '{NUM, plural,',
+            '=0 {New test text for numeric zero}',
+            '=1 {Different test text for numeric one}',
+            '=2 {New test text for numeric two}',
+            '=3 {New test text for numeric three}',
+            'other {Different test text for plural with {NUM} as number}}',
+        '</message>',
+    '</grit-part>')
 
-  # A grdp file with one ICU syntax message with syntax errors (superfluent
-  # whitespace).
+  # A grdp file with one ICU syntax message with syntax errors (superfluous
+  # space).
   NEW_GRDP_CONTENTS_ICU_SYNTAX_ERROR = (
     '<?xml version="1.0" encoding="utf-8"?>',
       '<grit-part>',
@@ -3882,6 +3912,18 @@ class StringTest(unittest.TestCase):
       MockAffectedFile('test.grd', self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK2,
                        self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK1, action='M'),
       MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK2,
+                       self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK1, action='M')])
+    results = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
+    # We expect no ICU syntax errors.
+    icu_errors = [e for e in results
+        if e.message == self.ICU_SYNTAX_ERROR_MESSAGE]
+    self.assertEqual(0, len(icu_errors))
+
+    # Valid changes in ICU syntax. Should not raise an error.
+    input_api = self.makeInputApi([
+      MockAffectedFile('test.grd', self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK3,
+                       self.NEW_GRD_CONTENTS_ICU_SYNTAX_OK1, action='M'),
+      MockAffectedFile('part.grdp', self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK3,
                        self.NEW_GRDP_CONTENTS_ICU_SYNTAX_OK1, action='M')])
     results = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     # We expect no ICU syntax errors.

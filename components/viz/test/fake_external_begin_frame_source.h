@@ -72,7 +72,7 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
   bool paused_ = false;
   BeginFrameArgs current_args_;
   uint64_t next_begin_frame_number_ = BeginFrameArgs::kStartingFrameNumber;
-  std::set<BeginFrameObserver*> observers_;
+  std::set<raw_ptr<BeginFrameObserver, SetExperimental>> observers_;
   base::flat_map<BeginFrameObserver*, int64_t> pending_frames_;
   base::CancelableOnceClosure begin_frame_task_;
   BeginFrameSource::BeginFrameArgsGenerator begin_frame_args_generator_;

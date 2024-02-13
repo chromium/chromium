@@ -43,6 +43,8 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
   std::optional<gfx::RectF> captured_rect_in_layout_space;
   base::flat_map<blink::mojom::ViewTransitionPropertyId, std::string>
       captured_css_properties;
+
+  std::vector<std::string> class_list;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

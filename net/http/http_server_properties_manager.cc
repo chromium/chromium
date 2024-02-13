@@ -5,6 +5,7 @@
 #include "net/http/http_server_properties_manager.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/containers/adapters.h"
@@ -23,7 +24,6 @@
 #include "net/base/privacy_mode.h"
 #include "net/http/http_server_properties.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_hostname_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -69,7 +69,7 @@ const char kBrokenCountKey[] = "broken_count";
 // services. Also checks if an alternative service for the same canonical suffix
 // has already been saved, and if so, returns an empty list.
 AlternativeServiceInfoVector GetAlternativeServiceToPersist(
-    const absl::optional<AlternativeServiceInfoVector>& alternative_services,
+    const std::optional<AlternativeServiceInfoVector>& alternative_services,
     const HttpServerProperties::ServerInfoMapKey& server_info_key,
     base::Time now,
     const HttpServerPropertiesManager::GetCannonicalSuffix&
@@ -233,7 +233,7 @@ void HttpServerPropertiesManager::ReadPrefs(
 
   net_log_.AddEvent(NetLogEventType::HTTP_SERVER_PROPERTIES_UPDATE_CACHE,
                     [&] { return http_server_properties_dict.Clone(); });
-  absl::optional<int> maybe_version_number =
+  std::optional<int> maybe_version_number =
       http_server_properties_dict.FindInt(kVersionKey);
   if (!maybe_version_number.has_value() ||
       *maybe_version_number != kVersionNumber) {
@@ -354,7 +354,7 @@ void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
   // Read broken-count and add an entry for |alt_service| into
   // |recently_broken_alternative_services|.
   if (broken_alt_svc_entry_dict.Find(kBrokenCountKey)) {
-    absl::optional<int> broken_count =
+    std::optional<int> broken_count =
         broken_alt_svc_entry_dict.FindInt(kBrokenCountKey);
     if (!broken_count.has_value()) {
       DVLOG(1) << "Recently broken alternative service has malformed "
@@ -390,10 +390,10 @@ void HttpServerPropertiesManager::AddToBrokenAlternativeServices(
     base::TimeTicks expiration_time_ticks =
         clock_->NowTicks() +
         (base::Time::FromTimeT(expiration_time_t) - base::Time::Now());
-    broken_alternative_service_list->push_back(std::make_pair(
+    broken_alternative_service_list->emplace_back(
         BrokenAlternativeService(alt_service, network_anonymization_key,
                                  use_network_anonymization_key),
-        expiration_time_ticks));
+        expiration_time_ticks);
     contains_broken_count_or_broken_until = true;
   }
 
@@ -478,7 +478,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceDict(
   alternative_service->host = host;
 
   // Port is mandatory.
-  absl::optional<int> maybe_port = dict.FindInt(kPortKey);
+  std::optional<int> maybe_port = dict.FindInt(kPortKey);
   if (!maybe_port.has_value() || !IsPortValid(maybe_port.value())) {
     DVLOG(1) << "Malformed alternative service port under: " << parsing_under;
     return false;
@@ -618,7 +618,7 @@ void HttpServerPropertiesManager::ParseNetworkStats(
   if (!server_network_stats_dict) {
     return;
   }
-  absl::optional<int> maybe_srtt = server_network_stats_dict->FindInt(kSrttKey);
+  std::optional<int> maybe_srtt = server_network_stats_dict->FindInt(kSrttKey);
   if (!maybe_srtt.has_value()) {
     DVLOG(1) << "Malformed ServerNetworkStats for server: "
              << server.Serialize();

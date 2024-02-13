@@ -161,7 +161,7 @@ TEST_F(RegistryTest, TruncatedCharTest) {
 
   RegistryValueIterator iterator(HKEY_CURRENT_USER, root_key().c_str());
   ASSERT_TRUE(iterator.Valid());
-  // Avoid having to use EXPECT_STREQ here by leveraging StringPiece's
+  // Avoid having to use EXPECT_STREQ here by leveraging std::string_view's
   // operator== to perform a deep comparison.
   EXPECT_EQ(std::wstring_view(kName), std::wstring_view(iterator.Name()));
   // ValueSize() is in bytes.

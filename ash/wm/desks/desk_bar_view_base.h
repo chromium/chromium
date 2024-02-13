@@ -349,6 +349,9 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // is ended.
   bool MaybeScrollByDraggedDesk();
 
+  // Records UMA histograms on desk profile adoption.
+  void RecordDeskProfileAdoption();
+
   const Type type_ = Type::kOverview;
 
   State state_ = State::kZero;

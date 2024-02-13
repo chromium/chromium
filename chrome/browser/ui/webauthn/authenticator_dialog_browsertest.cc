@@ -697,9 +697,18 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else if (name == "trust_this_computer") {
       model_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kTrustThisComputer);
-    } else if (name == "gpm_create") {
+    } else if (name == "gpm_create_passkey") {
       model_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kGPMCreate);
+          AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+    } else if (name == "touchid") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMTouchID);
+    } else if (name == "gpm_onboarding") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMOnboarding);
+    } else if (name == "gpm_create_pin") {
+      model_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
     } else {
       NOTREACHED();
     }
@@ -778,6 +787,22 @@ IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
-                       InvokeUi_gpm_create) {
+                       InvokeUi_gpm_create_passkey) {
   ShowAndVerifyUi();
 }
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_onboarding) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,
+                       InvokeUi_gpm_create_pin) {
+  ShowAndVerifyUi();
+}
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest, InvokeUi_touchid) {
+  ShowAndVerifyUi();
+}
+#endif  // BUILDFLAG(IS_MAC)

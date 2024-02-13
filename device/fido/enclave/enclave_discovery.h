@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_ENCLAVE_ENCLAVE_DISCOVERY_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -16,7 +17,6 @@
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_discovery_base.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::enclave {
 
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
   base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
       save_passkey_callback_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
-  std::unique_ptr<EventStream<absl::optional<std::string_view>>>
+  std::unique_ptr<EventStream<std::optional<std::string_view>>>
       oauth_token_provider_;
 
   base::WeakPtrFactory<EnclaveAuthenticatorDiscovery> weak_factory_{this};

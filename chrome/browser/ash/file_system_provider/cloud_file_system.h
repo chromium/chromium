@@ -24,6 +24,7 @@ class IOBuffer;
 
 namespace base {
 class FilePath;
+class MetronomeTimer;
 }  // namespace base
 
 class GURL;
@@ -32,10 +33,13 @@ class OperationRequestManager;
 namespace ash::file_system_provider {
 
 // A simple wrapper over a `ProvidedFileSystem` that adds additional logging,
-// currently this is hidden behind the `FileSystemProviderContentCache` feature
-// flag.
+// currently this is hidden behind the `FileSystemProviderCloudFileSystem`
+// feature flag.
 class CloudFileSystem : public ProvidedFileSystemInterface {
  public:
+  explicit CloudFileSystem(
+      std::unique_ptr<ProvidedFileSystemInterface> file_system);
+
   CloudFileSystem(std::unique_ptr<ProvidedFileSystemInterface> file_system,
                    ContentCache* content_cache);
 
@@ -131,8 +135,11 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
 
  private:
   const std::string GetFileSystemId() const;
+  void OnTimer();
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
   raw_ptr<ContentCache> content_cache_;  // Not owned.
+  base::MetronomeTimer timer_;
+  int file_manager_watchers_ = 0;
 
   base::WeakPtrFactory<CloudFileSystem> weak_ptr_factory_{this};
 };

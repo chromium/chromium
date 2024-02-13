@@ -838,9 +838,6 @@ bool D3DImageBacking::BeginAccessD3D11(
   if (!ValidateBeginAccess(write_access))
     return false;
 
-  // If read fences or write fence are present, shared handle should be too.
-  CHECK((read_fences_.empty() && !write_fence_) || dxgi_shared_handle_state_);
-
   // Defer clearing fences until later to handle D3D11 failure to synchronize.
   std::vector<scoped_refptr<gfx::D3DSharedFence>> wait_fences =
       GetPendingWaitFences(d3d11_device, /*dawn_device=*/nullptr, write_access);

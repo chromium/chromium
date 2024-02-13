@@ -143,7 +143,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     match.SetAllowedToBeDefault(input);
   }
 
-  if (provider->InKeywordMode(input)) {
+  if (input.InKeywordMode()) {
     match.from_keyword = true;
   }
 

@@ -28,6 +28,7 @@
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_cache.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
@@ -117,6 +118,29 @@ static std::unique_ptr<base::SampleVector> GetRttHistogram(
   return histogram;
 }
 
+#if defined(ENABLE_BUILT_IN_DNS)
+constexpr size_t kDefaultCacheSize = 1000;
+#else
+constexpr size_t kDefaultCacheSize = 100;
+#endif
+
+std::unique_ptr<HostCache> CreateHostCache(bool enable_caching) {
+  if (enable_caching) {
+    return std::make_unique<HostCache>(kDefaultCacheSize);
+  } else {
+    return nullptr;
+  }
+}
+
+std::unique_ptr<HostResolverCache> CreateHostResolverCache(
+    bool enable_caching) {
+  if (enable_caching) {
+    return std::make_unique<HostResolverCache>(kDefaultCacheSize);
+  } else {
+    return nullptr;
+  }
+}
+
 }  // namespace
 
 ResolveContext::ServerStats::ServerStats(
@@ -130,7 +154,8 @@ ResolveContext::ServerStats::~ServerStats() = default;
 ResolveContext::ResolveContext(URLRequestContext* url_request_context,
                                bool enable_caching)
     : url_request_context_(url_request_context),
-      host_cache_(enable_caching ? HostCache::CreateDefaultCache() : nullptr),
+      host_cache_(CreateHostCache(enable_caching)),
+      host_resolver_cache_(CreateHostResolverCache(enable_caching)),
       isolation_info_(IsolationInfo::CreateTransient()) {
   max_fallback_period_ = GetMaxFallbackPeriod();
 }

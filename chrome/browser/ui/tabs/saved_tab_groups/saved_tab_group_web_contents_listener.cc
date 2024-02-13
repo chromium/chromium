@@ -30,6 +30,10 @@ bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
     return false;
   }
 
+  if (navigation_handle->IsSameDocument()) {
+    return false;
+  }
+
   return SavedTabGroupUtils::IsURLValidForSavedTabGroups(
       navigation_handle->GetURL());
 }
@@ -47,6 +51,11 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() = default;
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
+  if (web_contents_->GetURL().GetWithoutRef().spec() ==
+      url.GetWithoutRef().spec()) {
+    return;
+  }
+
   // Dont navigate to the new URL if its not valid for sync.
   if (!SavedTabGroupUtils::IsURLValidForSavedTabGroups(url)) {
     return;

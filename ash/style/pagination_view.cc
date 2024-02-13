@@ -71,9 +71,9 @@ struct InterpolationInterval {
 // IndicatorButton:
 // A button with a hollow circle in the center.
 class IndicatorButton : public views::Button {
- public:
-  METADATA_HEADER(IndicatorButton);
+  METADATA_HEADER(IndicatorButton, views::Button)
 
+ public:
   IndicatorButton(PressedCallback callback,
                   const std::u16string& accessible_name)
       : views::Button(std::move(callback)) {
@@ -110,7 +110,7 @@ class IndicatorButton : public views::Button {
   }
 };
 
-BEGIN_METADATA(IndicatorButton, views::Button)
+BEGIN_METADATA(IndicatorButton)
 END_METADATA
 
 }  // namespace
@@ -119,9 +119,9 @@ END_METADATA
 // PaginationView::SelectorDotView:
 // A solid circle that performs deformation with the pace of page transition.
 class PaginationView::SelectorDotView : public views::View {
- public:
-  METADATA_HEADER(SelectorDotView);
+  METADATA_HEADER(SelectorDotView, views::View)
 
+ public:
   using DeformInterval = InterpolationInterval<gfx::Rect>;
 
   SelectorDotView() {
@@ -197,9 +197,9 @@ END_METADATA
 // The container of indicators. If the indicator to be selected is not visible,
 // the container will scroll with the pace of pagination transition.
 class PaginationView::IndicatorContainer : public views::BoxLayoutView {
- public:
-  METADATA_HEADER(IndicatorContainer);
+  METADATA_HEADER(IndicatorContainer, views::BoxLayoutView)
 
+ public:
   explicit IndicatorContainer(views::BoxLayout::Orientation orientation) {
     SetOrientation(orientation);
     SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
@@ -655,6 +655,6 @@ void PaginationView::TransitionChanged() {
   selector_dot_->Deform(progress);
 }
 
-BEGIN_METADATA(PaginationView, views::View)
+BEGIN_METADATA(PaginationView)
 END_METADATA
 }  // namespace ash

@@ -327,7 +327,7 @@ NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
   HeapVector<Member<NotRestoredReasons>> children;
   for (const auto& reason : nrr->reasons) {
     NotRestoredReasonDetails* detail =
-        MakeGarbageCollected<NotRestoredReasonDetails>(reason);
+        MakeGarbageCollected<NotRestoredReasonDetails>(reason->name);
     reasons.push_back(detail);
   }
   if (nrr->same_origin_details) {

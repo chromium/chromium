@@ -85,7 +85,7 @@ MDnsCache::UpdateType MDnsCache::UpdateDnsRecord(
     new_expiration = std::min(new_expiration, next_expiration_);
 
   std::pair<RecordMap::iterator, bool> insert_result =
-      mdns_cache_.insert(std::make_pair(cache_key, nullptr));
+      mdns_cache_.emplace(cache_key, nullptr);
   UpdateType type = NoChange;
   if (insert_result.second) {
     type = RecordAdded;

@@ -55,9 +55,7 @@ static const int kMaxOutputStreams = 50;
 // Default sample-rate on most Apple hardware.
 static const int kFallbackSampleRate = 44100;
 
-static bool GetDeviceChannels(AudioUnit audio_unit,
-                              AUElement element,
-                              int* channels);
+static bool GetOutputDeviceChannels(AudioUnit audio_unit, int* channels);
 
 // Helper method to construct AudioObjectPropertyAddress structure given
 // property selector and scope. The property element is always set to
@@ -369,74 +367,18 @@ static bool GetDeviceChannels(AudioDeviceID device,
     return false;
   }
 
-  return GetDeviceChannels(au.audio_unit(), element, channels);
+  return GetOutputDeviceChannels(au.audio_unit(), channels);
 }
 
-static bool GetDeviceChannels(AudioUnit audio_unit,
-                              AUElement element,
-                              int* channels) {
+static bool GetOutputDeviceChannels(AudioUnit audio_unit, int* channels) {
   // Attempt to retrieve the channel layout from the AudioUnit.
-  //
-  // Note: We don't use kAudioDevicePropertyPreferredChannelLayout on the device
-  // because it is not available on all devices.
-  UInt32 size;
-  Boolean writable;
-  OSStatus result = AudioUnitGetPropertyInfo(
-      audio_unit, kAudioUnitProperty_AudioChannelLayout, kAudioUnitScope_Output,
-      element, &size, &writable);
-  if (result != noErr) {
-    OSSTATUS_DLOG(ERROR, result)
-        << "Failed to get property info for AudioUnit channel layout.";
-  }
-
-  std::unique_ptr<uint8_t[]> layout_storage(new uint8_t[size]);
-  AudioChannelLayout* layout =
-      reinterpret_cast<AudioChannelLayout*>(layout_storage.get());
-
-  result =
-      AudioUnitGetProperty(audio_unit, kAudioUnitProperty_AudioChannelLayout,
-                           kAudioUnitScope_Output, element, layout, &size);
-  if (result != noErr) {
-    OSSTATUS_LOG(ERROR, result) << "Failed to get AudioUnit channel layout.";
+  std::unique_ptr<ScopedAudioChannelLayout> audio_unit_layout =
+      AudioManagerApple::GetOutputDeviceChannelLayout(audio_unit);
+  if (!audio_unit_layout) {
+    DLOG(ERROR) << "Failed to retrieve output device channel layout.";
     return false;
   }
-
-  // We don't want to have to know about all channel layout tags, so force OSX
-  // to give us the channel descriptions from the bitmap or tag if necessary.
-  const AudioChannelLayoutTag tag = layout->mChannelLayoutTag;
-  if (tag != kAudioChannelLayoutTag_UseChannelDescriptions) {
-    const bool is_bitmap = tag == kAudioChannelLayoutTag_UseChannelBitmap;
-    const AudioFormatPropertyID fa =
-        is_bitmap ? kAudioFormatProperty_ChannelLayoutForBitmap
-                  : kAudioFormatProperty_ChannelLayoutForTag;
-
-    if (is_bitmap) {
-      result = AudioFormatGetPropertyInfo(fa, sizeof(UInt32),
-                                          &layout->mChannelBitmap, &size);
-    } else {
-      result = AudioFormatGetPropertyInfo(fa, sizeof(AudioChannelLayoutTag),
-                                          &tag, &size);
-    }
-    if (result != noErr || !size) {
-      OSSTATUS_DLOG(ERROR, result)
-          << "Failed to get AudioFormat property info, size=" << size;
-      return false;
-    }
-
-    layout_storage.reset(new uint8_t[size]);
-    layout = reinterpret_cast<AudioChannelLayout*>(layout_storage.get());
-    if (is_bitmap) {
-      result = AudioFormatGetProperty(fa, sizeof(UInt32),
-                                      &layout->mChannelBitmap, &size, layout);
-    } else {
-      result = AudioFormatGetProperty(fa, sizeof(AudioChannelLayoutTag), &tag,
-                                      &size, layout);
-    }
-    if (result != noErr) {
-      OSSTATUS_DLOG(ERROR, result) << "Failed to get AudioFormat property.";
-      return false;
-    }
-  }
+  AudioChannelLayout* layout = audio_unit_layout->layout();
 
   // There is no channel info for stereo, assume so for mono as well.
   if (layout->mNumberChannelDescriptions <= 2) {

@@ -509,11 +509,10 @@ ParseResult ValidateMatchingResponseHeaderValues(
 
 ParseResult ValidateResponseHeadersForMatching(
     const std::vector<dnr_api::HeaderInfo>& response_headers,
-    const std::vector<std::string>& excluded_response_headers) {
-  // Track the set of response headers to match that have not specified values.
-  // This is used to make sure that if the rule matches on the header's name
-  // only, the header does not show up in `excluded_response_headers`.
-  std::set<std::string> headers_matching_on_name;
+    const std::vector<dnr_api::HeaderInfo>& excluded_response_headers) {
+  // Track the set of response headers to match. This is used to make sure that
+  // the header is not matched in `excluded_response_headers` in name only.
+  std::set<std::string> response_header_names;
 
   for (const auto& header_info : response_headers) {
     if (!net::HttpUtil::IsValidHeaderName(header_info.header)) {
@@ -525,20 +524,24 @@ ParseResult ValidateResponseHeadersForMatching(
       return result;
     }
 
-    if (!header_info.values.has_value() &&
-        !header_info.excluded_values.has_value()) {
-      headers_matching_on_name.insert(header_info.header);
-    }
+    response_header_names.insert(header_info.header);
   }
 
-  for (const auto& header : excluded_response_headers) {
-    if (!net::HttpUtil::IsValidHeaderName(header)) {
+  for (const auto& header_info : excluded_response_headers) {
+    if (!net::HttpUtil::IsValidHeaderName(header_info.header)) {
       return ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME;
+    }
+
+    ParseResult result = ValidateMatchingResponseHeaderValues(header_info);
+    if (result != ParseResult::SUCCESS) {
+      return result;
     }
 
     // Return an error if a rule tries to match on the existence AND
     // non-existence of a header.
-    if (base::Contains(headers_matching_on_name, header)) {
+    if (!header_info.values.has_value() &&
+        !header_info.excluded_values.has_value() &&
+        base::Contains(response_header_names, header_info.header)) {
       return ParseResult::ERROR_MATCHING_RESPONSE_HEADER_DUPLICATED;
     }
   }

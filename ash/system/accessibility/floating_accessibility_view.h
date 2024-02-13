@@ -22,9 +22,9 @@ class FloatingMenuButton;
 class TrayBackgroundView;
 
 class FloatingAccessibilityBubbleView : public TrayBubbleView {
- public:
-  METADATA_HEADER(FloatingAccessibilityBubbleView);
+  METADATA_HEADER(FloatingAccessibilityBubbleView, TrayBubbleView)
 
+ public:
   explicit FloatingAccessibilityBubbleView(
       const TrayBubbleView::InitParams& init_params);
   FloatingAccessibilityBubbleView(const FloatingAccessibilityBubbleView&) =
@@ -55,9 +55,9 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
                                   public views::ViewObserver,
                                   public KeyboardControllerObserver,
                                   public SystemTrayObserver {
- public:
-  METADATA_HEADER(FloatingAccessibilityView);
+  METADATA_HEADER(FloatingAccessibilityView, views::BoxLayoutView)
 
+ public:
   // Used for testing. Starts 1 because views IDs should not be 0.
   enum ButtonId {
     kPosition = 1,

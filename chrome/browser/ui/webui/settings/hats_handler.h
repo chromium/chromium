@@ -45,6 +45,9 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
       HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction);
+  FRIEND_TEST_ALL_PREFIXES(
+      HatsHandlerTest,
+      HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,

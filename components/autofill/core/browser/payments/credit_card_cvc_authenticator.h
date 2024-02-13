@@ -130,6 +130,7 @@ class CreditCardCvcAuthenticator
   friend class autofill_metrics::AutofillMetricsBaseTest;
   friend class CreditCardAccessManagerTest;
   friend class CreditCardCvcAuthenticatorTest;
+  friend class FormFillerTest;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;

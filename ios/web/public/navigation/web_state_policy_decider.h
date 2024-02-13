@@ -86,11 +86,13 @@ class WebStatePolicyDecider : public base::CheckedObserver {
     RequestInfo(ui::PageTransition transition_type,
                 bool target_frame_is_main,
                 bool target_frame_is_cross_origin,
+                bool target_window_is_cross_origin,
                 bool is_user_initiated,
                 bool user_tapped_recently)
         : transition_type(transition_type),
           target_frame_is_main(target_frame_is_main),
           target_frame_is_cross_origin(target_frame_is_cross_origin),
+          target_window_is_cross_origin(target_window_is_cross_origin),
           is_user_initiated(is_user_initiated),
           user_tapped_recently(user_tapped_recently) {}
     // The navigation page transition type.
@@ -101,6 +103,9 @@ class WebStatePolicyDecider : public base::CheckedObserver {
     // Indicates whether the navigation target frame is cross-origin with
     // respect to the the navigation source frame.
     bool target_frame_is_cross_origin = false;
+    // Indicates whether the navigation target frame is in another window and is
+    // cross-origin with respect to the the navigation source frame.
+    bool target_window_is_cross_origin = false;
     // Indicates if the request is user initiated (to the best of our
     // knowledge).
     bool is_user_initiated = false;

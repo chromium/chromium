@@ -112,6 +112,11 @@ interface AppShim {
   // the original notification provider connection.
   BindNotificationProvider(
       pending_receiver<mac_notifications.mojom.MacNotificationProvider> provider);
+
+  // Requests notification permissions from the system. This will ask the user
+  // to accept permissions if not granted or denied already.
+  RequestNotificationPermission() =>
+      (mac_notifications.mojom.RequestPermissionResult result);
 };
 
 // Interface through which the a process communicates to the browser process.

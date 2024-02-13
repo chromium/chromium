@@ -136,9 +136,10 @@ suite('<settings-multidevice-page>', () => {
     assertTrue(!!disabledLocalizedLink);
 
     const disabledDescription =
-        disabledLocalizedLink.shadowRoot!.querySelector('#container');
+        disabledLocalizedLink.shadowRoot!.querySelector<HTMLElement>(
+            '#container');
     assertTrue(!!disabledDescription);
-    return disabledDescription.textContent!.trim();
+    return disabledDescription.innerText.trim();
   }
 
   /**
@@ -252,23 +253,31 @@ suite('<settings-multidevice-page>', () => {
   });
 
   function getLabel(): string {
-    const element =
-        multidevicePage.shadowRoot!.querySelector('#multideviceLabel');
+    const element = multidevicePage.shadowRoot!.querySelector<HTMLElement>(
+        '#multideviceLabel');
     assertTrue(!!element);
-    return element.textContent!.trim();
+    return element.innerText.trim();
   }
 
   function getSublabel(): string {
     const element =
         multidevicePage.shadowRoot!.querySelector('#multideviceSubLabel')!
-            .shadowRoot!.querySelector('#container');
+            .shadowRoot!.querySelector<HTMLElement>('#container');
     assertTrue(!!element);
-    return element.textContent!.trim();
+    return element.innerText.trim();
   }
 
   function getSubpage(): SettingsMultideviceSubpageElement|null {
     return multidevicePage.shadowRoot!.querySelector(
         'settings-multidevice-subpage');
+  }
+
+  function getNearbyShareSecondary(): HTMLElement {
+    const nearbyShareSecondary =
+        multidevicePage.shadowRoot!.querySelector<HTMLElement>(
+            '#nearbyShareSecondary');
+    assertTrue(!!nearbyShareSecondary);
+    return nearbyShareSecondary;
   }
 
   suite('nearby share description updates with isRevampWayfindingEnabled enabled', () => {
@@ -302,13 +311,9 @@ suite('<settings-multidevice-page>', () => {
           fakeSettings.setVisibility(Visibility.kAllContacts);
           await flushTasks();
 
-          const nearbyShareSecondary =
-              multidevicePage.shadowRoot!.querySelector(
-                  '#nearbyShareSecondary');
-          assertTrue(!!nearbyShareSecondary);
+          const nearbyShareSecondary = getNearbyShareSecondary();
           assertEquals(
-              'Visible to all contacts',
-              nearbyShareSecondary.textContent!.trim());
+              'Visible to all contacts', nearbyShareSecondary.innerText.trim());
         });
 
     test(
@@ -318,13 +323,11 @@ suite('<settings-multidevice-page>', () => {
           fakeSettings.setVisibility(Visibility.kSelectedContacts);
           await flushTasks();
 
-          const nearbyShareSecondary =
-              multidevicePage.shadowRoot!.querySelector(
-                  '#nearbyShareSecondary');
+          const nearbyShareSecondary = getNearbyShareSecondary();
           assertTrue(!!nearbyShareSecondary);
           assertEquals(
               'Visible to some contacts',
-              nearbyShareSecondary.textContent!.trim());
+              nearbyShareSecondary.innerText.trim());
         });
 
     test(
@@ -334,13 +337,10 @@ suite('<settings-multidevice-page>', () => {
           fakeSettings.setVisibility(Visibility.kYourDevices);
           await flushTasks();
 
-          const nearbyShareSecondary =
-              multidevicePage.shadowRoot!.querySelector(
-                  '#nearbyShareSecondary');
+          const nearbyShareSecondary = getNearbyShareSecondary();
           assertTrue(!!nearbyShareSecondary);
           assertEquals(
-              'Visible to your devices',
-              nearbyShareSecondary.textContent!.trim());
+              'Visible to your devices', nearbyShareSecondary.innerText.trim());
         });
 
     test(
@@ -350,11 +350,9 @@ suite('<settings-multidevice-page>', () => {
           fakeSettings.setVisibility(Visibility.kNoOne);
           await flushTasks();
 
-          const nearbyShareSecondary =
-              multidevicePage.shadowRoot!.querySelector(
-                  '#nearbyShareSecondary');
+          const nearbyShareSecondary = getNearbyShareSecondary();
           assertTrue(!!nearbyShareSecondary);
-          assertEquals('Hidden', nearbyShareSecondary.textContent!.trim());
+          assertEquals('Hidden', nearbyShareSecondary.innerText.trim());
         });
 
     test(
@@ -364,24 +362,21 @@ suite('<settings-multidevice-page>', () => {
           fakeSettings.setVisibility(Visibility.kNoOne);
           await flushTasks();
 
-          const nearbyShareSecondaryEnabled =
-              multidevicePage.shadowRoot!.querySelector(
-                  '#nearbyShareSecondary');
+          const nearbyShareSecondaryEnabled = getNearbyShareSecondary();
           assertTrue(!!nearbyShareSecondaryEnabled);
-          assertEquals(
-              'Hidden', nearbyShareSecondaryEnabled.textContent!.trim());
+          assertEquals('Hidden', nearbyShareSecondaryEnabled.innerText.trim());
 
           fakeSettings.setVisibility(Visibility.kAllContacts);
           await flushTasks();
           assertEquals(
               'Visible to all contacts',
-              nearbyShareSecondaryEnabled.textContent!.trim());
+              nearbyShareSecondaryEnabled.innerText.trim());
 
           fakeSettings.setVisibility(Visibility.kYourDevices);
           await flushTasks();
           assertEquals(
               'Visible to your devices',
-              nearbyShareSecondaryEnabled.textContent!.trim());
+              nearbyShareSecondaryEnabled.innerText.trim());
 
           setNearbyShareEnabled(false);
           flush();
@@ -396,7 +391,7 @@ suite('<settings-multidevice-page>', () => {
           await flushTasks();
           assertEquals(
               'Visible to some contacts',
-              nearbyShareSecondaryEnabled.textContent!.trim());
+              nearbyShareSecondaryEnabled.innerText.trim());
         });
   });
 
@@ -513,6 +508,15 @@ suite('<settings-multidevice-page>', () => {
       assertEquals('Android phone', getLabel());
       assertEquals(anotherHost, getSublabel());
     });
+
+    test('Labels for no eligible host device', () => {
+      setHostData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
+      assertEquals('Android phone', getLabel());
+      assertEquals(
+          'No available devices. Add your Google Account to your phone to ' +
+              'connect it to this Chrome device. Learn more',
+          getSublabel());
+    });
   } else {
     test('changing host device changes label', () => {
       setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED);
@@ -521,6 +525,12 @@ suite('<settings-multidevice-page>', () => {
       const anotherHost = `Super Duper ${HOST_DEVICE}`;
       setHostData(MultiDeviceSettingsMode.HOST_SET_VERIFIED, anotherHost);
       assertEquals(anotherHost, getLabel());
+    });
+
+    test('Labels for no eligible host device', () => {
+      setHostData(MultiDeviceSettingsMode.NO_ELIGIBLE_HOSTS);
+      assertEquals('Android phone', getLabel());
+      assertEquals('No eligible devices. Learn more', getSublabel());
     });
   }
 

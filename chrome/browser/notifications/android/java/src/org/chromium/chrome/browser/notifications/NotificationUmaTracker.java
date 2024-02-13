@@ -542,6 +542,18 @@ public class NotificationUmaTracker {
                 NotificationPermissionState.NUM_ENTRIES);
     }
 
+    /**
+     * Records the number of notifications that were suspended every time the user hits the
+     * `PRE_UNSUBSCRIBE` action button.
+     *
+     * @param count The number of notifications suspended, including the clicked notification.
+     */
+    public void recordSuspendedNotificationCountOnUnsubscribe(int count) {
+        RecordHistogram.recordCount100Histogram(
+                "Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount",
+                count);
+    }
+
     private void logNotificationShown(
             @SystemNotificationType int type,
             @ChromeChannelDefinitions.ChannelId String channelId) {

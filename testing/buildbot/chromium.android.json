@@ -2213,7 +2213,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "args": [
@@ -2225,6 +2226,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -6044,7 +6050,8 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
+          "--git-revision=${got_revision}"
         ],
         "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
@@ -6058,6 +6065,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -10371,7 +10383,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "args": [
@@ -10383,6 +10396,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -14035,7 +14053,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
+          "--git-revision=${got_revision}"
         ],
         "description": "Run with android_33_google_apis_x64",
         "merge": {
@@ -14048,6 +14067,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -18011,7 +18035,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
+          "--git-revision=${got_revision}"
         ],
         "description": "Run with android_34_google_apis_x64",
         "merge": {
@@ -18024,6 +18049,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -21868,7 +21898,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "args": [
@@ -21880,6 +21911,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -30761,7 +30797,8 @@
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -30774,6 +30811,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -35502,7 +35544,8 @@
         "args": [
           "--use-persistent-shell",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--git-revision=${got_revision}"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -35515,6 +35558,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -36547,7 +36595,8 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "args": [
@@ -36559,6 +36608,11 @@
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
         "name": "blink_platform_unittests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true

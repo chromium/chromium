@@ -8,11 +8,12 @@
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/accessibility/scoped_a11y_override_window_setter.h"
 #include "ash/shell.h"
+#include "ash/style/icon_button.h"
 #include "ash/wm/desks/desk_icon_button.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desk_profiles_view.h"
+#include "ash/wm/desks/desk_profiles_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
@@ -25,6 +26,7 @@
 #include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/splitview/faster_split_view.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -273,6 +275,10 @@ std::vector<OverviewFocusableView*> OverviewFocusCycler::GetTraversableViews()
     }
     if (grid->IsSaveDeskForLaterButtonVisible()) {
       traversable_views.push_back(grid->GetSaveDeskForLaterButton());
+    }
+    if (auto* faster_split_view = grid->GetFasterSplitView()) {
+      traversable_views.push_back(faster_split_view->toast());
+      traversable_views.push_back(faster_split_view->settings_button());
     }
   }
   return traversable_views;

@@ -115,7 +115,7 @@ void UpdateDeviceList() {
   DeviceDataManagerX11::GetInstance()->UpdateDeviceList(connection);
 }
 
-absl::optional<gfx::Point> GetRootCursorLocationFromEvent(
+std::optional<gfx::Point> GetRootCursorLocationFromEvent(
     const x11::Event& event) {
   auto* device = event.As<x11::Input::DeviceEvent>();
   auto* crossing = event.As<x11::Input::CrossingEvent>();
@@ -139,7 +139,7 @@ absl::optional<gfx::Point> GetRootCursorLocationFromEvent(
   if (is_valid_event) {
     return ui::EventSystemLocationFromXEvent(event);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace

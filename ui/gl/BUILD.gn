@@ -310,7 +310,6 @@ component("gl") {
       "hdr_metadata_helper_win.h",
       "swap_chain_presenter.cc",
       "swap_chain_presenter.h",
-      "vsync_observer.h",
       "vsync_provider_win.cc",
       "vsync_provider_win.h",
       "vsync_thread_win.cc",
@@ -496,10 +495,6 @@ static_library("test_support") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-
-    if (is_chromeos) {
-      deps += [ "//ui/gfx/linux:gbm" ]
-    }
   }
 
   # If the run-time search path isn't set properly when we use ANGLE with its

@@ -1,0 +1,109 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-drawer-width: 256px;
+}
+
+:host dialog {
+  --transition-timing: 200ms ease;
+  background-color: var(--cr-drawer-background-color, #fff);
+  border: none;
+  border-start-end-radius: var(--cr-drawer-border-start-end-radius, 0);
+  border-end-end-radius: var(--cr-drawer-border-end-end-radius, 0);
+  bottom: 0;
+  left: calc(-1 * var(--cr-drawer-width));
+  margin: 0;
+  max-height: initial;
+  max-width: initial;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  transition: left var(--transition-timing);
+  width: var(--cr-drawer-width);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host dialog {
+    background: var(--cr-drawer-background-color, var(--google-grey-900))
+        linear-gradient(rgba(255, 255, 255, .04), rgba(255, 255, 255, .04));
+  }
+}
+
+:host dialog,
+#container {
+  height: 100%;
+  word-break: break-word;
+}
+
+:host([show_]) dialog {
+  left: 0;
+}
+
+:host([align=rtl]) dialog {
+  left: auto;
+  right: calc(-1 * var(--cr-drawer-width));
+  transition: right var(--transition-timing);
+}
+
+:host([show_][align=rtl]) dialog {
+  right: 0;
+}
+
+:host dialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: opacity var(--transition-timing);
+}
+
+:host([show_]) dialog::backdrop {
+  opacity: 1;
+}
+
+.drawer-header {
+  align-items: center;
+  border-bottom: var(--cr-separator-line);
+  color: var(--cr-drawer-header-color, inherit);
+  display: flex;
+  font-size: 123.08%;  /* go to 16px from 13px */
+  font-weight: var(--cr-drawer-header-font-weight, inherit);
+  min-height: 56px;
+  padding-inline-start: var(--cr-drawer-header-padding, 24px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .drawer-header {
+    color: var(--cr-primary-text-color);
+  }
+}
+
+#heading {
+  outline: none;
+}
+
+:host ::slotted([slot='body']) {
+  height: calc(100% - 56px);
+  overflow: auto;
+}
+
+picture {
+  margin-inline-end: 16px;
+}
+
+picture,
+#product-logo {
+  height: 24px;
+  width: 24px;
+}

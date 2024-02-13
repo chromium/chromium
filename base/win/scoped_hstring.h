@@ -11,7 +11,6 @@
 #include <string_view>
 
 #include "base/scoped_generic.h"
-#include "base/strings/string_piece.h"
 
 namespace base {
 
@@ -47,10 +46,10 @@ class BASE_EXPORT ScopedHString
   explicit ScopedHString(HSTRING hstr);
 
   static ScopedHString Create(std::wstring_view str);
-  static ScopedHString Create(StringPiece str);
+  static ScopedHString Create(std::string_view str);
 
   // Returns a view into the memory buffer managed by the instance. The returned
-  // StringPiece is only valid during the lifetime of this ScopedHString
+  // std::string_view is only valid during the lifetime of this ScopedHString
   // instance.
   std::wstring_view Get() const;
 

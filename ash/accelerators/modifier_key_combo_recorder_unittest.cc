@@ -113,6 +113,52 @@ TEST_F(ModifierKeyComboRecorderTest, AltGrModifier) {
       "ChromeOS.Inputs.ModifierKeyCombo.Internal", expected_hash, 1);
 }
 
+TEST_F(ModifierKeyComboRecorderTest, AlphaOrDigitKeysWithShift) {
+  ui::KeyboardDevice keyboard(1, ui::INPUT_DEVICE_INTERNAL, "Keyboard");
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices({keyboard});
+
+  ui::KeyboardCapability* keyboard_capability =
+      Shell::Get()->keyboard_capability();
+  ui::KeyboardCapability::KeyboardInfo keyboard_info;
+  keyboard_info.device_type =
+      ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+  keyboard_capability->DisableKeyboardInfoTrimmingForTesting();
+  keyboard_capability->SetKeyboardInfoForTesting(keyboard,
+                                                 std::move(keyboard_info));
+
+  ui::KeyEvent shift_c_event(ui::ET_KEY_PRESSED, ui::VKEY_C, ui::EF_SHIFT_DOWN);
+  shift_c_event.set_source_device_id(keyboard.id);
+  modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(shift_c_event);
+  // No metric should be recorded if the input was an alpha key + shift.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.ModifierKeyCombo.Internal", 0);
+
+  ui::KeyEvent shift_nine_event(ui::ET_KEY_PRESSED, ui::VKEY_9,
+                                ui::EF_SHIFT_DOWN);
+  shift_nine_event.set_source_device_id(keyboard.id);
+  modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(shift_nine_event);
+  // No metric should be recorded if the input was a digit key + shift.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.ModifierKeyCombo.Internal", 0);
+
+  ui::KeyEvent ctrl_shift_c_event(ui::ET_KEY_PRESSED, ui::VKEY_C,
+                                  ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  ctrl_shift_c_event.set_source_device_id(keyboard.id);
+  modifier_key_combo_recorder_->OnPrerewriteKeyInputEvent(ctrl_shift_c_event);
+  // ShiftLeft and ControlLeft are the default locations for these modifiers.
+  const uint32_t modifier_flag =
+      1 << static_cast<uint32_t>(ModifierFlag::kShiftLeft) |
+      1 << static_cast<uint32_t>(ModifierFlag::kControlLeft);
+  const uint32_t expected_hash =
+      static_cast<uint32_t>(AcceleratorKeyInputType::kAlpha) +
+      (modifier_flag << 16);
+  // Metric should be recorded if shift and another modifier are held.
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Inputs.ModifierKeyCombo.Internal", 1);
+  histogram_tester_->ExpectBucketCount(
+      "ChromeOS.Inputs.ModifierKeyCombo.Internal", expected_hash, 1);
+}
+
 class ModifierKeyComboRecorderParameterizedTest
     : public ModifierKeyComboRecorderTest,
       public testing::WithParamInterface<std::tuple<ui::KeyEvent, uint32_t>> {};

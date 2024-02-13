@@ -93,7 +93,7 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
     PortalFilterSet& operator=(PortalFilterSet&& other) = default;
 
     std::vector<PortalFilter> filters;
-    absl::optional<PortalFilter> default_filter;
+    std::optional<PortalFilter> default_filter;
   };
 
   // A wrapper over some shared contextual information that needs to be passed

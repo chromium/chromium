@@ -273,13 +273,13 @@ found in the LICENSE file.
         </div>
       </div>
       <div id="scrollContainer" class="layout vertical flex scrollable"
-          on-scroll="applyScrollClassTags_">
+          on-scroll="applyScrollClassTags">
         <div id="contentContainer" class="layout vertical flex">
           <slot name="content"></slot>
         </div>
         <div id="readMoreButtonContainer">
-          <template is="dom-if" if="[[showReadMoreButton_]]" restamp>
-            <cr-button id="readMoreButton" on-click="onReadMoreClick_"
+          <template is="dom-if" if="[[showReadMoreButton]]" restamp>
+            <cr-button id="readMoreButton" on-click="onReadMoreClick"
                 class="action-button">
               <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
             </cr-button>
@@ -290,7 +290,7 @@ found in the LICENSE file.
     <div class="buttons-common bottom-buttons-container
         vertical-mode-centering">
       <slot class="layout horizontal end-justified" name="bottom-buttons"
-          hidden="[[showReadMoreButton_]]">
+          hidden="[[showReadMoreButton]]">
       </slot>
     </div>
   </template>

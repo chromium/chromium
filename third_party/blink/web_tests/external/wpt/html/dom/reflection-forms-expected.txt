@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] progress.max: setAttribute() to "\\t7"
+  assert_equals: IDL get expected 7 but got 1
+[FAIL] progress.max: setAttribute() to "\\f7"
+  assert_equals: IDL get expected 7 but got 1
+[FAIL] progress.max: setAttribute() to " 7"
+  assert_equals: IDL get expected 7 but got 1
+[FAIL] progress.max: setAttribute() to "\\n7"
+  assert_equals: IDL get expected 7 but got 1
+[FAIL] progress.max: setAttribute() to "\\r7"
+  assert_equals: IDL get expected 7 but got 1
+[FAIL] progress.max: setAttribute() to "7\\v"
+  assert_equals: IDL get expected 7 but got 1
+[FAIL] progress.max: setAttribute() to "5%"
+  assert_equals: IDL get expected 5 but got 1
+[FAIL] progress.max: setAttribute() to "+100"
+  assert_equals: IDL get expected 100 but got 1
+[FAIL] progress.max: IDL set to -10000000000
+  assert_equals: getAttribute() expected "previous value" but got "1"
+[FAIL] progress.max: IDL set to -1
+  assert_equals: getAttribute() expected "previous value" but got "1"
+[FAIL] progress.max: IDL set to -0
+  assert_equals: getAttribute() expected "previous value" but got "1"
+[FAIL] progress.max: IDL set to 0
+  assert_equals: getAttribute() expected "previous value" but got "1"
+Harness: the test ran to completion.
+

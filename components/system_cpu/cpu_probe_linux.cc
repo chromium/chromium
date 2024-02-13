@@ -18,7 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/system_cpu/core_times.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 #include "components/system_cpu/procfs_stat_cpu_parser.h"
 
 namespace system_cpu {
@@ -34,7 +34,7 @@ class CpuProbeLinux::BlockingTaskRunnerHelper final {
   BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
   BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
 
-  std::optional<PressureSample> Update();
+  std::optional<CpuSample> Update();
 
  private:
   // Called when a core is seen the first time in /proc/stat.
@@ -61,8 +61,7 @@ CpuProbeLinux::BlockingTaskRunnerHelper::~BlockingTaskRunnerHelper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::optional<PressureSample>
-CpuProbeLinux::BlockingTaskRunnerHelper::Update() {
+std::optional<CpuSample> CpuProbeLinux::BlockingTaskRunnerHelper::Update() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!stat_parser_.Update()) {
@@ -96,8 +95,7 @@ CpuProbeLinux::BlockingTaskRunnerHelper::Update() {
   }
 
   if (utilization_cores > 0) {
-    return PressureSample{.cpu_utilization =
-                              utilization_sum / utilization_cores};
+    return CpuSample{.cpu_utilization = utilization_sum / utilization_cores};
   } else {
     return std::nullopt;
   }

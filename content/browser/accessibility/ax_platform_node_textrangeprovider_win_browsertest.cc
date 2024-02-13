@@ -2633,8 +2633,8 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        MoveByUnitParagraphWithAriaHiddenNodes) {
   const std::string html_markup = R"HTML(<!DOCTYPE html>
-  <html>
-    <body>
+  <html>   <!-- aria=describedby on #body causes hidden nodes to be included -->
+    <body id="body" aria-describedby="body">
       <div>start</div>
       <div>
         1. Paragraph with hidden <span aria-hidden="true">

@@ -14,7 +14,10 @@ class UserContext;
 // This interface is used by `AuthFactorMigrator` to run a migration step.
 class AuthFactorMigration {
  public:
-  enum class MigrationName { kRecoveryFactorHsmPubkeyMigration };
+  enum class MigrationName {
+    kRecoveryFactorHsmPubkeyMigration,
+    kKnowledgeFactorHashInfoMigration
+  };
   AuthFactorMigration() = default;
   virtual ~AuthFactorMigration() = default;
 

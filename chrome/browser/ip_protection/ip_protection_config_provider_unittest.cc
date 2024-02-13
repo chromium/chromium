@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -58,15 +59,10 @@ privacy::ppn::PrivacyPassTokenData CreateMockPrivacyPassToken(
 // will return them.
 quiche::BlindSignToken CreateMockBlindSignToken(std::string token_value,
                                                 base::Time expiration) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
+      CreateMockPrivacyPassToken(std::move(token_value));
   quiche::BlindSignToken blind_sign_token;
-
-  if (net::features::kIpPrivacyBsaEnablePrivacyPass.Get()) {
-    privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
-        CreateMockPrivacyPassToken(std::move(token_value));
-    blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
-  } else {
-    blind_sign_token.token = std::move(token_value);
-  }
+  blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
   blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
   return blind_sign_token;
 }
@@ -189,7 +185,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
             prefs(), /*onboarding_service=*/nullptr, /*is_incognito=*/false);
     getter_ = std::make_unique<IpProtectionConfigProvider>(
-        IdentityManager(), tracking_protection_settings_.get(),
+        IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
     bsa_ = std::make_unique<MockBlindSignAuth>();
     getter_->SetUpForTesting(
@@ -360,47 +356,9 @@ class IpProtectionConfigProviderTest : public testing::Test {
   std::unique_ptr<MockBlindSignAuth> bsa_;
 };
 
-enum class TokenFormatTestCase {
-  kTokenFormatRegular,
-  kTokenFormatPrivacyPass,
-};
-
-class IpProtectionConfigProviderTest_TokenFormat
-    : public IpProtectionConfigProviderTest,
-      public ::testing::WithParamInterface<TokenFormatTestCase> {
- public:
-  IpProtectionConfigProviderTest_TokenFormat() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kEnableIpProtectionProxy,
-        {{net::features::kIpPrivacyBsaEnablePrivacyPass.name,
-          IsPrivacyPassTokenFormatEnabled() ? "true" : "false"}});
-  }
-
-  bool IsPrivacyPassTokenFormatEnabled() const {
-    return GetParam() == TokenFormatTestCase::kTokenFormatPrivacyPass;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    IpProtectionConfigProviderTest_TokenFormat,
-    testing::ValuesIn({TokenFormatTestCase::kTokenFormatRegular,
-                       TokenFormatTestCase::kTokenFormatPrivacyPass}),
-    [](const testing::TestParamInfo<TokenFormatTestCase>& info) {
-      switch (info.param) {
-        case (TokenFormatTestCase::kTokenFormatRegular):
-          return "TokenFormatRegular";
-        case (TokenFormatTestCase::kTokenFormatPrivacyPass):
-          return "TokenFormatPrivacyPass";
-      }
-    });
-
 // The success case: a primary account is available, and BSA gets a token for
 // it.
-TEST_P(IpProtectionConfigProviderTest_TokenFormat, Success) {
+TEST_F(IpProtectionConfigProviderTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_),
                    CreateMockBlindSignToken("single-use-2", expiration_time_)};
@@ -444,12 +402,7 @@ TEST_F(IpProtectionConfigProviderTest, NoTokens) {
 }
 
 // BSA returns malformed tokens.
-TEST_P(IpProtectionConfigProviderTest_TokenFormat, MalformedTokens) {
-  if (!IsPrivacyPassTokenFormatEnabled()) {
-    // We can't detect malformed tokens unless the privacy pass token format is
-    // being used.
-    return;
-  }
+TEST_F(IpProtectionConfigProviderTest, MalformedTokens) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->tokens_ = {{"invalid-token-proto-data", absl::Now() + absl::Hours(1)}};
 
@@ -614,6 +567,26 @@ TEST_F(IpProtectionConfigProviderTest, NoPrimary) {
   histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
 }
 
+// TryGetAuthTokens() fails because IP Protection is disabled by user settings.
+TEST_F(IpProtectionConfigProviderTest, TryGetAuthTokens_IpProtectionDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+
+  primary_account_behavior_ = PrimaryAccountBehavior::kNone;
+
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
+
+  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+
+  EXPECT_FALSE(bsa_->get_tokens_called_);
+  ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      IpProtectionTryGetAuthTokensResult::kFailedDisabledByUser, 1);
+  histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 0);
+  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
+}
+
 // No primary account initially but this changes when the account status
 // changes.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -724,82 +697,41 @@ TEST_F(IpProtectionConfigProviderTest, CalculateBackoff) {
   check(kFailedBSA400, getter_->kBugBackoff, true);
 }
 
-TEST_F(IpProtectionConfigProviderTest, GetProxyListFirstHopHostnames) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "false"}});
-  ip_protection::GetProxyConfigResponse response;
-  response.add_first_hop_hostnames("proxy1");
-  response.add_first_hop_hostnames("proxy2");
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
-
-  getter_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"}),
-                                                 MakeChain({"proxy2"})};
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
-}
-
-TEST_F(IpProtectionConfigProviderTest,
-       GetProxyListFirstHopHostnamesWithOAuthTokenFlag) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "false"},
-       {net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.name,
-        "true"}});
-  ip_protection::GetProxyConfigResponse response;
-  response.add_first_hop_hostnames("proxy1");
-  response.add_first_hop_hostnames("proxy2");
-  getter_->SetUpForTesting(
-      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
-
-  primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  GetProxyListWithOAuthToken();
-
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"}),
-                                                 MakeChain({"proxy2"})};
-  EXPECT_THAT(proxy_list_future_.Get(),
-              testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
-}
-
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
   chain->set_chain_id(1);
   chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy2");
+  chain->set_proxy_b("proxy2b");
   chain->set_chain_id(2);
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"}, 1),
-                                                 MakeChain({"proxy2"}, 2)};
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      MakeChain({"proxy1", "proxy1b"}, 1), MakeChain({"proxy2", "proxy2b"}, 2)};
   EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
   chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy2:80");
+  chain->set_proxy_b("proxy2");
   chain = response.add_proxy_chain();
   chain->set_proxy_a("proxy3:0");
   chain->set_proxy_b("proxy4:443");
@@ -809,10 +741,13 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"proxy1"})};
-  exp_proxy_list.push_back(
-      net::ProxyChain::ForIpProtection({net::ProxyServer::FromSchemeHostAndPort(
-          net::ProxyServer::SCHEME_HTTPS, "proxy2", 80)}));
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      MakeChain({"proxy1", "proxy1b"})};
+  exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy2", 80),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxy2", std::nullopt)}));
   exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxy3", "0"),
@@ -825,29 +760,29 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("]INVALID[");
+  chain->set_proxy_b("not-invalid");
   chain = response.add_proxy_chain();
   chain->set_proxy_a("valid");
+  chain->set_proxy_b("valid");
   getter_->SetUpForTesting(
       std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"valid"})};
+  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"valid", "valid"})};
   EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
 }
 
 TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      net::features::kEnableIpProtectionProxy,
-      {{net::features::kIpPrivacyUseProxyChains.name, "true"}});
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kEnableIpProtectionProxy);
   ip_protection::GetProxyConfigResponse response;
   auto* chain = response.add_proxy_chain();
   chain->set_proxy_a("proxya");
@@ -874,7 +809,6 @@ TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy,
       {
-          {net::features::kIpPrivacyUseProxyChains.name, "true"},
           {net::features::kIpPrivacyProxyAHostnameOverride.name,
            "proxyAOverride"},
           {net::features::kIpPrivacyProxyBHostnameOverride.name,
@@ -905,15 +839,31 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
   EXPECT_EQ(proxy_list_future_.Get(), std::nullopt);
 }
 
+TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+
+  ip_protection::GetProxyConfigResponse response;
+  auto* chain = response.add_proxy_chain();
+  chain->set_proxy_a("proxy1");
+  chain->set_proxy_b("proxy1b");
+  chain->set_chain_id(1);
+  getter_->SetUpForTesting(
+      std::make_unique<MockIpProtectionConfigHttp>(response), bsa_.get());
+
+  prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
+
+  getter_->GetProxyList(proxy_list_future_.GetCallback());
+
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  EXPECT_EQ(proxy_list_future_.Get(), std::nullopt);
+}
+
 // Do a basic check of the token formats.
-TEST_P(IpProtectionConfigProviderTest_TokenFormat, TokenFormat) {
+TEST_F(IpProtectionConfigProviderTest, TokenFormat) {
   network::mojom::BlindSignedAuthTokenPtr result =
       CreateMockBlindSignedAuthToken("single-use-1", expiration_time_);
 
-  if (IsPrivacyPassTokenFormatEnabled()) {
-    EXPECT_TRUE(base::StartsWith((*result).token, "PrivateToken token="));
-    EXPECT_NE((*result).token.find("extensions="), std::string::npos);
-  } else {
-    EXPECT_TRUE(base::StartsWith((*result).token, "Bearer "));
-  }
+  EXPECT_TRUE(base::StartsWith((*result).token, "PrivateToken token="));
+  EXPECT_NE((*result).token.find("extensions="), std::string::npos);
 }

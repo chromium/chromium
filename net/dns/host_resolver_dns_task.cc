@@ -17,6 +17,7 @@
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_cache.h"
 #include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/public/util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -134,6 +135,7 @@ bool HostResolverDnsTask::TransactionInfo::operator<(
 HostResolverDnsTask::HostResolverDnsTask(
     DnsClient* client,
     absl::variant<url::SchemeHostPort, std::string> host,
+    NetworkAnonymizationKey anonymization_key,
     DnsQueryTypeSet query_types,
     ResolveContext* resolve_context,
     bool secure,
@@ -145,6 +147,7 @@ HostResolverDnsTask::HostResolverDnsTask(
     const HostResolver::HttpsSvcbOptions& https_svcb_options)
     : client_(client),
       host_(std::move(host)),
+      anonymization_key_(std::move(anonymization_key)),
       resolve_context_(resolve_context->AsSafeRef()),
       secure_(secure),
       secure_dns_mode_(secure_dns_mode),
@@ -695,6 +698,16 @@ void HostResolverDnsTask::HandleTransactionResults(
     Results transaction_results) {
   CHECK(transactions_in_progress_.find(transaction_info) ==
         transactions_in_progress_.end());
+
+  if (base::FeatureList::IsEnabled(features::kUseHostResolverCache) &&
+      resolve_context_->host_resolver_cache() != nullptr) {
+    for (const std::unique_ptr<HostResolverInternalResult>& result :
+         transaction_results) {
+      resolve_context_->host_resolver_cache()->Set(
+          result->Clone(), anonymization_key_, HostResolverSource::DNS,
+          secure_);
+    }
+  }
 
   // TODO(crbug.com/1381506): Use new results type directly instead of
   // converting to HostCache::Entry.

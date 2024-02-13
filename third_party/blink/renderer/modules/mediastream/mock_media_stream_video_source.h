@@ -94,11 +94,6 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
       (override));
 
   MOCK_METHOD(void,
-              GetZoomLevel,
-              (base::OnceCallback<void(std::optional<int>, const String&)>),
-              (override));
-
-  MOCK_METHOD(void,
               SetZoomLevel,
               (int, base::OnceCallback<void(DOMException*)>),
               (override));

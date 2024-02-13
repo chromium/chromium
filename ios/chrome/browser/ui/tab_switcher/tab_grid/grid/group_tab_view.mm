@@ -15,12 +15,22 @@ namespace {
 
 const CGFloat kFaviconViewScaleFactor = 0.6;
 const NSInteger kTabGridButtonFontSize = 14;
+const CGFloat kBottomFaviconViewWidthAndHeightAnchor = 24;
+const CGFloat kBottomFaviconBottomTrailingOffset = 4;
+const CGFloat kBottomFaviconViewScaleFactor = 0.75;
 
 }  // namespace
 
 @implementation GroupTabView {
   // The view for the snapshot configuration.
   TopAlignedImageView* _snapshotFaviconView;
+
+  // The view to display the favicon in the bottom right of the
+  // `_snapshotFaviconView`.
+  UIView* _bottomFaviconView;
+
+  // The view that holds the favicon image.
+  UIImageView* _bottomFaviconImageView;
 
   // The views for favicon configuration.
   UIView* _faviconView;
@@ -43,6 +53,20 @@ const NSInteger kTabGridButtonFontSize = 14;
     gradientView.translatesAutoresizingMaskIntoConstraints = NO;
     [_snapshotFaviconView addSubview:gradientView];
 
+    _bottomFaviconView = [[UIView alloc] init];
+    _bottomFaviconView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    _bottomFaviconView.layer.cornerRadius =
+        kGroupGridBottomTrailingCellCornerRadius;
+    _bottomFaviconView.layer.masksToBounds = YES;
+    _bottomFaviconView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _bottomFaviconImageView = [[UIImageView alloc] init];
+    _bottomFaviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomFaviconImageView.backgroundColor = [UIColor clearColor];
+    _bottomFaviconImageView.layer.cornerRadius =
+        kGroupGridFaviconViewCornerRadius;
+    _bottomFaviconImageView.contentMode = UIViewContentModeScaleAspectFit;
+
     _faviconView = [[UIView alloc] init];
     _faviconView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     _faviconView.layer.cornerRadius = kGroupGridBottomTrailingCellCornerRadius;
@@ -51,7 +75,6 @@ const NSInteger kTabGridButtonFontSize = 14;
 
     _faviconImageView = [[UIImageView alloc] init];
     _faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _faviconImageView.layer.masksToBounds = YES;
     _faviconImageView.backgroundColor = [UIColor clearColor];
     _faviconImageView.layer.cornerRadius = kGroupGridFaviconViewCornerRadius;
     _faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -69,9 +92,12 @@ const NSInteger kTabGridButtonFontSize = 14;
 
     [self hideAllAttributes];
 
+    [_bottomFaviconView addSubview:_bottomFaviconImageView];
+    [_snapshotFaviconView addSubview:_bottomFaviconView];
     [_faviconView addSubview:_faviconImageView];
     [_remainingTabsView addSubview:_remainingTabsLabel];
     [self addSubview:_snapshotFaviconView];
+
     [self addSubview:_faviconView];
     [self addSubview:_remainingTabsView];
 
@@ -82,6 +108,29 @@ const NSInteger kTabGridButtonFontSize = 14;
     AddSameCenterConstraints(_faviconView, _remainingTabsLabel);
     AddSameCenterConstraints(_faviconView, _faviconImageView);
     NSArray* constraints = @[
+      [_bottomFaviconView.widthAnchor
+          constraintEqualToConstant:kBottomFaviconViewWidthAndHeightAnchor],
+      [_bottomFaviconView.heightAnchor
+          constraintEqualToConstant:kBottomFaviconViewWidthAndHeightAnchor],
+      [_bottomFaviconView.bottomAnchor
+          constraintEqualToAnchor:_snapshotFaviconView.bottomAnchor
+                         constant:-kBottomFaviconBottomTrailingOffset],
+      [_bottomFaviconView.trailingAnchor
+          constraintEqualToAnchor:_snapshotFaviconView.trailingAnchor
+                         constant:-kBottomFaviconBottomTrailingOffset],
+
+      [_bottomFaviconImageView.widthAnchor
+          constraintEqualToAnchor:_bottomFaviconView.widthAnchor
+                       multiplier:kBottomFaviconViewScaleFactor],
+      [_bottomFaviconImageView.heightAnchor
+          constraintEqualToAnchor:_bottomFaviconView.heightAnchor
+                       multiplier:kBottomFaviconViewScaleFactor],
+
+      [_bottomFaviconImageView.centerYAnchor
+          constraintEqualToAnchor:_bottomFaviconView.centerYAnchor],
+      [_bottomFaviconImageView.centerXAnchor
+          constraintEqualToAnchor:_bottomFaviconView.centerXAnchor],
+
       [_faviconImageView.widthAnchor
           constraintEqualToAnchor:_faviconView.widthAnchor
                        multiplier:kFaviconViewScaleFactor],
@@ -98,9 +147,10 @@ const NSInteger kTabGridButtonFontSize = 14;
 - (void)configureWithSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon {
   [self hideAllAttributes];
   _snapshotFaviconView.image = snapshot;
+  _bottomFaviconImageView.image = favicon;
+  _bottomFaviconImageView.hidden = NO;
+  _bottomFaviconView.hidden = NO;
   _snapshotFaviconView.hidden = NO;
-  // TODO(crbug.com/1501837): Handle the favicon in the bottom right of the
-  // `_snapshotFaviconView`.
   return;
 }
 
@@ -126,6 +176,9 @@ const NSInteger kTabGridButtonFontSize = 14;
 - (void)hideAllAttributes {
   _snapshotFaviconView.hidden = YES;
   _snapshotFaviconView.image = nil;
+  _bottomFaviconView.hidden = YES;
+  _bottomFaviconImageView.hidden = YES;
+  _bottomFaviconImageView.image = nil;
   _faviconView.hidden = YES;
   _faviconImageView.hidden = YES;
   _faviconImageView.image = nil;

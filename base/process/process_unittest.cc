@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -58,7 +59,7 @@ constexpr int kDummyExitCode = 42;
 // Fake port provider that returns the calling process's
 // task port, ignoring its argument.
 class FakePortProvider : public base::PortProvider {
-  mach_port_t TaskForPid(base::ProcessHandle process) const override {
+  mach_port_t TaskForHandle(base::ProcessHandle process_handle) const override {
     return mach_task_self();
   }
 };
@@ -78,10 +79,10 @@ std::string GetProcessCpuCgroup(const base::Process& process) {
     return std::string();
   }
 
-  std::vector<base::StringPiece> lines = SplitStringPiece(
+  std::vector<std::string_view> lines = SplitStringPiece(
       proc, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const auto& line : lines) {
-    std::vector<base::StringPiece> fields = SplitStringPiece(
+    std::vector<std::string_view> fields = SplitStringPiece(
         line, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (fields.size() != 3U) {
       continue;

@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/game_dashboard/game_dashboard_context_test_api.h"
@@ -25,6 +26,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/icon_button.h"
@@ -65,7 +67,18 @@ class GameDashboardContextTest : public GameDashboardTestBase {
   GameDashboardContextTest& operator=(const GameDashboardContextTest&) = delete;
   ~GameDashboardContextTest() override = default;
 
+  void SetUp() override {
+    GameDashboardTestBase::SetUp();
+
+    // Disable the welcome dialog by default.
+    active_user_prefs_ =
+        Shell::Get()->session_controller()->GetActivePrefService();
+    ASSERT_TRUE(active_user_prefs_);
+    SetShowWelcomeDialog(false);
+  }
+
   void TearDown() override {
+    active_user_prefs_ = nullptr;
     CloseGameWindow();
     GameDashboardTestBase::TearDown();
   }
@@ -100,16 +113,27 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
   }
 
+  // Sets whether the welcome dialog should be displayed when a game window
+  // opens, which is determiend by the `show_dialog` param.
+  void SetShowWelcomeDialog(bool show_dialog) {
+    CHECK(!game_window_)
+        << "The show welcome dialog param should be changed before "
+           "creating the window. To set this param, call this "
+           "function before CreateGameWindow() is called.";
+    active_user_prefs_->SetBoolean(prefs::kGameDashboardShowWelcomeDialog,
+                                   show_dialog);
+    ASSERT_EQ(
+        active_user_prefs_->GetBoolean(prefs::kGameDashboardShowWelcomeDialog),
+        show_dialog);
+  }
+
   // If `is_arc_window` is true, this function creates the window as an ARC
   // game window. Otherwise, it creates the window as a GeForceNow window.
   // For ARC game windows, if `set_arc_game_controls_flags_prop` is true, then
   // the `kArcGameControlsFlagsKey` window property will be set to
-  // `ArcGameControlsFlag::kKnown`, otherwise the property will not be set. If
-  // `show_welcome_dialog` is true, the welcome dialog displays when the Game
-  // Window first opens.
+  // `ArcGameControlsFlag::kKnown`, otherwise the property will not be set.
   void CreateGameWindow(bool is_arc_window,
-                        bool set_arc_game_controls_flags_prop = true,
-                        bool show_welcome_dialog = false) {
+                        bool set_arc_game_controls_flags_prop = true) {
     ASSERT_FALSE(game_window_);
     ASSERT_FALSE(test_api_);
     game_window_ = CreateAppWindow(
@@ -118,9 +142,6 @@ class GameDashboardContextTest : public GameDashboardTestBase {
         (is_arc_window ? AppType::ARC_APP : AppType::NON_APP), app_bounds());
     auto* context = GameDashboardController::Get()->GetGameDashboardContext(
         game_window_.get());
-    // TODO(b/316141148): Update test logic to set `show_welcome_dialog_` to
-    // false via a property instead of directly.
-    context->SetShowWelcomeDialogForTesting(show_welcome_dialog);
     ASSERT_TRUE(context);
     test_api_ = std::make_unique<GameDashboardContextTestApi>(
         context, GetEventGenerator());
@@ -139,6 +160,15 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     CHECK(game_dashboard_button_widget);
     ASSERT_FALSE(game_dashboard_button_widget->CanActivate());
     ASSERT_FALSE(game_dashboard_button_widget->IsActive());
+
+    // Using `prefs::kGameDashboardShowWelcomeDialog`, verify whether the
+    // welcome dialog should be shown.
+    if (active_user_prefs_->GetBoolean(
+            prefs::kGameDashboardShowWelcomeDialog)) {
+      ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+    } else {
+      ASSERT_FALSE(test_api_->GetWelcomeDialogWidget());
+    }
   }
 
   // Opens the main menu and toolbar, and checks Game Controls UI states. At the
@@ -455,6 +485,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
  private:
   gfx::Rect app_bounds_ = gfx::Rect(50, 50, 800, 400);
+  raw_ptr<PrefService> active_user_prefs_;
 };
 
 // Verifies Game Controls tile state.
@@ -828,13 +859,12 @@ TEST_F(GameDashboardContextTest, RecordingTimerStringFormat) {
 // disappears after 4 seconds.
 TEST_F(GameDashboardContextTest, WelcomeDialogAutoDismisses) {
   // Open the game window with the welcome dialog enabled.
+  SetShowWelcomeDialog(true);
   CreateGameWindow(/*is_arc_window=*/true,
-                   /*set_arc_game_controls_flags_prop=*/true,
-                   /*show_welcome_dialog=*/true);
+                   /*set_arc_game_controls_flags_prop=*/true);
 
   // Verify the welcome dialog is initially shown and is right aligned in the
   // app window.
-  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
   gfx::Rect welcome_dialog_bounds =
       test_api_->GetWelcomeDialogWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(welcome_dialog_bounds.x(),
@@ -851,11 +881,9 @@ TEST_F(GameDashboardContextTest, WelcomeDialogAutoDismisses) {
 // Verifies the welcome dialog disappears when the main menu view is opened.
 TEST_F(GameDashboardContextTest, WelcomeDialogDismissOnMainMenuOpening) {
   // Open the game window with the welcome dialog enabled.
-  // CloseGameWindow();
+  SetShowWelcomeDialog(true);
   CreateGameWindow(/*is_arc_window=*/true,
-                   /*set_arc_game_controls_flags_prop=*/true,
-                   /*show_welcome_dialog=*/true);
-  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+                   /*set_arc_game_controls_flags_prop=*/true);
 
   // Open the main menu and verify the welcome dialog dismisses.
   test_api_->OpenTheMainMenu();
@@ -866,11 +894,10 @@ TEST_F(GameDashboardContextTest, WelcomeDialogDismissOnMainMenuOpening) {
 // enough.
 TEST_F(GameDashboardContextTest, WelcomeDialogWithSmallWindow) {
   // Open a new game window with a width of 450.
+  SetShowWelcomeDialog(true);
   SetAppBounds(gfx::Rect(50, 50, 450, 400));
   CreateGameWindow(/*is_arc_window=*/true,
-                   /*set_arc_game_controls_flags_prop=*/true,
-                   /*show_welcome_dialog=*/true);
-  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+                   /*set_arc_game_controls_flags_prop=*/true);
 
   // Verify the welcome dialog is centered.
   gfx::Rect welcome_dialog_bounds =

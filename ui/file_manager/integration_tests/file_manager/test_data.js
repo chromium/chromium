@@ -296,3 +296,48 @@ export const MODIFIED_ENTRY_SET = [
   ENTRIES.photos,
   ENTRIES.invalidLastModifiedDate,
 ];
+
+
+/**
+ * Fake task.
+ */
+export class FakeTask {
+  /**
+   * @param {boolean} isDefault Whether the task is default or not.
+   * @param {!FileTaskDescriptor} descriptor Task
+   *     descriptor.
+   * @param {string=} opt_title Title of the task.
+   * @param {boolean=} opt_isGenericFileHandler Whether the task is a generic
+   *     file handler.
+   * @param {boolean=} opt_isDlpBlocked Whether the task is blocked by DLP.
+   */
+  constructor(
+      isDefault, descriptor, opt_title, opt_isGenericFileHandler,
+      opt_isDlpBlocked) {
+    this.driveApp = false;
+    this.iconUrl = 'chrome://theme/IDR_DEFAULT_FAVICON';  // Dummy icon
+    this.isDefault = isDefault;
+    this.descriptor = descriptor;
+    this.title = opt_title;
+    this.isGenericFileHandler = opt_isGenericFileHandler || false;
+    this.isDlpBlocked = opt_isDlpBlocked || false;
+    Object.freeze(this);
+  }
+}
+
+/**
+ * Fake tasks for a local volume.
+ *
+ * @type {Array<FakeTask>}
+ * @const
+ */
+export const DOWNLOADS_FAKE_TASKS = [
+  new FakeTask(
+      true,
+      {appId: 'dummytaskid', taskType: 'fake-type', actionId: 'open-with'},
+      'DummyTask1'),
+  new FakeTask(
+      false,
+      {appId: 'dummytaskid-2', taskType: 'fake-type', actionId: 'open-with'},
+      'DummyTask2'),
+];

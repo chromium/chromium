@@ -5,12 +5,13 @@
 #ifndef NET_SSL_SSL_CONFIG_SERVICE_H_
 #define NET_SSL_SSL_CONFIG_SERVICE_H_
 
+#include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/ssl/ssl_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -48,27 +49,27 @@ struct NET_EXPORT SSLContextConfig {
   std::vector<uint16_t> disabled_cipher_suites;
 
   // If specified, controls whether post-quantum key agreement in TLS
-  // connections is allowed. If `absl::nullopt`, this is determined by feature
+  // connections is allowed. If `std::nullopt`, this is determined by feature
   // flags.
-  absl::optional<bool> post_quantum_override;
+  std::optional<bool> post_quantum_override;
 
   // Controls whether ECH is enabled.
   bool ech_enabled = true;
 
   // If specified, controls whether insecure hashes are allowed in TLS
-  // handshakes. If `absl::nullopt`, this is determined by feature flags.
-  absl::optional<bool> insecure_hash_override;
+  // handshakes. If `std::nullopt`, this is determined by feature flags.
+  std::optional<bool> insecure_hash_override;
 
   // If specified, controls whether the X.509 keyUsage extension is checked in
   // TLS 1.2 for RSA certificates that chain to a local trust anchor. If
-  // `absl::nullopt`, this is determined by feature flags.
+  // `std::nullopt`, this is determined by feature flags.
   //
   // Independent of the setting of this value, keyUsage is always checked at TLS
   // 1.3, for ECDSA certificates, and for all certificates that chain to a known
   // root.
   //
   // TODO(crbug.com/795089): Enable this unconditionally.
-  absl::optional<bool> rsa_key_usage_for_local_anchors_override;
+  std::optional<bool> rsa_key_usage_for_local_anchors_override;
 };
 
 // The interface for retrieving global SSL configuration.  This interface
@@ -117,7 +118,7 @@ class NET_EXPORT SSLConfigService {
   // removed in a future release. Please leave a comment on
   // https://crbug.com/855690 if you believe this is needed.
   virtual bool CanShareConnectionWithClientCerts(
-      const std::string& hostname) const = 0;
+      std::string_view hostname) const = 0;
 
   // Add an observer of this service.
   void AddObserver(Observer* observer);

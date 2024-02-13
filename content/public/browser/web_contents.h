@@ -257,12 +257,6 @@ class WebContents : public PageNavigator,
     // and GetLastActiveTime() will return the WebContents' creation time.
     base::TimeTicks last_active_time;
 
-    // Normal WebContents initialization is split between construction and the
-    // first time it is shown. Some WebContents are never shown though.
-    // Setting this to true will invoke the WebContents delayed initialization
-    // that doesn't require visibility.
-    bool is_never_visible = false;
-
     // Code location responsible for creating the CreateParams.  This is used
     // mostly for debugging (e.g. to help attribute specific scenarios or
     // invariant violations to a particular flavor of WebContents).

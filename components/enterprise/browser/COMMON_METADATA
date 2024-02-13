@@ -1,7 +1,7 @@
-# This is for Chrome Enterprise Everywhere.
-
-monorail {
+monorail: {
   component: "Enterprise"
 }
-
 team_email: "chromium-enterprise@chromium.org"
+buganizer_public: {
+  component_id: 1456152
+}

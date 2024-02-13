@@ -16,6 +16,8 @@ static_library("installer_policies_no_content_deps") {
   sources = [
     "autofill_states_component_installer.cc",
     "autofill_states_component_installer.h",
+    "first_party_sets_component_installer_policy.cc",
+    "first_party_sets_component_installer_policy.h",
     "masked_domain_list_component_installer_policy.cc",
     "masked_domain_list_component_installer_policy.h",
     "origin_trials_component_installer.cc",
@@ -65,6 +67,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_states_component_installer_unittest.cc",
+    "first_party_sets_component_installer_policy_unittest.cc",
     "masked_domain_list_component_installer_policy_unittest.cc",
     "optimization_hints_component_installer_unittest.cc",
     "tpcd_metadata_component_installer_policy_unittest.cc",

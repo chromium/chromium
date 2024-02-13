@@ -54,9 +54,10 @@
 namespace blink {
 
 class ViewTransitionTest : public testing::Test,
-                           public PaintTestConfigurations {
+                           public PaintTestConfigurations,
+                           private ScopedViewTransitionOnNavigationForTest {
  public:
-  ViewTransitionTest() {}
+  ViewTransitionTest() : ScopedViewTransitionOnNavigationForTest(true) {}
 
   void SetUp() override {
     web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
@@ -1289,6 +1290,45 @@ TEST_P(ViewTransitionTest, GetAnimationsCrashTest) {
   // This test passes if getAnimations() doesn't crash while trying to sort the
   // view-transitions animations.
   ASSERT_GT(GetDocument().getAnimations().size(), 0ul);
+}
+
+TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  ViewTransitionSupplement::SnapshotDocumentForNavigation(
+      GetDocument(), base::BindOnce([](const ViewTransitionState&) {}));
+
+  ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());
+
+  bool callback_issued = false;
+
+  // This callback sets the elements for the start phase of the transition.
+  auto start_setup_lambda =
+      [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+        auto* callback_issued =
+            static_cast<bool*>(info.Data().As<v8::External>()->Value());
+        *callback_issued = true;
+      };
+  auto start_setup_callback =
+      v8::Function::New(
+          v8_scope.GetContext(), start_setup_lambda,
+          v8::External::New(v8_scope.GetIsolate(), &callback_issued))
+          .ToLocalChecked();
+  DOMViewTransition* script_transition =
+      ViewTransitionSupplement::startViewTransition(
+          script_state, GetDocument(),
+          V8ViewTransitionCallback::Create(start_setup_callback),
+          exception_state);
+
+  EXPECT_TRUE(script_transition);
+
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhasesAndFinishDirectives();
+
+  EXPECT_TRUE(callback_issued);
 }
 
 }  // namespace blink

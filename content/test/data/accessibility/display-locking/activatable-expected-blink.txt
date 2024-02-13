@@ -15,8 +15,4 @@ rootWebArea focusable
 ++++++++++++staticText offscreen name='<newline>    '
 ++++++++++staticText offscreen name='<newline>    '
 ++++++++++genericContainer offscreen
-++++++++++++staticText ignored invisible offscreen name='<newline>      nested non activatable locked element<newline>      '
-++++++++++++button ignored invisible offscreen
-++++++++++++++staticText ignored invisible offscreen name='locked button'
-++++++++++++staticText ignored invisible offscreen name='<newline>    '
 ++++++++++staticText offscreen name='<newline>  '

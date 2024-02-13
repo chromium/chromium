@@ -21,19 +21,21 @@
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/resource_attribution/memory_measurement_provider.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 class ContextCollection;
 }
 
-namespace performance_manager::resource_attribution::internal {
+namespace resource_attribution::internal {
 
 struct QueryParams;
 
 // QueryScheduler keeps track of all queries for a particular resource type and
 // owns the machinery that performs measurements.
-class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
-                       public GraphOwned {
+class QueryScheduler
+    : public performance_manager::GraphRegisteredImpl<QueryScheduler>,
+      public performance_manager::GraphOwned {
  public:
   QueryScheduler();
   ~QueryScheduler() override;
@@ -114,6 +116,6 @@ class QueryScheduler : public GraphRegisteredImpl<QueryScheduler>,
   base::WeakPtrFactory<QueryScheduler> weak_factory_{this};
 };
 
-}  // namespace performance_manager::resource_attribution::internal
+}  // namespace resource_attribution::internal
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_QUERY_SCHEDULER_H_

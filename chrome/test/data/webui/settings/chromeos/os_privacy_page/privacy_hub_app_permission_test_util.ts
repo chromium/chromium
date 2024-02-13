@@ -22,10 +22,10 @@ export function createApp(
 }
 
 export function createFakeMetricsPrivate(): FakeMetricsPrivate {
-  const metrics = new FakeMetricsPrivate();
-  chrome.metricsPrivate = metrics as unknown as typeof chrome.metricsPrivate;
+  const fakeMetricsPrivate = new FakeMetricsPrivate();
+  chrome.metricsPrivate = fakeMetricsPrivate;
   flush();
-  return metrics;
+  return fakeMetricsPrivate;
 }
 
 export function getSystemServicesFromSubpage(

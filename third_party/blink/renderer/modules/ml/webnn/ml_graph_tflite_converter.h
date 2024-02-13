@@ -36,7 +36,7 @@ class MLGraphTfLiteConverter final {
   // Serialize tensor for input, constant and output operand. It's output
   // operand of graph if the `graph_output_name` is specified, returns the index
   // in the `tflite::Tensor` array if it's successful.
-  int32_t SerializeTensor(
+  base::expected<int32_t, String> SerializeTensor(
       const MLOperand* operand,
       std::optional<String> graph_output_name = std::nullopt);
 

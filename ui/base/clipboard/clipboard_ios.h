@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardIOS : public Clipboard {
 
   // Clipboard overrides:
   void OnPreShutdown() override;
-  absl::optional<DataTransferEndpoint> GetSource(
+  std::optional<DataTransferEndpoint> GetSource(
       ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardIOS : public Clipboard {
       std::unique_ptr<DataTransferEndpoint> data_src) override;
   void WriteText(base::StringPiece text) override;
   void WriteHTML(base::StringPiece markup,
-                 absl::optional<base::StringPiece> source_url) override;
+                 std::optional<base::StringPiece> source_url) override;
   void WriteSvg(base::StringPiece markup) override;
   void WriteRTF(base::StringPiece rtf) override;
   void WriteFilenames(std::vector<ui::FileInfo> filenames) override;

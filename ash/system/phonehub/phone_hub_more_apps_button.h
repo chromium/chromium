@@ -22,9 +22,9 @@ class AppLoadingIcon;
 class VIEWS_EXPORT PhoneHubMoreAppsButton
     : public views::Button,
       phonehub::AppStreamLauncherDataModel::Observer {
- public:
-  METADATA_HEADER(PhoneHubMoreAppsButton);
+  METADATA_HEADER(PhoneHubMoreAppsButton, views::Button)
 
+ public:
   // Only use this constructor to create a skeleton view for the LoadingView.
   // Does not process click events or load app icons.
   PhoneHubMoreAppsButton();

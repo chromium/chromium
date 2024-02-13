@@ -100,6 +100,7 @@
 #include "extensions/browser/warning_service_factory.h"
 #include "extensions/browser/zipfile_installer.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/install_warning.h"
@@ -410,52 +411,6 @@ void UpdateSiteGroupCountsForExtensionHosts(
   }
 }
 
-// Adds `site` to the extension's set of runtime granted host permissions.
-void GrantPermissionsForSite(content::BrowserContext* context,
-                             const Extension& extension,
-                             const URLPattern& site,
-                             base::OnceClosure done_callback) {
-  URLPatternSet new_host_permissions({site});
-  PermissionsUpdater(context).GrantRuntimePermissions(
-      extension,
-      PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                    new_host_permissions.Clone(), new_host_permissions.Clone()),
-      std::move(done_callback));
-}
-
-// Revokes the extension's access to `site` in its host permissions.
-void RevokePermissionsForSite(content::BrowserContext* context,
-                              const Extension& extension,
-                              const URLPattern& site,
-                              base::OnceClosure done_callback) {
-  // Revoke all sites which have some intersection with `site` from the
-  // extension's set of runtime granted host permissions.
-  URLPatternSet hosts_to_withhold;
-  std::unique_ptr<const PermissionSet> runtime_granted_permissions =
-      ExtensionPrefs::Get(context)->GetRuntimeGrantedPermissions(
-          extension.id());
-
-  for (const URLPattern& pattern :
-       runtime_granted_permissions->effective_hosts()) {
-    if (site.OverlapsWith(pattern))
-      hosts_to_withhold.AddPattern(pattern);
-  }
-
-  std::unique_ptr<const PermissionSet> permissions_to_remove =
-      PermissionSet::CreateIntersection(
-          PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                        hosts_to_withhold.Clone(), hosts_to_withhold.Clone()),
-          *PermissionsManager::Get(context)->GetRevokablePermissions(extension),
-          URLPatternSet::IntersectionBehavior::kDetailed);
-  if (permissions_to_remove->IsEmpty()) {
-    std::move(done_callback).Run();
-    return;
-  }
-
-  PermissionsUpdater(context).RevokeRuntimePermissions(
-      extension, *permissions_to_remove, std::move(done_callback));
-}
-
 }  // namespace
 
 namespace ChoosePath = api::developer_private::ChoosePath;
@@ -580,12 +535,12 @@ DeveloperPrivateEventRouter::~DeveloperPrivateEventRouter() {
 }
 
 void DeveloperPrivateEventRouter::AddExtensionId(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   extension_ids_.insert(extension_id);
 }
 
 void DeveloperPrivateEventRouter::RemoveExtensionId(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   extension_ids_.erase(extension_id);
 }
 
@@ -637,28 +592,28 @@ void DeveloperPrivateEventRouter::OnErrorAdded(const ExtensionError* error) {
 }
 
 void DeveloperPrivateEventRouter::OnExtensionConfigurationChanged(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   BroadcastItemStateChanged(developer::EventType::kConfigurationChanged,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnErrorsRemoved(
-    const std::set<std::string>& removed_ids) {
-  for (const std::string& id : removed_ids) {
+    const std::set<ExtensionId>& removed_ids) {
+  for (const ExtensionId& id : removed_ids) {
     if (!extension_ids_.count(id))
       BroadcastItemStateChanged(developer::EventType::kErrorsRemoved, id);
   }
 }
 
 void DeveloperPrivateEventRouter::OnExtensionFrameRegistered(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host) {
   BroadcastItemStateChanged(developer::EventType::kViewRegistered,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionFrameUnregistered(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     content::RenderFrameHost* render_frame_host) {
   BroadcastItemStateChanged(developer::EventType::kViewUnregistered,
                             extension_id);
@@ -687,31 +642,32 @@ void DeveloperPrivateEventRouter::OnAppWindowRemoved(AppWindow* window) {
 }
 
 void DeveloperPrivateEventRouter::OnExtensionCommandAdded(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Command& added_command) {
   BroadcastItemStateChanged(developer::EventType::kCommandAdded, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionCommandRemoved(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     const Command& removed_command) {
   BroadcastItemStateChanged(developer::EventType::kCommandRemoved,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionDisableReasonsChanged(
-    const std::string& extension_id, int disable_reasons) {
+    const ExtensionId& extension_id,
+    int disable_reasons) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionRuntimePermissionsChanged(
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   BroadcastItemStateChanged(developer::EventType::kPermissionsChanged,
                             extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     bool show_warning) {
   BroadcastItemStateChanged(developer::EventType::kPrefsChanged, extension_id);
 }
@@ -796,7 +752,7 @@ void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
 
 void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
     developer::EventType event_type,
-    const std::string& extension_id) {
+    const ExtensionId& extension_id) {
   std::unique_ptr<ExtensionInfoGenerator> info_generator(
       new ExtensionInfoGenerator(profile_));
   ExtensionInfoGenerator* info_generator_weak = info_generator.get();
@@ -810,7 +766,7 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
 
 void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
     developer::EventType event_type,
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::unique_ptr<ExtensionInfoGenerator> info_generator,
     ExtensionInfoGenerator::ExtensionInfoList infos) {
   DCHECK_LE(infos.size(), 1u);
@@ -932,13 +888,13 @@ DeveloperPrivateAPIFunction::~DeveloperPrivateAPIFunction() {
 }
 
 const Extension* DeveloperPrivateAPIFunction::GetExtensionById(
-    const std::string& id) {
+    const ExtensionId& id) {
   return ExtensionRegistry::Get(browser_context())->GetExtensionById(
       id, ExtensionRegistry::EVERYTHING);
 }
 
 const Extension* DeveloperPrivateAPIFunction::GetEnabledExtensionById(
-    const std::string& id) {
+    const ExtensionId& id) {
   return ExtensionRegistry::Get(browser_context())->enabled_extensions().
       GetByID(id);
 }
@@ -2643,8 +2599,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
           modifier.RemoveAllGrantedHostPermissions();
           done_callback.Run();
         } else {
-          RevokePermissionsForSite(browser_context(), extension, parsed_site,
-                                   done_callback);
+          modifier.RemoveHostPermissions(parsed_site, done_callback);
         }
         break;
       case developer::HostAccess::kOnSpecificSites:
@@ -2655,8 +2610,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
           modifier.SetWithholdHostPermissions(true);
           modifier.RemoveAllGrantedHostPermissions();
         }
-        GrantPermissionsForSite(browser_context(), extension, parsed_site,
-                                done_callback);
+        modifier.GrantHostPermission(parsed_site, done_callback);
         break;
       case developer::HostAccess::kOnAllSites:
         modifier.SetWithholdHostPermissions(false);

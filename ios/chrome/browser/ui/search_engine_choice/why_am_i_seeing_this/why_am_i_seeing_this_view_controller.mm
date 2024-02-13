@@ -23,15 +23,23 @@ NSString* const kEmptyLine = @"\n \n";
 NSString* const kBeginBoldTag = @"<b>";
 NSString* const kEndBoldTag = @"</b>";
 
+void AddBoldAttributeToString(NSMutableAttributedString* attributed_string,
+                              NSRange range) {
+  UIFontDescriptor* bold_descriptor = [[UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote]
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  [attributed_string addAttribute:NSFontAttributeName
+                            value:[UIFont fontWithDescriptor:bold_descriptor
+                                                        size:0.0]
+                            range:range];
+}
+
 // The logic here is taken from PutBoldPartInString in
 // "ios/chrome/common/string_util.h" except that we use desktop-style beginning
 // and end bold tags.
 NSAttributedString* PutBoldPartInText(NSString* string) {
   UIFontDescriptor* default_descriptor = [UIFontDescriptor
       preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote];
-  UIFontDescriptor* bold_descriptor = [[UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote]
-      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
   StringWithTag parsed_string =
       ParseStringWithTag(string, kBeginBoldTag, kEndBoldTag);
 
@@ -42,10 +50,8 @@ NSAttributedString* PutBoldPartInText(NSString* string) {
                                                         size:0.0]
                             range:NSMakeRange(0, parsed_string.string.length)];
 
-  [attributed_string addAttribute:NSFontAttributeName
-                            value:[UIFont fontWithDescriptor:bold_descriptor
-                                                        size:0.0]
-                            range:parsed_string.range];
+  AddBoldAttributeToString(attributed_string, parsed_string.range);
+
   [attributed_string addAttribute:NSForegroundColorAttributeName
                             value:[UIColor colorNamed:kSolidBlackColor]
                             range:NSMakeRange(0, parsed_string.string.length)];
@@ -65,7 +71,7 @@ NSAttributedString* PutBoldPartInText(NSString* string) {
   // Create a label for the navigation bar title to allow multitline.
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.text =
-      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE);
+      l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE_IOS);
   titleLabel.numberOfLines = 0;
   titleLabel.adjustsFontForContentSizeCategory = YES;
   [titleLabel setTextAlignment:NSTextAlignmentCenter];
@@ -106,7 +112,13 @@ NSAttributedString* PutBoldPartInText(NSString* string) {
 
   NSString* infoString = [paragraph1 stringByAppendingString:paragraphs2and3];
 
-  NSAttributedString* attributedString = PutBoldPartInText(infoString);
+  NSString* firstLine =
+      [l10n_util::GetNSString(IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_INTRO_IOS)
+          stringByAppendingString:kEmptyLine];
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc] initWithString:firstLine];
+  AddBoldAttributeToString(attributedString, NSMakeRange(0, firstLine.length));
+  [attributedString appendAttributedString:PutBoldPartInText(infoString)];
 
   TableViewAttributedStringHeaderFooterItem* footerItem =
       [[TableViewAttributedStringHeaderFooterItem alloc] init];

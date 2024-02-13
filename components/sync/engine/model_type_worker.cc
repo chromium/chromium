@@ -887,7 +887,7 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ModelTypeWorker::OnFullCommitFailure,
                      weak_ptr_factory_.GetWeakPtr()),
-      passphrase_type_, CommitOnlyTypes().Has(type_));
+      passphrase_type_);
 }
 
 bool ModelTypeWorker::HasLocalChanges() const {

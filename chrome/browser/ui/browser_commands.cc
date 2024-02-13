@@ -72,7 +72,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -2131,10 +2130,6 @@ void ToggleMultitaskMenu(Browser* browser) {
   browser->window()->ToggleMultitaskMenu();
 }
 #endif
-
-void ToggleCommander(Browser* browser) {
-  commander::Commander::Get()->ToggleForBrowser(browser);
-}
 
 #if !defined(TOOLKIT_VIEWS)
 std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {

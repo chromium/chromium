@@ -138,6 +138,9 @@ class ProfileAttributesEntry {
   bool IsUsingDefaultAvatar() const;
   // Indicates that profile was signed in through native OS credential provider.
   bool IsSignedInWithCredentialProvider() const;
+  // Returns true if the profile is managed by a third party identity that is
+  // not sync-ed to Google (i.e dasher-based).
+  bool IsDasherlessManagement() const;
   // Returns the index of the default icon used by the profile.
   size_t GetAvatarIconIndex() const;
   // Returns the colors specified by the profile theme, or default colors if no
@@ -193,6 +196,7 @@ class ProfileAttributesEntry {
   void SetLastDownloadedGAIAPictureUrlWithSize(
       const std::string& image_url_with_size);
   void SetSignedInWithCredentialProvider(bool value);
+  void SetDasherlessManagement(bool value);
   // Only non-omitted profiles can be set as non-ephemeral. It's the
   // responsibility of the caller to make sure that the entry is set as
   // non-ephemeral only if prefs::kForceEphemeralProfiles is false.

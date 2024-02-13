@@ -4,6 +4,7 @@
 
 #include "net/reporting/reporting_service.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -25,7 +26,6 @@
 #include "net/reporting/reporting_delivery_agent.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_uploader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -81,7 +81,7 @@ class ReportingServiceImpl : public ReportingService {
 
   void QueueReport(
       const GURL& url,
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& user_agent,
       const std::string& group,
@@ -120,7 +120,7 @@ class ReportingServiceImpl : public ReportingService {
     if (header_string.size() > kMaxJsonSize)
       return;
 
-    absl::optional<base::Value> header_value = base::JSONReader::Read(
+    std::optional<base::Value> header_value = base::JSONReader::Read(
         "[" + header_string + "]", base::JSON_PARSE_RFC, kMaxJsonDepth);
     if (!header_value)
       return;
@@ -205,7 +205,7 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   void DoQueueReport(
-      const absl::optional<base::UnguessableToken>& reporting_source,
+      const std::optional<base::UnguessableToken>& reporting_source,
       const NetworkAnonymizationKey& network_anonymization_key,
       GURL sanitized_url,
       const std::string& user_agent,

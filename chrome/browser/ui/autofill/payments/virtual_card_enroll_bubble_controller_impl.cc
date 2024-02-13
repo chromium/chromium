@@ -102,16 +102,37 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollBubbleView() const {
 void VirtualCardEnrollBubbleControllerImpl::HideIconAndBubble() {
   HideBubble();
   bubble_state_ = BubbleState::kHidden;
+  is_enrollment_in_progress_ = false;
   UpdatePageActionIcon();
+}
+
+bool VirtualCardEnrollBubbleControllerImpl::IsEnrollmentInProgress() const {
+  return is_enrollment_in_progress_;
 }
 #endif
 
-void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton() {
+void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton(
+    bool did_switch_to_loading_state) {
   std::move(accept_virtual_card_callback_).Run();
   decline_virtual_card_callback_.Reset();
 
 #if !BUILDFLAG(IS_ANDROID)
-  bubble_state_ = BubbleState::kHidden;
+  if (did_switch_to_loading_state) {
+    // When user clicks "Accept", the bubble closing is delayed since we wait
+    // for the enrollment to finish on the server.
+    is_enrollment_in_progress_ = true;
+  } else {
+    bubble_state_ = BubbleState::kHidden;
+  }
+  // Log metrics here instead of when the bubble is closed. When
+  // "did_switch_to_loading_state == true" we don't immediately close the
+  // bubble, so this ensures we don't have to wait for a future closure to log
+  // the user's acceptance.
+  LogVirtualCardEnrollmentBubbleResultMetric(
+      VirtualCardEnrollmentBubbleResult::
+          VIRTUAL_CARD_ENROLLMENT_BUBBLE_ACCEPTED,
+      GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
+      ui_model_.enrollment_fields.previously_declined);
 #endif
 }
 
@@ -151,6 +172,14 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // If `closed_reason == PaymentsBubbleClosedReason::kAccepted`, the metrics
+  // have been logged by `OnAcceptButton()`.
+  if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
+    return;
+  }
+#endif
 
   VirtualCardEnrollmentBubbleResult result;
   switch (closed_reason) {

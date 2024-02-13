@@ -95,7 +95,7 @@ TranslateEventProto::EventType BubbleResultToTranslateEvent(
 bool IsMessageUISnackbarEnabled() {
   constexpr base::FeatureParam<bool> kIsSnackbarEnabled(
       &translate::kTranslateMessageUI,
-      translate::kTranslateMessageUISnackbarParam, false);
+      translate::kTranslateMessageUISnackbarParam, true);
   return kIsSnackbarEnabled.Get();
 }
 

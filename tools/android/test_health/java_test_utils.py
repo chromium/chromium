@@ -74,6 +74,12 @@ def get_java_test_health(test_path: pathlib.Path) -> JavaTestHealth:
                               column_num=syntax_error.at.position.column,
                               file_path=test_path,
                               java_src_code=java_file_contents) from None
+    except javalang.tokenizer.LexerError as lexer_error:
+        raise JavaSyntaxError(str(lexer_error),
+                              line_num=0,
+                              column_num=0,
+                              file_path=test_path,
+                              java_src_code=java_file_contents) from None
 
     return _get_java_test_health(java_ast)
 
@@ -185,4 +191,7 @@ class JavaSyntaxError(SyntaxError):
         self.lineno = line_num
         self.offset = column_num
         self.filename = str(file_path.relative_to(_CHROMIUM_SRC_PATH))
-        self.text = java_src_code.splitlines()[line_num - 1]
+        if line_num > 0:
+            self.text = java_src_code.splitlines()[line_num - 1]
+        else:
+            self.text = '<unknown line>'

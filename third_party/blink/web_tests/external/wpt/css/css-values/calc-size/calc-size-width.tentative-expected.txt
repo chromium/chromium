@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] resolved width for width: calc-size(stretch, size / 2 - 10%)
+  assert_equals: expected "200px" but got "500px"
+Harness: the test ran to completion.
+

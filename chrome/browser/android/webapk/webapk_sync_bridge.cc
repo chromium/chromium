@@ -465,4 +465,9 @@ const Registry& WebApkSyncBridge::GetRegistryForTesting() const {
   return registry_;
 }
 
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+WebApkSyncBridge::GetModelTypeControllerDelegate() {
+  return change_processor()->GetControllerDelegate();
+}
+
 }  // namespace webapk

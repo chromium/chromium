@@ -32,10 +32,6 @@ class FakeDataCollectorDelegate : public DataCollector::Delegate {
 
   void SetPrivacyScreenState(bool state) override {}  // Do nothing.
 
-  bool IsOutputForceMuted() override { return audio_force_muted_; }
-
-  void SetOutputMute(bool mute_on) override {}  // Do nothing.
-
   void SetPrivacyScreenAttributes(bool supported,
                                   bool managed,
                                   [[maybe_unused]] bool enabled) {
@@ -46,12 +42,9 @@ class FakeDataCollectorDelegate : public DataCollector::Delegate {
     // unittests.
   }
 
-  void SetAudioForceMute(bool force_mute) { audio_force_muted_ = force_mute; }
-
  private:
   bool privacy_screen_supported_ = false;
   bool privacy_screen_managed_ = false;
-  bool audio_force_muted_ = false;
 };
 
 class DataCollectorTest : public testing::Test {
@@ -162,30 +155,16 @@ TEST_F(DataCollectorTest, AcceptPrivacyScreenSetRequestFromOffToff) {
   EXPECT_TRUE(future.Get());
 }
 
-// Test that SetAudioOutputMute will return false when the audio output device
-// is force muted but the users want to unmute it.
-TEST_F(DataCollectorTest, AudioUnmuteForceMuted) {
+// Test that setting audio output mute always fails.
+TEST_F(DataCollectorTest, SetAudioOutputMuteAlwaysFail) {
   base::test::TestFuture<bool> future;
-  delegate_.SetAudioForceMute(/*force_mute=*/true);
-  remote_->SetAudioOutputMute(/*mute_on=*/false, future.GetCallback());
+  remote_->DEPRECATED_SetAudioOutputMute(/*mute_on=*/true,
+                                         future.GetCallback());
   EXPECT_FALSE(future.Get());
-}
 
-// Test that SetAudioOutputMute will return true when the users want to mute it.
-TEST_F(DataCollectorTest, AudioMute) {
-  base::test::TestFuture<bool> future;
-  delegate_.SetAudioForceMute(/*force_mute=*/true);
-  remote_->SetAudioOutputMute(/*mute_on=*/true, future.GetCallback());
-  EXPECT_TRUE(future.Get());
-}
-
-// Test that SetAudioOutputMute will return true when the audio output device
-// is not force muted.
-TEST_F(DataCollectorTest, AudioUnmuteNotForceMuted) {
-  base::test::TestFuture<bool> future;
-  delegate_.SetAudioForceMute(/*force_mute=*/false);
-  remote_->SetAudioOutputMute(/*mute_on=*/false, future.GetCallback());
-  EXPECT_TRUE(future.Get());
+  remote_->DEPRECATED_SetAudioOutputMute(/*mute_on=*/false,
+                                         future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 
 }  // namespace

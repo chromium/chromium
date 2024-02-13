@@ -39,6 +39,8 @@ std::string GetCdmInfoCapabilityStatusName(CdmInfo::Status status) {
       return "Disabled due to previous errors (stored in Local State)";
     case CdmInfo::Status::kDisabledOnError:
       return "Disabled after errors or crashes";
+    case CdmInfo::Status::kDisabledBySoftwareEmulatedGpu:
+      return "Disabled because software emulated GPU is enabled";
   }
 }
 

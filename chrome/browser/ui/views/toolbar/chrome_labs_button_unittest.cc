@@ -26,11 +26,9 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/common/pref_names.h"
-#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -40,11 +38,6 @@
 #if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kFakeUserName[] = "test@example.com";
-constexpr char kFakeGaiaId[] = "1234567890";
-#endif
 
 const char kFirstTestFeatureId[] = "feature-1";
 BASE_FEATURE(kTestFeature1, "FeatureName1", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -59,10 +52,6 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
  public:
   ChromeLabsButtonTest()
       :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-        user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
-#endif
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         channel_override_(chrome::ScopedChannelOverride(
             chrome::ScopedChannelOverride::Channel::kDev)),
@@ -74,12 +63,6 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
   {
   }
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    const AccountId account_id(
-        AccountId::FromUserEmailGaiaId(kFakeUserName, kFakeGaiaId));
-    user_manager_->AddUser(account_id);
-    user_manager_->LoginUser(account_id);
-#endif
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kChromeLabs,
         {{features::kChromeLabsActivationPercentage.name, "100"}});
@@ -91,12 +74,6 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
     profile()->GetPrefs()->SetBoolean(
         chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
- protected:
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
-#endif
 
  private:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -189,14 +166,11 @@ class ChromeLabsButtonTestSecondaryUser : public ChromeLabsButtonTest {
  public:
   ChromeLabsButtonTestSecondaryUser() : ChromeLabsButtonTest() {}
 
-  void SetUp() override {
-    // Set the email of |secondary_user| to
-    // |TestingProfile::kDefaultProfileUserName| so
-    // |ProfileHelperImpl::GetUserByProfile| returns this user.
-    AccountId secondary_user =
-        AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
-    user_manager_->AddUser(secondary_user);
-    ChromeLabsButtonTest::SetUp();
+  void LogIn(const std::string& email) override {
+    // Fake primary user log-in, so that the created profile will be interpreted
+    // as secondary user's profile.
+    ChromeLabsButtonTest::LogIn("primary-user@domain.com");
+    ChromeLabsButtonTest::LogIn(email);
   }
 };
 

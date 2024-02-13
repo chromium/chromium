@@ -6,11 +6,11 @@
 #define UI_VIEWS_CONTROLS_LABEL_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/color/color_id.h"
@@ -136,14 +136,14 @@ class VIEWS_EXPORT Label : public View,
   // enabled.
   SkColor GetEnabledColor() const;
   virtual void SetEnabledColor(SkColor color);
-  absl::optional<ui::ColorId> GetEnabledColorId() const;
-  void SetEnabledColorId(absl::optional<ui::ColorId> enabled_color_id);
+  std::optional<ui::ColorId> GetEnabledColorId() const;
+  void SetEnabledColorId(std::optional<ui::ColorId> enabled_color_id);
 
   // Gets/Sets the background color. This won't be explicitly drawn, but the
   // label will force the text color to be readable over it.
   SkColor GetBackgroundColor() const;
   void SetBackgroundColor(SkColor color);
-  void SetBackgroundColorId(absl::optional<ui::ColorId> background_color_id);
+  void SetBackgroundColorId(std::optional<ui::ColorId> background_color_id);
 
   // Gets/Sets the selection text color. This will automatically force the color
   // to be readable over the selection background color, if auto color
@@ -475,7 +475,7 @@ class VIEWS_EXPORT Label : public View,
 
   int text_context_;
   int text_style_;
-  absl::optional<int> line_height_;
+  std::optional<int> line_height_;
 
   // An un-elided and single-line RenderText object used for preferred sizing.
   std::unique_ptr<gfx::RenderText> full_text_;
@@ -495,8 +495,8 @@ class VIEWS_EXPORT Label : public View,
   SkColor actual_selection_text_color_ = gfx::kPlaceholderColor;
   SkColor selection_background_color_ = gfx::kPlaceholderColor;
 
-  absl::optional<ui::ColorId> enabled_color_id_;
-  absl::optional<ui::ColorId> background_color_id_;
+  std::optional<ui::ColorId> enabled_color_id_;
+  std::optional<ui::ColorId> background_color_id_;
 
   // Set to true once the corresponding setter is invoked.
   bool enabled_color_set_ = false;

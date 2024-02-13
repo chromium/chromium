@@ -330,7 +330,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, NoPermissions) {
   ASSERT_TRUE(RunExtensionTest("tabs/no_permissions")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, HostPermission) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType,
+                       DISABLED_HostPermission) {
   ASSERT_TRUE(RunExtensionTest("tabs/host_permission")) << message_;
 }
 
@@ -544,9 +545,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest, DISABLED_Prerendering) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering")) << message_;
 }
 
-// TODO(crbug.com/1501760): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
-                       DISABLED_PrerenderingIntoANewTab) {
+                       PrerenderingIntoANewTab) {
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
 

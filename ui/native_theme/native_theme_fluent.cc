@@ -119,12 +119,14 @@ void NativeThemeFluent::PaintScrollbarThumb(
   path.addRRect(rrect);
   canvas->clipPath(path, true);
 
-  auto get_color = [color_provider, state]() {
+  auto get_color = [color_provider, state, extra_params]() {
     ColorId thumb_color_id = kColorWebNativeControlScrollbarThumb;
     if (state == NativeTheme::kPressed) {
       thumb_color_id = kColorWebNativeControlScrollbarThumbPressed;
     } else if (state == NativeTheme::kHovered) {
       thumb_color_id = kColorWebNativeControlScrollbarThumbHovered;
+    } else if (extra_params.is_thumb_minimal_mode) {
+      thumb_color_id = kColorWebNativeControlScrollbarThumbOverlayMinimalMode;
     }
     return color_provider->GetColor(thumb_color_id);
   };

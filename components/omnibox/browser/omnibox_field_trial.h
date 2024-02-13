@@ -654,7 +654,7 @@ struct MLConfig {
   // Enables approach (2) above.
   bool stable_search_blending{false};
 
-  // Enables approach (3) above. No affect if `stable_search_blending` is true.
+  // Enables approach (3) above. No effect if `stable_search_blending` is true.
   // Map ML scores [0, 1] to [`min`, `max`]. Groups URLs above searches if their
   // mapped relevance is greater than `grouping_threshold`
   bool mapped_search_blending{false};

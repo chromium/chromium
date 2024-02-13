@@ -10,11 +10,13 @@ chrome.test.runTests([testEnqueue = async () => {
         'enqueue': true,
         'onEvent': event => {
           chrome.test.assertEq('end', event.type);
+          chrome.test.assertEq(2, callbacks);
           callbacks++;
         }
       },
       () => {
         chrome.test.assertNoLastError();
+        chrome.test.assertEq(0, callbacks);
         callbacks++;
       });
   // Try async promise-style API.
@@ -22,13 +24,10 @@ chrome.test.runTests([testEnqueue = async () => {
     'enqueue': true,
     'onEvent': event => {
       chrome.test.assertEq('end', event.type);
-      callbacks++;
-      if (callbacks == 4) {
-        chrome.test.succeed();
-      } else {
-        chrome.test.fail();
-      }
+      chrome.test.assertEq(3, callbacks);
+      chrome.test.succeed();
     }
   });
+  chrome.test.assertEq(1, callbacks);
   callbacks++;
 }]);

@@ -275,10 +275,17 @@ int BrokeredUdpClientSocket::SetDoNotFragment() {
   return socket_->SetDoNotFragment();
 }
 
-int BrokeredUdpClientSocket::SetRecvEcn() {
+int BrokeredUdpClientSocket::SetRecvTos() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(socket_);
-  return socket_->SetRecvEcn();
+  return socket_->SetRecvTos();
+}
+
+int BrokeredUdpClientSocket::SetTos(net::DiffServCodePoint dscp,
+                                    net::EcnCodePoint ecn) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(socket_);
+  return socket_->SetTos(dscp, ecn);
 }
 
 void BrokeredUdpClientSocket::SetMsgConfirm(bool confirm) {
@@ -313,6 +320,11 @@ void BrokeredUdpClientSocket::SetIOSNetworkServiceType(
     int ios_network_service_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   socket_->SetIOSNetworkServiceType(ios_network_service_type);
+}
+
+net::DscpAndEcn BrokeredUdpClientSocket::GetLastTos() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return socket_->GetLastTos();
 }
 
 }  // namespace network

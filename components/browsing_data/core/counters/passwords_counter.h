@@ -14,6 +14,8 @@
 #include "components/browsing_data/core/counters/sync_tracker.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 
+class PrefService;
+
 namespace password_manager {
 class PasswordStoreInterface;
 }
@@ -58,6 +60,7 @@ class PasswordsCounter : public browsing_data::BrowsingDataCounter {
   PasswordsCounter(
       scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
       scoped_refptr<password_manager::PasswordStoreInterface> account_store,
+      PrefService* pref_service,
       syncer::SyncService* sync_service);
   ~PasswordsCounter() override;
 
@@ -83,6 +86,8 @@ class PasswordsCounter : public browsing_data::BrowsingDataCounter {
   std::unique_ptr<PasswordStoreFetcher> account_store_fetcher_;
   SyncTracker sync_tracker_;
   int remaining_tasks_ = 0;
+
+  const raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<PasswordsCounter> weak_ptr_factory_{this};
 };

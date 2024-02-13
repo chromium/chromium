@@ -92,8 +92,8 @@ EndpointMetadataPairFromValue(const base::Value& value) {
   if (!metadata)
     return std::nullopt;
 
-  return std::make_pair(base::checked_cast<HttpsRecordPriority>(weight.value()),
-                        std::move(metadata).value());
+  return std::pair(base::checked_cast<HttpsRecordPriority>(weight.value()),
+                   std::move(metadata).value());
 }
 
 std::optional<DnsQueryType> QueryTypeFromValue(const base::Value& value) {

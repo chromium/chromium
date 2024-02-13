@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/media_switches.h"
@@ -49,7 +50,11 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
                         surface_origin, alpha_type, usage,
                         gpu_memory_buffer->CloneHandle());
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage(), nullptr);
+        gpu::Mailbox::GenerateForSharedImage(),
+        gpu::ClientSharedImage::Metadata(
+            si_format, gpu_memory_buffer->GetSize(), color_space,
+            surface_origin, alpha_type, usage),
+        nullptr);
   }
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -62,7 +67,13 @@ class FakeContext : public RenderableGpuMemoryBufferVideoFramePool::Context {
     DoCreateSharedImage(gpu_memory_buffer, plane, color_space, surface_origin,
                         alpha_type, usage);
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        gpu::Mailbox::GenerateForSharedImage(), nullptr);
+        gpu::Mailbox::GenerateForSharedImage(),
+        gpu::ClientSharedImage::Metadata(viz::GetSinglePlaneSharedImageFormat(
+                                             gpu_memory_buffer->GetFormat()),
+                                         gpu_memory_buffer->GetSize(),
+                                         color_space, surface_origin,
+                                         alpha_type, usage),
+        nullptr);
   }
 
   MOCK_METHOD2(DoCreateGpuMemoryBuffer,

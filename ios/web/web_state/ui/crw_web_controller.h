@@ -250,6 +250,12 @@ class WebStateImpl;
 // Returns the under page background color.
 - (UIColor*)underPageBackgroundColor;
 
+#pragma mark Fullscreen Message Handlers
+
+// Handles the viewport fit value, `isCover` is true when the "viewport-fit" is
+// equal to "cover".
+- (void)handleViewportFit:(BOOL)isCover;
+
 #pragma mark Navigation Message Handlers
 
 // Handles a navigation hash change message for the current webpage.
@@ -283,6 +289,8 @@ class WebStateImpl;
 // Returns the current page loading phase.
 // TODO(crbug.com/956511): Remove this once refactor is done.
 @property(nonatomic, readonly, assign) web::WKNavigationState navigationState;
+// YES if the web container view fill the screen.
+@property(nonatomic, readonly) BOOL isCover;
 
 // Injects a CRWWebViewContentView for testing.  Takes ownership of
 // `webViewContentView`.

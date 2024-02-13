@@ -72,8 +72,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.
-  void OnCreateTaskScope(scheduler::TaskAttributionInfo&,
-                         ScriptState*) override;
+  void OnCreateTaskScope(scheduler::TaskAttributionInfo&) override;
   ExecutionContext* GetExecutionContext() override;
 
   void RecordPaint(LocalFrame*,

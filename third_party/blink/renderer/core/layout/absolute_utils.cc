@@ -420,7 +420,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   if (const Length& left_length = style.UsedLeft(); !left_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kLeft, anchor_evaluator);
     left = MinimumValueForLength(left_length, available_size.width,
-                                 anchor_evaluator);
+                                 {.anchor_evaluator = anchor_evaluator});
   } else if (force_x_insets_to_zero) {
     left = LayoutUnit();
   }
@@ -428,7 +428,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   if (const Length& right_length = style.UsedRight(); !right_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kRight, anchor_evaluator);
     right = MinimumValueForLength(right_length, available_size.width,
-                                  anchor_evaluator);
+                                  {.anchor_evaluator = anchor_evaluator});
   } else if (force_x_insets_to_zero) {
     right = LayoutUnit();
   }
@@ -437,7 +437,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
   if (const Length& top_length = style.UsedTop(); !top_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kTop, anchor_evaluator);
     top = MinimumValueForLength(top_length, available_size.height,
-                                anchor_evaluator);
+                                {.anchor_evaluator = anchor_evaluator});
   } else if (force_y_insets_to_zero) {
     top = LayoutUnit();
   }
@@ -446,7 +446,7 @@ LogicalOofInsets ComputeOutOfFlowInsets(
       !bottom_length.IsAuto()) {
     AnchorScope scope(AnchorScope::Mode::kBottom, anchor_evaluator);
     bottom = MinimumValueForLength(bottom_length, available_size.height,
-                                   anchor_evaluator);
+                                   {.anchor_evaluator = anchor_evaluator});
   } else if (force_y_insets_to_zero) {
     bottom = LayoutUnit();
   }

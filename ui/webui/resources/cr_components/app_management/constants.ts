@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App} from './app_management.mojom-webui.js';
+import type {App} from './app_management.mojom-webui.js';
 
 export {AppType, InstallReason, InstallSource, RunOnOsLogin, RunOnOsLoginMode, WindowMode} from './app_management.mojom-webui.js';
 

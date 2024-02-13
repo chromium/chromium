@@ -61,6 +61,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     // Create a mock D3D11 device that supports 11.0.  Note that if you change
     // this, then you probably also want VideoDevice1 and friends, below.
     mock_d3d11_device_ = MakeComPtr<NiceMock<D3D11DeviceMock>>();
+    ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_ID3D11Device, _))
+        .WillByDefault(SetComPointeeAndReturnOk<1>(mock_d3d11_device_.Get()));
     ON_CALL(*mock_d3d11_device_.Get(), GetFeatureLevel)
         .WillByDefault(Return(D3D_FEATURE_LEVEL_11_0));
 
@@ -179,7 +181,12 @@ class D3D11VideoDecoderTest : public ::testing::Test {
       std::optional<D3D11VideoDecoder::SupportedConfigs> supported_configs =
           std::optional<D3D11VideoDecoder::SupportedConfigs>()) {
     auto get_device_cb = base::BindRepeating(
-        [](Microsoft::WRL::ComPtr<ID3D11Device> device) { return device; },
+        [](Microsoft::WRL::ComPtr<ID3D11Device> device,
+           D3D11VideoDecoder::D3DVersion version)
+            -> Microsoft::WRL::ComPtr<IUnknown> {
+          EXPECT_EQ(version, D3D11VideoDecoder::D3DVersion::kD3D11);
+          return device;
+        },
         mock_d3d11_device_);
 
     // Autodetect the supported configs, unless it's being overridden.
@@ -197,8 +204,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
             gpu_preferences_, gpu_workarounds_,
             base::BindRepeating(&D3D11VideoDecoderTest::GetCommandBufferHelper,
                                 base::Unretained(this)),
-            get_device_cb, *supported_configs, system_hdr_enabled_,
-            CHROME_LUID{0, 0}));
+            get_device_cb, *supported_configs, system_hdr_enabled_));
   }
 
   void InitializeDecoder(const VideoDecoderConfig& config,

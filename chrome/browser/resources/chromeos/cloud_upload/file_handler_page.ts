@@ -96,7 +96,7 @@ export class FileHandlerPageElement extends HTMLElement {
           fileHandlerDialogArgs?.showMicrosoftOfficeTask;
 
       // Adjust the dialog's size if there are no local tasks to display.
-      if (localTasks.length == 0) {
+      if (localTasks.length === 0) {
         this.$('#dialog').style.height = '315px';
       } else if (!showGoogleWorkspaceTask || !showMicrosoftOfficeTask) {
         this.$('#dialog').style.height = '295px';
@@ -130,7 +130,7 @@ export class FileHandlerPageElement extends HTMLElement {
         this.addCloudProviderCard(officeCard);
       }
 
-      if (localTasks.length == 0) {
+      if (localTasks.length === 0) {
         return;
       }
 
@@ -146,7 +146,7 @@ export class FileHandlerPageElement extends HTMLElement {
         localHandlerCard.setParameters(task.position, task.title);
         localHandlerCard.setIconUrl(task.iconUrl);
         localHandlerCard.id = this.toStringId(task.position);
-        if (i == localTasks.length - 1) {
+        if (i === localTasks.length - 1) {
           // Round bottom for last card.
           localHandlerCard.$('#container')!.classList.add('round-bottom');
         }
@@ -210,12 +210,12 @@ export class FileHandlerPageElement extends HTMLElement {
   }
 
   private selectCard(card: FileHandlerCardElement) {
-    assert(card.style.display != 'none', 'Attempting to select a hidden card');
+    assert(card.style.display !== 'none', 'Attempting to select a hidden card');
     for (const providerCard of this.cloudProviderCards) {
-      providerCard.updateSelection(providerCard == card);
+      providerCard.updateSelection(providerCard === card);
     }
     for (const localHandlerCard of this.localHandlerCards) {
-      localHandlerCard.updateSelection(localHandlerCard == card);
+      localHandlerCard.updateSelection(localHandlerCard === card);
     }
     // Enable action button.
     if (card?.selected) {

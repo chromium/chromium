@@ -4,7 +4,7 @@
 
 import '//resources/cr_components/localized_link/localized_link.js';
 
-import {LocalizedLinkElement} from '//resources/cr_components/localized_link/localized_link.js';
+import type {LocalizedLinkElement} from '//resources/cr_components/localized_link/localized_link.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

@@ -1037,6 +1037,30 @@ TEST_F(ManagePasswordsUIControllerTest,
   ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 
+TEST_F(ManagePasswordsUIControllerTest,
+       DefaultStoreChangedBubbleClosedAndKeyIconPressedManually) {
+  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
+  auto test_form_manager = CreateFormManagerWithBestMatches(&best_matches);
+  EXPECT_CALL(*client().GetPasswordFeatureManager(),
+              ShouldChangeDefaultPasswordStore)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility()).Times(2);
+
+  // Change the pwm ui state to PASSWORD_STORE_CHANGED_BUBBLE_STATE.
+  controller()->OnPasswordSubmitted(std::move(test_form_manager));
+  EXPECT_TRUE(controller()->opened_automatic_bubble());
+  EXPECT_EQ(url::Origin::Create(test_local_form().url),
+            controller()->GetOrigin());
+  ExpectIconAndControllerStateIs(
+      password_manager::ui::PASSWORD_STORE_CHANGED_BUBBLE_STATE);
+
+  controller()->OnBubbleHidden();
+  EXPECT_FALSE(controller()->opened_automatic_bubble());
+  EXPECT_EQ(url::Origin::Create(test_local_form().url),
+            controller()->GetOrigin());
+  ExpectIconAndControllerStateIs(password_manager::ui::PENDING_PASSWORD_STATE);
+}
+
 TEST_F(ManagePasswordsUIControllerTest, AutoSignin) {
   std::vector<std::unique_ptr<PasswordForm>> local_credentials;
   local_credentials.emplace_back(new PasswordForm(test_local_form()));

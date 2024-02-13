@@ -443,7 +443,7 @@ class MockHostResolverBase
   const int initial_cache_invalidation_num_;
   std::map<HostCache::Key, int> cache_invalidation_nums_;
 
-  std::set<MdnsListenerImpl*> listeners_;
+  std::set<raw_ptr<MdnsListenerImpl, SetExperimental>> listeners_;
 
   size_t next_request_id_ = 1;
 

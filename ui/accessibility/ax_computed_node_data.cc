@@ -282,10 +282,10 @@ void AXComputedNodeData::ComputeUnignoredValues(
     int starting_index_in_parent) const {
   DCHECK_GE(starting_index_in_parent, 0);
   // Reset any previously computed values.
-  unignored_index_in_parent_ = absl::nullopt;
-  unignored_parent_id_ = absl::nullopt;
-  unignored_child_count_ = absl::nullopt;
-  unignored_child_ids_ = absl::nullopt;
+  unignored_index_in_parent_ = std::nullopt;
+  unignored_parent_id_ = std::nullopt;
+  unignored_child_count_ = std::nullopt;
+  unignored_child_ids_ = std::nullopt;
 
   AXNodeID unignored_parent_id_for_child = unignored_parent_id;
   if (!owner_->IsIgnored())

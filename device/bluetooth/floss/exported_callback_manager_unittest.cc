@@ -66,7 +66,7 @@ class SomeCallback : public ISomeCallback {
   void SomeMethod() override { some_method_called = true; }
 
   // For test inspections.
-  absl::optional<std::tuple<std::string, uint32_t, bool>>
+  std::optional<std::tuple<std::string, uint32_t, bool>>
       last_something_happened;
   bool some_method_called = false;
 

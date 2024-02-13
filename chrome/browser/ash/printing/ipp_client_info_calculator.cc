@@ -6,12 +6,12 @@
 
 #include <cstdint>
 #include <memory>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/policy/core/device_attributes.h"
 #include "chrome/browser/ash/policy/core/device_attributes_impl.h"
@@ -37,10 +37,10 @@ constexpr char kDeviceAnnotatedLocationPlaceholder[] =
 
 // Replace device variables found in `str` with the provided values.
 std::string ReplaceDeviceVariables(std::string template_with_vars,
-                                   base::StringPiece api_id,
-                                   base::StringPiece serial,
-                                   base::StringPiece asset_id,
-                                   base::StringPiece location) {
+                                   std::string_view api_id,
+                                   std::string_view serial,
+                                   std::string_view asset_id,
+                                   std::string_view location) {
   base::ReplaceSubstringsAfterOffset(&template_with_vars, 0,
                                      kDeviceDirectoryApiIdPlaceholder, api_id);
   base::ReplaceSubstringsAfterOffset(&template_with_vars, 0,

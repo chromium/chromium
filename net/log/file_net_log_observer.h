@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -130,7 +130,7 @@ class NET_EXPORT FileNetLogObserver : public NetLog::ThreadSafeObserver {
   static std::unique_ptr<FileNetLogObserver> CreateInternal(
       const base::FilePath& log_path,
       const base::FilePath& inprogress_dir_path,
-      absl::optional<base::File> pre_existing_out_file,
+      std::optional<base::File> pre_existing_out_file,
       uint64_t max_total_size,
       size_t total_num_event_files,
       NetLogCaptureMode capture_mode,

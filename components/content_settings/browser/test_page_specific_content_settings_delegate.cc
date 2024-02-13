@@ -36,11 +36,6 @@ void TestPageSpecificContentSettingsDelegate::
     SetDefaultRendererContentSettingRules(content::RenderFrameHost* rfh,
                                           RendererContentSettingRules* rules) {}
 
-std::vector<storage::FileSystemType>
-TestPageSpecificContentSettingsDelegate::GetAdditionalFileSystemTypes() {
-  return {};
-}
-
 browsing_data::CookieHelper::IsDeletionDisabledCallback
 TestPageSpecificContentSettingsDelegate::GetIsDeletionDisabledCallback() {
   return base::NullCallback();

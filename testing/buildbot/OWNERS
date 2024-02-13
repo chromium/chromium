@@ -42,9 +42,10 @@ per-file internal.optimization_guide.json=file://components/optimization_guide/O
 per-file internal.optimization_guide.json=mgeorgaklis@google.com
 
 # Perf owners
+per-file *chromium.perf*.json=hypan@google.com
+per-file *chromium.perf*.json=jeffyoon@google.com
 per-file *chromium.perf*.json=johnchen@chromium.org
 per-file *chromium.perf*.json=wenbinzhang@google.com
-per-file *chromium.perf*.json=hypan@google.com
 
 # For OOBE-related test filters.
 per-file *oobe*=file://ash/login/OOBE_WEBUI_OWNERS

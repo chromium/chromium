@@ -417,8 +417,6 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
     return r.is_action_empty;
   }
 
-  static bool is_form_tag(const autofill::FormData& r) { return r.is_form_tag; }
-
   static autofill::FormRendererId renderer_id(const autofill::FormData& r) {
     return r.renderer_id;
   }
@@ -708,6 +706,11 @@ struct StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
     return r.form_data;
   }
 
+  static autofill::AutofillSuggestionTriggerSource trigger_source(
+      const autofill::PasswordSuggestionRequest& r) {
+    return r.trigger_source;
+  }
+
   static uint64_t username_field_index(
       const autofill::PasswordSuggestionRequest& r) {
     return r.username_field_index;
@@ -728,8 +731,9 @@ struct StructTraits<autofill::mojom::PasswordSuggestionRequestDataView,
     return r.typed_username;
   }
 
-  static int options(const autofill::PasswordSuggestionRequest& r) {
-    return r.options;
+  static int show_webauthn_credentials(
+      const autofill::PasswordSuggestionRequest& r) {
+    return r.show_webauthn_credentials;
   }
 
   static const gfx::RectF& bounds(

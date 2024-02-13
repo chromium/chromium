@@ -77,8 +77,8 @@ class RoundedScrollBarTest : public views::ViewsTestBase,
 
     // Add a vertical scrollbar along the right edge.
     auto* contents = widget_->SetContentsView(std::make_unique<views::View>());
-    scroll_bar_ = contents->AddChildView(
-        std::make_unique<RoundedScrollBar>(/*horizontal=*/false));
+    scroll_bar_ = contents->AddChildView(std::make_unique<RoundedScrollBar>(
+        views::ScrollBar::Orientation::kVertical));
     scroll_bar_->set_controller(&controller_);
     scroll_bar_->SetBounds(90, 0, kScrollBarWidth, kViewportHeight);
     scroll_bar_->Update(kViewportHeight, kContentHeight,

@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "components/google/core/common/google_util.h"
 #include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
 
@@ -37,6 +38,14 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
 
   GURL site(bound_session_params.site());
   if (!site.is_valid()) {
+    return false;
+  }
+
+  // Restrict allowed sites fow now.
+  if (!google_util::IsGoogleDomainUrl(site, google_util::ALLOW_SUBDOMAIN,
+                                      google_util::ALLOW_NON_STANDARD_PORTS) &&
+      !google_util::IsYoutubeDomainUrl(site, google_util::ALLOW_SUBDOMAIN,
+                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
     return false;
   }
 

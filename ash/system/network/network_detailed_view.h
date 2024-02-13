@@ -34,9 +34,9 @@ class Button;
 // delegate interface it uses to propagate user interactions.
 class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
                                        public NetworkInfoBubble::Delegate {
- public:
-  METADATA_HEADER(NetworkDetailedView);
+  METADATA_HEADER(NetworkDetailedView, TrayDetailedView)
 
+ public:
   // This class defines the interface that NetworkDetailedView will use to
   // propagate user interactions.
   class Delegate {

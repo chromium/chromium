@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
-#include "chromecast/media/base/media_caps.h"
 #include "chromecast/media/common/media_resource_tracker.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/cdm_promise.h"
@@ -139,7 +138,9 @@ void CastCdm::GetStatusForPolicy(
     ::media::HdcpVersion min_hdcp_version,
     std::unique_ptr<::media::KeyStatusCdmPromise> promise) {
   int min_hdcp_x10 = HdcpVersionX10(min_hdcp_version);
-  int cur_hdcp_x10 = MediaCapabilities::GetHdcpVersion();
+  // TODO(sanfin): Implement a function to get the current HDCP version in the
+  // browser process.
+  int cur_hdcp_x10 = 0;
   promise->resolve(cur_hdcp_x10 >= min_hdcp_x10 ? KeyStatus::USABLE
                                                 : KeyStatus::OUTPUT_RESTRICTED);
 }

@@ -562,8 +562,7 @@ TEST_F(DownloadManagerCoordinatorTest, QuitDuringInProgressDownload) {
   auto task = CreateTestTask();
   coordinator_.downloadTask = task.get();
   auto web_state = std::make_unique<web::FakeWebState>();
-  browser_->GetWebStateList()->InsertWebState(
-      0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(web_state));
   [coordinator_ start];
 
   EXPECT_EQ(1U, base_view_controller_.childViewControllers.count);

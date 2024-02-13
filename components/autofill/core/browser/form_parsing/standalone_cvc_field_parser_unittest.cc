@@ -40,7 +40,7 @@ TEST_P(StandaloneCvcFieldParserTest, ParseStandaloneCvc) {
 
   AddTextFormFieldData("cvc", "CVC:", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Do not parse non cvc standalone fields.
@@ -50,7 +50,7 @@ TEST_P(StandaloneCvcFieldParserTest, ParseNonStandaloneCvc) {
 
   AddTextFormFieldData("other-field", "Other Field:", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 // Do not parse when standalone cvc flag is disabled.
@@ -60,7 +60,7 @@ TEST_P(StandaloneCvcFieldParserTest, ParseStandaloneCvcFlagOff) {
 
   AddTextFormFieldData("cvc", "CVC:", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 // Do not parse gift card as standalone cvc fields.
@@ -70,7 +70,7 @@ TEST_P(StandaloneCvcFieldParserTest, NotParseGiftCardAsStandaloneCvc) {
 
   AddTextFormFieldData("gift-card", "Gift Card Pin:", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 }  // namespace autofill

@@ -25,6 +25,7 @@
 #include "chrome/browser/tpcd/experiment/tpcd_utils.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service.h"
 #include "chrome/browser/tpcd/support/tpcd_support_service_factory.h"
+#include "chrome/browser/tpcd/support/validity_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -475,6 +476,10 @@ class AdHeuristicTPCDBrowserTestTrialGrant
            {"SkipTpcdMitigationsForAdsMetadata", "true"},
            {"SkipTpcdMitigationsForAdsHeuristics", "true"}}}},
         {});
+
+    // Disable the validity service so it doesn't remove manually created
+    // trial settings.
+    tpcd::trial::ValidityService::DisableForTesting();
   }
 
  private:
@@ -515,6 +520,10 @@ class AdHeuristicTPCDBrowserTestSkipTrialGrant
            {"SkipTpcdMitigationsForAdsMetadata", "false"},
            {"SkipTpcdMitigationsForAdsHeuristics", "false"}}}},
         {});
+
+    // Disable the validity service so it doesn't remove manually created
+    // trial settings.
+    tpcd::trial::ValidityService::DisableForTesting();
   }
 
  private:

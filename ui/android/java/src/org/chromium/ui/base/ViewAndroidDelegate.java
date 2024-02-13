@@ -555,19 +555,6 @@ public class ViewAndroidDelegate {
      */
     public void performPrivateImeCommand(String action, Bundle data) {}
 
-    /**
-     * @return Array of ints with 4 values, the top, left, right, and bottom of
-     *         the display feature. A display feature is a distinctive physical attribute
-     *         located within the display panel of the device that creates a logical or
-     *         physical separation of the Window's space. The display feature is expressed
-     *         in physical pixels, with coordinates relative to the Window. If no
-     *         DisplayFeature exists, or if it is not currently available, returns null.
-     */
-    @CalledByNative
-    protected int[] getDisplayFeature() {
-        return null;
-    }
-
     private void notifyVerticalScrollDirectionChangeListeners(
             boolean directionUp, float currentScrollRatio) {
         for (VerticalScrollDirectionChangeListener listener :

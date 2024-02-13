@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/prerender/model/prerender_pref.h",
   "+ios/chrome/browser/push_notification/model/push_notification_service.h",
   "+ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h",
+  "+ios/chrome/browser/tips_notifications/model/tips_notification_client.h",
   "+ios/chrome/browser/voice/model/voice_search_prefs_registration.h",
   "+ios/chrome/browser/web/model/font_size/font_size_tab_helper.h",
   "+ios/chrome/browser/photos/model/photos_policy.h",

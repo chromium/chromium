@@ -15,9 +15,9 @@ namespace ash {
 
 class ASH_EXPORT SavedDeskSaveDeskButton : public PillButton,
                                            public OverviewFocusableView {
- public:
-  METADATA_HEADER(SavedDeskSaveDeskButton);
+  METADATA_HEADER(SavedDeskSaveDeskButton, PillButton)
 
+ public:
   enum class Type {
     // Button that saves current desk as template.
     kSaveAsTemplate = 0,

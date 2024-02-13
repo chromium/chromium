@@ -99,7 +99,7 @@ DOMViewTransition* ViewTransitionSupplement::StartViewTransitionInternal(
     // Set the parent task ID if we're not in an extension task (as extensions
     // are not currently supported in TaskAttributionTracker).
     if (tracker && script_state->World().IsMainWorld()) {
-      callback->SetParentTask(tracker->RunningTask(script_state));
+      callback->SetParentTask(tracker->RunningTask(script_state->GetIsolate()));
     }
   }
   return supplement->StartTransition(document, callback, types,
@@ -142,11 +142,14 @@ DOMViewTransition* ViewTransitionSupplement::StartTransition(
     ExceptionState& exception_state) {
   // Disallow script initiated transitions during a navigation initiated
   // transition.
-  if (transition_ && !transition_->IsCreatedViaScriptAPI())
-    return nullptr;
+  if (transition_ && !transition_->IsCreatedViaScriptAPI()) {
+    return ViewTransition::CreateSkipped(&document, callback)
+        ->GetScriptDelegate();
+  }
 
-  if (transition_)
+  if (transition_) {
     transition_->SkipTransition();
+  }
 
   DCHECK(!transition_)
       << "SkipTransition() should finish existing |transition_|";

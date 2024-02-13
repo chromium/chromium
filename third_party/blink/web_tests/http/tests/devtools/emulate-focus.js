@@ -11,11 +11,11 @@ import * as Common from 'devtools/core/common/common.js';
   await dumpPageFocus();
 
   TestRunner.addResult('\nEmulating page focus');
-  Common.Settings.moduleSetting('emulatePageFocus').set(true);
+  Common.Settings.moduleSetting('emulate-page-focus').set(true);
   await dumpPageFocus();
 
   TestRunner.addResult('\nDisabling focus emulation');
-  Common.Settings.moduleSetting('emulatePageFocus').set(false);
+  Common.Settings.moduleSetting('emulate-page-focus').set(false);
   await dumpPageFocus();
 
 

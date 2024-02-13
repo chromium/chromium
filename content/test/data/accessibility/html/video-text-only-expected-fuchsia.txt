@@ -11,7 +11,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN hidden
 ++++++++++++++++BUTTON hidden
-++++++++++++++++++UNKNOWN hidden
 ++++++++++++++++UNKNOWN hidden
 ++++++++++++++++++STATIC_TEXT hidden label='0:00'
 ++++++++++++++++UNKNOWN hidden
@@ -22,9 +21,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++++SLIDER hidden
 ++++++++++++++++++BUTTON hidden
 ++++++++++++++++BUTTON hidden
-++++++++++++++++++UNKNOWN hidden
 ++++++++++++++++UNKNOWN hidden
-++++++++++++++++++UNKNOWN hidden
 ++++++++++++++SLIDER hidden
 ++++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
@@ -81,7 +78,6 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN hidden
 ++++++++++++++++BUTTON hidden
-++++++++++++++++++UNKNOWN hidden
 ++++++++++++++++UNKNOWN hidden
 ++++++++++++++++++STATIC_TEXT hidden label='0:00'
 ++++++++++++++++UNKNOWN hidden
@@ -92,9 +88,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++++++++++SLIDER hidden
 ++++++++++++++++++BUTTON hidden
 ++++++++++++++++BUTTON hidden
-++++++++++++++++++UNKNOWN hidden
 ++++++++++++++++UNKNOWN hidden
-++++++++++++++++++UNKNOWN hidden
 ++++++++++++++SLIDER hidden
 ++++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden

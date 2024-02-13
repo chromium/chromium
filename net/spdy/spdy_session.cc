@@ -7,6 +7,7 @@
 #include <limits>
 #include <map>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -731,8 +732,8 @@ void SpdyStreamRequest::OnConfirmHandshakeComplete(int rv) {
 bool SpdySession::CanPool(TransportSecurityState* transport_security_state,
                           const SSLInfo& ssl_info,
                           const SSLConfigService& ssl_config_service,
-                          const std::string& old_hostname,
-                          const std::string& new_hostname) {
+                          std::string_view old_hostname,
+                          std::string_view new_hostname) {
   // Pooling is prohibited if the server cert is not valid for the new domain,
   // and for connections on which client certs were sent. It is also prohibited
   // when channel ID was sent if the hosts are from different eTLDs+1.
@@ -786,7 +787,7 @@ SpdySession::SpdySession(
     int session_max_queued_capped_frames,
     const spdy::SettingsMap& initial_settings,
     bool enable_http2_settings_grease,
-    const absl::optional<SpdySessionPool::GreasedHttp2Frame>&
+    const std::optional<SpdySessionPool::GreasedHttp2Frame>&
         greased_http2_frame,
     bool http2_end_stream_with_data_frame,
     bool enable_priority_update,
@@ -937,8 +938,8 @@ int SpdySession::ParseAlps() {
       continue;
     }
     has_valid_entry = true;
-    accept_ch_entries_received_via_alps_.insert(
-        std::make_pair(std::move(scheme_host_port), entry.value));
+    accept_ch_entries_received_via_alps_.emplace(std::move(scheme_host_port),
+                                                 entry.value);
 
     net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_ACCEPT_CH,
                       [&] { return NetLogSpdyRecvAcceptChParams(entry); });
@@ -963,7 +964,7 @@ int SpdySession::ParseAlps() {
   return OK;
 }
 
-bool SpdySession::VerifyDomainAuthentication(const std::string& domain) const {
+bool SpdySession::VerifyDomainAuthentication(std::string_view domain) const {
   if (availability_state_ == STATE_DRAINING)
     return false;
 
@@ -1509,7 +1510,8 @@ bool SpdySession::ChangeSocketTag(const SocketTag& new_tag) {
       spdy_session_key_.host_port_pair(), spdy_session_key_.privacy_mode(),
       spdy_session_key_.proxy_chain(), spdy_session_key_.session_usage(),
       new_tag, spdy_session_key_.network_anonymization_key(),
-      spdy_session_key_.secure_dns_policy());
+      spdy_session_key_.secure_dns_policy(),
+      spdy_session_key_.disable_cert_verification_network_fetches());
   spdy_session_key_ = new_key;
 
   return true;
@@ -2145,7 +2147,7 @@ void SpdySession::SendInitialData() {
         static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1);
     // Let insertion silently fail if `settings_map` already contains
     // `greased_id`.
-    settings_map.insert(std::make_pair(greased_id, greased_value));
+    settings_map.emplace(greased_id, greased_value);
   }
   net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_SEND_SETTINGS, [&] {
     return NetLogSpdySendSettingsParams(&settings_map);
@@ -2289,7 +2291,7 @@ void SpdySession::UpdateStreamsSendWindowSize(int32_t delta_window_size) {
     }
   }
 
-  for (auto* const stream : created_streams_) {
+  for (SpdyStream* const stream : created_streams_) {
     if (!stream->AdjustSendWindowSize(delta_window_size)) {
       DoDrainSession(
           ERR_HTTP2_FLOW_CONTROL_ERROR,
@@ -2487,7 +2489,7 @@ void SpdySession::InsertActivatedStream(std::unique_ptr<SpdyStream> stream) {
   spdy::SpdyStreamId stream_id = stream->stream_id();
   CHECK_NE(stream_id, 0u);
   std::pair<ActiveStreamMap::iterator, bool> result =
-      active_streams_.insert(std::make_pair(stream_id, stream.get()));
+      active_streams_.emplace(stream_id, stream.get());
   CHECK(result.second);
   std::ignore = stream.release();
 }
@@ -3004,10 +3006,11 @@ void SpdySession::OnAltSvc(
     if (!gurl.SchemeIs(url::kHttpsScheme))
       return;
     SSLInfo ssl_info;
-    if (!GetSSLInfo(&ssl_info))
+    if (!GetSSLInfo(&ssl_info)) {
       return;
+    }
     if (!CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
-                 host_port_pair().host(), gurl.host())) {
+                 host_port_pair().host(), gurl.host_piece())) {
       return;
     }
     scheme_host_port = url::SchemeHostPort(gurl);

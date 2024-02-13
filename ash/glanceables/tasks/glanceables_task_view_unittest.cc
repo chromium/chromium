@@ -62,8 +62,8 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
     base::Time due;
     EXPECT_TRUE(base::Time::FromString(tc.due.c_str(), &due));
 
-    const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                                /*due=*/due,
+    const auto task = api::Task("task-id", "Task title",
+                                /*due=*/due, /*completed=*/false,
                                 /*has_subtasks=*/false,
                                 /*has_email_link=*/false, /*has_notes=*/false,
                                 /*updated=*/due);
@@ -81,8 +81,8 @@ TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {
 
 TEST_F(GlanceablesTaskViewTest,
        AppliesStrikeThroughStyleAfterMarkingAsComplete) {
-  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/std::nullopt,
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 
@@ -115,8 +115,8 @@ TEST_F(GlanceablesTaskViewTest,
 }
 
 TEST_F(GlanceablesTaskViewTest, InvokesMarkAsCompletedCallback) {
-  const auto task = api::Task("task-id", "Task title", /*completed=*/false,
-                              /*due=*/std::nullopt,
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
                               /*has_subtasks=*/false, /*has_email_link=*/false,
                               /*has_notes=*/false, /*updated=*/base::Time());
 

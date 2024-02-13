@@ -57,7 +57,7 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
 
   void OnFailure(const std::string& message,
                  int net_error,
-                 absl::optional<int> response_code) override {
+                 std::optional<int> response_code) override {
     owner_->has_failed_ = true;
     owner_->failure_message_ = message;
     owner_->failure_response_code_ = response_code.value_or(-1);
@@ -86,7 +86,7 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
                      scoped_refptr<HttpResponseHeaders> response_headers,
                      const IPEndPoint& remote_endpoint,
                      base::OnceCallback<void(const AuthCredentials*)> callback,
-                     absl::optional<AuthCredentials>* credentials) override {
+                     std::optional<AuthCredentials>* credentials) override {
     owner_->run_loop_waiting_for_on_auth_required_.Quit();
     owner_->auth_challenge_info_ = auth_info;
     *credentials = owner_->auth_credentials_;

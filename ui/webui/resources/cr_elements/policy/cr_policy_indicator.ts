@@ -9,7 +9,8 @@ import './cr_tooltip_icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_policy_indicator.html.js';
-import {CrPolicyIndicatorMixin, CrPolicyIndicatorType} from './cr_policy_indicator_mixin.js';
+import type {CrPolicyIndicatorType} from './cr_policy_indicator_mixin.js';
+import {CrPolicyIndicatorMixin} from './cr_policy_indicator_mixin.js';
 
 
 const CrPolicyIndicatorElementBase = CrPolicyIndicatorMixin(PolymerElement);

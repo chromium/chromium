@@ -240,7 +240,8 @@ TEST_F(SpdySessionPoolTest, CloseCurrentSessions) {
   SpdySessionKey test_key = SpdySessionKey(
       test_host_port_pair, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
@@ -302,7 +303,8 @@ TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
   SpdySessionKey key1(test_host_port_pair1, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session1 =
       CreateSpdySession(http_session_.get(), key1, NetLogWithSource());
   base::WeakPtr<SpdyStream> spdy_stream1 = CreateStreamSynchronously(
@@ -317,7 +319,8 @@ TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
   SpdySessionKey key2(test_host_port_pair2, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session2 =
       CreateSpdySession(http_session_.get(), key2, NetLogWithSource());
   base::WeakPtr<SpdyStream> spdy_stream2 = CreateStreamSynchronously(
@@ -333,7 +336,8 @@ TEST_F(SpdySessionPoolTest, CloseCurrentIdleSessions) {
   SpdySessionKey key3(test_host_port_pair3, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session3 =
       CreateSpdySession(http_session_.get(), key3, NetLogWithSource());
   base::WeakPtr<SpdyStream> spdy_stream3 = CreateStreamSynchronously(
@@ -411,7 +415,8 @@ TEST_F(SpdySessionPoolTest, CloseAllSessions) {
   SpdySessionKey test_key = SpdySessionKey(
       test_host_port_pair, PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
 
   MockConnect connect_data(SYNCHRONOUS, OK);
   MockRead reads[] = {
@@ -461,13 +466,15 @@ class SpdySessionPoolOnIPAddressChangeTest : public SpdySessionPoolTest {
         reads_({
             MockRead(SYNCHRONOUS, ERR_IO_PENDING)  // Stall forever.
         }),
-        test_key_(SpdySessionKey(test_host_port_pair_,
-                                 PRIVACY_MODE_DISABLED,
-                                 ProxyChain::Direct(),
-                                 SessionUsage::kDestination,
-                                 SocketTag(),
-                                 NetworkAnonymizationKey(),
-                                 SecureDnsPolicy::kAllow)),
+        test_key_(SpdySessionKey(
+            test_host_port_pair_,
+            PRIVACY_MODE_DISABLED,
+            ProxyChain::Direct(),
+            SessionUsage::kDestination,
+            SocketTag(),
+            NetworkAnonymizationKey(),
+            SecureDnsPolicy::kAllow,
+            /*disable_cert_verification_network_fetches=*/false)),
         connect_data_(SYNCHRONOUS, OK),
         data_(reads_, base::span<MockWrite>()),
         ssl_(SYNCHRONOUS, OK) {
@@ -557,7 +564,8 @@ void SpdySessionPoolTest::RunIPPoolingTest(
     test_host.key = SpdySessionKey(
         HostPortPair(test_host.name, kTestPort), PRIVACY_MODE_DISABLED,
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
   }
 
   MockConnect connect_data(SYNCHRONOUS, OK);
@@ -602,7 +610,8 @@ void SpdySessionPoolTest::RunIPPoolingTest(
       test_hosts[1].key.host_port_pair(), PRIVACY_MODE_DISABLED,
       PacResultElementToProxyChain("HTTP http://proxy.foo.com/"),
       SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow);
+      SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
   EXPECT_FALSE(TryCreateAliasedSpdySession(spdy_session_pool_, proxy_key,
                                            test_hosts[1].iplist));
 
@@ -611,7 +620,8 @@ void SpdySessionPoolTest::RunIPPoolingTest(
   SpdySessionKey disable_secure_dns_key(
       test_hosts[1].key.host_port_pair(), PRIVACY_MODE_DISABLED,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kDisable);
+      NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
+      /*disable_cert_verification_network_fetches=*/false);
   EXPECT_FALSE(TryCreateAliasedSpdySession(
       spdy_session_pool_, disable_secure_dns_key, test_hosts[1].iplist));
 
@@ -741,7 +751,8 @@ void SpdySessionPoolTest::RunIPPoolingDisabledTest(SSLSocketDataProvider* ssl) {
     test_host.key = SpdySessionKey(
         HostPortPair(test_host.name, kTestPort), PRIVACY_MODE_DISABLED,
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
   }
 
   MockRead reads[] = {
@@ -797,7 +808,8 @@ TEST_F(SpdySessionPoolTest, IPPoolingNetLog) {
     test_host.key = SpdySessionKey(
         HostPortPair(test_host.name, kTestPort), PRIVACY_MODE_DISABLED,
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
   }
 
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
@@ -895,7 +907,8 @@ TEST_F(SpdySessionPoolTest, IPPoolingDnsAlpn) {
     test_host.key = SpdySessionKey(
         HostPortPair(test_host.name, kTestPort), PRIVACY_MODE_DISABLED,
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
   }
 
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
@@ -960,7 +973,8 @@ TEST_F(SpdySessionPoolTest, IPPoolingDisabled) {
     test_host.key = SpdySessionKey(
         HostPortPair(test_host.name, kTestPort), PRIVACY_MODE_DISABLED,
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
   }
 
   MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_IO_PENDING)};
@@ -1112,7 +1126,8 @@ TEST_P(SpdySessionGoAwayOnChangeTest, GoAwayOnChange) {
   SpdySessionKey keyA(test_host_port_pairA, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> sessionA =
       CreateSpdySession(http_session_.get(), keyA, NetLogWithSource());
 
@@ -1145,7 +1160,8 @@ TEST_P(SpdySessionGoAwayOnChangeTest, GoAwayOnChange) {
   SpdySessionKey keyB(test_host_port_pairB, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> sessionB =
       CreateSpdySession(http_session_.get(), keyB, NetLogWithSource());
   EXPECT_TRUE(sessionB->IsAvailable());
@@ -1168,7 +1184,8 @@ TEST_P(SpdySessionGoAwayOnChangeTest, GoAwayOnChange) {
   SpdySessionKey keyC(test_host_port_pairC, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> sessionC =
       CreateSpdySession(http_session_.get(), keyC, NetLogWithSource());
 
@@ -1237,7 +1254,8 @@ TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
   SpdySessionKey keyA(test_host_port_pairA, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> sessionA =
       CreateSpdySession(http_session_.get(), keyA, NetLogWithSource());
 
@@ -1270,7 +1288,8 @@ TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
   SpdySessionKey keyB(test_host_port_pairB, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> sessionB =
       CreateSpdySession(http_session_.get(), keyB, NetLogWithSource());
   EXPECT_TRUE(sessionB->IsAvailable());
@@ -1293,7 +1312,8 @@ TEST_F(SpdySessionPoolTest, CloseOnIPAddressChanged) {
   SpdySessionKey keyC(test_host_port_pairC, PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       SocketTag(), NetworkAnonymizationKey(),
-                      SecureDnsPolicy::kAllow);
+                      SecureDnsPolicy::kAllow,
+                      /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> sessionC =
       CreateSpdySession(http_session_.get(), keyC, NetLogWithSource());
 
@@ -1334,7 +1354,8 @@ TEST_F(SpdySessionPoolTest, HandleIPAddressChangeThenShutdown) {
   SpdySessionKey key(HostPortPair::FromURL(url), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow);
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session =
       CreateSpdySession(http_session_.get(), key, NetLogWithSource());
 
@@ -1392,7 +1413,8 @@ TEST_F(SpdySessionPoolTest, HandleGracefulGoawayThenShutdown) {
   SpdySessionKey key(HostPortPair::FromURL(url), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow);
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session =
       CreateSpdySession(http_session_.get(), key, NetLogWithSource());
 
@@ -1446,7 +1468,8 @@ TEST_F(SpdySessionPoolTest, IPConnectionPoolingWithWebSockets) {
     test_host.key = SpdySessionKey(
         HostPortPair(test_host.name, kTestPort), PRIVACY_MODE_DISABLED,
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
   }
 
   SpdyTestUtil spdy_util;
@@ -1608,7 +1631,8 @@ TEST_F(SpdySessionPoolTest, RequestSessionWithNoSessions) {
   const SpdySessionKey kSessionKey(
       HostPortPair("foo.test", 443), PRIVACY_MODE_DISABLED,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
 
   CreateNetworkSession();
 
@@ -1670,7 +1694,8 @@ TEST_F(SpdySessionPoolTest, RequestSessionDuringNotification) {
   const SpdySessionKey kSessionKey(
       HostPortPair("foo.test", 443), PRIVACY_MODE_DISABLED,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
-      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*disable_cert_verification_network_fetches=*/false);
 
   CreateNetworkSession();
 
@@ -1800,7 +1825,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChanged) {
         PRIVACY_MODE_DISABLED,
         PacResultElementToProxyChain(kSSLServerTests[i].proxy_pac_string),
         SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
-        SecureDnsPolicy::kAllow);
+        SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/false);
     sessions.push_back(
         CreateSpdySession(http_session_.get(), key, NetLogWithSource()));
   }
@@ -1856,7 +1882,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithProxyChain) {
   SpdySessionKey key(HostPortPair::FromURL(GURL("https://example.com")),
                      PRIVACY_MODE_DISABLED, proxy_chain,
                      SessionUsage::kDestination, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session =
       CreateSpdySession(http_session_.get(), key, NetLogWithSource());
 
@@ -1903,7 +1930,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
   SpdySessionKey key(HostPortPair::FromURL(url), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow);
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session =
       CreateSpdySession(http_session_.get(), key, NetLogWithSource());
 
@@ -1998,7 +2026,8 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithOnlyPendingStreams) {
   SpdySessionKey key(HostPortPair::FromURL(url), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow);
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false);
   base::WeakPtr<SpdySession> session =
       CreateSpdySession(http_session_.get(), key, NetLogWithSource());
 

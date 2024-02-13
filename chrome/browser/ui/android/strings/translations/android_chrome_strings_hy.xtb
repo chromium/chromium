@@ -169,7 +169,6 @@
 <translation id="1933845786846280168">Ընտրված ներդիր</translation>
 <translation id="1943432128510653496">Պահել գաղտնաբառերը</translation>
 <translation id="1944535645109964458">Հասանելի անցաբառեր չկան</translation>
-<translation id="1952172573699511566">Կայքերի տեքստը հնարավորության դեպքում կցուցադրվի ձեր ընտրած լեզվով։</translation>
 <translation id="1959679933317802873">Բովանդակության սպասում</translation>
 <translation id="1960290143419248813">Chrome-ն այլևս չի թարմացվում Android-ի այս տարբերակում</translation>
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
@@ -204,6 +203,7 @@
 <translation id="2132122640199389833">Հեռացնել բոլոր կապված սարքերը</translation>
 <translation id="213279576345780926">Փակված <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Ավելացնել գլխավոր էկրանին</translation>
+<translation id="2139414603196655536">«Էջի վիճակագրություն» բաժնում կատարված ձեր գործողությունները պահվում են ձեր Google հաշվում։ <ph name="BEGIN_LINK" />Իմանալ, թե ինչպես կառավարել սա<ph name="END_LINK" /></translation>
 <translation id="2141396931810938595">Ձեր օգտագործման հիման վրա</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
 <translation id="2155214902713132423">Հաստատման այս եղանակը հասանելի չէ այս սարքի համար։ Ընտրեք մեկ այլ տարբերակ ձեր մյուս սարքում։</translation>
@@ -379,7 +379,6 @@
 <translation id="3027644380269727216">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումը միացված է։</translation>
 <translation id="3029276696788198026">Առանց նախաբեռնման</translation>
 <translation id="3029704984691124060">Անցաբառերը չեն համընկնում</translation>
-<translation id="303514781271618814">Chrome-ը ներկայացնում է նոր գործառույթներ, որոնք կայքերին թույլ են տալիս տրամադրել դիտարկման միևնույն հնարավորությունները՝ ձեր մասին ավելի քիչ տվյալներ օգտագործելով։</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Ստացեք օգնություն<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Դուք հետևում եք այս ապրանքի գնին</translation>
 <translation id="3037517125981011456">Ցույց է տալիս հաղորդագրություն Chrome-ում մուտք գործելու համար</translation>
@@ -873,6 +872,7 @@
 <translation id="5698878456427040674">Ստուգեք՝ արդյոք ընտրված հաշիվն աջակցվում է։</translation>
 <translation id="570347048394355941">Անցնել ներդիր</translation>
 <translation id="5715150588940290235">Ջնջե՞լ անվտանգության պահված կոդերը</translation>
+<translation id="571930967925877633">Ձեր էջանիշները, պատմությունը և Chrome-ի մյուս տվյալները այլևս չեն համաժամացվի ձեր Google հաշվի հետ</translation>
 <translation id="572328651809341494">Վերջերս բացված ներդիրներ</translation>
 <translation id="5726692708398506830">Էջում ամեն ինչ մեծացնել</translation>
 <translation id="5744751019568455640">Այստեղ կարող եք ընտրել ձայն՝ վեբ էջերի հնչեցման համար։ Եթե ձեզ դուր է գալիս այս ձայնը, և դուք ուզում եք այն հետագայում ևս լսել, հպեք դրա անվանմանը։</translation>
@@ -1081,6 +1081,7 @@
 <translation id="670498945988402717">Ստուգվել է երեկ</translation>
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
+<translation id="6714850225831215156">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում։ Այն պահվում է միայն այս սարքում։}one{Էջանիշը պահվեց «<ph name="FOLDER_NAME" />» պանակում։ Այն պահվում է միայն այս սարքում։}other{Էջանիշները պահվեցին «<ph name="FOLDER_NAME" />» պանակում։ Դրանք պահվում են միայն այս սարքում։}}</translation>
 <translation id="6715020873764921614">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
 <translation id="6719634564325948108">Կապե՞լ QR կոդի միջոցով</translation>
 <translation id="6723740634201835758">Ձեր Google հաշվում</translation>
@@ -1105,7 +1106,6 @@
 <translation id="6828070228333235514">Դադարեցնել գների հետագծումը</translation>
 <translation id="6830728435402077660">Անվտանգ չէ</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
-<translation id="6833996806551876956">Privacy Sandbox-ի փորձաշրջան</translation>
 <translation id="6836206421467243968">Վերականգնել «<ph name="TITLE_OF_GROUP" />» ներդիրների խումբը որպես ներդիրների նոր ֆոնային խումբ։</translation>
 <translation id="6846298663435243399">Բեռնում…</translation>
 <translation id="6850409657436465440">Ներբեռնումն ընթացքում է</translation>
@@ -1161,7 +1161,6 @@
 <translation id="7088681679121566888">Chrome-ը թարմացված է</translation>
 <translation id="7105047059074518658">Մտեք հաշիվ՝ ձեր բոլոր սարքերում նույն կայքերից հեշտությամբ օգտվելու համար</translation>
 <translation id="7106762743910369165">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից</translation>
-<translation id="7116588989735740310">Համաժամացրեք ներդիրները և պատմությունը, որպեսզի վերադառնաք կայքեր, որոնք այցելել եք այլ սարքերում</translation>
 <translation id="7138678301420049075">Այլ</translation>
 <translation id="7140829094791862589">Տեսակավորել ձեռքով</translation>
 <translation id="7146622961999026732">Այս կայքերը և հավելվածները կարող են կարևոր լինել ձեզ համար՝</translation>
@@ -1251,7 +1250,6 @@
 <translation id="752220631458524187">Աշխատանքն ավարտեուց հետո անջատեք մալուխը</translation>
 <translation id="7523960634226602883">Որոնել տեսախցիկի միջոցով՝ օգտագործելով Google Տեսապակին</translation>
 <translation id="752731652852882757">Արգելափակել ինկոգնիտո ռեժիմում</translation>
-<translation id="7539698981064401140">Համաժամացրեք ներդիրները և տվյալները</translation>
 <translation id="7562080006725997899">Ջնջվում են զննարկման տվյալները</translation>
 <translation id="756809126120519699">Chrome-ի տվյալները ջնջվեցին</translation>
 <translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
@@ -1404,6 +1402,7 @@
 <translation id="8237871086242677046">Էջի վիճակագրության ներքևի էկրան</translation>
 <translation id="8243077599929149377">Ավելացրեք ձեր օգտանունը</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
+<translation id="8253557549177565072">{BOOKMARK_COUNT,plural, =1{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}one{Էջանիշը պահվեց <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}other{Էջանիշները պահվեցին <ph name="ACCOUNT_EMAIL" /> հաշվի «<ph name="FOLDER_NAME" />» պանակում։}}</translation>
 <translation id="8255617931166444521">Կայքերը կարող են օգտագործել քուքիներ՝ միայն իրենց էջերում ձեր գործողությունները հետագծելու համար։</translation>
 <translation id="8259179246279078674">Քանի որ նախապես բեռնված էջերը գաղտնագրված են, Google-ը ոչինչ չի իմանա դրանց բովանդակության մասին։ Google-ի սերվերները տեղեկություններ կստանան, թե որ կայքերն են անանուն կերպով նախաբեռնվել։ Այս տեղեկություններն օգտագործվում են միայն կայքերի նախաբեռնման համար և կապված չեն ձեր Google հաշվի մյուս տվյալների հետ։</translation>
 <translation id="8260126382462817229">Փորձեք նորից մուտք գործել</translation>
@@ -1446,7 +1445,6 @@
 <translation id="8461694314515752532">Գաղտնագրել համաժամացված տվյալները սեփական համաժամացման անցաբառով</translation>
 <translation id="8466613982764129868">Համոզվեք, որ <ph name="TARGET_DEVICE_NAME" /> սարքը միացված է ինտերնետին</translation>
 <translation id="8473863474539038330">Հասցեներ և այլ տեղեկություններ</translation>
-<translation id="847433688444405067">Դիտարկեք տարբեր սարքերում</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Բացել պատմության էջը</translation>
 <translation id="8493948351860045254">Ազատել տարածք</translation>
@@ -1496,7 +1494,6 @@
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>
 <translation id="8746155870861185046">Կիսվել ընդգծված տեքստով</translation>
-<translation id="874726034427945498">Ավելի լավ առաջարկներ ձեր հասցեագոտում տեսնելու համար համաժամացրեք ձեր ներդիրները և պատմությունը</translation>
 <translation id="8748850008226585750">Բովանդակությունը թաքցված է</translation>
 <translation id="8754448020583829686">Պատճենել առանց հղման</translation>
 <translation id="8756969031206844760">Թարմացնե՞լ գաղտնաբառը</translation>
@@ -1538,7 +1535,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_ONE" /> այլ ներդիր կփակվեն}one{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիր կփակվեն}other{<ph name="INCOGNITO_TAB_COUNT" /> ինկոգնիտո և <ph name="TAB_COUNT_MANY" /> այլ ներդիրներ կփակվեն}}</translation>
 <translation id="8970887620466824814">Սխալ առաջացավ:</translation>
 <translation id="8972098258593396643">Ներբեռնե՞լ կանխադրված պանակ</translation>
-<translation id="8987736167266086032">Շարունակեք այնտեղից, որտեղ կանգ էիք առել</translation>
 <translation id="8993760627012879038">Բացել նոր ներդիր ինկոգնիտո ռեժիմում</translation>
 <translation id="8996847606757455498">Ընտրել մեկ այլ մատակարար</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
@@ -1561,7 +1557,6 @@
 <translation id="9070377983101773829">Սկսել ձայնային որոնումը</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Ինկոգնիտո ռեժիմում այցելած կայքերի մասին տեղեկությունները չեն պահվում</translation>
-<translation id="9084103763810123431">Այս սարքում դիտարկումը շարունակելու համար համաժամացրեք ձեր ներդիրները և պատմությունը</translation>
 <translation id="9086302186042011942">Համաժամացում</translation>
 <translation id="9086455579313502267">Հնարավոր չէ մուտք գործել ցանց</translation>
 <translation id="9099220545925418560">Ձեր այցելությունների պատմության հիման վրա։ Այս կարգավորումն անջատված է։</translation>

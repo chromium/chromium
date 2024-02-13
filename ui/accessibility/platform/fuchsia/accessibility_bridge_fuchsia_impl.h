@@ -9,10 +9,11 @@
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/inspect/cpp/vmo/types.h>
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
 #include "ui/aura/window.h"
@@ -57,7 +58,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
   void UpdateNode(fuchsia_accessibility_semantics::Node node) override;
   void DeleteNode(uint32_t node_id) override;
   void OnAccessibilityHitTestResult(int hit_test_request_id,
-                                    absl::optional<uint32_t> result) override;
+                                    std::optional<uint32_t> result) override;
   float GetDeviceScaleFactor() override;
   void SetRootID(uint32_t root_node_id) override;
   inspect::Node GetInspectNode() override;
@@ -92,7 +93,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
   // Fuchsia semantic trees require that the root node ID == 0. The
   // AXUniqueId of the chrome node corresponding to the fuchsia root will NOT be
   // 0, so we need to store it here in order to map between the two.
-  absl::optional<uint32_t> root_node_id_;
+  std::optional<uint32_t> root_node_id_;
 
   // Holds callbacks for hit tests that have not yet completed, keyed by a
   // request ID that this class generates.

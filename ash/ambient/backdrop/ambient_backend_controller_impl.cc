@@ -219,6 +219,8 @@ std::optional<WeatherInfo> ToWeatherInfo(const base::Value& result) {
   WeatherInfo weather_info;
   const auto& list_result = result.GetList();
 
+  weather_info.condition_description = GetStringValue(
+      list_result, backdrop::WeatherInfo::kConditionDescriptionFieldNumber);
   weather_info.condition_icon_url = GetStringValue(
       list_result, backdrop::WeatherInfo::kConditionIconUrlFieldNumber);
   weather_info.temp_f =

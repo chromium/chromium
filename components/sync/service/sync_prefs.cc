@@ -59,6 +59,10 @@ constexpr char kPasswordsPerAccountPrefMigrationDone[] =
 constexpr char kSyncToSigninMigrationState[] =
     "sync.sync_to_signin_migration_state";
 
+// State of the migration done by MaybeMigrateCustomPassphrasePref().
+constexpr char kSyncEncryptionBootstrapTokenPerAccountMigrationDone[] =
+    "sync.encryption_bootstrap_token_per_account_migration_done";
+
 constexpr int kNotMigrated = 0;
 constexpr int kMigratedPart1ButNot2 = 1;
 constexpr int kMigratedPart2AndFullyDone = 2;
@@ -180,6 +184,9 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // account.
   registry->RegisterDictionaryPref(
       prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+  // For migration only, tracks if the EncryptionBootstrapToken is migrated.
+  registry->RegisterBooleanPref(
+      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, false);
 
   registry->RegisterBooleanPref(prefs::internal::kSyncManaged, false);
   registry->RegisterIntegerPref(
@@ -574,6 +581,15 @@ void SyncPrefs::SetEncryptionBootstrapToken(const std::string& token) {
 void SyncPrefs::ClearEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pref_service_->ClearPref(prefs::internal::kSyncEncryptionBootstrapToken);
+  if (IsInitialSyncFeatureSetupComplete()) {
+    // When Sync-the-feature gets turned off, the user's encryption bootstrap
+    // token should be cleared. However, at this point it's hard to determine
+    // the right account, since the user is already signed out. For simplicity,
+    // just clear all existing bootstrap tokens (in practice, there will almost
+    // always be at most one anyway).
+    KeepAccountSettingsPrefsOnlyForUsers(
+        {}, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+  }
 }
 
 std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
@@ -596,6 +612,18 @@ void SyncPrefs::SetEncryptionBootstrapTokenForAccount(
         prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
     base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
     all_accounts.Set(gaia_id_hash.ToBase64(), token);
+  }
+}
+
+void SyncPrefs::ClearEncryptionBootstrapTokenForAccount(
+    const signin::GaiaIdHash& gaia_id_hash) {
+  CHECK(gaia_id_hash.IsValid());
+  {
+    ScopedDictPrefUpdate update_account_passphrase_dict(
+        pref_service_,
+        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
+    all_accounts.Remove(gaia_id_hash.ToBase64());
   }
 }
 
@@ -674,6 +702,13 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
              base::FeatureList::IsEnabled(kEnablePreferencesAccountStorage);
     case UserSelectableType::kPasswords:
+      // WARNING: This should actually be checking
+      // password_manager::features_util::CanCreateAccountStore() too, otherwise
+      // a crash can happen. But a) it would require a cyclic dependency, and
+      // b) by the time kEnablePasswordsAccountStorageForNonSyncingUsers is
+      // rolled out on Android, CanCreateAccountStore() should always return
+      // true (or at least it can be some trivial GmsCore version check and live
+      // in components/sync/).
       return base::FeatureList::IsEnabled(
           kEnablePasswordsAccountStorageForNonSyncingUsers);
     case UserSelectableType::kAutofill:
@@ -695,6 +730,9 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
       return base::FeatureList::IsEnabled(
           kSyncSharedTabGroupDataInTransportMode);
     case UserSelectableType::kApps:
+#if BUILDFLAG(IS_ANDROID)
+      return base::FeatureList::IsEnabled(kWebApkBackupAndRestoreBackend);
+#endif
     case UserSelectableType::kExtensions:
     case UserSelectableType::kThemes:
     case UserSelectableType::kSavedTabGroups:
@@ -942,6 +980,46 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart2(
     return true;
   }
   return false;
+}
+
+void SyncPrefs::MaybeMigrateCustomPassphrasePref(
+    const signin::GaiaIdHash& gaia_id_hash) {
+  if (!base::FeatureList::IsEnabled(
+          kSyncRememberCustomPassphraseAfterSignout)) {
+    pref_service_->ClearPref(
+        kSyncEncryptionBootstrapTokenPerAccountMigrationDone);
+    return;
+  }
+
+  if (pref_service_->GetBoolean(
+          kSyncEncryptionBootstrapTokenPerAccountMigrationDone)) {
+    return;
+  }
+  pref_service_->SetBoolean(
+      kSyncEncryptionBootstrapTokenPerAccountMigrationDone, true);
+
+  if (gaia_id_hash == signin::GaiaIdHash::FromGaiaId("")) {
+    // Do not migrate if gaia_id is empty; no signed in user.
+    return;
+  }
+
+  CHECK(gaia_id_hash.IsValid());
+  const std::string& token =
+      pref_service_->GetString(prefs::internal::kSyncEncryptionBootstrapToken);
+  if (token.empty()) {
+    // No custom passphrase is used, or it is not set.
+    return;
+  }
+  {
+    ScopedDictPrefUpdate update_account_passphrase_dict(
+        pref_service_,
+        prefs::internal::kSyncEncryptionBootstrapTokenPerAccount);
+    base::Value::Dict& all_accounts = update_account_passphrase_dict.Get();
+    all_accounts.Set(gaia_id_hash.ToBase64(), token);
+  }
+  CHECK(GetEncryptionBootstrapTokenForAccount(gaia_id_hash) ==
+        GetEncryptionBootstrapToken());
+  return;
 }
 
 // static

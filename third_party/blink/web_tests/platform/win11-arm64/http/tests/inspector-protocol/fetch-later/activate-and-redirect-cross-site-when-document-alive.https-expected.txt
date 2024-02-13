@@ -41,6 +41,7 @@ Network.requestWillBeSent{
     redirectHasExtraInfo : false
     redirectResponse : {
         alternateProtocolUsage : unspecifiedReason
+        charset : 
         connectionId : <number>
         connectionReused : true
         encodedDataLength : 247

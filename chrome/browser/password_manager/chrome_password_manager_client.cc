@@ -27,6 +27,7 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
@@ -190,12 +191,6 @@ url::Origin URLToOrigin(GURL url) {
   return url::Origin::Create(url.DeprecatedGetOriginAsURL());
 }
 #endif
-
-const syncer::SyncService* GetSyncServiceForProfile(Profile* profile) {
-  if (SyncServiceFactory::HasSyncService(profile))
-    return SyncServiceFactory::GetForProfile(profile);
-  return nullptr;
-}
 
 }  // namespace
 
@@ -709,7 +704,15 @@ PrefService* ChromePasswordManagerClient::GetLocalStatePrefs() const {
 }
 
 const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
-  return GetSyncServiceForProfile(profile_);
+  if (SyncServiceFactory::HasSyncService(profile_)) {
+    return SyncServiceFactory::GetForProfile(profile_);
+  }
+  return nullptr;
+}
+
+password_manager::AffiliationService*
+ChromePasswordManagerClient::GetAffiliationService() {
+  return AffiliationServiceFactory::GetForProfile(profile_);
 }
 
 password_manager::PasswordStoreInterface*
@@ -733,13 +736,6 @@ ChromePasswordManagerClient::GetAccountPasswordStore() const {
 password_manager::PasswordReuseManager*
 ChromePasswordManagerClient::GetPasswordReuseManager() const {
   return PasswordReuseManagerFactory::GetForProfile(profile_);
-}
-
-password_manager::SyncState ChromePasswordManagerClient::GetPasswordSyncState()
-    const {
-  const syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile_);
-  return password_manager::sync_util::GetPasswordSyncState(sync_service);
 }
 
 bool ChromePasswordManagerClient::WasLastNavigationHTTPError() const {
@@ -1377,12 +1373,9 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       credentials_filter_(
           this,
-          base::BindRepeating(&GetSyncServiceForProfile, profile_),
           DiceWebSigninInterceptorFactory::GetForProfile(profile_)),
 #else
-      credentials_filter_(
-          this,
-          base::BindRepeating(&GetSyncServiceForProfile, profile_)),
+      credentials_filter_(this),
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
       account_storage_auth_helper_(

@@ -541,7 +541,8 @@ class EventRouter : public KeyedService,
 
   base::ObserverList<TestObserver>::Unchecked test_observers_;
 
-  std::set<content::RenderProcessHost*> observed_process_set_;
+  std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>
+      observed_process_set_;
 
   LazyEventDispatchUtil lazy_event_dispatch_util_;
 

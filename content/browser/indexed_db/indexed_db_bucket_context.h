@@ -6,12 +6,14 @@
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_BUCKET_CONTEXT_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <queue>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -21,7 +23,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_bucket_types.mojom.h"
-#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom-forward.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -32,6 +34,7 @@
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
@@ -44,7 +47,6 @@ class IndexedDBBackingStore;
 class IndexedDBBucketContextHandle;
 class IndexedDBDatabase;
 class IndexedDBDataItemReader;
-class IndexedDBFactory;
 class IndexedDBPreCloseTaskQueue;
 
 constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
@@ -52,24 +54,25 @@ constexpr const char kIDBCloseImmediatelySwitch[] = "idb-close-immediately";
 // IndexedDBBucketContext manages the per-bucket IndexedDB state, and other
 // important context like the backing store and lock manager.
 //
-// IndexedDBBucketContext will keep itself alive while any of these is true:
-// * There are handles referencing the factory,
+// IndexedDBBucketContext will keep its backing store around while any of these
+// is true:
+// * There are handles referencing the bucket context,
 // * There are outstanding blob references to this database's blob files, or
-// * The factory is in-memory (i.e. an incognito profile).
+// * The bucket context is in-memory (i.e. an incognito profile).
 //
 // When these qualities are no longer true, `RunTasks()` will invoke
-// `on_ready_for_destruction`, which lets the owner (`IndexedDBFactory`) know
-// it's time to destroy this.
+// `ResetBackingStore()`, which returns `this` to an uninitialized state.
 //
 // TODO(crbug.com/1474996): it's intended that each bucket gets its own
 // IndexedDB task runner. To facilitate IndexedDB code running on multiple task
 // runners, `IndexedDBBucketContext` is in the process of becoming the single
 // point of communication between classes running on the main task runner, such
-// as `IndexedDBFactory`, and those that pertain to a specific bucket and
+// as `IndexedDBContextImpl`, and those that pertain to a specific bucket and
 // therefore run on a bucket's IDB task runner, such as `IndexedDBDatabase` or
 // `IndexedDBCursor`.
 class CONTENT_EXPORT IndexedDBBucketContext
-    : public base::trace_event::MemoryDumpProvider {
+    : public blink::mojom::IDBFactory,
+      public base::trace_event::MemoryDumpProvider {
  public:
   using DBMap =
       base::flat_map<std::u16string, std::unique_ptr<IndexedDBDatabase>>;
@@ -132,16 +135,6 @@ class CONTENT_EXPORT IndexedDBBucketContext
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    // Called when a fatal error has occurred that should result in tearing down
-    // the backing store. `IndexedDBBucketContext` *may* be synchronously
-    // destroyed after this is invoked. The string, if non-empty, is used as an
-    // error message.
-    base::RepeatingCallback<void(leveldb::Status, const std::string&)>
-        on_fatal_error;
-
-    // Called when the backing store has been corrupted.
-    base::RepeatingCallback<void(const IndexedDBDatabaseError&)> on_corruption;
-
     // Called when the bucket context is ready to be destroyed.
     base::RepeatingCallback<void()> on_ready_for_destruction;
 
@@ -153,11 +146,10 @@ class CONTENT_EXPORT IndexedDBBucketContext
                                  const std::u16string& /*object_store_name*/)>
         on_content_changed;
 
-    // Called to inform the quota system that a transaction which may have
-    // updated the amount of disk space used has completed. The parameter is
-    // true for transactions that caused the backing store to flush.
-    base::RepeatingCallback<void(bool /*did_sync*/)>
-        on_writing_transaction_complete;
+    // Called to inform the quota system that an action which may have updated
+    // the amount of disk space used has completed. The parameter is true for
+    // transactions that caused the backing store to flush.
+    base::RepeatingCallback<void(bool /*did_sync*/)> on_files_written;
 
     // Called to run a given callback on every bucket context (including the one
     // in the current sequence and those in other sequences/associated with
@@ -174,9 +166,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // `IndexedDBBucketContext` it creates.
   IndexedDBBucketContext(
       storage::BucketInfo bucket_info,
-      std::unique_ptr<PartitionedLockManager> lock_manager,
+      const base::FilePath& data_path,
       Delegate&& delegate,
-      std::unique_ptr<IndexedDBBackingStore> backing_store,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<base::TaskRunner> io_task_runner,
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
@@ -195,6 +186,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // Normally, in-memory bucket contexts never self-close. If this is called
   // with `doom` set to true, they will self-close.
   void ForceClose(bool doom);
+
+  int64_t GetInMemorySize();
 
   bool IsClosing() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -236,22 +229,17 @@ class CONTENT_EXPORT IndexedDBBucketContext
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return backing_store_.get();
   }
-  // TODO(crbug.com/1474996): remove this.
-  const DBMap& databases() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return databases_;
-  }
   const DBMap& GetDatabasesForTesting() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return databases_;
   }
-  PartitionedLockManager* lock_manager() {
+  PartitionedLockManager& lock_manager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return lock_manager_.get();
+    return *lock_manager_;
   }
-  const PartitionedLockManager* lock_manager() const {
+  const PartitionedLockManager& lock_manager() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return lock_manager_.get();
+    return *lock_manager_;
   }
   IndexedDBPreCloseTaskQueue* pre_close_task_queue() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -280,33 +268,27 @@ class CONTENT_EXPORT IndexedDBBucketContext
     return file_system_access_context_.get();
   }
 
-  // `pending_factory_client` must be bound on the thread that uses it, hence it
-  // is not safe to bind it before passing here. `client_token` uniquely
-  // identifies `state_checker`, and by extension, the "client"/render frame.
-  void OpenDatabase(
-      const std::u16string& name,
-      int64_t version,
-      mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
-          pending_factory_client,
-      mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
-          database_callbacks_remote,
-      int64_t transaction_id,
-      mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
-          transaction_receiver,
-      bool was_cold_open,
-      IndexedDBDataLossInfo data_loss_info,
+  void AddReceiver(
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
-          state_checker,
-      base::UnguessableToken client_token);
+          client_state_checker_remote,
+      base::UnguessableToken client_token,
+      mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
-  // `pending_factory_client` must be bound on the thread that uses it, hence it
-  // is not safe to bind it before passing here.
-  void DeleteDatabase(
-      mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
-          pending_factory_client,
-      std::u16string name,
-      bool force_close,
-      base::OnceClosure on_deletion_complete);
+  // blink::mojom::IDBFactory implementation:
+  void GetDatabaseInfo(GetDatabaseInfoCallback callback) override;
+  void Open(mojo::PendingAssociatedRemote<blink::mojom::IDBFactoryClient>
+                factory_client,
+            mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
+                database_callbacks_remote,
+            const std::u16string& name,
+            int64_t version,
+            mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+                transaction_receiver,
+            int64_t transaction_id) override;
+  void DeleteDatabase(mojo::PendingAssociatedRemote<
+                          blink::mojom::IDBFactoryClient> factory_client,
+                      const std::u16string& name,
+                      bool force_close) override;
 
   // Finishes filling in `info` with data relevant to idb-internals and passes
   // the result back via `result`.
@@ -315,27 +297,59 @@ class CONTENT_EXPORT IndexedDBBucketContext
       base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
 
   void CompactBackingStoreForTesting();
+  void WriteToIndexedDBForTesting(const std::string& key,
+                                  const std::string& value,
+                                  base::OnceClosure callback);
+
+  // Called when a fatal error has occurred that should result in tearing down
+  // the backing store. `IndexedDBBucketContext` *may* be synchronously
+  // destroyed after this is invoked. The string, if non-empty, is used as an
+  // error message.
+  void OnDatabaseError(leveldb::Status status, const std::string& message);
+
+  // Called when the backing store has been corrupted.
+  void HandleBackingStoreCorruption(const IndexedDBDatabaseError& error);
 
   // base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
+  bool force_close_called_for_testing() const { return skip_closing_sequence_; }
+
  private:
-  friend IndexedDBFactory;
   friend IndexedDBBucketContextHandle;
+  friend class IndexedDBBackingStoreTest;
   friend class IndexedDBDatabaseTest;
+  friend class IndexedDBTest;
   friend class IndexedDBTransactionTest;
 
-  // Test needs access to ShouldRunTombstoneSweeper.
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, TombstoneSweeperTiming);
-
-  // Test needs access to ShouldRunCompaction.
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionTaskTiming);
-
-  // Test needs access to CompactionKillSwitchWorks.
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBFactoryTest, CompactionKillSwitchWorks);
-
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBBucketContextTest, BucketSpaceDecay);
+
+  // The data structure that stores everything bound to the receiver. This will
+  // be stored together with the receiver in the `mojo::ReceiverSet`.
+  struct ReceiverContext {
+    ReceiverContext(
+        mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+            client_state_checker_remote,
+        base::UnguessableToken token);
+
+    ~ReceiverContext();
+
+    ReceiverContext(const ReceiverContext&) = delete;
+    ReceiverContext(ReceiverContext&&) noexcept;
+    ReceiverContext& operator=(const ReceiverContext&) = delete;
+    ReceiverContext& operator=(ReceiverContext&&) = delete;
+
+    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote;
+
+    base::UnguessableToken client_token;
+  };
 
   // Used to synchronize the global throttling of LevelDB cleanup operations.
   // See `for_each_bucket_context`.
@@ -349,8 +363,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   void OnHandleCreated();
   void OnHandleDestruction();
 
-  // Returns true if this factory can be closed (no references, no blobs, and
-  // not persisting for incognito).
+  // Returns true if this bucket context can be closed (no references, no blobs,
+  // and not persisting for incognito).
   bool CanClose();
 
   void MaybeStartClosing();
@@ -386,9 +400,35 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // Removes all readers for this file path.
   void RemoveBoundReaders(const base::FilePath& path);
 
+  std::tuple<std::unique_ptr<IndexedDBBackingStore>,
+             leveldb::Status,
+             IndexedDBDataLossInfo,
+             bool /* is_disk_full */>
+  OpenAndVerifyIndexedDBBackingStore(base::FilePath data_directory,
+                                     base::FilePath database_path,
+                                     base::FilePath blob_path,
+                                     PartitionedLockManager* lock_manager,
+                                     bool is_first_attempt,
+                                     bool create_if_missing);
+
+  std::tuple<leveldb::Status, IndexedDBDatabaseError, IndexedDBDataLossInfo>
+  InitBackingStoreIfNeeded(bool create_if_missing);
+
+  // Destroys `backing_store_` and all associated state. If there are no
+  // receivers remaining, it will also destroy `this`.
+  void ResetBackingStore();
+
+  // Called when a receiver from `receiver_set_` has been disconnected. If there
+  // are no receivers left and the backing store is already destroyed, this will
+  // initiate destruction of `this`.
+  void OnReceiverDisconnected();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
-  storage::BucketInfo bucket_info_;
+  const storage::BucketInfo bucket_info_;
+
+  // Base directory for blobs and backing store files.
+  const base::FilePath data_path_;
 
   // True if there are blobs referencing this backing store that are still
   // alive. This is used as closing criteria for this object, see
@@ -402,7 +442,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   base::Time earliest_global_compaction_time_;
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
-  const std::unique_ptr<PartitionedLockManager> lock_manager_;
+  std::unique_ptr<PartitionedLockManager> lock_manager_;
   std::unique_ptr<IndexedDBBackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
@@ -411,8 +451,8 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // have not yet been loaded.
   DBMap databases_;
   // This is the refcount for the number of IndexedDBBucketContextHandle's
-  // given out for this factory using OpenReference. This is used as closing
-  // criteria for this object, see CanClose.
+  // given out for this bucket context using OpenReference. This is used as
+  // closing criteria for this object, see CanClose.
   int64_t open_handles_ = 0;
 
   // A queue of callbacks representing `CheckCanUseDiskSpace()` requests.
@@ -451,8 +491,7 @@ class CONTENT_EXPORT IndexedDBBucketContext
   // True if there's already a task queued to call `RunTasks()`.
   bool task_run_queued_ = false;
 
-  // Base directory for blobs and backing store files.
-  base::FilePath data_path_;
+  mojo::ReceiverSet<blink::mojom::IDBFactory, ReceiverContext> receivers_;
 
   base::WeakPtrFactory<IndexedDBBucketContext> weak_factory_{this};
 };

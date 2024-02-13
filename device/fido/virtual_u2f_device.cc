@@ -31,7 +31,7 @@ namespace {
 constexpr uint8_t kU2fRegistrationResponseHeader = 0x05;
 
 // Returns an error response with the given status.
-absl::optional<std::vector<uint8_t>> ErrorStatus(
+std::optional<std::vector<uint8_t>> ErrorStatus(
     apdu::ApduResponse::Status status) {
   return apdu::ApduResponse(std::vector<uint8_t>(), status)
       .GetEncodedResponse();
@@ -88,7 +88,7 @@ FidoDevice::CancelToken VirtualU2fDevice::DeviceTransact(
     return 0;
   }
 
-  absl::optional<std::vector<uint8_t>> response;
+  std::optional<std::vector<uint8_t>> response;
 
   switch (parsed_command->ins()) {
     // Version request is defined by the U2F spec, but is never used in
@@ -120,7 +120,7 @@ base::WeakPtr<FidoDevice> VirtualU2fDevice::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-absl::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
+std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
     uint8_t ins,
     uint8_t p1,
     uint8_t p2,
@@ -130,7 +130,7 @@ absl::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
   }
 
   if (!SimulatePress()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto challenge_param = data.first<32>();
@@ -197,7 +197,7 @@ absl::optional<std::vector<uint8_t>> VirtualU2fDevice::DoRegister(
       .GetEncodedResponse();
 }
 
-absl::optional<std::vector<uint8_t>> VirtualU2fDevice::DoSign(
+std::optional<std::vector<uint8_t>> VirtualU2fDevice::DoSign(
     uint8_t ins,
     uint8_t p1,
     uint8_t p2,
@@ -209,7 +209,7 @@ absl::optional<std::vector<uint8_t>> VirtualU2fDevice::DoSign(
   }
 
   if (!SimulatePress()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (data.size() < 32 + 32 + 1)

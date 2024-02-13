@@ -4,14 +4,19 @@
 
 #include "components/exo/wayland/output_controller.h"
 
+#include <aura-output-management-server-protocol.h>
 #include <secure-output-unstable-v1-server-protocol.h>
 #include <wayland-server-core.h>
 #include <xdg-output-unstable-v1-server-protocol.h>
 
 #include "ash/shell.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
+#include "components/exo/wayland/output_configuration_change.h"
 #include "components/exo/wayland/wayland_display_output.h"
 #include "components/exo/wayland/wl_output.h"
 #include "components/exo/wayland/zaura_output_manager.h"
+#include "components/exo/wayland/zaura_output_manager_v2.h"
 #include "components/exo/wayland/zcr_secure_output.h"
 #include "components/exo/wayland/zxdg_output_manager.h"
 #include "ui/display/display.h"
@@ -20,12 +25,16 @@
 namespace exo::wayland {
 
 OutputController::OutputController(Delegate* delegate) : delegate_(delegate) {
-  // aura_output_manager needs to be registered before the wl_output globals to
-  // ensure clients can bind to the aura_output_manager before any wl_outputs.
-  // This is necessary to ensure aura_output_manager can send relevant output
-  // events immediately after an output is bound to the client and before the
-  // data in these events might be needed by the client.
+  // Clients need to bind aura output manager globals before binding any of the
+  // wl_output globals. This is necessary to ensure clients won't receive events
+  // for outputs before receiving events for the aura output manager.
   wl_display* display = delegate_->GetWaylandDisplay();
+  aura_output_manager_v2_ =
+      std::make_unique<AuraOutputManagerV2>(base::BindRepeating(
+          &OutputController::GetActiveOutputs, base::Unretained(this)));
+  wl_global_create(display, &zaura_output_manager_v2_interface,
+                   kZAuraOutputManagerV2Version, aura_output_manager_v2_.get(),
+                   bind_aura_output_manager_v2);
   wl_global_create(display, &zaura_output_manager_interface,
                    kZAuraOutputManagerVersion, nullptr,
                    bind_aura_output_manager);
@@ -63,6 +72,20 @@ void OutputController::OnDidProcessDisplayChanges(
     outputs_.insert(std::make_pair(added_display.id(), std::move(output)));
   }
 
+  for (const auto& change : configuration_change.display_metrics_changes) {
+    if (auto* wayland_display_output =
+            GetWaylandDisplayOutput(change.display->id())) {
+      wayland_display_output->SendDisplayMetricsChanges(change.display.get(),
+                                                        change.changed_metrics);
+    }
+  }
+
+  // Propagate display configuration changes to aura output manager clients.
+  const bool needs_done =
+      ProcessDisplayChangesForAuraOutputManager(configuration_change);
+
+  // Remove outputs after propagating config changes as the WaylandDisplayOutput
+  // object may be needed during change notification propagation.
   for (const display::Display& removed_display :
        configuration_change.removed_displays) {
     // There should always be at least one display tracked by Exo.
@@ -74,12 +97,8 @@ void OutputController::OnDidProcessDisplayChanges(
     output.release()->OnDisplayRemoved();
   }
 
-  for (const auto& change : configuration_change.display_metrics_changes) {
-    if (auto* wayland_display_output =
-            GetWaylandDisplayOutput(change.display->id())) {
-      wayland_display_output->SendDisplayMetricsChanges(change.display.get(),
-                                                        change.changed_metrics);
-    }
+  if (needs_done) {
+    aura_output_manager_v2_->SendDone();
   }
 
   UpdateActivatedDisplayIfNecessary();
@@ -109,6 +128,45 @@ WaylandDisplayOutput* OutputController::GetWaylandDisplayOutput(
   CHECK_NE(display_id, display::kInvalidDisplayId);
   auto iter = outputs_.find(display_id);
   return iter == outputs_.end() ? nullptr : iter->second.get();
+}
+
+WaylandOutputList OutputController::GetActiveOutputs() const {
+  WaylandOutputList output_list;
+  base::ranges::transform(outputs_, std::back_inserter(output_list),
+                          [](auto& pair) { return pair.second.get(); });
+  return output_list;
+}
+
+bool OutputController::ProcessDisplayChangesForAuraOutputManager(
+    const DisplayConfigurationChange& configuration_change) {
+  OutputConfigurationChange output_config_change;
+
+  base::ranges::transform(
+      configuration_change.added_displays,
+      std::back_inserter(output_config_change.added_outputs),
+      [this](const display::Display& display) {
+        return GetWaylandDisplayOutput(display.id());
+      });
+  base::ranges::transform(
+      configuration_change.removed_displays,
+      std::back_inserter(output_config_change.removed_outputs),
+      [this](const display::Display& display) {
+        return GetWaylandDisplayOutput(display.id());
+      });
+  for (const DisplayMetricsChange& change :
+       configuration_change.display_metrics_changes) {
+    // Added displays may appear in both added and changed lists, ensure added
+    // outputs are not represented in both added and changed lists.
+    if (!base::Contains(configuration_change.added_displays,
+                        change.display.get())) {
+      output_config_change.changed_outputs.emplace_back(
+          GetWaylandDisplayOutput(change.display->id()),
+          change.changed_metrics);
+    }
+  }
+
+  return aura_output_manager_v2_->OnDidProcessDisplayChanges(
+      output_config_change);
 }
 
 void OutputController::UpdateActivatedDisplayIfNecessary() {

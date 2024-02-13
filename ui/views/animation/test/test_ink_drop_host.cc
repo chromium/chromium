@@ -102,7 +102,6 @@ TestInkDropHost::TestInkDropHost(
         if (host->disable_timers_for_test_)
           highlight->GetTestApi()->SetDisableAnimationTimers(true);
         host->num_ink_drop_highlights_created_++;
-        host->last_ink_drop_highlight_ = highlight.get();
         return highlight;
       },
       this));
@@ -114,7 +113,6 @@ TestInkDropHost::TestInkDropHost(
         if (host->disable_timers_for_test_)
           ripple->GetTestApi()->SetDisableAnimationTimers(true);
         host->num_ink_drop_ripples_created_++;
-        host->last_ink_drop_ripple_ = ripple.get();
         return ripple;
       },
       this));

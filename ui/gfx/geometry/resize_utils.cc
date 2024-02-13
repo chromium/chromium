@@ -36,7 +36,7 @@ void SizeRectToAspectRatioWithExcludedMargin(
     ResizeEdge resize_edge,
     float aspect_ratio,
     const Size& original_min_window_size,
-    absl::optional<Size> max_window_size,
+    std::optional<Size> max_window_size,
     const Size& excluded_margin,
     Rect& rect) {
   DCHECK_GT(aspect_ratio, 0.0f);
@@ -152,7 +152,7 @@ void SizeRectToAspectRatioWithExcludedMargin(
 void SizeRectToAspectRatio(ResizeEdge resize_edge,
                            float aspect_ratio,
                            const Size& min_window_size,
-                           absl::optional<Size> max_window_size,
+                           std::optional<Size> max_window_size,
                            Rect* rect) {
   SizeRectToAspectRatioWithExcludedMargin(
       resize_edge, aspect_ratio, min_window_size, std::move(max_window_size),

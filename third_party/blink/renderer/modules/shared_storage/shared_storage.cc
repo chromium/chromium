@@ -13,7 +13,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -25,6 +24,7 @@
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worklet_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_shared_storage_run_operation_method_options.h"
@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_window_supplement.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
@@ -118,6 +119,21 @@ void OnSetterMethodFinished(ScriptPromiseResolver* resolver,
 
   LogTimingHistogramForSetterMethod(method, global_scope, start_time);
   resolver->Resolve();
+}
+
+mojom::blink::SharedStorageDocumentService* GetSharedStorageDocumentService(
+    ExecutionContext* execution_context) {
+  CHECK(execution_context->IsWindow());
+  return SharedStorageWindowSupplement::From(
+             To<LocalDOMWindow>(*execution_context))
+      ->GetSharedStorageDocumentService();
+}
+
+mojom::blink::SharedStorageWorkletServiceClient*
+GetSharedStorageWorkletServiceClient(ExecutionContext* execution_context) {
+  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
+  return To<SharedStorageWorkletGlobalScope>(execution_context)
+      ->GetSharedStorageWorkletServiceClient();
 }
 
 }  // namespace
@@ -318,7 +334,6 @@ SharedStorage::~SharedStorage() = default;
 
 void SharedStorage::Trace(Visitor* visitor) const {
   visitor->Trace(shared_storage_worklet_);
-  visitor->Trace(shared_storage_document_service_);
   ScriptWrappable::Trace(visitor);
 }
 
@@ -711,10 +726,6 @@ ScriptValue SharedStorage::context(ScriptState* script_state,
                      V8String(script_state->GetIsolate(), embedder_context));
 }
 
-// This C++ overload is called by JavaScript:
-// sharedStorage.selectURL('foo', [{url: "bar.com"}]);
-//
-// It returns a JavaScript promise that resolves to an urn::uuid.
 ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
@@ -725,18 +736,6 @@ ScriptPromise SharedStorage::selectURL(
                    exception_state);
 }
 
-// This C++ overload is called by JavaScript:
-// 1. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0}});
-// 2. sharedStorage.selectURL('foo', [{url: "bar.com"}], {data: {'option': 0},
-// resolveToConfig: true});
-//
-// It returns a JavaScript promise:
-// 1. that resolves to an urn::uuid, when `resolveToConfig` is false or
-// unspecified.
-// 2. that resolves to a fenced frame config, when `resolveToConfig` is true.
-//
-// This function implements the other overload, with `resolveToConfig`
-// defaulting to false.
 ScriptPromise SharedStorage::selectURL(
     ScriptState* script_state,
     const String& name,
@@ -747,7 +746,7 @@ ScriptPromise SharedStorage::selectURL(
       worklet(script_state, exception_state);
   CHECK(shared_storage_worklet);
 
-  return shared_storage_worklet->SelectURL(script_state, name, urls, options,
+  return shared_storage_worklet->selectURL(script_state, name, urls, options,
                                            exception_state);
 }
 
@@ -767,41 +766,27 @@ ScriptPromise SharedStorage::run(
       worklet(script_state, exception_state);
   CHECK(shared_storage_worklet);
 
-  return shared_storage_worklet->Run(script_state, name, options,
+  return shared_storage_worklet->run(script_state, name, options,
                                      exception_state);
+}
+
+ScriptPromise SharedStorage::createWorklet(ScriptState* script_state,
+                                           const String& module_url,
+                                           const WorkletOptions* options,
+                                           ExceptionState& exception_state) {
+  SharedStorageWorklet* worklet = SharedStorageWorklet::Create(script_state);
+  return worklet->AddModuleHelper(script_state, module_url, options,
+                                  exception_state,
+                                  /*resolve_to_worklet=*/true);
 }
 
 SharedStorageWorklet* SharedStorage::worklet(ScriptState* script_state,
                                              ExceptionState& exception_state) {
-  if (shared_storage_worklet_)
-    return shared_storage_worklet_.Get();
-
-  shared_storage_worklet_ = MakeGarbageCollected<SharedStorageWorklet>(this);
+  if (!shared_storage_worklet_) {
+    shared_storage_worklet_ = SharedStorageWorklet::Create(script_state);
+  }
 
   return shared_storage_worklet_.Get();
-}
-
-mojom::blink::SharedStorageDocumentService*
-SharedStorage::GetSharedStorageDocumentService(
-    ExecutionContext* execution_context) {
-  CHECK(execution_context->IsWindow());
-  if (!shared_storage_document_service_.is_bound()) {
-    LocalFrame* frame = To<LocalDOMWindow>(execution_context)->GetFrame();
-    DCHECK(frame);
-
-    frame->GetRemoteNavigationAssociatedInterfaces()->GetInterface(
-        shared_storage_document_service_.BindNewEndpointAndPassReceiver(
-            execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  }
-  return shared_storage_document_service_.get();
-}
-
-mojom::blink::SharedStorageWorkletServiceClient*
-SharedStorage::GetSharedStorageWorkletServiceClient(
-    ExecutionContext* execution_context) {
-  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
-  return To<SharedStorageWorkletGlobalScope>(execution_context)
-      ->GetSharedStorageWorkletServiceClient();
 }
 
 PairAsyncIterable<SharedStorage>::IterationSource*

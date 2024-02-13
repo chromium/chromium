@@ -5,13 +5,13 @@
 #include "ui/views/interaction/interactive_views_test.h"
 
 #include <functional>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"

@@ -254,7 +254,6 @@ void PromptToNameWindow(Browser* browser);
 #if BUILDFLAG(IS_CHROMEOS)
 void ToggleMultitaskMenu(Browser* browser);
 #endif
-void ToggleCommander(Browser* browser);
 void ExecuteUIDebugCommand(int id, const Browser* browser);
 
 std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser);

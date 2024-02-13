@@ -52,8 +52,8 @@ void EditorMediator::OnEditorServiceConnected(bool is_connection_successful) {}
 
 void EditorMediator::SetUpNewEditorService() {
   if (editor_service_connector_.SetUpNewEditorService()) {
-    mojo::PendingAssociatedRemote<orca::mojom::TextActuator>
-        text_actuator_remote;
+    mojo::PendingAssociatedRemote<orca::mojom::SystemActuator>
+        system_actuator_remote;
     mojo::PendingAssociatedRemote<orca::mojom::TextQueryProvider>
         text_query_provider_remote;
     mojo::PendingAssociatedReceiver<orca::mojom::EditorClientConnector>
@@ -61,8 +61,8 @@ void EditorMediator::SetUpNewEditorService() {
     mojo::PendingAssociatedReceiver<orca::mojom::EditorEventSink>
         editor_event_sink_receiver;
 
-    text_actuator_ = std::make_unique<EditorTextActuator>(
-        profile_, text_actuator_remote.InitWithNewEndpointAndPassReceiver(),
+    system_actuator_ = std::make_unique<EditorSystemActuator>(
+        profile_, system_actuator_remote.InitWithNewEndpointAndPassReceiver(),
         this);
     text_query_provider_ = std::make_unique<TextQueryProviderForOrca>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
@@ -74,7 +74,8 @@ void EditorMediator::SetUpNewEditorService() {
 
     editor_service_connector_.BindEditor(
         std::move(editor_client_connector_receiver),
-        std::move(editor_event_sink_receiver), std::move(text_actuator_remote),
+        std::move(editor_event_sink_receiver),
+        std::move(system_actuator_remote),
         std::move(text_query_provider_remote));
 
     // TODO: b:300838514 - We should only bind the native UI with the shared lib when the
@@ -103,8 +104,8 @@ void EditorMediator::OnFocus(int context_id) {
       base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  if (text_actuator_ != nullptr) {
-    text_actuator_->OnFocus(context_id);
+  if (system_actuator_ != nullptr) {
+    system_actuator_->OnFocus(context_id);
   }
 }
 
@@ -112,10 +113,6 @@ void EditorMediator::OnBlur() {
   if (mako_bubble_coordinator_.IsShowingUI() ||
       panel_manager_.IsEditorMenuVisible()) {
     return;
-  }
-
-  if (text_actuator_ != nullptr) {
-    text_actuator_->OnBlur();
   }
 }
 
@@ -151,6 +148,10 @@ void EditorMediator::OnSurroundingTextChanged(const std::u16string& text,
 
   size_t selected_length = NonWhitespaceAndSymbolsLength(text, selection_range);
   editor_switch_->OnTextSelectionLengthChanged(selected_length);
+}
+
+void EditorMediator::Announce(const std::u16string& message) {
+  announcer_.Announce(message);
 }
 
 void EditorMediator::ProcessConsentAction(ConsentAction consent_action) {
@@ -205,12 +206,6 @@ void EditorMediator::CacheContext() {
     editor_event_proxy_->OnSurroundingTextChanged(
         surrounding_text_.text, surrounding_text_.selection_range);
   }
-}
-
-void EditorMediator::OnTextInsertionRequested() {
-  // After queuing the text to be inserted, closing the mako web ui should
-  // return the focus back to the original input.
-  mako_bubble_coordinator_.CloseUI();
 }
 
 void EditorMediator::OnTextFieldContextualInfoChanged(

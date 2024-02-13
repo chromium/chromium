@@ -4,6 +4,8 @@
 
 #include "device/vr/android/arcore/arcore_impl.h"
 
+#include <optional>
+
 #include "base/android/jni_android.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -23,7 +25,6 @@
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -82,12 +83,12 @@ std::set<ArTrackableType> GetArCoreEntityTypes(
 // ray mode is "tapping", which is OK for input sources available for AR on
 // Android, but is not true in the general case. This method should duplicate
 // the logic found in XRTargetRaySpace::MojoFromNative().
-absl::optional<gfx::Transform> GetMojoFromInputSource(
+std::optional<gfx::Transform> GetMojoFromInputSource(
     const device::mojom::XRInputSourceStatePtr& input_source_state,
     const gfx::Transform& mojo_from_viewer) {
   if (!input_source_state->description ||
       !input_source_state->description->input_from_pointer) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   gfx::Transform viewer_from_pointer =
@@ -533,14 +534,14 @@ ArCoreImpl::~ArCoreImpl() {
   }
 }
 
-absl::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
+std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
     base::android::ScopedJavaLocalRef<jobject> context,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-    absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
+    std::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   DCHECK(IsOnGlThread());
   DCHECK(!arcore_session_.is_valid());
 
@@ -549,7 +550,7 @@ absl::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!env) {
     DLOG(ERROR) << "Unable to get JNIEnv for ArCore";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Use a local scoped ArSession for the next steps, we want the
@@ -562,7 +563,7 @@ absl::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
       internal::ScopedArCoreObject<ArSession*>::Receiver(session).get());
   if (status != AR_SUCCESS) {
     DLOG(ERROR) << "ArSession_create failed: " << status;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Set incognito mode for ARCore session - this is done unconditionally as we
@@ -582,14 +583,14 @@ absl::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   if (!ConfigureCamera(session.get(), required_features, optional_features,
                        enabled_features)) {
     DLOG(ERROR) << "Failed to configure session camera";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!ConfigureFeatures(session.get(), required_features, optional_features,
                          tracked_images, depth_sensing_config,
                          enabled_features)) {
     DLOG(ERROR) << "Failed to configure session features";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   internal::ScopedArCoreObject<ArFrame*> frame;
@@ -597,7 +598,7 @@ absl::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
                  internal::ScopedArCoreObject<ArFrame*>::Receiver(frame).get());
   if (!frame.is_valid()) {
     DLOG(ERROR) << "ArFrame_create failed";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (base::Contains(enabled_features,
@@ -609,7 +610,7 @@ absl::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
             .get());
     if (!light_estimate.is_valid()) {
       DVLOG(1) << "ArLightEstimate_create failed";
-      return absl::nullopt;
+      return std::nullopt;
     }
     arcore_light_estimate_ = std::move(light_estimate);
   }
@@ -639,7 +640,7 @@ bool ArCoreImpl::ConfigureFeatures(
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-    const absl::optional<ArCore::DepthSensingConfiguration>&
+    const std::optional<ArCore::DepthSensingConfiguration>&
         depth_sensing_config,
     std::unordered_set<device::mojom::XRSessionFeature>& enabled_features) {
   internal::ScopedArCoreObject<ArConfig*> arcore_config;
@@ -747,7 +748,7 @@ bool ArCoreImpl::ConfigureFeatures(
 }
 
 bool ArCoreImpl::ConfigureDepthSensing(
-    const absl::optional<ArCore::DepthSensingConfiguration>&
+    const std::optional<ArCore::DepthSensingConfiguration>&
         depth_sensing_config) {
   if (!depth_sensing_config) {
     return false;
@@ -1095,7 +1096,7 @@ mojom::XRTrackedImagesDataPtr ArCoreImpl::GetTrackedImages() {
     return ret;
   } else {
     return mojom::XRTrackedImagesData::New(std::move(images_data),
-                                           absl::nullopt);
+                                           std::nullopt);
   }
 }
 
@@ -1211,7 +1212,7 @@ float ArCoreImpl::GetEstimatedFloorHeight() {
   return kDefaultFloorHeightEstimation;
 }
 
-absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
+std::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr native_origin_information,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
@@ -1229,23 +1230,23 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
       // tracking.
       if (!plane_manager_ || !plane_manager_->PlaneExists(PlaneId(
                                  native_origin_information->get_plane_id()))) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       break;
     case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
       // Unsupported by ARCore:
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // TODO(https://crbug.com/1143575): Add hit test support for tracked
       // images.
-      return absl::nullopt;
+      return std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       // Validate that we know which anchor's space the hit test is interested
       // in tracking.
       if (!anchor_manager_ ||
           !anchor_manager_->AnchorExists(
               AnchorId(native_origin_information->get_anchor_id()))) {
-        return absl::nullopt;
+        return std::nullopt;
       }
       break;
   }
@@ -1260,7 +1261,7 @@ absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTest(
   return subscription_id.GetUnsafeValue();
 }
 
-absl::optional<uint64_t> ArCoreImpl::SubscribeToHitTestForTransientInput(
+std::optional<uint64_t> ArCoreImpl::SubscribeToHitTestForTransientInput(
     const std::string& profile_name,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
@@ -1401,7 +1402,7 @@ ArCoreImpl::GetMojoFromInputSources(
                          profile_name)) {
         // Input source represented by input_state matches the profile, find
         // the transform and grab input source id.
-        absl::optional<gfx::Transform> maybe_mojo_from_input_source =
+        std::optional<gfx::Transform> maybe_mojo_from_input_source =
             GetMojoFromInputSource(input_source_state, mojo_from_viewer);
 
         if (!maybe_mojo_from_input_source)
@@ -1416,7 +1417,7 @@ ArCoreImpl::GetMojoFromInputSources(
   return result;
 }
 
-absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromReferenceSpace(
+std::optional<gfx::Transform> ArCoreImpl::GetMojoFromReferenceSpace(
     device::mojom::XRReferenceSpaceType type,
     const gfx::Transform& mojo_from_viewer) {
   DVLOG(3) << __func__ << ": type=" << type;
@@ -1432,9 +1433,9 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromReferenceSpace(
     case device::mojom::XRReferenceSpaceType::kViewer:
       return mojo_from_viewer;
     case device::mojom::XRReferenceSpaceType::kBoundedFloor:
-      return absl::nullopt;
+      return std::nullopt;
     case device::mojom::XRReferenceSpaceType::kUnbounded:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -1486,7 +1487,7 @@ bool ArCoreImpl::NativeOriginExists(
   }
 }
 
-absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
+std::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform& mojo_from_viewer,
     const std::vector<mojom::XRInputSourceStatePtr>& input_state) {
@@ -1500,7 +1501,7 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
       // guaranteed not to be localizable:
       if (input_source_space_info->input_source_space_type ==
           mojom::XRInputSourceSpaceType::kGrip) {
-        return absl::nullopt;
+        return std::nullopt;
       }
 
       // Linear search should be fine for ARCore device as it only has one input
@@ -1512,7 +1513,7 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
         }
       }
 
-      return absl::nullopt;
+      return std::nullopt;
     }
     case mojom::XRNativeOriginInformation::Tag::kReferenceSpaceType:
       return GetMojoFromReferenceSpace(
@@ -1521,18 +1522,18 @@ absl::optional<gfx::Transform> ArCoreImpl::GetMojoFromNativeOrigin(
     case mojom::XRNativeOriginInformation::Tag::kPlaneId:
       return plane_manager_ ? plane_manager_->GetMojoFromPlane(PlaneId(
                                   native_origin_information.get_plane_id()))
-                            : absl::nullopt;
+                            : std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kAnchorId:
       return anchor_manager_ ? anchor_manager_->GetMojoFromAnchor(AnchorId(
                                    native_origin_information.get_anchor_id()))
-                             : absl::nullopt;
+                             : std::nullopt;
     case mojom::XRNativeOriginInformation::Tag::kHandJointSpaceInfo:
-      return absl::nullopt;
+      return std::nullopt;
 
     case mojom::XRNativeOriginInformation::Tag::kImageIndex:
       // TODO(https://crbug.com/1143575): Needed for hit test and anchors
       // support for tracked images.
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -1681,8 +1682,8 @@ bool ArCoreImpl::RequestHitTest(
         }
       }
 
-      absl::optional<PlaneId> maybe_plane_id =
-          plane_manager_ ? plane_manager_->GetPlaneId(ar_plane) : absl::nullopt;
+      std::optional<PlaneId> maybe_plane_id =
+          plane_manager_ ? plane_manager_->GetPlaneId(ar_plane) : std::nullopt;
       if (maybe_plane_id) {
         plane_id = maybe_plane_id->GetUnsafeValue();
       }
@@ -1829,7 +1830,7 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
       continue;
     }
 
-    absl::optional<gfx::Transform> maybe_mojo_from_native_origin =
+    std::optional<gfx::Transform> maybe_mojo_from_native_origin =
         GetMojoFromNativeOrigin(native_origin_information, mojo_from_viewer,
                                 input_state);
 
@@ -1843,7 +1844,7 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
       continue;
     }
 
-    absl::optional<device::Pose> mojo_from_anchor =
+    std::optional<device::Pose> mojo_from_anchor =
         device::Pose::Create(*maybe_mojo_from_native_origin *
                              create_anchor.GetNativeOriginFromAnchor());
 
@@ -1857,7 +1858,7 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
       continue;
     }
 
-    absl::optional<AnchorId> maybe_anchor_id = std::forward<FunctionType>(
+    std::optional<AnchorId> maybe_anchor_id = std::forward<FunctionType>(
         create_anchor_function)(create_anchor, mojo_from_anchor->position(),
                                 mojo_from_anchor->orientation());
 

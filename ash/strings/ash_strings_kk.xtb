@@ -26,6 +26,7 @@
 <translation id="1087110696012418426">Қайырлы күн, <ph name="GIVEN_NAME" />!</translation>
 <translation id="1088231044944504242"><ph name="CATEGORY" />, файлдар, қолданбалар және т. б. іздеңіз. Бір қолданбадан екіншісіне өту үшін бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="1093645050124056515">ctrl + alt + төмен бағыт пернесі</translation>
+<translation id="1094756674036064790">Bluetooth-ды өшіру керек пе?</translation>
 <translation id="109942774857561566">Ішім пысты</translation>
 <translation id="1104084341931202936">Арнайы мүмкіндіктер параметрлерін көрсету</translation>
 <translation id="1104621072296271835">Құрылғылар бірігіп жақсы жұмыс істейді</translation>
@@ -65,7 +66,6 @@
 <translation id="1217633719248931900">Қолданбаға өту</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store қолданбасы</translation>
 <translation id="1225748608451425081">Белгілі мәселеге байланысты Chromebook құлыпталды. Келесі уақыттан кейін аккаунтқа кіре аласыз: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">жұмыс үстелі белсенді емес</translation>
 <translation id="1229194443904279055">Таңдауды тоқтату</translation>
 <translation id="1235458158152011030">Сақталған желілер</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> қосылды.</translation>
@@ -159,7 +159,6 @@
 <translation id="1586324912145647027">Жұмыс үстелдеріне (1–8) өту</translation>
 <translation id="158838227375272121">Google Classroom веб-сайты</translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
-<translation id="1592682369233288537">Келесі жұмыс үстелі: <ph name="NEXT_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын тіркесімін пайдаланыңыз.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + төмен бағыт пернесі</translation>
 <translation id="1604857178818051494">Мультимедианы кідірту</translation>
 <translation id="1607312127821884567">Телефондағы қолданбаларды көру мүмкіндігін реттеуден бас тарту</translation>
@@ -374,7 +373,6 @@
 <translation id="2575685495496069081">Бірнеше аккаунтқа кіру функциясы өшірілді</translation>
 <translation id="2579264398927991698">Микробағдарлама жаңартулары</translation>
 <translation id="2582112259361606227">Жаңарту үшін қайта іске қосу</translation>
-<translation id="2586561057878260610"><ph name="DESK_NAME" /> жұмыс үстелімен біріктіру үшін Ctrl + W пернелерін басыңыз. Жұмыс үстелін және терезелерді жабу үшін Ctrl + Shift + W пернелерін басыңыз.</translation>
 <translation id="2586657967955657006">Буфер</translation>
 <translation id="2595239820337756193">5 км неше мильге тең</translation>
 <translation id="2596078834055697711">Терезенің скриншотын жасау</translation>
@@ -511,7 +509,6 @@
 <translation id="3154351730702813399">Құрылғы әкімшісі интернетті шолуыңызға қатысты ақпаратты көре алады.</translation>
 <translation id="316086887565479535">Үлгіде қолдау көрсетілмейтін қолданбалар бар</translation>
 <translation id="3160929076476941240">2 сағ</translation>
-<translation id="3161500364292033097">Жұмыс үстелі мен терезелерді жабу</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> құрылғыңызды алдыңғы нұсқаға қайтарады. Құрылғы бастапқы күйге қайтарылады және барлық дерек жойылады.</translation>
 <translation id="3170769098533255179">Ешқандай құрылғы жалғанбады. Хотспот пайдаланылғанда, Wi-Fi өшіп тұрады.</translation>
 <translation id="3171170659304083361">Енгізу әдістерінің параметрлері</translation>
@@ -660,6 +657,7 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> үшін тез табылу режимін қосу немесе өшіру</translation>
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Қалқымалы терезені жасыру үшін сырғытыңыз.</translation>
+<translation id="3673898235958558034">Bluetooth-ды өшірсеңіз, "<ph name="DEVICE_NAME_1" />" және "<ph name="DEVICE_NAME_2" />" құрылғылары Chromebook-тен ажыратылады.</translation>
 <translation id="367531336287639526">Мекенжай жолағының сол жағындағы бірінші белгішені таңдау</translation>
 <translation id="3677931086890821290">Бұл геодеректі пайдалану рұқсаты мен ChromeOS жүйесі бар барлық қолданба мен веб-сайттың Wi-Fi және мобильді желілер орындарын пайдалануына мүмкіндік береді.</translation>
 <translation id="3679827876008292680">Терезедегі соңғы қойындыға өту</translation>
@@ -671,6 +669,7 @@
 <translation id="3702846122927433391">Нигерия халқының саны</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Бұған дейін жалғанғандар</translation>
+<translation id="3712143870407382523">Экранның осы жағына қоятын терезені таңдау</translation>
 <translation id="371370241367527062">Алдыңғы микрофон</translation>
 <translation id="3713734891607377840">Жүктеп алынған соң ашу</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> және тағы <ph name="UNAVAILABLE_APPS_COUNT" /> қолданба бұл құрылғыда жоқ.</translation>
@@ -846,7 +845,6 @@
 <translation id="4389184120735010762">Бекітілген ұлғайтқышқа арналған пернелер тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
 <translation id="439598569299422042">Кідіртілді, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Cкринкастты сақтау мүмкін емес.</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> жалғанды және пайдалануға дайын. Тінтуірді "Параметрлер" бөлімінде бейімдей аласыз.</translation>
 <translation id="4405151984121254935">Жалғанған перифериялық құрылғы түріне қолдау көрсетілмейді.</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> өшірулі.</translation>
@@ -872,7 +870,6 @@
 <translation id="4491109536499578614">Кескін</translation>
 <translation id="450584155212756404">Әзірлеуші арнасы</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
-<translation id="4516212064498225455">Қазіргі жұмыс үстелі: <ph name="CURRENT_DESK_NAME" />, барлық жұмыс үстелі мәзірін ашу үшін Іздеу+Бос орын тіркесімін пайдаланыңыз.</translation>
 <translation id="4518404433291145981">Chromebook құлпын ашу үшін алдымен телефонның құлпын ашыңыз.</translation>
 <translation id="4527045527269911712">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптасуға рұқсат сұрайды.</translation>
 <translation id="4533343294786968049">Батарея зарядталуда. Толық зарядталу уақыты: <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -915,6 +912,7 @@
 <translation id="4666911709726371538">Басқа қолданбалар</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынуда</translation>
 <translation id="4672539464599646374">Батареяны үнемдеу режимі қосылды.</translation>
+<translation id="4673427585974421255">Қосулы қалдыру</translation>
 <translation id="468293128311738995">Телефондағы қолданбалар</translation>
 <translation id="4690510401873698237">Төмен жақтағы сөре</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
@@ -1047,13 +1045,11 @@
 <translation id="5197255632782567636">Интернет</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> іс-шара</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> және <ph name="IN_PLACE_APP" /> қолданбалары қосылып, бір қалта жасалды.</translation>
-<translation id="5203299837691351876">жұмыс үстелі белсенді</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Тағы 1 хабарландыру}other{Тағы # хабарландыру}}</translation>
 <translation id="5207949376430453814">Мәтін курсорын ерекшелеу</translation>
 <translation id="5208059991603368177">Қосулы</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> дейін өшірулі</translation>
-<translation id="5217646019792206018">Келесі жұмыс үстелі: <ph name="NEXT_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын немесе Shift+Іздеу+<ph name="NEXT_DESK_INDEX" /> перне тіркесімін пайдаланыңыз.</translation>
 <translation id="5218064144558110424">Орындалмаған деп белгілеу</translation>
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="5229343007215035173">Құпиялық экранын қосу/өшіру</translation>
@@ -1066,7 +1062,6 @@
 <translation id="5258528442992323769">Сақталған жұмыс үстелі жоқ.</translation>
 <translation id="5260676007519551770">4-ші жұмыс үстелі</translation>
 <translation id="5268819379131021772">Google тапсырмалар тізімі</translation>
-<translation id="5275923704957843041">Жұмыс үстелінің алғы көрінісі</translation>
 <translation id="5277869901083657836">Стилус құралдарын көрсету/жасыру</translation>
 <translation id="5278086053818066789">ChromeVox-ты (экранды дыбыстау функциясын) қосу/өшіру</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> қолданбасы назар аударуыңызды сұрайды.</translation>
@@ -1215,6 +1210,7 @@
 <translation id="5802516411616338943">Жылдам параметрлерді ашу</translation>
 <translation id="5804651031882187592">"SIM картасын құлыптау" параметрін өшіру</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> іске қосу үшін басыңыз</translation>
+<translation id="5816222150329690597">Bluetooth-ды өшірсеңіз, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" және тағы <ph name="DEVICE_COUNT" /> құрылғы Chromebook-тен ажыратылады.</translation>
 <translation id="5823239091726045201">Ғаламтордағы Google Tasks</translation>
 <translation id="5825969630400862129">Байланыстырылған құрылғылар параметрлері</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> қабылдағышында <ph name="ROUTE_TITLE" /> трансляциясын тоқтату</translation>
@@ -1319,7 +1315,6 @@
 <translation id="6199775032047436064">Ағымдағы бетті қайта жүктеу</translation>
 <translation id="6200515304866777730">Қолданбада қолдау көрсетілмейді</translation>
 <translation id="6210042900243040400">Бұрын <ph name="EMAIL" /> электрондық поштасына сақталған <ph name="NAME" /> құрылғысын байланыстырыңыз.</translation>
-<translation id="6212097153736801627"><ph name="PERIPHERAL_NAME" /> құрылғысын бейімдеуге болады</translation>
 <translation id="6213808132343683860">Жарты скриншот немесе экран жазбасын түсіру</translation>
 <translation id="6220928844947387476">Енді бір уақытта экранды жазып, өзіңізді де бейнеге түсіре аласыз.</translation>
 <translation id="622484624075952240">Төмен</translation>
@@ -1395,6 +1390,7 @@
 <translation id="6539852571005954999">Жүктеп алынған <ph name="FILENAME" /> файлы сканерленіп жатыр</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="6546062506073634094">Суретті ішінде не нәрсе бейнеленгеніне және алғы көрінісіне байланысты іздеу</translation>
+<translation id="6547795021703527064">Bluetooth-ды өшірсеңіз, "<ph name="DEVICE_NAME" />" құрылғысы Chromebook-тен ажыратылады.</translation>
 <translation id="6555373427270923730">Мекенжай жолағына веб-мекенжайды енгізіп, <ph name="MODIFIER" /><ph name="KEY" /> пернесін басыңыз</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Жаңадан орнатылды</translation>
@@ -1414,6 +1410,7 @@
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> жады қолданыста | жалпы <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">Құпиялық экраны қосулы.</translation>
 <translation id="6622679827379792051">Телефондағы қолданбаларды көру мүмкіндігін реттеу</translation>
+<translation id="6624493541160101248">Қазіргі жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> және тағы басқа хабарландырулар жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
 <translation id="662830937908749204">Келесі панельге өту</translation>
@@ -1468,7 +1465,6 @@
 <translation id="6819327813400217281">Камера төменгі сол жақ бұрышқа ауыстырылды.</translation>
 <translation id="6820676911989879663">Үзіліс жасаңыз!</translation>
 <translation id="6827049576281411231">Іс-шара панелін жабу</translation>
-<translation id="6831561626108366035"><ph name="ACTIVE_STATE" /> <ph name="DESK_NAME" /> түймесіне өтіңіз.</translation>
 <translation id="6836499262298959512">Қауіпті файл</translation>
 <translation id="6837621009301897464">Скриншот түсіру үшін басыңыз:</translation>
 <translation id="6852052252232534364">Іске қосу үшін басыңыз.</translation>
@@ -1507,6 +1503,7 @@
 <translation id="698231206551913481">Бұл пайдаланушы өшірілгеннен кейін, оған қатысты барлық файлдар және жергілікті деректер біржола жойылады.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц) ажыратымдылығына қолдау көрсетпейді. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц) болып өзгертілді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> өткеннен кейін қалпына келтіріледі.</translation>
 <translation id="6989752354829085073">Chromebook құрылғысын пайдалану жолын білу үшін қысқаша шолу жасаңыз. 6 қадаммен жұмысты бастаңыз.</translation>
+<translation id="7000027735917578303">Windows және жұмыс үстелі параметрлері</translation>
 <translation id="7004910047186208204">Мобильдік интернетке қосылу</translation>
 <translation id="7005239792648594238">Іске қосу үшін қолданбаны ашыңыз.</translation>
 <translation id="7007983414944123363">PIN кодыңыз не құпия сөзіңіз расталмады. Қайталап көріңіз.</translation>
@@ -1758,6 +1755,7 @@
 <translation id="8001755249288974029">Курсордан жолдың басына дейінгі мәтінді таңдау</translation>
 <translation id="8004512796067398576">Арту</translation>
 <translation id="8026334261755873520">Шолу деректерін өшіру</translation>
+<translation id="802782383769312836">Алдыңғы жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
 <translation id="8029247720646289474">Хотспотпен байланыс орнатылмады</translation>
 <translation id="8029629653277878342">Қауіпсіздікті күшейту үшін PIN коды немесе құпия сөз қажет.</translation>
 <translation id="8030169304546394654">Ажыратылған</translation>
@@ -1805,6 +1803,7 @@
 <translation id="8219451629189078428">Chromebook құрылғысы осы уақыт бойы қосулы болып, қуат көзіне жалғанулы тұруы керек. Зарядтағыш не адаптер кабельдері Chromebook құрылғысына да, розеткаға да толығымен жалғанғанын тексеріңіз. Chromebook құрылғысын өшірмеңіз.</translation>
 <translation id="8230305195727960608">Түс инверсиясы режимі</translation>
 <translation id="8236042855478648955">Үзіліс жасайтын кез келді</translation>
+<translation id="8237964652943995219">Келесі жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
 <translation id="8239034820133090126">Оң жақтағы жұмыс үстелін іске қосу</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, телефонның батарея заряды: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, қолданба</translation>
@@ -1869,7 +1868,6 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофон кірісін <ph name="APP_NAME" /> басқарады}other{Микрофон кірісін # қолданба басқарады}}</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
-<translation id="853768060447955562">Алдыңғы жұмыс үстелі: <ph name="PREVIOUS_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын немесе Shift+Іздеу+<ph name="PREVIOUS_DESK_INDEX" /> перне тіркесімін пайдаланыңыз.</translation>
 <translation id="8541078764854166027">Камерамен кадрлау</translation>
 <translation id="8542053257095774575">Сақталған жұмыс үстелі немесе үлгі жоқ.</translation>
 <translation id="8546059259582788728">Сұрыптау реті қайтарылды.</translation>
@@ -1956,7 +1954,6 @@
 <translation id="888982883502837004">Құрылғыңыз үшін микробағдарламаның жаңа нұсқасы қолжетімді. Көру және жаңарту үшін басыңыз.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> біржола жойылады.</translation>
 <translation id="889790758758811533">Батарея заряды — <ph name="PERCENTAGE" />% (шамамен <ph name="TIME_LEFT" /> қалды). Құрылғыны қуат көзіне қосыңыз.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> жалғанды және пайдалануға дайын. Графикалық планшетті "Параметрлер" бөлімінде бейімдей аласыз.</translation>
 <translation id="88986195241502842">Төменгі бетке өту</translation>
 <translation id="8905919797434099235">(атауы жоқ)</translation>
 <translation id="890616557918890486">Дереккөзді өзгерту</translation>
@@ -2033,8 +2030,8 @@
 <translation id="92580429198593979">Түс инверсиясы үшін перне тіркесімін бастыңыз. Оны қосқыңыз келе ме?</translation>
 <translation id="925832987464884575">Алдын ала көріністерді жасыру</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын дереу жаңартуды талап етеді.</translation>
+<translation id="938407504481277932">Қазіргі жұмыс үстелі: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" /> жұмыс үстелі.</translation>
 <translation id="938963181863597773">Күнтізбемде не бар?</translation>
-<translation id="943067377221312471">Алдыңғы жұмыс үстелі: <ph name="PREVIOUS_DESK_NAME" />, белсендіру үшін Іздеу+Бос орын тіркесімін пайдаланыңыз.</translation>
 <translation id="945383118875625837">Сілтемені бетбелгілер жолағына сүйреңіз</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>
 <translation id="951991426597076286">Қабылдамау</translation>

@@ -137,7 +137,8 @@ class PLATFORM_EXPORT PaintController {
       const DisplayItemClient&,
       DisplayItem::Type,
       const TransformPaintPropertyNode* scroll_translation,
-      const gfx::Rect&);
+      const gfx::Rect&,
+      cc::HitTestOpaqueness);
 
   void RecordSelection(std::optional<PaintedSelectionBound> start,
                        std::optional<PaintedSelectionBound> end,

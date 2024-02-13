@@ -8,6 +8,7 @@
 #include <AudioUnit/AudioUnit.h>
 
 #include "media/audio/audio_manager_base.h"
+#include "media/base/mac/channel_layout_util_mac.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <CoreAudio/CoreAudio.h>
@@ -23,6 +24,11 @@ class AudioManagerApple : public AudioManagerBase {
   AudioManagerApple& operator=(const AudioManagerApple&) = delete;
 
   ~AudioManagerApple() override;
+
+  // Retrieve the output channel layout from a given `audio_unit`, Return
+  // nullptr if failed.
+  static std::unique_ptr<ScopedAudioChannelLayout> GetOutputDeviceChannelLayout(
+      AudioUnit audio_unit);
 
   // Apple platform specific implementations overridden by mac and ios.
   // Manage device capabilities for ambient noise reduction. These functionality

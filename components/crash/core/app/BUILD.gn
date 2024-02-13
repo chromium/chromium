@@ -73,11 +73,7 @@ static_library("app") {
     "crashpad.h",
   ]
 
-  if (is_linux || is_chromeos) {
-    sources += [ "crashpad_linux.cc" ]
-  }
-
-  if (is_chromeos || is_castos) {
+  if (is_castos) {
     sources += [
       "breakpad_linux.cc",
       "breakpad_linux.h",
@@ -98,6 +94,11 @@ static_library("app") {
     "//third_party/crashpad/crashpad/client",
     "//third_party/crashpad/crashpad/util",
   ]
+
+  if (is_linux || is_chromeos) {
+    sources += [ "crashpad_linux.cc" ]
+    data_deps = [ ":chrome_crashpad_handler" ]
+  }
 
   if (is_ios) {
     deps -= [ "//content/public/common:content_descriptors" ]
@@ -122,7 +123,7 @@ static_library("app") {
     ]
   }
 
-  if (is_chromeos || is_castos) {
+  if (is_castos) {
     deps += [ "//third_party/breakpad:client" ]
   }
 

@@ -358,6 +358,14 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowTiledStateChanged(
                new_tiled_edges.bottom || new_tiled_edges.right;
   browser_frame_->set_tiled(tiled && !maximized);
   UpdateFrameHints();
+  if (SupportsClientFrameShadow()) {
+    // Trigger a re-layout as the insets will change even if the bounds don't.
+    ScheduleRelayout();
+    if (GetWidget()->non_client_view()) {
+      // This is needed for the decorated regions, borders etc. to be repainted.
+      GetWidget()->non_client_view()->SchedulePaint();
+    }
+  }
 }
 
 void BrowserDesktopWindowTreeHostLinux::OnNativeThemeUpdated(

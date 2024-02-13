@@ -30,7 +30,7 @@ void SyncSetupService::SetInitialSyncFeatureSetupComplete(
   CHECK(sync_blocker_);
   // Turn on the sync setup completed flag only if the user did not turn sync
   // off.
-  // TODO(crbug.com/1462858): Remove this code once
+  // TODO(crbug.com/40067025): Remove this code once
   // kReplaceSyncPromosWithSignInPromos launches.
   if (sync_service_->CanSyncFeatureStart()) {
     sync_service_->GetUserSettings()->SetInitialSyncFeatureSetupComplete(

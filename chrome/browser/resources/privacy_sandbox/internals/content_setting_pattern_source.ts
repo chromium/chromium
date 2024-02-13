@@ -5,14 +5,16 @@ import './value_display.js';
 import './mojo_timestamp.js';
 import './mojo_timedelta.js';
 
-import {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {Time, TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+import type {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 
 import {getTemplate} from './content_setting_pattern_source.html.js';
-import {ContentSetting, ContentSettingPatternSource, SessionModel} from './content_settings.mojom-webui.js';
-import {PageHandlerInterface} from './privacy_sandbox_internals.mojom-webui.js';
-import {defaultLogicalFn, LogicalFn} from './value_display.js';
+import type {ContentSettingPatternSource} from './content_settings.mojom-webui.js';
+import {ContentSetting, SessionModel} from './content_settings.mojom-webui.js';
+import type {PageHandlerInterface} from './privacy_sandbox_internals.mojom-webui.js';
+import type {LogicalFn} from './value_display.js';
+import {defaultLogicalFn} from './value_display.js';
 
 function contentSettingLogicalValue(v: Value) {
   if (v.intValue === undefined) {

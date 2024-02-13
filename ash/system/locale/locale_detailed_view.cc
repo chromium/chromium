@@ -42,9 +42,9 @@ namespace {
 // |display_name| is shown in the middle. A checkmark is shown in the end if
 // |checked| is true.
 class LocaleItemView : public views::Button {
- public:
-  METADATA_HEADER(LocaleItemView);
+  METADATA_HEADER(LocaleItemView, views::Button)
 
+ public:
   LocaleItemView(LocaleDetailedView* locale_detailed_view,
                  const std::string& iso_code,
                  const std::u16string& display_name,
@@ -116,7 +116,7 @@ class LocaleItemView : public views::Button {
   const bool checked_;
 };
 
-BEGIN_METADATA(LocaleItemView, views::Button)
+BEGIN_METADATA(LocaleItemView)
 END_METADATA
 
 }  // namespace
@@ -169,7 +169,7 @@ views::View* LocaleDetailedView::GetScrollContentForTest() {
   return scroll_content();
 }
 
-BEGIN_METADATA(LocaleDetailedView, TrayDetailedView)
+BEGIN_METADATA(LocaleDetailedView)
 END_METADATA
 
 }  // namespace ash

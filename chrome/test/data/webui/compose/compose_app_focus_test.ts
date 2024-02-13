@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compose/app.js';
+import 'chrome-untrusted://compose/app.js';
 
-import {ComposeAppElement} from 'chrome://compose/app.js';
-import {Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
-import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
-import {ComposeStatus} from 'chrome://compose/compose_enums.mojom-webui.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import type {ComposeAppElement} from 'chrome-untrusted://compose/app.js';
+import {Length, Tone, UserFeedback} from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
+import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
+import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 import {TestComposeApiProxy} from './test_compose_api_proxy.js';
 

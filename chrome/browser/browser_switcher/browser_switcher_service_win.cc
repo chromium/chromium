@@ -29,6 +29,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
 #include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
@@ -95,7 +96,11 @@ std::string SerializeCacheFile(const BrowserSwitcherPrefs& prefs,
          << std::endl;
 
   buffer << prefs.GetChromePath() << std::endl;
-  buffer << base::JoinString(prefs.GetChromeParameters(), " ") << std::endl;
+  std::vector<std::string> chrome_params = prefs.GetChromeParameters();
+  // Always include "--from-browser-switcher", to record the
+  // Windows.Launch.FromBrowserSwitcher histogram when we come back.
+  chrome_params.push_back(std::string("--") + switches::kFromBrowserSwitcher);
+  buffer << base::JoinString(chrome_params, " ") << std::endl;
 
   const auto rules = GetRules(prefs, sitelist);
 

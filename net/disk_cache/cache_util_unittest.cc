@@ -124,7 +124,7 @@ TEST_F(CacheUtilTest, CleanupDirectory) {
       // Caveat: On ChromeOS, we leave the top-level directory ("Cache") so
       // it must be "Cache" or "old_Cache_000".
       const base::FilePath dirname = path.DirName();
-      absl::optional<base::SafeBaseName> basename =
+      std::optional<base::SafeBaseName> basename =
           base::SafeBaseName::Create(path);
       ASSERT_EQ(dirname, tmp_dir_.GetPath());
       ASSERT_TRUE(basename.has_value());

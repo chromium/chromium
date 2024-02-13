@@ -736,9 +736,7 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
         surface->GetActiveFrameIndex()) {
       // If there is a new CompositorFrame for `surface` compute resolved frame
       // data.
-      base::ElapsedTimer timer;
       ProcessResolvedFrame(resolved_frame);
-      stats_->declare_resources_time += timer.Elapsed();
     } else if (resolved_frame.is_valid()) {
       // The same `CompositorFrame` since last aggregation. Set the
       // `CompositorRenderPass` pointer back to `ResolvedPassData`. Only
@@ -2401,10 +2399,6 @@ void SurfaceAggregator::RecordStatHistograms() {
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Compositing.SurfaceAggregator.CopyUs", stats_->copy_time,
       kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Compositing.SurfaceAggregator.DeclareResourcesUs",
-      stats_->declare_resources_time, kHistogramMinTime, kHistogramMaxTime,
-      kHistogramTimeBuckets);
 
   UMA_HISTOGRAM_BOOLEAN("Compositing.SurfaceAggregator.HasCopyRequestsPerFrame",
                         has_copy_requests_);

@@ -29,7 +29,7 @@ CardUnmaskPromptViewBridge::CardUnmaskPromptViewBridge(
   CHECK(controller_);
   CHECK(personal_data_manager_);
   credit_card_data_ =
-      [[CreditCardData alloc] initWithCreditCard:&(controller_->GetCreditCard())
+      [[CreditCardData alloc] initWithCreditCard:controller_->GetCreditCard()
                                             icon:GetCardIcon()];
 }
 

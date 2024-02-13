@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
@@ -77,8 +79,9 @@ TargetView::TargetView(DisplayOverlayController* controller,
   center_.set_x(bounds.width() / 2);
   center_.set_y(bounds.height() / 2);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  // TODO(b/279117180): Update a11y properties.
-  SetAccessibilityProperties(ax::mojom::Role::kGroup, u"Targeting");
+  SetAccessibilityProperties(
+      ax::mojom::Role::kPane,
+      l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_BUTTON_PLACEMENT_A11Y_LABEL));
 }
 
 TargetView::~TargetView() = default;
@@ -118,13 +121,17 @@ int TargetView::GetCircleRingRadius() const {
   }
 }
 
+int TargetView::GetPadding() const {
+  return TouchPoint::GetEdgeLength(action_type_) / 2;
+}
+
 void TargetView::ClampCenter() {
-  const int circle_ring_radius = GetCircleRadius();
+  const int padding = GetPadding();
   const auto& view_size = size();
-  center_.set_x(std::clamp(center_.x(), /*lo=*/circle_ring_radius,
-                           view_size.width() - circle_ring_radius));
-  center_.set_y(std::clamp(center_.y(), /*lo=*/circle_ring_radius,
-                           view_size.height() - circle_ring_radius));
+  center_.set_x(std::clamp(center_.x(), /*lo=*/padding,
+                           /*hi=*/view_size.width() - padding));
+  center_.set_y(std::clamp(center_.y(), /*lo=*/padding,
+                           /*hi=*/view_size.height() - padding));
 }
 
 void TargetView::OnCenterChanged() {

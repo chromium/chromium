@@ -94,7 +94,7 @@ class VIEWS_EXPORT TableHeader : public View {
 
   // Returns the column to resize given the specified x-coordinate, or nullopt
   // if |x| is not in the resize range of any columns.
-  absl::optional<size_t> GetResizeColumn(int x) const;
+  std::optional<size_t> GetResizeColumn(int x) const;
 
   bool is_resizing() const { return resize_details_.get() != nullptr; }
 

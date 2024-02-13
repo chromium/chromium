@@ -258,7 +258,8 @@ class WebsiteMetrics : public BrowserListObserver,
   base::flat_map<aura::Window*, content::WebContents*> window_to_web_contents_;
 
   // The map from the root window's activation client to windows.
-  std::map<wm::ActivationClient*, std::set<aura::Window*>>
+  std::map<wm::ActivationClient*,
+           std::set<raw_ptr<aura::Window, SetExperimental>>>
       activation_client_to_windows_;
 
   std::map<content::WebContents*, std::unique_ptr<ActiveTabWebContentsObserver>>

@@ -33,12 +33,12 @@ std::unique_ptr<ui::Event> ConvertToBoundedLocatedEvent(const ui::Event& event,
   return cloned_event;
 }
 
-absl::optional<size_t> GetLargeImageCornerRadius() {
+std::optional<size_t> GetLargeImageCornerRadius() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::features::IsJellyEnabled() ? kJellyImageCornerRadius
                                               : kImageCornerRadius;
 #else
-  return absl::nullopt;
+  return std::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

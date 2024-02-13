@@ -425,7 +425,7 @@ class BubbleDialogDelegateView::CloseOnDeactivatePin::Pins {
   }
 
  protected:
-  std::set<CloseOnDeactivatePin*> pins_;
+  std::set<raw_ptr<CloseOnDeactivatePin, SetExperimental>> pins_;
   base::WeakPtrFactory<Pins> weak_ptr_factory_{this};
 };
 
@@ -870,7 +870,7 @@ BubbleDialogDelegate::BubbleUmaLogger::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 BubbleDialogDelegate::BubbleUmaLogger::GetBubbleName() const {
   // Some dialogs might only use BDD and not BDDV. In those cases, the class
   // name should be based on BDDs' content view.
@@ -885,7 +885,7 @@ BubbleDialogDelegate::BubbleUmaLogger::GetBubbleName() const {
   if (bubble_view_.has_value()) {
     return bubble_view_.value()->GetClassName();
   }
-  return absl::optional<std::string>();
+  return std::optional<std::string>();
 }
 
 template <typename Value>
@@ -899,7 +899,7 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
   // Record histogram for all BDDV subclasses under a generic name
   uma_func(base::StrCat({"Bubble.All.", histogram_name}), value);
   // Record histograms for specific BDDV subclasses
-  absl::optional<std::string> bubble_name = GetBubbleName();
+  std::optional<std::string> bubble_name = GetBubbleName();
   if (!bubble_name.has_value()) {
     return;
   }

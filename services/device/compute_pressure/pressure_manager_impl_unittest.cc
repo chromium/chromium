@@ -103,7 +103,7 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
                                 base::Unretained(manager_impl_.get()),
                                 mojom::PressureSource::kCpu));
     auto fake_cpu_probe = std::make_unique<system_cpu::FakeCpuProbe>();
-    fake_cpu_probe->SetLastSample(system_cpu::PressureSample{0.42});
+    fake_cpu_probe->SetLastSample(system_cpu::CpuSample{0.42});
     cpu_probe_manager->SetCpuProbeForTesting(std::move(fake_cpu_probe));
     manager_impl_->SetCpuProbeManagerForTesting(std::move(cpu_probe_manager));
     manager_.reset();

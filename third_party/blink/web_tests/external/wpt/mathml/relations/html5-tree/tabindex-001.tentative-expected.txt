@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] default and invalid values for mi without href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mi with href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mn without href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mn with href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mo without href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mo with href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mrow without href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mrow with href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for ms without href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for ms with href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mtext without href
+  assert_equals: no attribute expected 0 but got -1
+[FAIL] default and invalid values for mtext with href
+  assert_equals: no attribute expected 0 but got -1
+Harness: the test ran to completion.
+

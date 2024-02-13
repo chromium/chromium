@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /** @fileoverview Common utilities for extension ui tests. */
-import {ItemDelegate} from 'chrome://extensions/extensions.js';
+import type {ItemDelegate} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';

@@ -20,6 +20,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {castExists} from '../assert_extras.js';
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
+import {recordSettingChange} from '../metrics_recorder.js';
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, SliderTick} from './crostini_browser_proxy.js';
 import {getTemplate} from './crostini_disk_resize_dialog.html.js';
@@ -189,6 +191,7 @@ export class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
             succeeded => {
               if (succeeded) {
                 this.resizeState_ = ResizeState.DONE;
+                recordSettingChange(Setting.kCrostiniDiskResize);
                 this.$.diskResizeDialog.close();
               } else {
                 this.resizeState_ = ResizeState.ERROR;

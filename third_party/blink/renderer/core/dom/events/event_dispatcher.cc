@@ -224,16 +224,19 @@ DispatchEventResult EventDispatcher::Dispatch() {
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
   if ((is_click || is_unfocused_keyboard_event) && event_->isTrusted() &&
       frame) {
-    if (window && frame->IsMainFrame() &&
+    if (window &&
         base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
-      bool is_new_interaction =
-          is_click || (event_->type() == event_type_names::kKeydown);
-      soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
-          SoftNavigationHeuristics::From(*window),
-          is_unfocused_keyboard_event
-              ? SoftNavigationHeuristics::EventScopeType::kKeyboard
-              : SoftNavigationHeuristics::EventScopeType::kClick,
-          is_new_interaction);
+      if (SoftNavigationHeuristics* heuristics =
+              SoftNavigationHeuristics::From(*window)) {
+        bool is_new_interaction =
+            is_click || (event_->type() == event_type_names::kKeydown);
+        soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
+            heuristics,
+            is_unfocused_keyboard_event
+                ? SoftNavigationHeuristics::EventScopeType::kKeyboard
+                : SoftNavigationHeuristics::EventScopeType::kClick,
+            is_new_interaction);
+      }
     }
     // A genuine mouse click cannot be triggered by script so we don't expect
     // there are any script in the stack.

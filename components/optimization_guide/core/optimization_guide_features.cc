@@ -173,7 +173,7 @@ BASE_FEATURE(kRemotePageMetadata,
 // Enables the page entities model to be annotated on every page load.
 BASE_FEATURE(kPageEntitiesPageContentAnnotations,
              "PageEntitiesPageContentAnnotations",
-             enabled_by_default_desktop_only);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the page visibility model to be annotated on every page load.
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
@@ -256,18 +256,6 @@ BASE_FEATURE(kOptimizationGuideFetchingForSRP,
              "OptimizationHintsFetchingSRP",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the model store to save relative paths computed from the base model
-// store dir. Storing as relative path in the model store is needed for IOS,
-// since the directories could change after Chrome upgrade. This feature is
-// expected to be enabled only for IOS.
-BASE_FEATURE(kModelStoreUseRelativePath,
-             "ModelStoreUseRelativePath",
-#if BUILDFLAG(IS_IOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 // Kill switch for disabling model quality logging.
 BASE_FEATURE(kModelQualityLogging,

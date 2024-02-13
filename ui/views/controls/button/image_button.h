@@ -75,7 +75,7 @@ class VIEWS_EXPORT ImageButton : public Button {
       const gfx::VectorIcon& icon,
       const std::u16string& accessible_name,
       MaterialIconStyle icon_style = MaterialIconStyle::kLarge,
-      absl::optional<gfx::Insets> insets = absl::nullopt);
+      std::optional<gfx::Insets> insets = std::nullopt);
 
  protected:
   // Overridden from Button:

@@ -71,8 +71,7 @@ suite('<files-settings-card>', () => {
   async function createFilesSettingsCard() {
     prefElement = document.createElement('settings-prefs');
     const fakeSettingsPrivate = new FakeSettingsPrivate(getFakePrefs());
-    prefElement.initialize(
-        fakeSettingsPrivate as unknown as typeof chrome.settingsPrivate);
+    prefElement.initialize(fakeSettingsPrivate);
     await CrSettingsPrefs.initialized;
 
     filesSettingsCard = document.createElement('files-settings-card');

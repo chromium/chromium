@@ -1,0 +1,4 @@
+buganizer {
+  # ChromeOS > Software > Essential Inputs
+  component_id: 95887
+}

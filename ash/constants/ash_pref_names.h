@@ -2008,6 +2008,11 @@ inline constexpr char kInsertKeyModifier[] = "ash.settings.insert_key_modifier";
 inline constexpr char kRestoreAppsAndPagesPrefName[] =
     "settings.restore_apps_and_pages";
 
+// A boolean pref of whether the Game Dashboard should show the welcome dialog
+// on app startup.
+inline constexpr char kGameDashboardShowWelcomeDialog[] =
+    "ash.game_dashboard.show_welcome_dialog";
+
 //-----------------------------------------------------------------------------
 // Language related Prefs
 //-----------------------------------------------------------------------------

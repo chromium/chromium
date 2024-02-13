@@ -206,10 +206,44 @@ void OptInToAccountStorage(PrefService* pref_service,
   sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
                                       /*is_type_on=*/true);
 
+  // Since opting out using toggle in settings explicitly sets the default store
+  // to kProfileStore, opt in needs to explicitly set it to kAccountStore.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kButterOnDesktopFollowup)) {
+    ScopedAccountStorageSettingsUpdate(pref_service,
+                                       GaiaIdHash::FromGaiaId(gaia_id))
+        .SetDefaultStore(PasswordForm::Store::kAccountStore);
+  }
+
   // Record the total number of (now) opted-in accounts.
   base::UmaHistogramExactLinear(
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptIn",
       sync_user_settings->GetNumberOfAccountsWithPasswordsSelected(), 10);
+}
+
+void OptOutOfAccountStorage(PrefService* pref_service,
+                            syncer::SyncService* sync_service) {
+  CHECK(pref_service);
+  CHECK(sync_service);
+  CHECK(base::FeatureList::IsEnabled(
+      password_manager::features::kButterOnDesktopFollowup));
+
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  if (gaia_id.empty()) {
+    // In rare cases, it could happen that the account went away since the
+    // opt-out UI was triggered.
+    return;
+  }
+
+  // Note SyncUserSettings::SetSelectedType() won't clear the gaia id hash
+  // but that's not required here.
+  syncer::SyncUserSettings* sync_user_settings =
+      sync_service->GetUserSettings();
+  sync_user_settings->SetSelectedType(syncer::UserSelectableType::kPasswords,
+                                      false);
+  ScopedAccountStorageSettingsUpdate(pref_service,
+                                     GaiaIdHash::FromGaiaId(gaia_id))
+      .SetDefaultStore(PasswordForm::Store::kProfileStore);
 }
 
 void OptOutOfAccountStorageAndClearSettings(PrefService* pref_service,

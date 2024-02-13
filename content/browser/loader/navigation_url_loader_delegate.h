@@ -89,7 +89,7 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       GlobalRequestID request_id,
       bool is_download,
       net::NetworkAnonymizationKey network_anonymization_key,
-      std::optional<SubresourceLoaderParams> subresource_loader_params,
+      SubresourceLoaderParams subresource_loader_params,
       EarlyHints early_hints) = 0;
 
   // Called if the request fails before receving a response. Specific

@@ -92,12 +92,12 @@ TEST_F(TransportSecurityPersisterTest, LoadEntriesClearsExistingState) {
 // Tests that serializing -> deserializing -> reserializing results in the same
 // output.
 TEST_F(TransportSecurityPersisterTest, SerializeData1) {
-  absl::optional<std::string> output = persister_->SerializeData();
+  std::optional<std::string> output = persister_->SerializeData();
 
   ASSERT_TRUE(output);
   persister_->LoadEntries(*output);
 
-  absl::optional<std::string> output2 = persister_->SerializeData();
+  std::optional<std::string> output2 = persister_->SerializeData();
   ASSERT_TRUE(output2);
   EXPECT_EQ(output, output2);
 }
@@ -113,7 +113,7 @@ TEST_F(TransportSecurityPersisterTest, SerializeData2) {
   bool include_subdomains = true;
   state_->AddHSTS(kYahooDomain, expiry, include_subdomains);
 
-  absl::optional<std::string> output = persister_->SerializeData();
+  std::optional<std::string> output = persister_->SerializeData();
   ASSERT_TRUE(output);
   persister_->LoadEntries(*output);
 
@@ -150,7 +150,7 @@ TEST_F(TransportSecurityPersisterTest, SerializeData3) {
     sts_iter.Advance();
   }
 
-  absl::optional<std::string> serialized = persister_->SerializeData();
+  std::optional<std::string> serialized = persister_->SerializeData();
   ASSERT_TRUE(serialized);
 
   // Persist the data to the file.

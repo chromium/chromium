@@ -10,6 +10,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -43,6 +45,9 @@ class GLTestHelper {
                                    GLsizei height,
                                    int error,
                                    const uint8_t expected_color[4]);
+
+  static std::pair<scoped_refptr<GLSurface>, scoped_refptr<GLContext>>
+  CreateOffscreenGLSurfaceAndContext();
 
 #if BUILDFLAG(IS_WIN)
   // Check that |location| is inside the bounds of |bitmap| and return the color

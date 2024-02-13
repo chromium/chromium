@@ -111,7 +111,7 @@ class AXTreeSerializer {
   // Invalidate the subtree rooted at this node, ensuring that the entire
   // subtree is re-serialized the next time any of those nodes end up
   // being serialized.
-  void MarkSubtreeDirty(AXSourceNode node);
+  void MarkSubtreeDirty(AXNodeID node);
 
   // Return whether or not this node is in the client tree. If you call
   // this immediately after serializing, this indicates whether a given
@@ -122,9 +122,6 @@ class AXTreeSerializer {
   // reachable. If one of its ancestors is hidden and it was pruned
   // from the accessibility tree, this would return false.
   bool IsInClientTree(AXSourceNode node);
-
-  // Return true if this node is marked dirty.
-  bool IsDirty(AXSourceNode node);
 
   // Only for unit testing. Normally this class relies on getting a call
   // to SerializeChanges() every time the source tree changes. For unit
@@ -607,8 +604,8 @@ AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::GetIncompleteNodeIds() {
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>
 void AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::MarkSubtreeDirty(
-    AXSourceNode node) {
-  ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
+    AXNodeID id) {
+  ClientTreeNode* client_node = ClientTreeNodeById(id);
   if (client_node)
     MarkClientSubtreeDirty(client_node);
 }
@@ -617,13 +614,6 @@ template <typename AXSourceNode, typename AXSourceNodeVectorType>
 bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::IsInClientTree(
     AXSourceNode node) {
   return ClientTreeNodeById(tree_->GetId(node));
-}
-
-template <typename AXSourceNode, typename AXSourceNodeVectorType>
-bool AXTreeSerializer<AXSourceNode, AXSourceNodeVectorType>::IsDirty(
-    AXSourceNode node) {
-  ClientTreeNode* client_node = ClientTreeNodeById(tree_->GetId(node));
-  return client_node ? client_node->IsDirty() : false;
 }
 
 template <typename AXSourceNode, typename AXSourceNodeVectorType>

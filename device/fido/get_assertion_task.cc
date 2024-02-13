@@ -246,7 +246,7 @@ void GetAssertionTask::U2fSign() {
 void GetAssertionTask::HandleResponse(
     std::vector<PublicKeyCredentialDescriptor> allow_list,
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
+    std::optional<AuthenticatorGetAssertionResponse> response_data) {
   if (canceled_) {
     return;
   }
@@ -296,13 +296,13 @@ void GetAssertionTask::HandleResponse(
 void GetAssertionTask::HandleNextResponse(
     uint8_t num_responses,
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
+    std::optional<AuthenticatorGetAssertionResponse> response_data) {
   if (response_code != CtapDeviceResponseCode::kSuccess) {
     std::move(callback_).Run(response_code, {});
   }
 
   // Extract any hmac-secret or prf response.
-  const absl::optional<cbor::Value>& extensions_cbor =
+  const std::optional<cbor::Value>& extensions_cbor =
       response_data->authenticator_data.extensions();
   if (extensions_cbor) {
     // Parsing has already checked that |extensions_cbor| is a map.
@@ -316,7 +316,7 @@ void GetAssertionTask::HandleNextResponse(
         return LogAndFail(
             "Assertion response has both hmac-secret and prf extensions");
       }
-      absl::optional<std::vector<uint8_t>> plaintext =
+      std::optional<std::vector<uint8_t>> plaintext =
           hmac_secret_request_->Decrypt(it->second.GetBytestring());
       if (!plaintext) {
         return LogAndFail("Failed to decrypt hmac-secret extension");
@@ -345,7 +345,7 @@ void GetAssertionTask::HandleNextResponse(
 
 void GetAssertionTask::HandleResponseToSilentRequest(
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorGetAssertionResponse> response_data) {
+    std::optional<AuthenticatorGetAssertionResponse> response_data) {
   DCHECK(request_.allow_list.size() > 0);
   DCHECK(allow_list_batches_.size() > 0);
   DCHECK(0 < current_allow_list_batch_ &&
@@ -417,7 +417,7 @@ void GetAssertionTask::HandleResponseToSilentRequest(
 
 void GetAssertionTask::HandleDummyMakeCredentialComplete(
     CtapDeviceResponseCode response_code,
-    absl::optional<AuthenticatorMakeCredentialResponse> response_data) {
+    std::optional<AuthenticatorMakeCredentialResponse> response_data) {
   std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials, {});
 }
 
@@ -435,12 +435,12 @@ void GetAssertionTask::MaybeSetPRFParameters(CtapGetAssertionRequest* request,
                                hmac_secret_request_->salts_auth,
                                // The correct PIN protocol will be inserted
                                // automatically when needed.
-                               /*pin_protocol=*/absl::nullopt);
+                               /*pin_protocol=*/std::nullopt);
 }
 
 void GetAssertionTask::MaybeRevertU2fFallbackAndInvokeCallback(
     CtapDeviceResponseCode status,
-    absl::optional<AuthenticatorGetAssertionResponse> response) {
+    std::optional<AuthenticatorGetAssertionResponse> response) {
   DCHECK_EQ(ProtocolVersion::kU2f, device()->supported_protocol());
   if (device()->device_info()) {
     // This was actually a CTAP2 device, but the protocol version was set to U2F

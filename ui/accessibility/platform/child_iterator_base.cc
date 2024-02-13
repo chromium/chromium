@@ -51,7 +51,7 @@ gfx::NativeViewAccessible ChildIteratorBase::GetNativeViewAccessible() const {
   return nullptr;
 }
 
-absl::optional<size_t> ChildIteratorBase::GetIndexInParent() const {
+std::optional<size_t> ChildIteratorBase::GetIndexInParent() const {
   return index_;
 }
 

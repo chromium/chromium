@@ -90,7 +90,7 @@ API_AVAILABLE(macos(13.3))
 @end
 
 @implementation ICloudKeychainCreateController {
-  absl::optional<device::CtapMakeCredentialRequest> request_;
+  std::optional<device::CtapMakeCredentialRequest> request_;
 }
 
 - (void)setRequest:(device::CtapMakeCredentialRequest)request {
@@ -156,7 +156,7 @@ API_AVAILABLE(macos(13.3))
 @end
 
 @implementation ICloudKeychainGetController {
-  absl::optional<device::CtapGetAssertionRequest> request_;
+  std::optional<device::CtapGetAssertionRequest> request_;
 }
 
 - (void)setRequest:(device::CtapGetAssertionRequest)request {

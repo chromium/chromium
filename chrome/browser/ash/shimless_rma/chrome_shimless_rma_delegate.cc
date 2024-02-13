@@ -69,16 +69,11 @@ void ChromeShimlessRmaDelegate::GenerateQrCode(
   auto qrcode_service_callback =
       base::BindOnce(&ChromeShimlessRmaDelegate::OnQrCodeGenerated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  if (qrcode_service_override_.is_null()) {
-    if (!qrcode_service_) {
-      qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
-    }
-    qrcode_service_->GenerateQRCode(std::move(request),
-                                    std::move(qrcode_service_callback));
-  } else {
-    qrcode_service_override_.Run(std::move(request),
-                                 std::move(qrcode_service_callback));
+  if (!qrcode_service_) {
+    qrcode_service_ = std::make_unique<qrcode_generator::QRImageGenerator>();
   }
+  qrcode_service_->GenerateQRCode(std::move(request),
+                                  std::move(qrcode_service_callback));
 }
 
 void ChromeShimlessRmaDelegate::OnQrCodeGenerated(
@@ -90,14 +85,6 @@ void ChromeShimlessRmaDelegate::OnQrCodeGenerated(
   std::vector<unsigned char> bytes;
   gfx::PNGCodec::EncodeBGRASkBitmap(response->bitmap, false, &bytes);
   std::move(callback).Run(std::string(bytes.begin(), bytes.end()));
-}
-
-void ChromeShimlessRmaDelegate::SetQRCodeServiceForTesting(
-    base::RepeatingCallback<
-        void(qrcode_generator::mojom::GenerateQRCodeRequestPtr request,
-             qrcode_generator::QRImageGenerator::ResponseCallback callback)>
-        qrcode_service_override) {
-  qrcode_service_override_ = std::move(qrcode_service_override);
 }
 
 void ChromeShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContext(

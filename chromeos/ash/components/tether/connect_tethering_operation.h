@@ -29,7 +29,6 @@ class SecureChannelClient;
 namespace ash::tether {
 
 class MessageWrapper;
-class TetherHostResponseRecorder;
 
 // Operation used to request that a tether host share its Internet connection.
 // Attempts a connection to the RemoteDevice passed to its constructor and
@@ -61,7 +60,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
         multidevice::RemoteDeviceRef device_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
-        TetherHostResponseRecorder* tether_host_response_recorder,
         bool setup_required);
 
     static void SetFactoryForTesting(Factory* factory);
@@ -72,7 +70,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
         multidevice::RemoteDeviceRef devices_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
-        TetherHostResponseRecorder* tether_host_response_recorder,
         bool setup_required) = 0;
 
    private:
@@ -106,7 +103,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
       multidevice::RemoteDeviceRef device_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client,
-      TetherHostResponseRecorder* tether_host_response_recorder,
       bool setup_required);
 
   // MessageTransferOperation:
@@ -155,7 +151,6 @@ class ConnectTetheringOperation : public MessageTransferOperation {
   static const uint32_t kSetupRequiredResponseTimeoutSeconds;
 
   multidevice::RemoteDeviceRef remote_device_;
-  raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
   raw_ptr<base::Clock> clock_;
   int connect_message_sequence_number_ = -1;
   bool setup_required_;

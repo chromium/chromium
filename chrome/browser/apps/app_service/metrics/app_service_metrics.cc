@@ -156,6 +156,10 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromInstaller",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromFirstRun:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromFirstRun",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:

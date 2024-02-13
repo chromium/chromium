@@ -13,18 +13,17 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow MAT id='scroller'",
-      "position": [0, 18],
-      "bounds": [345, 2000],
-      "drawsContent": false,
-      "transform": 3
-    },
-    {
       "name": "VerticalScrollbar",
       "position": [345, 0],
       "bounds": [15, 640],
       "contentsOpaque": true,
       "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow MAT id='scroller'",
+      "bounds": [345, 2018],
+      "drawsContent": false,
+      "transform": 3
     },
     {
       "name": "LayoutNGBlockFlow (sticky positioned, children-inline) DIV id='sticky'",

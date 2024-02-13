@@ -230,7 +230,7 @@ void TasksBubbleView::ScheduleUpdateTasksList(bool initial_update) {
       task_list_combo_box_view_->GetSelectedIndex().value());
   tasks_combobox_model_->SaveLastSelectedTaskList(active_task_list->id);
   Shell::Get()->glanceables_controller()->GetTasksClient()->GetTasks(
-      active_task_list->id,
+      active_task_list->id, /*force_fetch=*/false,
       base::BindOnce(&TasksBubbleView::UpdateTasksList,
                      weak_ptr_factory_.GetWeakPtr(), active_task_list->id,
                      active_task_list->title, initial_update));
@@ -338,7 +338,7 @@ void TasksBubbleView::MarkTaskAsCompleted(const std::string& task_list_id,
       task_list_id, task_id, completed);
 }
 
-BEGIN_METADATA(TasksBubbleView, views::View)
+BEGIN_METADATA(TasksBubbleView)
 END_METADATA
 
 }  // namespace ash

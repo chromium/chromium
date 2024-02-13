@@ -1110,13 +1110,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithNoTitle) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test.pdf"));
-  ASSERT_TRUE(guest_view);
-  EXPECT_EQ(u"test.pdf", guest_view->GetController()
-                             .GetLastCommittedEntry()
-                             ->GetTitleForDisplay());
-  EXPECT_EQ(u"test.pdf", GetActiveWebContents()->GetTitle());
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  const std::u16string kExpectedTitle = u"test.pdf";
+  EXPECT_EQ(kExpectedTitle, GetEmbedderWebContents()
+                                ->GetController()
+                                .GetLastCommittedEntry()
+                                ->GetTitleForDisplay());
+  EXPECT_EQ(kExpectedTitle, GetActiveWebContents()->GetTitle());
 }
 
 // This test ensures that titles are set properly for PDFs with /Title.
@@ -1126,17 +1127,19 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithTitle) {
     GTEST_SKIP();
   }
 
-  MimeHandlerViewGuest* guest_view = LoadPdfGetMimeHandlerView(
-      embedded_test_server()->GetURL("/pdf/test-title.pdf"));
-  ASSERT_TRUE(guest_view);
-  EXPECT_EQ(u"PDF title test", guest_view->GetController()
-                                   .GetLastCommittedEntry()
-                                   ->GetTitleForDisplay());
-  EXPECT_EQ(u"PDF title test", GetActiveWebContents()->GetTitle());
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test-title.pdf")));
+
+  const std::u16string kExpectedTitle = u"PDF title test";
+  EXPECT_EQ(kExpectedTitle, GetEmbedderWebContents()
+                                ->GetController()
+                                .GetLastCommittedEntry()
+                                ->GetTitleForDisplay());
+  EXPECT_EQ(kExpectedTitle, GetActiveWebContents()->GetTitle());
 }
 
-// This test ensures that titles are set properly for embedded PDFs with /Title.
-IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
+// This test ensures that titles are set properly for embedded PDFs (using data
+// URL). PDF /Title should be ignored for embedded PDFs.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdfDataUrl) {
   // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
@@ -1152,6 +1155,32 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
       "\"></body></html>";
   ASSERT_TRUE(LoadPdf(GURL(data_url)));
   EXPECT_EQ(u"TabTitleWithEmbeddedPdf", GetActiveWebContents()->GetTitle());
+}
+
+// This test ensures that tab titles are set properly for embedded PDFs.
+// PDF /Title should be ignored for embedded PDFs.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest, TabTitleWithEmbeddedPdf) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
+  // Load page with embedded PDF and make sure it succeeds.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+  WebContents* web_contents = GetActiveWebContents();
+
+  if (UseOopif()) {
+    // Verify the pdf has loaded. The test will timeout if the PDF fails to
+    // load.
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        web_contents->GetPrimaryMainFrame()));
+  }
+
+  EXPECT_EQ(u"TabWithEmbeddedPdf", web_contents->GetTitle());
 }
 
 // Flaky, http://crbug.com/767427
@@ -3646,6 +3675,10 @@ class PDFExtensionIncognitoTest : public PDFExtensionTest {
 
   Browser* incognito_browser() { return incognito_browser_; }
 
+  content::WebContents* GetIncognitoActiveWebContents() {
+    return incognito_browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
  private:
   raw_ptr<Browser> incognito_browser_ = nullptr;
 };
@@ -3656,10 +3689,18 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoFullPage) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
 
-  content::WebContents* contents =
-      incognito_browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-      contents->GetPrimaryMainFrame()));
+  auto* incognito_contents = GetIncognitoActiveWebContents();
+  auto* incognito_primary_main_frame =
+      incognito_contents->GetPrimaryMainFrame();
+  if (UseOopif()) {
+    // Verify the pdf has loaded. The test will timeout if the PDF fails to
+    // load.
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
+                    ->WaitUntilPdfLoaded(incognito_primary_main_frame));
+  } else {
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        incognito_primary_main_frame));
+  }
 }
 
 // Test that an embed-embedded PDF viewer successfully loads in incognito.
@@ -3669,10 +3710,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoEmbed) {
       incognito_browser(),
       embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
 
-  content::WebContents* contents =
-      incognito_browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-      contents->GetPrimaryMainFrame()));
+  auto* incognito_contents = GetIncognitoActiveWebContents();
+  if (UseOopif()) {
+    // Verify the pdf has loaded. The test will timeout if the PDF fails to
+    // load.
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
+  } else {
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
+        incognito_contents->GetPrimaryMainFrame()));
+  }
 }
 
 // Test that an iframe-embedded PDF viewer successfully loads in incognito.
@@ -3681,21 +3728,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
     GTEST_SKIP() << "GuestView PDF viewer cannot ensure PDF load in an iframe.";
   }
 
-  content::WebContents* contents =
-      incognito_browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(contents));
-
-  auto* manager =
-      pdf::TestPdfViewerStreamManager::CreateForWebContents(contents);
-
   // Load the HTML containing an iframe embedding a PDF.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser(),
       embedded_test_server()->GetURL("/pdf/test-iframe.html")));
-  ASSERT_EQ(manager, pdf::PdfViewerStreamManager::FromWebContents(contents));
 
-  // Verify the pdf has loaded. The test will timeout if the PDF fails to load.
-  manager->WaitUntilPdfLoadedInFirstChild();
+  // Verify the pdf has loaded. The test will timeout if the PDF fails to
+  // load.
+  auto* incognito_contents = GetIncognitoActiveWebContents();
+  ASSERT_TRUE(GetTestPdfViewerStreamManager(incognito_contents)
+                  ->WaitUntilPdfLoadedInFirstChild());
 }
 
 // PDF extension tests for the OOPIF PDF viewer.
@@ -3732,49 +3774,50 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, OopifPdfPostMessageEmbed) {
   // `EnsurePDFHasLoaded()` uses postMessage() to check that the PDF has loaded,
   // so calling it is sufficient to check that a postMessage() connection has
   // been established.
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-      GetActiveWebContents()->GetPrimaryMainFrame()));
+  content::RenderFrameHost* embedder_host =
+      ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(embedder_host);
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(embedder_host));
 }
 
 // This test verifies the correctness of util `FindFullPagePdfExtensionHost`.
 IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest,
                        OopifPdfFindFullPagePdfExtensionHost) {
+  auto* web_contents = GetActiveWebContents();
   {
     // Navigate to a non-PDF page.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/title1.html")));
 
     // Verify that there is no full-page pdf extension host on non-PDF page.
-    EXPECT_FALSE(
-        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+    EXPECT_FALSE(pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
   }
 
   {
     // Load page with embedded PDF and make sure it succeeds.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-        GetActiveWebContents()->GetPrimaryMainFrame()));
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                    ->WaitUntilPdfLoadedInFirstChild());
 
     // Verify that there is no full-page pdf extension host on embedded PDF.
-    EXPECT_FALSE(
-        pdf_frame_util::FindFullPagePdfExtensionHost(GetActiveWebContents()));
+    EXPECT_FALSE(pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
   }
 
   {
     // Load a full-page PDF and make sure it succeeds.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-        GetActiveWebContents()->GetPrimaryMainFrame()));
+    ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents)
+                    ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame()));
 
     content::RenderFrameHost* child_frame =
-        content::ChildFrameAt(GetActiveWebContents()->GetPrimaryMainFrame(), 0);
+        content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
     ASSERT_TRUE(child_frame);
 
     // Verify that `FindFullPagePdfExtensionHost` returns the correct frame.
-    EXPECT_EQ(child_frame, pdf_frame_util::FindFullPagePdfExtensionHost(
-                               GetActiveWebContents()));
+    EXPECT_EQ(child_frame,
+              pdf_frame_util::FindFullPagePdfExtensionHost(web_contents));
   }
 }
 

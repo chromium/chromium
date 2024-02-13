@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_COMPOSE_COMPOSE_DIALOG_VIEW_H_
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
-#include "chrome/browser/ui/webui/compose/compose_ui.h"
+#include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -34,7 +34,7 @@ class ComposeDialogView : public WebUIBubbleDialogView {
 
   explicit ComposeDialogView(
       View* anchor_view,
-      std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper,
+      std::unique_ptr<WebUIContentsWrapperT<ComposeUntrustedUI>> bubble_wrapper,
       const gfx::Rect& anchor_bounds,
       views::BubbleBorder::Arrow anchor_position);
 
@@ -47,7 +47,7 @@ class ComposeDialogView : public WebUIBubbleDialogView {
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
 
-  BubbleContentsWrapperT<ComposeUI>* bubble_wrapper() {
+  WebUIContentsWrapperT<ComposeUntrustedUI>* bubble_wrapper() {
     return bubble_wrapper_.get();
   }
 
@@ -55,7 +55,7 @@ class ComposeDialogView : public WebUIBubbleDialogView {
 
  private:
   gfx::Rect anchor_bounds_;
-  std::unique_ptr<BubbleContentsWrapperT<ComposeUI>> bubble_wrapper_;
+  std::unique_ptr<WebUIContentsWrapperT<ComposeUntrustedUI>> bubble_wrapper_;
   base::WeakPtrFactory<ComposeDialogView> weak_ptr_factory_{this};
 };
 

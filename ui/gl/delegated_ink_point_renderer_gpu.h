@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 
@@ -47,7 +47,7 @@ struct DelegatedInkPointCompare {
 };
 
 using DelegatedInkPointTokenMap = base::flat_map<gfx::DelegatedInkPoint,
-                                                 absl::optional<unsigned int>,
+                                                 std::optional<unsigned int>,
                                                  DelegatedInkPointCompare>;
 
 }  // namespace
@@ -278,7 +278,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
       if (point_matching_metadata_it != token_map.end()) {
         gfx::DelegatedInkPoint point_matching_metadata =
             point_matching_metadata_it->first;
-        absl::optional<unsigned int> token = point_matching_metadata_it->second;
+        std::optional<unsigned int> token = point_matching_metadata_it->second;
         // (continued from above)
         //  5. The DelegatedInkPoint retrieved above matches |metadata| - this
         //     means that the timestamp is an exact match and the point is
@@ -365,7 +365,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     // OS compositor does internally when it hits the max number of points.
     if (token_map.size() == gfx::kMaximumNumberOfDelegatedInkPoints)
       token_map.erase(token_map.begin());
-    token_map.insert({point, absl::nullopt});
+    token_map.insert({point, std::nullopt});
 
     EraseExcessPointerIds();
 
@@ -514,7 +514,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     DCHECK_LE(delegated_ink_points_.size(), kMaximumNumberOfPointerIds);
   }
 
-  absl::optional<int32_t> GetPointerIdForMetadata() {
+  std::optional<int32_t> GetPointerIdForMetadata() {
     if (pointer_id_ && delegated_ink_points_.find(pointer_id_.value()) !=
                            delegated_ink_points_.end()) {
       // Since we remove all DelegatedInkPoints with timestamp before
@@ -528,7 +528,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
       }
     }
 
-    pointer_id_ = absl::nullopt;
+    pointer_id_ = std::nullopt;
 
     for (auto token_map_it = delegated_ink_points_.begin();
          token_map_it != delegated_ink_points_.end() && !pointer_id_;
@@ -571,7 +571,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
 
     EraseExcessPointerIds();
 
-    absl::optional<unsigned int> pointer_id = GetPointerIdForMetadata();
+    std::optional<unsigned int> pointer_id = GetPointerIdForMetadata();
 
     // Now, the very first point must match |metadata_|, and as long as it does
     // we can continue to draw everything else. If at any point something can't
@@ -676,7 +676,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   base::flat_map<int32_t, DelegatedInkPointTokenMap> delegated_ink_points_;
 
   // Cached pointer id of the most recently drawn trail.
-  absl::optional<int32_t> pointer_id_;
+  std::optional<int32_t> pointer_id_;
 
   // Flag to know if new DelegatedInkPoints that arrive should be drawn
   // immediately or if they should wait for a new trail to be started. Set to

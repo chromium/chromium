@@ -385,7 +385,8 @@ class MockDnsTransactionFactory : public DnsTransactionFactory {
   DelayedTransactionList delayed_transactions_;
 
   bool force_doh_server_available_ = true;
-  std::set<MockDohProbeRunner*> running_doh_probe_runners_;
+  std::set<raw_ptr<MockDohProbeRunner, SetExperimental>>
+      running_doh_probe_runners_;
 
   base::WeakPtrFactory<MockDnsTransactionFactory> weak_ptr_factory_{this};
 };

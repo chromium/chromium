@@ -2016,7 +2016,7 @@ void NetworkContext::VerifyCertificateForTesting(
 void NetworkContext::PreconnectSockets(
     uint32_t num_streams,
     const GURL& original_url,
-    bool allow_credentials,
+    mojom::CredentialsMode credentials_mode,
     const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK(!require_network_anonymization_key_ ||
          !network_anonymization_key.IsEmpty());
@@ -2039,13 +2039,29 @@ void NetworkContext::PreconnectSockets(
   request_info.extra_headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                        user_agent);
 
-  if (allow_credentials) {
-    request_info.load_flags = net::LOAD_NORMAL;
-    request_info.privacy_mode = net::PRIVACY_MODE_DISABLED;
-  } else {
-    request_info.load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
-    request_info.privacy_mode = net::PRIVACY_MODE_ENABLED;
+  switch (credentials_mode) {
+    case mojom::CredentialsMode::kOmit:
+      request_info.load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+      request_info.privacy_mode = net::PRIVACY_MODE_ENABLED;
+      break;
+
+    case mojom::CredentialsMode::kSameOrigin:
+      // Not yet implemented. If you need this credentials mode please update
+      // this branch to set the correct request_info fields.
+      NOTREACHED_NORETURN() << "kSameOrigin not yet implemented";
+
+    case mojom::CredentialsMode::kInclude:
+      request_info.load_flags = net::LOAD_NORMAL;
+      request_info.privacy_mode = net::PRIVACY_MODE_DISABLED;
+      break;
+
+    case mojom::CredentialsMode::kOmitBug_775438_Workaround:
+      request_info.load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+      request_info.privacy_mode =
+          net::PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
+      break;
   }
+
   request_info.network_anonymization_key = network_anonymization_key;
 
   net::HttpTransactionFactory* factory =
@@ -2355,7 +2371,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
 
         std::make_unique<IpProtectionProxyDelegate>(
-            nspal, std::move(ipp_config_cache));
+            nspal, std::move(ipp_config_cache), params_->enable_ip_protection);
     proxy_delegate->SetReceiver(
         std::move(params_->ip_protection_proxy_delegate));
     proxy_delegate_ = proxy_delegate.get();

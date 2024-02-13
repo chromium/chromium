@@ -13,6 +13,7 @@
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
@@ -51,6 +52,27 @@ ModelTypeSet UserSelectableOsTypesToModelTypes(
 int GetCurrentMajorProductVersion() {
   DCHECK(version_info::GetVersion().IsValid());
   return version_info::GetVersion().components()[0];
+}
+
+// Checks if the AUTOFILL_WALLET_CREDENTIAL should be ignored if it is the only
+// encrypted datatype.
+bool ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType() {
+  // Explicit sign-in to the browser via native UI, making this scenario an edge
+  // case as more features will usually be enabled, including PASSWORDS. Thus,
+  // AUTOFILL_WALLET_CREDENTIAL is not the only active encrypted type.
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    return false;
+  }
+  // Similar to above: more features will usually be enabled, including
+  // PASSWORDS, making this an edge case.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return false;
+  }
+  // AUTOFILL_WALLET_CREDENTIAL is the only active encrypted type for the
+  // previously signed-in-non-syncing users.
+  return true;
 }
 
 }  // namespace
@@ -404,24 +426,30 @@ ModelTypeSet SyncUserSettingsImpl::GetEncryptedDataTypes() const {
 }
 
 bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
-  const ModelTypeSet preferred_types = GetPreferredDataTypes();
+  ModelTypeSet preferred_types = GetPreferredDataTypes();
   const ModelTypeSet encrypted_types = GetEncryptedDataTypes();
   DCHECK(encrypted_types.HasAll(AlwaysEncryptedUserTypes()));
+  if (ShouldAutofillWalletCredentialBeIgnoredIfOnlyEncryptedType()) {
+    // Remove AUTOFILL_WALLET_CREDENTIAL from the set to avoid that the
+    // function returns true for the case where the set ONLY includes
+    // AUTOFILL_WALLET_CREDENTIAL. This feature alone is not sufficient to
+    // trigger error UI, which may be confusing to some users given that strings
+    // may allude to passwords. This is a side effect of
+    // AUTOFILL_WALLET_CREDENTIAL being listed as AlwaysEncryptedUserTypes().
+    preferred_types.Remove(syncer::AUTOFILL_WALLET_CREDENTIAL);
+  }
   return !Intersection(preferred_types, encrypted_types).Empty();
 }
 
 std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
   if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
-    switch (delegate_->GetSyncAccountStateForPrefs()) {
-      case SyncPrefs::SyncAccountState::kSyncing:
-        return prefs_->GetEncryptionBootstrapToken();
-      case SyncPrefs::SyncAccountState::kNotSignedIn:
-        return std::string();
-      case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
-        signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-            delegate_->GetSyncAccountInfoForPrefs().gaia);
-        return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
+    const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+    if (gaia_id.empty()) {
+      return std::string();
     }
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
+    CHECK(gaia_id_hash.IsValid());
+    return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id_hash);
   }
   return prefs_->GetEncryptionBootstrapToken();
 }
@@ -429,21 +457,17 @@ std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
 void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     const std::string& token) {
   if (base::FeatureList::IsEnabled(kSyncRememberCustomPassphraseAfterSignout)) {
-    switch (delegate_->GetSyncAccountStateForPrefs()) {
-      case SyncPrefs::SyncAccountState::kSyncing:
-        prefs_->SetEncryptionBootstrapToken(token);
-        return;
-      case SyncPrefs::SyncAccountState::kNotSignedIn:
-        // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
-        DUMP_WILL_BE_NOTREACHED_NORETURN()
-            << "Must not set passphrase while signed out";
-        return;
-      case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
-        signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
-            delegate_->GetSyncAccountInfoForPrefs().gaia);
-        prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
-        return;
+    const std::string& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
+    if (gaia_id.empty()) {
+      // TODO(crbug.com/1505100): Convert to NOTREACHED_NORETURN.
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "Must not set passphrase while signed out";
+      return;
     }
+    signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(gaia_id);
+    CHECK(gaia_id_hash.IsValid());
+    prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id_hash);
+    return;
   }
   prefs_->SetEncryptionBootstrapToken(token);
 }

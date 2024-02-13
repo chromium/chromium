@@ -102,9 +102,7 @@ class CrashReporterURLObserverTest : public PlatformTest {
     test_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     FakeWebState* test_web_state_ptr = test_web_state.get();
-    web_state_list->InsertWebState(0, std::move(test_web_state),
-                                   WebStateList::INSERT_NO_FLAGS,
-                                   WebStateOpener());
+    web_state_list->InsertWebState(std::move(test_web_state));
     return test_web_state_ptr;
   }
 
@@ -321,9 +319,9 @@ TEST_F(CrashReporterURLObserverTest, TestBasicBehaviors) {
   };
   EXPECT_NSEQ(expected, params_.params);
 
-  web_state_list_1.InsertWebState(0, std::move(tmp_web_state),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list_1.InsertWebState(
+      std::move(tmp_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
   expected = @{
     @"url0" : @"http://example14.test/",
     @"url1" : @"http://example33.test/",
@@ -339,9 +337,9 @@ TEST_F(CrashReporterURLObserverTest, TestBasicBehaviors) {
   };
   EXPECT_NSEQ(expected, params_.params);
 
-  web_state_list_3.InsertWebState(0, std::move(tmp_web_state2),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  web_state_list_3.InsertWebState(
+      std::move(tmp_web_state2),
+      WebStateList::InsertionParams::Automatic().Activate());
   expected = @{
     @"url0" : @"http://example14.test/",
     @"url1" : @"http://example33.test/",

@@ -14,7 +14,7 @@
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // Each ResourceContext measured by resource attribution is identified by an
 // object with the following properties:
@@ -99,6 +99,6 @@ class ResourceContextTypeId
 
 }  // namespace internal
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_RESOURCE_CONTEXTS_H_

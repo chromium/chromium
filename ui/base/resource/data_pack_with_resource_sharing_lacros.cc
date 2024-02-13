@@ -200,7 +200,7 @@ bool DataPackWithResourceSharing::LoadMappingTable(const base::FilePath& path) {
   return true;
 }
 
-const absl::optional<uint16_t> DataPackWithResourceSharing::LookupMappingTable(
+const std::optional<uint16_t> DataPackWithResourceSharing::LookupMappingTable(
     uint16_t resource_id) const {
   // Look up `resource_id` in `mapping_table_`|.
   // If mapped ash resource id is not found, return null.
@@ -208,13 +208,13 @@ const absl::optional<uint16_t> DataPackWithResourceSharing::LookupMappingTable(
       bsearch(&resource_id, mapping_table_, mapping_count_, sizeof(Mapping),
               Mapping::CompareById));
   if (!ret)
-    return absl::nullopt;
+    return std::nullopt;
 
   return ret->ash_resource_id;
 }
 
 bool DataPackWithResourceSharing::HasResource(uint16_t resource_id) const {
-  absl::optional<uint16_t> ash_resource_id = LookupMappingTable(resource_id);
+  std::optional<uint16_t> ash_resource_id = LookupMappingTable(resource_id);
   if (ash_resource_id.has_value()) {
     // If ash resource id is found in mapping table, its resource must exists.
     DCHECK(ash_data_pack_->HasResource(ash_resource_id.value()));
@@ -224,9 +224,9 @@ bool DataPackWithResourceSharing::HasResource(uint16_t resource_id) const {
   return fallback_data_pack_->HasResource(resource_id);
 }
 
-absl::optional<base::StringPiece> DataPackWithResourceSharing::GetStringPiece(
+std::optional<base::StringPiece> DataPackWithResourceSharing::GetStringPiece(
     uint16_t resource_id) const {
-  absl::optional<uint16_t> ash_resource_id = LookupMappingTable(resource_id);
+  std::optional<uint16_t> ash_resource_id = LookupMappingTable(resource_id);
   if (ash_resource_id.has_value())
     return ash_data_pack_->GetStringPiece(ash_resource_id.value());
 

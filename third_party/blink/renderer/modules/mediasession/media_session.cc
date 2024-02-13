@@ -288,6 +288,12 @@ void MediaSession::setPositionState(MediaPositionState* position_state,
     return;
   }
 
+  // The duration cannot be NaN.
+  if (std::isnan(position_state->duration())) {
+    exception_state.ThrowTypeError("The provided duration cannot be NaN.");
+    return;
+  }
+
   // The duration cannot be negative.
   if (position_state->duration() < 0) {
     exception_state.ThrowTypeError(

@@ -567,6 +567,9 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
     // Record metric.
   }
 
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
   [tab_opener_
       dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
                                withUrlLoadParams:params
@@ -574,10 +577,8 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
                                                      startupParameters]
                                                      postOpeningAction] !=
                                                  FOCUS_OMNIBOX
-                                      completion:^{
-                                        [connection_information_
-                                            setStartupParameters:nil];
-                                      }];
+                                      completion:base::CallbackToBlock(
+                                                     std::move(closure))];
 }
 
 BOOL UserActivityBrowserAgent::ProceedWithUserActivity(
@@ -757,14 +758,16 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
         [tab_opener_ URLIsOpenedInRegularMode:webpage_GURL]) {
       // Record metric.
     }
+
+    base::OnceClosure closure =
+        base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                       weak_ptr_factory_.GetWeakPtr());
     [tab_opener_
         dismissModalsAndMaybeOpenSelectedTabInMode:target_mode
                                  withUrlLoadParams:params
                                     dismissOmnibox:YES
-                                        completion:^{
-                                          [connection_information_
-                                              setStartupParameters:nil];
-                                        }];
+                                        completion:base::CallbackToBlock(
+                                                       std::move(closure))];
     return YES;
   }
 
@@ -791,25 +794,23 @@ void UserActivityBrowserAgent::OpenMultipleTabs() {
   BOOL dismiss_omnibox = [[connection_information_ startupParameters]
                              postOpeningAction] != FOCUS_OMNIBOX;
 
-  // Using a weak reference to `connection_information_` to solve a memory leak
-  // issue. `tab_opener_` and `connection_information_` are the same object in
+  // Using a weak reference to `this` to solve a memory leak issue.
+  // `tab_opener_` and `connection_information_` are the same object in
   // some cases (SceneController). This retains the object while the block
   // exists. Then this block is passed around and in some cases it ends up
   // stored in BrowserViewController. This results in a memory leak that looks
   // like this: SceneController -> BrowserViewWrangler -> BrowserCoordinator
   // -> BrowserViewController -> SceneController
-  __weak id<ConnectionInformation> weak_connection_info =
-      connection_information_;
-
+  base::OnceClosure closure =
+      base::BindOnce(&UserActivityBrowserAgent::ClearStartupParameters,
+                     weak_ptr_factory_.GetWeakPtr());
   [tab_opener_
-      dismissModalsAndOpenMultipleTabsWithURLs:weak_connection_info
+      dismissModalsAndOpenMultipleTabsWithURLs:connection_information_
                                                    .startupParameters.URLs
                                inIncognitoMode:incognito_mode
                                 dismissOmnibox:dismiss_omnibox
-                                    completion:^{
-                                      weak_connection_info.startupParameters =
-                                          nil;
-                                    }];
+                                    completion:base::CallbackToBlock(
+                                                   std::move(closure))];
 }
 
 GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
@@ -840,4 +841,8 @@ void UserActivityBrowserAgent::OverloadContinueUserActivityURL(
   BOOL is_active = [[UIApplication sharedApplication] applicationState] ==
                    UIApplicationStateActive;
   ContinueUserActivityURL(webpage_url, is_active, open_existing_tab);
+}
+
+void UserActivityBrowserAgent::ClearStartupParameters() {
+  connection_information_.startupParameters = nil;
 }

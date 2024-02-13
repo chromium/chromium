@@ -710,8 +710,8 @@ class EventBands {
     let eventDetected = false;
     let attributes = opt_attributes;
     const autoDetectRange = !attributes ||
-        typeof attributes.minValue == 'undefined' ||
-        typeof attributes.maxValue == 'undefined';
+        typeof attributes.minValue === 'undefined' ||
+        typeof attributes.maxValue === 'undefined';
     for (let i = 0; i < sources.length; ++i) {
       const source = sources[i];
       let eventIndex = source.getFirstAfter(this.minTimestamp);
@@ -766,7 +766,7 @@ class EventBands {
     for (let i = 0; i < sources.length; ++i) {
       const source = sources[i];
       const eventIndices = eventIndicesForAll[i];
-      if (eventIndices.length == 0) {
+      if (eventIndices.length === 0) {
         continue;
       }
       // Determine type using first element.
@@ -778,7 +778,7 @@ class EventBands {
         const event = source.events[eventIndices[j]];
         const x = this.timestampToOffset(event[1]);
         const y = height * (maxValue - event[2]) * divider;
-        if (!smooth && j != 0) {
+        if (!smooth && j !== 0) {
           points.push([x, lastY]);
         }
         points.push([x, y]);
@@ -857,7 +857,7 @@ class EventBands {
     const input = document.createElement('input');
     input.onclick = handler;
     input.setAttribute('type', type);
-    if (type == 'button') {
+    if (type === 'button') {
       input.setAttribute('value', text);
     }
     if (checked) {
@@ -865,7 +865,7 @@ class EventBands {
     }
     this.title.addContolledItems(input);
     this.title.div.appendChild(input);
-    if (type == 'button') {
+    if (type === 'button') {
       return;
     }
     const label = document.createElement('label');
@@ -946,7 +946,7 @@ class EventBands {
    */
   addGlobal(events, renderType, color, y) {
     let eventIndex = -1;
-    if (typeof y == 'undefined') {
+    if (typeof y === 'undefined') {
       y = 0.5;
     }
     while (true) {
@@ -958,7 +958,7 @@ class EventBands {
       const attributes = events.getEventAttributes(eventIndex);
       const x = this.timestampToOffset(event[1]) + this.bandOffsetX;
       const evColor = color || attributes.color;
-      if (renderType == 'circle') {
+      if (renderType === 'circle') {
         SVG.addCircle(
             this.svg, x, this.height * y, attributes.radius,
             1 /* strokeWidth */, evColor, 'black' /* strokeColor */);
@@ -1068,7 +1068,7 @@ class EventBands {
     // chart.
     yOffset =
         this.updateToolTipForGlobalEvents_(event, svg, eventTimestamp, yOffset);
-    if (yOffset == this.verticalGap) {
+    if (yOffset === this.verticalGap) {
       // Find band for this mouse event.
       for (let i = 0; i < this.bands.length; ++i) {
         if (this.bands[i].top <= eventY && this.bands[i].bottom > eventY) {
@@ -1140,7 +1140,7 @@ class EventBands {
     // events may stick close each other so let diplay up to 3 closest events.
     const distanceMcs = 3 * this.resolution;
     const globalEvents = this.findGlobalEvents_(eventTimestamp, distanceMcs);
-    if (globalEvents.length == 0) {
+    if (globalEvents.length === 0) {
       return yOffset;
     }
 
@@ -1525,7 +1525,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
       });
 
       // In case we have only one main thread add CPU info to process.
-      if (threads.length == 1 && threads[0].tid == pid) {
+      if (threads.length === 1 && threads[0].tid === pid) {
         bands.addBand(
             new Events(eventsPerTid[pid].events, 0, 1), cpuBandHeight, padding);
         bands.addBandSeparator(2 /* padding */);
@@ -1606,7 +1606,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
    * @param {number} timestampTo end time of thread activity.
    */
   addActivityTime_(eventsPerTid, tid, timestampFrom, timestampTo) {
-    if (tid == 0) {
+    if (tid === 0) {
       // Don't process idle thread.
       return;
     }
@@ -1722,7 +1722,7 @@ class Events {
     if (!nextEventTypes) {
       return false;
     }
-    if (nextEventTypes.length == 0) {
+    if (nextEventTypes.length === 0) {
       return true;
     }
     const nextIndex = this.getNextEvent(index, 1 /* direction */);
@@ -1739,7 +1739,7 @@ class Events {
    * @param {number} timestamp to search.
    */
   getClosest(timestamp) {
-    if (this.events.length == 0) {
+    if (this.events.length === 0) {
       return -1;
     }
     if (this.events[0][1] >= timestamp) {
@@ -1752,7 +1752,7 @@ class Events {
     // At this moment |firstBefore| and |firstAfter| points to any event.
     let firstBefore = 0;
     let firstAfter = this.events.length - 1;
-    while (firstBefore + 1 != firstAfter) {
+    while (firstBefore + 1 !== firstAfter) {
       const candidateIndex = Math.ceil((firstBefore + firstAfter) / 2);
       if (this.events[candidateIndex][1] < timestamp) {
         firstBefore = candidateIndex;

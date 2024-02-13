@@ -77,6 +77,8 @@ void SetUpTestsIfPresent() {
 
 void RunTestsIfPresent() {}
 
+void SignalAppLaunched() {}
+
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No artificial delays for tests.
   return base::Seconds(0);

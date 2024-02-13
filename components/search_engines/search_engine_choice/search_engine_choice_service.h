@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/country_codes/country_codes.h"
@@ -70,12 +71,12 @@ class SearchEngineChoiceService : public KeyedService {
   void RecordChoiceMade(ChoiceMadeLocation choice_location,
                         TemplateURLService* template_url_service);
 
+ private:
   // Checks if the search engine choice should be prompted again, based on
   // experiment parameters. If a reprompt is needed, some preferences related to
   // the choice are cleared, which triggers a reprompt on the next page load.
   void PreprocessPrefsForReprompt();
 
- private:
   int GetCountryIdInternal();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -91,6 +92,8 @@ class SearchEngineChoiceService : public KeyedService {
 
   base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
+
+void MarkSearchEngineChoiceCompletedForTesting(PrefService& prefs);
 
 }  // namespace search_engines
 

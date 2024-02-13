@@ -11,8 +11,9 @@
 #include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "build/ios_buildflags.h"
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
 #include "base/functional/bind.h"
 #include "base/ios/scoped_critical_action.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,7 +23,7 @@ namespace base {
 
 namespace internal {
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
 // This class wraps a closure so it can continue to run for a period of time
 // when the application goes to the background by using
 // |ios::ScopedCriticalAction|.
@@ -78,7 +79,7 @@ class PendingCriticalClosure {
 //
 // This function is used automatically for tasks posted to a sequence runner
 // using TaskShutdownBehavior::BLOCK_SHUTDOWN.
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
 inline OnceClosure MakeCriticalClosure(StringPiece task_name,
                                        OnceClosure closure,
                                        bool is_immediate) {
@@ -104,7 +105,7 @@ inline OnceClosure MakeCriticalClosure(const Location& posted_from,
                              is_immediate);
 }
 
-#else  // BUILDFLAG(IS_IOS)
+#else  // BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
 
 inline OnceClosure MakeCriticalClosure(StringPiece task_name,
                                        OnceClosure closure,
@@ -120,7 +121,7 @@ inline OnceClosure MakeCriticalClosure(const Location& posted_from,
   return closure;
 }
 
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_APP_EXTENSION)
 
 }  // namespace base
 

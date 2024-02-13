@@ -16,7 +16,7 @@ class MakoRewriteView : public WebUIBubbleDialogView {
   METADATA_HEADER(MakoRewriteView, WebUIBubbleDialogView)
 
  public:
-  MakoRewriteView(BubbleContentsWrapper* contents_wrapper,
+  MakoRewriteView(WebUIContentsWrapper* contents_wrapper,
                   const gfx::Rect& caret_bounds);
   MakoRewriteView(const MakoRewriteView&) = delete;
   MakoRewriteView& operator=(const MakoRewriteView&) = delete;

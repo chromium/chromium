@@ -18,7 +18,6 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -93,12 +92,6 @@ namespace content {
 
 namespace {
 
-// Controls if browser compositor context can be backed by raster decoder.
-// TODO(crbug.com/1505425): Remove kill switch once rolled out to stable.
-BASE_FEATURE(kUseRasterDecoderForAndroidBrowserContext,
-             "UseRasterDecoderForAndroidBrowserContext",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // NOINLINE to make sure crashes use this for magic signature.
 NOINLINE void FatalSurfaceFailure() {
   LOG(FATAL) << "Fatal surface initialization failure";
@@ -120,9 +113,8 @@ gpu::ContextCreationAttribs GetCompositorContextAttributes(
   attributes.need_alpha = requires_alpha_channel;
 
   attributes.enable_raster_interface = true;
-  attributes.enable_gles2_interface =
-      !base::FeatureList::IsEnabled(kUseRasterDecoderForAndroidBrowserContext);
-  attributes.enable_grcontext = attributes.enable_gles2_interface;
+  attributes.enable_gles2_interface = false;
+  attributes.enable_grcontext = false;
 
   return attributes;
 }
@@ -562,10 +554,6 @@ void CompositorImpl::SetNeedsComposite() {
 
 void CompositorImpl::MaybeCompositeNow() {
   host_->MaybeCompositeNow();
-}
-
-void CompositorImpl::SetNeedsRedraw() {
-  host_->SetNeedsRedraw();
 }
 
 void CompositorImpl::BeginFrame(const viz::BeginFrameArgs& args) {

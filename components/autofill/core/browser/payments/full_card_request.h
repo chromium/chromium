@@ -26,6 +26,7 @@ class AutofillMetricsTest;
 class CreditCardAccessManagerTest;
 class CreditCardCvcAuthenticatorTest;
 class CreditCard;
+class FormFillerTest;
 class PersonalDataManager;
 
 namespace autofill_metrics {
@@ -199,6 +200,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   friend class autofill::autofill_metrics::AutofillMetricsBaseTest;
   friend class autofill::CreditCardAccessManagerTest;
   friend class autofill::CreditCardCvcAuthenticatorTest;
+  friend class autofill::FormFillerTest;
 
   // Retrieves the pan for `card` and invokes
   // `Delegate::OnFullCardRequestSucceeded()` or

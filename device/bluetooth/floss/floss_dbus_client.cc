@@ -290,7 +290,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 // static
 template bool FlossDBusClient::ReadDBusParam<int32_t>(
     dbus::MessageReader* reader,
-    absl::optional<int32_t>* value);
+    std::optional<int32_t>* value);
 
 // static
 template <>
@@ -302,7 +302,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 // static
 template bool FlossDBusClient::ReadDBusParam<std::string>(
     dbus::MessageReader* reader,
-    absl::optional<std::string>* value);
+    std::optional<std::string>* value);
 
 // static
 template <>
@@ -345,7 +345,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 // static
 template bool FlossDBusClient::ReadDBusParam<device::BluetoothUUID>(
     dbus::MessageReader* reader,
-    absl::optional<device::BluetoothUUID>* uuid);
+    std::optional<device::BluetoothUUID>* uuid);
 
 // static
 template <>
@@ -371,7 +371,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 // static
 template bool FlossDBusClient::ReadDBusParam<base::ScopedFD>(
     dbus::MessageReader* reader,
-    absl::optional<base::ScopedFD>* fd);
+    std::optional<base::ScopedFD>* fd);
 
 // static
 template <>
@@ -469,7 +469,7 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
 
 template void FlossDBusClient::WriteDBusParam<uint32_t>(
     dbus::MessageWriter* writer,
-    const absl::optional<uint32_t>& data);
+    const std::optional<uint32_t>& data);
 
 template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,

@@ -1512,12 +1512,14 @@ source_set("unit_tests_v2") {
   sources += rebase_path(blink_core_tests_lcp_critical_path_predictor,
                          "",
                          "lcp_critical_path_predictor")
+  sources += rebase_path(blink_core_tests_loader, "", "loader")
   sources += rebase_path(blink_core_tests_mathml, "", "mathml")
   sources += rebase_path(blink_core_tests_messaging, "", "messaging")
   sources += rebase_path(blink_core_tests_mobile_metrics, "", "mobile_metrics")
   sources += rebase_path(blink_core_tests_navigation_api, "", "navigation_api")
   sources += rebase_path(blink_core_tests_origin_trials, "", "origin_trials")
   sources += rebase_path(blink_core_tests_paint, "", "paint")
+  sources += rebase_path(blink_core_tests_page, "", "page")
   sources +=
       rebase_path(blink_core_tests_permissions_policy, "", "permissions_policy")
   sources +=

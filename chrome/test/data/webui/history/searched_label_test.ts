@@ -4,7 +4,7 @@
 
 import 'chrome://history/history.js';
 
-import {HistorySearchedLabelElement} from 'chrome://history/history.js';
+import type {HistorySearchedLabelElement} from 'chrome://history/history.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 

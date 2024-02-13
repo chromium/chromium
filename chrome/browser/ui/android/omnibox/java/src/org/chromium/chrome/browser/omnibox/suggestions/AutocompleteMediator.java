@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactoryImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryClustersProcessor.OpenHistoryClustersDelegate;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -54,6 +56,7 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -935,15 +938,32 @@ class AutocompleteMediator
                 finishInteraction();
             }
 
+            var autocompleteLoadCallback =
+                    new AutocompleteLoadCallback() {
+                        @Override
+                        public void onLoadUrl(LoadUrlParams params, LoadUrlResult loadUrlResult) {
+                            if (loadUrlResult.navigationHandle != null) {
+                                mAutocomplete.createNavigationObserver(
+                                        loadUrlResult.navigationHandle, suggestion);
+                            }
+                        }
+                    };
+
             if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
-                mDelegate.loadUrlWithPostData(
-                        url.getSpec(),
-                        transition,
-                        inputStart,
-                        suggestion.getPostContentType(),
-                        suggestion.getPostData());
+                mDelegate.loadUrl(
+                        new OmniboxLoadUrlParams.Builder(url.getSpec(), transition)
+                                .setInputStartTimestamp(inputStart)
+                                .setpostDataAndType(
+                                        suggestion.getPostData(), suggestion.getPostContentType())
+                                .setAutocompleteLoadCallback(autocompleteLoadCallback)
+                                .build());
             } else {
-                mDelegate.loadUrl(url.getSpec(), transition, inputStart, openInNewTab);
+                mDelegate.loadUrl(
+                        new OmniboxLoadUrlParams.Builder(url.getSpec(), transition)
+                                .setInputStartTimestamp(inputStart)
+                                .setOpenInNewTab(openInNewTab)
+                                .setAutocompleteLoadCallback(autocompleteLoadCallback)
+                                .build());
             }
 
             if (mClearFocusAfterNavigationAsynchronously) {

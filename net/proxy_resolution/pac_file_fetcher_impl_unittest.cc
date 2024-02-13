@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/pac_file_fetcher_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -49,7 +50,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsError;
 using net::test::IsOk;

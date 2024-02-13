@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that third-party cookies are blocked for WebSockets even when the WebSocket's URL's domain is an exact match for the domain of its initiator.
-  assert_equals: expected "DONE: (none)" but got "DONE: samesite-none=value"
-Harness: the test ran to completion.

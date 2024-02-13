@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/net_internals/net_internals_ui_browsertest.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/command_line.h"
@@ -48,6 +49,7 @@
 #include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/transport_security_state.h"
+#include "services/network/public/cpp/request_destination.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -60,6 +62,25 @@ base::Time ToTime(const char* time_string) {
   base::Time time;
   CHECK(base::Time::FromString(time_string, &time));
   return time;
+}
+
+std::vector<network::mojom::RequestDestination> ToRequestDestinationList(
+    const base::Value::List* list) {
+  std::vector<network::mojom::RequestDestination> result;
+  if (!list) {
+    return result;
+  }
+  for (const auto& value : *list) {
+    CHECK(value.is_string());
+    std::optional<network::mojom::RequestDestination> dest =
+        network::RequestDestinationFromString(
+            value.GetString(),
+            network::EmptyRequestDestinationOption::kUseTheEmptyString);
+    CHECK(dest);
+    result.push_back(*dest);
+  }
+  std::sort(result.begin(), result.end());
+  return result;
 }
 
 // Notifies the NetInternalsTest.Task JS object of the DNS lookup result once
@@ -390,12 +411,15 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
   base::Value::Dict dict = base::test::ParseJsonDict(*dictionary_json_string);
   net::SHA256HashValue hash_value;
   base::HexStringToSpan(*dict.FindString("hash"), hash_value.data);
+  const std::string* id_string = dict.FindString("id");
   network_context_for_testing_.RegisterTestSharedDictionary(
       net::SharedDictionaryIsolationKey(
           url::Origin::Create(GURL(*dict.FindString("frame_origin"))),
           net::SchemefulSite(GURL(*dict.FindString("top_frame_site")))),
       network::mojom::SharedDictionaryInfo::New(
-          *dict.FindString("match"), GURL(*dict.FindString("dictionary_url")),
+          *dict.FindString("match"),
+          ToRequestDestinationList(dict.FindList("match_dest")),
+          id_string ? *id_string : "", GURL(*dict.FindString("dictionary_url")),
           ToTime(dict.FindString("response_time")->c_str()),
           base::Seconds(*dict.FindInt("expiration")),
           ToTime(dict.FindString("last_used_time")->c_str()),

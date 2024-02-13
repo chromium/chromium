@@ -49,7 +49,8 @@ constexpr auto kPopupItemTypesUsingLeadingIcons =
          PopupItemId::kPasswordAccountStorageEmpty,
          PopupItemId::kPasswordAccountStorageOptIn,
          PopupItemId::kPasswordAccountStorageReSignin,
-         PopupItemId::kPasswordAccountStorageOptInAndGenerate});
+         PopupItemId::kPasswordAccountStorageOptInAndGenerate,
+         PopupItemId::kViewPasswordDetails});
 
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
@@ -105,6 +106,9 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
           suggestion.main_text, ShouldApplyNewAutofillPopupStyle()
                                     ? views::style::TextStyle::STYLE_BODY_3
                                     : views::style::TextStyle::STYLE_SECONDARY);
+  if (ShouldApplyNewAutofillPopupStyle()) {
+    main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
+  }
   main_text_label->SetEnabled(!suggestion.is_loading);
   view->TrackLabel(view->AddChildView(std::move(main_text_label)));
 
@@ -326,9 +330,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case PopupItemId::kMixedFormMessage:
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
       NOTREACHED_NORETURN();
-    case PopupItemId::kUsernameEntry:
     case PopupItemId::kPasswordEntry:
-    case PopupItemId::kAccountStorageUsernameEntry:
     case PopupItemId::kAccountStoragePasswordEntry:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,

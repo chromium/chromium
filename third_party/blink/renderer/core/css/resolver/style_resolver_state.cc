@@ -210,10 +210,19 @@ void StyleResolverState::SetLayoutParentStyle(
 void StyleResolverState::LoadPendingResources() {
   if (pseudo_request_type_ == StyleRequest::kForComputedStyle ||
       (ParentStyle() && ParentStyle()->IsEnsuredInDisplayNone()) ||
-      (StyleBuilder().Display() == EDisplay::kNone &&
-       !GetElement().LayoutObjectIsNeeded(style_builder_->GetDisplayStyle())) ||
       StyleBuilder().IsEnsuredOutsideFlatTree()) {
     return;
+  }
+  if (StyleBuilder().Display() == EDisplay::kNone &&
+      !GetElement().LayoutObjectIsNeeded(style_builder_->GetDisplayStyle())) {
+    // Don't load resources for display:none elements unless we are animating
+    // display. If we are animating display, we might otherwise have ended up
+    // caching a base style with pending images.
+    Element* animating_element = GetAnimatingElement();
+    if (!animating_element || !CSSAnimations::IsAnimatingDisplayProperty(
+                                  animating_element->GetElementAnimations())) {
+      return;
+    }
   }
 
   if (StyleBuilder().StyleType() == kPseudoIdTargetText) {

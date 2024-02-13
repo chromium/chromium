@@ -16,7 +16,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   var sourcesNavigator = new Sources.SourcesNavigator.NetworkNavigatorView();
   sourcesNavigator.show(UI.InspectorView.InspectorView.instance().element);
 
-  Common.Settings.moduleSetting('cssSourceMapsEnabled').set(true);
+  Common.Settings.moduleSetting('css-source-maps-enabled').set(true);
   await TestRunner.addStylesheetTag('resources/sourcemap-style-1.css');
   await TestRunner.addStylesheetTag('resources/sourcemap-style-2.css');
 
@@ -28,11 +28,11 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('disableCSSSourceMaps');
-  Common.Settings.moduleSetting('cssSourceMapsEnabled').set(false);
+  Common.Settings.moduleSetting('css-source-maps-enabled').set(false);
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('enableCSSSourceMaps');
-  Common.Settings.moduleSetting('cssSourceMapsEnabled').set(true);
+  Common.Settings.moduleSetting('css-source-maps-enabled').set(true);
   await Promise.all([
     TestRunner.waitForUISourceCode('sourcemap-style-1.scss'), TestRunner.waitForUISourceCode('sourcemap-style-2.scss')
   ]);

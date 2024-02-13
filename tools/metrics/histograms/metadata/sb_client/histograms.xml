@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
-    expires_after="2024-06-08">
+    expires_after="2024-08-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -369,7 +369,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.Warning.DownloadIsHttps.{DangerType}.{Action}"
-    enum="BooleanHttps" expires_after="2024-06-09">
+    enum="BooleanHttps" expires_after="2024-08-11">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -420,7 +420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.{Encryption}DeepScanEvent3"
-    enum="SBDeepScanEvent" expires_after="2024-06-02">
+    enum="SBDeepScanEvent" expires_after="2024-08-04">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -606,13 +606,35 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ImageEmbeddingModelVersionMatch"
-    enum="BooleanMatched" expires_after="2024-06-05">
+    enum="BooleanMatched" expires_after="2024-08-04">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether the image embedding model version is matched or not so that the
     correctly paired trigger and image embedidng model are sent together to the
     renderer process
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.LiveClientPhishingModelCountAtCreation"
+    units="models" expires_after="2024-04-01">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Record how many ClientPhishingModels are alive. This is logged each time a
+    new ClientPhishingModel is created. This is temporarily logged to
+    investigate https://crbug.com/1515348.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.LiveScorersAtCreation" units="models"
+    expires_after="2024-04-01">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Record how many Scorers are alive within a single renderer process. This is
+    logged each time a new Scorer is created. This is temporarily logged to
+    investigate https://crbug.com/1515348.
   </summary>
 </histogram>
 
@@ -630,7 +652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ModelDynamicUpdateSuccess"
-    enum="BooleanSuccess" expires_after="2024-06-08">
+    enum="BooleanSuccess" expires_after="2024-08-11">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -729,7 +751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.RTLookupForceRequest"
-    enum="BooleanForceRequest" expires_after="2024-06-02">
+    enum="BooleanForceRequest" expires_after="2024-08-04">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

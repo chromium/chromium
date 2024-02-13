@@ -53,19 +53,17 @@
         "name": "getAll",
         "type": "function",
         "description": "Gets the extension's current set of permissions.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-               {
-                "name": "permissions",
-                "$ref": "Permissions",
-                "description": "The extension's active permissions."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+             {
+              "name": "permissions",
+              "$ref": "Permissions",
+              "description": "The extension's active permissions."
+            }
+          ]
+        }
       },
       {
         "name": "contains",
@@ -75,19 +73,18 @@
           {
             "name": "permissions",
             "$ref": "Permissions"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "boolean",
-                "description": "True if the extension has the specified permissions."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "boolean",
+              "description": "True if the extension has the specified permissions."
+            }
+          ]
+        }
       },
       {
         "name": "request",
@@ -97,20 +94,19 @@
           {
             "name": "permissions",
             "$ref": "Permissions"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "granted",
-                "type": "boolean",
-                "description": "True if the user granted the specified permissions."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "granted",
+              "type": "boolean",
+              "description": "True if the user granted the specified permissions."
+            }
+          ]
+        }
       },
       {
         "name": "remove",
@@ -120,20 +116,19 @@
           {
             "name": "permissions",
             "$ref": "Permissions"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "removed",
-                "type": "boolean",
-                "description": "True if the permissions were removed."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "removed",
+              "type": "boolean",
+              "description": "True if the permissions were removed."
+            }
+          ]
+        }
       }
     ]
   }

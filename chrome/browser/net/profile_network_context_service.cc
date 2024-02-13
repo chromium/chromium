@@ -1133,6 +1133,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
             .InitWithNewPipeAndPassReceiver(),
         network_context_params->ip_protection_proxy_delegate
             .InitWithNewPipeAndPassRemote());
+    network_context_params->enable_ip_protection =
+        ipp_config_provider->IsIpProtectionEnabled();
   }
 
   network_context_params->afp_block_list_experiment_enabled =

@@ -44,7 +44,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  base::UmaHistogramEnumeration("FirstRun.Stage",
+  base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   [self recordDefaultBrowserPromoShown];
 
@@ -67,7 +67,8 @@
 
 - (void)didTapPrimaryActionButton {
   base::UmaHistogramEnumeration(
-      "FirstRun.Stage", first_run::kDefaultBrowserScreenCompletionWithSettings);
+      first_run::kFirstRunStageHistogram,
+      first_run::kDefaultBrowserScreenCompletionWithSettings);
   LogUserInteractionWithFirstRunPromo(YES);
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
@@ -78,7 +79,7 @@
 
 - (void)didTapSecondaryActionButton {
   base::UmaHistogramEnumeration(
-      "FirstRun.Stage",
+      first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithoutSettings);
   LogUserInteractionWithFirstRunPromo(NO);
   [self.delegate screenWillFinishPresenting];

@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
@@ -211,6 +212,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   self.infobarButton.accessibilityIdentifier =
       kInfobarBannerAcceptButtonIdentifier;
   self.infobarButton.pointerInteractionEnabled = YES;
+  self.infobarButton.layer.cornerRadius = kBannerViewCornerRadius;
+  self.infobarButton.clipsToBounds = YES;
   self.infobarButton.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {
@@ -234,7 +237,8 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   // Add labels.
   [containerStack addArrangedSubview:labelsStackView];
     // Open Modal Button setup.
-  self.openModalButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  self.openModalButton =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   UIImage* gearImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol,
                                                   kInfobarSymbolPointSize);
 
@@ -257,6 +261,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   // Hide open modal button if user shouldn't be allowed to open the modal.
   self.openModalButton.hidden = !self.presentsModal;
   self.openModalButton.pointerInteractionEnabled = YES;
+  self.openModalButton.layer.cornerRadius = gearImage.size.width / 2;
   self.openModalButton.pointerStyleProvider =
       CreateDefaultEffectCirclePointerStyleProvider();
 

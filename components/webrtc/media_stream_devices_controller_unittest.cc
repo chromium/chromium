@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "components/webrtc/media_stream_devices_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,6 +54,30 @@ class FakeEnumerator : public webrtc::MediaStreamDeviceEnumeratorImpl {
     return video_capture_devices_;
   }
 
+  const std::optional<blink::MediaStreamDevice>
+  GetPreferredAudioDeviceForBrowserContext(
+      content::BrowserContext* context,
+      const std::vector<std::string>& eligible_device_ids) const override {
+    auto devices = webrtc::FilterMediaDevices(GetAudioCaptureDevices(),
+                                              eligible_device_ids);
+    if (devices.empty()) {
+      return std::nullopt;
+    }
+    return devices.back();
+  }
+
+  const std::optional<blink::MediaStreamDevice>
+  GetPreferredVideoDeviceForBrowserContext(
+      content::BrowserContext* context,
+      const std::vector<std::string>& eligible_device_ids) const override {
+    auto devices = webrtc::FilterMediaDevices(GetVideoCaptureDevices(),
+                                              eligible_device_ids);
+    if (devices.empty()) {
+      return std::nullopt;
+    }
+    return devices.back();
+  }
+
  private:
   const blink::MediaStreamDevices audio_capture_devices_;
   const blink::MediaStreamDevices video_capture_devices_;
@@ -68,6 +93,16 @@ class MockPermissionController : public content::MockPermissionController {
        base::OnceCallback<
            void(const std::vector<blink::mojom::PermissionStatus>&)> callback));
 };
+
+std::vector<std::string> GetIds(const blink::MediaStreamDevices& devices,
+                                size_t start_index) {
+  CHECK_LT(start_index, devices.size());
+  std::vector<std::string> device_ids;
+  std::transform(devices.begin() + start_index, devices.end(),
+                 std::back_inserter(device_ids),
+                 [](const auto& device) { return device.id; });
+  return device_ids;
+}
 
 }  // namespace
 
@@ -120,19 +155,20 @@ TEST_F(MediaStreamDevicesControllerTest, RequestPermissions) {
         };
       });
 
-  const auto kRequestedAudioCaptureDevice =
-      enumerator_.GetAudioCaptureDevices().back();
-  const auto kRequestedVideoCaptureDevice =
-      enumerator_.GetVideoCaptureDevices().back();
+  // Request all but the first device to exercise filtering.
+  const auto kRequestedAudioCaptureDeviceIds =
+      GetIds(enumerator_.GetAudioCaptureDevices(), /*start_index=*/1);
+  const auto kRequestedVideoCaptureDeviceIds =
+      GetIds(enumerator_.GetVideoCaptureDevices(), /*start_index=*/1);
 
   content::PermissionRequestDescription expected_description{
       {blink::PermissionType::AUDIO_CAPTURE,
        blink::PermissionType::VIDEO_CAPTURE},
       false};
-  expected_description.requested_audio_capture_device_ids = {
-      kRequestedAudioCaptureDevice.id};
-  expected_description.requested_video_capture_device_ids = {
-      kRequestedVideoCaptureDevice.id};
+  expected_description.requested_audio_capture_device_ids =
+      kRequestedAudioCaptureDeviceIds;
+  expected_description.requested_video_capture_device_ids =
+      kRequestedVideoCaptureDeviceIds;
 
   EXPECT_CALL(*mock_permission_controller,
               RequestPermissionsFromCurrentDocument(render_frame_host_.get(),
@@ -157,8 +193,8 @@ TEST_F(MediaStreamDevicesControllerTest, RequestPermissions) {
           /*page_request_id=*/0, /*url_origin=*/origin_, /*user_gesture=*/false,
           /*request_type=*/
           blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
-          /*requested_audio_device_ids=*/{kRequestedAudioCaptureDevice.id},
-          /*requested_video_device_ids=*/{kRequestedVideoCaptureDevice.id},
+          /*requested_audio_device_ids=*/kRequestedAudioCaptureDeviceIds,
+          /*requested_video_device_ids=*/kRequestedVideoCaptureDeviceIds,
           blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
           /*disable_local_echo=*/false,
@@ -176,9 +212,9 @@ TEST_F(MediaStreamDevicesControllerTest, RequestPermissions) {
   auto [result, stream_devices] = result_future.Take();
   ASSERT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
   ASSERT_TRUE(stream_devices->audio_device.has_value());
-  EXPECT_TRUE(
-      stream_devices->audio_device->IsSameDevice(kRequestedAudioCaptureDevice));
+  EXPECT_TRUE(stream_devices->audio_device->IsSameDevice(
+      enumerator_.GetAudioCaptureDevices().back()));
   ASSERT_TRUE(stream_devices->video_device.has_value());
-  EXPECT_TRUE(
-      stream_devices->video_device->IsSameDevice(kRequestedVideoCaptureDevice));
+  EXPECT_TRUE(stream_devices->video_device->IsSameDevice(
+      enumerator_.GetVideoCaptureDevices().back()));
 }

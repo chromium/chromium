@@ -66,9 +66,8 @@ using ::ash::disks::FakeDiskMountManager;
 using base::FilePath;
 
 std::vector<std::string> arc_volume_ids = {
-    arc::kImagesRootDocumentId, arc::kVideosRootDocumentId,
-    arc::kAudioRootDocumentId, arc::kDocumentsRootDocumentId,
-    "android_files:0"};
+    arc::kImagesRootId, arc::kVideosRootId, arc::kAudioRootId,
+    arc::kDocumentsRootId, "android_files:0"};
 
 class LoggingObserver : public VolumeManagerObserver {
  public:

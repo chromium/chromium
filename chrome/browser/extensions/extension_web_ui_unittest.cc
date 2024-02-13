@@ -36,8 +36,9 @@
 #include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 #endif
 
 using extensions::mojom::ManifestLocation;
@@ -82,7 +83,8 @@ class ExtensionWebUITest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif
 };
 

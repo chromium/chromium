@@ -18,6 +18,7 @@ class AccountId;
 namespace ash::test {
 
 class LocalAuthenticationDialogActor;
+class AuthErrorBubbleActor;
 
 class FullScreenAuthSurface {
  public:
@@ -26,9 +27,13 @@ class FullScreenAuthSurface {
 
   virtual void SelectUserPod(const AccountId& account_id) = 0;
   virtual void AddNewUser() = 0;
+  virtual void SubmitPassword(const AccountId& account_id,
+                              const std::string& password) = 0;
 
   virtual std::unique_ptr<LocalAuthenticationDialogActor>
   WaitForLocalAuthenticationDialog() = 0;
+
+  virtual std::unique_ptr<AuthErrorBubbleActor> WaitForAuthErrorBubble() = 0;
 };
 
 class OobePageActor {
@@ -94,6 +99,17 @@ class PasswordUpdatedPageActor : public OobePageActor {
   void ConfirmPasswordUpdate();
 };
 
+class LocalPasswordSetupPageActor : public OobePageActor {
+ public:
+  LocalPasswordSetupPageActor();
+  ~LocalPasswordSetupPageActor() override;
+
+  void TypeFirstPassword(const std::string& password);
+  void TypeConfirmPassword(const std::string& password);
+  void GoBack();
+  void Submit();
+};
+
 class LocalAuthenticationDialogActor {
  public:
   LocalAuthenticationDialogActor();
@@ -102,6 +118,18 @@ class LocalAuthenticationDialogActor {
   bool IsVisible();
   void CancelDialog();
   void SubmitPassword(const std::string& password);
+  void WaitUntilDismissed();
+};
+
+class AuthErrorBubbleActor {
+ public:
+  AuthErrorBubbleActor();
+  ~AuthErrorBubbleActor();
+
+  bool IsVisible();
+  void Hide();
+  void PressRecoveryButton();
+  void PressLearnMoreButton();
 };
 
 std::unique_ptr<FullScreenAuthSurface> OnLoginScreen();
@@ -113,6 +141,8 @@ AwaitPasswordChangedUI();
 [[nodiscard]] std::unique_ptr<PasswordUpdatedPageActor>
 AwaitPasswordUpdatedUI();
 [[nodiscard]] std::unique_ptr<UserSelectionPageActor> AwaitNewUserSelectionUI();
+[[nodiscard]] std::unique_ptr<LocalPasswordSetupPageActor>
+AwaitLocalPasswordSetupUI();
 
 // Password change scenario
 // page for entering old password
@@ -141,6 +171,15 @@ void PasswordUpdateNoticeNextAction();
 void PasswordUpdateNoticeExpectDone();
 void PasswordUpdateNoticeDoneAction();
 
+void LocalPasswordSetupExpectNextButton();
+void LocalPasswordSetupNextAction();
+void LocalPasswordSetupExpectBackButton();
+void LocalPasswordSetupBackAction();
+void LocalPasswordSetupExpectFirstInput();
+void LocalPasswordSetupTypeFirstPassword(const std::string& pw);
+void LocalPasswordSetupExpectConfirmInput();
+void LocalPasswordSetupTypeConfirmPassword(const std::string& pw);
+
 std::unique_ptr<test::TestConditionWaiter> RecoveryPasswordUpdatedPageWaiter();
 void RecoveryPasswordUpdatedProceedAction();
 
@@ -151,6 +190,11 @@ void RecoveryErrorFallbackAction();
 std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter();
 
 std::unique_ptr<test::TestConditionWaiter> LocalAuthenticationDialogWaiter();
+std::unique_ptr<test::TestConditionWaiter>
+LocalAuthenticationDialogDismissWaiter();
+
+std::unique_ptr<test::TestConditionWaiter> AuthErrorBubbleWaiter();
+std::unique_ptr<test::TestConditionWaiter> AuthErrorBubbleDismissWaiter();
 
 }  // namespace ash::test
 

@@ -5,11 +5,11 @@
 #ifndef UI_VIEWS_INTERACTION_POLLING_VIEW_OBSERVER_H_
 #define UI_VIEWS_INTERACTION_POLLING_VIEW_OBSERVER_H_
 
+#include <optional>
 #include <type_traits>
 #include <utility>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/polling_state_observer.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -21,8 +21,8 @@ namespace views::test {
 
 // Polling static observer that repeatedly calls `poll_view_callback` on a View
 // of type `V` with `view_id` in `context` (or any context if not specified) to
-// determine the value of the state, which is of `type absl::optional<T>`.
-// The state value `absl::nullopt` corresponds to no matching view present.
+// determine the value of the state, which is of `type std::optional<T>`.
+// The state value `std::nullopt` corresponds to no matching view present.
 //
 // Designed for use with the `InteractiveViewsTestApi::PollView()` testing verb.
 //
@@ -37,10 +37,10 @@ class PollingViewObserver : public ui::test::PollingElementStateObserver<T> {
   template <typename C>
   PollingViewObserver(
       ui::ElementIdentifier view_id,
-      absl::optional<ui::ElementContext> context,
+      std::optional<ui::ElementContext> context,
       C&& poll_view_callback,
       base::TimeDelta polling_interval = ui::test::PollingStateObserver<
-          absl::optional<T>>::kDefaultPollingInterval)
+          std::optional<T>>::kDefaultPollingInterval)
       : ui::test::PollingElementStateObserver<T>(
             view_id,
             context,
@@ -62,8 +62,8 @@ class PollingViewObserver : public ui::test::PollingElementStateObserver<T> {
 
 // Polling static observer that repeatedly calls `property` on a View of type
 // of type `V` with `view_id` in `context` (or any context if not specified) to
-// determine the value of the state, which is of `type absl::optional<T>`.
-// The state value `absl::nullopt` corresponds to no matching view present.
+// determine the value of the state, which is of `type std::optional<T>`.
+// The state value `std::nullopt` corresponds to no matching view present.
 //
 // Designed for use with the `InteractiveViewsTestApi::PollViewProperty()`
 // testing verb.
@@ -77,10 +77,10 @@ class PollingViewPropertyObserver : public PollingViewObserver<T, V> {
   template <typename R>
   PollingViewPropertyObserver(
       ui::ElementIdentifier view_id,
-      absl::optional<ui::ElementContext> context,
+      std::optional<ui::ElementContext> context,
       R (V::*property)() const,
       base::TimeDelta polling_interval = ui::test::PollingStateObserver<
-          absl::optional<T>>::kDefaultPollingInterval)
+          std::optional<T>>::kDefaultPollingInterval)
       : PollingViewObserver<T, V>(
             view_id,
             context,

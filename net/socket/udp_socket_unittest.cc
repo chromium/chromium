@@ -120,12 +120,20 @@ class UDPSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 
   std::string ReadSocket(UDPClientSocket* socket) {
+    return ReadSocket(socket, DSCP_DEFAULT, ECN_DEFAULT);
+  }
+
+  std::string ReadSocket(UDPClientSocket* socket,
+                         DiffServCodePoint dscp,
+                         EcnCodePoint ecn) {
     TestCompletionCallback callback;
 
     int rv = socket->Read(buffer_.get(), kMaxRead, callback.callback());
     rv = callback.GetResult(rv);
     if (rv < 0)
       return std::string();
+    EXPECT_EQ(socket->GetLastTos().dscp, dscp);
+    EXPECT_EQ(socket->GetLastTos().ecn, ecn);
     return std::string(buffer_->data(), rv);
   }
 
@@ -867,6 +875,46 @@ TEST_F(UDPSocketTest, SetDSCP) {
   client.Close();
 }
 
+// Send DSCP + ECN marked packets from server to client and verity the TOS
+// bytes that arrive.
+#if !BUILDFLAG(IS_WIN)  // TODO(crbug.com/1521435): No windows support yet.
+TEST_F(UDPSocketTest, VerifyDscpAndEcnExchange) {
+  IPEndPoint server_address(IPAddress::IPv4Localhost(), 0);
+  UDPServerSocket server(nullptr, NetLogSource());
+  UDPClientSocket client(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
+  server.AllowAddressReuse();
+  ASSERT_THAT(server.Listen(server_address), IsOk());
+  ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
+  client.Connect(server_address);
+  client.SetRecvTos();
+  IPEndPoint client_address;
+  client.GetLocalAddress(&client_address);
+
+  server.SetTos(DSCP_AF41, ECN_ECT1);
+  SendToSocket(&server, "foo", client_address);
+  ReadSocket(&client, DSCP_AF41, ECN_ECT1);
+
+  server.SetTos(DSCP_CS2, ECN_ECT0);
+  SendToSocket(&server, "foo", client_address);
+  ReadSocket(&client, DSCP_CS2, ECN_ECT0);
+
+  server.SetTos(DSCP_NO_CHANGE, ECN_CE);
+  SendToSocket(&server, "foo", client_address);
+  ReadSocket(&client, DSCP_CS2, ECN_CE);
+
+  server.SetTos(DSCP_AF41, ECN_NO_CHANGE);
+  SendToSocket(&server, "foo", client_address);
+  ReadSocket(&client, DSCP_AF41, ECN_CE);
+
+  server.SetTos(DSCP_NO_CHANGE, ECN_NO_CHANGE);
+  SendToSocket(&server, "foo", client_address);
+  ReadSocket(&client, DSCP_AF41, ECN_CE);
+
+  server.Close();
+  client.Close();
+}
+#endif
+
 TEST_F(UDPSocketTest, ConnectUsingNetwork) {
   // The specific value of this address doesn't really matter, and no
   // server needs to be running here. The test only needs to call
@@ -1422,6 +1470,8 @@ TEST_F(UDPSocketTest, ReadWithSocketOptimizationTruncation) {
   TestCompletionCallback callback;
   int rv = client.Read(buffer_.get(), kMaxRead, callback.callback());
   EXPECT_EQ(ERR_MSG_TOO_BIG, callback.GetResult(rv));
+  EXPECT_EQ(client.GetLastTos().dscp, DSCP_DEFAULT);
+  EXPECT_EQ(client.GetLastTos().ecn, ECN_DEFAULT);
 
   // 2. The second message is |right_length_message|. Its size is
   // one byte smaller than the size of the buffer. In that case, the client
@@ -1430,6 +1480,8 @@ TEST_F(UDPSocketTest, ReadWithSocketOptimizationTruncation) {
   rv = callback.GetResult(rv);
   EXPECT_EQ(static_cast<int>(right_length_message.length()), rv);
   EXPECT_EQ(right_length_message, std::string(buffer_->data(), rv));
+  EXPECT_EQ(client.GetLastTos().dscp, DSCP_DEFAULT);
+  EXPECT_EQ(client.GetLastTos().ecn, ECN_DEFAULT);
 
   // 3. The third message is |exact_length_message|. Its size is equal to
   // the read buffer size. In that case, the client expects to get
@@ -1443,6 +1495,8 @@ TEST_F(UDPSocketTest, ReadWithSocketOptimizationTruncation) {
   // |ERR_MSG_TOO_BIG|.
   rv = client.Read(buffer_.get(), kMaxRead, callback.callback());
   rv = callback.GetResult(rv);
+  EXPECT_EQ(client.GetLastTos().dscp, DSCP_DEFAULT);
+  EXPECT_EQ(client.GetLastTos().ecn, ECN_DEFAULT);
 #if BUILDFLAG(IS_POSIX)
   EXPECT_EQ(ERR_MSG_TOO_BIG, rv);
 #else

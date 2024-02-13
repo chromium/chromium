@@ -17,7 +17,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   TestRunner.addSniffer(BindingsModule.IgnoreListManager.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step1);
   var frameworkRegexString = '.*';
-  Common.Settings.settingForTest('skipStackFramesPattern').set('.*');
+  Common.Settings.settingForTest('skip-stack-frames-pattern').set('.*');
 
   async function step1() {
     TestRunner.addResult('Evaluating script with source map');

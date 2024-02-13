@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_AVATAR_TOOLBAR_BUTTON_H_
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,48 +20,26 @@ class AvatarToolbarButtonDelegate;
 class Browser;
 class BrowserView;
 
+// This class takes care the Profile Avatar Button.
+// Primarily applies UI configuration.
+// It's data (text, icon, etc...) content are computed through the
+// `AvatarToolbarButtonDelegate`, when relying on Chrome and Profile changes in
+// order to adapt the expected content shown in the button.
 class AvatarToolbarButton : public ToolbarButton {
   METADATA_HEADER(AvatarToolbarButton, ToolbarButton)
 
  public:
-  // States of the button ordered in priority of getting displayed.
-  enum class State {
-    kIncognitoProfile,
-    kGuestSession,
-    kSignInTextShowing,
-    kAnimatedUserIdentity,
-    kSyncPaused,
-    // An error in sync-the-feature or sync-the-transport.
-    kSyncError,
-    kNormal
-  };
-
-  class Observer {
-   public:
-    virtual ~Observer() = default;
-
-    virtual void OnAvatarHighlightAnimationFinished() = 0;
-  };
-
   explicit AvatarToolbarButton(BrowserView* browser);
   AvatarToolbarButton(const AvatarToolbarButton&) = delete;
   AvatarToolbarButton& operator=(const AvatarToolbarButton&) = delete;
   ~AvatarToolbarButton() override;
 
   void UpdateText();
-  std::optional<SkColor> GetHighlightTextColor() const override;
-  std::optional<SkColor> GetHighlightBorderColor() const override;
-  bool ShouldPaintBorder() const override;
-  bool ShouldBlendHighlightColor() const override;
 
-  void ShowAvatarHighlightAnimation();
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)
-  // Expands the pill to show the signin text.
-  void ShowSignInText();
-  // Contracts the pill so that no text is shown.
-  void HideSignInText();
-#endif
+  // Expands the pill to show the intercept text.
+  // Returns a callback to be used when the shown text should be hidden.
+  [[nodiscard]] base::ScopedClosureRunner ShowExplicitText(
+      const std::u16string& text);
 
   // Control whether the button action is active or not.
   // One reason to disable the action; when a bubble is shown from this button
@@ -69,13 +48,11 @@ class AvatarToolbarButton : public ToolbarButton {
   void SetButtonActionDisabled(bool disabled);
   bool IsButtonActionDisabled() const;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
-  void NotifyHighlightAnimationFinished();
-
   // Attempts showing the In-Produce-Help for profile Switching.
   void MaybeShowProfileSwitchIPH();
+
+  // Returns true if a text is set and is visible.
+  bool IsLabelPresentAndVisible() const;
 
   // ToolbarButton:
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -85,14 +62,10 @@ class AvatarToolbarButton : public ToolbarButton {
   void Layout(PassKey) override;
   int GetIconSize() const override;
   SkColor GetForegroundColor(ButtonState state) const override;
-
-  // Returns true if a text is set and is visible.
-  bool IsLabelPresentAndVisible() const;
-
-  // Updates the inkdrop highlight and ripple properties depending on the state
-  // and
-  // whether the chip is expanded.
-  void UpdateInkdrop();
+  std::optional<SkColor> GetHighlightTextColor() const override;
+  std::optional<SkColor> GetHighlightBorderColor() const override;
+  bool ShouldPaintBorder() const override;
+  bool ShouldBlendHighlightColor() const override;
 
   // Can be used in tests to reduce or remove the delay before showing the IPH.
   static void SetIPHMinDelayAfterCreationForTesting(base::TimeDelta delay);
@@ -106,14 +79,14 @@ class AvatarToolbarButton : public ToolbarButton {
 
   void ButtonPressed();
 
-  std::u16string GetAvatarTooltipText() const;
-  ui::ImageModel GetAvatarIcon(ButtonState state,
-                               const gfx::Image& profile_identity_image) const;
-
   void SetInsets();
 
   // Updates the layout insets depending on whether it is a chip or a button.
   void UpdateLayoutInsets();
+
+  // Updates the inkdrop highlight and ripple properties depending on the state
+  // and whether the chip is expanded.
+  void UpdateInkdrop();
 
   std::unique_ptr<AvatarToolbarButtonDelegate> delegate_;
 
@@ -130,8 +103,6 @@ class AvatarToolbarButton : public ToolbarButton {
   // Setting this to true will stop the button reaction but the button will
   // remain in active state, not affecting it's UI in any way.
   bool button_action_disabled_ = false;
-
-  base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::WeakPtrFactory<AvatarToolbarButton> weak_ptr_factory_{this};
 };

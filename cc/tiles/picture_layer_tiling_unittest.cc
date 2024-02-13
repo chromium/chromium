@@ -1142,7 +1142,7 @@ TEST_F(PictureLayerTilingIteratorTest, GiantRect) {
 
   client_.SetTileSize(tile_size);
   scoped_refptr<FakeRasterSource> raster_source =
-      FakeRasterSource::CreateEmpty(layer_size);
+      FakeRasterSource::CreateFilled(layer_size);
   tiling_ = TestablePictureLayerTiling::Create(
       PENDING_TREE, gfx::AxisTransform2d(contents_scale, gfx::Vector2dF()),
       raster_source, &client_, LayerTreeSettings());

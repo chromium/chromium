@@ -14,11 +14,8 @@
 
 MultiProfileCredentialsFilter::MultiProfileCredentialsFilter(
     password_manager::PasswordManagerClient* client,
-    SyncServiceFactoryFunction sync_service_factory_function,
     DiceWebSigninInterceptor* dice_web_signin_interceptor)
-    : password_manager::SyncCredentialsFilter(
-          client,
-          std::move(sync_service_factory_function)),
+    : password_manager::SyncCredentialsFilter(client),
       dice_web_signin_interceptor_(dice_web_signin_interceptor) {}
 
 bool MultiProfileCredentialsFilter::ShouldSave(

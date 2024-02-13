@@ -10,18 +10,30 @@ import {FakeChromeEvent} from './fake_chrome_event.js';
 
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */
 
+type SettingsPrivateApi = typeof chrome.settingsPrivate;
+type PrefObject = chrome.settingsPrivate.PrefObject;
+type PrefType = chrome.settingsPrivate.PrefType;
+
 /**
  * Fake of chrome.settingsPrivate API. Use by setting
  * CrSettingsPrefs.deferInitialization to true, then passing a
  * FakeSettingsPrivate to settings-prefs#initialize().
  */
-export class FakeSettingsPrivate extends TestBrowserProxy {
+export class FakeSettingsPrivate extends TestBrowserProxy implements
+    SettingsPrivateApi {
+  // Mirroring chrome.settingsPrivate API members.
+  /* eslint-disable @typescript-eslint/naming-convention */
+  PrefType = chrome.settingsPrivate.PrefType;
+  ControlledBy = chrome.settingsPrivate.ControlledBy;
+  Enforcement = chrome.settingsPrivate.Enforcement;
+  /* eslint-enable @typescript-eslint/naming-convention */
+
+  prefs: Record<string, PrefObject> = {};
+  onPrefsChanged: FakeChromeEvent = new FakeChromeEvent();
   private disallowSetPref_: boolean = false;
   private failNextSetPref_: boolean = false;
-  prefs: {[key: string]: chrome.settingsPrivate.PrefObject} = {};
-  onPrefsChanged: FakeChromeEvent = new FakeChromeEvent();
 
-  constructor(initialPrefs?: chrome.settingsPrivate.PrefObject[]) {
+  constructor(initialPrefs?: PrefObject[]) {
     super([
       'setPref',
       'getPref',
@@ -36,18 +48,16 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
   }
 
   // chrome.settingsPrivate overrides.
-  getAllPrefs(): Promise<chrome.settingsPrivate.PrefObject[]> {
+  getAllPrefs(): Promise<PrefObject[]> {
     // Send a copy of prefs to keep our internal state private.
     const prefs = [];
     for (const key in this.prefs) {
-      prefs.push(
-          structuredClone(this.prefs[key]!) as
-          chrome.settingsPrivate.PrefObject);
+      prefs.push(structuredClone(this.prefs[key]!));
     }
     return Promise.resolve(prefs);
   }
 
-  setPref(key: string, value: any, _pageId: string): Promise<boolean> {
+  setPref(key: string, value: any, _pageId?: string): Promise<boolean> {
     this.methodCalled('setPref', {key, value});
     const pref = this.prefs[key];
     assertNotEquals(undefined, pref);
@@ -69,12 +79,11 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
     return Promise.resolve(true);
   }
 
-  getPref(key: string): Promise<chrome.settingsPrivate.PrefObject> {
+  getPref(key: string): Promise<PrefObject> {
     this.methodCalled('getPref', key);
     const pref = this.prefs[key];
     assertNotEquals(undefined, pref);
-    return Promise.resolve(
-        structuredClone(pref!) as chrome.settingsPrivate.PrefObject);
+    return Promise.resolve(structuredClone(pref!));
   }
 
   // Functions used by tests.
@@ -102,19 +111,20 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
       const pref = this.prefs[change.key];
       assertNotEquals(undefined, pref);
       pref!.value = change.value;
-      prefs.push(structuredClone(pref!) as chrome.settingsPrivate.PrefObject);
+      prefs.push(structuredClone(pref!) as PrefObject);
     }
     this.onPrefsChanged.callListeners(prefs);
   }
 
-  getDefaultZoom() {}
+  getDefaultZoom(): Promise<number> {
+    return Promise.resolve(100);
+  }
 
-  setDefaultZoom() {}
+  setDefaultZoom(): void {}
 
   // Private methods for use by the fake API.
 
-  private addPref_(
-      type: chrome.settingsPrivate.PrefType, key: string, value: any) {
+  private addPref_(type: PrefType, key: string, value: any) {
     this.prefs[key] = {
       type: type,
       key: key,

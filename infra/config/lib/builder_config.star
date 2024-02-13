@@ -625,16 +625,16 @@ def _get_builder_mirror_description(bucket_name, builder, bc_state):
         description += "<br/>"
     if mirrored_builders:
         description += "This builder mirrors the following CI builders:<br/>"
+        if bucket_name not in ("finch", "try"):
+            fail("Error with {}: only builders in bucket 'try' and 'finch' can mirror other builders".format(bucket_name))
     else:
         description += "This builder is mirrored by any of the following try builders:<br/>"
+        if bucket_name != "ci":
+            fail("Error with {}: only builders in buckets 'ci' can be mirrored".format(bucket_name))
 
     description += "<ul>"
     m_ids = [_builder_id(m) for m in mirrored_builders or mirroring_builders]
     for m_id in sorted(m_ids, key = _builder_id_sort_key):
-        if (bucket_name, m_id["bucket"]) not in [("try", "ci"), ("ci", "try")]:
-            # Change the descriptions above if this assertion no
-            # longer holds true.
-            fail("{} to {} mirroring is not allowed. Only 'try' can mirror 'ci'.".format(bucket_name, m_id["bucket"]))
         link = linkify_builder(m_id["bucket"], m_id["builder"])
         description += "<li>%s</li>" % link
     return description + "</ul>"
@@ -811,6 +811,7 @@ def _set_builder_config_property(ctx):
                 "mac-arm64-dbg",
             ]
             is_excluded = (
+                bucket_name != "ci" or
                 builder.name in excluded_builders or
                 any([s.key.id in excluded_rotations for s in rotations])
             )

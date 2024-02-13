@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_details_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
@@ -1777,6 +1778,16 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
 
       return element.CachedDirectionality() == direction;
     }
+    case CSSSelector::kPseudoSelectAuthorButton:
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->SlottedButton();
+      }
+      return false;
+    case CSSSelector::kPseudoSelectAuthorDatalist:
+      if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->SlottedDatalist();
+      }
+      return false;
     case CSSSelector::kPseudoDialogInTopLayer:
       if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
         if (dialog->IsModal() &&
@@ -1822,11 +1833,23 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoOpen:
       if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
         return selectlist->open();
+      } else if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+        return dialog->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
+        return details->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->PopupIsVisible();
       }
       return false;
     case CSSSelector::kPseudoClosed:
       if (auto* selectlist = DynamicTo<HTMLSelectListElement>(element)) {
         return !selectlist->open();
+      } else if (auto* dialog = DynamicTo<HTMLDialogElement>(element)) {
+        return !dialog->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* details = DynamicTo<HTMLDetailsElement>(element)) {
+        return !details->FastHasAttribute(html_names::kOpenAttr);
+      } else if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
+        return select->UsesMenuList() && !select->PopupIsVisible();
       }
       return false;
     case CSSSelector::kPseudoFullscreen:
@@ -2159,8 +2182,30 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
 
       CHECK(!selector.IdentList().empty());
       const AtomicString& name_or_wildcard = selector.IdentList()[0];
-      return name_or_wildcard == CSSSelector::UniversalSelectorAtom() ||
-             name_or_wildcard == pseudo_argument_;
+
+      // note that the pseudo_ident_list_ is the class list, and
+      // pseudo_argument_ is the name, while in the selector the IdentList() is
+      // both the name and the classes.
+      if (name_or_wildcard != CSSSelector::UniversalSelectorAtom() &&
+          name_or_wildcard != pseudo_argument_) {
+        return false;
+      }
+
+      // https://drafts.csswg.org/css-view-transitions-2/#typedef-pt-class-selector
+      // A named view transition pseudo-element selector which has one or more
+      // <custom-ident> values in its <pt-class-selector> would only match an
+      // element if the class list value in named elements for the
+      // pseudo-element’s view-transition-name contains all of those values.
+
+      // selector.IdentList() is equivalent to
+      // <pt-name-selector><pt-class-selector>, as in [name, class, class, ...]
+      // so we check that all of its items excluding the first one are
+      // contained in the pseudo element's classes (pseudo_ident_list_).
+      return base::ranges::all_of(
+          selector.IdentList().begin() + 1, selector.IdentList().end(),
+          [&](const AtomicString& class_from_selector) {
+            return base::Contains(pseudo_ident_list_, class_from_selector);
+          });
     }
     case CSSSelector::kPseudoScrollbarButton:
     case CSSSelector::kPseudoScrollbarCorner:

@@ -122,6 +122,11 @@ TEST_P(SearchEngineChoiceClientSideTrialTest, SetUpIfNeeded) {
 #endif
 }
 
+// The test below only checks field trials for specific platforms, so the list
+// is allowed to be empty.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    SearchEngineChoiceClientSideTrialTest);
+
 INSTANTIATE_TEST_SUITE_P(
     ,
     SearchEngineChoiceClientSideTrialTest,
@@ -156,7 +161,7 @@ INSTANTIATE_TEST_SUITE_P(
             .channel = version_info::Channel::STABLE,
             .expect_study_enabled = false,
             .expect_feature_enabled = true}
-#else
+#elif BUILDFLAG(IS_WIN)
         SearchEngineChoiceFieldTrialTestParams{
             .entropy_value = 0.01,
             .channel = version_info::Channel::BETA,

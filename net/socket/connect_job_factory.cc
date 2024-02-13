@@ -5,6 +5,7 @@
 #include "net/socket/connect_job_factory.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "net/socket/transport_connect_job.h"
 #include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -172,7 +172,7 @@ ConnectJobFactory::~ConnectJobFactory() = default;
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     url::SchemeHostPort endpoint,
     const ProxyChain& proxy_chain,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,
     bool force_tunnel,
@@ -197,7 +197,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     bool using_ssl,
     HostPortPair endpoint,
     const ProxyChain& proxy_chain,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     bool force_tunnel,
     PrivacyMode privacy_mode,
     const OnHostResolutionCallback& resolution_callback,
@@ -220,7 +220,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     Endpoint endpoint,
     const ProxyChain& proxy_chain,
-    const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
+    const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     ConnectJobFactory::AlpnMode alpn_mode,
     bool force_tunnel,

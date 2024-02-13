@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SystemLog} from './browser_proxy.js';
+import type {SystemLog} from './browser_proxy.js';
 import {getTemplate} from './log_entry.html.js';
 
 // <if expr="chromeos_ash">

@@ -130,7 +130,7 @@ void FlossManagerClient::SetFlossEnabled(
     bool enabled,
     int retry,
     int retry_wait_ms,
-    absl::optional<ResponseCallback<bool>> cb) {
+    std::optional<ResponseCallback<bool>> cb) {
   if (cb) {
     set_floss_enabled_callback_ =
         WeaklyOwnedResponseCallback<bool>::Create(std::move(*cb));
@@ -496,7 +496,7 @@ void FlossManagerClient::HandleSetFlossEnabled(bool target,
           FROM_HERE,
           base::BindOnce(&FlossManagerClient::SetFlossEnabled,
                          weak_ptr_factory_.GetWeakPtr(), target, retry - 1,
-                         retry_wait_ms, absl::nullopt),
+                         retry_wait_ms, std::nullopt),
           base::Milliseconds(retry_wait_ms));
     } else if (set_floss_enabled_callback_) {
       set_floss_enabled_callback_->Run(base::unexpected(response.error()));
@@ -538,7 +538,7 @@ void FlossManagerClient::HandleGetFlossEnabled(bool target,
         FROM_HERE,
         base::BindOnce(&FlossManagerClient::SetFlossEnabled,
                        weak_ptr_factory_.GetWeakPtr(), target, retry - 1,
-                       retry_wait_ms, absl::nullopt),
+                       retry_wait_ms, std::nullopt),
         base::Milliseconds(kSetFlossRetryDelayMs));
   } else {
     DVLOG(1) << "Floss is currently "

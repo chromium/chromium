@@ -6,6 +6,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -59,7 +60,8 @@ base::expected<flatbuffers::DetachedBuffer, String> BuildTfLiteModel(
   for (const auto& [name, operand] : named_outputs) {
     // Serialize output operand of graph into the flat buffer.
     const auto tensor_index = converter.SerializeTensor(operand, name);
-    operand_to_index_map.insert(operand, tensor_index);
+    RETURN_IF_ERROR(tensor_index);
+    operand_to_index_map.insert(operand, tensor_index.value());
   }
 
   const auto* toposorted_operators =
@@ -80,7 +82,8 @@ base::expected<flatbuffers::DetachedBuffer, String> BuildTfLiteModel(
         case MLOperand::OperandKind::kConstant: {
           // Serialize tensor for input or constant operand.
           auto tensor_index = converter.SerializeTensor(operand.Get());
-          operand_to_index_map.insert(operand, tensor_index);
+          RETURN_IF_ERROR(tensor_index);
+          operand_to_index_map.insert(operand, tensor_index.value());
           break;
         }
         case MLOperand::OperandKind::kOutput:
@@ -101,14 +104,13 @@ base::expected<flatbuffers::DetachedBuffer, String> BuildTfLiteModel(
       // operand should be an intermediate operand that connects with two
       // operators.
       const auto tensor_index = converter.SerializeTensor(operand.Get());
-      operand_to_index_map.insert(operand, tensor_index);
+      RETURN_IF_ERROR(tensor_index);
+      operand_to_index_map.insert(operand, tensor_index.value());
     }
 
     const auto serialized_result = converter.SerializeOperation(
         operand_to_index_map, current_operator.Get());
-    if (!serialized_result.has_value()) {
-      return base::unexpected(serialized_result.error());
-    }
+    RETURN_IF_ERROR(serialized_result);
   }
 
   // Build the model in the flat buffer and return the detached Buffer.

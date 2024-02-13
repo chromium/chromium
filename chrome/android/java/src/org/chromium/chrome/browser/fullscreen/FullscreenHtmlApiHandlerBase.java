@@ -59,8 +59,8 @@ public abstract class FullscreenHtmlApiHandlerBase
     // by the Android system (this value is additive on top of the show duration imposed by
     // Android).
     protected static final long ANDROID_CONTROLS_SHOW_DURATION_MS = 200;
-    // Delay to allow a frame to render between getting the fullscreen layout update and clearing
-    // the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag.
+    // Delay to allow a frame to render between getting the fullscreen layout update and leaving
+    // layout fullscreen mode.
     private static final long CLEAR_LAYOUT_FULLSCREEN_DELAY_MS = 20;
 
     protected final Activity mActivity;
@@ -149,11 +149,10 @@ public abstract class FullscreenHtmlApiHandlerBase
 
                         if (!fullscreenHtmlApiHandlerBase.isLayoutFullscreen(contentView)) return;
 
-                        // Trigger a update to clear the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag
-                        // once the view has been laid out after this system UI update.  Without
-                        // clearing this flag, the keyboard appearing will not trigger a relayout
-                        // of the contents, which prevents updating the overdraw amount to the
-                        // renderer.
+                        // Trigger an update to unset layout fullscreen mode once the view has been
+                        // laid out after this system UI update.  Without clearing this flag, the
+                        // keyboard appearing will not trigger a relayout of the contents, which
+                        // prevents updating the overdraw amount to the renderer.
                         contentView.addOnLayoutChangeListener(
                                 new OnLayoutChangeListener() {
                                     @Override
@@ -465,42 +464,42 @@ public abstract class FullscreenHtmlApiHandlerBase
         if (DEBUG_LOGS) logExitFullscreen(contentView);
         resetExitFullscreenLayoutChangeListener(contentView);
         if (webContents != null && !webContents.isDestroyed()) webContents.exitFullscreen();
+
+        // Ensure that the layout change listener to bring back browser controls is called on
+        // automotive devices that never hide system bars.
+        if (BuildInfo.getInstance().isAutomotive) {
+            ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.exitFullScreen");
+        }
     }
 
     private void resetExitFullscreenLayoutChangeListener(View contentView) {
         if (mFullscreenOnLayoutChangeListener != null) {
             contentView.removeOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
         }
-        // Since automotive devices persist the system bars in full screen mode, onLayoutChange is
-        // not triggered by showing the system bars, and browser controls need to be re-added
-        // directly.
-        if (BuildInfo.getInstance().isAutomotive) {
-            TabBrowserControlsConstraintsHelper.update(mTab, BrowserControlsState.SHOWN, true);
-        } else {
-            mFullscreenOnLayoutChangeListener =
-                    new OnLayoutChangeListener() {
-                        @Override
-                        public void onLayoutChange(
-                                View v,
-                                int left,
-                                int top,
-                                int right,
-                                int bottom,
-                                int oldLeft,
-                                int oldTop,
-                                int oldRight,
-                                int oldBottom) {
-                            if ((bottom - top) <= (oldBottom - oldTop)) {
-                                // At this point, browser controls are hidden. Show browser controls
-                                // only if it's permitted.
-                                TabBrowserControlsConstraintsHelper.update(
-                                        mTab, BrowserControlsState.SHOWN, true);
-                                contentView.removeOnLayoutChangeListener(this);
-                            }
+        mFullscreenOnLayoutChangeListener =
+                new OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        if ((bottom - top) <= (oldBottom - oldTop)
+                                || BuildInfo.getInstance().isAutomotive) {
+                            // At this point, browser controls are hidden. Show browser controls
+                            // only if it's permitted.
+                            TabBrowserControlsConstraintsHelper.update(
+                                    mTab, BrowserControlsState.SHOWN, true);
+                            contentView.removeOnLayoutChangeListener(this);
                         }
-                    };
+                    }
+                };
             contentView.addOnLayoutChangeListener(mFullscreenOnLayoutChangeListener);
-        }
     }
 
     private boolean isAlreadyInFullscreenOrNavigationHidden(View contentView) {
@@ -551,8 +550,9 @@ public abstract class FullscreenHtmlApiHandlerBase
             // To avoid a double layout that is caused by the system when just hiding
             // the status bar set the status bar as translucent immediately. This causes
             // it not to take up space so the layout is stable. (See https://crbug.com/935015).
-            // Do not do this in multi-window mode or automotive devices since the status bar is
-            // forced to always be visible.
+            // Do not do this in multi-window mode or if the system bars can't be dismissed (i.e.
+            // on some automotive devices), since the status bar will be forced to always stay
+            // visible.
             if (!mFullscreenOptions.showStatusBar
                     && !isMultiWindow
                     && !BuildInfo.getInstance().isAutomotive) {
@@ -567,7 +567,7 @@ public abstract class FullscreenHtmlApiHandlerBase
         if (DEBUG_LOGS) logEnterFullscreen(contentView);
 
         // Request a layout so the updated system visibility takes affect.
-        // The flow will continue in the handler of MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS message.
+        // The flow will continue in the handler of MSG_ID_UNSET_FULLSCREEN_LAYOUT message.
         ViewUtils.requestLayout(contentView, "FullscreenHtmlApiHandler.enterFullScreen");
 
         mWebContentsInFullscreen = webContents;
@@ -595,9 +595,8 @@ public abstract class FullscreenHtmlApiHandlerBase
                             int oldRight,
                             int oldBottom) {
                         // On certain sites playing embedded video (http://crbug.com/293782),
-                        // setting the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN does not always trigger a
-                        // view-level layout
-                        // with an updated height.  To work around this, do not check for an
+                        // setting the layout as fullscreen does not always trigger a view-level
+                        // layout with an updated height. To work around this, do not check for an
                         // increased height and always just trigger the next step of the
                         // fullscreen initialization.
                         // Posting the message to set the fullscreen flag because setting it
@@ -606,6 +605,8 @@ public abstract class FullscreenHtmlApiHandlerBase
 
                         if ((bottom - top) <= (oldBottom - oldTop)
                                 && (right - left) <= (oldRight - oldLeft)
+                                // Some automotive devices never hide the system bars, so Chrome
+                                // can't rely on detecting a change in insets.
                                 && !BuildInfo.getInstance().isAutomotive) {
                             return;
                         }

@@ -115,11 +115,19 @@ bool BookmarkClientImpl::IsNodeManaged(const bookmarks::BookmarkNode* node) {
   return false;
 }
 
-std::string BookmarkClientImpl::EncodeBookmarkSyncMetadata() {
+std::string BookmarkClientImpl::EncodeLocalOrSyncableBookmarkSyncMetadata() {
   return bookmark_sync_service_->EncodeBookmarkSyncMetadata();
 }
 
-void BookmarkClientImpl::DecodeBookmarkSyncMetadata(
+std::string BookmarkClientImpl::EncodeAccountBookmarkSyncMetadata() {
+  // On iOS, for historic reasons, a dedicated BookmarkModel is used for account
+  // bookmarks and, counter-intuitively, the local-or-syncable nodes within are
+  // used to represent account data. The same is true for sync metadata, so
+  // account sync metadata remains unused.
+  return std::string();
+}
+
+void BookmarkClientImpl::DecodeLocalOrSyncableBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
   // On iOS, for historic reasons, a dedicated BookmarkModel is used for account
@@ -131,6 +139,13 @@ void BookmarkClientImpl::DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure,
       std::make_unique<
           sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
+}
+
+void BookmarkClientImpl::DecodeAccountBookmarkSyncMetadata(
+    const std::string& metadata_str,
+    const base::RepeatingClosure& schedule_save_closure) {
+  // See comment in `EncodeAccountBookmarkSyncMetadata()` for rationale about
+  // why account sync metadata remains unused on iOS.
 }
 
 void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(

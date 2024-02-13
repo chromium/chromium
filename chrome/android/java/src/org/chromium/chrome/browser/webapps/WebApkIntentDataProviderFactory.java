@@ -11,6 +11,7 @@ import static org.chromium.webapk.lib.common.WebApkConstants.EXTRA_WEBAPK_SELECT
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.pm.ResolveInfo;
@@ -271,9 +272,12 @@ public class WebApkIntentDataProviderFactory {
         PackageManager pm = appContext.getPackageManager();
         Resources res = null;
         int apkVersion = 0;
+        long lastUpdateTime = 0;
         try {
             res = pm.getResourcesForApplication(webApkPackageName);
-            apkVersion = pm.getPackageInfo(webApkPackageName, 0).versionCode;
+            PackageInfo packageInfo = pm.getPackageInfo(webApkPackageName, 0);
+            apkVersion = packageInfo.versionCode;
+            lastUpdateTime = packageInfo.lastUpdateTime;
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
@@ -418,51 +422,53 @@ public class WebApkIntentDataProviderFactory {
                 isSplashProvidedByWebApk,
                 shareData,
                 parseShortcutItems(webApkPackageName, res),
-                apkVersion);
+                apkVersion,
+                lastUpdateTime);
     }
 
     /**
      * Construct a {@link BrowserServicesIntentDataProvider} instance.
-     * @param intent                   Intent used to launch activity.
-     * @param url                      URL that the WebAPK should navigate to when launched.
-     * @param scope                    Scope for the WebAPK.
-     * @param primaryIcon              Primary icon to show for the WebAPK.
-     * @param splashIcon               Splash icon to use for the splash screen.
-     * @param name                     Name of the WebAPK.
-     * @param shortName                The short name of the WebAPK.
-     * @param displayMode              Display mode of the WebAPK.
-     * @param orientation              Orientation of the WebAPK.
-     * @param source                   Source that the WebAPK was launched from.
-     * @param themeColor               The theme color of the WebAPK.
-     * @param backgroundColor          The background color of the WebAPK.
-     * @param darkThemeColor           The theme color of the WebAPK's dark mode.
-     * @param darkBackgroundColor      The background color of the WebAPK's dark mode.
-     * @param defaultBackgroundColor   The background color to use if the Web Manifest does not
-     *                                 provide a background color.
-     * @param isPrimaryIconMaskable    Is the primary icon maskable.
-     * @param isSplashIconMaskable     Is the splash icon maskable.
-     * @param webApkPackageName        The package of the WebAPK.
-     * @param shellApkVersion          Version of the code in //chrome/android/webapk/shell_apk.
-     * @param manifestUrl              URL of the Web Manifest.
-     * @param manifestStartUrl         URL that the WebAPK should navigate to when launched from
-     *                                 the homescreen. Different from the {@link url} parameter if
-     *                                 the WebAPK is launched from a deep link.
-     * @param manifestId               Id of the WebAPK.
-     * @param appKey                   Key used to identified the WebAPK. This is either the
-     *                                 Manifest URL or the Manifest Unique ID depending on the
-     *                                 situation.
-     * @param distributor              The source from where the WebAPK is installed.
-     * @param iconUrlToMurmur2HashMap  Map of the WebAPK's icon URLs to Murmur2 hashes of the
-     *                                 icon untransformed bytes.
-     * @param shareTarget              Specifies what share data is supported by WebAPK.
-     * @param forceNavigation          Whether the WebAPK should navigate to {@link url} if the
-     *                                 WebAPK is already open.
+     *
+     * @param intent Intent used to launch activity.
+     * @param url URL that the WebAPK should navigate to when launched.
+     * @param scope Scope for the WebAPK.
+     * @param primaryIcon Primary icon to show for the WebAPK.
+     * @param splashIcon Splash icon to use for the splash screen.
+     * @param name Name of the WebAPK.
+     * @param shortName The short name of the WebAPK.
+     * @param displayMode Display mode of the WebAPK.
+     * @param orientation Orientation of the WebAPK.
+     * @param source Source that the WebAPK was launched from.
+     * @param themeColor The theme color of the WebAPK.
+     * @param backgroundColor The background color of the WebAPK.
+     * @param darkThemeColor The theme color of the WebAPK's dark mode.
+     * @param darkBackgroundColor The background color of the WebAPK's dark mode.
+     * @param defaultBackgroundColor The background color to use if the Web Manifest does not
+     *     provide a background color.
+     * @param isPrimaryIconMaskable Is the primary icon maskable.
+     * @param isSplashIconMaskable Is the splash icon maskable.
+     * @param webApkPackageName The package of the WebAPK.
+     * @param shellApkVersion Version of the code in //chrome/android/webapk/shell_apk.
+     * @param manifestUrl URL of the Web Manifest.
+     * @param manifestStartUrl URL that the WebAPK should navigate to when launched from the
+     *     homescreen. Different from the {@link url} parameter if the WebAPK is launched from a
+     *     deep link.
+     * @param manifestId Id of the WebAPK.
+     * @param appKey Key used to identified the WebAPK. This is either the Manifest URL or the
+     *     Manifest Unique ID depending on the situation.
+     * @param distributor The source from where the WebAPK is installed.
+     * @param iconUrlToMurmur2HashMap Map of the WebAPK's icon URLs to Murmur2 hashes of the icon
+     *     untransformed bytes.
+     * @param shareTarget Specifies what share data is supported by WebAPK.
+     * @param forceNavigation Whether the WebAPK should navigate to {@link url} if the WebAPK is
+     *     already open.
      * @param isSplashProvidedByWebApk Whether the WebAPK (1) launches an internal activity to
-     *                                 display the splash screen and (2) has a content provider
-     *                                 which provides a screenshot of the splash screen.
-     * @param shareData                Shared information from the share intent.
-     * @param shortcutItems            A list of shortcut items.
-     * @param webApkVersionCode        WebAPK's version code.
+     *     display the splash screen and (2) has a content provider which provides a screenshot of
+     *     the splash screen.
+     * @param shareData Shared information from the share intent.
+     * @param shortcutItems A list of shortcut items.
+     * @param webApkVersionCode WebAPK's version code.
+     * @param lastUpdateTime WebAPK's last update timestamp.
      */
     public static BrowserServicesIntentDataProvider create(
             Intent intent,
@@ -495,7 +501,8 @@ public class WebApkIntentDataProviderFactory {
             boolean isSplashProvidedByWebApk,
             ShareData shareData,
             List<ShortcutItem> shortcutItems,
-            int webApkVersionCode) {
+            int webApkVersionCode,
+            long lastUpdateTime) {
         if (manifestStartUrl == null || webApkPackageName == null) {
             Log.e(TAG, "Incomplete data provided: " + manifestStartUrl + ", " + webApkPackageName);
             return null;
@@ -556,7 +563,8 @@ public class WebApkIntentDataProviderFactory {
                         shareTarget,
                         isSplashProvidedByWebApk,
                         shortcutItems,
-                        webApkVersionCode);
+                        webApkVersionCode,
+                        lastUpdateTime);
         boolean hasCustomToolbarColor = WebappIntentUtils.isLongColorValid(themeColor);
         int toolbarColor =
                 hasCustomToolbarColor

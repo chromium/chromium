@@ -57,7 +57,7 @@ std::unique_ptr<HostResolver> CreateMockHostResolver() {
   // local.com resolves to a private IP address.
   host_resolver->rules()->AddRule("local.com", "127.0.0.1");
   host_resolver->LoadIntoCache(HostPortPair("local.com", 80),
-                               NetworkAnonymizationKey(), absl::nullopt);
+                               NetworkAnonymizationKey(), std::nullopt);
   // Hosts not listed here (e.g., "example.com") are treated as external. See
   // ThroughputAnalyzerTest.PrivateHost below.
 
@@ -215,14 +215,14 @@ TEST_F(ThroughputAnalyzerTest,
     // empty NetworkAnonymizationKey.
     mock_host_resolver->rules()->AddRule(kUrl.host(), "1.2.3.4");
     mock_host_resolver->LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                      NetworkAnonymizationKey(), absl::nullopt);
+                                      NetworkAnonymizationKey(), std::nullopt);
 
     // Add an entry to the host cache mapping kUrl to local IP when using
     // kNetworkAnonymizationKey.
     mock_host_resolver->rules()->ClearRules();
     mock_host_resolver->rules()->AddRule(kUrl.host(), "127.0.0.1");
     mock_host_resolver->LoadIntoCache(HostPortPair::FromURL(kUrl),
-                                      kNetworkAnonymizationKey, absl::nullopt);
+                                      kNetworkAnonymizationKey, std::nullopt);
 
     context_builder->set_host_resolver(std::move(mock_host_resolver));
     auto context = context_builder->Build();

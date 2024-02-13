@@ -1760,8 +1760,8 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
           break;
       }
 
-      if (prefetch_iter.second->GetReferrer().url ==
-          prefetch_container->GetReferrer().url) {
+      if (prefetch_iter.second->HasSameReferringURLForMetrics(
+              *prefetch_container)) {
         num_matching_prefetch_same_referrer++;
       }
 

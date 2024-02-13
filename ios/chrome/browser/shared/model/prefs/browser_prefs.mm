@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
@@ -333,6 +334,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       registry);
   optimization_guide::prefs::RegisterLocalStatePrefs(registry);
   PushNotificationService::RegisterLocalStatePrefs(registry);
+  TipsNotificationClient::RegisterLocalStatePrefs(registry);
 
   // Preferences related to the browser state manager.
   registry->RegisterStringPref(prefs::kBrowserStateLastUsed, std::string());

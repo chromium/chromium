@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] matmul float32 constant 1D and 1D tensors all positive produces a scalar / async
+  promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
 [FAIL] matmul float32 1D and 1D tensors all positive produces a scalar / async
   promise_test: Unhandled rejection with value: object "DataError: Failed to execute 'matmul' on 'MLGraphBuilder': The rank of input must be larger than or equal to 2."
 [FAIL] matmul float32 1D and 1D tensors all negative produces a scalar / async

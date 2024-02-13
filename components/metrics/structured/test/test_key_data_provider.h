@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "components/metrics/structured/key_data_provider.h"
+#include "components/metrics/structured/lib/key_data_provider.h"
 
 namespace base {
 class FilePath;

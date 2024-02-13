@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 
-import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import type {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
@@ -80,7 +80,7 @@ suite('CrSettingsPrefs', function() {
 
     prefs = document.createElement('settings-prefs');
     document.body.appendChild(prefs);
-    prefs.initialize(fakeApi as unknown as typeof chrome.settingsPrivate);
+    prefs.initialize(fakeApi);
 
     // getAllPrefs is asynchronous, so return the prefs promise.
     return CrSettingsPrefs.initialized;

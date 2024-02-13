@@ -1,3 +1,6 @@
 monorail: {
   component: "OS>Systems>Bluetooth"
 }
+buganizer_public: {
+  component_id: 1457189
+}

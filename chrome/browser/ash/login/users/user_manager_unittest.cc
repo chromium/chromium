@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -43,6 +44,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -204,7 +206,10 @@ class UserManagerTest : public testing::Test {
   void ResetUserManager() {
     // Initialize the UserManager singleton to a fresh ChromeUserManagerImpl
     // instance.
+    user_image_manager_registry_.reset();
     user_manager_.Reset(ChromeUserManagerImpl::CreateChromeUserManager());
+    user_image_manager_registry_ =
+        std::make_unique<ash::UserImageManagerRegistry>(user_manager_.Get());
 
     // ChromeUserManagerImpl ctor posts a task to reload policies.
     // Also ensure that all existing ongoing user manager tasks are completed.
@@ -283,6 +288,7 @@ class UserManagerTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
 
   user_manager::TypedScopedUserManager<ChromeUserManager> user_manager_;
+  std::unique_ptr<ash::UserImageManagerRegistry> user_image_manager_registry_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -498,8 +504,9 @@ TEST_F(UserManagerTest, DoNotSaveKioskAccountsToKRegularUsersPref) {
       false /* is_child */);
   ResetUserManager();
 
-  EXPECT_EQ(
-      1U, local_state_->Get()->GetList(user_manager::kRegularUsersPref).size());
+  EXPECT_EQ(1U, local_state_->Get()
+                    ->GetList(user_manager::prefs::kRegularUsersPref)
+                    .size());
   EXPECT_EQ(2U, user_manager::UserManager::Get()->GetUsers().size());
 
   SetDeviceSettings(
@@ -507,8 +514,9 @@ TEST_F(UserManagerTest, DoNotSaveKioskAccountsToKRegularUsersPref) {
       /* owner= */ kOwnerAccountId.GetUserEmail());
   RetrieveTrustedDevicePolicies();
 
-  EXPECT_TRUE(
-      local_state_->Get()->GetList(user_manager::kRegularUsersPref).empty());
+  EXPECT_TRUE(local_state_->Get()
+                  ->GetList(user_manager::prefs::kRegularUsersPref)
+                  .empty());
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUsers().size());
 }
 

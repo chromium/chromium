@@ -96,6 +96,10 @@ declare_args() {
   #     trace-pc-guard,indirect-calls
   sanitizer_coverage_flags = ""
 
+  # A sanitizer coverage allowlist, specifying exactly which
+  # files or symbol names should be instrumented, rather than all of them.
+  sanitizer_coverage_allowlist = ""
+
   # When enabled, only relevant sanitizer defines are set, but compilation
   # happens with no extra flags. This is useful when in component build
   # enabling sanitizers only in some of the components.
@@ -322,6 +326,10 @@ assert(
     "crbug.com/753445: use_sanitizer_coverage=true is not supported by the " +
         "Chromium mac_clang_x64 toolchain on iOS distribution. Please set " +
         "the argument value to false.")
+
+assert(
+    sanitizer_coverage_allowlist == "" || use_sanitizer_coverage,
+    "Can't specify a sanitizer coverage allowlist without using sanitizer coverage.")
 
 # Use these lists of configs to disable instrumenting code that is part of a
 # fuzzer, but which isn't being targeted (such as libprotobuf-mutator, *.pb.cc

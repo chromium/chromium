@@ -97,6 +97,8 @@ static_library("cardboard") {
     "src/sdk/screen_params.h",
     "src/sdk/screen_params/android/screen_params.cc",
     "src/sdk/sensors/accelerometer_data.h",
+    "src/sdk/sensors/android/device_accelerometer_sensor.cc",
+    "src/sdk/sensors/android/device_gyroscope_sensor.cc",
     "src/sdk/sensors/android/sensor_event_producer.cc",
     "src/sdk/sensors/device_accelerometer_sensor.h",
     "src/sdk/sensors/device_gyroscope_sensor.h",
@@ -132,10 +134,6 @@ static_library("cardboard") {
     "src/sdk/util/vectorutils.cc",
     "src/sdk/util/vectorutils.h",
     "src_overrides/sdk/jni_utils/android/jni_utils.cc",
-
-    # TODO(crbug.com/1497732): Remove override once changes have been upstreamed.
-    "src_overrides/sdk/sensors/android/device_accelerometer_sensor.cc",
-    "src_overrides/sdk/sensors/android/device_gyroscope_sensor.cc",
   ]
 
   deps = [

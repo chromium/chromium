@@ -1,5 +1,6 @@
 # crbug.com/1522972
 -WebNNCommandRecorderTest.InitializeAndExecuteConvolutionOperator
+-WebNNCommandRecorderTest.InitializeAndExecuteConvolutionOperatorWithCustomBuffers
 -WebNNGraphBuilderTest.BuildGraphWithReluAndConv2d
 -WebNNGraphBuilderTest.BuildSingleOperatorConv2d
 -WebNNGraphDMLImplTest.BuildAndComputeMultipleOperatorGemm

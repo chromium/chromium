@@ -724,11 +724,15 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
   base::test::ScopedFeatureList feature_list;
   std::vector<base::test::FeatureRef> enabled_features = {
       content_settings::features::kTrackingProtection3pcd};
+  std::vector<base::test::FeatureRef> disabled_features = {};
   if (test_case.bypass_feature_enabled) {
     enabled_features.emplace_back(
         kPrivateAggregationDebugReportingCookieDeprecationTesting);
+  } else {
+    disabled_features.emplace_back(
+        kPrivateAggregationDebugReportingCookieDeprecationTesting);
   }
-  feature_list.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+  feature_list.InitWithFeatures(enabled_features, disabled_features);
 
   // Enable ad measurement pref. Otherwise, Private Aggregation will not be
   // allowed by PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed().

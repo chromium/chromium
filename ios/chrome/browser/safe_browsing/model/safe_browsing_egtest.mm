@@ -42,11 +42,6 @@ const char kPhishingWarningDetails[] =
 const char kMalwareWarningDetails[] =
     "Google Safe Browsing, which recently found malware";
 
-// Text that is found when expanding details on the malware warning page for an
-// iframe with malware.
-const char kIframeMalwareWarningDetails[] =
-    "Safe Browsing recently found malware";
-
 // Request handler for net::EmbeddedTestServer that returns the request URL's
 // path as the body of the response if the request URL's path starts with
 // "/echo". Otherwise, returns nulltpr to allow other handlers to handle the
@@ -104,20 +99,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(safe_browsing::kRedInterstitialFacelift);
-  if ([self isRunningTest:@selector(testPageWithUnsafeIframe)] ||
-      [self isRunningTest:@selector(testPageWithUnsafeIframeInIncognito)] ||
-      [self isRunningTest:@selector
-            (testBackForwardNavigationWithIframeWarning)] ||
-      [self isRunningTest:@selector(testProceedingPastIframeWarning)]) {
-    config.features_disabled.push_back(
-        safe_browsing::kSafeBrowsingSkipSubresources);
-  } else if ([self isRunningTest:@selector
-                   (testPageWithUnsafeIframeSkipSubresources)] ||
-             [self isRunningTest:@selector
-                   (testPageWithUnsafeIframeInIncognitoSkipSubresources)]) {
-    config.features_enabled.push_back(
-        safe_browsing::kSafeBrowsingSkipSubresources);
-  }
 
   // Use commandline args to insert fake unsafe URLs into the Safe Browsing
   // database.
@@ -660,37 +641,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
 }
 
-// Tests that a page with an unsafe ifame is blocked, back history is preserved,
-// and forward navigation to the warning works as expected.
-- (void)testPageWithUnsafeIframe {
-  [ChromeEarlGrey loadURL:_safeURL2];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-
-  // Load a page that has an iframe with malware, and verify that a warning is
-  // shown.
-  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
-
-  // Ensure back history is preserved. Tap on the "Back to safety" button and
-  // verify that the previous page's contents are loaded.
-  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-  [ChromeEarlGrey goBack];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-
-  // Verify that going forward results in the warning being displayed.
-  [ChromeEarlGrey goForward];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-  [ChromeEarlGrey goForward];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
-}
-
-// Tests that a page with an unsafe ifame is not blocked when subframe checks
-// are disabled.
+// Tests that a page with an unsafe ifame is not blocked.
 - (void)testPageWithUnsafeIframeSkipSubresources {
   [ChromeEarlGrey loadURL:_safeURL2];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
@@ -701,121 +652,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // not shown.
   [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
   [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
-}
-
-// Tests that a page with an unsafe ifame is blocked, back history is preserved,
-// and forward navigation to the warning works as expected, in incognito mode.
-- (void)testPageWithUnsafeIframeInIncognito {
-  [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey loadURL:_safeURL2];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-
-  // Load a page that has an iframe with malware, and verify that a warning is
-  // shown.
-  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
-
-  // Ensure back history is preserved. Tap on the "Back to safety" button and
-  // verify that the previous page's contents are loaded.
-  [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-
-  // Verify that going forward results in the warning being displayed.
-  [[EarlGrey selectElementWithMatcher:ForwardButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-  [[EarlGrey selectElementWithMatcher:ForwardButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
-}
-
-// Tests that a page with an unsafe ifame is not blocked when subframe checks
-// are disabled, in incognito mode.
-- (void)testPageWithUnsafeIframeInIncognitoSkipSubresources {
-  [ChromeEarlGrey openNewIncognitoTab];
-  [ChromeEarlGrey loadURL:_safeURL2];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-
-  // Load a page that has an iframe with malware, and verify that a warning is
-  // not shown.
-  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
-}
-
-// Tests performing a back navigation to a warning page for an unsafe iframe,
-// and then performing a forward navigation from the warning.
-- (void)testBackForwardNavigationWithIframeWarning {
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-
-  // Load a page that has an iframe with malware, and verify that a warning is
-  // shown.
-  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
-
-  [ChromeEarlGrey loadURL:_safeURL2];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-
-  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
-
-  [[EarlGrey selectElementWithMatcher:ForwardButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-}
-
-// Tests expanding the details on a warning for an unsafe iframe, proceeding
-// past the warning, and navigating away from and back to the unsafe page. Also
-// verifies that a warning is still shown when visiting the unsafe URL in a new
-// tab.
-- (void)testProceedingPastIframeWarning {
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-
-  // Load a page that has an iframe with malware, and verify that a warning is
-  // shown.
-  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
-
-  // Tap on the Details button and verify that warning details are shown.
-  [ChromeEarlGrey tapWebStateElementWithID:@"details-button"];
-  [ChromeEarlGrey waitForWebStateContainingText:kIframeMalwareWarningDetails];
-
-  // Tap on the link to proceed to the unsafe page, and verify that this page is
-  // loaded.
-  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-link"];
-  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
-
-  // Verify that no warning is shown when navigating back and then forward to
-  // the unsafe page.
-  [ChromeEarlGrey goBack];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
-  [ChromeEarlGrey goForward];
-  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
-
-  // Visit another safe page, and then navigate back to the unsafe page and
-  // verify that no warning is shown.
-  [ChromeEarlGrey loadURL:_safeURL2];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
-  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateFrameContainingText:_malwareContent];
-
-  // Verify that a warning is still shown when loading the page in a new tab.
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey loadURL:_iframeWithMalwareURL];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(IDS_HEADING_NEW)];
 }
 
 // Tests that real-time lookups are not performed when opted-out of real-time

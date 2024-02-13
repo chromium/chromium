@@ -29,7 +29,7 @@ import * as Common from 'devtools/core/common/common.js';
       }
   `);
 
-  Common.Settings.settingForTest('showEventListenersForAncestors').set(true);
+  Common.Settings.settingForTest('show-event-listeners-for-ancestors').set(true);
   TestRunner.evaluateInPage('setupEventListeners()', step1);
 
   function step1() {

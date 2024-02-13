@@ -41,6 +41,7 @@ class MockPasswordFeatureManager : public PasswordFeatureManager {
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, OptInToAccountStorage, (), (override));
+  MOCK_METHOD(void, OptOutOfAccountStorage, (), (override));
   MOCK_METHOD(void, OptOutOfAccountStorageAndClearSettings, (), (override));
   MOCK_METHOD(bool,
               ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally,

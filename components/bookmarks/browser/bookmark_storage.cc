@@ -43,9 +43,9 @@ base::Value::Dict EncodeModelToDict(
   BookmarkCodec codec;
   switch (permanent_node_selection) {
     case BookmarkStorage::kSelectLocalOrSyncableNodes:
-      return codec.Encode(model->bookmark_bar_node(), model->other_node(),
-                          model->mobile_node(),
-                          model->client()->EncodeBookmarkSyncMetadata());
+      return codec.Encode(
+          model->bookmark_bar_node(), model->other_node(), model->mobile_node(),
+          model->client()->EncodeLocalOrSyncableBookmarkSyncMetadata());
     case BookmarkStorage::kSelectAccountNodes:
       if (!model->account_bookmark_bar_node()) {
         CHECK(!model->account_other_node());
@@ -56,10 +56,10 @@ base::Value::Dict EncodeModelToDict(
       CHECK(model->account_other_node());
       CHECK(model->account_mobile_node());
 
-      // TODO(crbug.com/1520418): Plumb sync metadata for account nodes.
       return codec.Encode(model->account_bookmark_bar_node(),
                           model->account_other_node(),
-                          model->account_mobile_node(), std::string());
+                          model->account_mobile_node(),
+                          model->client()->EncodeAccountBookmarkSyncMetadata());
   }
 
   NOTREACHED_NORETURN();

@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/common/extension_id.h"
 
 class GURL;
 
@@ -61,7 +62,7 @@ class EventRouterForwarder
 
   // Helper function for {Broadcast,Dispatch}EventTo{Extension,Renderers}.
   // Virtual for testing.
-  virtual void HandleEvent(const std::string& extension_id,
+  virtual void HandleEvent(const ExtensionId& extension_id,
                            events::HistogramValue histogram_value,
                            const std::string& event_name,
                            base::Value::List event_args,
@@ -75,7 +76,7 @@ class EventRouterForwarder
   // |profile| may never be NULL.
   // Virtual for testing.
   virtual void CallEventRouter(Profile* profile,
-                               const std::string& extension_id,
+                               const ExtensionId& extension_id,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,
                                base::Value::List event_args,

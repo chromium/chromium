@@ -48,7 +48,7 @@ export class FocusHistory {
     }
     const cache = new SACache();
     // Create a list of ancestors.
-    const ancestorStack = [node];
+    const ancestorStack: Array<AutomationNode|SAChildNode|SARootNode> = [node];
     while (node.parent) {
       ancestorStack.push(node.parent);
       node = node.parent;
@@ -76,6 +76,7 @@ export class FocusHistory {
       }
       newDataStack.push(new FocusData(group, focus));
 
+      // TODO(b/314203187): Not null asserted, check that this is correct.
       group = focus.asRootNode()!;
       if (!group) {
         break;

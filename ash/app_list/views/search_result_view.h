@@ -29,6 +29,7 @@ namespace ash {
 namespace test {
 class SearchResultListViewTest;
 class SearchResultViewWidgetTest;
+class SearchResultViewPixelTest;
 }  // namespace test
 
 class AppListViewDelegate;
@@ -222,6 +223,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
  private:
   friend class test::SearchResultListViewTest;
+  friend class SearchResultViewPixelTest;
   friend class SearchResultListView;
   friend class SearchResultViewWidgetTest;
 

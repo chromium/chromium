@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -185,23 +186,6 @@ void DeskButton::OnGestureEvent(ui::GestureEvent* event) {
   views::Button::OnGestureEvent(event);
 }
 
-void DeskButton::StateChanged(ButtonState old_state) {
-  if (GetState() != ButtonState::STATE_NORMAL &&
-      GetState() != ButtonState::STATE_HOVERED) {
-    return;
-  }
-
-  UpdateShelfAutoHideDisabler(disable_shelf_auto_hide_hover_, !GetHovered());
-}
-
-views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
-  // We override this function so that the tooltip manager ignores disabled desk
-  // switch buttons when creating tooltips.
-  views::View* tooltip_handler = Button::GetTooltipHandlerForPoint(point);
-  return tooltip_handler && tooltip_handler->GetEnabled() ? tooltip_handler
-                                                          : this;
-}
-
 void DeskButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
   desk_button_container_->desk_button_widget()->MaybeFocusOut(reverse);
 }
@@ -224,7 +208,7 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
       this, gfx::Insets(kDeskButtonFocusRingHaloInset),
       kDeskButtonCornerRadius);
 
-  if (features::IsDeskButtonEnabled()) {
+  if (chromeos::features::IsDeskProfilesEnabled()) {
     AddChildView(views::Builder<views::ImageView>()
                      .CopyAddressTo(&desk_avatar_view_)
                      .SetPaintToLayer()
@@ -245,16 +229,10 @@ void DeskButton::Init(DeskButtonContainer* desk_button_container) {
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *desk_name_label_);
 
-  UpdateLocaleSpecificSettings();
-
   // Use shelf view as the context menu controller so that it shows the same
   // context menu.
   set_context_menu_controller(
       desk_button_container_->shelf()->hotseat_widget()->GetShelfView());
-}
-
-bool DeskButton::GetHovered() const {
-  return GetState() == ButtonState::STATE_HOVERED;
 }
 
 void DeskButton::SetActivation(bool is_activated) {
@@ -281,8 +259,8 @@ std::u16string DeskButton::GetTitle() const {
 }
 
 void DeskButton::UpdateUi(const Desk* active_desk) {
-  desk_name_label_->SetText(GetDeskNameLabelText(active_desk));
   UpdateAvatar(active_desk);
+  UpdateLocaleSpecificSettings();
 }
 
 void DeskButton::UpdateAvatar(const Desk* active_desk) {
@@ -297,6 +275,7 @@ void DeskButton::UpdateAvatar(const Desk* active_desk) {
       if (auto* summary =
               desk_profiles_delegate->GetProfilesSnapshotByProfileId(
                   active_desk->lacros_profile_id())) {
+        profile_ = *summary;
         desk_avatar_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
             summary->icon, skia::ImageOperations::RESIZE_BEST,
             kDeskButtonAvatarSize);
@@ -313,9 +292,23 @@ void DeskButton::UpdateAvatar(const Desk* active_desk) {
 }
 
 void DeskButton::UpdateLocaleSpecificSettings() {
-  const Desk* active_desk = DesksController::Get()->active_desk();
-  SetAccessibleName(l10n_util::GetStringFUTF16(IDS_SHELF_DESK_BUTTON_TITLE,
-                                               active_desk->name()));
+  // Update the accessible name.
+  DesksController* desk_controller = DesksController::Get();
+  const Desk* active_desk = desk_controller->active_desk();
+  if (desk_avatar_view_ && desk_avatar_view_->GetVisible()) {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_SHELF_DESK_BUTTON_TITLE_WITH_PROFILE_AVATAR, active_desk->name(),
+        profile_.name, profile_.email,
+        base::NumberToString16(desk_controller->GetDeskIndex(active_desk) + 1),
+        base::NumberToString16(desk_controller->GetNumberOfDesks())));
+  } else {
+    SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_SHELF_DESK_BUTTON_TITLE_NO_PROFILE_AVATAR, active_desk->name(),
+        base::NumberToString16(desk_controller->GetDeskIndex(active_desk) + 1),
+        base::NumberToString16(desk_controller->GetNumberOfDesks())));
+  }
+
+  // Update the button text since the default desk name can be locale specific.
   desk_name_label_->SetText(GetDeskNameLabelText(active_desk));
 }
 

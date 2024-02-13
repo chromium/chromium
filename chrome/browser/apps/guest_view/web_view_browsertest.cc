@@ -303,7 +303,7 @@ class SelectControlWaiter : public aura::WindowObserver,
   SelectControlWaiter& operator=(const SelectControlWaiter&) = delete;
   ~SelectControlWaiter() override {
     aura::Env::GetInstance()->RemoveObserver(this);
-    for (auto* window : observed_windows_) {
+    for (aura::Window* window : observed_windows_) {
       window->RemoveObserver(this);
     }
   }
@@ -335,7 +335,7 @@ class SelectControlWaiter : public aura::WindowObserver,
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::set<aura::Window*> observed_windows_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> observed_windows_;
   bool wait_for_widget_shown_ = false;
 };
 
@@ -3915,17 +3915,7 @@ class WebViewCaptureTest : public WebViewTest {
   }
 };
 
-// TODO(crbug.com/1087381): Flaky on mac
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) ||             \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-     defined(ADDRESS_SANITIZER))
-#define MAYBE_Shim_TestZoomAPI DISABLED_Shim_TestZoomAPI
-#else
-#define MAYBE_Shim_TestZoomAPI Shim_TestZoomAPI
-#endif
-IN_PROC_BROWSER_TEST_F(WebViewTest, MAYBE_Shim_TestZoomAPI) {
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestZoomAPI) {
   TestHelper("testZoomAPI", "web_view/shim", NO_TEST_SERVER);
 }
 
@@ -4017,8 +4007,7 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestPerOriginZoomMode) {
   TestHelper("testPerOriginZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 
-// TODO(crbug.com/935665): Test has flaky failures on all platforms.
-IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_Shim_TestPerViewZoomMode) {
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestPerViewZoomMode) {
   TestHelper("testPerViewZoomMode", "web_view/shim", NO_TEST_SERVER);
 }
 

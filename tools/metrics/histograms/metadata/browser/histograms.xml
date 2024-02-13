@@ -61,9 +61,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ChromeOS.HatsStatus" enum="HatsStatus"
-    expires_after="2024-06-09">
+    expires_after="2024-08-11">
   <owner>aalsum@chromium.org</owner>
-  <owner>cros-telemetry@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
   <summary>
     Records the stage up to which the user interacted with the HaTS Chrome OS
     survey. This is needed in addition to the Hats metrics data since Chrome OS
@@ -333,8 +333,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Browser.MainThreadsCongestion.ExtensionContentScripts.{NumExtensions}"
+    units="janks" expires_after="2024-06-02">
+  <owner>joenotcharles@google.com</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    This metric is emitted every 30 seconds after main message loop start, when
+    there is user activity. Each 30 second duration is divided into 100ms
+    intervals. This metric counts the number of these intervals that were
+    &quot;congested&quot;. An interval is congested if during it the UI or IO
+    thread executes an &quot;important&quot; task that was queued more than 100
+    ms ago, or a non-important task or a native event handler that started
+    executing more than 100 ms ago. See
+    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
+    for more details.
+
+    This metric is split by the estimated number of extensions that ran content
+    scripts in the pages that were visible during the interval. It is only
+    recorded if there were visible pages. This version is used for
+    {NumExtensions}.
+  </summary>
+  <token key="NumExtensions">
+    <variant name="0" summary="0 extensions"/>
+    <variant name="1" summary="1 extension"/>
+    <variant name="2" summary="2 or 3 extensions"/>
+    <variant name="4" summary="4 to 7 extensions"/>
+    <variant name="8" summary="8 to 15 extensions"/>
+    <variant name="16" summary="16 or more extensions"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.MainThreadsCongestion.Used" units="janks"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -398,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion{UsageScenario}" units="janks"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -642,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabService.DiskUsageAtStartup" units="KB"
-    expires_after="2024-05-27">
+    expires_after="2024-08-11">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -758,7 +789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TabSwitchResult3{TabSwitchingType}"
-    enum="TabSwitchResult2" expires_after="2024-06-02">
+    enum="TabSwitchResult2" expires_after="2024-08-04">
   <owner>fdoray@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -770,7 +801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalIncompleteSwitchDuration3{TabSwitchingType}"
-    units="ms" expires_after="2024-06-02">
+    units="ms" expires_after="2024-08-04">
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
@@ -784,7 +815,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Tabs.TotalSwitchDuration3{TabSwitchingType}"
-    units="ms" expires_after="2024-06-02">
+    units="ms" expires_after="2024-08-04">
   <owner>jonross@chromium.org</owner>
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
@@ -822,12 +853,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.BlockedByFilterURL"
-    enum="RenderProcessHostBlockedURLReason" expires_after="2024-07-06">
+    enum="RenderProcessHostBlockedURLReason" expires_after="2025-02-05">
   <owner>creis@chromium.org</owner>
   <owner>site-isolation-dev@chromium.org</owner>
   <summary>
     Recorded when RenderProcessHostImpl::FilterURL detects a disallowed URL sent
-    by the renderer process and rewrites it to about:blank#blocked.
+    by the renderer process and rewrites it to about:blank#blocked. See also
+    Navigation.Renderer.BlockedForFilterURL for cases caught earlier in the
+    renderer process, and https://crbug.com/40066983.
   </summary>
 </histogram>
 
@@ -1111,6 +1144,18 @@ chromium-metrics-reviews@google.com.
     &quot;AppData/Local/Google/BrowserSwitcher&quot; directory was successfully
     moved to its final destination (&quot;cache.dat&quot;) after writing its
     contents. Windows only.
+  </summary>
+</histogram>
+
+<histogram name="BrowserSwitcher.ChromeLaunch.IsFromBrowserSwitcher"
+    enum="Boolean" expires_after="2024-03-25">
+  <owner>nicolaso@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Whether or not Chrome was launched by the Legacy Browser Support for Edge
+    extension's native host. This indicates an automatic Edge=&gt;Chrome or
+    IE=&gt;Chrome transition. Recorded whenever Chrome is launched by any means.
+    Only recorded on Windows.
   </summary>
 </histogram>
 
@@ -1399,7 +1444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SidePanel.{SidePanelEntry}.TimeFromEntryTriggerToShown"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-08-04">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_SHELF_UTILS_H_
 
 #include <string>
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "components/services/app_service/public/cpp/app_types.h"
 
 class Profile;
@@ -29,19 +30,19 @@ std::string GetGuestOsShelfAppId(Profile* profile,
                                  const std::string* window_startup_id);
 
 // Returns whether the app_id belongs to an unregistered/generic Crostini app.
-bool IsUnregisteredCrostiniShelfAppId(base::StringPiece shelf_app_id);
+bool IsUnregisteredCrostiniShelfAppId(std::string_view shelf_app_id);
 
 // Returns whether the app_id belongs to an unregistered/generic GuestOS app.
-bool IsUnregisteredGuestOsShelfAppId(base::StringPiece shelf_app_id);
+bool IsUnregisteredGuestOsShelfAppId(std::string_view shelf_app_id);
 
 // Returns whether the app_id is a Crostini app id. This includes both
 // registered and unregistered Crostini apps.
 bool IsCrostiniShelfAppId(const Profile* profile,
-                          base::StringPiece shelf_app_id);
+                          std::string_view shelf_app_id);
 
 // Returns the app_type for the given shelf app_id, based on which VM its
 // window_id comes from, or vm_tools::apps::UNKNOWN if it can't be determined.
-apps::AppType GetAppType(Profile* profile, base::StringPiece shelf_app_id);
+apps::AppType GetAppType(Profile* profile, std::string_view shelf_app_id);
 
 }  // namespace guest_os
 

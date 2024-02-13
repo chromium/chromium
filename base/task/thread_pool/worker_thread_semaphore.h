@@ -38,7 +38,8 @@ class BASE_EXPORT WorkerThreadSemaphore : public WorkerThread {
                         std::unique_ptr<Delegate> delegate,
                         TrackedRef<TaskTracker> task_tracker,
                         size_t sequence_num,
-                        const CheckedLock* predecessor_lock = nullptr);
+                        const CheckedLock* predecessor_lock = nullptr,
+                        void* flow_terminator = nullptr);
 
   WorkerThreadSemaphore(const WorkerThread&) = delete;
   WorkerThreadSemaphore& operator=(const WorkerThread&) = delete;

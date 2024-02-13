@@ -23,6 +23,11 @@ BASE_DECLARE_FEATURE(kSupervisedPrefsControlledBySupervisedStore);
 BASE_DECLARE_FEATURE(kEnableManagedByParentUi);
 extern const base::FeatureParam<std::string> kManagedByParentUiMoreInfoUrl;
 
+// Applies the updated extension approval flow, which can skip parent-approvals
+// on extension installations.
+BASE_DECLARE_FEATURE(
+    kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 #endif

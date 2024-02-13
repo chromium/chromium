@@ -10,8 +10,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
-import {BrowserProxyImpl, SystemLog} from './browser_proxy.js';
-import {LogEntryElement} from './log_entry.js';
+import type {SystemLog} from './browser_proxy.js';
+import {BrowserProxyImpl} from './browser_proxy.js';
+import type {LogEntryElement} from './log_entry.js';
 import {parseSystemLog} from './log_parser.js';
 
 // Limit file size to 10 MiB to prevent hanging on accidental upload.

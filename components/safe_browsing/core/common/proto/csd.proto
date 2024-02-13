@@ -2358,6 +2358,8 @@ message ExtensionTelemetryReportRequest {
   // The telemetry configuration version used to generate this report.
   // This field is not present if the default configuration is used.
   optional uint32 configuration_version = 3;
+  // Tracks the current setting of developer mode in chrome://extensions page.
+  optional bool developer_mode_enabled = 4;
 }
 
 message ExtensionTelemetryReportResponse {

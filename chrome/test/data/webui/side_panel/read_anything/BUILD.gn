@@ -10,6 +10,7 @@ build_webui_tests("build") {
   is_chrome_untrusted = true
   files = [
     "checkmark_visible_on_selected.ts",
+    "voice_selection_menu_test.ts",
     "fake_reading_mode.ts",
   ]
 
@@ -20,5 +21,9 @@ build_webui_tests("build") {
   ts_path_mappings = [ "chrome-untrusted://read-anything-side-panel.top-chrome/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/side_panel/read_anything/tsc/*",
                            target_gen_dir) ]
-  ts_deps = [ "//chrome/browser/resources/side_panel/read_anything:build_ts" ]
+  ts_deps = [
+    "//chrome/browser/resources/side_panel/read_anything:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+  ]
 }

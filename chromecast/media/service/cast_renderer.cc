@@ -30,7 +30,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_resource.h"
 #include "media/base/renderer_client.h"
-#include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 namespace chromecast {
 namespace media {

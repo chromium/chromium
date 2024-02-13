@@ -19,6 +19,7 @@ public class HistoryItem extends TimedItem {
     private final GURL mUrl;
     private final String mDomain;
     private final String mTitle;
+    private final String mAppId;
     private final boolean mWasBlockedVisit;
     private final long mMostRecentJavaTimestamp;
     private final long[] mNativeTimestampList;
@@ -30,6 +31,8 @@ public class HistoryItem extends TimedItem {
      * @param url The url for this item.
      * @param domain The string to display for the item's domain.
      * @param title The string to display for the item's title.
+     * @param appId ID of the app that this item was generated for. {@code null} if this is
+     *     generated for BrApp, or the app can't be identified.
      * @param mostRecentJavaTimestamp Most recent Java compatible navigation time.
      * @param nativeTimestamps Microsecond resolution navigation times.
      * @param blockedVisit Whether the visit to this item was blocked when it was attempted.
@@ -38,6 +41,7 @@ public class HistoryItem extends TimedItem {
             GURL url,
             String domain,
             String title,
+            String appId,
             long mostRecentJavaTimestamp,
             long[] nativeTimestamps,
             boolean blockedVisit) {
@@ -48,6 +52,7 @@ public class HistoryItem extends TimedItem {
                         ? ContextUtils.getApplicationContext()
                                 .getString(R.string.android_history_blocked_site)
                         : TextUtils.isEmpty(title) ? url.getSpec() : title;
+        mAppId = appId;
         mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
         mNativeTimestampList = Arrays.copyOf(nativeTimestamps, nativeTimestamps.length);
         mWasBlockedVisit = blockedVisit;
@@ -66,6 +71,14 @@ public class HistoryItem extends TimedItem {
     /** @return The string to display for the item's title. */
     public String getTitle() {
         return mTitle;
+    }
+
+    /**
+     * @return The app ID associated with the history item. Can be {@code null} on BrApp, or if app
+     *     can't be identified.
+     */
+    public String getAppId() {
+        return mAppId;
     }
 
     /** @return Whether the visit to this item was blocked when it was attempted. */

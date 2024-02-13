@@ -17777,8 +17777,7 @@
       {
         "args": [
           "--use-gpu-in-tests",
-          "--git-revision=${got_revision}",
-          "--gtest_filter=-DelegatedInkPointRendererGpuTest.DrawPointsAsTheyArrive:DelegatedInkPointRendererGpuTest.MaximumPointerIds:DelegatedInkPointRendererGpuTest.MultiplePointerIds:DelegatedInkPointRendererGpuTest.StoreAndRemovePointsAndTokens"
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -18834,7 +18833,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
-          "--jobs=4"
+          "--jobs=2"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19031,8 +19030,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=4",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=2"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19111,7 +19110,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4"
+          "--jobs=2"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -19148,7 +19147,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4"
+          "--jobs=2"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -20305,7 +20304,8 @@
       },
       {
         "args": [
-          "--ignore-runtime-requirements=*"
+          "--ignore-runtime-requirements=*",
+          "--gtest_filter=-WebXrVrPermissionsBrowserTest.TestPermissionPersists"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

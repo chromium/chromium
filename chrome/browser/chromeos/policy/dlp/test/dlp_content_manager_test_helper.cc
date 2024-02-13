@@ -43,15 +43,25 @@ DlpContentManagerTestHelper::~DlpContentManagerTestHelper() {
 
 void DlpContentManagerTestHelper::ChangeConfidentiality(
     content::WebContents* web_contents,
-    const DlpContentRestrictionSet& restrictions) {
+    DlpContentRestrictionSet restrictions) {
   DCHECK(manager_);
+  for (auto& restriction_lvl_url : restrictions.restrictions_) {
+    if (restriction_lvl_url.level != DlpRulesManager::Level::kNotSet) {
+      restriction_lvl_url.url = web_contents->GetLastCommittedURL();
+    }
+  }
   manager_->OnConfidentialityChanged(web_contents, restrictions);
 }
 
 void DlpContentManagerTestHelper::UpdateConfidentiality(
     content::WebContents* web_contents,
-    const DlpContentRestrictionSet& restrictions) {
+    DlpContentRestrictionSet restrictions) {
   DCHECK(manager_);
+  for (auto& restriction_lvl_url : restrictions.restrictions_) {
+    if (restriction_lvl_url.level != DlpRulesManager::Level::kNotSet) {
+      restriction_lvl_url.url = web_contents->GetLastCommittedURL();
+    }
+  }
   manager_->UpdateConfidentiality(web_contents, restrictions);
 }
 

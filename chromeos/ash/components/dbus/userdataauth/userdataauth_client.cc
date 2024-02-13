@@ -252,6 +252,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void UpdateAuthFactorMetadata(
+      const ::user_data_auth::UpdateAuthFactorMetadataRequest& request,
+      UpdateAuthFactorMetadataCallback callback) override {
+    CallProtoMethod(::user_data_auth::kUpdateAuthFactorMetadata,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void RemoveAuthFactor(
       const ::user_data_auth::RemoveAuthFactorRequest& request,
       RemoveAuthFactorCallback callback) override {

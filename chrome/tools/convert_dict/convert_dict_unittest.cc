@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/i18n/icu_string_conversions.h"
@@ -116,15 +117,15 @@ void RunDictionaryTest(const char* codepage,
     writer.SetWords(dic_reader.words());
 
     std::string bdict_data = writer.GetBDict();
+    base::span<const uint8_t> bytes = base::as_byte_span(bdict_data);
     VerifyWords(dic_reader.words(), bdict_data);
-    EXPECT_TRUE(hunspell::BDict::Verify(bdict_data.data(), bdict_data.size()));
+    EXPECT_TRUE(hunspell::BDict::Verify(bytes));
 
     // Trim the end of this BDICT and verify our verifier tells these trimmed
     // BDICTs are corrupted.
     for (size_t i = 1; i < bdict_data.size(); ++i) {
       SCOPED_TRACE(base::StringPrintf("i = %" PRIuS, i));
-      EXPECT_FALSE(hunspell::BDict::Verify(bdict_data.data(),
-                                           bdict_data.size() - i));
+      EXPECT_FALSE(hunspell::BDict::Verify(bytes.first(i)));
     }
   }
 

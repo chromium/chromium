@@ -181,7 +181,7 @@ void SwipeHomeToOverviewController::FinalizeDragAndShowOverview() {
   state_ = State::kFinished;
   overview_transition_threshold_y_ = 0;
 
-  if (features::AreContextualNudgesEnabled()) {
+  if (features::IsHideShelfControlsInTabletModeEnabled()) {
     contextual_tooltip::HandleGesturePerformed(
         Shell::Get()->session_controller()->GetActivePrefService(),
         contextual_tooltip::TooltipType::kHomeToOverview);

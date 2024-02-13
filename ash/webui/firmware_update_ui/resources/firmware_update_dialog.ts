@@ -161,15 +161,6 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
       this.isInitiallyInflight = false;
     }
     this.installationProgress = update;
-    if (this.isUpdateInProgress() && this.isDialogOpen()) {
-      // 'aria-hidden' is used to prevent ChromeVox from announcing
-      // the body text automatically. Setting 'aria-hidden' to false
-      // here allows ChromeVox to announce the body text when a user
-      // navigates to it.
-      assert(this.shadowRoot);
-      this.shadowRoot.querySelector('#updateDialogBody')!.setAttribute(
-          'aria-hidden', 'false');
-    }
   }
 
   protected installationProgressChanged(
@@ -443,6 +434,12 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
   private isWaitingForUserAction(): boolean {
     return isAppV2Enabled() && this.lastDeviceRequestId !== null &&
         this.installationProgress.state === UpdateState.kWaitingForUser;
+  }
+
+  private getDialogBodyAriaLive(): string {
+    // Use assertive aria-live value to ensure user requests are announced
+    // before they time out.
+    return this.isWaitingForUserAction() ? 'assertive' : '';
   }
 }
 

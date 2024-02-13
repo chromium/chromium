@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -24,7 +25,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"
@@ -222,7 +222,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
       float refresh_rate,
       bool is_interlaced,
       VariableRefreshRateState variable_refresh_rate_state,
-      const absl::optional<float>& vsync_rate_min);
+      const std::optional<float>& vsync_rate_min);
 
   // Register stored rotation properties for the internal display.
   void RegisterDisplayRotationProperties(bool rotation_lock,
@@ -353,8 +353,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
     should_restore_mirror_mode_from_display_prefs_ = value;
   }
 
-  const absl::optional<MixedMirrorModeParams>& mixed_mirror_mode_params()
-      const {
+  const std::optional<MixedMirrorModeParams>& mixed_mirror_mode_params() const {
     return mixed_mirror_mode_params_;
   }
 
@@ -362,7 +361,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // mixed mirror mode in the next display configuration. (Use SetMirrorMode()
   // to immediately switch to mixed mirror mode.)
   void set_mixed_mirror_mode_params(
-      const absl::optional<MixedMirrorModeParams> mixed_params) {
+      const std::optional<MixedMirrorModeParams> mixed_params) {
     mixed_mirror_mode_params_ = mixed_params;
   }
 
@@ -430,7 +429,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // the specified destination displays and all other connected displays will be
   // extended.
   void SetMirrorMode(MirrorMode mode,
-                     const absl::optional<MixedMirrorModeParams>& mixed_params);
+                     const std::optional<MixedMirrorModeParams>& mixed_params);
 
   // Used to emulate display change when run in a desktop environment instead
   // of on a device.
@@ -453,7 +452,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
       const ui::TouchscreenDevice& touchdevice);
   void ClearTouchCalibrationData(
       int64_t display_id,
-      absl::optional<ui::TouchscreenDevice> touchdevice);
+      std::optional<ui::TouchscreenDevice> touchdevice);
   void UpdateZoomFactor(int64_t display_id, float zoom_factor);
   bool HasUnassociatedDisplay() const;
 
@@ -735,7 +734,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // Not empty if mixed mirror mode should be turned on (the specified source
   // display is mirrored to the specified destination displays). Empty if mixed
   // mirror mode is disabled.
-  absl::optional<MixedMirrorModeParams> mixed_mirror_mode_params_;
+  std::optional<MixedMirrorModeParams> mixed_mirror_mode_params_;
 
   // This is incremented whenever a BeginEndNotifier is created and decremented
   // when destroyed. BeginEndNotifier uses this to track when it should call
@@ -745,7 +744,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // State accumulated during a display configuration update. Created when
   // BeginEndNotifier is created and propagated in OnDidProcessDisplayChanges()
   // when the last BeginEndNotifier is destroyed.
-  absl::optional<PendingDisplayChanges> pending_display_changes_;
+  std::optional<PendingDisplayChanges> pending_display_changes_;
 
   std::unique_ptr<display::DisplayConfigurator> display_configurator_;
 

@@ -53,7 +53,8 @@ class SpeedMenuSheetContent extends MenuSheetContent {
             String speedString =
                     mContext.getResources()
                             .getString(R.string.readaloud_speed, speedFormatter(mSpeeds[i]));
-            MenuItem item = mMenu.addItem(i, 0, speedString, MenuItem.Action.RADIO);
+            MenuItem item =
+                    mMenu.addItem(i, 0, speedString, /* header= */ null, MenuItem.Action.RADIO);
             if (mSpeeds[i] == currentSpeed) {
                 item.setValue(true);
             }

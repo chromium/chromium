@@ -6,25 +6,32 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/focus_mode/focus_mode_histogram_names.h"
 #include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 
 namespace ash {
 
 namespace {
+
+constexpr char kFocusModeEndingMomentNudgeId[] =
+    "focus_mode_ending_moment_nudge";
 
 FocusModeController* g_instance = nullptr;
 
@@ -47,6 +54,53 @@ void MaybeUpdateDndNotification() {
   if (auto* notification_controller =
           DoNotDisturbNotificationController::Get()) {
     notification_controller->MaybeUpdateNotification();
+  }
+}
+
+FocusModeTray* GetFocusModeTrayInActiveWindow() {
+  auto* window = Shell::Get()->GetRootWindowForNewWindows();
+  if (!window) {
+    return nullptr;
+  }
+
+  auto* root_window_controller = RootWindowController::ForWindow(window);
+  if (!root_window_controller) {
+    return nullptr;
+  }
+
+  auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
+  if (!status_area_widget) {
+    return nullptr;
+  }
+
+  return status_area_widget->focus_mode_tray();
+}
+
+void ShowEndingMomentNudge() {
+  auto* tray = GetFocusModeTrayInActiveWindow();
+  if (!tray) {
+    return;
+  }
+
+  // NOTE: we anchor to `tray->image_view()` in order to center the nudge
+  // properly because there is extra spacing on the actual `FocusModeTray` view.
+  AnchoredNudgeData nudge_data(
+      kFocusModeEndingMomentNudgeId,
+      NudgeCatalogName::kFocusModeEndingMomentNudge,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_ENDING_MOMENT_NUDGE),
+      tray->image_view());
+  nudge_data.arrow = views::BubbleBorder::BOTTOM_CENTER;
+  nudge_data.duration = NudgeDuration::kDefaultDuration;
+  nudge_data.anchored_to_shelf = true;
+  nudge_data.click_callback =
+      base::BindRepeating(&FocusModeTray::ShowBubble, base::Unretained(tray));
+  AnchoredNudgeManager::Get()->Show(nudge_data);
+}
+
+void HideEndingMomentNudge() {
+  if (AnchoredNudgeManager* nudge_manager = AnchoredNudgeManager::Get()) {
+    nudge_manager->Cancel(kFocusModeEndingMomentNudgeId);
   }
 }
 
@@ -178,6 +232,8 @@ void FocusModeController::ResetFocusSession() {
     timer_.Stop();
   }
 
+  HideEndingMomentNudge();
+
   SetFocusTrayVisibility(false);
 
   if (IsQuietModeOnSetByFocusMode()) {
@@ -208,6 +264,8 @@ void FocusModeController::EnablePersistentEnding() {
   }
   // Update the session to stay in the ending moment state.
   current_session_->set_persistent_ending();
+
+  HideEndingMomentNudge();
 }
 
 void FocusModeController::SetInactiveSessionDuration(
@@ -331,6 +389,7 @@ void FocusModeController::StartFocusSession(
 
   CloseSystemTrayBubble();
   SetFocusTrayVisibility(true);
+  HideEndingMomentNudge();
 
   for (auto& observer : observers_) {
     observer.OnFocusModeChanged(/*in_focus_session=*/true);
@@ -356,6 +415,7 @@ void FocusModeController::OnTimerTick() {
                      &FocusModeController::ResetFocusSession,
                      base::TimeTicks::Now());
         MaybeUpdateDndNotification();
+        ShowEndingMomentNudge();
       } else {
         current_session_->set_persistent_ending();
       }

@@ -478,7 +478,7 @@ TEST_F(NotificationListTest, GetNotificationsByAppId) {
   }
 
   for (std::string app_id : {app_id1, app_id2}) {
-    for (auto* notification :
+    for (Notification* notification :
          notification_list_->GetNotificationsByAppId(app_id)) {
       EXPECT_EQ(app_id, notification->notifier_id().id);
     }
@@ -546,7 +546,7 @@ TEST_F(NotificationListTest, GetNotificationsByOriginUrl) {
   }
 
   for (GURL url : {kUrl1, kUrl2}) {
-    for (auto* notification :
+    for (Notification* notification :
          notification_list_->GetNotificationsByOriginUrl(url)) {
       EXPECT_EQ(url, notification->origin_url());
     }

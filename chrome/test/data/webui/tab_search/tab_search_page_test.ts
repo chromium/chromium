@@ -4,7 +4,8 @@
 
 import {MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, RecentlyClosedTab, Tab, TabGroupColor, TabSearchApiProxyImpl, TabSearchItem, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
+import type {ProfileData, RecentlyClosedTab, Tab, TabSearchItem, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabGroupColor, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -697,6 +698,7 @@ suite('TabSearchAppTest', () => {
       recentlyClosedTabs: SAMPLE_RECENTLY_CLOSED_DATA,
       recentlyClosedSectionExpanded: true,
     }));
+    assertEquals(1, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
     assertEquals(3, queryRows().length);
 
     const recentlyClosedTitleItem = queryListTitle()[1];
@@ -707,15 +709,18 @@ suite('TabSearchAppTest', () => {
     assertTrue(!!recentlyClosedTitleExpandButton);
 
     // Collapse the `Recently Closed` section and assert item count.
-    recentlyClosedTitleExpandButton!.click();
-    const [expanded] =
+    testProxy.resetResolver('saveRecentlyClosedExpandedPref');
+    recentlyClosedTitleExpandButton.click();
+    let [expanded] =
         await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
     assertFalse(expanded);
     assertEquals(1, queryRows().length);
 
     // Expand the `Recently Closed` section and assert item count.
-    recentlyClosedTitleExpandButton!.click();
-    assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
+    testProxy.resetResolver('saveRecentlyClosedExpandedPref');
+    recentlyClosedTitleExpandButton.click();
+    [expanded] = await testProxy.whenCalled('saveRecentlyClosedExpandedPref');
+    assertTrue(expanded);
     assertEquals(3, queryRows().length);
   });
 

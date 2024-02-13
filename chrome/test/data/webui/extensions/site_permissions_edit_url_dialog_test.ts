@@ -5,7 +5,8 @@
 /** @fileoverview Suite of tests for site-permissions-edit-url-dialog. */
 import 'chrome://extensions/extensions.js';
 
-import {getSitePermissionsPatternFromSite, SitePermissionsEditUrlDialogElement} from 'chrome://extensions/extensions.js';
+import type {SitePermissionsEditUrlDialogElement} from 'chrome://extensions/extensions.js';
+import {getSitePermissionsPatternFromSite} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

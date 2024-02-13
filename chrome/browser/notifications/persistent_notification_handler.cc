@@ -137,14 +137,11 @@ void PersistentNotificationHandler::OnClick(
     site_engagement::SiteEngagementService::Get(profile)
         ->HandleNotificationInteraction(origin);
 
-    if (base::FeatureList::IsEnabled(
-            permissions::features::kNotificationInteractionHistory)) {
-      auto* service =
-          NotificationsEngagementServiceFactory::GetForProfile(profile);
-      // This service might be missing for incognito profiles and in tests.
-      if (service) {
-        service->RecordNotificationInteraction(origin);
-      }
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile);
+    // This service might be missing for incognito profiles and in tests.
+    if (service) {
+      service->RecordNotificationInteraction(origin);
     }
   }
 

@@ -24,4 +24,3 @@ rootWebArea
 ++++++++treeItem name='Selected illegal' selected=true
 ++++++grid
 ++++++++columnHeader name='Sort illegal' sortDirection=other
-++++++genericContainer ignored invisible

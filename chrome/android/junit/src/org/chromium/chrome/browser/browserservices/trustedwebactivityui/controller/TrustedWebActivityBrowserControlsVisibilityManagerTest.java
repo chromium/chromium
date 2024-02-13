@@ -126,11 +126,9 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
 
     private BrowserServicesIntentDataProvider buildWebApkIntentDataProvider(
             @DisplayMode.EnumType int displayMode) {
-        WebApkIntentDataProviderBuilder intentDataProviderBuilder =
-                new WebApkIntentDataProviderBuilder(
-                        "org.chromium.webapk.abcd", "https://pwa.rocks/");
-        intentDataProviderBuilder.setDisplayMode(displayMode);
-        return intentDataProviderBuilder.build();
+        return new WebApkIntentDataProviderBuilder("org.chromium.webapk.abcd", "https://pwa.rocks/")
+                .setDisplayMode(displayMode)
+                .build();
     }
 
     private TrustedWebActivityBrowserControlsVisibilityManager buildController(

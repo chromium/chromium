@@ -26,7 +26,6 @@ namespace {
 static const GlobalRenderFrameHostId kFrameId = {20, 30};
 static const int kPid = 35;
 static const int kLid = 75;
-static const char kConstraints[] = "c";
 static const char kRtcConfiguration[] = "r";
 static const char kUrl[] = "u";
 
@@ -84,7 +83,7 @@ TEST_F(WebRtcInternalsMessageHandlerTest, DontRunJSBeforeNavigationCommitted) {
 
   NavigateAndCommit(example_url);
   webrtc_internals.OnPeerConnectionAdded(kFrameId, kPid, kLid, kUrl,
-                                         kRtcConfiguration, kConstraints);
+                                         kRtcConfiguration);
   base::RunLoop().RunUntilIdle();
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(

@@ -5,15 +5,20 @@
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 
 #include <memory>
+
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
-class DocumentLoadTimingTest : public testing::Test {};
+class DocumentLoadTimingTest : public testing::Test {
+ private:
+  test::TaskEnvironment task_environment_;
+};
 
 TEST_F(DocumentLoadTimingTest, ensureValidNavigationStartAfterEmbedder) {
   auto dummy_page = std::make_unique<DummyPageHolder>();

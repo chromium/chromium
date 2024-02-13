@@ -1086,14 +1086,6 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Set the product channel for crash reports.
-  if (!crash_reporter::IsCrashpadEnabled()) {
-    breakpad::SetChannelCrashKey(
-        chrome::GetChannelName(chrome::WithExtendedStable(true)));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_X86_64)
   // The use of Rosetta to run the x64 version of Chromium on Arm is neither
@@ -1490,6 +1482,14 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
     headless::HeadlessSelectFileDialogFactory::SetUp();
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(CHROME_FOR_TESTING)
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kChromeForTestingAllowed)) {
+    LOG(ERROR) << "Chrome for Testing is disallowed by the system admin.";
+    return static_cast<int>(chrome::RESULT_CODE_ACTION_DISALLOWED_BY_POLICY);
+  }
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kMakeDefaultBrowser)) {

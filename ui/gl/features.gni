@@ -26,10 +26,7 @@ declare_args() {
   # Independent of use_dawn, which controls whether Dawn is used in Chromium.
   build_dawn_tests = is_mac || is_win || is_linux || is_chromeos || is_android
 
-  enable_validating_command_decoder =
-      !is_win && !is_apple &&
-      !(is_linux && !is_castos && !is_chromeos_lacros) && !is_fuchsia &&
-      !is_chromeos
+  enable_validating_command_decoder = is_android
 }
 
 declare_args() {

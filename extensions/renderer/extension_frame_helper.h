@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -49,7 +50,7 @@ class ExtensionFrameHelper
   // criteria. A |browser_window_id| of extension_misc::kUnknownWindowId
   // specifies "all", as does a |view_type| of mojom::ViewType::kInvalid.
   static std::vector<content::RenderFrame*> GetExtensionFrames(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       int browser_window_id,
       int tab_id,
       mojom::ViewType view_type);
@@ -59,7 +60,7 @@ class ExtensionFrameHelper
   // current context.
   // Returns an empty v8::Array if no frames are found.
   static v8::Local<v8::Array> GetV8MainFrames(v8::Local<v8::Context> context,
-                                              const std::string& extension_id,
+                                              const ExtensionId& extension_id,
                                               int browser_window_id,
                                               int tab_id,
                                               mojom::ViewType view_type);
@@ -67,14 +68,14 @@ class ExtensionFrameHelper
   // Returns the main frame of the extension's background page, or null if there
   // isn't one in this process.
   static content::RenderFrame* GetBackgroundPageFrame(
-      const std::string& extension_id);
+      const ExtensionId& extension_id);
   // Same as above, but returns the background page's main frame, or
   // v8::Undefined if there is none. Note: This will assert that the
   // isolate's current context can access the returned object; callers should
   // ensure that the current context is correct.
   static v8::Local<v8::Value> GetV8BackgroundPageMainFrame(
       v8::Isolate* isolate,
-      const std::string& extension_id);
+      const ExtensionId& extension_id);
 
   // Finds a neighboring extension frame with the same extension as the one
   // owning |relative_to_frame| (if |relative_to_frame| is not an extension
@@ -112,14 +113,14 @@ class ExtensionFrameHelper
   void SetTabId(int32_t id) override;
   void AppWindowClosed(bool send_onclosed) override;
   void NotifyRenderViewType(mojom::ViewType view_type) override;
-  void MessageInvoke(const std::string& extension_id,
+  void MessageInvoke(const ExtensionId& extension_id,
                      const std::string& module_name,
                      const std::string& function_name,
                      base::Value::List args) override;
   void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                    ExecuteCodeCallback callback) override;
   void ExecuteDeclarativeScript(int32_t tab_id,
-                                const std::string& extension_id,
+                                const ExtensionId& extension_id,
                                 const std::string& script_id,
                                 const GURL& url) override;
   void UpdateBrowserWindowId(int32_t window_id) override;

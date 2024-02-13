@@ -50,7 +50,7 @@ KeyboardShortcutView::KeyboardShortcutView(
 
 KeyboardShortcutView::~KeyboardShortcutView() = default;
 
-BEGIN_METADATA(KeyboardShortcutView, views::FlexLayoutView)
+BEGIN_METADATA(KeyboardShortcutView)
 END_METADATA
 
 }  // namespace ash

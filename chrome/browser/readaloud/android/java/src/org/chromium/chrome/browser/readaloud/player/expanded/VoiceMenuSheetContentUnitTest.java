@@ -68,9 +68,9 @@ public class VoiceMenuSheetContentUnitTest {
                         .with(
                                 PlayerProperties.VOICES_LIST,
                                 List.of(
-                                        createVoice("en", "a", "voice a"),
-                                        createVoice("en", "b", "voice b"),
-                                        createVoice("en", "c", "voice c")))
+                                        createVoice("a", "voice a"),
+                                        createVoice("b", "voice b"),
+                                        createVoice("c", "voice c")))
                         .with(PlayerProperties.SELECTED_VOICE_ID, "a")
                         .build();
         mContent = new VoiceMenuSheetContent(mActivity, mParent, mBottomSheetController, mModel);
@@ -101,17 +101,9 @@ public class VoiceMenuSheetContentUnitTest {
         mContent.setVoices(
                 List.of(
                         createVoice(
-                                "en",
-                                "d",
-                                "voice d",
-                                PlaybackVoice.Pitch.LOW,
-                                PlaybackVoice.Tone.SMOOTH),
+                                "a", "voice d", PlaybackVoice.Pitch.LOW, PlaybackVoice.Tone.SMOOTH),
                         createVoice(
-                                "en",
-                                "e",
-                                "voice e",
-                                PlaybackVoice.Pitch.MID,
-                                PlaybackVoice.Tone.CALM)));
+                                "e", "voice e", PlaybackVoice.Pitch.MID, PlaybackVoice.Tone.CALM)));
 
         assertEquals("voice d", getText(mMenu.getItem(0), R.id.item_label));
         assertEquals("Low-pitch, Smooth", getText(mMenu.getItem(0), R.id.item_sublabel));
@@ -191,10 +183,6 @@ public class VoiceMenuSheetContentUnitTest {
         return (RadioButton) item.findViewById(R.id.readaloud_radio_button);
     }
 
-    private static PlaybackVoice createVoice(String language, String id, String displayName) {
-        return createVoice(
-                language, id, displayName, PlaybackVoice.Pitch.NONE, PlaybackVoice.Tone.NONE);
-    }
 
     @Test
     public void testEmptyVoiceList() {
@@ -215,17 +203,9 @@ public class VoiceMenuSheetContentUnitTest {
         mContent.setVoices(
                 List.of(
                         createVoice(
-                                "en",
-                                "d",
-                                "voice d",
-                                PlaybackVoice.Pitch.LOW,
-                                PlaybackVoice.Tone.SMOOTH),
+                                "d", "voice d", PlaybackVoice.Pitch.LOW, PlaybackVoice.Tone.SMOOTH),
                         createVoice(
-                                "en",
-                                "e",
-                                "voice e",
-                                PlaybackVoice.Pitch.MID,
-                                PlaybackVoice.Tone.CALM)));
+                                "e", "voice e", PlaybackVoice.Pitch.MID, PlaybackVoice.Tone.CALM)));
 
         assertEquals("voice d", getText(mMenu.getItem(0), R.id.item_label));
         assertEquals("Low-pitch, Smooth", getText(mMenu.getItem(0), R.id.item_sublabel));
@@ -233,13 +213,36 @@ public class VoiceMenuSheetContentUnitTest {
         assertEquals("Mid-pitch, Calm", getText(mMenu.getItem(1), R.id.item_sublabel));
     }
 
+    @Test
+    public void testLocaleLabel() {
+        mContent.setVoices(
+                List.of(
+                        createVoice(
+                                "a", "voice d", PlaybackVoice.Pitch.LOW, PlaybackVoice.Tone.SMOOTH),
+                        createVoice(
+                                "e", "voice e", PlaybackVoice.Pitch.MID, PlaybackVoice.Tone.CALM),
+                        new PlaybackVoice(
+                                "en",
+                                "IN",
+                                "in",
+                                "voice in",
+                                PlaybackVoice.Pitch.MID,
+                                PlaybackVoice.Tone.CALM)));
+
+        assertEquals("English (United States)", getText(mMenu.getItem(0), R.id.item_header));
+        assertEquals("", getText(mMenu.getItem(1), R.id.item_header));
+        assertEquals("English (India)", getText(mMenu.getItem(2), R.id.item_header));
+    }
+
+    private static PlaybackVoice createVoice(String id, String displayName) {
+        return createVoice(id, displayName, PlaybackVoice.Pitch.NONE, PlaybackVoice.Tone.NONE);
+    }
+
     private static PlaybackVoice createVoice(
-            String language,
             String id,
             String displayName,
             @PlaybackVoice.Pitch int pitch,
             @PlaybackVoice.Tone int tone) {
-        return new PlaybackVoice(
-                language, /* accentRegionCode= */ null, id, displayName, pitch, tone);
+        return new PlaybackVoice("en", "US", id, displayName, pitch, tone);
     }
 }

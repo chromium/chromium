@@ -17,13 +17,30 @@ void MockQuicData::AddConnect(IoMode mode, int rv) {
 }
 
 void MockQuicData::AddRead(IoMode mode,
+                           std::unique_ptr<quic::QuicReceivedPacket> packet) {
+  reads_.emplace_back(mode, packet->data(), packet->length(),
+                      sequence_number_++,
+                      static_cast<uint8_t>(packet->ecn_codepoint()));
+  packets_.push_back(std::move(packet));
+}
+void MockQuicData::AddRead(IoMode mode,
                            std::unique_ptr<quic::QuicEncryptedPacket> packet) {
   reads_.emplace_back(mode, packet->data(), packet->length(),
-                      sequence_number_++);
+                      sequence_number_++, /*tos=*/0);
   packets_.push_back(std::move(packet));
 }
 void MockQuicData::AddRead(IoMode mode, int rv) {
   reads_.emplace_back(mode, rv, sequence_number_++);
+}
+
+void MockQuicData::AddReadPause() {
+  // Add a sentinel value that indicates a read pause.
+  AddRead(ASYNC, ERR_IO_PENDING);
+}
+
+void MockQuicData::AddReadPauseForever() {
+  // Add a sentinel value that indicates a read pause forever.
+  AddRead(SYNCHRONOUS, ERR_IO_PENDING);
 }
 
 void MockQuicData::AddWrite(IoMode mode,
@@ -42,6 +59,11 @@ void MockQuicData::AddWrite(IoMode mode,
                             std::unique_ptr<quic::QuicEncryptedPacket> packet) {
   writes_.emplace_back(mode, rv, sequence_number_++);
   packets_.push_back(std::move(packet));
+}
+
+void MockQuicData::AddWritePause() {
+  // Add a sentinel value that indicates a write pause.
+  AddWrite(ASYNC, ERR_IO_PENDING);
 }
 
 void MockQuicData::AddSocketDataToFactory(MockClientSocketFactory* factory) {

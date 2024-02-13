@@ -25,22 +25,15 @@ namespace ash {
 class PineContextMenuModel;
 
 class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
+  METADATA_HEADER(PineContentsView, views::BoxLayoutView)
+
  public:
-  METADATA_HEADER(PineContentsView);
-
-  // Temporary typedefs to describe a bunch of apps. An app is described by an
-  // app id and a vector of urls, which can be empty if the app is not Chrome.
-  using AppData = std::pair<std::string, std::vector<std::string>>;
-  using AppsData = std::vector<AppData>;
-
-  explicit PineContentsView(const gfx::ImageSkia& pine_image);
+  PineContentsView();
   PineContentsView(const PineContentsView&) = delete;
   PineContentsView& operator=(const PineContentsView&) = delete;
   ~PineContentsView() override;
 
-  static std::unique_ptr<views::Widget> Create(
-      aura::Window* root,
-      const gfx::ImageSkia& pine_image);
+  static std::unique_ptr<views::Widget> Create(aura::Window* root);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PineContextMenuModelTest,

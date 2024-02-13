@@ -1065,8 +1065,7 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
     if (world_ && world_->IsMainWorld()) {
       if (auto* tracker =
               ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-        parent_task_ =
-            tracker->RunningTask(ToScriptStateForMainWorld(&execution_context));
+        parent_task_ = tracker->RunningTask(execution_context.GetIsolate());
       }
     }
     async_task_context_.Schedule(&execution_context, "XMLHttpRequest.send");
@@ -2146,7 +2145,7 @@ XMLHttpRequest::MaybeCreateTaskAttributionScope() {
   //
   // TODO(crbug.com/1439971): Make this safe to do or move the logic into the
   // task attribution implementation.
-  if (tracker->RunningTask(script_state) == parent_task_.Get()) {
+  if (tracker->RunningTask(script_state->GetIsolate()) == parent_task_.Get()) {
     return nullptr;
   }
   return tracker->CreateTaskScope(

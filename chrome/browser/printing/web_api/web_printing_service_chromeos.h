@@ -85,6 +85,7 @@ class WebPrintingServiceChromeOS
 
   void OnPrintJobCreated(
       mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,
+      mojo::PendingReceiver<blink::mojom::WebPrintJobController> controller,
       std::optional<PrintJobCreatedInfo> creation_info);
 
   // Stores browser-side endpoints for blink-side Printer objects.

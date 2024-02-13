@@ -23,7 +23,8 @@ class WebKioskInstallerLacros : public crosapi::mojom::WebKioskInstaller {
   WebKioskInstallerLacros& operator=(const WebKioskInstallerLacros&) = delete;
   ~WebKioskInstallerLacros() override;
 
-  // crosapi::mojom::WebKioskInstaller
+  // crosapi::mojom::WebKioskInstaller:
+  // Ash calls this function before launching the web app.
   void GetWebKioskInstallState(
       const GURL& url,
       GetWebKioskInstallStateCallback callback) override;

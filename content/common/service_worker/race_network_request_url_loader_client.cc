@@ -18,6 +18,7 @@
 #include "mojo/public/c/system/data_pipe.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
@@ -256,14 +257,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // If the fetch handler result is a fallback, commit the
       // RaceNetworkRequest response. If the result is not a fallback and the
-      // response is not 200, use the other response from the fetch handler
-      // instead because it may have a response from the cache.
+      // response is not ok status, use the other response from the fetch
+      // handler instead because it may have a response from the cache.
       // TODO(crbug.com/1420517): More comprehensive error handling may be
       // needed, especially the case when HTTP cache hit or redirect happened.
       //
       // When the AutoPreload is enabled, RaceNetworkRequest works just for the
       // dedupe purpose. The fetch handler should always commit the response.
-      if (head_->headers->response_code() != net::HttpStatusCode::HTTP_OK) {
+      if (!network::IsSuccessfulStatus(head_->headers->response_code())) {
         owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       } else {
         owner_->SetCommitResponsibility(
@@ -526,11 +527,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
     return;
   }
 
+  size_t num_bytes_to_consume = read_buffer->size();
   if (write_buffer_manager_for_race_network_request_.IsWatching() &&
       write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If both data pipes are watched, write data to both pipes.
-    result = write_buffer_manager_for_race_network_request_.WriteData(
-        read_buffer.value());
+    std::pair<size_t, size_t> written_bytes;
+    std::tie(result, written_bytes.first) =
+        write_buffer_manager_for_race_network_request_.WriteData(
+            read_buffer.value());
     RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
@@ -542,13 +546,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         Abort();
         return;
       case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
         // The data pipe is not writable yet. We don't consume data from |body_|
         // and write any data in this case. And retry it later.
         body_->EndReadData(0);
         write_buffer_manager_for_race_network_request_.ArmOrNotify();
         return;
     }
-    result =
+    std::tie(result, written_bytes.second) =
         write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
     RecordMojoResultForWrite(result);
     switch (result) {
@@ -560,6 +565,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         Abort();
         return;
       case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
         // When the data pipe returns MOJO_RESULT_SHOULD_WAIT, the data pipe is
         // not consumed yet but the buffer is full. Stop processing the data
         // pipe for the fetch handler side, not to make the data transfer
@@ -569,13 +575,16 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         write_buffer_manager_for_race_network_request_.ArmOrNotify();
         return;
     }
+    CHECK_EQ(written_bytes.first, written_bytes.second);
+    num_bytes_to_consume = written_bytes.first;
     CHECK_EQ(write_buffer_manager_for_race_network_request_.num_bytes_written(),
              write_buffer_manager_for_fetch_handler_.num_bytes_written());
   } else if (write_buffer_manager_for_race_network_request_.IsWatching()) {
     // If the data pipe for RaceNetworkRequest is the only watcher, don't write
     // data to the data pipe for the fetch handler.
-    result = write_buffer_manager_for_race_network_request_.WriteData(
-        read_buffer.value());
+    std::tie(result, num_bytes_to_consume) =
+        write_buffer_manager_for_race_network_request_.WriteData(
+            read_buffer.value());
     RecordMojoResultForWrite(result);
     switch (result) {
       case MOJO_RESULT_OK:
@@ -586,6 +595,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         Abort();
         return;
       case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
         body_->EndReadData(0);
         write_buffer_manager_for_race_network_request_.ArmOrNotify();
         return;
@@ -593,7 +603,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
   } else if (write_buffer_manager_for_fetch_handler_.IsWatching()) {
     // If the data pipe for the fetch handler is the only watcher, don't write
     // data to the data pipe for RaceNetworkRequest.
-    result =
+    std::tie(result, num_bytes_to_consume) =
         write_buffer_manager_for_fetch_handler_.WriteData(read_buffer.value());
     RecordMojoResultForWrite(result);
     switch (result) {
@@ -605,12 +615,13 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(
         Abort();
         return;
       case MOJO_RESULT_SHOULD_WAIT:
+      case MOJO_RESULT_OUT_OF_RANGE:
         body_->EndReadData(0);
         write_buffer_manager_for_fetch_handler_.ArmOrNotify();
         return;
     }
   }
-  CompleteReadData(read_buffer.value().size());
+  CompleteReadData(num_bytes_to_consume);
 }
 
 std::optional<base::span<const char>>
@@ -658,8 +669,14 @@ ServiceWorkerRaceNetworkRequestURLLoaderClient::BeginReadData() {
   uint32_t buffer_num_bytes = 0;
   base::span<const char> read_buffer;
   MojoResult result = body_->BeginReadData(&buffer, &buffer_num_bytes,
-                                           MOJO_READ_DATA_FLAG_NONE);
+                                           MOJO_BEGIN_READ_DATA_FLAG_NONE);
   if (result == MOJO_RESULT_OK) {
+    SCOPED_CRASH_KEY_NUMBER("SWRace", "num_bytes_read_buffer",
+                            buffer_num_bytes);
+    volatile const char* buffer_v = static_cast<volatile const char*>(buffer);
+    for (size_t i = 0; i < buffer_num_bytes; ++i) {
+      buffer_v[i];
+    }
     read_buffer =
         base::make_span(static_cast<const char*>(buffer), buffer_num_bytes);
   }

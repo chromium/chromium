@@ -41,6 +41,12 @@
   <message name="IDS_AVATAR_BUTTON_SYNC_PAUSED" desc="Short label for the avatar button when sync is paused for the current profile." meaning="Sync is paused">
     Paused
   </message>
+  <message name="IDS_AVATAR_BUTTON_WORK" desc="Short label for the avatar button when the profile is a work profile." meaning="Using a work profile">
+    Work
+  </message>
+  <message name="IDS_AVATAR_BUTTON_SCHOOL" desc="Short label for the avatar button when the profile is a school profile." meaning="Using a school profile">
+    School
+  </message>
 
   <!-- Multi-profile -->
   <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">
@@ -135,6 +141,9 @@
       Hide Accounts
     </message>
   </if>
+  <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">
+    managed by <ph name="VALUE">$1<ex>1</ex></ph>
+  </message>
   <message name="IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP" desc="Button in the avatar menu bubble view for launching the profile picker.">
     Manage profiles
   </message>
@@ -165,6 +174,9 @@
   <message name="IDS_GUEST_PROFILE_NAME" desc="The name given to the guest
   browsing profile. Displayed in the avatar menu bubble and button UI.">
     Guest
+  </message>
+  <message name="IDS_PROFILE_MENU_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item in the profile menu.">
+    Open Guest Profile
   </message>
 
   <message name="IDS_DEFAULT_AVATAR_NAME_8" desc="The default name given to a newly created profile with the female spy avatar.">
@@ -716,7 +728,7 @@
         Delete this profile and browsing data?
       </message>
       <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_LACROS" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
-        This will permanently delete browsing data from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$2<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$3<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
+        This will permanently delete browsing data and saved desks associated with this profile from this device. The Google Accounts in this profile may be used by other apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can remove these accounts in <ph name="BEGIN_LINK">&lt;a is="action-link" target="_blank"&gt;</ph><ph name="SETTING_SECTION">$2<ex>Settings</ex></ph> > <ph name="ACCOUNTS_SECTION">$3<ex>Accounts</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>.
       </message>
       <message name="IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL" desc="Label of the 'next' button of the landing screen in first run experience for the primary profile. The screen promotes Chrome sync.">
         Let's go

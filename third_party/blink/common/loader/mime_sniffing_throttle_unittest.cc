@@ -91,7 +91,6 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
         std::move(updated_response_head_), std::move(body_), std::nullopt);
   }
 
-  void SetPriority(net::RequestPriority priority) override { NOTIMPLEMENTED(); }
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,
       mojo::ScopedDataPipeConsumerHandle body) override {

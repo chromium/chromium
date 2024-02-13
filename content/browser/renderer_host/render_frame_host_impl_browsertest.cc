@@ -6647,7 +6647,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeNikBrowserTest,
         ->GetBrowserContext()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
-        ->PreconnectSockets(1, fetch_url.DeprecatedGetOriginAsURL(), true,
+        ->PreconnectSockets(1, fetch_url.DeprecatedGetOriginAsURL(),
+                            network::mojom::CredentialsMode::kInclude,
                             main_rfh->GetIsolationInfoForSubresources()
                                 .network_anonymization_key());
 
@@ -7891,16 +7892,9 @@ viz::SurfaceId GetFirstSurfaceIdAfterNavigation(RenderWidgetHostView* view) {
 // visual glitches.
 //
 // TODO(https://crbug.com/1472026): Investigate and re-enable.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
-  DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
-#else
-#define MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition \
-  NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
-#endif
 IN_PROC_BROWSER_TEST_F(
     RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition,
-    MAYBE_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
+    DISABLED_NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition) {
   // "red_jank_second_pageshow.html" janks the renderer on the second pageshow
   // event.
   const GURL url_red(embedded_test_server()->GetURL(

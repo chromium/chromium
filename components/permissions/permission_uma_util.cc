@@ -1075,7 +1075,7 @@ void PermissionUmaUtil::RecordPermissionUsage(
     content::WebContents* web_contents,
     const GURL& requesting_origin) {
   PermissionsClient::Get()->GetUkmSourceId(
-      browser_context, web_contents, requesting_origin,
+      permission_type, browser_context, web_contents, requesting_origin,
       base::BindOnce(&RecordPermissionUsageUkm, permission_type));
 }
 
@@ -1142,7 +1142,7 @@ void PermissionUmaUtil::RecordPermissionAction(
   }
 
   PermissionsClient::Get()->GetUkmSourceId(
-      browser_context, web_contents, requesting_origin,
+      permission, browser_context, web_contents, requesting_origin,
       base::BindOnce(
           &RecordPermissionActionUkm, action, gesture_type, permission,
           dismiss_count, ignore_count, source_ui, time_to_decision,
@@ -1571,6 +1571,8 @@ std::string PermissionUmaUtil::GetPromptDispositionString(
       return "NoneVisible";
     case PermissionPromptDisposition::NOT_APPLICABLE:
       return "NotApplicable";
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
+      return "MacOsPrompt";
   }
 
   NOTREACHED();
@@ -1612,6 +1614,7 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
       return true;
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
     case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
@@ -1644,6 +1647,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     case PermissionPromptDisposition::NONE_VISIBLE:
     case PermissionPromptDisposition::CUSTOM_MODAL_DIALOG:
     case PermissionPromptDisposition::NOT_APPLICABLE:
+    case PermissionPromptDisposition::MAC_OS_PROMPT:
       return false;
   }
 }

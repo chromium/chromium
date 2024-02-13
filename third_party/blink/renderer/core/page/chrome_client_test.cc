@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -40,7 +41,9 @@ class ChromeClientToolTipLogger : public EmptyChromeClient {
 };
 }  // anonymous namespace
 
-class ChromeClientTest : public testing::Test {};
+class ChromeClientTest : public testing::Test {
+  test::TaskEnvironment task_environment_;
+};
 
 TEST_F(ChromeClientTest, UpdateTooltipUnderCursorFlood) {
   ChromeClientToolTipLogger logger;

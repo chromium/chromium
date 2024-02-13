@@ -498,6 +498,8 @@ function addChildEntriesReducer(currentState: State, payload: {
   const parentFileData: FileData = {
     ...allEntries[parentKey]!,
     children: newEntryKeys,
+    // Update canExpand according to the children length.
+    canExpand: newEntryKeys.length > 0,
   };
 
   return {

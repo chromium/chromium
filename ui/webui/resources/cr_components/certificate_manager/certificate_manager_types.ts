@@ -8,9 +8,9 @@
 
 // clang-format off
 // <if expr="is_chromeos">
-import {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
+import type {CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 // </if>
-import {CertificatesError, CertificatesImportError,CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
+import type {CertificatesError, CertificatesImportError,CertificateSubnode, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 // clang-format on
 
 /**

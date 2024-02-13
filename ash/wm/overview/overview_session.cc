@@ -175,7 +175,7 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
 
   Shell::Get()->AddShellObserver(this);
 
-  if (saved_desk_util::IsSavedDesksEnabled()) {
+  if (saved_desk_util::ShouldShowSavedDesksButtons()) {
     hide_windows_for_saved_desks_grid_ = std::make_unique<
         ScopedOverviewHideWindows>(
         /*windows=*/std::vector<raw_ptr<aura::Window, VectorExperimental>>{},
@@ -192,7 +192,8 @@ void OverviewSession::Init(const aura::Window::Windows& windows,
   }
 
   // Create this before the desks bar widget.
-  if (saved_desk_util::IsSavedDesksEnabled() && !saved_desk_presenter_) {
+  if (saved_desk_util::ShouldShowSavedDesksButtons() &&
+      !saved_desk_presenter_) {
     saved_desk_presenter_ = std::make_unique<SavedDeskPresenter>(this);
     saved_desk_dialog_controller_ =
         std::make_unique<SavedDeskDialogController>();
@@ -938,8 +939,9 @@ void OverviewSession::OnWindowActivating(
 }
 
 bool OverviewSession::IsSavedDeskUiLosingActivation(aura::Window* lost_active) {
-  if (!saved_desk_util::IsSavedDesksEnabled() || !lost_active)
+  if (!saved_desk_util::ShouldShowSavedDesksButtons() || !lost_active) {
     return false;
+  }
 
   for (auto& grid : grid_list_) {
     auto* desk_library_view = grid->GetSavedDeskLibraryView();
@@ -1025,7 +1027,10 @@ void OverviewSession::OnFocusedItemClosed(OverviewItem* item) {
 }
 
 void OverviewSession::OnRootWindowClosing(aura::Window* root) {
-  auto iter = base::ranges::find(grid_list_, root, &OverviewGrid::root_window);
+  auto iter = base::ranges::find_if(
+      grid_list_, [root](const std::unique_ptr<OverviewGrid>& grid) {
+        return grid->root_window() == root;
+      });
   DCHECK(iter != grid_list_.end());
   (*iter)->Shutdown(OverviewEnterExitType::kImmediateExit);
   grid_list_.erase(iter);
@@ -1215,14 +1220,20 @@ void OverviewSession::UpdateAccessibilityFocus() {
       for (const auto& item : grid->window_list())
         a11y_widgets.push_back(item->item_widget());
     }
-    if (grid->desks_widget())
+    if (grid->desks_widget()) {
       a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
+    }
 
-    if (grid->IsSaveDeskButtonContainerVisible())
+    if (grid->IsSaveDeskButtonContainerVisible()) {
       a11y_widgets.push_back(grid->save_desk_button_container_widget());
+    }
 
     if (auto* no_windows_widget = grid->no_windows_widget()) {
       a11y_widgets.push_back(no_windows_widget);
+    }
+
+    if (auto* faster_splitview_widget = grid->faster_splitview_widget()) {
+      a11y_widgets.push_back(faster_splitview_widget);
     }
   }
 
@@ -1345,15 +1356,11 @@ void OverviewSession::OnWindowAdded(aura::Window* new_window) {
 }
 
 void OverviewSession::OnMouseEvent(ui::MouseEvent* event) {
-  for (auto& grid : grid_list_) {
-    if (auto* split_view_overview_session =
-            RootWindowController::ForWindow(grid->root_window())
-                ->split_view_overview_session();
-        split_view_overview_session) {
-      split_view_overview_session->OnMouseEvent(*event);
-      return;
-    }
-  }
+  MaybeDelegateEventToSplitViewOverviewSession(event);
+}
+
+void OverviewSession::OnTouchEvent(ui::TouchEvent* event) {
+  MaybeDelegateEventToSplitViewOverviewSession(event);
 }
 
 void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
@@ -1585,7 +1592,11 @@ void OverviewSession::OnDisplayTabletStateChanged(display::TabletState state) {
 }
 
 void OverviewSession::OnTabletModeChanged() {
-  DCHECK(saved_desk_util::IsSavedDesksEnabled());
+  for (auto& overview_grid : grid_list_) {
+    overview_grid->OnTabletModeChanged();
+  }
+
+  DCHECK(saved_desk_util::ShouldShowSavedDesksButtons());
   DCHECK(saved_desk_presenter_);
   saved_desk_presenter_->UpdateUIForSavedDeskLibrary();
 }
@@ -1692,6 +1703,19 @@ size_t OverviewSession::GetNumWindows() const {
     size += grid->GetNumWindows();
   }
   return size;
+}
+
+void OverviewSession::MaybeDelegateEventToSplitViewOverviewSession(
+    ui::LocatedEvent* event) {
+  for (auto& grid : grid_list_) {
+    if (auto* split_view_overview_session =
+            RootWindowController::ForWindow(grid->root_window())
+                ->split_view_overview_session();
+        split_view_overview_session) {
+      split_view_overview_session->HandleClickOrTap(*event);
+      return;
+    }
+  }
 }
 
 }  // namespace ash

@@ -62,8 +62,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
                              int lid,
                              base::ProcessId pid,
                              const std::string& url,
-                             const std::string& rtc_configuration,
-                             const std::string& constraints) override;
+                             const std::string& rtc_configuration) override;
   void OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
                                int lid) override;
   void OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,

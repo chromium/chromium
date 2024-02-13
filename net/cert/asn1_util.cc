@@ -4,9 +4,9 @@
 
 #include "net/cert/asn1_util.h"
 
+#include <optional>
 #include <string_view>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "third_party/boringssl/src/pki/parser.h"
@@ -123,7 +123,7 @@ bool SeekToExtensions(bssl::der::Input in,
     return false;
   }
 
-  absl::optional<bssl::der::Input> extensions;
+  std::optional<bssl::der::Input> extensions;
   if (!tbs_cert_parser.ReadOptionalTag(
           bssl::der::kTagConstructed | bssl::der::kTagContextSpecific | 3,
           &extensions)) {

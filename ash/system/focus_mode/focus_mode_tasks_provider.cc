@@ -86,10 +86,11 @@ std::unique_ptr<api::Task> GetTaskFromDummyTask(
 
   base::Time due_date;
   return std::make_unique<api::Task>(
-      task_data.id, task_data.title, task_data.completed,
+      task_data.id, task_data.title,
       base::Time::FromString(task_data.due_string, &due_date)
           ? std::make_optional<base::Time>(due_date)
           : std::nullopt,
+      task_data.completed,
       /*has_subtasks=*/false,
       /*has_email_link=*/false,
       /*has_notes=*/false, update_date);
@@ -120,8 +121,8 @@ void FocusModeTasksProvider::AddTask(const std::string& title,
                                      OnTaskSavedCallback callback) {
   std::unique_ptr<api::Task> task = std::make_unique<api::Task>(
       /*id=*/base::NumberToString(task_id_++), title,
-      /*completed=*/false,
-      /*due=*/absl::nullopt, /*has_subtasks=*/false, /*has_email_link=*/false,
+      /*due=*/absl::nullopt, /*completed=*/false, /*has_subtasks=*/false,
+      /*has_email_link=*/false,
       /*has_notes=*/false, /*updated=*/base::Time::Now());
 
   api::Task* task_ptr = task.get();

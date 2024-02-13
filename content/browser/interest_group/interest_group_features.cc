@@ -41,4 +41,16 @@ BASE_FEATURE(kFledgePrefetchBandAKeys,
              "FledgePrefetchBandAKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable storing a retrieving B&A keys for the interest group
+// database.
+BASE_FEATURE(kFledgeStoreBandAKeysInDB,
+             "FledgeStoreBandAKeysInDB",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable detecting inconsistency in the `PageImpl` used in the auction. Abort
+// the auction when detected.
+BASE_FEATURE(kDetectInconsistentPageImpl,
+             "DetectInconsistentPageImpl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

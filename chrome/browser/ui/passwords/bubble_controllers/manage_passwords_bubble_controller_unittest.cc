@@ -199,22 +199,28 @@ TEST_F(ManagePasswordsBubbleControllerTest, ShouldReturnPasswordSyncState) {
       /*types=*/syncer::UserSelectableTypeSet());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kNotSyncing);
+            ManagePasswordsBubbleController::SyncState::kNotActive);
 
   sync_service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kPasswords});
+  ASSERT_FALSE(sync_service()->IsSyncFeatureEnabled());
+
   EXPECT_EQ(
       controller()->GetPasswordSyncState(),
-      password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);
+      ManagePasswordsBubbleController::SyncState::kActiveWithAccountPasswords);
 
   sync_service()->SetHasSyncConsent(true);
+  ASSERT_TRUE(sync_service()->IsSyncFeatureEnabled());
+
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kSyncingNormalEncryption);
+            ManagePasswordsBubbleController::SyncState::
+                kActiveWithSyncFeatureEnabled);
 
   sync_service()->SetIsUsingExplicitPassphrase(true);
   EXPECT_EQ(controller()->GetPasswordSyncState(),
-            password_manager::SyncState::kSyncingWithCustomPassphrase);
+            ManagePasswordsBubbleController::SyncState::
+                kActiveWithSyncFeatureEnabled);
 }
 
 TEST_F(ManagePasswordsBubbleControllerTest, ShouldGetPrimaryAccountEmail) {

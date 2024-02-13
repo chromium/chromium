@@ -30,7 +30,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/common/storage_type.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
@@ -54,8 +53,7 @@ std::unique_ptr<KeyedService> BuildBookmarkModelWithoutLoad(
 }
 
 void LoadBookmarkModel(Profile* profile) {
-  BookmarkModelFactory::GetForBrowserContext(profile)->Load(
-      profile->GetPath(), bookmarks::StorageType::kLocalOrSyncable);
+  BookmarkModelFactory::GetForBrowserContext(profile)->Load(profile->GetPath());
 }
 
 class BookmarkStatHelper {

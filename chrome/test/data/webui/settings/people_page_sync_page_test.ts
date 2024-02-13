@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {CrInputElement, SettingsSyncEncryptionOptionsElement, SettingsSyncPageElement} from 'chrome://settings/lazy_load.js';
+import type {CrExpandButtonElement, CrInputElement, SettingsSyncEncryptionOptionsElement, SettingsSyncPageElement} from 'chrome://settings/lazy_load.js';
 // <if expr="not chromeos_ash">
 import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 // </if>
@@ -247,15 +247,17 @@ suite('SyncSettingsTests', function() {
     assertTrue(spinnerPage.hidden);
   });
 
-  test('EncryptionExpandButton', function() {
+  test('EncryptionExpandButton', async function() {
     const encryptionDescription =
-        syncPage.shadowRoot!.querySelector<HTMLElement>(
-            '#encryptionDescription')!;
+        syncPage.shadowRoot!.querySelector<CrExpandButtonElement>(
+            '#encryptionDescription');
+    assertTrue(!!encryptionDescription);
     const encryptionCollapse = syncPage.$.encryptionCollapse;
 
     // No encryption with custom passphrase.
     assertFalse(encryptionCollapse.opened);
     encryptionDescription.click();
+    await encryptionDescription.updateComplete;
     assertTrue(encryptionCollapse.opened);
 
     // Push sync prefs with |prefs.encryptAllData| unchanged. The encryption
@@ -265,6 +267,7 @@ suite('SyncSettingsTests', function() {
     assertTrue(encryptionCollapse.opened);
 
     encryptionDescription.click();
+    await encryptionDescription.updateComplete;
     assertFalse(encryptionCollapse.opened);
 
     // Data encrypted with custom passphrase.

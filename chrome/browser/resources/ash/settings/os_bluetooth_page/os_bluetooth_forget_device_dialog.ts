@@ -10,7 +10,7 @@ import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 
-import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getDeviceNameUnsafe} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -45,13 +45,9 @@ class SettingsBluetoothForgetDeviceDialogElement extends
   private device_: PairedBluetoothDeviceProperties;
 
   private getForgetDeviceDialogBodyText_(): string {
-    return this.i18n(
-        'bluetoothDevicesDialogLabel', this.getDeviceName_(),
+    return loadTimeData.getStringF(
+        'bluetoothDevicesDialogLabel', getDeviceNameUnsafe(this.device_),
         loadTimeData.getString('primaryUserEmail'));
-  }
-
-  private getDeviceName_(): string {
-    return getDeviceName(this.device_);
   }
 
   private onForgetClick_(event: Event): void {

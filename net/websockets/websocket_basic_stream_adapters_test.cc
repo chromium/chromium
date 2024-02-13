@@ -359,7 +359,8 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
              SessionUsage::kDestination,
              SocketTag(),
              NetworkAnonymizationKey(),
-             SecureDnsPolicy::kAllow),
+             SecureDnsPolicy::kAllow,
+             /*disable_cert_verification_network_fetches=*/false),
         session_(SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         ssl_(SYNCHRONOUS, OK) {}
 
@@ -1602,7 +1603,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
 
   ASSERT_EQ(ERR_IO_PENDING, rv);
 
-  mock_quic_data_.GetSequencedSocketData()->Resume();
+  mock_quic_data_.Resume();
   base::RunLoop().RunUntilIdle();
 
   rv = read_callback.WaitForResult();
@@ -1684,7 +1685,7 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
 
   ASSERT_EQ(ERR_IO_PENDING, rv);
 
-  mock_quic_data_.GetSequencedSocketData()->Resume();
+  mock_quic_data_.Resume();
   base::RunLoop().RunUntilIdle();
 
   rv = read_callback.WaitForResult();

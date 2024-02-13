@@ -78,7 +78,7 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
 
   viz::CompositorFrame ProduceFrame(
       std::optional<viz::HitTestRegionList>* out_list = nullptr) {
-    layer_tree_->SetNeedsRedraw();
+    layer_tree_->SetNeedsAnimate();
     EXPECT_TRUE(layer_tree_->NeedsBeginFrames());
     base::TimeTicks frame_time = base::TimeTicks::Now();
     base::TimeDelta interval = viz::BeginFrameArgs::DefaultInterval();

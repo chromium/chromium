@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
-import {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import type {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

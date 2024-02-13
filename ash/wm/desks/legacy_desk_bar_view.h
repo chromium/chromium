@@ -16,9 +16,9 @@ namespace ash {
 // mini views, the new desk button, the library button, and the scroll arrow
 // buttons.
 class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
- public:
-  METADATA_HEADER(LegacyDeskBarView);
+  METADATA_HEADER(LegacyDeskBarView, DeskBarViewBase)
 
+ public:
   explicit LegacyDeskBarView(base::WeakPtr<OverviewGrid> overview_grid);
 
   LegacyDeskBarView(const LegacyDeskBarView&) = delete;

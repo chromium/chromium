@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -15,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -132,7 +132,7 @@ class WaylandSurface {
   // the opacity changes. Rects in |region_px| are specified surface-local, in
   // physical pixels.  If |region_px| is nullopt or empty, the opaque region is
   // reset to empty.
-  void set_opaque_region(absl::optional<std::vector<gfx::Rect>> region_px);
+  void set_opaque_region(std::optional<std::vector<gfx::Rect>> region_px);
 
   // Sets the input region on this surface in physical pixels.
   // The input region indicates which parts of the surface accept pointer and
@@ -140,7 +140,7 @@ class WaylandSurface {
   // whenever the region that the surface span changes or window state changes
   // when custom frame is used.  If |region_px| is nullptr, the input region is
   // reset to cover the entire wl_surface.
-  void set_input_region(absl::optional<gfx::Rect> region_px);
+  void set_input_region(std::optional<gfx::Rect> region_px);
 
   // Set the crop uv of the attached wl_buffer.
   // Unlike wp_viewport.set_source, this crops the buffer prior to
@@ -196,13 +196,13 @@ class WaylandSurface {
   // Sets the background color for this surface, which will be blended with the
   // wl_buffer contents during the compositing step on the Wayland compositor
   // side.
-  void set_background_color(absl::optional<SkColor4f> background_color) {
+  void set_background_color(std::optional<SkColor4f> background_color) {
     if (get_augmented_surface())
       pending_state_.background_color = background_color;
   }
 
   // Sets the clip rect for this surface.
-  void set_clip_rect(absl::optional<gfx::RectF> clip_rect) {
+  void set_clip_rect(std::optional<gfx::RectF> clip_rect) {
     if (get_augmented_surface()) {
       pending_state_.clip_rect = clip_rect;
     }
@@ -211,6 +211,10 @@ class WaylandSurface {
   // Sets whether this surface contains a video.
   void set_contains_video(bool contains_video) {
     pending_state_.contains_video = contains_video;
+  }
+
+  void set_frame_trace_id(int64_t frame_trace_id) {
+    pending_state_.frame_trace_id = frame_trace_id;
   }
 
   // Creates a wl_subsurface relating this surface and a parent surface,
@@ -280,7 +284,7 @@ class WaylandSurface {
 
     std::vector<gfx::Rect> damage_px;
     std::vector<gfx::Rect> opaque_region_px;
-    absl::optional<gfx::Rect> input_region_px = absl::nullopt;
+    std::optional<gfx::Rect> input_region_px = std::nullopt;
 
     // The current color space of the surface.
     scoped_refptr<WaylandZcrColorSpace> color_space = nullptr;
@@ -329,13 +333,18 @@ class WaylandSurface {
     // Optional background color for this surface. This information
     // can be used by Wayland compositor to correctly display delegated textures
     // which require background color applied.
-    absl::optional<SkColor4f> background_color;
+    std::optional<SkColor4f> background_color;
 
     // Optional clip rect for this surface on surface space coordinates.
-    absl::optional<gfx::RectF> clip_rect;
+    std::optional<gfx::RectF> clip_rect;
 
     // Whether or not this surface contains video, for wp_content_type_v1.
     bool contains_video = false;
+
+    // Trace ID used to associate tracing data of the wayland client and server
+    // side for frame submission tracking. It is received from the GPU process
+    // and sent to the wayland server.
+    int64_t frame_trace_id = -1;
   };
 
   // The wayland scale refers to the scale factor between the buffer coordinates

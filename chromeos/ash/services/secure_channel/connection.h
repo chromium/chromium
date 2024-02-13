@@ -13,11 +13,13 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 
 namespace ash::secure_channel {
 
 class ConnectionObserver;
+class NearbyConnectionObserver;
 class WireMessage;
 
 // Base class representing a connection with a remote device, which is a
@@ -64,6 +66,11 @@ class Connection {
   virtual void AddObserver(ConnectionObserver* observer);
   virtual void RemoveObserver(ConnectionObserver* observer);
 
+  virtual void AddNearbyConnectionObserver(
+      NearbyConnectionObserver* nearby_connection_observer);
+  virtual void RemoveNearbyConnectionObserver(
+      NearbyConnectionObserver* nearby_connection_observer);
+
   multidevice::RemoteDeviceRef remote_device() const { return remote_device_; }
 
   // Returns the RSSI of the connection; if no derived class overrides this
@@ -89,6 +96,10 @@ class Connection {
   // previous status, notifies observers of the change in status.
   // Virtual for testing.
   virtual void SetStatus(Status status);
+
+  virtual void SetNearbyConnectionSubStatus(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result);
 
   // Called after attempting to send bytes over the connection, whether the
   // message was successfully sent or not.
@@ -135,6 +146,9 @@ class Connection {
 
   // The registered observers of the connection.
   base::ObserverList<ConnectionObserver>::Unchecked observers_;
+
+  base::ObserverList<NearbyConnectionObserver>::Unchecked
+      nearby_connection_state_observers_;
 
   // A temporary buffer storing bytes received before a received message can be
   // fully constructed.

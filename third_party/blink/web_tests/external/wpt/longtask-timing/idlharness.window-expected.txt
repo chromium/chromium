@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] PerformanceLongTaskTiming interface: attribute startTime
   assert_own_property: expected property "startTime" missing
 [FAIL] PerformanceLongTaskTiming interface: attribute duration
@@ -36,5 +36,7 @@ Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: expected property "name" missing
 [FAIL] PerformanceScriptTiming interface: attribute entryType
   assert_own_property: expected property "entryType" missing
+[FAIL] PerformanceScriptTiming interface: attribute sourceLocation
+  assert_true: The prototype object must have a property "sourceLocation" expected true got false
 Harness: the test ran to completion.
 

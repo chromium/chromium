@@ -30,7 +30,7 @@ class AXPlatformTreeManager;
 class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderAuraLinux
     : public AXEventRecorder {
  public:
-  AXEventRecorderAuraLinux(AXPlatformTreeManager* manager,
+  AXEventRecorderAuraLinux(base::WeakPtr<AXPlatformTreeManager> manager,
                            base::ProcessId pid,
                            const AXTreeSelector& selector);
 
@@ -62,8 +62,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderAuraLinux
   void RemoveATSPIEventListeners();
 
   raw_ptr<AtspiEventListener> atspi_event_listener_ = nullptr;
-  // TODO: should be either removed or converted to a weakptr.
-  const raw_ptr<AXPlatformTreeManager> manager_;
+
+  base::WeakPtr<AXPlatformTreeManager> manager_;
   base::ProcessId pid_;
   AXTreeSelector selector_;
   static AXEventRecorderAuraLinux* instance_;

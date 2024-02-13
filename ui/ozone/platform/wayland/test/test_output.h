@@ -6,17 +6,19 @@
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_OUTPUT_H_
 
 #include <wayland-server-protocol.h>
+
 #include <cstdint>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/test_output_metrics.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output.h"
 
+struct wl_client;
 struct wl_resource;
 
 namespace wl {
@@ -27,22 +29,26 @@ namespace wl {
 // default.
 class TestOutput : public GlobalObject {
  public:
-  // A callback that allows clients to respond to a Flush() of a given
-  // TestOutput's metrics_. This is called immediately before Flush() sends
-  // metrics events to clients. The output_resource is the wl_resource
-  // associated with this output.
-  using FlushMetricsCallback =
-      base::RepeatingCallback<void(wl_resource* output_resource,
-                                   const TestOutputMetrics& metrics)>;
+  class Delegate {
+   public:
+    // Called immediately before Flush() sends metrics events to clients.
+    virtual void OnTestOutputFlush(TestOutput* test_output,
+                                   const TestOutputMetrics& metrics) = 0;
 
-  explicit TestOutput(FlushMetricsCallback flush_metrics_callback);
-  TestOutput(FlushMetricsCallback flush_metrics_callback,
-             TestOutputMetrics metrics);
+    // Called immediately after the test output's global is destroyed.
+    virtual void OnTestOutputGlobalDestroy(TestOutput* test_output) = 0;
+  };
+
+  explicit TestOutput(Delegate* delegate);
+  TestOutput(Delegate* delegate, TestOutputMetrics metrics);
   TestOutput(const TestOutput&) = delete;
   TestOutput& operator=(const TestOutput&) = delete;
   ~TestOutput() override;
 
   static TestOutput* FromResource(wl_resource* resource);
+
+  // Gets the name of the associated wl_output global.
+  uint64_t GetOutputName(wl_client* client) const;
 
   // Useful only when zaura_shell is supported.
   void set_aura_shell_enabled() { aura_shell_enabled_ = true; }
@@ -86,7 +92,8 @@ class TestOutput : public GlobalObject {
     suppress_implicit_flush_ = suppress_implicit_flush;
   }
 
- protected:
+  // GlobalObject:
+  void DestroyGlobal() override;
   void OnBind() override;
 
  private:
@@ -97,8 +104,8 @@ class TestOutput : public GlobalObject {
   // be explicitly called to propagate pending metrics.
   bool suppress_implicit_flush_ = false;
 
-  // Called immediately before Flush() sends metrics events to clients.
-  FlushMetricsCallback flush_metrics_callback_;
+  // The delegate strictly outlives TestOutput instances.
+  const raw_ptr<Delegate> delegate_;
 
   TestOutputMetrics metrics_;
 

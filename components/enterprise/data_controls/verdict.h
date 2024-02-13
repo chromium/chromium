@@ -24,6 +24,12 @@ class Verdict {
   static Verdict Block(base::OnceClosure initial_report_closure);
   static Verdict Allow();
 
+  // When an action has two distinct verdicts due to involving two different
+  // profiles, this helper can be used to simplify the logic to apply to the
+  // action.
+  static Verdict Merge(Verdict source_profile_verdict,
+                       Verdict destination_profile_verdict);
+
   ~Verdict();
   Verdict(Verdict&&);
   Verdict& operator=(Verdict&&);

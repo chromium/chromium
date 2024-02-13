@@ -19,7 +19,8 @@
 
 AutocompleteScoringModelService::AutocompleteScoringModelService(
     optimization_guide::OptimizationGuideModelProvider* model_provider) {
-  if (OmniboxFieldTrial::IsUrlScoringModelEnabled()) {
+  // `model_provider` may be null for tests.
+  if (OmniboxFieldTrial::IsUrlScoringModelEnabled() && model_provider) {
     model_executor_task_runner_ =
         base::SequencedTaskRunner::GetCurrentDefault();
     url_scoring_model_handler_ =

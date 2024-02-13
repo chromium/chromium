@@ -2963,7 +2963,7 @@ class URLCanonTypedTest : public ::testing::TestWithParam<bool> {
                          &parsed);
     } else {
       ParsePathURL(relative_case.base.data(), relative_case.base.size(),
-                   /*trim_path_end=*/false, &parsed);
+                   /*trim_path_end=*/true, &parsed);
     }
 
     // First see if it is relative.

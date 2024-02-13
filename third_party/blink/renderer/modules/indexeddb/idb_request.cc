@@ -538,9 +538,6 @@ void IDBRequest::OnOpenCursor(
     return;
   }
 
-  std::unique_ptr<WebIDBCursor> cursor = std::make_unique<WebIDBCursor>(
-      std::move(result->get_value()->cursor), transaction_->Id(),
-      GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess));
   std::unique_ptr<IDBValue> value;
   if (result->get_value()->value) {
     value = std::move(*result->get_value()->value);
@@ -552,7 +549,8 @@ void IDBRequest::OnOpenCursor(
   value->SetIsolate(GetIsolate());
 
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
-      this, std::move(cursor), std::move(result->get_value()->key),
+      this, std::move(result->get_value()->cursor),
+      std::move(result->get_value()->key),
       std::move(result->get_value()->primary_key), std::move(value),
       WTF::BindOnce(&IDBTransaction::OnResultReady,
                     WrapPersistent(transaction_.Get()))));
@@ -639,10 +637,12 @@ void IDBRequest::HandleError(mojom::blink::IDBErrorPtr error) {
                     WrapPersistent(transaction_.Get()))));
 }
 
-void IDBRequest::SendResultCursor(std::unique_ptr<WebIDBCursor> backend,
-                                  std::unique_ptr<IDBKey> key,
-                                  std::unique_ptr<IDBKey> primary_key,
-                                  std::unique_ptr<IDBValue> value) {
+void IDBRequest::SendResultCursor(
+    mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>
+        pending_remote_cursor,
+    std::unique_ptr<IDBKey> key,
+    std::unique_ptr<IDBKey> primary_key,
+    std::unique_ptr<IDBValue> value) {
   if (!CanStillSendResult()) {
     metrics_.RecordAndReset();
     return;
@@ -669,13 +669,13 @@ void IDBRequest::SendResultCursor(std::unique_ptr<WebIDBCursor> backend,
 
   switch (cursor_type_) {
     case indexed_db::kCursorKeyOnly:
-      cursor =
-          MakeGarbageCollected<IDBCursor>(std::move(backend), cursor_direction_,
-                                          this, source, transaction_.Get());
+      cursor = MakeGarbageCollected<IDBCursor>(std::move(pending_remote_cursor),
+                                               cursor_direction_, this, source,
+                                               transaction_.Get());
       break;
     case indexed_db::kCursorKeyAndValue:
       cursor = MakeGarbageCollected<IDBCursorWithValue>(
-          std::move(backend), cursor_direction_, this, source,
+          std::move(pending_remote_cursor), cursor_direction_, this, source,
           transaction_.Get());
       break;
     default:

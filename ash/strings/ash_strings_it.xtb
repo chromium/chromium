@@ -26,6 +26,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1087110696012418426">Buon pomeriggio <ph name="GIVEN_NAME" />,</translation>
 <translation id="1088231044944504242">Cerca <ph name="CATEGORY" />, file, app e altro ancora. Usa i tasti freccia per esplorare le tue app.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + Freccia giù</translation>
+<translation id="1094756674036064790">Disattivare il Bluetooth?</translation>
 <translation id="109942774857561566">Mi annoio</translation>
 <translation id="1104084341931202936">Mostra impostazioni di accessibilità</translation>
 <translation id="1104621072296271835">I tuoi dispositivi funzionano ancora meglio insieme</translation>
@@ -65,7 +66,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1217633719248931900">Vai all'app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app Play Store</translation>
 <translation id="1225748608451425081">Il Chromebook è bloccato a causa di un problema noto. Potrai accedere dopo: <ph name="TIME_LEFT" />.</translation>
-<translation id="1226877728704622336">scrivania non attiva</translation>
 <translation id="1229194443904279055">Interrompi la selezione</translation>
 <translation id="1235458158152011030">Reti note</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
@@ -78,7 +78,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1247519845643687288">App recenti</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
-<translation id="1269405891096105529">Periferica non supportata in modalità Ospite</translation>
+<translation id="1269405891096105529">Periferica non supportata in modalità ospite</translation>
 <translation id="1270290102613614947">Tastiera sullo schermo disattivata</translation>
 <translation id="1272079795634619415">Interrompi</translation>
 <translation id="1275285675049378717">Alimentazione di <ph name="POWER_SOURCE" /></translation>
@@ -159,7 +159,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1586324912145647027">Vai alla scrivania 1 di 8</translation>
 <translation id="158838227375272121">Sito web Google Classroom</translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
-<translation id="1592682369233288537">Scrivania successiva: <ph name="NEXT_DESK_NAME" />, usa Ricerca + Barra spaziatrice per procedere con l'attivazione.</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + Freccia giù</translation>
 <translation id="1604857178818051494">Metti in pausa i contenuti multimediali</translation>
 <translation id="1607312127821884567">Chiudi la configurazione della visualizzazione di app dello smartphone</translation>
@@ -374,7 +373,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2575685495496069081">L'accesso simultaneo è stato disattivato</translation>
 <translation id="2579264398927991698">Aggiornamenti del firmware</translation>
 <translation id="2582112259361606227">Riavvia per aggiornare</translation>
-<translation id="2586561057878260610">Premi Ctrl + W per eseguire una combinazione con <ph name="DESK_NAME" />. Premi Ctrl + Maiusc + W per chiudere scrivania e finestre.</translation>
 <translation id="2586657967955657006">Appunti</translation>
 <translation id="2595239820337756193">5 km in miglia</translation>
 <translation id="2596078834055697711">Consente di acquisire uno screenshot della finestra</translation>
@@ -511,7 +509,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3154351730702813399">L'amministratore del dispositivo potrebbe monitorare l'attività di navigazione.</translation>
 <translation id="316086887565479535">App non supportate nel modello</translation>
 <translation id="3160929076476941240">2 h</translation>
-<translation id="3161500364292033097">Chiudi scrivania e finestre</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sta eseguendo il rollback di <ph name="DEVICE_TYPE" />. Il dispositivo verrà reimpostato e tutti i dati verranno eliminati.</translation>
 <translation id="3170769098533255179">Nessun dispositivo connesso. Durante l'utilizzo dell'hotspot, il Wi-Fi rimane disattivato.</translation>
 <translation id="3171170659304083361">Impostazioni metodi di immissione</translation>
@@ -656,6 +653,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3660860940251915011">Attiva/disattiva alta visibilità di <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Utente gestito <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Scorri per nascondere la finestra mobile</translation>
+<translation id="3673898235958558034">Se disattivi il Bluetooth, i dispositivi "<ph name="DEVICE_NAME_1" />" e "<ph name="DEVICE_NAME_2" />" verranno scollegati da Chromebook.</translation>
 <translation id="367531336287639526">Seleziona la prima icona a sinistra della barra degli indirizzi</translation>
 <translation id="3677931086890821290">Tutti i siti web e le app che dispongono dell'autorizzazione di accesso alla posizione e di ChromeOS possono usare la posizione rilevata da reti Wi-Fi e mobili.</translation>
 <translation id="3679827876008292680">Vai all'ultima scheda nella finestra</translation>
@@ -667,6 +665,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Connessi in precedenza</translation>
+<translation id="3712143870407382523">Scegli una finestra per questo lato</translation>
 <translation id="371370241367527062">Microfono anteriore</translation>
 <translation id="3713734891607377840">Apri dopo il completamento</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> e altre <ph name="UNAVAILABLE_APPS_COUNT" /> app non sono disponibili su questo dispositivo.</translation>
@@ -843,7 +842,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4389184120735010762">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento ancorata. Vuoi attivarla?</translation>
 <translation id="439598569299422042">In pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Impossibile salvare lo screencast</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> è connesso e pronto per l'uso. Puoi personalizzare il mouse in Impostazioni.</translation>
 <translation id="4405151984121254935">Il tipo periferico connesso non è supportato</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
@@ -869,7 +867,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4491109536499578614">Immagine</translation>
 <translation id="450584155212756404">Canale Dev</translation>
 <translation id="4513946894732546136">Feedback</translation>
-<translation id="4516212064498225455">Scrivania corrente: <ph name="CURRENT_DESK_NAME" />, usa Ricerca + Barra spaziatrice per aprire il menu di tutte le scrivanie.</translation>
 <translation id="4518404433291145981">Per sbloccare Chromebook, sblocca prima il telefono</translation>
 <translation id="4527045527269911712">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato.</translation>
 <translation id="4533343294786968049">Prolunga la durata della batteria. La batteria si ricaricherà completamente entro le ore <ph name="FULLY_CHARGE_TIME" />.</translation>
@@ -912,6 +909,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4666911709726371538">Altre app</translation>
 <translation id="4667099493359681081">Download di <ph name="FILENAME" /> in corso…</translation>
 <translation id="4672539464599646374">Risparmio energetico attivato</translation>
+<translation id="4673427585974421255">Mantieni attivo</translation>
 <translation id="468293128311738995">App dal telefono</translation>
 <translation id="4690510401873698237">Barra delle app in basso</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
@@ -1044,13 +1042,11 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventi</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinata con <ph name="IN_PLACE_APP" /> per creare una nuova cartella.</translation>
-<translation id="5203299837691351876">scrivania attiva</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}other{altre # notifiche}}</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5216991270656129561">Funzionalità disattivata fino alle ore <ph name="TIME" /></translation>
-<translation id="5217646019792206018">Scrivania successiva: <ph name="NEXT_DESK_NAME" />, usa Ricerca + Barra spaziatrice. In alternativa usa la scorciatoia da tastiera: Maiusc + Ricerca + <ph name="NEXT_DESK_INDEX" /> per procedere con l'attivazione.</translation>
 <translation id="5218064144558110424">Contrassegna come non completata</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5229343007215035173">Attiva/disattiva la Schermata privata</translation>
@@ -1063,7 +1059,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5258528442992323769">Nessuna scrivania salvata</translation>
 <translation id="5260676007519551770">Scrivania 4</translation>
 <translation id="5268819379131021772">Elenco Google Tasks</translation>
-<translation id="5275923704957843041">Anteprima scrivania</translation>
 <translation id="5277869901083657836">Attiva/disattiva strumenti per stilo</translation>
 <translation id="5278086053818066789">Attiva/disattiva ChromeVox (funzione di lettura vocale)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> richiede la tua attenzione.</translation>
@@ -1212,6 +1207,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5802516411616338943">Apri le Impostazioni rapide</translation>
 <translation id="5804651031882187592">Disattiva l'impostazione "Blocca SIM"</translation>
 <translation id="5805809050170488595">Fai clic per attivare <ph name="NETWORK_NAME" /></translation>
+<translation id="5816222150329690597">Se disattivi il Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" e altri <ph name="DEVICE_COUNT" /> dispositivi verranno scollegati da Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks sul web</translation>
 <translation id="5825969630400862129">Impostazioni dei dispositivi connessi</translation>
 <translation id="5837036133683224804">Interrompi <ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
@@ -1316,7 +1312,6 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6199775032047436064">Ricarica la pagina corrente</translation>
 <translation id="6200515304866777730">Non supportate dall'app</translation>
 <translation id="6210042900243040400">Connetti il dispositivo <ph name="NAME" />, che è già stato salvato in <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">Personalizza il tuo <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="6213808132343683860">Acquisisci registrazione dello schermo o screenshot parziali</translation>
 <translation id="6220928844947387476">Ora puoi registrarti e registrare il tuo schermo nello stesso momento</translation>
 <translation id="622484624075952240">Giù</translation>
@@ -1392,6 +1387,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="6539852571005954999">Scansione del file <ph name="FILENAME" /> per il download in corso…</translation>
 <translation id="6542521951477560771">Trasmissione di contenuti a <ph name="RECEIVER_NAME" /> in corso</translation>
 <translation id="6546062506073634094">Ricerca immagini per contenuti e anteprime di immagini</translation>
+<translation id="6547795021703527064">Se disattivi il Bluetooth, "<ph name="DEVICE_NAME" />" verrà scollegato da Chromebook.</translation>
 <translation id="6555373427270923730">Digita un indirizzo web nella barra degli indirizzi, quindi premi <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nuova installazione</translation>
@@ -1411,6 +1407,7 @@ Nuova installazione</translation>
 <translation id="6613765291890844037">Spazio di archiviazione: <ph name="STORAGE_IN_USE_SIZE" /> in uso | <ph name="STORAGE_TOTAL_SIZE" /> totali</translation>
 <translation id="6614169507485700968">Schermata sulla privacy attiva</translation>
 <translation id="6622679827379792051">Configura la visualizzazione di app dello smartphone</translation>
+<translation id="6624493541160101248">Scrivania corrente: <ph name="DESK_NAME" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Le notifiche di <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> e altre app sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="6627638273713273709">Tasto per la ricerca + MAIUSC + K</translation>
 <translation id="662830937908749204">Sposta lo stato attivo sul riquadro successivo</translation>
@@ -1465,7 +1462,6 @@ Nuova installazione</translation>
 <translation id="6819327813400217281">Fotocamera allineata all'angolo in basso a sinistra</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
 <translation id="6827049576281411231">Chiudi il riquadro degli eventi</translation>
-<translation id="6831561626108366035">Pulsante Vai a <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />.</translation>
 <translation id="6836499262298959512">File pericoloso</translation>
 <translation id="6837621009301897464">Per fare uno screenshot, premi</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
@@ -1504,6 +1500,7 @@ Nuova installazione</translation>
 <translation id="698231206551913481">Tutti i file e i dati locali associati a questo utente verranno eliminati definitivamente in seguito alla rimozione dell'utente.</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> non supporta <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La risoluzione è stata modificata in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="6989752354829085073">Fai un rapido tour per scoprire come usare il tuo Chromebook. Puoi iniziare a usarlo in 6 passaggi.</translation>
+<translation id="7000027735917578303">Impostazioni di finestre e scrivanie</translation>
 <translation id="7004910047186208204">Connettiti ai dati mobili</translation>
 <translation id="7005239792648594238">Apri un'app per iniziare</translation>
 <translation id="7007983414944123363">Impossibile verificare il PIN o la password. Riprova.</translation>
@@ -1755,6 +1752,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8001755249288974029">Seleziona il testo dal cursore all'inizio della riga</translation>
 <translation id="8004512796067398576">Aumenta</translation>
 <translation id="8026334261755873520">Cancella dati di navigazione</translation>
+<translation id="802782383769312836">Scrivania precedente: <ph name="DESK_NAME" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Connessione all'hotspot non riuscita</translation>
 <translation id="8029629653277878342">PIN o password obbligatori per maggiore sicurezza</translation>
 <translation id="8030169304546394654">Disconnessa</translation>
@@ -1802,6 +1800,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8219451629189078428">Durante questo periodo di tempo, il Chromebook deve rimanere acceso e collegato all'alimentazione. Assicurati che il caricabatterie o i cavi dell'adattatore siano ben collegati al Chromebook e alla presa di corrente. Non spegnere il Chromebook.</translation>
 <translation id="8230305195727960608">Modalità inversione dei colori</translation>
 <translation id="8236042855478648955">È ora di fare una pausa</translation>
+<translation id="8237964652943995219">Scrivania successiva: <ph name="DESK_NAME" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="8239034820133090126">Attiva scrivania a destra</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />, batteria del telefono <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
@@ -1827,7 +1826,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8369166482916924789">Scrivania salvata, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8370414029565771236">Cerca <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Avanti per lettera</translation>
-<translation id="8371991222807690464">Le prestazioni delle periferiche potrebbero essere limitate in modalità Ospite</translation>
+<translation id="8371991222807690464">Le prestazioni delle periferiche potrebbero essere limitate in modalità ospite</translation>
 <translation id="8374601332003098278">Premi invio per registrare una schermata parziale</translation>
 <translation id="8375916635258623388">Questo dispositivo <ph name="DEVICE_NAME" /> e il telefono si connetteranno automaticamente</translation>
 <translation id="8380784334203145311">Buonanotte,</translation>
@@ -1866,7 +1865,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Ingresso del microfono controllato da <ph name="APP_NAME" />}other{Ingresso del microfono controllato da # app}}</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
-<translation id="853768060447955562">Scrivania precedente: <ph name="PREVIOUS_DESK_NAME" />, usa Ricerca + Barra spaziatrice. In alternativa usa la scorciatoia da tastiera: Maiusc + Ricerca + <ph name="PREVIOUS_DESK_INDEX" /> per procedere con l'attivazione.</translation>
 <translation id="8541078764854166027">Zoom automat.</translation>
 <translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>
 <translation id="8546059259582788728">Annullamento dell'ordinamento completato</translation>
@@ -1952,7 +1950,6 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="888982883502837004">Sono disponibili degli aggiornamenti del firmware per il tuo dispositivo. Fai clic per esaminarli ed eseguire gli aggiornamenti.</translation>
 <translation id="8896630965521842259">Il modello <ph name="DESK_TEMPLATE_NAME" /> verrà eliminato definitivamente</translation>
 <translation id="889790758758811533">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />). Collega il dispositivo all'alimentazione.</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> è connesso e pronto per l'uso. Puoi personalizzare la tavoletta grafica in Impostazioni.</translation>
 <translation id="88986195241502842">Pagina giù</translation>
 <translation id="8905919797434099235">(Senza titolo)</translation>
 <translation id="890616557918890486">Cambia origine</translation>
@@ -2029,8 +2026,8 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="92580429198593979">Hai premuto la scorciatoia da tastiera per l'inversione dei colori. Vuoi attivarla?</translation>
 <translation id="925832987464884575">Nascondi anteprime</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> richiede l'immediato aggiornamento di <ph name="DEVICE_TYPE" /></translation>
+<translation id="938407504481277932">Scrivania corrente: <ph name="DESK_NAME" />. <ph name="PROFILE_NAME" /> <ph name="EMAIL" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="938963181863597773">Cosa è segnato sul mio calendario?</translation>
-<translation id="943067377221312471">Scrivania precedente: <ph name="PREVIOUS_DESK_NAME" />, usa Ricerca + Barra spaziatrice per procedere con l'attivazione.</translation>
 <translation id="945383118875625837">Trascina il link nella barra dei preferiti</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="951991426597076286">Rifiuta</translation>

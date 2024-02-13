@@ -179,7 +179,7 @@ void PhoneHubMoreAppsButton::LoadAppList() {
   SetEnabled(true);
 }
 
-BEGIN_METADATA(PhoneHubMoreAppsButton, views::Button)
+BEGIN_METADATA(PhoneHubMoreAppsButton)
 END_METADATA
 
 }  // namespace ash

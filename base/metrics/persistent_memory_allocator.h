@@ -760,7 +760,10 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Histogram recording errors.
   raw_ptr<HistogramBase> errors_histogram_ = nullptr;
 
+  // TODO(crbug.com/1432981) For debugging purposes. Remove these once done.
+  friend class DelayedPersistentAllocation;
   friend class metrics::FileMetricsProvider;
+
   friend class PersistentMemoryAllocatorTest;
   FRIEND_TEST_ALL_PREFIXES(PersistentMemoryAllocatorTest, AllocateAndIterate);
 };

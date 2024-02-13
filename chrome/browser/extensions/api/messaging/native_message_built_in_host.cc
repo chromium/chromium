@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/url_pattern.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -18,7 +19,7 @@ namespace extensions {
 namespace {
 
 bool MatchesSecurityOrigin(const NativeMessageBuiltInHost& host,
-                           const std::string& extension_id) {
+                           const ExtensionId& extension_id) {
   GURL origin(std::string(kExtensionScheme) + "://" + extension_id);
   for (size_t i = 0; i < host.allowed_origins_count; i++) {
     URLPattern allowed_origin(URLPattern::SCHEME_ALL, host.allowed_origins[i]);
@@ -34,7 +35,7 @@ bool MatchesSecurityOrigin(const NativeMessageBuiltInHost& host,
 std::unique_ptr<NativeMessageHost> NativeMessageHost::Create(
     content::BrowserContext* browser_context,
     gfx::NativeView native_view,
-    const std::string& source_extension_id,
+    const ExtensionId& source_extension_id,
     const std::string& native_host_name,
     bool allow_user_level,
     std::string* error) {

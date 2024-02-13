@@ -35,7 +35,7 @@ std::u16string GenerateLabelText(float value, const std::u16string& dimention) {
 
 }  // anonymous namespace
 
-BEGIN_METADATA(ReferenceLines, views::View)
+BEGIN_METADATA(ReferenceLines)
 END_METADATA
 
 ReferenceLines::ReferenceLines(float left,

@@ -200,11 +200,11 @@ struct NET_EXPORT QuicParams {
   // (best effort).
   int ios_network_service_type = 0;
   // Delay for the 1st time the alternative service is marked broken.
-  absl::optional<base::TimeDelta> initial_delay_for_broken_alternative_service;
+  std::optional<base::TimeDelta> initial_delay_for_broken_alternative_service;
   // If true, the delay for broke alternative service would be initial_delay *
   // (1 << broken_count). Otherwise, the delay would be initial_delay, 5min,
   // 10min and so on.
-  absl::optional<bool> exponential_backoff_on_initial_delay;
+  std::optional<bool> exponential_backoff_on_initial_delay;
   // If true, delay main job even the request can be sent immediately on an
   // available SPDY session.
   bool delay_main_job_with_available_spdy_session = false;

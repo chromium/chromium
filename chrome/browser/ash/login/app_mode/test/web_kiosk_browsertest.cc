@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
@@ -32,12 +34,10 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
-#include "components/account_id/account_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -47,17 +47,55 @@
 namespace ash {
 namespace {
 
+using ::base::test::TestFuture;
 using ::testing::_;
 
 const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
                                                             "continueButton"};
 
-class FakeKioskProfileLoaderDelegate : public KioskProfileLoader::Delegate {
- public:
-  MOCK_METHOD1(OnProfileLoaded, void(Profile*));
-  MOCK_METHOD1(OnProfileLoadFailed, void(KioskAppLaunchError::Error));
-  MOCK_METHOD1(OnOldEncryptionDetected, void(std::unique_ptr<UserContext>));
-};
+std::optional<Profile*> LoadKioskProfile(const AccountId& account_id) {
+  TestFuture<absl::optional<Profile*>> profile_future;
+  auto profile_loader = LoadProfile(
+      account_id, KioskAppType::kWebApp,
+      base::BindOnce([](KioskProfileLoader::Result result) {
+        return result.has_value() ? absl::make_optional(result.value())
+                                  : absl::nullopt;
+      }).Then(profile_future.GetCallback()));
+  return profile_future.Take();
+}
+
+// TODO(b/322497609) Replace `URLLoaderInterceptor` with `EmbeddedTestServer`.
+content::URLLoaderInterceptor SimplePageInterceptor() {
+  return content::URLLoaderInterceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        content::URLLoaderInterceptor::WriteResponse(
+            "content/test/data/simple_page.html", params->client.get());
+        return true;
+      }));
+}
+
+bool InstallKioskWebAppInProvider(Profile& profile) {
+  // Serve a real page to avoid installing a placeholder app.
+  auto url_interceptor = SimplePageInterceptor();
+
+  TestFuture<bool> success_future;
+
+  auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(&profile);
+
+  web_app::ExternalInstallOptions install_options(
+      GURL(kAppInstallUrl), web_app::mojom::UserDisplayMode::kStandalone,
+      web_app::ExternalInstallSource::kKiosk);
+  install_options.install_placeholder = true;
+
+  provider->externally_managed_app_manager().InstallNow(
+      install_options,
+      base::BindOnce([](const GURL& install_url,
+                        web_app::ExternallyManagedAppManager::InstallResult
+                            result) {
+        return webapps::IsSuccess(result.code);
+      }).Then(success_future.GetCallback()));
+  return success_future.Wait();
+}
 
 class WebKioskTest : public WebKioskBaseTest {
  public:
@@ -66,45 +104,12 @@ class WebKioskTest : public WebKioskBaseTest {
   WebKioskTest(const WebKioskTest&) = delete;
   WebKioskTest& operator=(const WebKioskTest&) = delete;
 
-  void MakeAppAlreadyInstalled() {
-    // Intercept URL loader to avoid installing a placeholder app.
-    content::URLLoaderInterceptor url_interceptor(base::BindRepeating(
-        [](content::URLLoaderInterceptor::RequestParams* params) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "content/test/data/simple_page.html", params->client.get());
-          return true;
-        }));
-
-    FakeKioskProfileLoaderDelegate fake_delegate;
-    KioskProfileLoader profile_loader(account_id(), KioskAppType::kWebApp,
-                                      &fake_delegate);
-
-    base::RunLoop loop;
-    EXPECT_CALL(fake_delegate, OnProfileLoaded(_))
-        .WillOnce([&loop](Profile* profile) {
-          // When Kiosk profile is loaded, install Kiosk web app to
-          // WebAppProvider.
-          auto* provider =
-              web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-          web_app::ExternalInstallOptions install_options(
-              GURL(kAppInstallUrl),
-              web_app::mojom::UserDisplayMode::kStandalone,
-              web_app::ExternalInstallSource::kKiosk);
-          install_options.install_placeholder = true;
-          provider->externally_managed_app_manager().InstallNow(
-              install_options,
-              base::BindLambdaForTesting(
-                  [&loop](const GURL& install_url,
-                          web_app::ExternallyManagedAppManager::InstallResult
-                              result) {
-                    ASSERT_TRUE(webapps::IsSuccess(result.code));
-                    Shell::Get()->session_controller()->RequestSignOut();
-                    loop.Quit();
-                  }));
-        });
-
-    profile_loader.Start();
-    loop.Run();
+  void EnsureAppIsInstalled() {
+    std::optional<Profile*> profile = LoadKioskProfile(account_id());
+    ASSERT_TRUE(profile.has_value());
+    ASSERT_TRUE(InstallKioskWebAppInProvider(CHECK_DEREF(*profile)))
+        << "App was not installed";
+    Shell::Get()->session_controller()->RequestSignOut();
   }
 
   void SetBlockAppLaunch(bool block) {
@@ -194,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NetworkTimeout) {
 // launching offline.
 IN_PROC_BROWSER_TEST_F(WebKioskTest, PRE_AlreadyInstalledOffline) {
   PrepareAppLaunch();
-  MakeAppAlreadyInstalled();
+  EnsureAppIsInstalled();
 }
 
 // Runs the kiosk app offline when it has been already installed.
@@ -233,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, LaunchWithConfigureAcceleratorPressed) {
 IN_PROC_BROWSER_TEST_F(WebKioskTest,
                        PRE_AlreadyInstalledWithConfigureAcceleratorPressed) {
   PrepareAppLaunch();
-  MakeAppAlreadyInstalled();
+  EnsureAppIsInstalled();
 }
 
 // In case when the app was already installed, we should expect to be able to

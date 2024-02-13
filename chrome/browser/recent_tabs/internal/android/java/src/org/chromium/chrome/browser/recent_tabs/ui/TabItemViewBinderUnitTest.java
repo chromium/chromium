@@ -82,7 +82,7 @@ public class TabItemViewBinderUnitTest {
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(
                                 FOREIGN_SESSION_TAB,
-                                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0))
+                                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 32L, 0))
                         .with(IS_SELECTED, true)
                         .with(
                                 ON_CLICK_LISTENER,

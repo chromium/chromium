@@ -1408,6 +1408,8 @@ component("platform") {
     "text/date_time_format.cc",
     "text/date_time_format.h",
     "text/decode_escape_sequences.h",
+    "text/emoji_segmentation_category.h",
+    "text/emoji_segmentation_category_inline_header.h",
     "text/han_kerning_char_type.h",
     "text/hyphenation.cc",
     "text/hyphenation.h",
@@ -2452,6 +2454,7 @@ group("blink_platform_unittests_data") {
     # Required by some image decoder tests.
     "image-decoders/testing/",
     "//third_party/blink/web_tests/images/resources/",
+    "//third_party/blink/web_tests/images/bmp-suite/",
 
     # Required by some font tests.
     "//third_party/blink/web_tests/external/wpt/fonts/",
@@ -2612,8 +2615,41 @@ fuzzer_test("web_icon_sizes_fuzzer") {
   dict = "//testing/libfuzzer/fuzzers/dicts/web_icon_sizes.dict"
 }
 
+# Fuzzer for blink::AVIFImageDecoder
+fuzzer_test("blink_avif_decoder_fuzzer") {
+  sources = [ "image-decoders/avif/avif_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
+# Fuzzer for blink::ICOImageDecoder.
+fuzzer_test("blink_ico_decoder_fuzzer") {
+  sources = [ "image-decoders/ico/ico_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/icofuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
+# Fuzzer for blink::GIFImageDecoder
+fuzzer_test("blink_gif_decoder_fuzzer") {
+  sources = [ "image-decoders/gif/gif_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/giffuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
 fuzzer_test("blink_png_decoder_fuzzer") {
-  sources = [ "png_fuzzer.cc" ]
+  sources = [ "image-decoders/png/png_image_decoder_fuzzer.cc" ]
   deps = [
     ":blink_fuzzer_test_support",
     ":platform",
@@ -2625,6 +2661,7 @@ fuzzer_test("blink_png_decoder_fuzzer") {
     "//third_party/blink/web_tests/images/png-suite/samples",
     "//third_party/blink/web_tests/images/resources/pngfuzz",
   ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
 
 fuzzer_test("blink_jpeg_decoder_fuzzer") {
@@ -2634,6 +2671,17 @@ fuzzer_test("blink_jpeg_decoder_fuzzer") {
     ":platform",
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
+  libfuzzer_options = [ "rss_limit_mb=8192" ]
+}
+
+# Fuzzer for blink::WEBPImageDecoder.
+fuzzer_test("blink_webp_decoder_fuzzer") {
+  sources = [ "image-decoders/webp/webp_image_decoder_fuzzer.cc" ]
+  deps = [
+    ":blink_fuzzer_test_support",
+    ":platform",
+  ]
+  seed_corpuses = [ "//third_party/blink/web_tests/images/resources/webpfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
 }
 

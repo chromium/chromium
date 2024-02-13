@@ -1735,12 +1735,6 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
 
 TEST_P(GPURendererPixelTest,
        PremultipliedTextureWithBackgroundAndVertexOpacity) {
-  // TODO(b/323204379): Skia Graphite needs shader mask filter support through
-  // `SkCanvas::clipShader()`.
-  if (is_skia_graphite()) {
-    GTEST_SKIP();
-  }
-
   gfx::Rect rect(this->device_viewport_size_);
 
   AggregatedRenderPassId id{1};

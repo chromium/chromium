@@ -79,7 +79,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
     ObservedDeviceData();
     ~ObservedDeviceData();
 
-    absl::optional<CableEidArray> service_data;
+    std::optional<CableEidArray> service_data;
     std::vector<CableEidArray> uuids;
   };
 
@@ -91,8 +91,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   // description of |result|, if present.
   static std::string ResultDebugString(
       const CableEidArray& eid,
-      const absl::optional<V1DiscoveryDataAndEID>& result);
-  static absl::optional<CableEidArray> MaybeGetEidFromServiceData(
+      const std::optional<V1DiscoveryDataAndEID>& result);
+  static std::optional<CableEidArray> MaybeGetEidFromServiceData(
       const BluetoothDevice* device);
   static std::vector<CableEidArray> GetUUIDs(const BluetoothDevice* device);
 
@@ -123,11 +123,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   void ValidateAuthenticatorHandshakeMessage(
       CableDiscoveryData::Version cable_version,
       FidoCableHandshakeHandler* handshake_handler,
-      absl::optional<std::vector<uint8_t>> handshake_response);
+      std::optional<std::vector<uint8_t>> handshake_response);
 
-  absl::optional<V1DiscoveryDataAndEID> GetCableDiscoveryData(
+  std::optional<V1DiscoveryDataAndEID> GetCableDiscoveryData(
       const BluetoothDevice* device);
-  absl::optional<V1DiscoveryDataAndEID>
+  std::optional<V1DiscoveryDataAndEID>
   GetCableDiscoveryDataFromAuthenticatorEid(CableEidArray authenticator_eid);
 
   // FidoDeviceDiscovery:
@@ -151,7 +151,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
                     device::BluetoothDevice* device) override;
   void OnSessionStarted(
       device::BluetoothLowEnergyScanSession* scan_session,
-      absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+      std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
           error_code) override;
   void OnSessionInvalidated(
       device::BluetoothLowEnergyScanSession* scan_session) override;

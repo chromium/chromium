@@ -120,8 +120,7 @@ RequestOutcome RequestOutcomeFromPrompt(ContentSetting content_setting,
       return persist ? RequestOutcome::kDeniedByUser
                      : RequestOutcome::kReusedPreviousDecision;
     default:
-      NOTREACHED();
-      return RequestOutcome::kDeniedByUser;
+      NOTREACHED_NORETURN();
   }
 }
 

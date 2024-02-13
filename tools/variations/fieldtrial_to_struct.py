@@ -113,6 +113,13 @@ def _CreateExperiment(experiment_data, platforms, form_factors,
   min_os_version_data = experiment_data.get('min_os_version')
   if min_os_version_data:
     experiment['min_os_version'] = min_os_version_data
+  hardware_classes_data = experiment_data.get('hardware_classes')
+  if hardware_classes_data:
+    experiment['hardware_classes'] = hardware_classes_data
+  exclude_hardware_classes_data = experiment_data.get(
+      'exclude_hardware_classes')
+  if exclude_hardware_classes_data:
+    experiment['exclude_hardware_classes'] = exclude_hardware_classes_data
   params_data = experiment_data.get('params')
   if (params_data):
     experiment['params'] = [{'key': param, 'value': params_data[param]}

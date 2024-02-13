@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_controller.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "base/check_is_test.h"
@@ -497,9 +498,9 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
-  const std::optional<base::StringPiece> serial_number =
+  const std::optional<std::string_view> serial_number =
       provider->GetMachineID();
-  const std::optional<base::StringPiece> rlz_brand_code =
+  const std::optional<std::string_view> rlz_brand_code =
       provider->GetMachineStatistic(ash::system::kRlzBrandCodeKey);
   // The Initial State Determination should not be started if the serial number
   // or brand code are missing. This is ensured in

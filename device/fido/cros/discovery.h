@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_CROS_DISCOVERY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -15,7 +16,6 @@
 #include "device/fido/cros/authenticator.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_discovery_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -24,7 +24,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
  public:
   FidoChromeOSDiscovery(
       base::RepeatingCallback<std::string()> generate_request_id_callback,
-      absl::optional<CtapGetAssertionRequest> get_assertion_request_);
+      std::optional<CtapGetAssertionRequest> get_assertion_request_);
   ~FidoChromeOSDiscovery() override;
 
   void set_require_power_button_mode(bool require);
@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
   bool uv_available_ = false;
   bool lacros_supported_ = false;
   uint32_t pending_requests_ = 0;
-  absl::optional<CtapGetAssertionRequest> get_assertion_request_;
+  std::optional<CtapGetAssertionRequest> get_assertion_request_;
   std::unique_ptr<ChromeOSAuthenticator> authenticator_;
   base::WeakPtrFactory<FidoChromeOSDiscovery> weak_factory_;
 };

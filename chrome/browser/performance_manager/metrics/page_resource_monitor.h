@@ -18,7 +18,7 @@
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 
 namespace performance_manager::metrics {
 
@@ -104,7 +104,7 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   void OnPageResourceUsageResult(
       const resource_attribution::QueryResultMap& results,
       const PageCPUUsageMap& page_cpu_usage,
-      std::optional<system_cpu::PressureSample> system_cpu);
+      std::optional<system_cpu::CpuSample> system_cpu);
 
   // Asynchronously checks if the CPU metrics are still above the threshold
   // after a delay.
@@ -114,12 +114,12 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   // page and system CPU measurements are ready.
   void OnDelayedCPUInterventionMetricsResult(
       const PageCPUUsageMap& page_cpu_usage,
-      std::optional<system_cpu::PressureSample> system_cpu);
+      std::optional<system_cpu::CpuSample> system_cpu);
 
   // Log CPU intervention metrics with the provided suffix.
   void LogCPUInterventionMetrics(
       const PageCPUUsageMap& page_cpu_usage,
-      const std::optional<system_cpu::PressureSample>& system_cpu,
+      const std::optional<system_cpu::CpuSample>& system_cpu,
       const base::TimeTicks now,
       CPUInterventionSuffix histogram_suffix);
 

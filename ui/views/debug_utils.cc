@@ -93,7 +93,7 @@ std::string PrintViewGraphImpl(const View* view) {
   result.append(bounds_buffer);
 
   if (!view->GetTransform().IsIdentity()) {
-    if (absl::optional<gfx::DecomposedTransform> decomp =
+    if (std::optional<gfx::DecomposedTransform> decomp =
             view->GetTransform().Decompose()) {
       base::snprintf(bounds_buffer, kBoundsBufferSize,
                      "\\n translation: (%f, %f)", decomp->translate[0],

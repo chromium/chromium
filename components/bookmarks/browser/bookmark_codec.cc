@@ -269,7 +269,8 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
   int64_t id = 0;
   if (ids_valid_) {
     const std::string* string = value.FindString(kIdKey);
-    if (!string || !base::StringToInt64(*string, &id) || ids_.count(id) != 0) {
+    if (!string || !base::StringToInt64(*string, &id) || id <= 0 ||
+        ids_.count(id) != 0) {
       ids_valid_ = false;
     } else {
       ids_.insert(id);

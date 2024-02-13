@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.content.Intent;
+
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 
@@ -195,8 +197,13 @@ public class BookmarkFolderPickerActivityTest {
     }
 
     private void startFolderPickerActivity(BookmarkId... ids) {
-        // TODO(crbug.com/): Move this code to a shared ActivityTestUtils location.
-        BookmarkUtils.startFolderPickerActivity(sActivityTestRule.getActivity(), ids);
+        Intent intent =
+                new Intent(sActivityTestRule.getActivity(), BookmarkFolderPickerActivity.class);
+        intent.putStringArrayListExtra(
+                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
+                BookmarkUtils.bookmarkIdsToStringList(ids));
+        sActivityTestRule.getActivity().startActivity(intent);
+
         CriteriaHelper.pollUiThread(
                 () ->
                         ApplicationStatus.getLastTrackedFocusedActivity()

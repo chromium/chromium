@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_REQUEST_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "chromeos/ash/services/secure_channel/client_connection_parameters.h"
 #include "chromeos/ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -51,6 +53,11 @@ class PendingConnectionRequest {
   virtual void HandleBleDiscoveryStateChange(
       mojom::DiscoveryResult discovery_result,
       absl::optional<mojom::DiscoveryErrorCode> potential_error_code) {}
+  virtual void HandleNearbyConnectionChange(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) {}
+  virtual void HandleSecureChannelChanged(
+      mojom::SecureChannelState secure_channel_state) {}
 
   virtual const base::UnguessableToken& GetRequestId() const = 0;
 

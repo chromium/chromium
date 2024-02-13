@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTINUOUS_SEARCH_COMMON_TITLE_VALIDATOR_H_
 #define COMPONENTS_CONTINUOUS_SEARCH_COMMON_TITLE_VALIDATOR_H_
 
+#include <string>
+
 #include "base/strings/string_piece.h"
 
 namespace continuous_search {

@@ -141,18 +141,6 @@ ProposedLayout LayoutManagerBase::GetProposedLayout(
   return cached_layout_;
 }
 
-void LayoutManagerBase::SetChildViewIgnoredByLayout(View* child_view,
-                                                    bool ignored) {
-  // TODO(crbug.com/1267319): Call this directly in callers and remove.
-  child_view->SetProperty(kViewIgnoredByLayoutKey, ignored);
-}
-
-bool LayoutManagerBase::IsChildViewIgnoredByLayout(
-    const View* child_view) const {
-  // TODO(crbug.com/1267319): Call this directly in callers and remove.
-  return child_view->GetProperty(kViewIgnoredByLayoutKey);
-}
-
 LayoutManagerBase::LayoutManagerBase() = default;
 
 SizeBounds LayoutManagerBase::GetAvailableHostSize() const {
@@ -174,7 +162,7 @@ bool LayoutManagerBase::IsChildIncludedInLayout(const View* child,
     return false;
   }
 
-  return !IsChildViewIgnoredByLayout(child) &&
+  return !child->GetProperty(kViewIgnoredByLayoutKey) &&
          (include_hidden || it->second.can_be_visible);
 }
 
@@ -332,7 +320,7 @@ void LayoutManagerBase::ViewRemoved(View* host, View* view) {
   auto it = child_infos_.find(view);
   DCHECK(it != child_infos_.end());
   const bool removed_visible =
-      it->second.can_be_visible && !IsChildViewIgnoredByLayout(view);
+      it->second.can_be_visible && !view->GetProperty(kViewIgnoredByLayoutKey);
 
   view_observations_.RemoveObservation(view);
 
@@ -349,7 +337,7 @@ void LayoutManagerBase::ViewVisibilitySet(View* host,
   DCHECK_EQ(host_view_, host);
   auto it = child_infos_.find(view);
   DCHECK(it != child_infos_.end());
-  const bool was_ignored = IsChildViewIgnoredByLayout(view);
+  const bool was_ignored = view->GetProperty(kViewIgnoredByLayoutKey);
   if (it->second.can_be_visible == new_visibility)
     return;
 
@@ -384,7 +372,7 @@ void LayoutManagerBase::AddOwnedLayoutInternal(
     for (View* child_view : host_view_->children()) {
       const ChildInfo& child_info = child_infos_.find(child_view)->second;
       owned_layout->PropagateChildViewIgnoredByLayout(
-          child_view, IsChildViewIgnoredByLayout(child_view));
+          child_view, child_view->GetProperty(kViewIgnoredByLayoutKey));
       owned_layout->PropagateViewVisibilitySet(host_view_, child_view,
                                                child_info.can_be_visible);
     }

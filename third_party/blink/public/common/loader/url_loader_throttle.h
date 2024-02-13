@@ -68,8 +68,6 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
     // not deferred or has already been canceled.
     virtual void Resume() = 0;
 
-    virtual void SetPriority(net::RequestPriority priority);
-
     // Updates the request headers which is deferred  to be sent. This method
     // needs to be called when the response is deferred on WillStartRequest or
     // WillRedirectRequest and before calling Delegate::Resume().

@@ -457,7 +457,7 @@ class PermissionRequestManager
   // we are extracting a group of requests from the queue to show to user. This
   // is an immature solution to avoid an infinitive loop of preempting, we would
   // not prempt a request if the incoming request is already validated.
-  std::set<PermissionRequest*> validated_requests_set_;
+  std::set<raw_ptr<PermissionRequest, SetExperimental>> validated_requests_set_;
 
   base::ObserverList<Observer> observer_list_;
   AutoResponseType auto_response_for_test_ = NONE;

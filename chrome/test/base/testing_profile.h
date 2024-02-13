@@ -385,6 +385,9 @@ class TestingProfile : public Profile {
   ProfileKey* GetProfileKey() const override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUserCloudPolicyManagerAsh(
+      std::unique_ptr<policy::UserCloudPolicyManagerAsh>
+          user_cloud_policy_manager);
   policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() override;
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;

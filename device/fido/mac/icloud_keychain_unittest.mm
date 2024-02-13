@@ -4,6 +4,8 @@
 
 #include "device/fido/mac/icloud_keychain.h"
 
+#include <optional>
+
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -18,7 +20,6 @@
 #include "device/fido/mac/fake_icloud_keychain_sys.h"
 #include "device/fido/test_callback_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::fido::icloud_keychain {
 
@@ -203,7 +204,7 @@ TEST_F(iCloudKeychainTest, RequestAuthorization) {
         if (is_make_credential) {
           test::TestCallbackReceiver<
               CtapDeviceResponseCode,
-              absl::optional<AuthenticatorMakeCredentialResponse>>
+              std::optional<AuthenticatorMakeCredentialResponse>>
               callback;
           authenticator_->MakeCredential(make_credential_request,
                                          make_credential_options,
@@ -242,10 +243,10 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
 
     auto make_credential = [this, &request, &options]()
         -> std::tuple<CtapDeviceResponseCode,
-                      absl::optional<AuthenticatorMakeCredentialResponse>> {
+                      std::optional<AuthenticatorMakeCredentialResponse>> {
       test::TestCallbackReceiver<
           CtapDeviceResponseCode,
-          absl::optional<AuthenticatorMakeCredentialResponse>>
+          std::optional<AuthenticatorMakeCredentialResponse>>
           callback;
       authenticator_->MakeCredential(request, options, callback.callback());
       callback.WaitForCallback();
@@ -496,7 +497,7 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", absl::nullopt}}};
+         {{4, 3, 2, 1}, "name", std::nullopt}}};
     fake_->SetCredentials(creds);
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
                                FidoRequestHandlerBase::RecognizedCredential>
@@ -523,11 +524,11 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadataWithAllowlist) {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", absl::nullopt}},
+         {{4, 3, 2, 1}, "name", std::nullopt}},
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 5},
-         {{4, 3, 2, 2}, "name", absl::nullopt}},
+         {{4, 3, 2, 2}, "name", std::nullopt}},
     };
     fake_->SetCredentials(creds);
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,

@@ -85,7 +85,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
   CreatePictureBuffers(
       uint32_t count,
       VideoPixelFormat pixel_format,
-      uint32_t planes,
       gfx::Size texture_size,
       uint32_t texture_target,
       VideoDecodeAccelerator::TextureAllocationMode mode) override {
@@ -93,8 +92,6 @@ class PictureBufferManagerImpl : public PictureBufferManager {
     DCHECK(gpu_task_runner_);
     DCHECK(gpu_task_runner_->BelongsToCurrentThread());
     DCHECK(count);
-    DCHECK(planes);
-    DCHECK_LE(planes, static_cast<uint32_t>(VideoFrame::kMaxPlanes));
     DCHECK(!allocate_gpu_memory_buffers_ ||
            mode == VideoDecodeAccelerator::TextureAllocationMode::
                        kDoNotAllocateGLTextures);
@@ -124,36 +121,31 @@ class PictureBufferManagerImpl : public PictureBufferManager {
 #if !BUILDFLAG(IS_APPLE)
       if (mode ==
           VideoDecodeAccelerator::TextureAllocationMode::kAllocateGLTextures) {
-        for (uint32_t j = 0; j < planes; j++) {
-          // Use the plane size for texture-backed shared and non-shared images.
-          // Adjust the size by the subsampling factor.
-          const size_t width =
-              VideoFrame::Columns(j, pixel_format, texture_size.width());
-          const size_t height =
-              VideoFrame::Rows(j, pixel_format, texture_size.height());
+        // Use the plane size for texture-backed shared and non-shared images.
+        // Adjust the size by the subsampling factor.
+        const size_t width =
+            VideoFrame::Columns(0, pixel_format, texture_size.width());
+        const size_t height =
+            VideoFrame::Rows(0, pixel_format, texture_size.height());
 
-          picture_data.texture_sizes.emplace_back(width, height);
+        picture_data.texture_sizes.emplace_back(width, height);
 
-          // Create a texture for this plane.
-          // When using shared images, the VDA might not require GL textures to
-          // exist.
-          // TODO(crbug.com/1011555): Do not allocate GL textures when unused.
-          GLuint service_id = command_buffer_helper_->CreateTexture(
-              texture_target, GL_RGBA, width, height, GL_RGBA,
-              GL_UNSIGNED_BYTE);
-          DCHECK(service_id);
-          picture_data.service_ids.push_back(service_id);
+        // Create a texture for this plane.
+        // When using shared images, the VDA might not require GL textures to
+        // exist.
+        // TODO(crbug.com/1011555): Do not allocate GL textures when unused.
+        GLuint service_id = command_buffer_helper_->CreateTexture(
+            texture_target, GL_RGBA, width, height, GL_RGBA, GL_UNSIGNED_BYTE);
+        DCHECK(service_id);
+        picture_data.service_ids.push_back(service_id);
 
-          // The texture is not cleared yet, but it will be before the VDA
-          // outputs it. Rather than requiring output to happen on the GPU
-          // thread, mark the texture as cleared immediately.
-          command_buffer_helper_->SetCleared(service_id);
+        // NOTE: The texture is not cleared yet, but it will be before the VDA
+        // outputs it.
 
-          // Generate a mailbox while we are still on the GPU thread.
-          picture_data.mailbox_holders[j] = gpu::MailboxHolder(
-              command_buffer_helper_->CreateLegacyMailbox(service_id),
-              gpu::SyncToken(), texture_target);
-        }
+        // Generate a mailbox while we are still on the GPU thread.
+        picture_data.mailbox_holders[0] = gpu::MailboxHolder(
+            command_buffer_helper_->CreateLegacyMailbox(service_id),
+            gpu::SyncToken(), texture_target);
       }
 #endif  // !BUILDFLAG(IS_APPLE)
 

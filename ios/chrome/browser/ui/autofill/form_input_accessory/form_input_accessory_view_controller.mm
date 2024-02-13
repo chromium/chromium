@@ -60,6 +60,10 @@
 // Whether to show the scroll hint.
 @property(nonatomic, assign) BOOL showScrollHint;
 
+// UI tap recognizer used to dismiss bubble presenter.
+@property(nonatomic, strong)
+    UITapGestureRecognizer* formInputAccessoryTapRecognizer;
+
 @end
 
 @implementation FormInputAccessoryViewController {
@@ -181,24 +185,9 @@
 - (void)manualFillButtonPressed:(UIButton*)button {
   DCHECK(IsKeyboardAccessoryUpgradeEnabled());
 
-  switch (_mainFillingProduct) {
-    case autofill::FillingProduct::kAddress:
-    case autofill::FillingProduct::kPlusAddresses:
-      [self.manualFillAccessoryViewController accountButtonPressed:button];
-      break;
-    case autofill::FillingProduct::kCreditCard:
-    case autofill::FillingProduct::kIban:
-      [self.manualFillAccessoryViewController cardButtonPressed:button];
-      break;
-    case autofill::FillingProduct::kCompose:
-    case autofill::FillingProduct::kMerchantPromoCode:
-    case autofill::FillingProduct::kPassword:
-    case autofill::FillingProduct::kAutocomplete:
-    case autofill::FillingProduct::kNone:
-      [self.manualFillAccessoryViewController passwordButtonPressed:button];
-      break;
-  }
-
+  [_formInputAccessoryViewControllerDelegate
+      formInputAccessoryViewController:self
+              didPressManualFillButton:button];
   [self showManualFillView:YES];
 }
 
@@ -255,6 +244,20 @@
   _formInputPreviousButtonEnabled = formInputPreviousButtonEnabled;
   self.formInputAccessoryView.previousButton.enabled =
       _formInputPreviousButtonEnabled;
+}
+
+#pragma mark - Actions
+
+- (void)tapInsideRecognized:(id)sender {
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    [self.formInputAccessoryViewControllerDelegate
+        formInputAccessoryViewController:self
+            didTapFormInputAccessoryView:self.view];
+  } else {
+    // This method can't be reached when `kEnableStartupImprovements` is
+    // enabled.
+    NOTREACHED();
+  }
 }
 
 #pragma mark - Private
@@ -319,6 +322,16 @@
   // `self.formAccessoryVisible` depends on the visible state of its view.
   self.brandingViewController.keyboardAccessoryVisible =
       self.formAccessoryVisible;
+
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    // Adds tap recognizer.
+    self.formInputAccessoryTapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(tapInsideRecognized:)];
+    self.formInputAccessoryTapRecognizer.cancelsTouchesInView = NO;
+    [formInputAccessoryView
+        addGestureRecognizer:self.formInputAccessoryTapRecognizer];
+  }
 
   self.formInputAccessoryView = formInputAccessoryView;
 }

@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/storage_type.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"

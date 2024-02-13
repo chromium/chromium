@@ -1461,13 +1461,13 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   OnSodaProgress(12);
   ASSERT_FALSE(GetLabel()->GetVisible());
   ASSERT_TRUE(GetDownloadProgressLabel()->GetVisible());
-  ASSERT_EQ(u"Downloading French language pack...12%",
+  ASSERT_EQ(u"Downloading French language pack\x2026 12%",
             GetDownloadProgressLabel()->GetText());
 
   OnPartialTranscription(
       "Tasmanian devils hold the chomping champ title for mammals, crushing "
       "bone with a bite four times their own weight.");
-  ASSERT_EQ(u"Downloading French language pack...12%",
+  ASSERT_EQ(u"Downloading French language pack\x2026 12%",
             GetDownloadProgressLabel()->GetText());
 
   OnSodaInstalled();

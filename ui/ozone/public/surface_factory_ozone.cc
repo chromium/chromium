@@ -82,7 +82,7 @@ scoped_refptr<gfx::NativePixmap> SurfaceFactoryOzone::CreateNativePixmap(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    absl::optional<gfx::Size> framebuffer_size) {
+    std::optional<gfx::Size> framebuffer_size) {
   return nullptr;
 }
 
@@ -139,9 +139,9 @@ SurfaceFactoryOzone::GetSupportedFormatsForTexturing() const {
   return std::vector<gfx::BufferFormat>();
 }
 
-absl::optional<gfx::BufferFormat>
+std::optional<gfx::BufferFormat>
 SurfaceFactoryOzone::GetPreferredFormatForSolidColor() const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace ui

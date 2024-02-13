@@ -104,7 +104,7 @@ void NativeViewHost::NativeViewDestroyed() {
 }
 
 void NativeViewHost::SetBackgroundColorWhenClipped(
-    absl::optional<SkColor> color) {
+    std::optional<SkColor> color) {
   background_color_when_clipped_ = color;
 }
 
@@ -281,7 +281,7 @@ void NativeViewHost::ClearFocus() {
 
   Widget::Widgets widgets;
   Widget::GetAllChildWidgets(native_view(), &widgets);
-  for (auto* widget : widgets) {
+  for (Widget* widget : widgets) {
     focus_manager->ViewRemoved(widget->GetRootView());
     if (!focus_manager->GetFocusedView())
       return;

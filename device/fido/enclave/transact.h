@@ -5,6 +5,7 @@
 #ifndef DEVICE_FIDO_ENCLAVE_TRANSACT_H_
 #define DEVICE_FIDO_ENCLAVE_TRANSACT_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -12,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "device/fido/enclave/types.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network::mojom {
 class NetworkContext;
@@ -34,7 +34,7 @@ void Transact(raw_ptr<network::mojom::NetworkContext> network_context,
               std::string access_token,
               cbor::Value request,
               SigningCallback signing_callback,
-              base::OnceCallback<void(absl::optional<cbor::Value>)> callback);
+              base::OnceCallback<void(std::optional<cbor::Value>)> callback);
 
 }  // namespace device::enclave
 

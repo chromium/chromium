@@ -250,6 +250,11 @@ declare interface ClientApiDelegate {
    */
   pageMetadataUpdated(pageMetadata: PageMetadataWithClosureRect[]): void;
   /**
+   * Alert the OCR service that a specific page's contents has changed and
+   * should have OCR applied again.
+   */
+  pageContentsUpdated(dirtyPageId: string): void;
+  /**
    * Called whenever the viewport changes, e.g. due to scrolling, zooming,
    * resizing the window, or opening and closing toolbars/panels.
    * @param viewportBox The new bounding box of the viewport.

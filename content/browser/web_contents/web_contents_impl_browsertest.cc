@@ -3824,7 +3824,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyFullscreenAcquired) {
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
 
-  std::set<RenderFrameHostImpl*> fullscreen_frames;
+  std::set<raw_ptr<RenderFrameHostImpl, SetExperimental>> fullscreen_frames;
   EXPECT_EQ(fullscreen_frames, web_contents->fullscreen_frames_);
   EXPECT_FALSE(IsInFullscreen());
 
@@ -3951,7 +3951,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
 
-  std::set<RenderFrameHostImpl*> nodes;
+  std::set<raw_ptr<RenderFrameHostImpl, SetExperimental>> nodes;
   EXPECT_EQ(nodes, web_contents->fullscreen_frames_);
   EXPECT_FALSE(IsInFullscreen());
 
@@ -4002,7 +4002,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
 
-  std::set<RenderFrameHostImpl*> fullscreen_frames;
+  std::set<raw_ptr<RenderFrameHostImpl, SetExperimental>> fullscreen_frames;
   EXPECT_EQ(fullscreen_frames, web_contents->fullscreen_frames_);
   EXPECT_FALSE(IsInFullscreen());
 

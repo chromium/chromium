@@ -72,7 +72,9 @@ public class FledgeBlockedSitesFragment extends PrivacySandboxSettingsBaseFragme
                     R.string.settings_fledge_page_add_site_snackbar,
                     null,
                     Snackbar.TYPE_ACTION,
-                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_SITE);
+                    Snackbar.UMA_PRIVACY_SANDBOX_ADD_SITE,
+                    /* actionStringResId= */ 0,
+                    /* multiLine= */ true);
             RecordUserAction.record("Settings.PrivacySandbox.Fledge.SiteAdded");
             return true;
         }

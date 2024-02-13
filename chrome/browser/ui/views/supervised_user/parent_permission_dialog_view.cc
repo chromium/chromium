@@ -97,7 +97,7 @@ TestParentPermissionDialogViewObserver* test_view_observer = nullptr;
 
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ParentPermissionDialogView,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ParentPermissionDialog,
                                       kDialogViewIdForTesting);
 
 // Create the parent permission input section of the dialog and
@@ -289,7 +289,8 @@ ParentPermissionDialogView::ParentPermissionDialogView(
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  SetProperty(views::kElementIdentifierKey, kDialogViewIdForTesting);
+  SetProperty(views::kElementIdentifierKey,
+              ParentPermissionDialog::kDialogViewIdForTesting);
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(params_->profile);
 }

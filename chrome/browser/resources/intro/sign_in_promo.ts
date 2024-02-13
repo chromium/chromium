@@ -10,13 +10,14 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {IntroBrowserProxy, IntroBrowserProxyImpl} from './browser_proxy.js';
+import type {IntroBrowserProxy} from './browser_proxy.js';
+import {IntroBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './sign_in_promo.html.js';
 
 export interface SignInPromoElement {

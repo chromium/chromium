@@ -133,15 +133,15 @@ Methods:
         invalid="{{unlockPasswordInvalid}}" class="focus-on-show"
         label="[[i18nDynamic(locale, 'adUnlockPassword')]]"
         error-message="[[i18nDynamic(locale, 'adUnlockIncorrectPassword')]]"
-        disabled="[[disabled]]" on-keydown="onKeydownUnlockPassword_"
+        disabled="[[disabled]]" on-keydown="onKeydownUnlockPassword"
         required>
     </cr-input>
   </div>
   <div slot="bottom-buttons">
-    <oobe-text-button id="skipButton" on-click="onSkipClicked_"
+    <oobe-text-button id="skipButton" on-click="onSkipClicked"
         text-key="adUnlockPasswordSkip"></oobe-text-button>
     <oobe-next-button id="unlockButton"
-        on-click="onUnlockPasswordEntered_"></oobe-next-button>
+        on-click="onUnlockPasswordEntered"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
 <oobe-adaptive-dialog id="credsStep" for-step="creds" role="dialog"
@@ -160,7 +160,7 @@ Methods:
   <div slot="content" class="landscape-vertical-centered"
       hidden="[[loading]]">
     <div class="layout vertical" id="joinConfig"
-        hidden="[[!joinConfigVisible_]]">
+        hidden="[[!joinConfigVisible]]">
       <span class="select-divider-line top-line"></span>
       <div class="layout horizontal justified">
         <div class="flex self-center select-title">
@@ -175,19 +175,19 @@ Methods:
       <cr-input slot="inputs" id="machineNameInput" required
           hidden="[[!isDomainJoin]]" value="{{machineName}}"
           disabled="[[disabled]]" invalid="[[machineNameInvalid]]"
-          pattern="[[machineNameInputPattern_]]"
+          pattern="[[machineNameInputPattern]]"
           label="[[i18nDynamic(locale, 'oauthEnrollAdMachineNameInput')]]"
-          on-keydown="onKeydownMachineNameInput_" class="focus-on-show"
-          error-message="[[getMachineNameError_(locale, errorState,
-              selectedConfigOption_)]]">
+          on-keydown="onKeydownMachineNameInput" class="focus-on-show"
+          error-message="[[getMachineNameError(locale, errorState,
+              selectedConfigOption)]]">
       </cr-input>
       <cr-input slot="inputs" id="userInput" required
           invalid="[[userInvalid]]" domain="[[userRealm]]"
                                     value="{{userName}}"
-          disabled="[[isInputDisabled_('ad_username',
-                                        selectedConfigOption_, disabled)]]"
+          disabled="[[isInputDisabled('ad_username',
+                                        selectedConfigOption, disabled)]]"
           label="[[i18nDynamic(locale, 'adAuthLoginUsername')]]"
-          on-keydown="onKeydownUserInput_"
+          on-keydown="onKeydownUserInput"
           error-message="[[i18nDynamic(locale, 'adLoginInvalidUsername')]]">
         <span slot="suffix" id="userRealm"
             hidden="[[domainHidden(userRealm, userName)]]">
@@ -196,16 +196,16 @@ Methods:
       </cr-input>
       <cr-input slot="inputs" id="passwordInput" type="password" required
           invalid="[[authPasswordInvalid]]"
-          disabled="[[isInputDisabled_('ad_password',
-                                        selectedConfigOption_, disabled)]]"
-          value="[[calculateInputValue_('passwordInput', 'ad_password',
-                                        selectedConfigOption_)]]"
+          disabled="[[isInputDisabled('ad_password',
+                                        selectedConfigOption, disabled)]]"
+          value="[[calculateInputValue('passwordInput', 'ad_password',
+                                        selectedConfigOption)]]"
           label="[[i18nDynamic(locale, 'adLoginPassword')]]"
-          on-keydown="onKeydownAuthPasswordInput_"
+          on-keydown="onKeydownAuthPasswordInput"
           error-message="[[i18nDynamic(locale, 'adLoginInvalidPassword')]]">
       </cr-input>
       <div class="flex layout horizontal start-justified">
-        <gaia-button id="moreOptionsBtn" on-click="onMoreOptionsClicked_"
+        <gaia-button id="moreOptionsBtn" on-click="onMoreOptionsClicked"
             hidden="[[!isDomainJoin]]" disabled="[[disabled]]" link>
           [[i18nDynamic(locale, 'adJoinMoreOptions')]]
         </gaia-button>
@@ -213,29 +213,29 @@ Methods:
     </div>
   </div>
   <div slot="back-navigation" hidden="[[loading]]">
-    <oobe-back-button id="backToUnlockButton" on-click="onBackToUnlock_"
-        disabled="[[disabled]]" hidden="[[!backToUnlockButtonVisible_]]">
+    <oobe-back-button id="backToUnlockButton" on-click="onBackToUnlock"
+        disabled="[[disabled]]" hidden="[[!backToUnlockButtonVisible]]">
     </oobe-back-button>
-    <oobe-back-button id="backButton" on-click="onBackButton_"
+    <oobe-back-button id="backButton" on-click="onBackButton"
         hidden="[[isDomainJoin]]"></oobe-back-button>
   </div>
   <div slot="bottom-buttons" hidden="[[loading]]">
-    <oobe-next-button id="nextButton" on-click="onSubmit_"
+    <oobe-next-button id="nextButton" on-click="onSubmit"
         disabled="[[disabled]]"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
 
-<cr-dialog id="moreOptionsDlg" on-close="onMoreOptionsClosed_">
+<cr-dialog id="moreOptionsDlg" on-close="onMoreOptionsClosed">
   <div slot="title">
     [[i18nDynamic(locale, 'adJoinMoreOptions')]]
   </div>
   <div slot="body">
     <cr-input id="orgUnitInput"
-        disabled="[[isInputDisabled_('computer_ou',
-                                      selectedConfigOption_)]]"
+        disabled="[[isInputDisabled('computer_ou',
+                                      selectedConfigOption)]]"
         label="[[i18nDynamic(locale, 'adJoinOrgUnit')]]"
-        value="[[calculateInputValue_('orgUnitInput', 'computer_ou',
-                                      selectedConfigOption_)]]">
+        value="[[calculateInputValue('orgUnitInput', 'computer_ou',
+                                      selectedConfigOption)]]">
     </cr-input>
   </div>
   <div slot="body">
@@ -247,25 +247,25 @@ Methods:
       <select id="encryptionList"
           aria-label$="[[i18nDynamic(locale, 'selectEncryption')]]"
           class="md-select"
-          disabled="[[isInputDisabled_('encryption_types',
-                                        selectedConfigOption_)]]"
-          value="[[encryptionValue_]]">
+          disabled="[[isInputDisabled('encryption_types',
+                                        selectedConfigOption)]]"
+          value="[[encryptionValue]]">
       </select>
     </div>
     <div class="flex layout center horizontal start-justified
         encryption-subtitle">
       <iron-icon id="encryptionWarningIcon" icon="cr:warning"
-          hidden="[[isEncryptionStrong_(encryptionValue_)]]">
+          hidden="[[isEncryptionStrong(encryptionValue)]]">
       </iron-icon>
       <div id="encryptionSubtitle">
-        [[encryptionSubtitle_(locale, encryptionValue_)]]
+        [[encryptionSubtitle(locale, encryptionValue)]]
       </div>
     </div>
   </div>
   <div slot="button-container">
     <oobe-text-button text-key="adJoinCancel"
-        on-click="onMoreOptionsCancelTap_" autofocus></oobe-text-button>
+        on-click="onMoreOptionsCancelTapped" autofocus></oobe-text-button>
     <oobe-text-button id="moreOptionsSave" text-key="adJoinSave"
-        on-click="onMoreOptionsConfirmTap_" inverse></oobe-text-button>
+        on-click="onMoreOptionsConfirmTapped" inverse></oobe-text-button>
   </div>
 </cr-dialog>

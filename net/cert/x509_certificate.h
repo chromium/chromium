@@ -206,7 +206,7 @@ class NET_EXPORT X509Certificate
   // Verifies that |hostname| matches this certificate.
   // Does not verify that the certificate is valid, only that the certificate
   // matches this host.
-  bool VerifyNameMatch(const std::string& hostname) const;
+  bool VerifyNameMatch(std::string_view hostname) const;
 
   // Returns the PEM encoded data from a DER encoded certificate. If the
   // return value is true, then the PEM encoded certificate is written to
@@ -320,7 +320,7 @@ class NET_EXPORT X509Certificate
   // extension, if present. Note these IP addresses are NOT ascii-encoded:
   // they must be 4 or 16 bytes of network-ordered data, for IPv4 and IPv6
   // addresses, respectively.
-  static bool VerifyHostname(const std::string& hostname,
+  static bool VerifyHostname(std::string_view hostname,
                              const std::vector<std::string>& cert_san_dns_names,
                              const std::vector<std::string>& cert_san_ip_addrs);
 

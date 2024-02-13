@@ -5,10 +5,11 @@
 #ifndef DEVICE_FIDO_VALUE_RESPONSE_CONVERSIONS_H_
 #define DEVICE_FIDO_VALUE_RESPONSE_CONVERSIONS_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/values.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -16,10 +17,10 @@ namespace device {
 // based on the specified JSON format. It only parses a subset of the fields,
 // since they are creating CTAP-level objects and the JSON is defined for
 // WebAuthn responses.
-// Returns absl::nullopt on error.
+// Returns std::nullopt on error.
 // https://w3c.github.io/webauthn/#dictdef-authenticatorassertionresponsejson
 COMPONENT_EXPORT(DEVICE_FIDO)
-absl::optional<AuthenticatorGetAssertionResponse>
+std::optional<AuthenticatorGetAssertionResponse>
 AuthenticatorGetAssertionResponseFromValue(const base::Value& value);
 
 }  // namespace device

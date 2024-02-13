@@ -315,11 +315,6 @@ class PLATFORM_EXPORT FontCache final {
       const FontFaceCreationParams&,
       float font_size,
       AlternateFontName = AlternateFontName::kAllowAlternate);
-  std::unique_ptr<FontPlatformData> ScaleFontPlatformData(
-      const FontPlatformData&,
-      const FontDescription&,
-      const FontFaceCreationParams&,
-      float font_size);
 
   sk_sp<SkTypeface> CreateTypeface(const FontDescription&,
                                    const FontFaceCreationParams&,

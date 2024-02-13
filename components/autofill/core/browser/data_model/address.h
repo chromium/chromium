@@ -67,6 +67,10 @@ class Address : public FormGroup {
   // Returns whether the structured address uses the legacy address hierarchy.
   bool IsLegacyAddress() const { return is_legacy_address_; }
 
+  // Returns true if the given `field_type` is part of Autofill's address
+  // model for `GetAddressCountryCode()` and is accessible via settings.
+  bool IsAddressFieldSettingAccessible(FieldType field_type) const;
+
  private:
   // FormGroup:
   void GetSupportedTypes(FieldTypeSet* supported_types) const override;

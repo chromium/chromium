@@ -142,9 +142,10 @@ base::trace_event::MemoryAllocatorDump* SharedImageBacking::OnMemoryDump(
     uint64_t client_tracing_id) {
   base::trace_event::MemoryAllocatorDump* dump =
       pmd->CreateAllocatorDump(dump_name);
+  auto byte_size = GetEstimatedSizeForMemoryDump();
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  GetEstimatedSizeForMemoryDump());
+                  byte_size);
 
   dump->AddString("type", "", GetName());
   dump->AddString("dimensions", "", size().ToString());
@@ -152,6 +153,9 @@ base::trace_event::MemoryAllocatorDump* SharedImageBacking::OnMemoryDump(
   dump->AddString("usage", "", CreateLabelForSharedImageUsage(usage()));
   dump->AddString("debug label", "", debug_label_);
   dump->AddScalar("purgeable", "bool", IsPurgeable());
+#if BUILDFLAG(IS_CHROMEOS)
+  dump->AddScalar("non_exo_size", "bool", IsImportedFromExo() ? 0 : byte_size);
+#endif
 
   // Add ownership edge to `client_guid` which expresses shared ownership with
   // the client process.
@@ -456,6 +460,10 @@ gfx::GpuMemoryBufferHandle SharedImageBacking::GetGpuMemoryBufferHandle() {
 }
 
 bool SharedImageBacking::IsPurgeable() const {
+  return false;
+}
+
+bool SharedImageBacking::IsImportedFromExo() {
   return false;
 }
 

@@ -184,6 +184,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/default_browser/model:default_browser_interest_signals",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/device_sharing/model",
     "//ios/chrome/browser/enterprise/model/idle",

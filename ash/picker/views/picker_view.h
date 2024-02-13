@@ -13,6 +13,7 @@
 #include "ash/picker/model/picker_category.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -34,16 +35,20 @@ class PickerSearchResultsView;
 class PickerViewDelegate;
 class PickerZeroStateView;
 class PickerCategoryView;
+class SystemShadow;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
- public:
-  METADATA_HEADER(PickerView);
+  METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
+ public:
   enum class PickerLayoutType {
     kResultsBelowSearchField,
     kResultsAboveSearchField,
   };
+
+  static constexpr base::TimeDelta kSearchFieldDebouncingDelay =
+      base::Milliseconds(200);
 
   // `delegate` must remain valid for the lifetime of this class.
   explicit PickerView(PickerViewDelegate* delegate,
@@ -58,27 +63,31 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // click, then it should be the timestamp of the click. By default, the
   // timestamp is the time this function is called.
   // `delegate` must remain valid for the lifetime of the created Widget.
+  // `caret_bounds` and `cursor_point` should be in screen coordinates.
   static views::UniqueWidgetPtr CreateWidget(
       const gfx::Rect& caret_bounds,
+      const gfx::Point& cursor_point,
+      const gfx::Rect& focused_window_bounds,
       PickerViewDelegate* delegate,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void PaintChildren(const views::PaintInfo& paint_info) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
-  // horizontally align `search_field_view_` with `caret_bounds`.
-  gfx::Rect GetTargetBounds(const gfx::Rect& caret_bounds,
+  // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`
+  // and returned bounds should be in screen coordinates.
+  gfx::Rect GetTargetBounds(const gfx::Rect& anchor_bounds,
                             PickerLayoutType layout_type);
 
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;
   }
+  PickerContentsView& contents_view_for_testing() { return *contents_view_; }
   PickerSearchResultsView& search_results_view_for_testing() {
     return *search_results_view_;
   }
@@ -108,12 +117,14 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void OnClickOutsideWidget();
 
   void AddSearchFieldView();
-  void AddContentsView();
+  void AddContentsView(PickerLayoutType layout_type);
 
   std::optional<PickerCategory> selected_category_;
 
   // Used to close the Picker widget when the user clicks outside of it.
   std::unique_ptr<BubbleEventFilter> bubble_event_filter_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   PickerSessionMetrics session_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;

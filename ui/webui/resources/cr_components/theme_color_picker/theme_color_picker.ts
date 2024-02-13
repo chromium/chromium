@@ -9,16 +9,18 @@ import 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {hexColorToSkColor, skColorToRgba} from 'chrome://resources/js/color_utils.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {BrowserColorVariant} from 'chrome://resources/mojo/ui/base/mojom/themes.mojom-webui.js';
-import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ThemeColorPickerBrowserProxy} from './browser_proxy.js';
-import {Color, ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR, SelectedColor} from './color_utils.js';
-import {ThemeColorElement} from './theme_color.js';
+import type {Color, SelectedColor} from './color_utils.js';
+import {ColorType, DARK_BASELINE_BLUE_COLOR, DARK_BASELINE_GREY_COLOR, DARK_DEFAULT_COLOR, LIGHT_BASELINE_BLUE_COLOR, LIGHT_BASELINE_GREY_COLOR, LIGHT_DEFAULT_COLOR} from './color_utils.js';
+import type {ThemeColorElement} from './theme_color.js';
 import {getTemplate} from './theme_color_picker.html.js';
-import {ChromeColor, Theme, ThemeColorPickerHandlerRemote} from './theme_color_picker.mojom-webui.js';
-import {ThemeHueSliderDialogElement} from './theme_hue_slider_dialog.js';
+import type {ChromeColor, Theme, ThemeColorPickerHandlerRemote} from './theme_color_picker.mojom-webui.js';
+import type {ThemeHueSliderDialogElement} from './theme_hue_slider_dialog.js';
 
 const ThemeColorPickerElementBase = I18nMixin(PolymerElement);
 

@@ -14,7 +14,7 @@ TEST(MultiImageContainerTest, SetImages) {
   EXPECT_EQ(images->children().size(), 1u);
 
   size_t number_of_images = 5;  // some arbitrary number.
-  std::vector<const ui::ImageModel> models(number_of_images);
+  std::vector<ui::ImageModel> models(number_of_images);
   container.SetImages(models);
   EXPECT_EQ(images->children().size(), number_of_images);
 

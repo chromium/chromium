@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
@@ -185,17 +184,8 @@ void CdmSessionAdapter::OnCdmCreated(
   key_system_uma_prefix_ = std::move(key_system_uma_prefix);
 
   // Only report time for successful CDM creation.
-  auto cdm_creation_duration = base::TimeTicks::Now() - start_time;
   base::UmaHistogramTimes(key_system_uma_prefix_ + kTimeToCreateCdmUMAName,
-                          cdm_creation_duration);
-
-  if (cdm_creation_duration >= base::Seconds(5)) {
-    // Collect crash dumps to investigate why some systems are taking a long
-    // time to complete.
-    // TODO(crbug.com/1506221): remove this block after the investigation.
-    NO_CODE_FOLDING();
-    base::debug::DumpWithoutCrashing();
-  }
+                          base::TimeTicks::Now() - start_time);
 
   cdm_config_ = cdm_config;
 

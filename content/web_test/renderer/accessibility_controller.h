@@ -51,6 +51,8 @@ class AccessibilityController {
                         const std::string& notification_name,
                         const std::vector<ui::AXEventIntent>& event_intents);
 
+  void Remove(unsigned axid);
+
  private:
   friend class AccessibilityControllerBindings;
 

@@ -13,21 +13,12 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      // Alphabetical based on file path.
-      importModule(
-          'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js'),
-      importModule(
-          'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule('CursorRange', '/common/cursors/range.js'),
-    ]);
-
     globalThis.EventType = chrome.automation.EventType;
     globalThis.RoleType = chrome.automation.RoleType;
     this.forceContextualLastOutput();
   }
 
-  /** @return {chrome.automation.AutomationNode} */
+  /** @return {AutomationNode} */
   async runWithFakeArcSimpleScrollable() {
     // This simulates a scrolling behavior of Android scrollable, where when a
     // scroll action is performed, a new item is added to the list.

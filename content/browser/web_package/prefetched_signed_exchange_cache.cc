@@ -499,11 +499,12 @@ class PrefetchedNavigationLoaderInterceptor
     if (state_ == State::kInitial &&
         tentative_resource_request.url == exchange_->outer_url()) {
       state_ = State::kOuterRequestRequested;
-      std::move(callback).Run(
+      std::move(callback).Run(NavigationLoaderInterceptor::Result(
           base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
               base::BindOnce(
                   &PrefetchedNavigationLoaderInterceptor::StartRedirectResponse,
-                  weak_factory_.GetWeakPtr())));
+                  weak_factory_.GetWeakPtr())),
+          /*subresource_loader_params=*/{}));
       return;
     }
     if (tentative_resource_request.url == exchange_->inner_url()) {
@@ -512,30 +513,22 @@ class PrefetchedNavigationLoaderInterceptor
               *exchange_->inner_response()->headers)) {
         DCHECK(cookie_manager_);
         state_ = State::kCheckingCookies;
-        CheckAbsenceOfCookies(tentative_resource_request, std::move(callback),
-                              std::move(fallback_callback));
+        CheckAbsenceOfCookies(tentative_resource_request, std::move(callback));
         return;
       } else {
         state_ = State::kInnerResponseRequested;
-        std::move(callback).Run(
+        SubresourceLoaderParams params;
+        params.prefetched_signed_exchanges = std::move(info_list_);
+        std::move(callback).Run(NavigationLoaderInterceptor::Result(
             base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
                 base::BindOnce(
                     &PrefetchedNavigationLoaderInterceptor::StartInnerResponse,
-                    weak_factory_.GetWeakPtr())));
+                    weak_factory_.GetWeakPtr())),
+            std::move(params)));
         return;
       }
     }
     DUMP_WILL_BE_NOTREACHED_NORETURN();
-  }
-
-  std::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
-      override {
-    if (state_ != State::kInnerResponseRequested)
-      return std::nullopt;
-
-    SubresourceLoaderParams params;
-    params.prefetched_signed_exchanges = std::move(info_list_);
-    return std::make_optional(std::move(params));
   }
 
  private:
@@ -547,8 +540,7 @@ class PrefetchedNavigationLoaderInterceptor
   };
 
   void CheckAbsenceOfCookies(const network::ResourceRequest& request,
-                             LoaderCallback callback,
-                             FallbackCallback fallback_callback) {
+                             LoaderCallback callback) {
     auto match_options = network::mojom::CookieManagerGetOptions::New();
     match_options->name = "";
     match_options->match_type = network::mojom::CookieMatchType::STARTS_WITH;
@@ -558,12 +550,10 @@ class PrefetchedNavigationLoaderInterceptor
         request.has_storage_access, std::move(match_options),
         request.is_ad_tagged,
         base::BindOnce(&PrefetchedNavigationLoaderInterceptor::OnGetCookies,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(fallback_callback)));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void OnGetCookies(LoaderCallback callback,
-                    FallbackCallback fallback_callback,
                     const std::vector<net::CookieWithAccessResult>& results) {
     DCHECK_EQ(State::kCheckingCookies, state_);
     if (!results.empty()) {
@@ -573,18 +563,21 @@ class PrefetchedNavigationLoaderInterceptor
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info =
           this->exchange_->outer_response()->load_timing;
-      std::move(fallback_callback)
-          .Run(true /* reset_subresource_loader_params */,
-               // TODO(crbug.com/1441384) test workerStart in SXG scenarios
-               head_update_params);
+      // TODO(crbug.com/1441384) test workerStart in SXG scenarios
+      std::move(callback).Run(NavigationLoaderInterceptor::Result(
+          /*factory=*/nullptr, /*subresource_loader_params=*/{},
+          std::move(head_update_params)));
       return;
     }
     state_ = State::kInnerResponseRequested;
-    std::move(callback).Run(
+    SubresourceLoaderParams params;
+    params.prefetched_signed_exchanges = std::move(info_list_);
+    std::move(callback).Run(NavigationLoaderInterceptor::Result(
         base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
             base::BindOnce(
                 &PrefetchedNavigationLoaderInterceptor::StartInnerResponse,
-                weak_factory_.GetWeakPtr())));
+                weak_factory_.GetWeakPtr())),
+        std::move(params)));
   }
 
   void StartRedirectResponse(

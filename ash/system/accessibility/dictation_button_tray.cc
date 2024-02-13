@@ -262,7 +262,7 @@ void DictationButtonTray::TextInputChanged(const ui::TextInputClient* client) {
   CheckDictationStatusAndUpdateIcon();
 }
 
-BEGIN_METADATA(DictationButtonTray, TrayBackgroundView)
+BEGIN_METADATA(DictationButtonTray)
 END_METADATA
 
 }  // namespace ash

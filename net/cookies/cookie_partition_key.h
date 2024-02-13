@@ -5,12 +5,12 @@
 #ifndef NET_COOKIES_COOKIE_PARTITION_KEY_H_
 #define NET_COOKIES_COOKIE_PARTITION_KEY_H_
 
+#include <optional>
 #include <string>
 
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -43,26 +43,25 @@ class NET_EXPORT CookiePartitionKey {
   // TODO(crbug.com/1225444) Investigate ways to persist partition keys with
   // opaque origins if a browser session is restored.
   [[nodiscard]] static bool Serialize(
-      const absl::optional<CookiePartitionKey>& in,
+      const std::optional<CookiePartitionKey>& in,
       std::string& out);
   // Deserializes the result of the method above.
-  // If the result is absl::nullopt, the resulting cookie is not partitioned.
+  // If the result is std::nullopt, the resulting cookie is not partitioned.
   //
   // Returns if the resulting partition key is valid.
-  [[nodiscard]] static bool Deserialize(
-      const std::string& in,
-      absl::optional<CookiePartitionKey>& out);
+  [[nodiscard]] static bool Deserialize(const std::string& in,
+                                        std::optional<CookiePartitionKey>& out);
 
   static CookiePartitionKey FromURLForTesting(
       const GURL& url,
-      const absl::optional<base::UnguessableToken> nonce = absl::nullopt) {
+      const std::optional<base::UnguessableToken> nonce = std::nullopt) {
     return nonce ? CookiePartitionKey(SchemefulSite(url), nonce)
                  : CookiePartitionKey(url);
   }
 
   // Create a partition key from a network isolation key. Partition key is
   // derived from the key's top-frame site.
-  static absl::optional<CookiePartitionKey> FromNetworkIsolationKey(
+  static std::optional<CookiePartitionKey> FromNetworkIsolationKey(
       const NetworkIsolationKey& network_isolation_key);
 
   // Create a new CookiePartitionKey from the site of an existing
@@ -70,7 +69,7 @@ class NET_EXPORT CookiePartitionKey {
   // which were already created using Deserialize or FromNetworkIsolationKey.
   static CookiePartitionKey FromWire(
       const SchemefulSite& site,
-      absl::optional<base::UnguessableToken> nonce = absl::nullopt) {
+      std::optional<base::UnguessableToken> nonce = std::nullopt) {
     return CookiePartitionKey(site, nonce);
   }
 
@@ -86,17 +85,17 @@ class NET_EXPORT CookiePartitionKey {
   // TODO(crbug.com/1225444) Consider removing this factory method and
   // `from_script_` flag when BlinkStorageKey is available in
   // ServiceWorkerGlobalScope.
-  static absl::optional<CookiePartitionKey> FromScript() {
-    return absl::make_optional(CookiePartitionKey(true));
+  static std::optional<CookiePartitionKey> FromScript() {
+    return std::make_optional(CookiePartitionKey(true));
   }
 
   // Create a new CookiePartitionKey from the components of a StorageKey.
   // Forwards to FromWire, but unlike that method in this one the optional nonce
   // argument has no default. It also checks that cookie partitioning is enabled
   // before returning a valid key, which FromWire does not check.
-  static absl::optional<CookiePartitionKey> FromStorageKeyComponents(
+  static std::optional<CookiePartitionKey> FromStorageKeyComponents(
       const SchemefulSite& top_level_site,
-      const absl::optional<base::UnguessableToken>& nonce);
+      const std::optional<base::UnguessableToken>& nonce);
 
   const SchemefulSite& site() const { return site_; }
 
@@ -106,15 +105,15 @@ class NET_EXPORT CookiePartitionKey {
   // Cookie partition keys whose internal site is opaque cannot be serialized.
   bool IsSerializeable() const;
 
-  const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
+  const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
-  static bool HasNonce(const absl::optional<CookiePartitionKey>& key) {
+  static bool HasNonce(const std::optional<CookiePartitionKey>& key) {
     return key && key->nonce();
   }
 
  private:
   explicit CookiePartitionKey(const SchemefulSite& site,
-                              absl::optional<base::UnguessableToken> nonce);
+                              std::optional<base::UnguessableToken> nonce);
   explicit CookiePartitionKey(const GURL& url);
   explicit CookiePartitionKey(bool from_script);
 
@@ -123,7 +122,7 @@ class NET_EXPORT CookiePartitionKey {
 
   // Having a nonce is a way to force a transient opaque `CookiePartitionKey`
   // for non-opaque origins.
-  absl::optional<base::UnguessableToken> nonce_;
+  std::optional<base::UnguessableToken> nonce_;
 };
 
 // Used so that CookiePartitionKeys can be the arguments of DCHECK_EQ.

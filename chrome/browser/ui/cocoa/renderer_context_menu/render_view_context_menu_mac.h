@@ -43,6 +43,16 @@ class RenderViewContextMenuMac : public RenderViewContextMenu,
   void InitToolkitMenu();
 
  protected:
+  friend class ToolkitDelegateMacCocoa;
+
+  // Cancels the menu.
+  virtual void CancelToolkitMenu() {}
+  // Updates the status and text of the specified context-menu item.
+  virtual void UpdateToolkitMenuItem(int command_id,
+                                     bool enabled,
+                                     bool hidden,
+                                     const std::u16string& title) {}
+
   // RenderViewContextMenu:
   void AppendPlatformEditableItems() override;
 

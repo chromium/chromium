@@ -346,6 +346,16 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
     }
   }
 
+  // GetBitstreamBuffer() will create the buffer with the given size and return
+  // the buffer if it does not exist. Calling it here is to make sure it creates
+  // one with a large enough size |current_frame_size_| for D3D12 video decoder.
+  // D3D12 video decoder don't accept chopped bitstream buffer, so we need to
+  // reserve the buffer with the size large enough to contain the whole frame
+  // before the following call jumps into the base class who don't know this
+  // size.
+  CHECK_GT(current_frame_size_, 0u);
+  video_decoder_wrapper_->GetBitstreamBuffer(current_frame_size_);
+
   constexpr uint8_t kStartCode[] = {0, 0, 1};
   bool ok =
       video_decoder_wrapper_
@@ -364,6 +374,7 @@ H264DecoderStatus D3D11H264Accelerator::SubmitDecode(
 }
 
 void D3D11H264Accelerator::Reset() {
+  current_frame_size_ = 0;
   if (video_decoder_wrapper_) {
     video_decoder_wrapper_->Reset();
   }
@@ -372,6 +383,13 @@ void D3D11H264Accelerator::Reset() {
 bool D3D11H264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
   D3D11H264Picture* our_pic = pic->AsD3D11H264Picture();
   return our_pic && client_->OutputResult(our_pic, our_pic->picture);
+}
+
+H264Decoder::H264Accelerator::Status D3D11H264Accelerator::SetStream(
+    base::span<const uint8_t> stream,
+    const DecryptConfig* decrypt_config) {
+  current_frame_size_ = stream.size();
+  return H264Accelerator::SetStream(stream, decrypt_config);
 }
 
 }  // namespace media

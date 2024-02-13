@@ -6,6 +6,7 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 
 interface NetworkConfigToggleElement extends LegacyElementMixin, HTMLElement {
   checked: boolean;
+  disabled: boolean;
 }
 
 declare global {

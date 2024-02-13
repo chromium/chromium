@@ -109,6 +109,24 @@ public final class ExperimentalOptions {
                 getOrDefault(QUIC, "enable_socket_recv_optimization", null, Boolean.class));
     }
 
+    public OptionalBoolean getAllowPortMigration() {
+        return OptionalBoolean.fromBoolean(
+                getOrDefault(QUIC, "allow_port_migration", null, Boolean.class));
+    }
+
+    public OptionalBoolean getRaceStaleDnsOnConnection() {
+        return OptionalBoolean.fromBoolean(
+                getOrDefault(QUIC, "race_stale_dns_on_connection", null, Boolean.class));
+    }
+
+    public String getHostWhitelist() {
+        return getOrDefault(QUIC, "host_whitelist", null, String.class);
+    }
+
+    public String getUserAgentId() {
+        return getOrDefault(QUIC, "user_agent_id", null, String.class);
+    }
+
     public OptionalBoolean getAsyncDnsEnableOption() {
         return OptionalBoolean.fromBoolean(getOrDefault(ASYNC_DNS, "enable", null, Boolean.class));
     }

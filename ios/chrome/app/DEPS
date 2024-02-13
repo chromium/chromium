@@ -58,5 +58,6 @@ specific_include_rules = {
   ".*test\.mm": [
     "+components/previous_session_info/previous_session_info_private.h",
     "+components/sync_preferences",
+    "+components/open_from_clipboard",
   ],
 }

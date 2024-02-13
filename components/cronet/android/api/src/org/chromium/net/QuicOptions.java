@@ -4,21 +4,27 @@
 
 package org.chromium.net;
 
+import android.os.Build.VERSION_CODES;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresOptIn;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
  * Configuration options for QUIC in Cronet.
  *
- * <p>The settings in this class are only relevant if QUIC is enabled. Use
- * {@link org.chromium.net.CronetEngine.Builder#enableQuic(boolean)} to enable / disable QUIC for
- * the Cronet engine.
+ * <p>The settings in this class are only relevant if QUIC is enabled. Use {@link
+ * org.chromium.net.CronetEngine.Builder#enableQuic(boolean)} to enable / disable QUIC for the
+ * Cronet engine.
  */
-public class QuicOptions {
+public final class QuicOptions {
     private final Set<String> mQuicHostAllowlist;
     private final Set<String> mEnabledQuicVersions;
 
@@ -329,15 +335,31 @@ public class QuicOptions {
         }
 
         /**
-         * Sets the maximum idle time for a connection.
+         * Sets the maximum idle time for a connection. The actual value for the idle timeout is the
+         * minimum of this value and the server's and is negotiated during the handshake. Thus, it
+         * only applies after the handshake has completed. If no activity is detected on the
+         * connection for the set duration, the connection is closed.
          *
-         * TODO what happens to connection that are idle for too long?
+         * <p>See <a href="https://www.rfc-editor.org/rfc/rfc9114.html#name-idle-connections">RFC
+         * 9114, section 5.1 </a> for more details.
          *
          * @return the builder for chaining
          */
         public Builder setIdleConnectionTimeoutSeconds(long idleConnectionTimeoutSeconds) {
             this.mIdleConnectionTimeoutSeconds = idleConnectionTimeoutSeconds;
             return this;
+        }
+
+        /**
+         * Same as {@link #setIdleConnectionTimeoutSeconds(long)} but using {@link
+         * java.time.Duration}.
+         *
+         * @return the builder for chaining
+         */
+        @RequiresApi(VERSION_CODES.O)
+        public Builder setIdleConnectionTimeout(@NonNull Duration idleConnectionTimeout) {
+            Objects.requireNonNull(idleConnectionTimeout);
+            return setIdleConnectionTimeoutSeconds(idleConnectionTimeout.toSeconds());
         }
 
         /**

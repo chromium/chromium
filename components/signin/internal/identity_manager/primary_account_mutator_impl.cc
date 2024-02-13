@@ -70,9 +70,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
   switch (consent_level) {
     case ConsentLevel::kSync:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-      // TODO(crbug.com/1462858): Replace with NOTREACHED on iOS after all flows
-      //     have been migrated away from kSync. See ConsentLevel::kSync
-      //     documentation for details.
+      // TODO(crbug.com/40067025): Replace with NOTREACHED on iOS after all
+      // flows have been migrated away from kSync. See ConsentLevel::kSync
+      // documentation for details.
       if (primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync))
         return PrimaryAccountError::kSyncConsentAlreadySet;
 #endif
@@ -83,7 +83,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
       DCHECK(
           !primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 #endif
-      // TODO(crbug.com/1462978): Delete this when ConsentLevel::kSync is
+      // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is
       //     deleted. See ConsentLevel::kSync documentation for details.
       DCHECK(!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
       break;
@@ -112,7 +112,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
 void PrimaryAccountMutatorImpl::RevokeSyncConsent(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
-  // TODO(crbug.com/1462552): `RevokeSyncConsent` shouldn't be available on iOS
+  // TODO(crbug.com/40066949): `RevokeSyncConsent` shouldn't be available on iOS
   //     when kSync is no longer used. See ConsentLevel::kSync documentation for
   //     details.
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));

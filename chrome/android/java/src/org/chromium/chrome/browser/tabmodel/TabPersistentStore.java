@@ -12,6 +12,7 @@ import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.AtomicFile;
@@ -32,6 +33,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
@@ -45,10 +47,8 @@ import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileI
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.url.GURL;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -860,21 +860,13 @@ public class TabPersistentStore {
     private void addTabToSaveQueueIfApplicable(Tab tab) {
         if (tab == null || tab.isDestroyed()) return;
         TabStateAttributes tabStateAttributes = TabStateAttributes.from(tab);
+        @TabStateAttributes.DirtinessState
+        int dirtinessState = tabStateAttributes.getDirtinessState();
         if (mTabsToSave.contains(tab)
-                || tabStateAttributes.getDirtinessState()
-                        == TabStateAttributes.DirtinessState.CLEAN) {
+                || dirtinessState == TabStateAttributes.DirtinessState.CLEAN) {
             return;
         }
 
-        if (isTabUrlContentScheme(tab)
-                || (UrlUtilities.isNtpUrl(tab.getUrl())
-                        && !tab.canGoBack()
-                        && !tab.canGoForward())) {
-            // At present the tab is not in a valid state to save. Reset dirtiness state so that the
-            // next dirtiness change will reattempt the save.
-            tabStateAttributes.clearTabStateDirtiness();
-            return;
-        }
         mTabsToSave.addLast(tab);
     }
 
@@ -1040,8 +1032,7 @@ public class TabPersistentStore {
                     // If any non-active NTPs have been skipped, the serialized tab model index
                     // needs to be adjusted.
                     modelInfo.index = modelInfo.ids.size();
-                } else if (tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl())) {
-                    // Skips saving the non-selected Ntps.
+                } else if (shouldSkipTab(tab)) {
                     continue;
                 }
             }
@@ -1049,6 +1040,17 @@ public class TabPersistentStore {
             modelInfo.urls.add(tab.getUrl().getSpec());
         }
         return modelInfo;
+    }
+
+    private static boolean shouldSkipTab(@NonNull Tab tab) {
+        boolean isNtp = tab.isNativePage() && UrlUtilities.isNtpUrl(tab.getUrl());
+        if (!isNtp) return false;
+
+        if (ChromeFeatureList.sAndroidTabGroupStableIds.isEnabled()) {
+            // Only skip NTP tabs that are not in a tab group.
+            return tab.getTabGroupId() == null;
+        }
+        return true;
     }
 
     /**
@@ -1718,11 +1720,6 @@ public class TabPersistentStore {
             this.isIncognito = isIncognito;
             this.fromMerge = fromMerge;
         }
-    }
-
-    private boolean isTabUrlContentScheme(Tab tab) {
-        GURL url = tab.getUrl();
-        return url != null && url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
     }
 
     /**

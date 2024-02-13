@@ -11,7 +11,7 @@ namespace chrome {
 
 // Records Page Load Metrics for non-tab chrome:// pages such as side-panel
 // content and webUI based bubbles. This covers any webUI that goes through
-// `BubbleContentsWrapperT`
+// `WebUIContentsWrapperT`
 class NonTabPageLoadMetricsObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:

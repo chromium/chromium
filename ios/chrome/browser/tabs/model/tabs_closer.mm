@@ -38,19 +38,19 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
   const OrderControllerSourceFromWebStateList order_controller_source(*source);
   const OrderController order_controller(order_controller_source);
   source->ActivateWebStateAt(order_controller.DetermineNewActiveIndex(
-      old_active_index, RemovingIndexes::Range(start, count)));
+      old_active_index, RemovingIndexes({.start = start, .count = count})));
 
   for (int n = 0; n < count; ++n) {
     const bool is_pinned = start + n < old_pinned_count;
     std::unique_ptr<web::WebState> web_state = source->DetachWebStateAt(start);
 
-    const int insertion_flags =
-        (is_pinned ? WebStateList::INSERT_PINNED : 0) |
-        (start + n == old_active_index ? WebStateList::INSERT_ACTIVATE : 0);
+    const WebStateList::InsertionParams params =
+        WebStateList::InsertionParams::AtIndex(n + offset)
+            .Pinned(is_pinned)
+            .Activate(start + n == old_active_index);
 
-    const int insertion_index = target->InsertWebState(
-        n + offset, std::move(web_state), insertion_flags, WebStateOpener());
-
+    const int insertion_index =
+        target->InsertWebState(std::move(web_state), params);
     DCHECK_EQ(n + offset, insertion_index);
   }
 }

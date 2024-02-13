@@ -411,6 +411,7 @@ TEST(DocumentScanTypeConvertersTest, GetScannerListResponse_Usb) {
   scanner_in->connection_type = mojom::ScannerInfo_ConnectionType::kUsb;
   scanner_in->secure = true;
   scanner_in->image_formats = {"image/png", "image/jpeg"};
+  // scanner_in->protocol_type is unset.
   input->scanners.emplace_back(std::move(scanner_in));
 
   auto output = input.To<document_scan::GetScannerListResponse>();
@@ -426,6 +427,7 @@ TEST(DocumentScanTypeConvertersTest, GetScannerListResponse_Usb) {
   EXPECT_EQ(scanner_out.secure, true);
   EXPECT_THAT(scanner_out.image_formats,
               UnorderedElementsAre("image/png", "image/jpeg"));
+  EXPECT_EQ(scanner_out.protocol_type, "");
 }
 
 TEST(DocumentScanTypeConvertersTest, GetScannerListResponse_Network) {
@@ -440,6 +442,7 @@ TEST(DocumentScanTypeConvertersTest, GetScannerListResponse_Network) {
   scanner_in->connection_type = mojom::ScannerInfo_ConnectionType::kNetwork;
   scanner_in->secure = true;
   scanner_in->image_formats = {"image/png", "image/jpeg"};
+  scanner_in->protocol_type = "protocol_type";
   input->scanners.emplace_back(std::move(scanner_in));
 
   auto output = input.To<document_scan::GetScannerListResponse>();
@@ -456,6 +459,7 @@ TEST(DocumentScanTypeConvertersTest, GetScannerListResponse_Network) {
   EXPECT_EQ(scanner_out.secure, true);
   EXPECT_THAT(scanner_out.image_formats,
               UnorderedElementsAre("image/png", "image/jpeg"));
+  EXPECT_EQ(scanner_out.protocol_type, "protocol_type");
 }
 
 TEST(DocumentScanTypeConvertersTest, OpenScannerResponse_Empty) {

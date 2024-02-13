@@ -240,9 +240,15 @@ void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
 
   DCHECK(!callback_);
 
-  // If there's no component seller, set the component seller mapping as empty,
-  // so it's available as soon as possible.
-  if (!component_seller_winning_bid_info_) {
+  // If this is a single level auction, and there was no server-side component
+  // seller, set the component seller mapping as empty, so it's available as
+  // soon as possible.
+  bool has_component_seller_reporting =
+      component_seller_winning_bid_info_.has_value() ||
+      (top_level_seller_winning_bid_info_.saved_response.has_value() &&
+       top_level_seller_winning_bid_info_.saved_response
+           ->component_seller_reporting.has_value());
+  if (!has_component_seller_reporting) {
     fenced_frame_reporter_->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kComponentSeller,
         /*reporting_url_declarer_origin=*/std::nullopt,
@@ -273,8 +279,18 @@ void InterestGroupAuctionReporter::InitializeFromServerResponse(
           auction_config_->seller, seller_reporting.reporting_url,
           seller_reporting.beacon_urls, seller_destination, errors_);
     }
-    // TODO(behamilton): Add support for server-orchestrated multi-level
-    // auctions. They will also have component_seller_reporint.
+    // Support for server-orchestrated multi-level auctions. They will also have
+    // component_seller_reporting.
+    if (response.component_seller_reporting) {
+      const BiddingAndAuctionResponse::ReportingURLs& seller_reporting =
+          *response.component_seller_reporting;
+      // Ignore return value - there's nothing we can do at this point if the
+      // server did something wrong beyond logging the error.
+      AddReportResultResult(
+          auction_config_->seller, seller_reporting.reporting_url,
+          seller_reporting.beacon_urls,
+          blink::FencedFrame::ReportingDestination::kComponentSeller, errors_);
+    }
   } else {
     DCHECK_EQ(blink::FencedFrame::ReportingDestination::kComponentSeller,
               seller_destination);

@@ -341,7 +341,7 @@ Builder& Builder::SetVariableRefreshRateState(
 }
 
 Builder& Builder::SetVsyncRateMin(
-    const absl::optional<uint16_t>& vsync_rate_min) {
+    const std::optional<uint16_t>& vsync_rate_min) {
   vsync_rate_min_ = vsync_rate_min;
   return *this;
 }
@@ -395,7 +395,7 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     const gfx::Size& maximum_cursor_size,
     const DisplaySnapshot::ColorInfo& color_info,
     VariableRefreshRateState variable_refresh_rate_state,
-    const absl::optional<uint16_t>& vsync_rate_min,
+    const std::optional<uint16_t>& vsync_rate_min,
     const DrmFormatsAndModifiers& drm_formats_and_modifiers)
     : DisplaySnapshot(display_id,
                       port_display_id,

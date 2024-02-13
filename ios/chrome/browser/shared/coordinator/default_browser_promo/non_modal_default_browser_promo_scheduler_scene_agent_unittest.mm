@@ -75,9 +75,9 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
     test_web_state_->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfoBarManagerImpl::CreateForWebState(test_web_state_);
-    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                                WebStateList::INSERT_ACTIVATE,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     ClearDefaultBrowserPromoData();
 
@@ -254,7 +254,8 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   auto web_state = std::make_unique<web::FakeWebState>();
   test_web_state_ = web_state.get();
   browser_->GetWebStateList()->InsertWebState(
-      1, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Advance the timer and the mock handler should not have any interactions.
   task_env_.FastForwardBy(base::Seconds(60));
@@ -504,7 +505,8 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
   // showing.
   auto web_state = std::make_unique<web::FakeWebState>();
   browser_->GetWebStateList()->InsertWebState(
-      1, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Activate the first page again.
   browser_->GetWebStateList()->ActivateWebStateAt(0);

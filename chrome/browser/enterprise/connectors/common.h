@@ -227,10 +227,24 @@ std::u16string GetCustomRuleString(
 
 // Extracts the ranges and their corresponding links from the custom rule
 // message field in the content analysis response. Used to style the custom rule
-// message in the content analysis dialog.
+// message in the content analysis dialog. `offset` corresponds to its start
+// index as we are inserting it in another message.
 std::vector<std::pair<gfx::Range, GURL>> GetCustomRuleStyles(
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
-        custom_rule_message);
+        custom_rule_message,
+    size_t offset);
+
+// Simple custom rule message for tests, with one message segment containing the
+// text and associated url.
+ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
+CreateSampleCustomRuleMessage(const std::u16string& msg,
+                              const std::string& url);
+
+// Extracts the custom rule message from `download_item`. The rule for that
+// message needs to have an action (WARN, BLOCK) corresponding to `danger_type`.
+std::optional<ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage>
+GetDownloadsCustomRuleMessage(const download::DownloadItem* download_item,
+                              download::DownloadDangerType danger_type);
 
 // User data to persist a save package's final callback allowing/denying
 // completion. This is used since the callback can be called either when
@@ -258,7 +272,7 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile);
 // Returns whether the download danger type implies the user should be allowed
 // to review the download.
 bool ShouldPromptReviewForDownload(Profile* profile,
-                                   download::DownloadDangerType danger_type);
+                                   const download::DownloadItem* download_item);
 
 // Shows the review dialog after a user has clicked the "Review" button
 // corresponding to a download.
@@ -266,7 +280,6 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               Profile* profile,
                               download::DownloadItem* download_item,
                               content::WebContents* web_contents,
-                              download::DownloadDangerType danger_type,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure);
 

@@ -6,20 +6,19 @@
 #define CHROME_BROWSER_ASH_POLICY_HANDLERS_DEVICE_NAME_POLICY_HANDLER_NAME_GENERATOR_H_
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace policy {
 
 // Uses template to build a hostname. Returns valid hostname (after parameter
 // substitution) or empty string, if substitution result is not a valid
 // hostname.
-std::string FormatHostname(base::StringPiece name_template,
-                           base::StringPiece asset_id,
-                           base::StringPiece serial,
-                           base::StringPiece mac,
-                           base::StringPiece machine_name,
-                           base::StringPiece location);
+std::string FormatHostname(std::string_view name_template,
+                           std::string_view asset_id,
+                           std::string_view serial,
+                           std::string_view mac,
+                           std::string_view machine_name,
+                           std::string_view location);
 
 }  // namespace policy
 

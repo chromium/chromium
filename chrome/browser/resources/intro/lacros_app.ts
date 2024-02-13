@@ -8,11 +8,12 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './strings.m.js';
 
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {IntroBrowserProxy, IntroBrowserProxyImpl, LacrosIntroProfileInfo} from './browser_proxy.js';
+import type {IntroBrowserProxy, LacrosIntroProfileInfo} from './browser_proxy.js';
+import {IntroBrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './lacros_app.html.js';
 
 const LacrosIntroAppElementBase = WebUiListenerMixin(PolymerElement);

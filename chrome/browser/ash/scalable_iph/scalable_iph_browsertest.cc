@@ -342,13 +342,15 @@ class ScalableIphBrowserTestMultipleIphs : public ScalableIphBrowserTest {
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params_one;
     AppendVersionNumber(params_one, TestIphFeature());
-    AppendFakeUiParamsNotification(params_one, TestIphFeature());
+    AppendFakeUiParamsNotification(params_one,
+                                   /*has_body_text=*/true, TestIphFeature());
     base::test::FeatureRefAndParams test_config_one(TestIphFeature(),
                                                     params_one);
 
     base::FieldTrialParams params_two;
     AppendVersionNumber(params_two, kScalableIphTestTwo);
-    AppendFakeUiParamsNotification(params_two, kScalableIphTestTwo);
+    AppendFakeUiParamsNotification(params_two,
+                                   /*has_body_text=*/true, kScalableIphTestTwo);
     base::test::FeatureRefAndParams test_config_two(kScalableIphTestTwo,
                                                     params_two);
 
@@ -366,7 +368,7 @@ class ScalableIphBrowserTestCustomConditionBase
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
     AppendVersionNumber(params);
-    AppendFakeUiParamsNotification(params);
+    AppendUiParams(params);
     AppendCustomCondition(params);
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
@@ -529,7 +531,13 @@ class MockMessageCenterObserver
 };
 
 class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
+ public:
+  ScalableIphBrowserTestNotification() : has_body_text_(true) {}
+
  protected:
+  explicit ScalableIphBrowserTestNotification(bool has_body_text)
+      : has_body_text_(has_body_text) {}
+
   void SetUpOnMainThread() override {
     ScalableIphBrowserTest::SetUpOnMainThread();
 
@@ -540,11 +548,18 @@ class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
     mock_delegate()->FakeShowNotification();
   }
 
+  void AppendUiParams(base::FieldTrialParams& params) override {
+    AppendFakeUiParamsNotification(params, has_body_text_, TestIphFeature());
+  }
+
   void TearDownOnMainThread() override {
     scoped_observation_.Reset();
 
     ScalableIphBrowserTest::TearDownOnMainThread();
   }
+
+ protected:
+  const bool has_body_text_;
 
  private:
   // Observe notifications.
@@ -552,6 +567,13 @@ class ScalableIphBrowserTestNotification : public ScalableIphBrowserTest {
   base::ScopedObservation<message_center::MessageCenter,
                           message_center::MessageCenterObserver>
       scoped_observation_{&mock_};
+};
+
+class ScalableIphBrowserTestNotificationNoBodyText
+    : public ScalableIphBrowserTestNotification {
+ public:
+  ScalableIphBrowserTestNotificationNoBodyText()
+      : ScalableIphBrowserTestNotification(/*has_body_text=*/false) {}
 };
 
 class ScalableIphBrowserTestBubble : public ScalableIphBrowserTest {
@@ -586,7 +608,8 @@ class ScalableIphBrowserTestNotificationInvalidConfig
   void InitializeScopedFeatureList() override {
     base::FieldTrialParams params;
     AppendVersionNumber(params);
-    AppendFakeUiParamsNotification(params);
+    AppendFakeUiParamsNotification(params, /*has_body_text=*/true,
+                                   TestIphFeature());
     params[FullyQualified(TestIphFeature(),
                           scalable_iph::kCustomNotificationIdParamName)] = "";
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
@@ -1460,6 +1483,22 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotification,
                                     scalable_iph::ActionType::kOpenChrome)));
   notification->delegate()->Click(/*button_index=*/0, /*reply=*/std::nullopt);
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+// Test that a scalable_iph NotificationParam with an empty body text can create
+// a notification, i.e., make sure that it's accepted input.
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNotificationNoBodyText,
+                       ShowNotification) {
+  EnableTestIphFeature();
+
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  message_center::Notification* notification =
+      message_center->FindVisibleNotificationById(kTestNotificationId);
+  EXPECT_TRUE(notification);
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, InvokeIphByTimer_Bubble) {

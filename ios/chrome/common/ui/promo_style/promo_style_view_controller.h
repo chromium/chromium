@@ -186,6 +186,9 @@ enum class BannerImageSizeType {
 // Aligns the elements to the top of the view.
 @property(nonatomic, assign) BOOL topAlignedLayout;
 
+// Whether action buttons should have the same visual style.
+@property(nonatomic, assign) BOOL useEquallyWeightedButtons;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_UI_PROMO_STYLE_PROMO_STYLE_VIEW_CONTROLLER_H_

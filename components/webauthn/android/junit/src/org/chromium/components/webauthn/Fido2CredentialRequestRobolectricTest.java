@@ -20,6 +20,7 @@ import android.content.Context;
 import android.credentials.CredentialManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ResultReceiver;
 
 import androidx.test.filters.SmallTest;
 
@@ -1022,6 +1023,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 PublicKeyCredentialCreationOptions options,
                 Uri uri,
                 byte[] clientDataHash,
+                ResultReceiver resultReceiver,
                 OnSuccessListener<PendingIntent> successCallback,
                 OnFailureListener failureCallback)
                 throws NoSuchAlgorithmException {
@@ -1040,6 +1042,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 PublicKeyCredentialRequestOptions options,
                 Uri uri,
                 byte[] clientDataHash,
+                ResultReceiver resultReceiver,
                 OnSuccessListener<PendingIntent> successCallback,
                 OnFailureListener failureCallback) {
             mGetAssertionCalled = true;

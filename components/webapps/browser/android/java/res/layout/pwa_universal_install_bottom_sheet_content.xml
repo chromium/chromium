@@ -37,22 +37,34 @@ found in the LICENSE file.
             android:layout_margin="16dp"
             android:importantForAccessibility="no" />
 
-        <TextView
-            android:id="@+id/option_text_install"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="22dp"
             android:layout_weight="1"
-            android:text="@string/pwa_uni_install_option_install"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/option_text_install"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pwa_uni_install_option_install"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+            <TextView
+                android:id="@+id/option_text_open_instead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/arrow_install"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="28dp"
             android:importantForAccessibility="no" />
     </LinearLayout>
 
@@ -79,13 +91,13 @@ found in the LICENSE file.
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/option_text_shortcut"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
                 android:text="@string/pwa_uni_install_option_shortcut"
                 android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
@@ -102,7 +114,7 @@ found in the LICENSE file.
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="28dp"
             android:importantForAccessibility="no" />
     </LinearLayout>
 </LinearLayout>

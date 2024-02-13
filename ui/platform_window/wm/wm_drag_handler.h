@@ -5,9 +5,10 @@
 #ifndef UI_PLATFORM_WINDOW_WM_WM_DRAG_HANDLER_H_
 #define UI_PLATFORM_WINDOW_WM_WM_DRAG_HANDLER_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
@@ -38,7 +39,7 @@ class COMPONENT_EXPORT(WM) WmDragHandler {
     virtual void OnDragOperationChanged(mojom::DragOperation operation) = 0;
     // DragWidget (if any) should be ignored when finding top window and
     // dispatching mouse events.
-    virtual absl::optional<gfx::AcceleratedWidget> GetDragWidget() = 0;
+    virtual std::optional<gfx::AcceleratedWidget> GetDragWidget() = 0;
 
    protected:
     virtual ~LocationDelegate();

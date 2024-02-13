@@ -37,13 +37,15 @@ class ThreadWrapper;
 
 namespace base {
 
+namespace android {
+class PreFreezeBackgroundMemoryTrimmer;
+}
 namespace internal {
 class DelayTimerBase;
 class DelayedTaskManager;
 }
 class DeadlineTimer;
 class MetronomeTimer;
-class PreFreezeBackgroundMemoryTrimmer;
 class SingleThreadTaskRunner;
 class TimeDelta;
 class TimeTicks;
@@ -70,7 +72,7 @@ class PostDelayedTaskPassKey {
   friend class media::AlsaPcmInputStream;
   friend class media::FakeAudioWorker;
 #if BUILDFLAG(IS_ANDROID)
-  friend class base::PreFreezeBackgroundMemoryTrimmer;
+  friend class base::android::PreFreezeBackgroundMemoryTrimmer;
 #endif
 };
 

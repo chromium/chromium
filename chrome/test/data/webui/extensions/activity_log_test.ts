@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActivityLogExtensionPlaceholder, ExtensionsActivityLogElement, navigation, Page} from 'chrome://extensions/extensions.js';
-
+import type {ActivityLogExtensionPlaceholder, ExtensionsActivityLogElement} from 'chrome://extensions/extensions.js';
+import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
 

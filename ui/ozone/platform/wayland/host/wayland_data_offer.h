@@ -59,6 +59,8 @@ class WaylandDataOffer : public WaylandDataOfferBase {
   uint32_t source_actions_;
   // Action selected by the compositor
   uint32_t dnd_action_;
+  // Whether a MIME type was accepted.
+  bool mime_type_accepted_ = false;
 };
 
 }  // namespace ui

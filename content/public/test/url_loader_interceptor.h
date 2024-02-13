@@ -66,8 +66,16 @@ class URLLoaderInterceptor {
     ~RequestParams();
     RequestParams(RequestParams&& other);
     RequestParams& operator=(RequestParams&& other);
-    // This is the process_id of the process that is making the request (0 for
-    // browser process).
+    // This is the process_id of the process that is making the request. This
+    // can be
+    // - a renderer process,
+    // - `network::mojom::kBrowserProcessId` for browser process, or
+    // - `network::mojom::kInvalidProcessId` when a process ID is not yet
+    //    plumbed.
+    // TODO(crbug.com/324458368): Currently this is
+    // `network::mojom::URLLoaderFactoryParams::process_id` where applicable and
+    // not necessarily the initiating RenderFrameHost's process ID. Clarify the
+    // expected process ID here and remove `kInvalidProcessId` cases.
     int process_id;
     // The following are the parameters to CreateLoaderAndStart.
     mojo::PendingReceiver<network::mojom::URLLoader> receiver;

@@ -23,7 +23,6 @@
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connect_job.h"
 #include "net/ssl/ssl_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -125,9 +124,9 @@ int InitSocketPoolHelper(
   if ((request_load_flags & LOAD_IGNORE_LIMITS) != 0)
     respect_limits = ClientSocketPool::RespectLimits::DISABLED;
 
-  absl::optional<NetworkTrafficAnnotationTag> proxy_annotation =
-      proxy_info.is_direct() ? absl::nullopt
-                             : absl::optional<NetworkTrafficAnnotationTag>(
+  std::optional<NetworkTrafficAnnotationTag> proxy_annotation =
+      proxy_info.is_direct() ? std::nullopt
+                             : std::optional<NetworkTrafficAnnotationTag>(
                                    proxy_info.traffic_annotation());
   if (num_preconnect_streams) {
     return pool->RequestSockets(connection_group, std::move(socket_params),

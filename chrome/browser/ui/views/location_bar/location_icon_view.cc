@@ -277,7 +277,8 @@ void LocationIconView::UpdateIcon() {
                      icon_fetch_weak_ptr_factory_.GetWeakPtr()));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const bool is_vector_icon = !icon.IsEmpty() && icon.IsVectorIcon();
+  const bool is_vector_icon = !icon.IsEmpty() && icon.IsVectorIcon() &&
+                              icon.GetVectorIcon().vector_icon();
   if (is_vector_icon) {
     const std::string icon_name = icon.GetVectorIcon().vector_icon()->name;
     if (icon_name == vector_icons::kGoogleSuperGIcon.name ||

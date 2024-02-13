@@ -191,6 +191,16 @@ bool ProfileCanBeManaged(Profile* profile) {
   return entry && entry->CanBeManaged();
 }
 
+ManagementEnvironment GetManagementEnvironment(
+    Profile* profile,
+    const AccountInfo& account_info) {
+  if (!UserAcceptedAccountManagement(profile)) {
+    return ManagementEnvironment::kNone;
+  }
+  // TODO (b/322796016): Add check for school using account_info
+  return ManagementEnvironment::kWork;
+}
+
 bool IsKnownConsumerDomain(const std::string& email_domain) {
   // List of consumer-only domains from the server side logic. See
   // `KNOWN_INVALID_DOMAINS` from GetAgencySignupStateProducerModule.java.

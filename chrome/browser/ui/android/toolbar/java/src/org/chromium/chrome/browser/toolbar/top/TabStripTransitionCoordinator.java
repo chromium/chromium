@@ -301,6 +301,12 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         boolean showTabStrip = tabStripWidth >= mTabStripTransitionThreshold;
         if (showTabStrip == mTabStripVisible) return;
 
+        // Update the min size for the control container. This is needed one-layout-before browser
+        // controls start changing its height, as it assumed a fixed size control container during
+        // transition. See b/324178484.
+        int maxHeight = mTabStripHeightFromResource + mToolbarLayout.getMeasuredHeight();
+        controlContainerView().setMinimumHeight(maxHeight);
+
         // When transition kicked off by the BrowserControlsManager, the toolbar capture can be
         // stale e.g. still with the previous window width. Force invalidate the toolbar capture to
         // make sure the it's up-to-date with the latest Android view.
@@ -347,7 +353,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                     TAG,
                     "TransitionFinishedObserver is not cleared when new transition starts. This"
                             + " means previous transition was not finished properly.");
-            notifyTransitionFinished();
+            notifyTransitionFinished(false);
             recordTabStripTransitionFinished(false);
         }
 
@@ -428,7 +434,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
 
         // If top control is already at steady state, notify right away.
         if (isTopControlAtSteadyState()) {
-            notifyTransitionFinished();
+            notifyTransitionFinished(true);
             recordTabStripTransitionFinished(true);
             return;
         }
@@ -444,7 +450,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                             int bottomControlsMinHeightOffset,
                             boolean needsAnimate) {
                         if (isTopControlAtSteadyState()) {
-                            notifyTransitionFinished();
+                            notifyTransitionFinished(true);
                             recordTabStripTransitionFinished(true);
                         }
                     }
@@ -495,12 +501,32 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         return topControlsAtSteadyState || browserControlsInvisible;
     }
 
-    private void notifyTransitionFinished() {
+    private void notifyTransitionFinished(boolean measureControlContainer) {
         mBrowserControlsVisibilityManager.removeObserver(mTransitionFinishedObserver);
         mTransitionFinishedObserver = null;
         for (var observer : mTabStripHeightObservers) {
             observer.onTransitionFinished();
         }
+
+        if (measureControlContainer) remeasureControlContainer();
+    }
+
+    private void remeasureControlContainer() {
+        // Remeasure the control container in the next layout pass if needed. The post is needed due
+        // to the existence of ToolbarProgressBar adjusting its position based on ToolbarLayout's
+        // layout pass. The control container needs to remeasure based on the new margin in order to
+        // retain the up-to-date size with size reduction for the tab strip.
+
+        // This is not done during the transition as it could cause visual glitches.
+        mHandler.post(
+                mCallbackController.makeCancelable(
+                        () -> {
+                            controlContainerView()
+                                    .setMinimumHeight(mToolbarLayout.getHeight() + mTabStripHeight);
+                            ViewUtils.requestLayout(
+                                    controlContainerView(),
+                                    "TabStripTransitionCoordinator.remeasureControlContainer");
+                        }));
     }
 
     private void recordTabStripTransitionFinished(boolean finished) {

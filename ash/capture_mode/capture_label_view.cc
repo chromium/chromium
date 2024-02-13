@@ -464,7 +464,7 @@ void CaptureLabelView::OnCountDownAnimationFinished() {
   std::move(countdown_finished_callback_).Run();  // `this` is destroyed here.
 }
 
-BEGIN_METADATA(CaptureLabelView, views::View)
+BEGIN_METADATA(CaptureLabelView)
 END_METADATA
 
 }  // namespace ash

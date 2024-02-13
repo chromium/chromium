@@ -60,10 +60,14 @@ class StartupBrowserCreatorImpl {
 
   // Creates the necessary windows for startup. |process_startup| indicates
   // whether Chrome is just starting up or already running and the user wants to
-  // launch another instance.
+  // launch another instance. `restore_tabbed_browser` should only be
+  // flipped false by Ash full restore code path, suppressing restoring a normal
+  // browser when there were only PWAs open in previous session. See
+  // crbug.com/1463906.
   void Launch(Profile* profile,
               chrome::startup::IsProcessStartup process_startup,
-              std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder);
+              std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
+              bool restore_tabbed_browser);
 
   // Convenience for OpenTabsInBrowser that converts |urls| into a set of
   // Tabs.
@@ -152,8 +156,12 @@ class StartupBrowserCreatorImpl {
   // Determines the URLs to be shown at startup by way of various policies
   // (welcome, pinned tabs, etc.), determines whether a session restore
   // is necessary, and opens the URLs in a new or restored browser accordingly.
+  // `restore_tabbed_browser` should only be flipped false by Ash full
+  // restore code path, suppressing restoring a normal browser when there were
+  // only PWAs open in previous session. See crbug.com/1463906.
   LaunchResult DetermineURLsAndLaunch(
-      chrome::startup::IsProcessStartup process_startup);
+      chrome::startup::IsProcessStartup process_startup,
+      bool restore_tabbed_browser);
 
   // Returns a tuple of
   // - the tabs to be shown on startup, based on the policy functions in
@@ -196,11 +204,14 @@ class StartupBrowserCreatorImpl {
       BrowserOpenBehaviorOptions options);
 
   // Returns the relevant bitmask options which must be passed when restoring a
-  // session.
+  // session. `restore_tabbed_browser` should only be flipped false by Ash
+  // full restore code path, suppressing restoring a normal browser when there
+  // were only PWAs open in previous session. See crbug.com/1463906.
   static SessionRestore::BehaviorBitmask DetermineSynchronousRestoreOptions(
       bool has_create_browser_default,
       bool has_create_browser_switch,
-      bool was_mac_login_or_resume);
+      bool was_mac_login_or_resume,
+      bool restore_tabbed_browser);
 
   // Returns whether `switches::kKioskMode` is set on the command line of
   // the current process. This is a static method to avoid accidentally reading

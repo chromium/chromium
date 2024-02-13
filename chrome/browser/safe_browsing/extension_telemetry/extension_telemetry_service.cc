@@ -39,6 +39,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_api_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/tabs_execute_script_signal_processor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -727,6 +728,8 @@ ExtensionTelemetryService::CreateReport() {
   // - no stale extension entry is left over in the extension store.
   extension_store_.clear();
 
+  telemetry_report_pb->set_developer_mode_enabled(
+      profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode));
   telemetry_report_pb->set_creation_timestamp_msec(
       base::Time::Now().InMillisecondsSinceUnixEpoch());
   return telemetry_report_pb;
@@ -754,6 +757,7 @@ void ExtensionTelemetryService::DumpReportForTest(
   ss << "Report creation time: "
      << base::UTF16ToUTF8(TimeFormatShortDateAndTimeWithTimeZone(creation_time))
      << "\n";
+  ss << "Developer mode enabled: " << report.developer_mode_enabled() << "\n";
 
   const RepeatedPtrField<ExtensionTelemetryReportRequest_Report>& reports =
       report.reports();

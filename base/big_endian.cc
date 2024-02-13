@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_piece.h"
 
@@ -26,82 +27,98 @@ BigEndianReader::BigEndianReader(base::span<const uint8_t> buf)
     : ptr_(buf.data()), end_(buf.data() + buf.size()) {}
 
 bool BigEndianReader::Skip(size_t len) {
-  if (len > remaining())
+  if (len > remaining()) {
     return false;
+  }
   ptr_ += len;
   return true;
 }
 
 bool BigEndianReader::ReadBytes(void* out, size_t len) {
-  if (len > remaining())
+  if (len > remaining()) {
     return false;
+  }
   memcpy(out, ptr_, len);
   ptr_ += len;
   return true;
 }
 
 bool BigEndianReader::ReadPiece(base::StringPiece* out, size_t len) {
-  if (len > remaining())
+  if (len > remaining()) {
     return false;
+  }
   *out = base::StringPiece(reinterpret_cast<const char*>(ptr_), len);
   ptr_ += len;
   return true;
 }
 
 bool BigEndianReader::ReadSpan(base::span<const uint8_t>* out, size_t len) {
-  if (len > remaining())
+  if (len > remaining()) {
     return false;
+  }
   *out = base::make_span(ptr_, len);
   ptr_ += len;
   return true;
 }
 
-template<typename T>
-bool BigEndianReader::Read(T* value) {
-  if (sizeof(T) > remaining())
-    return false;
-  ReadBigEndian<T>(ptr_, value);
-  ptr_ += sizeof(T);
-  return true;
-}
-
 bool BigEndianReader::ReadU8(uint8_t* value) {
-  return Read(value);
+  std::optional<span<const uint8_t, 1u>> bytes = ReadFixedSpan<1u>();
+  if (!bytes.has_value()) {
+    return false;
+  }
+  *value = numerics::U8FromBigEndian(*bytes);
+  return true;
 }
 
 bool BigEndianReader::ReadU16(uint16_t* value) {
-  return Read(value);
-}
-
-bool BigEndianReader::ReadU32(uint32_t* value) {
-  return Read(value);
-}
-
-bool BigEndianReader::ReadU64(uint64_t* value) {
-  return Read(value);
-}
-
-template <typename T>
-bool BigEndianReader::ReadLengthPrefixed(base::StringPiece* out) {
-  T t_len;
-  if (!Read(&t_len))
-    return false;
-  size_t len = strict_cast<size_t>(t_len);
-  const uint8_t* original_ptr = ptr_;
-  if (!Skip(len)) {
-    ptr_ -= sizeof(T);
+  std::optional<span<const uint8_t, 2u>> bytes = ReadFixedSpan<2u>();
+  if (!bytes.has_value()) {
     return false;
   }
-  *out = base::StringPiece(reinterpret_cast<const char*>(original_ptr), len);
+  *value = numerics::U16FromBigEndian(*bytes);
   return true;
 }
 
-bool BigEndianReader::ReadU8LengthPrefixed(base::StringPiece* out) {
-  return ReadLengthPrefixed<uint8_t>(out);
+bool BigEndianReader::ReadU32(uint32_t* value) {
+  std::optional<span<const uint8_t, 4u>> bytes = ReadFixedSpan<4u>();
+  if (!bytes.has_value()) {
+    return false;
+  }
+  *value = numerics::U32FromBigEndian(*bytes);
+  return true;
 }
 
-bool BigEndianReader::ReadU16LengthPrefixed(base::StringPiece* out) {
-  return ReadLengthPrefixed<uint16_t>(out);
+bool BigEndianReader::ReadU64(uint64_t* value) {
+  std::optional<span<const uint8_t, 8u>> bytes = ReadFixedSpan<8u>();
+  if (!bytes.has_value()) {
+    return false;
+  }
+  *value = numerics::U64FromBigEndian(*bytes);
+  return true;
+}
+
+bool BigEndianReader::ReadU8LengthPrefixed(std::string_view* out) {
+  uint8_t len;
+  if (!ReadU8(&len)) {
+    return false;
+  }
+  const bool ok = ReadPiece(out, len);
+  if (!ok) {
+    ptr_ -= 1u;  // Undo the ReadU8.
+  }
+  return ok;
+}
+
+bool BigEndianReader::ReadU16LengthPrefixed(std::string_view* out) {
+  uint16_t len;
+  if (!ReadU16(&len)) {
+    return false;
+  }
+  const bool ok = ReadPiece(out, len);
+  if (!ok) {
+    ptr_ -= 2u;  // Undo the ReadU16.
+  }
+  return ok;
 }
 
 BigEndianWriter::BigEndianWriter(char* buf, size_t len)
@@ -111,24 +128,27 @@ BigEndianWriter::BigEndianWriter(char* buf, size_t len)
 }
 
 bool BigEndianWriter::Skip(size_t len) {
-  if (len > remaining())
+  if (len > remaining()) {
     return false;
+  }
   ptr_ += len;
   return true;
 }
 
 bool BigEndianWriter::WriteBytes(const void* buf, size_t len) {
-  if (len > remaining())
+  if (len > remaining()) {
     return false;
+  }
   memcpy(ptr_, buf, len);
   ptr_ += len;
   return true;
 }
 
-template<typename T>
+template <typename T>
 bool BigEndianWriter::Write(T value) {
-  if (sizeof(T) > remaining())
+  if (sizeof(T) > remaining()) {
     return false;
+  }
   WriteBigEndian<T>(ptr_, value);
   ptr_ += sizeof(T);
   return true;

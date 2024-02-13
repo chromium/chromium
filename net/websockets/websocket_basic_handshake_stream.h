@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -22,7 +23,6 @@
 #include "net/log/net_log_with_source.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
 #include "net/websockets/websocket_stream.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -127,7 +127,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   void OnFailure(const std::string& message,
                  int net_error,
-                 absl::optional<int> response_code);
+                 std::optional<int> response_code);
 
   HttpStreamParser* parser() const { return state_.parser(); }
 
@@ -149,7 +149,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   // The key to be sent in the next Sec-WebSocket-Key header. Usually NULL (the
   // key is generated on the fly).
-  absl::optional<std::string> handshake_challenge_for_testing_;
+  std::optional<std::string> handshake_challenge_for_testing_;
 
   // The required value for the Sec-WebSocket-Accept header.
   std::string handshake_challenge_response_;

@@ -91,8 +91,6 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
                  int wheel_delta_x,
                  int wheel_delta_y,
                  base::OnceCallback<void(DOMException*)> callback) override;
-  void GetZoomLevel(base::OnceCallback<void(std::optional<int>, const String&)>
-                        callback) override;
   void SetZoomLevel(int zoom_level,
                     base::OnceCallback<void(DOMException*)> callback) override;
 #endif

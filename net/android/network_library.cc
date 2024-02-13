@@ -140,12 +140,12 @@ void SetWifiEnabledForTesting(bool enabled) {
       base::android::AttachCurrentThread(), enabled);
 }
 
-absl::optional<int32_t> GetWifiSignalLevel() {
+std::optional<int32_t> GetWifiSignalLevel() {
   const int count_buckets = 5;
   int signal_strength = Java_AndroidNetworkLibrary_getWifiSignalLevel(
       base::android::AttachCurrentThread(), count_buckets);
   if (signal_strength < 0)
-    return absl::nullopt;
+    return std::nullopt;
   DCHECK_LE(0, signal_strength);
   DCHECK_GE(count_buckets - 1, signal_strength);
 

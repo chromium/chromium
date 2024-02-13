@@ -54,26 +54,26 @@ namespace {
 // ReadHeader reads the header (including length prefix) from |data| and
 // updates |data| to remove the header on return. Caller takes ownership of the
 // returned pointer.
-absl::optional<base::Value> ReadHeader(std::string_view* data) {
+std::optional<base::Value> ReadHeader(std::string_view* data) {
   uint16_t header_len;
   if (data->size() < sizeof(header_len)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   // Assumes little-endian.
   memcpy(&header_len, data->data(), sizeof(header_len));
   data->remove_prefix(sizeof(header_len));
 
   if (data->size() < header_len) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const std::string_view header_bytes = data->substr(0, header_len);
   data->remove_prefix(header_len);
 
-  absl::optional<base::Value> header =
+  std::optional<base::Value> header =
       base::JSONReader::Read(header_bytes, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!header || !header->is_dict()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return header;
@@ -215,7 +215,7 @@ bool CRLSet::Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set) {
 #error assumes little endian
 #endif
 
-  absl::optional<base::Value> header_value = ReadHeader(&data);
+  std::optional<base::Value> header_value = ReadHeader(&data);
   if (!header_value) {
     return false;
   }
@@ -229,7 +229,7 @@ bool CRLSet::Parse(std::string_view data, scoped_refptr<CRLSet>* out_crl_set) {
   if (header_dict.FindInt("Version") != kCurrentFileVersion)
     return false;
 
-  absl::optional<int> sequence = header_dict.FindInt("Sequence");
+  std::optional<int> sequence = header_dict.FindInt("Sequence");
   if (!sequence)
     return false;
 

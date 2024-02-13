@@ -95,12 +95,10 @@ class BufferGraphicsEventMapper {
           start_timestamp = event_start_time_callback.Run(*matcher, event);
         }
 
-        collector->push_back(
-            ArcTracingGraphicsModel::BufferEvent(map_start, start_timestamp));
+        collector->emplace_back(map_start, start_timestamp);
       }
       if (map_finish != EventType::kNone) {
-        collector->push_back(ArcTracingGraphicsModel::BufferEvent(
-            map_finish, event.GetEndTimestamp()));
+        collector->emplace_back(map_finish, event.GetEndTimestamp());
       }
 
       return true;
@@ -213,14 +211,19 @@ void AddJanks(std::vector<BufferEvent>* events,
       pulse_events.emplace_back(ev);
     }
   }
+  if (!ArcGraphicsJankDetector::IsEnoughSamplesToDetect(pulse_events.size())) {
+    LOG(WARNING) << "Not enough samples to detect jank: "
+                 << pulse_events.size();
+    return;
+  }
   SortBufferEventsByTimestamp(&pulse_events);
 
   ArcGraphicsJankDetector jank_detector(base::BindRepeating(
       [](EventType jank_event_type, BufferEvents* out_janks,
          const base::Time& timestamp) {
         out_janks->emplace_back(
-            BufferEvent(jank_event_type,
-                        timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()));
+            jank_event_type,
+            timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
       },
       jank_event_type, events));
 
@@ -231,8 +234,10 @@ void AddJanks(std::vector<BufferEvent>* events,
       break;
   }
   // At this point, no janks should be reported. We are detecting the rate.
-  if (jank_detector.stage() != ArcGraphicsJankDetector::Stage::kActive)
+  if (jank_detector.stage() != ArcGraphicsJankDetector::Stage::kActive) {
+    LOG(ERROR) << "Jank detector was not able to determine rate";
     return;
+  }
 
   // Period is defined. Pass all samples to detect janks.
   jank_detector.SetPeriodFixed(jank_detector.period());

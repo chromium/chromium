@@ -16,8 +16,10 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -34,11 +36,49 @@
 // Tests for the chrome://sync-confirmation WebUI page. They live here and not
 // in the webui directory because they manipulate views.
 namespace {
+
+// Configures the state of ::switches::kMinorModeRestrictionsForHistorySyncOptIn
+// that relies on can_show_history_sync_opt_ins_without_minor_mode_restrictions
+// capability.
+struct MinorModeRestrictions {
+  // Enable or disable the Feature
+  bool enable_feature = false;
+  // Related capability value
+  signin::Tribool capability = signin::Tribool::kTrue;
+};
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithUnrestrictedUser{
+    .enable_feature = true,
+    .capability = signin::Tribool::kTrue};
+constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithRestrictedUser{
+    .enable_feature = true,
+    .capability = signin::Tribool::kFalse};
+#endif
+
+void ConfigureMinorModeRestrictionFeature(
+    MinorModeRestrictions minor_mode_restrictions,
+    base::test::ScopedFeatureList& feature_flag_) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  if (minor_mode_restrictions.enable_feature) {
+    feature_flag_.InitAndEnableFeature(
+        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+  } else {
+    feature_flag_.InitAndDisableFeature(
+        ::switches::kMinorModeRestrictionsForHistorySyncOptIn);
+  }
+#else
+  CHECK(!minor_mode_restrictions.enable_feature)
+      << "This feature can be only enabled for selected platforms.";
+#endif
+}
+
 struct SyncConfirmationTestParam {
   PixelTestParam pixel_test_param;
   AccountManagementStatus account_management_status =
       AccountManagementStatus::kNonManaged;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
+  MinorModeRestrictions minor_mode_restrictions;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -61,6 +101,17 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
      .account_management_status = AccountManagementStatus::kManaged},
     {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true}},
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    // Restricted mode is only implemented for these platforms.
+    {.pixel_test_param = {.test_suffix =
+                              "RegularWithRestrictionsWithUnrestrictedUser"},
+     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+    {.pixel_test_param = {.test_suffix =
+                              "RegularWithRestrictionsWithRestrictedUser"},
+     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+#endif
+
 };
 
 const SyncConfirmationTestParam kDialogTestParams[] = {
@@ -82,6 +133,19 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "CR2023",
                           .use_chrome_refresh_2023_style = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    // Restricted mode is only implemented for these platforms.
+    {.pixel_test_param = {.test_suffix =
+                              "RegularWithRestrictionsWithUnrestrictedUser"},
+     .sync_style = SyncConfirmationStyle::kDefaultModal,
+     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+    {.pixel_test_param = {.test_suffix =
+                              "RegularWithRestrictionsWithRestrictedUser"},
+     .sync_style = SyncConfirmationStyle::kDefaultModal,
+     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+#endif
+
 };
 
 GURL BuildSyncConfirmationWindowURL() {
@@ -139,6 +203,9 @@ class SyncConfirmationUIWindowPixelTest
   SyncConfirmationUIWindowPixelTest()
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style == SyncConfirmationStyle::kWindow);
+
+    ConfigureMinorModeRestrictionFeature(GetParam().minor_mode_restrictions,
+                                         scoped_feature_list);
   }
 
   void ShowUi(const std::string& name) override {
@@ -146,7 +213,9 @@ class SyncConfirmationUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    SignInWithAccount(GetParam().account_management_status);
+    SignInWithAccount(GetParam().account_management_status,
+                      signin::ConsentLevel::kSignin,
+                      GetParam().minor_mode_restrictions.capability);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -185,6 +254,8 @@ class SyncConfirmationUIWindowPixelTest
 
   raw_ptr<ProfileManagementStepTestView, DanglingUntriaged>
       profile_picker_view_;
+
+  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConfirmationUIWindowPixelTest, InvokeUi_default) {
@@ -203,6 +274,9 @@ class SyncConfirmationUIDialogPixelTest
   SyncConfirmationUIDialogPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     DCHECK(GetParam().sync_style != SyncConfirmationStyle::kWindow);
+
+    ConfigureMinorModeRestrictionFeature(GetParam().minor_mode_restrictions,
+                                         scoped_feature_list);
   }
 
   ~SyncConfirmationUIDialogPixelTest() override = default;
@@ -211,7 +285,9 @@ class SyncConfirmationUIDialogPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
-    SignInWithAccount(GetParam().account_management_status);
+    SignInWithAccount(GetParam().account_management_status,
+                      signin::ConsentLevel::kSignin,
+                      GetParam().minor_mode_restrictions.capability);
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     if (GetParam().sync_style == SyncConfirmationStyle::kSigninInterceptModal) {
       url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style);
@@ -232,6 +308,9 @@ class SyncConfirmationUIDialogPixelTest
     widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 IN_PROC_BROWSER_TEST_P(SyncConfirmationUIDialogPixelTest, InvokeUi_default) {

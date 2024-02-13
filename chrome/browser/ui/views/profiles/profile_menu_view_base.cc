@@ -379,8 +379,14 @@ class AvatarImageView : public views::ImageView {
 
  public:
   AvatarImageView(const ui::ImageModel& avatar_image,
+                  const ui::ImageModel& management_badge,
                   const ProfileMenuViewBase* root_view)
-      : avatar_image_(avatar_image), root_view_(root_view) {
+      : avatar_image_(avatar_image),
+        management_badge_(
+            base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)
+                ? management_badge
+                : ui::ImageModel()),
+        root_view_(root_view) {
     if (avatar_image_.IsEmpty()) {
       // This can happen if the account image hasn't been fetched yet, if there
       // is no image, or in tests.
@@ -402,11 +408,23 @@ class AvatarImageView : public views::ImageView {
         sized_avatar_image, GetBackgroundColor(), kIdentityImageSizeInclBorder);
 
     if (features::IsChromeRefresh2023()) {
-      SetImage(ui::ImageModel::FromImageSkia(sized_avatar_image));
-    } else {
       gfx::ImageSkia sized_badge = AddCircularBackground(
-          SizeImage(root_view_->GetSyncIcon(), kBadgeSize),
-          GetBackgroundColor(), kBadgeSize + 2 * kBadgePadding);
+          SizeImage(management_badge_.Rasterize(GetColorProvider()),
+                    kBadgeSize),
+          GetBackgroundColor(), kBadgeSize + 6 * kBadgePadding);
+      gfx::ImageSkia badged_image =
+          gfx::ImageSkiaOperations::CreateIconWithBadge(sized_avatar_image,
+                                                        sized_badge);
+      SetImage(ui::ImageModel::FromImageSkia(badged_image));
+    } else {
+      auto badge = root_view_->GetSyncIcon();
+      int background_size = kBadgeSize + 2 * kBadgePadding;
+      if (badge.isNull()) {
+        badge = management_badge_.Rasterize(GetColorProvider());
+        background_size = kBadgeSize + 6 * kBadgePadding;
+      }
+      gfx::ImageSkia sized_badge = AddCircularBackground(
+          SizeImage(badge, kBadgeSize), GetBackgroundColor(), background_size);
       gfx::ImageSkia sized_badge_with_shadow =
           gfx::ImageSkiaOperations::CreateImageWithDropShadow(
               sized_badge, gfx::ShadowValue::MakeMdShadowValues(/*elevation=*/1,
@@ -425,6 +443,7 @@ class AvatarImageView : public views::ImageView {
   }
 
   ui::ImageModel avatar_image_;
+  ui::ImageModel management_badge_;
   raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
@@ -479,7 +498,8 @@ END_METADATA
 
 void BuildProfileTitleAndSubtitle(views::View* parent,
                                   const std::u16string& title,
-                                  const std::u16string& subtitle) {
+                                  const std::u16string& subtitle,
+                                  const std::u16string& management_label) {
   views::View* profile_titles_container =
       parent->AddChildView(std::make_unique<views::View>());
   // Separate the titles from the avatar image by the default margin.
@@ -502,6 +522,14 @@ void BuildProfileTitleAndSubtitle(views::View* parent,
     profile_titles_container->AddChildView(std::make_unique<views::Label>(
         subtitle, views::style::CONTEXT_LABEL,
         features::IsChromeRefresh2023() ? views::style::STYLE_BODY_3
+                                        : views::style::STYLE_SECONDARY));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) &&
+      !management_label.empty()) {
+    profile_titles_container->AddChildView(std::make_unique<views::Label>(
+        management_label, views::style::CONTEXT_LABEL,
+        features::IsChromeRefresh2023() ? views::style::STYLE_BODY_5
                                         : views::style::STYLE_SECONDARY));
   }
 }
@@ -655,8 +683,10 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
     SkColor profile_background_color,
     std::optional<EditButtonParams> edit_button_params,
     const ui::ImageModel& image_model,
+    const ui::ImageModel& management_badge,
     const std::u16string& title,
     const std::u16string& subtitle,
+    const std::u16string& management_label,
     const ui::ThemedVectorIcon& avatar_header_art) {
   constexpr int kBottomMargin = kDefaultMargin;
 
@@ -668,7 +698,8 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
                       views::BoxLayout::CrossAxisAlignment::kStretch,
                       gfx::Insets::TLBR(0, 0, kBottomMargin, 0)));
 
-  auto avatar_image_view = std::make_unique<AvatarImageView>(image_model, this);
+  auto avatar_image_view =
+      std::make_unique<AvatarImageView>(image_model, management_badge, this);
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
@@ -732,7 +763,7 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
       std::move(heading_label), profile_background_color,
       std::move(avatar_image_view), std::move(edit_button), avatar_header_art);
   BuildProfileTitleAndSubtitle(/*parent=*/identity_info_container_, title,
-                               subtitle);
+                               subtitle, management_label);
 }
 
 void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(

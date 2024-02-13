@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -38,7 +39,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/content_providing.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_pedal_annotator.h"
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_container_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_controller.h"
@@ -149,8 +149,7 @@
   OmniboxPedalAnnotator* annotator = [[OmniboxPedalAnnotator alloc] init];
   annotator.applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
-  annotator.settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
 
   self.mediator.pedalAnnotator = annotator;

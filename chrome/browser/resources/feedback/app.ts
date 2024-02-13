@@ -259,8 +259,7 @@ export class FeedbackAppElement extends PolymerElement {
     // </if>
 
     const autofillMetadataUrlElement =
-        this.shadowRoot!.querySelector<HTMLLabelElement>(
-            '#autofill-metadata-url');
+        this.shadowRoot!.querySelector<HTMLElement>('#autofill-metadata-url');
 
     if (autofillMetadataUrlElement) {
       // Opens a new window showing the full anonymized autofill metadata.
@@ -277,7 +276,7 @@ export class FeedbackAppElement extends PolymerElement {
     }
 
     const sysInfoUrlElement =
-        this.shadowRoot!.querySelector<HTMLLabelElement>('#sys-info-url');
+        this.shadowRoot!.querySelector<HTMLElement>('#sys-info-url');
     if (sysInfoUrlElement) {
       // Opens a new window showing the full anonymized system+app
       // information.
@@ -337,7 +336,7 @@ export class FeedbackAppElement extends PolymerElement {
 
       // <if expr="chromeos_ash">
       const bluetoothLogsInfoLinkElement =
-          this.shadowRoot!.querySelector<HTMLLabelElement>(
+          this.shadowRoot!.querySelector<HTMLElement>(
               '#bluetooth-logs-info-link');
       if (bluetoothLogsInfoLinkElement) {
         bluetoothLogsInfoLinkElement.onclick = (e: Event) => {
@@ -352,7 +351,7 @@ export class FeedbackAppElement extends PolymerElement {
       }
 
       const assistantLogsInfoLinkElement =
-          this.shadowRoot!.querySelector<HTMLLabelElement>(
+          this.shadowRoot!.querySelector<HTMLElement>(
               '#assistant-logs-info-link');
       if (assistantLogsInfoLinkElement) {
         assistantLogsInfoLinkElement.onclick = (e: Event) => {

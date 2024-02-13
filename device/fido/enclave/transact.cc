@@ -24,12 +24,12 @@ struct Transaction : base::RefCounted<Transaction> {
   Transaction(const EnclaveIdentity& enclave,
               cbor::Value request,
               SigningCallback signing_callback,
-              base::OnceCallback<void(absl::optional<cbor::Value>)> callback)
+              base::OnceCallback<void(std::optional<cbor::Value>)> callback)
       : enclave_public_key_(enclave.public_key),
         request_(std::move(request)),
         signing_callback_(std::move(signing_callback)),
         callback_(std::move(callback)),
-        handshake_(absl::nullopt, enclave.public_key, absl::nullopt) {}
+        handshake_(std::nullopt, enclave.public_key, std::nullopt) {}
 
   void set_client(std::unique_ptr<EnclaveWebSocketClient> client) {
     client_ = std::move(client);
@@ -38,11 +38,11 @@ struct Transaction : base::RefCounted<Transaction> {
   void Start() { client_->Write(handshake_.BuildInitialMessage()); }
 
   void OnData(device::enclave::EnclaveWebSocketClient::SocketStatus status,
-              absl::optional<std::vector<uint8_t>> data) {
+              std::optional<std::vector<uint8_t>> data) {
     if (!done_handshake_) {
       if (status != EnclaveWebSocketClient::SocketStatus::kOk) {
         LOG(ERROR) << "Enclave WebSocket connection failed";
-        std::move(callback_).Run(absl::nullopt);
+        std::move(callback_).Run(std::nullopt);
         // client_ holds a RepeatingCallback that has a reference to this
         // object. Thus, by deleting it, this object should also be destroyed.
         client_.reset();
@@ -52,7 +52,7 @@ struct Transaction : base::RefCounted<Transaction> {
       cablev2::HandshakeResult result = handshake_.ProcessResponse(*data);
       if (!result) {
         LOG(ERROR) << "Enclave handshake failed";
-        std::move(callback_).Run(absl::nullopt);
+        std::move(callback_).Run(std::nullopt);
         client_.reset();
         return;
       }
@@ -70,14 +70,14 @@ struct Transaction : base::RefCounted<Transaction> {
         std::vector<uint8_t> plaintext;
         if (!crypter_->Decrypt(*data, &plaintext)) {
           LOG(ERROR) << "Failed to decrypt enclave response";
-          std::move(callback_).Run(absl::nullopt);
+          std::move(callback_).Run(std::nullopt);
           break;
         }
 
-        absl::optional<cbor::Value> response = cbor::Reader::Read(plaintext);
+        std::optional<cbor::Value> response = cbor::Reader::Read(plaintext);
         if (!response) {
           LOG(ERROR) << "Failed to parse enclave response";
-          std::move(callback_).Run(absl::nullopt);
+          std::move(callback_).Run(std::nullopt);
           break;
         }
 
@@ -96,7 +96,7 @@ struct Transaction : base::RefCounted<Transaction> {
   void RequestReady(std::vector<uint8_t> request) {
     if (!crypter_->Encrypt(&request)) {
       LOG(ERROR) << "Failed to encrypt message to enclave";
-      std::move(callback_).Run(absl::nullopt);
+      std::move(callback_).Run(std::nullopt);
       client_.reset();
       return;
     }
@@ -106,11 +106,11 @@ struct Transaction : base::RefCounted<Transaction> {
   const std::array<uint8_t, kP256X962Length> enclave_public_key_;
   cbor::Value request_;
   SigningCallback signing_callback_;
-  base::OnceCallback<void(absl::optional<cbor::Value>)> callback_;
+  base::OnceCallback<void(std::optional<cbor::Value>)> callback_;
   cablev2::HandshakeInitiator handshake_;
   std::unique_ptr<EnclaveWebSocketClient> client_;
   std::unique_ptr<cablev2::Crypter> crypter_;
-  absl::optional<std::array<uint8_t, 32>> handshake_hash_;
+  std::optional<std::array<uint8_t, 32>> handshake_hash_;
   bool done_handshake_ = false;
 };
 
@@ -121,7 +121,7 @@ void Transact(raw_ptr<network::mojom::NetworkContext> network_context,
               std::string access_token,
               cbor::Value request,
               SigningCallback signing_callback,
-              base::OnceCallback<void(absl::optional<cbor::Value>)> callback) {
+              base::OnceCallback<void(std::optional<cbor::Value>)> callback) {
   auto transaction = base::MakeRefCounted<Transaction>(
       enclave, std::move(request), std::move(signing_callback),
       std::move(callback));

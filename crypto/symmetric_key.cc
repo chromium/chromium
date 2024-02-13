@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
@@ -61,10 +60,10 @@ std::unique_ptr<SymmetricKey> SymmetricKey::GenerateRandomKey(
 
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   std::unique_ptr<SymmetricKey> key(new SymmetricKey);
-  uint8_t* key_data = reinterpret_cast<uint8_t*>(
-      base::WriteInto(&key->key_, key_size_in_bytes + 1));
 
-  int rv = RAND_bytes(key_data, static_cast<int>(key_size_in_bytes));
+  key->key_.resize(key_size_in_bytes);
+  int rv = RAND_bytes(reinterpret_cast<uint8_t*>(key->key_.data()),
+                      key->key_.size());
   return rv == 1 ? std::move(key) : nullptr;
 }
 
@@ -82,14 +81,12 @@ std::unique_ptr<SymmetricKey> SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
 
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   std::unique_ptr<SymmetricKey> key(new SymmetricKey);
-  uint8_t* key_data = reinterpret_cast<uint8_t*>(
-      base::WriteInto(&key->key_, key_size_in_bytes + 1));
-
+  key->key_.resize(key_size_in_bytes);
   int rv = PKCS5_PBKDF2_HMAC_SHA1(
       password.data(), password.length(),
       reinterpret_cast<const uint8_t*>(salt.data()), salt.length(),
-      static_cast<unsigned>(iterations),
-      key_size_in_bytes, key_data);
+      static_cast<unsigned>(iterations), key->key_.size(),
+      reinterpret_cast<uint8_t*>(key->key_.data()));
   return rv == 1 ? std::move(key) : nullptr;
 }
 
@@ -110,14 +107,12 @@ std::unique_ptr<SymmetricKey> SymmetricKey::DeriveKeyFromPasswordUsingScrypt(
 
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   std::unique_ptr<SymmetricKey> key(new SymmetricKey);
-  uint8_t* key_data = reinterpret_cast<uint8_t*>(
-      base::WriteInto(&key->key_, key_size_in_bytes + 1));
-
-  int rv = EVP_PBE_scrypt(password.data(), password.length(),
-                          reinterpret_cast<const uint8_t*>(salt.data()),
-                          salt.length(), cost_parameter, block_size,
-                          parallelization_parameter, max_memory_bytes, key_data,
-                          key_size_in_bytes);
+  key->key_.resize(key_size_in_bytes);
+  int rv = EVP_PBE_scrypt(
+      password.data(), password.length(),
+      reinterpret_cast<const uint8_t*>(salt.data()), salt.length(),
+      cost_parameter, block_size, parallelization_parameter, max_memory_bytes,
+      reinterpret_cast<uint8_t*>(key->key_.data()), key->key_.size());
   return rv == 1 ? std::move(key) : nullptr;
 }
 

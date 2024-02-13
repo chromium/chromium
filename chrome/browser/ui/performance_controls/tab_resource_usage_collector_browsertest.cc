@@ -10,26 +10,25 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
-#include "tab_resource_usage_collector.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 class TabResourceUsageCollectorBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-
-    InProcessBrowserTest::SetUpOnMainThread();
   }
 
   // Adds a new tab and waits for that tab to finish receiving memory usage
   // to prevent test from flaking
   void AddAndWaitForTabReady() {
-    base::RunLoop run_loop;
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     ResourceUsageCollectorObserver observer(run_loop.QuitClosure());
-    ASSERT_TRUE(AddTabAtIndex(0, embedded_test_server()->GetURL("/title1.html"),
-                              ui::PAGE_TRANSITION_TYPED));
+    ASSERT_TRUE(AddTabAtIndex(
+        0, embedded_test_server()->GetURL("example.com", "/title1.html"),
+        ui::PAGE_TRANSITION_TYPED));
     run_loop.Run();
   }
 
@@ -50,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   second_tab_helper->SetMemoryUsageInBytes(bytes_used);
 
   // Collector refresh memory usage data for all tabs
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   ResourceUsageCollectorObserver observer(run_loop.QuitClosure());
   TabResourceUsageCollector::Get()->ImmediatelyRefreshMetricsForAllTabs();
   run_loop.Run();
@@ -74,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   second_tab_helper->SetMemoryUsageInBytes(bytes_used);
 
   // Collector refresh memory usage data for the first web contents
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   ResourceUsageCollectorObserver observer(run_loop.QuitClosure());
   TabResourceUsageCollector::Get()->ImmediatelyRefreshMetrics(
       first_tab_contents);

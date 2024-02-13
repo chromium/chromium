@@ -88,7 +88,7 @@ class SaveCardBubbleControllerImpl
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
   void ReshowBubble(bool is_user_gesture);
-  virtual void ShowConfirmationBubbleView();
+  virtual void ShowConfirmationBubbleView(bool card_saved);
 
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;
@@ -100,6 +100,8 @@ class SaveCardBubbleControllerImpl
   const CreditCard& GetCard() const override;
   base::OnceCallback<void(PaymentsBubbleClosedReason)>
   GetOnBubbleClosedCallback() override;
+  const SaveCardAndVirtualCardEnrollConfirmationUiParams&
+  GetConfirmationUiParams() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
   ui::ImageModel GetCreditCardImage() const override;
@@ -219,6 +221,10 @@ class SaveCardBubbleControllerImpl
 
   // The security level for the current context.
   security_state::SecurityLevel security_level_;
+
+  // UI parameters needed to display the save card confirmation view.
+  std::optional<SaveCardAndVirtualCardEnrollConfirmationUiParams>
+      confirmation_ui_params_;
 
   // Weak pointer factory for this save card bubble controller.
   base::WeakPtrFactory<SaveCardBubbleControllerImpl> weak_ptr_factory_{this};

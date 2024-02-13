@@ -6,8 +6,9 @@
 
 #include <AppKit/AppKit.h>
 
+#include <optional>
+
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -36,8 +37,8 @@ bool& BlinkPeriodNeedsRefresh() {
 
 namespace ui {
 
-absl::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults() {
-  static absl::optional<base::TimeDelta> blink_period;
+std::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults() {
+  static std::optional<base::TimeDelta> blink_period;
 
   if (!BlinkPeriodNeedsRefresh()) {
     return blink_period;
@@ -56,7 +57,7 @@ absl::optional<base::TimeDelta> TextInsertionCaretBlinkPeriodFromDefaults() {
   // In that case use the default blink time.
   if ((on_period_ms == 0 && off_period_ms == 0) || on_period_ms < 0 ||
       off_period_ms < 0) {
-    blink_period = absl::nullopt;
+    blink_period = std::nullopt;
     return blink_period;
   }
 

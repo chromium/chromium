@@ -6,10 +6,10 @@
 #define UI_VIEWS_CONTROLS_BUTTON_MD_TEXT_BUTTON_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
@@ -44,22 +44,22 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   ui::ButtonStyle GetStyle() const;
 
   // See |bg_color_override_|.
-  void SetBgColorOverride(const absl::optional<SkColor>& color);
-  absl::optional<SkColor> GetBgColorOverride() const;
+  void SetBgColorOverride(const std::optional<SkColor>& color);
+  std::optional<SkColor> GetBgColorOverride() const;
 
   // Override the default corner radius of the round rect used for the
   // background and ink drop effects.
-  void SetCornerRadius(absl::optional<float> radius);
-  absl::optional<float> GetCornerRadius() const;
+  void SetCornerRadius(std::optional<float> radius);
+  std::optional<float> GetCornerRadius() const;
   float GetCornerRadiusValue() const;
 
   // See |custom_padding_|.
-  void SetCustomPadding(const absl::optional<gfx::Insets>& padding);
-  absl::optional<gfx::Insets> GetCustomPadding() const;
+  void SetCustomPadding(const std::optional<gfx::Insets>& padding);
+  std::optional<gfx::Insets> GetCustomPadding() const;
 
   // LabelButton:
   void OnThemeChanged() override;
-  void SetEnabledTextColors(absl::optional<SkColor> color) override;
+  void SetEnabledTextColors(std::optional<SkColor> color) override;
   void SetText(const std::u16string& text) override;
   PropertyEffects UpdateStyleToIndicateDefaultStatus() override;
   void StateChanged(ButtonState old_state) override;
@@ -88,13 +88,13 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   ui::ButtonStyle style_ = ui::ButtonStyle::kDefault;
 
   // When set, this provides the background color.
-  absl::optional<SkColor> bg_color_override_;
+  std::optional<SkColor> bg_color_override_;
 
   // Used to set the corner radius of the button.
-  absl::optional<float> corner_radius_;
+  std::optional<float> corner_radius_;
 
   // Used to override default padding.
-  absl::optional<gfx::Insets> custom_padding_;
+  std::optional<gfx::Insets> custom_padding_;
 
   // When set, the icon color will match the text color.
   bool use_text_color_for_icon_ = true;
@@ -114,9 +114,9 @@ class VIEWS_EXPORT MdTextButtonActionViewInterface
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
-VIEW_BUILDER_PROPERTY(absl::optional<float>, CornerRadius)
-VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BgColorOverride)
-VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, CustomPadding)
+VIEW_BUILDER_PROPERTY(std::optional<float>, CornerRadius)
+VIEW_BUILDER_PROPERTY(std::optional<SkColor>, BgColorOverride)
+VIEW_BUILDER_PROPERTY(std::optional<gfx::Insets>, CustomPadding)
 VIEW_BUILDER_PROPERTY(ui::ButtonStyle, Style)
 END_VIEW_BUILDER
 

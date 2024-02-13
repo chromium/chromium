@@ -61,9 +61,9 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
     [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
     web_state->SetWebViewProxy(web_view_proxy_mock);
     // Insert and activate a WebState.
-    browser_->GetWebStateList()->InsertWebState(0, std::move(web_state),
-                                                WebStateList::INSERT_ACTIVATE,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
   ~OverlayPresentationContextFullscreenDisablerTest() override {
     overlay_presenter()->SetPresentationContext(nullptr);

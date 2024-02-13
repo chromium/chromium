@@ -5,11 +5,11 @@
 #include "ui/accessibility/ax_tree_manager_base.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree.h"
@@ -311,7 +311,7 @@ TEST_F(AXTreeManagerBaseTest, AttachingAndDetachingChildTrees) {
   EXPECT_EQ(nullptr, simple_manager_.GetHostNode());
   EXPECT_EQ(nullptr, complex_manager_.GetRootOfChildTree(kIframeID));
 
-  absl::optional<AXTreeManagerBase> child_manager =
+  std::optional<AXTreeManagerBase> child_manager =
       complex_manager_.AttachChildTree(*iframe, CreateSimpleTreeUpdate());
   ASSERT_TRUE(child_manager.has_value());
   EXPECT_NE(nullptr, child_manager->GetTree());

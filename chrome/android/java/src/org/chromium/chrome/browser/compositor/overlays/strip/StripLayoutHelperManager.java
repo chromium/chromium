@@ -68,7 +68,9 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
@@ -160,8 +162,10 @@ public class StripLayoutHelperManager
     private Context mContext;
     private boolean mTabStripObscured;
     private boolean mIsHidden;
+    private float mStripTransitionScrimOpacity;
     private boolean mIsTransitioning;
     private final ToolbarManager mToolbarManager;
+    private final StatusBarColorController mStatusBarColorController;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
@@ -415,7 +419,7 @@ public class StripLayoutHelperManager
 
         // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
         // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
-        mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
+        mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
         // Use toolbar menu button padding to align MSB with menu button.
         mStripEndPadding =
@@ -452,6 +456,7 @@ public class StripLayoutHelperManager
         }
 
         mToolbarManager = toolbarManager;
+        mStatusBarColorController = mToolbarManager.getStatusBarColorController();
 
         mNormalHelper =
                 new StripLayoutHelper(
@@ -545,6 +550,7 @@ public class StripLayoutHelperManager
     /** Mark whether tab strip |isHidden|. */
     public void setIsTabStripHidden(boolean isHidden) {
         mIsHidden = isHidden;
+        mStatusBarColorController.setTabStripHiddenOnTablet(mIsHidden);
     }
 
     @Override
@@ -606,6 +612,8 @@ public class StripLayoutHelperManager
             // The fade-out is implemented by adding a scrim layer on top of the tab strip, with the
             // same bg as the toolbar background color.
             scrimOpacity = calculateScrimOpacityDuringTransition(visibleHeight);
+            mStatusBarColorController.setTabStripColorOverlay(
+                    getStripTransitionScrimColor(), scrimOpacity);
 
             yOffset = 0;
         } else if (mIsHidden) {
@@ -627,7 +635,7 @@ public class StripLayoutHelperManager
     }
 
     private int getStripTransitionScrimColor() {
-        if (!ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.getValue()) {
+        if (!ToolbarFeatures.shouldUseToolbarBgColorForStripTransitionScrim()) {
             return getBackgroundColor();
         }
         return mToolbarManager.getPrimaryColor();
@@ -655,9 +663,9 @@ public class StripLayoutHelperManager
             orientationChanged = true;
         }
         if (!LocalizationUtils.isLayoutRtl()) {
-            mModelSelectorButton.setX(mWidth - getModelSelectorButtonWidthWithEndPadding());
+            mModelSelectorButton.setDrawX(mWidth - getModelSelectorButtonWidthWithEndPadding());
         } else {
-            mModelSelectorButton.setX(
+            mModelSelectorButton.setDrawX(
                     getModelSelectorButtonWidthWithEndPadding() - mModelSelectorWidth);
         }
 
@@ -676,25 +684,60 @@ public class StripLayoutHelperManager
     public void onHeightChanged(int newHeight) {
         mIsTransitioning = true;
         mIsHidden = newHeight == 0;
+        mStripTransitionScrimOpacity = mIsHidden ? 0f : 1f;
+        // Update the strip visibility state in StatusBarController just after the margins are
+        // updated during a hide->show transition so that the status bar assumes the base tab strip
+        // color for the remaining duration of the transition while a scrim is applied.
+        if (!mIsHidden) {
+            mStatusBarColorController.setTabStripHiddenOnTablet(false);
+        }
+        // Set the status bar color and scrim overlay at the start of the transition.
+        mStatusBarColorController.setTabStripColorOverlay(
+                getStripTransitionScrimColor(), mStripTransitionScrimOpacity);
     }
 
     @Override
     public void onTransitionFinished() {
         mIsTransitioning = false;
+        mStripTransitionScrimOpacity = 0f;
+        //  Update the strip visibility state in StatusBarColorController only after a show->hide
+        // transition, so that the status bar assumes the toolbar color when the strip is hidden.
+        if (mIsHidden) {
+            mStatusBarColorController.setTabStripHiddenOnTablet(true);
+        }
+        mStatusBarColorController.setTabStripColorOverlay(
+                ScrimProperties.INVALID_COLOR, mStripTransitionScrimOpacity);
     }
 
     private boolean duringTabStripTransition() {
         return mIsTransitioning;
     }
 
-    private float calculateScrimOpacityDuringTransition(float visibleHeight) {
+    @VisibleForTesting
+    float calculateScrimOpacityDuringTransition(float visibleHeight) {
         if (!duringTabStripTransition()) {
             return 0.0f;
         }
 
         // Otherwise, the alpha fraction is based on the percent of the tab strip visibility.
         float ratio = 1 - visibleHeight / mHeight;
-        return TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
+        float newOpacity = TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
+
+        // There is a known issue where the scrim opacity for a hide->show transition incorrectly
+        // gets updated to 1f (when yOffset = 0) in concluding frame updates during the transition,
+        // thereby making the transition janky (b/324130906). This could be due to frame updates
+        // initiated potentially by other sources before a timely dispatch of #onTransitionFinished.
+        // The following logic is to prevent such jank from surfacing in both directions of
+        // transition.
+        // If the tab strip is hiding, new opacity should be >= current opacity; if the tab strip is
+        // showing, new opacity should be <= current opacity. Otherwise, ignore the new value and
+        // use the current value.
+        if ((mIsHidden && newOpacity >= mStripTransitionScrimOpacity)
+                || (!mIsHidden && newOpacity <= mStripTransitionScrimOpacity)) {
+            mStripTransitionScrimOpacity = newOpacity;
+        }
+
+        return mStripTransitionScrimOpacity;
     }
 
     private float getModelSelectorButtonWidthWithEndPadding() {

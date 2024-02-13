@@ -6,13 +6,10 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/search/search_tag_registry.h"
 #include "ash/webui/help_app_ui/url_constants.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -84,11 +81,7 @@ class HelpAppProviderTest : public AppListTestBase {
                 /*for_testing=*/true)),
         search_tag_registry_(local_search_service_proxy_.get()),
         mock_handler_(&search_tag_registry_,
-                      local_search_service_proxy_.get()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kReleaseNotesSuggestionChip},
-        /*disabled_features=*/{});
-  }
+                      local_search_service_proxy_.get()) {}
   ~HelpAppProviderTest() override = default;
 
   void SetUp() override {
@@ -126,7 +119,6 @@ class HelpAppProviderTest : public AppListTestBase {
   ash::help_app::SearchTagRegistry search_tag_registry_;
   raw_ptr<HelpAppProvider> provider_ = nullptr;
   raw_ptr<apps::AppServiceProxy> proxy_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   MockSearchHandler mock_handler_;
 };
 

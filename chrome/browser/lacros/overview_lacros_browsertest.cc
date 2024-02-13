@@ -7,47 +7,20 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/chromeos/test_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"
 
-namespace {
-
-// If ash does not contain the relevant test controller functionality, then
-// there's nothing to do for this test.
-bool IsServiceAvailable() {
-  if (chromeos::LacrosService::Get()
-          ->GetInterfaceVersion<crosapi::mojom::TestController>() <
-      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
-                           kEnterOverviewModeMinVersion)) {
-    LOG(WARNING) << "Unsupported ash version.";
-    return false;
-  }
-  return true;
-}
-
-}  // namespace
-
-using OverviewBrowserTest = InProcessBrowserTest;
+using OverviewBrowserTest = ChromeOSBrowserUITest;
 
 // We enter overview mode with a single window. When we close the window,
 // overview mode automatically exits. Check that there's no crash.
-// TODO(https://crbug.com/1157314): This test is not safe to run in parallel
-// with other lacros tests as overview mode applies to all processes.
+// This test is not safe to run in parallel with other lacros tests as overview
+// mode applies to all processes.
 IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
-  if (!IsServiceAvailable())
-    return;
-
-  // Enter overview mode.
-  auto& test_controller = chromeos::LacrosService::Get()
-                              ->GetRemote<crosapi::mojom::TestController>();
-  base::RunLoop run_loop;
-  test_controller->EnterOverviewMode(run_loop.QuitClosure());
-  run_loop.Run();
+  EnterOverviewMode();
 
   // Close the window by closing all tabs and wait for it to stop existing in
   // ash.
@@ -59,25 +32,16 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashWithSingleWindow) {
 
 // We enter overview mode with 2 windows. We delete 1 window during overview
 // mode. Then we exit overview mode.
-// TODO(https://crbug.com/1157314): This test is not safe to run in parallel
-// with other lacros tests as overview mode applies to all processes.
+// This test is not safe to run in parallel with other lacros tests as overview
+// mode applies to all processes.
 IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
-  if (!IsServiceAvailable())
-    return;
-
   // Create an incognito window and make it visible.
   Browser* incognito_browser = Browser::Create(Browser::CreateParams(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       true));
   AddBlankTabAndShow(incognito_browser);
 
-  // Enter overview mode.
-  auto& test_controller = chromeos::LacrosService::Get()
-                              ->GetRemote<crosapi::mojom::TestController>();
-  base::test::TestFuture<void> future;
-  test_controller->EnterOverviewMode(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  future.Clear();
+  EnterOverviewMode();
 
   // Close the incognito window by closing all tabs and wait for it to stop
   // existing in ash.
@@ -86,7 +50,5 @@ IN_PROC_BROWSER_TEST_F(OverviewBrowserTest, NoCrashTwoWindows) {
   incognito_browser->tab_strip_model()->CloseAllTabs();
   ASSERT_TRUE(browser_test_util::WaitForWindowDestruction(incognito_id));
 
-  // Exit overview mode.
-  test_controller->ExitOverviewMode(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ExitOverviewMode();
 }

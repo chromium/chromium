@@ -22,7 +22,7 @@ export class CustomAutomationEvent {
    * @param {chrome.automation.EventType} type The event type.
    * @param {!chrome.automation.AutomationNode} target The event target.
    * @param {!{eventFrom: (string|undefined),
-   *           eventFromAction: (string|undefined),
+   *           eventFromAction: (chrome.automation.ActionType|undefined),
    *           intents: (!Array<chrome.automation.AutomationIntent>|undefined)
    *        }} params
    */

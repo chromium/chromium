@@ -10,8 +10,7 @@
 // Enum defining different styles for the instruction view.
 typedef NS_ENUM(NSInteger, InstructionViewStyle) {
   InstructionViewStyleDefault = 0,
-  InstructionViewStyleGrayscale,
-  InstructionViewStyleBold,
+  InstructionViewStyleGrayscale
 };
 
 // View containing an instruction list with their step number.

@@ -104,6 +104,16 @@ const InlineBreakToken* BlockBreakToken::InlineBreakTokenFor(
   return nullptr;
 }
 
+void BlockBreakToken::MutableForOofFragmentation::Merge(
+    const BlockBreakToken& new_break_token) {
+  if (LayoutUnit monolithic_overflow = new_break_token.MonolithicOverflow()) {
+    DCHECK_GT(monolithic_overflow, LayoutUnit());
+    DCHECK(break_token_.data_);
+    break_token_.data_->monolithic_overflow =
+        std::max(break_token_.data_->monolithic_overflow, monolithic_overflow);
+  }
+}
+
 #if DCHECK_IS_ON()
 
 String BlockBreakToken::ToString() const {

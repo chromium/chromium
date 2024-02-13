@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 #include <ostream>
 #include <vector>
 
@@ -423,10 +424,9 @@ void SkColorToHSL(SkColor c, HSL* hsl) {
   float r = SkColorGetR(c) / 255.0f;
   float g = SkColorGetG(c) / 255.0f;
   float b = SkColorGetB(c) / 255.0f;
-  float vmax = std::max({r, g, b});
-  float vmin = std::min({r, g, b});
+  auto [vmin, vmax] = std::minmax({r, g, b});
   float delta = vmax - vmin;
-  hsl->l = (vmax + vmin) / 2;
+  hsl->l = std::midpoint(vmin, vmax);
   if (SkColorGetR(c) == SkColorGetG(c) && SkColorGetR(c) == SkColorGetB(c)) {
     hsl->h = hsl->s = 0;
   } else {
@@ -631,11 +631,10 @@ SkColor PickContrastingColor(SkColor foreground1,
       foreground1 : foreground2;
 }
 
-BlendResult BlendForMinContrast(
-    SkColor default_foreground,
-    SkColor background,
-    absl::optional<SkColor> high_contrast_foreground,
-    float contrast_ratio) {
+BlendResult BlendForMinContrast(SkColor default_foreground,
+                                SkColor background,
+                                std::optional<SkColor> high_contrast_foreground,
+                                float contrast_ratio) {
   DCHECK_EQ(SkColorGetA(background), SK_AlphaOPAQUE);
   default_foreground = GetResultingPaintColor(default_foreground, background);
   if (GetContrastRatio(default_foreground, background) >= contrast_ratio)
@@ -651,7 +650,7 @@ BlendResult BlendForMinContrast(
   // Use int for inclusive lower bound and exclusive upper bound, reserving
   // conversion to SkAlpha for the end (reduces casts).
   for (int low = SK_AlphaTRANSPARENT, high = SK_AlphaOPAQUE + 1; low < high;) {
-    const SkAlpha alpha = (low + high) / 2;
+    const SkAlpha alpha = std::midpoint(low, high);
     const SkColor color =
         AlphaBlend(target_foreground, default_foreground, alpha);
     const float luminance = GetRelativeLuminance(color);

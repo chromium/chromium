@@ -51,7 +51,7 @@
 				<string>IDS_IOS_WHATS_NEW_BOTTOMOMNIBOX_SCREENSHOT_TEXT_2</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>circle</string>
+			<string>globe.americas.fill</string>
 			<key>IconBackgroundColor</key>
 			<string>blue</string>
 			<key>IsSymbol</key>

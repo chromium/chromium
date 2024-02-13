@@ -31,6 +31,7 @@ source_set("notifications") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
     "//ios/chrome/browser/ui/push_notification:presenters",
     "//ios/chrome/browser/ui/settings/notifications/tracking_price",

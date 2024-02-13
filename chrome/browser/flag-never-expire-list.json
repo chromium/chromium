@@ -107,6 +107,7 @@
   "overlay-scrollbars",
   "overlay-strategies",
   "prefer-dcheck",
+  "prerender2",
   "printing-ppd-channel",
   "reader-mode-heuristics",
   "record-web-app-debug-info",

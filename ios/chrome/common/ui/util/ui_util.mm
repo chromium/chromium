@@ -4,31 +4,11 @@
 
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-#import <UIKit/UIKit.h>
 #import <cmath>
 #import <limits>
 
 #import "base/apple/foundation_util.h"
 #import "ui/gfx/ios/uikit_util.h"
-
-CGFloat DeviceCornerRadius() {
-  UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
-
-  UIWindow* window = nil;
-  for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
-    UIWindowScene* windowScene =
-        base::apple::ObjCCastStrict<UIWindowScene>(scene);
-    UIWindow* firstWindow = [windowScene.windows firstObject];
-    if (firstWindow) {
-      window = firstWindow;
-      break;
-    }
-  }
-
-  const BOOL isRoundedDevice =
-      (idiom == UIUserInterfaceIdiomPhone && window.safeAreaInsets.bottom);
-  return isRoundedDevice ? 40.0 : 0.0;
-}
 
 CGFloat AlignValueToPixel(CGFloat value) {
   static CGFloat scale = [[UIScreen mainScreen] scale];

@@ -19,21 +19,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-// This class serves as a reference test for the bindings generator, and as example documentation
-// for how to use the jni generator.
-// The C++ counter-part is sample_for_tests.cc.
-// jni_generator/BUILD.gn has a jni_generator_tests target that will:
-//   * Generate a header file for the JNI bindings based on this file.
-//   * Generate a header file containing registration methods required to use C++ methods from this
-//     file.
-//   * Compile sample_for_tests.cc using the generated header file.
-//   * link a native executable to prove the generated header + cc file are self-contained.
-// All comments are informational only, and are ignored by the jni generator.
-//
-// This JNINamespace annotation indicates that all native methods should be
-// generated inside this namespace, including the native class that this
-// object binds to.
-@JNINamespace("base::android")
+/**
+ * This class serves as a reference test for the bindings generator, and as example documentation
+ * for how to use the jni generator.
+ *
+ * <p>The C++ counter-part is sample_for_tests.cc.
+ *
+ * <p>jni_zero/BUILD.gn has a sample_jni_apk target that uses these files to create a test app that
+ * exercises some basic JNI when the app is opened.
+ *
+ * <p>All comments are informational only, and are ignored by the jni generator.
+ *
+ * <p>This JNINamespace annotation indicates that all native methods should be generated inside this
+ * namespace, including the native class that this object binds to.
+ */
+@JNINamespace("jni_zero::samples")
 class SampleForTests {
     // Classes can store their C++ pointer counterpart as an int that is normally initialized by
     // calling out a SampleForTestsJni.get().init() function. Replace "CPPClass" with your

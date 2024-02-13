@@ -286,7 +286,7 @@ void TransformOperations::AppendSkew(SkScalar x, SkScalar y) {
   decomposed_transforms_.clear();
 }
 
-void TransformOperations::AppendPerspective(absl::optional<SkScalar> depth) {
+void TransformOperations::AppendPerspective(std::optional<SkScalar> depth) {
   TransformOperation to_add;
   to_add.type = TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE;
   if (depth) {
@@ -377,7 +377,7 @@ bool TransformOperations::ComputeDecomposedTransform(
   auto it = decomposed_transforms_.find(start_offset);
   if (it == decomposed_transforms_.end()) {
     Transform transform = ApplyRemaining(start_offset);
-    if (absl::optional<DecomposedTransform> decomp = transform.Decompose()) {
+    if (std::optional<DecomposedTransform> decomp = transform.Decompose()) {
       decomposed_transforms_[start_offset] =
           std::make_unique<DecomposedTransform>(*decomp);
     } else {

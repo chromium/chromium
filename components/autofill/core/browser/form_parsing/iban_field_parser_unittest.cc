@@ -32,19 +32,19 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(IbanFieldParserTest, ParseIban) {
   AddTextFormFieldData("iban-field", "Enter account number", IBAN_VALUE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(IbanFieldParserTest, ParseIbanBanks) {
   AddTextFormFieldData("accountNumber", "IBAN*", IBAN_VALUE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(IbanFieldParserTest, ParseNonIban) {
   AddTextFormFieldData("other-field", "Field for Account Number", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 }  // namespace autofill

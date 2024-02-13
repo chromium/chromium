@@ -40,7 +40,7 @@ cr.define('mobile', function() {
     },
 
     updateNetworkState(networkState) {
-      if (this.networkState_ == networkState) {
+      if (this.networkState_ === networkState) {
         return;
       }
       this.networkState_ = networkState;
@@ -53,12 +53,12 @@ cr.define('mobile', function() {
     },
 
     updateState_() {
-      if (!this.deviceInfo_ || this.networkState_ == NetworkState.UNKNOWN) {
+      if (!this.deviceInfo_ || this.networkState_ === NetworkState.UNKNOWN) {
         return;
       }
 
       if (!this.isDeviceInfoValid_() ||
-          this.networkState_ != NetworkState.PORTAL_REACHABLE) {
+          this.networkState_ !== NetworkState.PORTAL_REACHABLE) {
         // If the device info is not valid or portal is unreachable, hide
         // portalFrame and show system status displaying error message.
         this.setStatusMessage_(StatusMessageType.PORTAL_OFFLINE);
@@ -83,7 +83,7 @@ cr.define('mobile', function() {
      */
     setStatusMessage_(type) {
       // The status is already set, nothing to do.
-      if (type == this.statusMessageType_) {
+      if (type === this.statusMessageType_) {
         return;
       }
 

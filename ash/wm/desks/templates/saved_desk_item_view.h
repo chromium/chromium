@@ -67,9 +67,9 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
                                      public OverviewFocusableView,
                                      public views::ViewTargeterDelegate,
                                      public views::TextfieldController {
- public:
-  METADATA_HEADER(SavedDeskItemView);
+  METADATA_HEADER(SavedDeskItemView, views::Button)
 
+ public:
   explicit SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk);
   SavedDeskItemView(const SavedDeskItemView&) = delete;
   SavedDeskItemView& operator=(const SavedDeskItemView&) = delete;

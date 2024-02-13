@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -34,6 +34,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -63,6 +65,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.history_clusters.HistoryC
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
@@ -77,6 +80,7 @@ import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -123,6 +127,9 @@ public class AutocompleteMediatorUnitTest {
     private @Mock HistoryClustersProcessor.OpenHistoryClustersDelegate mOpenHistoryClustersDelegate;
     private @Mock OmniboxActionFactoryJni mActionFactoryJni;
     private @Mock TemplateUrlService mTemplateUrlService;
+    private @Mock NavigationHandle mNavigationHandle;
+
+    private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
 
     private PropertyModel mListModel;
     private AutocompleteMediator mMediator;
@@ -587,8 +594,44 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url);
         // Verify that the URL is not loaded in a new tab.
-        verify(mAutocompleteDelegate)
-                .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
+
+        // Verify the callback.
+        mOmniboxLoadUrlParamsCaptor
+                .getValue()
+                .callback
+                .onLoadUrl(
+                        null,
+                        new LoadUrlResult(Tab.TabLoadStatus.DEFAULT_PAGE_LOAD, mNavigationHandle));
+        verify(mAutocompleteController)
+                .createNavigationObserver(mNavigationHandle, mSuggestionsList.get(0));
+    }
+
+    @Test
+    public void onSuggestionClicked_ClipboardImageSuggestion() {
+        mMediator.setAutocompleteProfile(mProfile);
+        mMediator.onNativeInitialized();
+        mMediator.onOmniboxSessionStateChange(true);
+        var url = new GURL("http://test");
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.CLIPBOARD_IMAGE)
+                        .build();
+
+        // Verify that loadUrlWithPostData is called for the clipboard image suggestion.
+        mMediator.onSuggestionClicked(match, 0, url);
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+
+        // Verify the callback.
+        mOmniboxLoadUrlParamsCaptor
+                .getValue()
+                .callback
+                .onLoadUrl(
+                        null,
+                        new LoadUrlResult(Tab.TabLoadStatus.DEFAULT_PAGE_LOAD, mNavigationHandle));
+        verify(mAutocompleteController).createNavigationObserver(mNavigationHandle, match);
     }
 
     @Test
@@ -611,10 +654,20 @@ public class AutocompleteMediatorUnitTest {
         // Simulate profile loaded.
         mMediator.setAutocompleteProfile(mProfile);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mAutocompleteDelegate)
-                .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
         verify(mAutocompleteDelegate).clearOmniboxFocus();
         verifyNoMoreInteractions(mAutocompleteDelegate);
+
+        // Verify the callback.
+        mOmniboxLoadUrlParamsCaptor
+                .getValue()
+                .callback
+                .onLoadUrl(
+                        null,
+                        new LoadUrlResult(Tab.TabLoadStatus.DEFAULT_PAGE_LOAD, mNavigationHandle));
+        verify(mAutocompleteController).createNavigationObserver(mNavigationHandle, match);
 
         // Verify no reload on profile change.
         Profile newProfile = mock(Profile.class);

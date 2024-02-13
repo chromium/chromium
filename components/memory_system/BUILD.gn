@@ -33,12 +33,6 @@ source_set("memory_system") {
 
   if (enable_gwp_asan) {
     deps += [ "//components/gwp_asan/client" ]
-    if (is_chromeos) {
-      deps += [
-        # for crash_reporter::IsCrashpadEnabled()
-        "//components/crash/core/app",
-      ]
-    }
   }
 
   # Regardless of `enable_gwp_asan`, we must depend directly

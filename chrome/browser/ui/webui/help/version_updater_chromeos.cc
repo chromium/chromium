@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 
 #include <cmath>
+#include <memory>
 #include <optional>
 #include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -133,8 +135,9 @@ bool EnsureCanUpdate(bool interactive,
 
 }  // namespace
 
-VersionUpdater* VersionUpdater::Create(content::WebContents* web_contents) {
-  return new VersionUpdaterCros(web_contents);
+std::unique_ptr<VersionUpdater> VersionUpdater::Create(
+    content::WebContents* web_contents) {
+  return base::WrapUnique(new VersionUpdaterCros(web_contents));
 }
 
 void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {

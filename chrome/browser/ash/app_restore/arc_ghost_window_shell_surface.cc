@@ -70,7 +70,7 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
       restore_data->display_id.value_or(display::kInvalidDisplayId);
 
   const chromeos::WindowStateType window_state =
-      restore_data->window_state_type.value_or(
+      restore_data->window_info.window_state_type.value_or(
           chromeos::WindowStateType::kDefault);
 
   gfx::Rect local_bounds = bounds;
@@ -111,14 +111,20 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
   shell_surface->SetAppId(app_id);
   shell_surface->SetBounds(display_id_value, local_bounds);
 
-  if (restore_data->maximum_size.has_value())
-    shell_surface->SetMaximumSize(restore_data->maximum_size.value());
+  const std::optional<app_restore::WindowInfo::ArcExtraInfo>& arc_info =
+      restore_data->window_info.arc_extra_info;
+  if (arc_info) {
+    if (arc_info->maximum_size.has_value()) {
+      shell_surface->SetMaximumSize(*arc_info->maximum_size);
+    }
+    if (arc_info->minimum_size.has_value()) {
+      shell_surface->SetMinimumSize(*arc_info->minimum_size);
+    }
+  }
 
-  if (restore_data->minimum_size.has_value())
-    shell_surface->SetMinimumSize(restore_data->minimum_size.value());
-
-  if (restore_data->title.has_value())
-    shell_surface->SetTitle(restore_data->title.value());
+  if (restore_data->window_info.app_title.has_value()) {
+    shell_surface->SetTitle(*restore_data->window_info.app_title);
+  }
 
   // Set frame buttons.
   constexpr uint32_t kVisibleButtonMask =

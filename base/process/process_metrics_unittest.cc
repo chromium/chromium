@@ -160,8 +160,8 @@ class TestChildLauncher::TestChildPortProvider final : public PortProvider {
   TestChildPortProvider(const TestChildPortProvider&) = delete;
   TestChildPortProvider& operator=(const TestChildPortProvider&) = delete;
 
-  mach_port_t TaskForPid(ProcessHandle process) const final {
-    return process == handle_ ? port_.get() : MACH_PORT_NULL;
+  mach_port_t TaskForHandle(ProcessHandle process_handle) const final {
+    return process_handle == handle_ ? port_.get() : MACH_PORT_NULL;
   }
 
  private:
@@ -455,6 +455,60 @@ TEST_F(SystemMetricsTest, ParseMeminfo) {
   EXPECT_EQ(meminfo.dirty, 4);
   EXPECT_EQ(69936u,
             base::SysInfo::AmountOfAvailablePhysicalMemory(meminfo) / 1024);
+
+  // output from a system with a large page cache, to catch arithmetic errors
+  // that incorrectly assume free + buffers + cached <= total. (Copied from
+  // ash/components/arc/test/data/mem_profile/16G.)
+  const char large_cache_input[] =
+      "MemTotal:       18025572 kB\n"
+      "MemFree:        13150176 kB\n"
+      "MemAvailable:   15447672 kB\n"
+      "Buffers:         1524852 kB\n"
+      "Cached:         12645260 kB\n"
+      "SwapCached:            0 kB\n"
+      "Active:          2572904 kB\n"
+      "Inactive:        1064976 kB\n"
+      "Active(anon):    1047836 kB\n"
+      "Inactive(anon):    11736 kB\n"
+      "Active(file):    1525068 kB\n"
+      "Inactive(file):  1053240 kB\n"
+      "Unevictable:      611904 kB\n"
+      "Mlocked:           32884 kB\n"
+      "SwapTotal:      11756208 kB\n"
+      "SwapFree:       11756208 kB\n"
+      "Dirty:              4152 kB\n"
+      "Writeback:             0 kB\n"
+      "AnonPages:       1079660 kB\n"
+      "Mapped:           782152 kB\n"
+      "Shmem:            591820 kB\n"
+      "Slab:             366104 kB\n"
+      "SReclaimable:     254356 kB\n"
+      "SUnreclaim:       111748 kB\n"
+      "KernelStack:       22652 kB\n"
+      "PageTables:        41540 kB\n"
+      "NFS_Unstable:          0 kB\n"
+      "Bounce:                0 kB\n"
+      "WritebackTmp:          0 kB\n"
+      "CommitLimit:    15768992 kB\n"
+      "Committed_AS:   36120244 kB\n"
+      "VmallocTotal:   34359738367 kB\n"
+      "VmallocUsed:           0 kB\n"
+      "VmallocChunk:          0 kB\n"
+      "Percpu:             3328 kB\n"
+      "AnonHugePages:     32768 kB\n"
+      "ShmemHugePages:        0 kB\n"
+      "ShmemPmdMapped:        0 kB\n"
+      "DirectMap4k:      293036 kB\n"
+      "DirectMap2M:     6918144 kB\n"
+      "DirectMap1G:     2097152 kB\n";
+
+  meminfo = {};
+  EXPECT_TRUE(ParseProcMeminfo(large_cache_input, &meminfo));
+  EXPECT_EQ(meminfo.total, 18025572);
+  EXPECT_EQ(meminfo.free, 13150176);
+  EXPECT_EQ(meminfo.buffers, 1524852);
+  EXPECT_EQ(meminfo.cached, 12645260);
+  EXPECT_EQ(GetSystemCommitChargeFromMeminfo(meminfo), 0u);
 }
 
 TEST_F(SystemMetricsTest, ParseVmstat) {

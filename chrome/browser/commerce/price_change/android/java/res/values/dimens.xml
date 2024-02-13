@@ -11,4 +11,5 @@
     <dimen name="price_change_module_margin_top">16dp</dimen>
     <dimen name="price_change_module_product_image_size">116dp</dimen>
     <dimen name="price_change_module_product_image_corner_radius">12dp</dimen>
+    <dimen name="price_change_module_price_card_corner_radius">8dp</dimen>
 </resources>

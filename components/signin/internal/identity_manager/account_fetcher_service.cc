@@ -257,6 +257,11 @@ bool AccountFetcherService::IsAccountCapabilitiesFetchingEnabled() {
       switches::kEnableFetchingAccountCapabilities);
 }
 
+void AccountFetcherService::PrepareForFetchingAccountCapabilities() {
+  account_capabilities_fetcher_factory_
+      ->PrepareForFetchingAccountCapabilities();
+}
+
 void AccountFetcherService::StartFetchingAccountCapabilities(
     const CoreAccountInfo& core_account_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

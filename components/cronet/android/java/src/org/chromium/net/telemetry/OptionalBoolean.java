@@ -10,7 +10,7 @@ package org.chromium.net.telemetry;
  * one of them and used it to create a private variable that we can use to make the code more
  * readable.
  */
-enum OptionalBoolean {
+public enum OptionalBoolean {
     UNSET(
             CronetStatsLog
                     .CRONET_ENGINE_CREATED__EXPERIMENTAL_OPTIONS_QUIC_STORE_SERVER_CONFIGS_IN_PROPERTIES__OPTIONAL_BOOLEAN_UNSET),

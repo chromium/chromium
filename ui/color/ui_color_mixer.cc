@@ -406,6 +406,9 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
                 : SkColorSetA(SK_ColorBLACK, 0x4D)};
   mixer[kColorWebNativeControlScrollbarThumbInactive] = {
       dark_mode ? SK_ColorWHITE : SkColorSetRGB(0xEA, 0xEA, 0xEA)};
+  mixer[kColorWebNativeControlScrollbarThumbOverlayMinimalMode] = {
+      dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
+                : SkColorSetA(SK_ColorBLACK, 0x72)};
   mixer[kColorWebNativeControlScrollbarThumbPressed] = {
       dark_mode ? SkColorSetA(SK_ColorWHITE, 0x80)
                 : SkColorSetA(SK_ColorBLACK, 0x80)};

@@ -5,6 +5,7 @@
 package org.chromium.base;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.DoNotMock;
 
@@ -33,6 +34,7 @@ public final class Token {
      * @param high The high portion of the token.
      * @param low The low portion of the token.
      */
+    @CalledByNative
     public Token(long high, long low) {
         mHigh = high;
         mLow = low;
@@ -73,14 +75,9 @@ public final class Token {
         return other.mHigh == mHigh && other.mLow == mLow;
     }
 
-    /** Wrapper around {@link Token} constructor for native. */
-    @CalledByNative
-    private static Token create(long high, long low) {
-        return new Token(high, low);
-    }
-
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         Token createRandom();
     }
 }

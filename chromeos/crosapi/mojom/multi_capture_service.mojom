@@ -7,18 +7,26 @@ module crosapi.mojom;
 // Interacts with the media capture API. Implemented in ash-chrome. This
 // interface is used to show multi capture related usage indicators and
 // notifications.
-// Next version: 1
-// Next method id: 2
+// Next version: 2
+// Next method id: 3
 [Stable, Uuid="6ea59fc6-65e0-11ed-a200-7be727846002"]
 interface MultiCaptureService {
-  // Called when a new multi capture (identified by a unique label)
-  // is started. The parameters are a unique label and the host that
-  // triggered the capture.
+  // Called when a new multi capture (identified by a unique label
+  // representing the capture session) is started. The parameters
+  // are a unique label and the host that triggered the capture.
   MultiCaptureStarted@0(string label, string host);
 
-  // Called when an existing multi capture (identified by a unique label) is
-  // stopped. A multi capture is considered to be stopped when the capture
-  // for all used devices is stopped / finished.
+  // Called when a new multi capture (identified by a unique label
+  // representing the capture session) is started. The parameters
+  // are a unique label, the app id and the name of the app that
+  // triggered the capture.
+  [MinVersion=1] MultiCaptureStartedFromApp@2(string label,
+      string app_id, string app_name);
+
+  // Called when an existing multi capture (identified by a unique label
+  // representing the capture session) is stopped. A multi capture is
+  // considered to be stopped when the capture for all used devices is
+  // stopped / finished.
   // MultiCaptureStopped will only be called after MultiCaptureStarted was
   // called before with the same label.
   MultiCaptureStopped@1(string label);

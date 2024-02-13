@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Test subframes receive orientation change events
+  promise_test: Unhandled rejection with value: object "NotSupportedError: screen.orientation.lock() is not available on this device."
+[FAIL] Check directly that events are fired in right order (from top to bottom)
+  promise_test: Unhandled rejection with value: object "NotSupportedError: screen.orientation.lock() is not available on this device."
+Harness: the test ran to completion.

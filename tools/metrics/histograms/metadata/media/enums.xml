@@ -257,6 +257,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="GpuCompositionDisabled"/>
   <int value="7" label="DisabledByPref"/>
   <int value="8" label="DisabledOnError"/>
+  <int value="9" label="DisabledBySoftwareEmulatedGpu"/>
 </enum>
 
 <enum name="CdmKeyStatusMix">

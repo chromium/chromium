@@ -132,10 +132,12 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
 
   auto progress_indicator = std::make_unique<ProgressBar>();
   progress_indicator->SetPreferredHeight(kProgressIndicatorHeight);
-  progress_indicator->SetPreferredCornerRadii(absl::nullopt);
+  progress_indicator->SetPreferredCornerRadii(std::nullopt);
   progress_indicator->SetBackgroundColor(SK_ColorTRANSPARENT);
   progress_indicator->SetVisible(false);
   progress_indicator->GetViewAccessibility().OverrideIsIgnored(true);
+  progress_indicator->SetProperty(views::kElementIdentifierKey,
+                                  kProgressIndicatorElementId);
   progress_indicator_ = AddChildView(std::move(progress_indicator));
 }
 
@@ -450,7 +452,7 @@ void BubbleFrameView::UpdateMainImage() {
   }
 }
 
-void BubbleFrameView::SetProgress(absl::optional<double> progress) {
+void BubbleFrameView::SetProgress(std::optional<double> progress) {
   bool visible = progress.has_value();
   progress_indicator_->SetVisible(visible);
   progress_indicator_->GetViewAccessibility().OverrideIsIgnored(!visible);
@@ -459,11 +461,11 @@ void BubbleFrameView::SetProgress(absl::optional<double> progress) {
   }
 }
 
-absl::optional<double> BubbleFrameView::GetProgress() const {
+std::optional<double> BubbleFrameView::GetProgress() const {
   if (progress_indicator_->GetVisible()) {
     return progress_indicator_->GetValue();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 gfx::Size BubbleFrameView::CalculatePreferredSize() const {
@@ -1211,7 +1213,7 @@ std::unique_ptr<Label> BubbleFrameView::CreateLabelWithContextAndStyle(
 }
 
 BEGIN_METADATA(BubbleFrameView)
-ADD_PROPERTY_METADATA(absl::optional<double>, Progress)
+ADD_PROPERTY_METADATA(std::optional<double>, Progress)
 ADD_PROPERTY_METADATA(gfx::Insets, ContentMargins)
 ADD_PROPERTY_METADATA(gfx::Insets, FootnoteMargins)
 ADD_PROPERTY_METADATA(BubbleFrameView::PreferredArrowAdjustment,
@@ -1225,5 +1227,7 @@ END_METADATA
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView,
                                       kMinimizeButtonElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView, kCloseButtonElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BubbleFrameView,
+                                      kProgressIndicatorElementId);
 
 }  // namespace views

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<script>
+
+function runTest() {
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+
+  var image = document.createElement('img');
+  image.setAttribute('src', 'resources/svg-with-image-with-foreignobject.svg');
+  image.onload = function() {
+    var vbuf = ctx.createMesh2DVertexBuffer(new Float32Array([0, 0, 0, 100, 100, 100]));
+    var uvbuf = ctx.createMesh2DUVBuffer(new Float32Array([0, 0, 0, 1, 1, 1]));
+    var ibuf = ctx.createMesh2DIndexBuffer(new Uint16Array([0, 1, 2]));
+
+    ctx.drawMesh(vbuf, uvbuf, ibuf, image);
+    try {
+      // This should throw an exception.
+      ctx.getImageData(0, 0, 1, 1).data;
+      finishTest('FAIL - drawMesh() with a foreignObject SVG image did not taint the canvas.');
+    } catch (e) {
+      finishTest('PASS');
+    }
+  }
+}
+
+function finishTest(output) {
+  document.write(output);
+  if (window.testRunner) {
+    testRunner.dumpAsText();
+    testRunner.notifyDone();
+  }
+}
+</script>
+<body onload="runTest()">
+  drawMesh() with a foreignObject SVG image should taint the canvas.<br/>
+  FAIL - test did not run.<br/>
+<canvas id="canvas" width="100" height="100"></canvas>
+</body>
+</html>

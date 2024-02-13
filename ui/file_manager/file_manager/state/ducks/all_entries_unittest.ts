@@ -294,6 +294,7 @@ export async function testAddChildEntries(done: () => void) {
     [aEntry.toURL()]: {
       ...convertEntryToFileData(aEntry),
       children: [a1Entry.toURL(), a2Entry.toURL()],
+      canExpand: true,
     },
     [a1Entry.toURL()]: convertEntryToFileData(a1Entry),
     [a2Entry.toURL()]: convertEntryToFileData(a2Entry),
@@ -312,6 +313,7 @@ export async function testAddChildEntries(done: () => void) {
     [a2Entry.toURL()]: {
       ...convertEntryToFileData(a2Entry),
       children: [bEntry.toURL()],
+      canExpand: true,
     },
     [bEntry.toURL()]: {
       ...convertEntryToFileData(bEntry),
@@ -535,7 +537,7 @@ export async function testReadSubDirectories(done: () => void) {
   const aDirEntry = fakeFs.entries['/Downloads/a']!;
   const cDirEntry = fakeFs.entries['/Downloads/c']!;
   const want: State['allEntries'] = {
-    [downloadsEntry.toURL()]: downloadsEntryFileData,
+    [downloadsEntry.toURL()]: {...downloadsEntryFileData, canExpand: true},
     [aDirEntry.toURL()]: convertEntryToFileData(aDirEntry),
     [cDirEntry.toURL()]: convertEntryToFileData(cDirEntry),
   };
@@ -589,6 +591,7 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
     [downloadsEntry.toURL()]: {
       ...downloadsEntryFileData,
       children: [aDirEntry.toURL(), bDirEntry.toURL()],
+      canExpand: true,
     },
     [aDirEntry.toURL()]: {
       ...convertEntryToFileData(aDirEntry),
@@ -601,6 +604,7 @@ export async function testReadSubDirectoriesRecursively(done: () => void) {
     [bDirEntry.toURL()]: {
       ...bEntryFileData,
       children: [dirEntry2.toURL()],
+      canExpand: true,
     },
     [dirEntry2.toURL()]: convertEntryToFileData(dirEntry2),
     // Entry /a/111/ is not here because its parent a/ is not expanded.
@@ -712,7 +716,7 @@ export async function testReadSubDirectoriesForFakeDriveEntry(
   // Expect its direct sub directories and grand sub directories of /Computers
   // should be in the store.
   const want: State['allEntries'] = {
-    [driveRootEntryList.toURL()]: fakeDriveEntryFileData,
+    [driveRootEntryList.toURL()]: {...fakeDriveEntryFileData, canExpand: true},
     [driveEntry.toURL()]: convertEntryToFileData(driveEntry),
     [computersEntry.toURL()]: convertEntryToFileData(computersEntry),
     [sharedWithMeEntry.toURL()]: convertEntryToFileData(sharedWithMeEntry),
@@ -781,21 +785,25 @@ export async function testTraverseAndExpandPathEntriesFound(
       ...volumeRootEntryFileData,
       expanded: true,
       children: [dirA.toURL()],
+      canExpand: true,
     },
     [dirA.toURL()]: {
       ...convertEntryToFileData(dirA),
       expanded: true,
       children: [dirB.toURL()],
+      canExpand: true,
     },
     [dirB.toURL()]: {
       ...convertEntryToFileData(dirB),
       expanded: true,
       children: [dirC.toURL()],
+      canExpand: true,
     },
     [dirC.toURL()]: {
       ...convertEntryToFileData(dirC),
       expanded: false,
       children: [],
+      canExpand: false,
     },
   };
 
@@ -853,11 +861,13 @@ export async function testTraverseAndExpandPathEntriesNotFound(
       ...volumeRootEntryFileData,
       expanded: false,
       children: [dirA.toURL()],
+      canExpand: true,
     },
     [dirA.toURL()]: {
       ...convertEntryToFileData(dirA),
       expanded: false,
       children: [dirB.toURL()],
+      canExpand: true,
     },
     [dirB.toURL()]: {
       ...convertEntryToFileData(dirB),
@@ -865,6 +875,7 @@ export async function testTraverseAndExpandPathEntriesNotFound(
       // dirB's children is not being read because read stops when non-exist-url
       // is encountered.
       children: [],
+      canExpand: false,
     },
     // dirC is cleared because it's not referenced by any other entries.
   };

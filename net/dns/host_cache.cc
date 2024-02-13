@@ -138,9 +138,8 @@ EndpointMetadataPairFromValue(const base::Value& value) {
   if (!metadata)
     return std::nullopt;
 
-  return std::make_pair(
-      base::checked_cast<HttpsRecordPriority>(priority.value()),
-      std::move(metadata).value());
+  return std::pair(base::checked_cast<HttpsRecordPriority>(priority.value()),
+                   std::move(metadata).value());
 }
 
 bool IPEndPointsFromLegacyAddressListValue(
@@ -1177,16 +1176,6 @@ size_t HostCache::size() const {
 size_t HostCache::max_entries() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return max_entries_;
-}
-
-// static
-std::unique_ptr<HostCache> HostCache::CreateDefaultCache() {
-#if defined(ENABLE_BUILT_IN_DNS)
-  const size_t kDefaultMaxEntries = 1000;
-#else
-  const size_t kDefaultMaxEntries = 100;
-#endif
-  return std::make_unique<HostCache>(kDefaultMaxEntries);
 }
 
 bool HostCache::EvictOneEntry(base::TimeTicks now) {

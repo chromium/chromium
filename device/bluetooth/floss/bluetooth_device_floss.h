@@ -70,7 +70,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  absl::optional<std::string> GetName() const override;
+  std::optional<std::string> GetName() const override;
   bool IsPaired() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   bool IsBonded() const override;
@@ -80,7 +80,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   UUIDSet GetUUIDs() const override;
-  absl::optional<int8_t> GetInquiryTxPower() const override;
+  std::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
   bool ExpectingConfirmation() const override;
@@ -136,7 +136,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   FlossAdapterClient::BondState GetBondState() { return bond_state_; }
   void SetBondState(
       FlossAdapterClient::BondState bond_state,
-      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<BluetoothDevice::ConnectErrorCode> error_code);
   void SetIsConnected(bool is_connected);
   void SetConnectionState(uint32_t state);
   void ResetPairing();
@@ -192,7 +192,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
  protected:
   // BluetoothDevice override
   void CreateGattConnectionImpl(
-      absl::optional<device::BluetoothUUID> service_uuid) override;
+      std::optional<device::BluetoothUUID> service_uuid) override;
   void UpgradeToFullDiscovery() override;
   void DisconnectGatt() override;
 
@@ -204,12 +204,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Updates the state of connecting and calls callbacks accordingly.
   void UpdateConnectingState(
       ConnectingState state,
-      absl::optional<BluetoothDevice::ConnectErrorCode> error);
+      std::optional<BluetoothDevice::ConnectErrorCode> error);
   // Updates the state of gatt connecting.
   void UpdateGattConnectingState(GattConnectingState state);
   // Triggers the pending callback of Connect() method.
   void TriggerConnectCallback(
-      absl::optional<BluetoothDevice::ConnectErrorCode> error_code);
+      std::optional<BluetoothDevice::ConnectErrorCode> error_code);
 
   void OnGetRemoteType(base::OnceClosure callback,
                        DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
@@ -248,23 +248,23 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                       DBusResult<Void> ret);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
-      absl::nullopt;
+  std::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
+      std::nullopt;
 
   // Timer to stop waiting for a successful connect complete.
   base::OneShotTimer connection_incomplete_timer_;
 
-  absl::optional<base::OnceClosure> pending_callback_on_init_props_ =
-      absl::nullopt;
+  std::optional<base::OnceClosure> pending_callback_on_init_props_ =
+      std::nullopt;
 
   // Callbacks for a pending |SetConnectionLatency|.
-  absl::optional<std::pair<base::OnceClosure, ErrorCallback>>
-      pending_set_connection_latency_ = absl::nullopt;
+  std::optional<std::pair<base::OnceClosure, ErrorCallback>>
+      pending_set_connection_latency_ = std::nullopt;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Callbacks for a pending |ExecuteWrite| or |AbortWrite|.
-  absl::optional<std::pair<base::OnceClosure, ExecuteWriteErrorCallback>>
-      pending_execute_write_ = absl::nullopt;
+  std::optional<std::pair<base::OnceClosure, ExecuteWriteErrorCallback>>
+      pending_execute_write_ = std::nullopt;
 
   // Writes are using reliable writes.
   bool using_reliable_write_ = false;
@@ -316,7 +316,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   // Specific uuid to search for after gatt connection is established. If this
   // is not set, then we do full discovery.
-  absl::optional<device::BluetoothUUID> search_uuid;
+  std::optional<device::BluetoothUUID> search_uuid;
 
   // Similar to is_acl_connected_ but contains the full connection state
   // (including encryption). This is updated when |SetConnectionState| is called

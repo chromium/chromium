@@ -331,7 +331,7 @@
 <translation id="3619115746895587757">Caputxino</translation>
 <translation id="3619593063686672873">No hi ha cap vídeo recent</translation>
 <translation id="3634507049637220048">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestionada per l'administrador, detalls</translation>
-<translation id="36451918667380448">El servei de xarxa mòbil està bloquejat. Contacta amb el proveïdor per obtenir assistència.</translation>
+<translation id="36451918667380448">El proveïdor de xarxa mòbil està bloquejat. Contacta amb el proveïdor per obtenir assistència.</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elements moguts.</translation>
 <translation id="3658269352872031728">S'han seleccionat <ph name="SELECTED_FILE_COUNT" /> fitxers</translation>
 <translation id="3685122418104378273">La sincronització amb Google Drive està desactivada de manera predeterminada en utilitzar les dades mòbils.</translation>

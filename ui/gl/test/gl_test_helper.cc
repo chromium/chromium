@@ -9,6 +9,9 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/init/gl_factory.h"
+
 #if BUILDFLAG(IS_WIN)
 #include <wingdi.h>
 
@@ -98,6 +101,17 @@ bool GLTestHelper::CheckPixelsWithError(int x,
   }
 
   return !bad_count;
+}
+
+std::pair<scoped_refptr<GLSurface>, scoped_refptr<GLContext>>
+GLTestHelper::CreateOffscreenGLSurfaceAndContext() {
+  scoped_refptr<GLSurface> gl_surface = init::CreateOffscreenGLSurface(
+      gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size());
+
+  scoped_refptr<GLContext> context =
+      gl::init::CreateGLContext(nullptr, gl_surface.get(), GLContextAttribs());
+  EXPECT_TRUE(context->MakeCurrent(gl_surface.get()));
+  return std::make_pair(std::move(gl_surface), std::move(context));
 }
 
 #if BUILDFLAG(IS_WIN)

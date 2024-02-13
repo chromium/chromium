@@ -42,15 +42,12 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
-#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/ash/login/signin/auth_error_observer_factory.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/external_data/handlers/crostini_ansible_playbook_external_data_handler.h"
@@ -103,9 +100,12 @@
 #include "components/proxy_config/proxy_prefs.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
@@ -118,12 +118,19 @@
 #include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {
-namespace {
 
 // TODO(b/278643115) Remove the using when moved.
-using user_manager::kMultiProfileUserBehaviorPref;
+namespace prefs {
+using user_manager::prefs::kMultiProfileNeverShowIntro;
+using user_manager::prefs::kMultiProfileUserBehaviorPref;
+using user_manager::prefs::kMultiProfileWarningShowDismissed;
+using user_manager::prefs::kRegularUsersPref;
+}  // namespace prefs
 using user_manager::MultiUserSignInPolicy;
+using user_manager::MultiUserSignInPolicyController;
 using user_manager::ParseMultiUserSignInPolicyPref;
+
+namespace {
 
 using ::content::BrowserThread;
 
@@ -169,7 +176,7 @@ bool GetUserLockAttributes(const user_manager::User* user,
   }
   if (policy) {
     *policy = ParseMultiUserSignInPolicyPref(
-                  prefs->GetString(kMultiProfileUserBehaviorPref))
+                  prefs->GetString(prefs::kMultiProfileUserBehaviorPref))
                   .value_or(MultiUserSignInPolicy::kUnrestricted);
   }
   return true;
@@ -275,15 +282,33 @@ void ChromeUserManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(kDeviceLocalAccountsWithSavedData);
   registry->RegisterStringPref(kDeviceLocalAccountPendingDataRemoval,
                                std::string());
+  MultiUserSignInPolicyController::RegisterPrefs(registry);
 
   SessionLengthLimiter::RegisterPrefs(registry);
   enterprise_user_session_metrics::RegisterPrefs(registry);
 }
 
 // static
-std::unique_ptr<ChromeUserManager>
+void ChromeUserManagerImpl::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  // TODO(b/278643115): Move to components/user_manager. Currently,
+  // using user_prefs::PrefRegistrySyncable in components/user_manager
+  // will cause circular dependency.
+  registry->RegisterStringPref(prefs::kMultiProfileUserBehaviorPref,
+                               std::string(MultiUserSignInPolicyToPrefValue(
+                                   MultiUserSignInPolicy::kUnrestricted)));
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileNeverShowIntro, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kMultiProfileWarningShowDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+}
+
+// static
+std::unique_ptr<ChromeUserManagerImpl>
 ChromeUserManagerImpl::CreateChromeUserManager() {
-  return std::unique_ptr<ChromeUserManager>(new ChromeUserManagerImpl());
+  return base::WrapUnique(new ChromeUserManagerImpl());
 }
 
 ChromeUserManagerImpl::ChromeUserManagerImpl()
@@ -292,8 +317,7 @@ ChromeUserManagerImpl::ChromeUserManagerImpl()
                             : nullptr),
       cros_settings_(CrosSettings::Get()),
       device_local_account_policy_service_(nullptr),
-      user_image_manager_registry_(this),
-      multi_profile_user_controller_(GetLocalState(), this),
+      multi_user_sign_in_policy_controller_(GetLocalState(), this),
       mount_performer_(std::make_unique<MountPerformer>()) {
   UpdateNumberOfUsers();
 
@@ -434,21 +458,14 @@ void ChromeUserManagerImpl::Shutdown() {
     device_local_account_policy_service_->RemoveObserver(this);
   }
 
-  user_image_manager_registry_.Shutdown();
-
-  multi_profile_user_controller_.Shutdown();
+  multi_user_sign_in_policy_controller_.Shutdown();
   cloud_external_data_policy_handlers_.clear();
   session_observation_.Reset();
 }
 
-MultiProfileUserController*
-ChromeUserManagerImpl::GetMultiProfileUserController() {
-  return &multi_profile_user_controller_;
-}
-
-UserImageManager* ChromeUserManagerImpl::GetUserImageManager(
-    const AccountId& account_id) {
-  return user_image_manager_registry_.GetManager(account_id);
+MultiUserSignInPolicyController*
+ChromeUserManagerImpl::GetMultiUserSignInPolicyController() {
+  return &multi_user_sign_in_policy_controller_;
 }
 
 user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
@@ -459,29 +476,25 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
     return user_manager::UserList();
   }
 
-  user_manager::UserList result;
-  const user_manager::UserList& users = GetUsers();
-  for (user_manager::UserList::const_iterator it = users.begin();
-       it != users.end(); ++it) {
-    if ((*it)->GetType() == user_manager::UserType::kRegular &&
-        !(*it)->is_logged_in()) {
-      MultiProfileUserController::UserAllowedInSessionReason check;
-      multi_profile_user_controller_.IsUserAllowedInSession(
-          (*it)->GetAccountId().GetUserEmail(), &check);
-      if (check ==
-          MultiProfileUserController::NOT_ALLOWED_PRIMARY_USER_POLICY_FORBIDS) {
-        return user_manager::UserList();
-      }
+  // No user is allowed if the primary user policy forbids it.
+  if (multi_user_sign_in_policy_controller_.GetPrimaryUserPolicy() ==
+      MultiUserSignInPolicy::kNotAllowed) {
+    return {};
+  }
 
+  user_manager::UserList result;
+  for (user_manager::User* user : GetUsers()) {
+    if (user->GetType() == user_manager::UserType::kRegular &&
+        !user->is_logged_in()) {
       // Users with a policy that prevents them being added to a session will be
       // shown in login UI but will be grayed out.
       // Same applies to owner account (see http://crbug.com/385034).
-      result.push_back(*it);
+      result.push_back(user);
     }
   }
 
   // Extract out users that are allowed on login screen.
-  return ExistingUserController::ExtractLoginUsers(result);
+  return chrome_user_manager_util::FindLoginAllowedUsers(result);
 }
 
 user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
@@ -582,7 +595,10 @@ void ChromeUserManagerImpl::OnUserProfileLoaded(const AccountId& account_id) {
             AuthErrorObserverFactory::GetInstance()->GetForProfile(profile);
         sync_observer->StartObserving();
       }
-      multi_profile_user_controller_.StartObserving(profile);
+      auto* user =
+          user_manager::UserManager::Get()->FindUserAndModify(account_id);
+      CHECK(user);
+      multi_user_sign_in_policy_controller_.StartObserving(user);
     }
   }
   system::UpdateSystemTimezone(profile);
@@ -705,7 +721,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
   // Remove ephemeral regular users (except the owner) when on the login screen.
   if (!IsUserLoggedIn()) {
     ScopedListPrefUpdate prefs_users_update(GetLocalState(),
-                                            user_manager::kRegularUsersPref);
+                                            prefs::kRegularUsersPref);
     // Take snapshot because DeleteUser called in the loop will update it.
     std::vector<raw_ptr<user_manager::User, VectorExperimental>> users = users_;
     for (user_manager::User* user : users) {
@@ -903,7 +919,8 @@ void ChromeUserManagerImpl::RemoveNonCryptohomeDataPostExternalDataRemoval(
                                                 : account_id.GetUserEmail());
   }
 
-  multi_profile_user_controller_.RemoveCachedValues(account_id.GetUserEmail());
+  multi_user_sign_in_policy_controller_.RemoveCachedValues(
+      account_id.GetUserEmail());
 
   ChromeUserManager::RemoveNonCryptohomeData(account_id);
 }
@@ -1237,16 +1254,6 @@ bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
-}
-
-const gfx::ImageSkia& ChromeUserManagerImpl::GetResourceImageSkiaNamed(
-    int id) const {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(id);
-}
-
-std::u16string ChromeUserManagerImpl::GetResourceStringUTF16(
-    int string_id) const {
-  return l10n_util::GetStringUTF16(string_id);
 }
 
 void ChromeUserManagerImpl::ScheduleResolveLocale(

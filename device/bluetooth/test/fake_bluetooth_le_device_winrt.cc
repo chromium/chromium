@@ -276,10 +276,10 @@ void FakeBluetoothLEDeviceWinrt::SimulateDisplayPin(
           DevicePairingKinds_ConfirmPinMatch, display_pin));
 }
 
-absl::optional<BluetoothUUID> FakeBluetoothLEDeviceWinrt::GetTargetGattService()
+std::optional<BluetoothUUID> FakeBluetoothLEDeviceWinrt::GetTargetGattService()
     const {
   if (!service_uuid_)
-    return absl::nullopt;
+    return std::nullopt;
   return BluetoothUUID(*service_uuid_);
 }
 

@@ -313,7 +313,7 @@ void OverviewItemView::OnThemeChanged() {
   UpdateFocusState(is_focused());
 }
 
-BEGIN_METADATA(OverviewItemView, WindowMiniView)
+BEGIN_METADATA(OverviewItemView)
 END_METADATA
 
 }  // namespace ash

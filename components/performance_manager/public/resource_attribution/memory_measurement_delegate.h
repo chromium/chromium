@@ -15,7 +15,7 @@ namespace performance_manager {
 class Graph;
 }
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 class ProcessContext;
 
@@ -52,7 +52,8 @@ class MemoryMeasurementDelegate {
   // measure ProcessNodes in `graph`. The factory object must outlive the graph.
   // Usually it's owned by the test harness. nullptr will cause the factory
   // returned by GetDefaultFactory() to be used.
-  static void SetDelegateFactoryForTesting(Graph* graph, Factory* factory);
+  static void SetDelegateFactoryForTesting(performance_manager::Graph* graph,
+                                           Factory* factory);
 
   // Returns the default factory to use in production.
   static Factory* GetDefaultFactory();
@@ -71,9 +72,9 @@ class MemoryMeasurementDelegate::Factory {
 
   // Creates a MemoryMeasurementDelegate for all ProcessNodes in `graph`.
   virtual std::unique_ptr<MemoryMeasurementDelegate> CreateDelegate(
-      Graph* graph) = 0;
+      performance_manager::Graph* graph) = 0;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_MEMORY_MEASUREMENT_DELEGATE_H_

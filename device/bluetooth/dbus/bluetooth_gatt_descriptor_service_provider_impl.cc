@@ -342,7 +342,7 @@ void BluetoothGattDescriptorServiceProviderImpl::OnExported(
 void BluetoothGattDescriptorServiceProviderImpl::OnReadValue(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+    std::optional<device::BluetoothGattService::GattErrorCode> error_code,
     const std::vector<uint8_t>& value) {
   if (error_code.has_value()) {
     DVLOG(2) << "Failed to get descriptor value. Report error.";

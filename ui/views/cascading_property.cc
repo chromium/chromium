@@ -46,7 +46,7 @@ void SetCascadingColorProviderColor(
 }
 
 SkColor GetCascadingBackgroundColor(View* view) {
-  const absl::optional<SkColor> color =
+  const std::optional<SkColor> color =
       GetCascadingProperty(view, kCascadingBackgroundColor);
   return color.value_or(
       view->GetColorProvider()->GetColor(ui::kColorWindowBackground));
@@ -58,7 +58,7 @@ SkColor GetCascadingAccentColor(View* view) {
   const SkColor background_color = GetCascadingBackgroundColor(view);
   return features::IsChromeRefresh2023()
              ? color_utils::BlendForMinContrast(
-                   default_color, background_color, absl::nullopt,
+                   default_color, background_color, std::nullopt,
                    color_utils::kMinimumVisibleContrastRatio)
                    .color
              : color_utils::PickGoogleColor(

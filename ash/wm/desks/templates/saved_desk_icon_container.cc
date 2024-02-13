@@ -106,10 +106,11 @@ void InsertIconIdentifierToIconInfoFromLaunchList(
         IsBrowserAppId(app_id) &&
         !browser_extra_info.app_type_browser.value_or(false);
     const int activation_index =
-        restore_data.second->activation_index.value_or(0);
+        restore_data.second->window_info.activation_index.value_or(0);
     const int active_tab_index =
         browser_extra_info.active_tab_index.value_or(-1);
-    const std::u16string app_title = restore_data.second->title.value_or(u"");
+    const std::u16string app_title =
+        restore_data.second->window_info.app_title.value_or(u"");
     if (!restore_data.second->browser_extra_info.urls.empty() && is_browser) {
       const auto& urls = browser_extra_info.urls;
       // Make all urls that have the same domain identical.
@@ -357,7 +358,7 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
           /*show_plus=*/!children().empty()));
 }
 
-BEGIN_METADATA(SavedDeskIconContainer, views::BoxLayoutView)
+BEGIN_METADATA(SavedDeskIconContainer)
 END_METADATA
 
 }  // namespace ash

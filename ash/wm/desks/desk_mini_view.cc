@@ -22,7 +22,7 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
-#include "ash/wm/desks/desk_profiles_view.h"
+#include "ash/wm/desks/desk_profiles_button.h"
 #include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -120,13 +120,6 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   desk_name_view->set_controller(this);
   desk_name_view->SetText(desk_->name());
 
-  // Desks created by the new desk button are initialized with an empty name to
-  // encourage user to name the desk, but the `desk_name_view` needs a non-empty
-  // accessible name.
-  auto* desks_controller = DesksController::Get();
-  desk_name_view->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_DESKS_DESK_NAME));
-
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -196,7 +189,9 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   }
 
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
-      desks_controller->GetCombineDesksTargetName(desk_),
+      /*combine_desks_target_name=*/DesksController::Get()
+          ->GetCombineDesksTargetName(desk_),
+      /*close_all_target_name=*/desk_->name(),
       /*combine_desks_callback=*/
       base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
                           DeskCloseType::kCombineDesks),
@@ -404,6 +399,7 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   // Only add desk combine/close options if it's possible to remove a desk.
   DesksController* desk_controller = DesksController::Get();
   if (desk_controller->CanRemoveDesks()) {
+    menu_config.close_all_target_name = desk_->name();
     menu_config.close_all_callback = base::BindRepeating(
         &DeskMiniView::OnRemovingDesk, base::Unretained(this),
         DeskCloseType::kCloseAllWindowsAndWait);
@@ -603,7 +599,7 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
     return;
 
   desk_name_view_->SetText(new_name);
-  desk_preview_->SetAccessibleName(new_name);
+  desk_preview_->UpdateAccessibleName();
 
   DeprecatedLayoutImmediately();
 }
@@ -770,7 +766,9 @@ void DeskMiniView::OnContextMenuClosed() {
 
 void DeskMiniView::OnSetLacrosProfileId(uint64_t lacros_profile_id) {
   if (desk_) {
-    desk_->SetLacrosProfileId(lacros_profile_id);
+    desk_->SetLacrosProfileId(
+        lacros_profile_id,
+        DeskProfilesSelectProfileSource::kDeskActionContextMenu);
   }
 }
 

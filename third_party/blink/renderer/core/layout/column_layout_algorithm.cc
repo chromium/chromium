@@ -1423,12 +1423,15 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
     size = std::min(size, available_outer_space.ClampNegativeToZero());
   }
 
+  const ConstraintSpace& space = GetConstraintSpace();
+  const ComputedStyle& style = Style();
+
   // Table-cell sizing is special. The aspects of specified block-size (and its
   // min/max variants) that are actually honored by table cells is taken care of
   // in the table layout algorithm. A constraint space with fixed block-size
   // will be passed from the table layout algorithm if necessary. Leave it
   // alone.
-  if (GetConstraintSpace().IsTableCell()) {
+  if (space.IsTableCell()) {
     return size;
   }
 
@@ -1446,22 +1449,26 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   LayoutUnit extra = BorderScrollbarPadding().BlockSum();
   size += extra;
 
-  const ComputedStyle& style = Style();
-  LayoutUnit max = ResolveMaxBlockLength(
-      GetConstraintSpace(), style, BorderPadding(), style.LogicalMaxHeight());
+  LayoutUnit max = ResolveMaxBlockLength(space, style, BorderPadding(),
+                                         style.LogicalMaxHeight());
   LayoutUnit extent = kIndefiniteSize;
-  if (!style.LogicalHeight().IsAuto()) {
-    extent =
-        ResolveMainBlockLength(GetConstraintSpace(), style, BorderPadding(),
-                               style.LogicalHeight(), kIndefiniteSize);
-    // A specified block-size will just constrain the maximum length.
-    if (extent != kIndefiniteSize)
-      max = std::min(max, extent);
+
+  Length block_length = style.LogicalHeight();
+  if (block_length.IsAuto()) {
+    block_length = space.IsBlockAutoBehaviorStretch() ? Length::FillAvailable()
+                                                      : Length::FitContent();
+  }
+
+  extent = ResolveMainBlockLength(space, style, BorderPadding(), block_length,
+                                  kIndefiniteSize);
+  // A specified block-size will just constrain the maximum length.
+  if (extent != kIndefiniteSize) {
+    max = std::min(max, extent);
   }
 
   // A specified min-block-size may increase the maximum length.
-  LayoutUnit min = ResolveMinBlockLength(
-      GetConstraintSpace(), style, BorderPadding(), style.LogicalMinHeight());
+  LayoutUnit min = ResolveMinBlockLength(space, style, BorderPadding(),
+                                         style.LogicalMinHeight());
   max = std::max(max, min);
 
   if (max != LayoutUnit::Max()) {

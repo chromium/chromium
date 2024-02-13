@@ -245,34 +245,23 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
 }  // namespace
 
 // static
-std::unique_ptr<ImageProcessor>
-ImageProcessorFactory::CreateWithInputCandidates(
-    const std::vector<PixelLayoutCandidate>& input_candidates,
-    const gfx::Rect& input_visible_rect,
-    const gfx::Size& output_size,
-    size_t num_buffers,
-    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
-    PickFormatCB out_format_picker,
-    ImageProcessor::ErrorCB error_cb,
+std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
     const ImageProcessor::PortConfig& input_config,
-    const ImageProcessor::PortConfig& output_config) {
-  const bool is_input_config_defined = input_config.fourcc != Fourcc();
-  const bool is_output_config_defined = output_config.fourcc != Fourcc();
-  CHECK_EQ(is_input_config_defined, is_output_config_defined)
-      << "|input_config| and |output_config| must both be defined or not";
-  DCHECK_NE(is_input_config_defined, !input_candidates.empty())
-      << "|input_candidates| cannot be defined if |input_config| is defined";
+    const ImageProcessor::PortConfig& output_config,
+    size_t num_buffers,
+    ImageProcessor::ErrorCB error_cb,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
+  CHECK(input_config.fourcc != Fourcc());
+  CHECK(output_config.fourcc != Fourcc());
 
-  if (is_input_config_defined) {
-    std::vector<ImageProcessor::CreateBackendCB> create_funcs = {
+  std::vector<ImageProcessor::CreateBackendCB> create_funcs = {
 #if BUILDFLAG(USE_VAAPI)
       base::BindRepeating(&VaapiImageProcessorBackend::Create),
 #elif BUILDFLAG(USE_V4L2_CODEC)
       base::BindRepeating(&V4L2ImageProcessorBackend::Create,
                           base::MakeRefCounted<V4L2Device>(), num_buffers),
 #endif
-      base::BindRepeating(&LibYUVImageProcessorBackend::Create)
-    };
+      base::BindRepeating(&LibYUVImageProcessorBackend::Create)};
 
 #if defined(ARCH_CPU_ARM_FAMILY)
     if (base::FeatureList::IsEnabled(media::kUseGLForScaling)) {
@@ -291,8 +280,18 @@ ImageProcessorFactory::CreateWithInputCandidates(
       }
     }
     return nullptr;
-  }
+}
 
+// static
+std::unique_ptr<ImageProcessor>
+ImageProcessorFactory::CreateWithInputCandidates(
+    const std::vector<PixelLayoutCandidate>& input_candidates,
+    const gfx::Rect& input_visible_rect,
+    const gfx::Size& output_size,
+    size_t num_buffers,
+    scoped_refptr<base::SequencedTaskRunner> client_task_runner,
+    PickFormatCB out_format_picker,
+    ImageProcessor::ErrorCB error_cb) {
 #if BUILDFLAG(USE_VAAPI)
   auto processor = CreateVaapiImageProcessorWithInputCandidates(
       input_candidates, input_visible_rect, output_size, client_task_runner,
@@ -312,24 +311,22 @@ ImageProcessorFactory::CreateWithInputCandidates(
   }
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
-    auto processor = CreateLibYUVImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, output_size, client_task_runner,
-        out_format_picker, error_cb);
-    if (processor)
-      return processor;
+  auto processor = CreateLibYUVImageProcessorWithInputCandidates(
+      input_candidates, input_visible_rect, output_size, client_task_runner,
+      out_format_picker, error_cb);
+  if (processor) {
+    return processor;
+  }
 
-    processor = CreateV4L2ImageProcessorWithInputCandidates(
-        input_candidates, input_visible_rect, num_buffers, client_task_runner,
-        out_format_picker, error_cb);
-    if (processor)
-      return processor;
+  processor = CreateV4L2ImageProcessorWithInputCandidates(
+      input_candidates, input_visible_rect, num_buffers, client_task_runner,
+      out_format_picker, error_cb);
+  if (processor) {
+    return processor;
+  }
 
 #endif
 
-  // TODO(crbug.com/1004727): Implement LibYUVImageProcessorBackend. When doing
-  // so, we must keep in mind that it might not be desirable to fallback to
-  // libyuv if the hardware image processor fails (e.g., in the case of
-  // protected content).
   return nullptr;
 }
 

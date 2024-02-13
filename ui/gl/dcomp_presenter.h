@@ -22,7 +22,7 @@
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/presenter.h"
-#include "ui/gl/vsync_observer.h"
+#include "ui/gl/vsync_thread_win.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -41,12 +41,9 @@ class DCLayerTree;
 
 // This class owns the DComp layer tree and its presentation. It does not own
 // the root surface.
-class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
+class GL_EXPORT DCompPresenter : public Presenter,
+                                 public VSyncThreadWin::VSyncObserver {
  public:
-  using VSyncCallback =
-      base::RepeatingCallback<void(base::TimeTicks, base::TimeDelta)>;
-  using OverlayHDRInfoUpdateCallback = base::RepeatingClosure;
-
   struct Settings {
     bool disable_nv12_dynamic_textures = false;
     bool disable_vp_auto_hdr = false;
@@ -59,7 +56,6 @@ class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
   };
 
   DCompPresenter(GLDisplayEGL* display,
-                 VSyncCallback vsync_callback,
                  const Settings& settings);
 
   DCompPresenter(const DCompPresenter&) = delete;
@@ -77,8 +73,6 @@ class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
               bool has_alpha) override;
   bool SetDrawRectangle(const gfx::Rect& rect) override;
   bool SupportsViewporter() const override;
-  bool SupportsGpuVSync() const override;
-  void SetGpuVSyncEnabled(bool enabled) override;
   // This schedules an overlay plane to be displayed on the next SwapBuffers
   // or PostSubBuffer call. Overlay planes must be scheduled before every swap
   // to remain in the layer tree. This surface's backbuffer doesn't have to be
@@ -138,23 +132,15 @@ class GL_EXPORT DCompPresenter : public Presenter, public VSyncObserver {
 
   void StartOrStopVSyncThread();
 
-  bool VSyncCallbackEnabled() const;
-
   void HandleVSyncOnMainThread(base::TimeTicks vsync_time,
                                base::TimeDelta interval);
 
   ChildWindowWin child_window_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-
-  const VSyncCallback vsync_callback_;
-
-  const raw_ptr<VSyncThreadWin> vsync_thread_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  bool vsync_thread_started_ = false;
-  bool vsync_callback_enabled_ GUARDED_BY(vsync_callback_enabled_lock_) = false;
-  mutable base::Lock vsync_callback_enabled_lock_;
+  bool observing_vsync_ = false;
 
   // Queue of pending presentation callbacks.
   base::circular_deque<PendingFrame> pending_frames_;

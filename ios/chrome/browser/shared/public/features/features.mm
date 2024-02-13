@@ -75,7 +75,7 @@ constexpr base::FeatureParam<int>
 
 BASE_FEATURE(kDefaultBrowserVideoPromo,
              "DefaultBrowserVideoPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kIOSEditMenuPartialTranslateNoIncognitoParam[] =
     "IOSEditMenuPartialTranslateNoIncognitoParam";
@@ -695,7 +695,7 @@ bool ShouldHideIrrelevantModules() {
 
 int TimeUntilShowingCompactedSetUpList() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      kMagicStack, kSetUpListCompactedTimeThresholdDays, 3);
+      kMagicStack, kSetUpListCompactedTimeThresholdDays, 0);
 }
 
 bool IsExternalActionSchemeHandlingEnabled() {

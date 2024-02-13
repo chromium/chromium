@@ -6,7 +6,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
-#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 namespace {
 

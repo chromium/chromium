@@ -49,19 +49,15 @@ class DeviceSharingBrowserAgentTest : public PlatformTest {
     return [sharing_manager->handoff_manager_ userActivityWebpageURL];
   }
 
-  web::FakeWebState* AppendNewWebState(Browser* browser, const GURL url) {
-    return AppendNewWebState(browser, url, WebStateList::INSERT_ACTIVATE);
-  }
-
   web::FakeWebState* AppendNewWebState(Browser* browser,
                                        const GURL url,
-                                       WebStateList::InsertionFlags flags) {
+                                       bool activate = true) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     fake_web_state->SetCurrentURL(url);
     web::FakeWebState* inserted_web_state = fake_web_state.get();
-    browser->GetWebStateList()->InsertWebState(WebStateList::kInvalidIndex,
-                                               std::move(fake_web_state), flags,
-                                               WebStateOpener());
+    browser->GetWebStateList()->InsertWebState(
+        std::move(fake_web_state),
+        WebStateList::InsertionParams::Automatic().Activate(activate));
     return inserted_web_state;
   }
 
@@ -106,7 +102,7 @@ TEST_F(DeviceSharingBrowserAgentTest, ActivateInBrowser) {
   AppendNewWebState(browser_.get(), url_1_);
   EXPECT_NSEQ(ActiveHandoffUrl(), net::NSURLWithGURL(url_1_));
   // Appending a web state without activating will not change the active URL.
-  AppendNewWebState(browser_.get(), url_2_, WebStateList::INSERT_NO_FLAGS);
+  AppendNewWebState(browser_.get(), url_2_, /*activate=*/false);
   EXPECT_NSEQ(ActiveHandoffUrl(), net::NSURLWithGURL(url_1_));
 }
 
@@ -126,7 +122,7 @@ TEST_F(DeviceSharingBrowserAgentTest, NavigateInBrowser) {
 TEST_F(DeviceSharingBrowserAgentTest, NavigateInactiveInBrowser) {
   DeviceSharingBrowserAgent::CreateForBrowser(browser_.get());
   web::FakeWebState* web_state =
-      AppendNewWebState(browser_.get(), url_1_, WebStateList::INSERT_NO_FLAGS);
+      AppendNewWebState(browser_.get(), url_1_, /*activate=*/false);
   AppendNewWebState(browser_.get(), url_2_);
 
   DeviceSharingBrowserAgent::FromBrowser(browser_.get())

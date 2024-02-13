@@ -93,7 +93,8 @@ class CONTENT_EXPORT NavigationControllerAndroid {
       const base::android::JavaParamRef<jobject>&
           j_additional_navigation_params,
       jlong input_start,
-      jlong navigation_ui_data_ptr);
+      jlong navigation_ui_data_ptr,
+      jboolean is_pdf);
   void ClearSslPreferences(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& /* obj */);

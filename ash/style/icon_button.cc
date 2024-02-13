@@ -176,6 +176,99 @@ std::unique_ptr<views::Background> CreateSolidBackground(
 
 }  // namespace
 
+IconButton::Builder::Builder()
+    : callback_(),
+      type_(IconButton::Type::kSmall),
+      icon_(nullptr),
+      accessible_name_(u""),
+      is_togglable_(false),
+      has_border_(false) {}
+
+IconButton::Builder::~Builder() = default;
+
+std::unique_ptr<IconButton> IconButton::Builder::Build() {
+  // `icon_` must be non-null.
+  CHECK(icon_);
+
+  std::u16string accessible_name;
+  if (absl::holds_alternative<int>(accessible_name_)) {
+    accessible_name =
+        l10n_util::GetStringUTF16(absl::get<int>(accessible_name_));
+  } else {
+    accessible_name = absl::get<std::u16string>(accessible_name_);
+  }
+
+  auto button = std::make_unique<IconButton>(
+      std::move(callback_), type_, icon_, accessible_name,
+      /*is_togglable=*/is_togglable_, /*has_border=*/has_border_);
+  if (view_id_.has_value()) {
+    button->SetID(*view_id_);
+  }
+  if (enabled_.has_value()) {
+    button->SetEnabled(*enabled_);
+  }
+  if (background_image_.has_value()) {
+    button->SetBackgroundImage(*background_image_);
+  }
+  if (background_color_.has_value()) {
+    button->SetBackgroundColor(*background_color_);
+  }
+
+  return button;
+}
+
+IconButton::Builder& IconButton::Builder::SetCallback(
+    PressedCallback callback) {
+  callback_ = std::move(callback);
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetType(Type type) {
+  type_ = type;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetVectorIcon(
+    const gfx::VectorIcon* icon) {
+  CHECK(icon);
+  icon_ = icon;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetAccessibleNameId(
+    int accessible_name_id) {
+  accessible_name_ = accessible_name_id;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetAccessibleName(
+    const std::u16string& accessible_name) {
+  accessible_name_ = accessible_name;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetTogglable(bool is_togglable) {
+  is_togglable_ = is_togglable;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetBorder(bool has_border) {
+  has_border_ = has_border;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetViewId(int view_id) {
+  view_id_ = view_id;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetEnabled(bool enabled) {
+  enabled_ = enabled;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetBackgroundImage(
+    const gfx::ImageSkia& background_image) {
+  background_image_ = background_image;
+  return *this;
+}
+IconButton::Builder& IconButton::Builder::SetBackgroundColor(
+    ui::ColorId background_color) {
+  background_color_ = background_color;
+  return *this;
+}
+
 IconButton::IconButton(PressedCallback callback,
                        IconButton::Type type,
                        const gfx::VectorIcon* icon,
@@ -258,13 +351,13 @@ IconButton::IconButton(PressedCallback callback,
 IconButton::~IconButton() = default;
 
 void IconButton::SetButtonBehavior(DisabledButtonBehavior button_behavior) {
-  if(button_behavior_ == button_behavior) {
+  if (button_behavior_ == button_behavior) {
     return;
   }
 
   button_behavior_ = button_behavior;
   // Change button behavior may impact the toggled state.
-  if(toggled_ && !GetEnabled()) {
+  if (toggled_ && !GetEnabled()) {
     UpdateVectorIcon();
   }
 }
@@ -465,9 +558,11 @@ void IconButton::UpdateBackground() {
   ColorVariant color_variant =
       is_toggled ? background_toggled_color_ : background_color_;
   if (absl::holds_alternative<SkColor>(color_variant)) {
-    SetBackground(CreateSolidBackground(absl::get<SkColor>(color_variant), type_));
+    SetBackground(
+        CreateSolidBackground(absl::get<SkColor>(color_variant), type_));
   } else {
-    SetBackground(CreateThemedBackground(absl::get<ui::ColorId>(color_variant), type_));
+    SetBackground(
+        CreateThemedBackground(absl::get<ui::ColorId>(color_variant), type_));
   }
 }
 
@@ -494,7 +589,8 @@ void IconButton::UpdateBlurredBackgroundShield() {
   if (absl::holds_alternative<SkColor>(color_variant)) {
     blurred_background_shield_->SetColor(absl::get<SkColor>(color_variant));
   } else {
-    blurred_background_shield_->SetColorId(absl::get<ui::ColorId>(color_variant));
+    blurred_background_shield_->SetColorId(
+        absl::get<ui::ColorId>(color_variant));
   }
 }
 
@@ -564,7 +660,7 @@ bool IconButton::IsToggledOn() const {
               DisabledButtonBehavior::kCanDisplayDisabledToggleValue);
 }
 
-BEGIN_METADATA(IconButton, views::ImageButton)
+BEGIN_METADATA(IconButton)
 END_METADATA
 
 }  // namespace ash

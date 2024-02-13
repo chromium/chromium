@@ -14,7 +14,6 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -37,9 +36,6 @@ import java.util.Set;
 
 /** Android implementation of the authenticator.mojom interface. */
 public final class AuthenticatorImpl implements Authenticator {
-    private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
-    public static final int GMSCORE_MIN_VERSION = 16890000;
-    public static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
     private final Context mContext;
     private final FidoIntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
@@ -59,9 +55,6 @@ public final class AuthenticatorImpl implements Authenticator {
 
     /** The payment information to be added to the "clientDataJson". */
     private PaymentOptions mPayment;
-
-    /** Caches the GMS Core package version. */
-    private int mGmsCorePackageVersion;
 
     private MakeCredential_Response mMakeCredentialCallback;
     private GetAssertion_Response mGetAssertionCallback;
@@ -99,9 +92,9 @@ public final class AuthenticatorImpl implements Authenticator {
             FidoIntentSender intentSender,
             @Nullable CreateConfirmationUiDelegate createConfirmationUiDelegate,
             RenderFrameHost renderFrameHost,
-            Origin topOrigin,
-            @WebauthnMode int mode) {
+            Origin topOrigin) {
         assert renderFrameHost != null;
+        assert WebauthnModeProvider.getInstance().getWebauthnMode() != WebauthnMode.NONE;
 
         mContext = context;
         mIntentSender = intentSender;
@@ -109,9 +102,6 @@ public final class AuthenticatorImpl implements Authenticator {
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
         mTopOrigin = topOrigin;
         mCreateConfirmationUiDelegate = createConfirmationUiDelegate;
-
-        mGmsCorePackageVersion = PackageUtils.getPackageVersion(GMSCORE_PACKAGE_NAME);
-        WebauthnModeProvider.getInstance().setWebauthnMode(mode);
     }
 
     public static void overrideFido2CredentialRequestForTesting(Fido2CredentialRequest request) {
@@ -154,7 +144,8 @@ public final class AuthenticatorImpl implements Authenticator {
 
         mMakeCredentialCallback = callback;
         mIsOperationPending = true;
-        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION) {
+        if (!GmsCoreUtils.isWebauthnSupported()
+                || (!isChrome() && !GmsCoreUtils.isResultReceiverSupported())) {
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -194,7 +185,8 @@ public final class AuthenticatorImpl implements Authenticator {
         mGetAssertionCallback = callback;
         mIsOperationPending = true;
 
-        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION) {
+        if (!GmsCoreUtils.isWebauthnSupported()
+                || (!isChrome() && !GmsCoreUtils.isResultReceiverSupported())) {
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -222,7 +214,7 @@ public final class AuthenticatorImpl implements Authenticator {
                     callback.call(isUvpaa);
                 };
 
-        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION) {
+        if (!GmsCoreUtils.isWebauthnSupported()) {
             decoratedCallback.call(false);
             return;
         }
@@ -233,15 +225,6 @@ public final class AuthenticatorImpl implements Authenticator {
                         mContext,
                         isUvpaa ->
                                 onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
-    }
-
-    /**
-     * Returns whether or not the getMatchingCredentialIds API is supported. As the API is
-     * flag-guarded inside of GMSCore, we can only provide a best-effort guess based on the GMSCore
-     * version.
-     */
-    public boolean isGetMatchingCredentialIdsSupported() {
-        return mGmsCorePackageVersion >= GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS;
     }
 
     /**
@@ -258,7 +241,7 @@ public final class AuthenticatorImpl implements Authenticator {
             byte[][] credentialIds,
             boolean requireThirdPartyPayment,
             GetMatchingCredentialIdsResponseCallback callback) {
-        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS) {
+        if (!GmsCoreUtils.isGetMatchingCredentialIdsSupported()) {
             callback.onResponse(new ArrayList<byte[]>());
             return;
         }
@@ -276,10 +259,9 @@ public final class AuthenticatorImpl implements Authenticator {
     @Override
     public void isConditionalMediationAvailable(
             final IsConditionalMediationAvailable_Response callback) {
-        if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION
+        if (!GmsCoreUtils.isWebauthnSupported()
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-                || WebauthnModeProvider.getInstance().getWebauthnMode()
-                        != WebauthnModeProvider.WebauthnMode.CHROME) {
+                || !isChrome()) {
             callback.call(false);
             return;
         }
@@ -369,6 +351,11 @@ public final class AuthenticatorImpl implements Authenticator {
     @Override
     public void onConnectionError(MojoException e) {
         close();
+    }
+
+    static boolean isChrome() {
+        return WebauthnModeProvider.getInstance().getWebauthnMode()
+                == WebauthnModeProvider.WebauthnMode.CHROME;
     }
 
     /** Implements {@link IntentSender} using a {@link WindowAndroid}. */

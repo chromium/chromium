@@ -19,6 +19,7 @@ TestFormDataImporter::TestFormDataImporter(
     std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager)
     : FormDataImporter(client,
                        personal_data_manager,
+                       /*history_service=*/nullptr,
                        app_locale) {
   test_api(*this).set_credit_card_save_manager(
       std::move(credit_card_save_manager));

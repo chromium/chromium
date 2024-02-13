@@ -61,7 +61,7 @@ UNNotificationPermissionStatus ConvertAuthorizationStatus(
 }  // namespace
 
 void LogUNNotificationRequestPermissionResult(
-    UNNotificationRequestPermissionResult result) {
+    mojom::RequestPermissionResult result) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"Notifications.Permissions.UNNotification.",

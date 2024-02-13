@@ -10,11 +10,11 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ClientTraceReport} from './trace_report.mojom-webui.js';
+import type {ClientTraceReport} from './trace_report.mojom-webui.js';
 import {TraceReportBrowserProxy} from './trace_report_browser_proxy.js';
 import {getTemplate} from './trace_report_list.html.js';
 
@@ -67,11 +67,11 @@ export class TraceReportListElement extends PolymerElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.initializeList();
+    this.initializeList(true);
   }
 
-  private async initializeList(): Promise<void> {
-    this.isLoading = true;
+  private async initializeList(hasLoading: boolean = false): Promise<void> {
+    this.isLoading = hasLoading;
     const {reports} = await this.traceReportProxy_.handler.getAllTraceReports();
     if (reports) {
       this.traces = reports;
@@ -120,7 +120,6 @@ export class TraceReportListElement extends PolymerElement {
   private hasTraces_(traces: ClientTraceReport[]): boolean {
     return traces.length > 0;
   }
-
 
   private async onDeleteAllTracesClick_(): Promise<void> {
     const {success} = await this.traceReportProxy_.handler.deleteAllTraces();

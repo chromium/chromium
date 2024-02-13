@@ -113,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaApi"
-    enum="FullscreenLockState" expires_after="2024-06-07">
+    enum="FullscreenLockState" expires_after="2024-08-11">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaBrowserUi"
-    enum="FullscreenLockState" expires_after="2024-06-07">
+    enum="FullscreenLockState" expires_after="2024-08-11">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -277,13 +277,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Methods that encountered leveldb errors while trying to write to disk.
   </summary>
-</histogram>
-
-<histogram name="WebCore.IndexedDB.Context.ForceCloseReason"
-    enum="IDBContextForcedCloseReason" expires_after="2024-07-28">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>The reason that a forced-close of a backing store occurred.</summary>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.FoundBlobFileForValue" enum="Boolean"

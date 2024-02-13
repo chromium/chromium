@@ -38,3 +38,6 @@ crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_color
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]
+
+# "reference test didn't generate pixel results"
+crbug.com/324436420 wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba16float_premultiplied_draw.https.html [ Failure ]

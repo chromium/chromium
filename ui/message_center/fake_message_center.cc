@@ -65,7 +65,7 @@ Notification* FakeMessageCenter::FindPopupNotificationById(
 Notification* FakeMessageCenter::FindVisibleNotificationById(
     const std::string& id) {
   const auto& notifications = GetVisibleNotifications();
-  for (auto* notification : notifications) {
+  for (Notification* notification : notifications) {
     if (notification->id() == id) {
       return notification;
     }
@@ -146,7 +146,7 @@ void FakeMessageCenter::RemoveNotificationsForNotifierId(
 void FakeMessageCenter::RemoveAllNotifications(bool by_user, RemoveType type) {
   // Only removing all is supported.
   DCHECK_EQ(type, RemoveType::ALL);
-  for (const auto* notification : notifications_.GetNotifications()) {
+  for (const Notification* notification : notifications_.GetNotifications()) {
     // This is safe to remove since GetNotifications() returned a copy.
     RemoveNotification(notification->id(), by_user);
   }

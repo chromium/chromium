@@ -103,8 +103,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         TabModelUtils.getTabIndexById(
                                         mTabModelSelector.getModel(currentTab.isIncognito()),
                                         currentTab.getId())
-                                + 1,
-                        globalState.getDragSourceInstance());
+                                + 1);
                 DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_CONTENT);
                 return true;
         }

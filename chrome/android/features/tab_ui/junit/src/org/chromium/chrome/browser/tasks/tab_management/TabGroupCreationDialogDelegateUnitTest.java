@@ -88,7 +88,7 @@ public class TabGroupCreationDialogDelegateUnitTest {
 
     @Test
     public void testCreationDialogDelegate_showDialog() {
-        mTabGroupCreationDialogDelegate.showDialog(TAB_COUNT);
+        mTabGroupCreationDialogDelegate.showDialog(TAB_COUNT, false);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();

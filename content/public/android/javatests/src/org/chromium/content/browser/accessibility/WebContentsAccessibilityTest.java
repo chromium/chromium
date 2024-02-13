@@ -102,10 +102,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -125,7 +125,7 @@ import java.util.concurrent.ExecutionException;
  * the interface.
  */
 @RunWith(ContentJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Flaky tests")
+@Batch(Batch.PER_CLASS)
 @SuppressLint("VisibleForTests")
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class WebContentsAccessibilityTest {

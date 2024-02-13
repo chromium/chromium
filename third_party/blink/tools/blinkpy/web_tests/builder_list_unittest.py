@@ -297,6 +297,22 @@ class BuilderListTest(unittest.TestCase):
                          builders.version_specifier_for_port_name('port-b'))
         self.assertIsNone(builders.version_specifier_for_port_name('port-x'))
 
+    def test_version_specifier_for_chrome_port_name(self):
+        builders = BuilderList({
+            'linux-blink-rel': {
+                'port_name': 'linux',
+                'specifiers': ['Linux', 'Release'],
+                'steps': {
+                    'webdriver_wpt_tests (with patch)': {
+                        'product': 'chrome',
+                    },
+                },
+                'is_try_builder': True,
+            }
+        })
+        self.assertEqual('Chrome',
+                         builders.version_specifier_for_port_name('chrome'))
+
     def test_product_for_build_step(self):
         builders = self.sample_builder_list()
         self.assertEqual(

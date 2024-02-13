@@ -109,12 +109,12 @@ class HardwareDisplayPlaneManager {
     display::GammaAdjustment gamma_adjustment;
 
     // Cached blobs for the properties to commit in CommitCrtcProperties.
-    // * If a property is `absl::nullopt`, then it should be left unchanged.
+    // * If a property is `std::nullopt`, then it should be left unchanged.
     // * If a property is `nullptr` then it should be set to 0.
     // * If a property is a blob, then it should be set to that blob.
-    absl::optional<ScopedDrmPropertyBlob> pending_ctm_blob;
-    absl::optional<ScopedDrmPropertyBlob> pending_gamma_lut_blob;
-    absl::optional<ScopedDrmPropertyBlob> pending_degamma_lut_blob;
+    std::optional<ScopedDrmPropertyBlob> pending_ctm_blob;
+    std::optional<ScopedDrmPropertyBlob> pending_gamma_lut_blob;
+    std::optional<ScopedDrmPropertyBlob> pending_degamma_lut_blob;
   };
 
   explicit HardwareDisplayPlaneManager(DrmDevice* drm);
@@ -145,10 +145,6 @@ class HardwareDisplayPlaneManager {
   void SetColorTemperatureAdjustment(
       uint32_t crtc_id,
       const display::ColorTemperatureAdjustment& cta);
-
-  // Sets the color calibration information for a given CRTC.
-  void SetColorCalibration(uint32_t crtc_id,
-                           const display::ColorCalibration& calibration);
 
   // Sets the gamma adjustment for a given CRTC.
   void SetGammaAdjustment(uint32_t crtc_id,
@@ -261,8 +257,8 @@ class HardwareDisplayPlaneManager {
 
   // Convert |crtc/connector_id| into an index, returning empty if the ID
   // couldn't be found.
-  absl::optional<int> LookupCrtcIndex(uint32_t crtc_id) const;
-  absl::optional<int> LookupConnectorIndex(uint32_t connector_id) const;
+  std::optional<int> LookupCrtcIndex(uint32_t crtc_id) const;
+  std::optional<int> LookupConnectorIndex(uint32_t connector_id) const;
 
   // Get Mutable CRTC State.
   CrtcState& CrtcStateForCrtcId(uint32_t crtc_id);

@@ -1128,7 +1128,7 @@
 
       <!-- Magic stack strings -->
       <message name="IDS_HOME_MODULES_CONTEXT_MENU_HIDE_MODULE" desc="The context menu item to hide a module.">
-          Hide "<ph name="TITLE_OF_MODULE">%1$s<ex>Module Title</ex></ph>"
+          Hide <ph name="TITLE_OF_MODULE">%1$s<ex>Module Title</ex></ph>
       </message>
       <message name="IDS_HOME_MODULES_CONTEXT_MENU_CUSTOMIZE" desc="The context menu item to show the customize homepage settings.">
         Customize

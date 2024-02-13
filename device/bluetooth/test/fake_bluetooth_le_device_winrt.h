@@ -136,7 +136,7 @@ class FakeBluetoothLEDeviceWinrt
   void SimulatePairingPinCode(std::string pin_code);
   void SimulateConfirmOnly();
   void SimulateDisplayPin(std::string_view display_pin);
-  absl::optional<BluetoothUUID> GetTargetGattService() const;
+  std::optional<BluetoothUUID> GetTargetGattService() const;
   void SimulateGattConnection();
   void SimulateGattConnectionError(
       BluetoothDevice::ConnectErrorCode error_code);
@@ -159,7 +159,7 @@ class FakeBluetoothLEDeviceWinrt
  private:
   raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
   uint32_t reference_count_ = 1u;
-  absl::optional<std::string> name_;
+  std::optional<std::string> name_;
 
   ABI::Windows::Devices::Bluetooth::BluetoothConnectionStatus status_ =
       ABI::Windows::Devices::Bluetooth::BluetoothConnectionStatus_Disconnected;
@@ -183,7 +183,7 @@ class FakeBluetoothLEDeviceWinrt
               IGattDeviceServicesResult>)>
       gatt_services_callback_;
   // Contains the last GUID passed to GetGattServicesForUuidAsync.
-  absl::optional<GUID> service_uuid_;
+  std::optional<GUID> service_uuid_;
 
   std::vector<Microsoft::WRL::ComPtr<FakeGattDeviceServiceWinrt>>
       fake_services_;

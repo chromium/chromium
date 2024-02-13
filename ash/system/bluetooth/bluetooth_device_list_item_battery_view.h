@@ -24,9 +24,9 @@ namespace ash {
 // Bluetooth device battery for a device in the detailed Bluetooth page within
 // the quick settings.
 class ASH_EXPORT BluetoothDeviceListItemBatteryView : public views::View {
- public:
-  METADATA_HEADER(BluetoothDeviceListItemBatteryView);
+  METADATA_HEADER(BluetoothDeviceListItemBatteryView, views::View)
 
+ public:
   BluetoothDeviceListItemBatteryView();
   BluetoothDeviceListItemBatteryView(
       const BluetoothDeviceListItemBatteryView&) = delete;

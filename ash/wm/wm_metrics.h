@@ -9,7 +9,7 @@ namespace ash {
 
 // Used to record different ways to snap a window. Note this should be kept in
 // sync with `WindowSnapActionSource` enum in
-// tools/metrics/histograms/enums.xml.
+// tools/metrics/histograms/metadata/ash/enums.xml.
 enum class WindowSnapActionSource {
   // Default value for any snap action actions that's not covered below.
   kNotSpecified,
@@ -29,7 +29,8 @@ enum class WindowSnapActionSource {
   kSnapByDeskOrSessionChange,
   kSnapGroupWindowUpdate,
   kTest,
-  kMaxValue = kTest,
+  kLacrosSnapButtonOrWindowLayoutMenu,
+  kMaxValue = kLacrosSnapButtonOrWindowLayoutMenu,
 };
 
 // Used to save histogram metrics about how the user initiates window snapping.

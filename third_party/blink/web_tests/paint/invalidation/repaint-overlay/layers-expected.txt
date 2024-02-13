@@ -29,6 +29,13 @@
       "transform": 3
     },
     {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrollable'",
+      "position": [1, 1],
+      "bounds": [795, 1491],
+      "drawsContent": false,
+      "transform": 4
+    },
+    {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
       "bounds": [200, 200],
       "contentsOpaque": true,

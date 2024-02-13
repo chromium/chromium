@@ -16,6 +16,7 @@
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
@@ -28,6 +29,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_metrics.h"
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_help_bubble_controller.h"
@@ -37,6 +39,7 @@
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_drag_drop_delegate.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/files/file_path.h"
@@ -140,6 +143,48 @@ WallpaperView* GetWallpaperViewNearestPoint(
       ->wallpaper_view();
 }
 
+// TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
+// into the production metrics code path when cleaning up the experiment.
+void RecordPinInteraction(const std::vector<const HoldingSpaceItem*>& items,
+                          holding_space_metrics::EventSource event_source) {
+  using holding_space_metrics::EventSource;
+  using holding_space_wallpaper_nudge_metrics::Interaction;
+
+  std::optional<Interaction> interaction;
+
+  switch (event_source) {
+    case EventSource::kHoldingSpaceBubble:
+      NOTREACHED_NORETURN();
+    case EventSource::kHoldingSpaceItem:
+      interaction = Interaction::kPinnedFileFromPinButton;
+      break;
+    case EventSource::kHoldingSpaceItemContextMenu:
+      interaction = Interaction::kPinnedFileFromContextMenu;
+      break;
+    case EventSource::kHoldingSpaceTray:
+      interaction = Interaction::kPinnedFileFromHoldingSpaceDrop;
+      break;
+    case EventSource::kFilesApp:
+      interaction = Interaction::kPinnedFileFromFilesApp;
+      break;
+    case EventSource::kTest:
+      CHECK_IS_TEST();
+      break;
+    case EventSource::kWallpaper:
+      interaction = Interaction::kPinnedFileFromWallpaperDrop;
+      break;
+  }
+
+  for (const HoldingSpaceItem* _ : items) {
+    holding_space_wallpaper_nudge_metrics::RecordInteraction(
+        Interaction::kPinnedFileFromAnySource);
+    if (interaction.has_value()) {
+      holding_space_wallpaper_nudge_metrics::RecordInteraction(
+          interaction.value());
+    }
+  }
+}
+
 // Highlight -------------------------------------------------------------------
 
 // A class which adds a highlight layer to the region above the associated
@@ -211,6 +256,7 @@ class Highlight : public ui::LayerOwner, public views::ViewObserver {
 // While the observed drag-and-drop sequence is in progress.
 class DragDropDelegate : public WallpaperDragDropDelegate,
                          public HoldingSpaceControllerObserver,
+                         public holding_space_metrics::Observer,
                          public SessionObserver {
  public:
   explicit DragDropDelegate(
@@ -510,12 +556,62 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
     }
   }
 
+  // holding_space_metrics::Observer:
+  // TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
+  // into the production metrics code path when cleaning up the experiment.
+  void OnHoldingSpaceItemActionRecorded(
+      const std::vector<const HoldingSpaceItem*>& items,
+      holding_space_metrics::ItemAction action,
+      holding_space_metrics::EventSource event_source) override {
+    using holding_space_metrics::ItemAction;
+
+    switch (action) {
+      case ItemAction::kPin:
+        RecordPinInteraction(items, event_source);
+        break;
+      case ItemAction::kCancel:
+      case ItemAction::kCopy:
+      case ItemAction::kDrag:
+      case ItemAction::kLaunch:
+      case ItemAction::kPause:
+      case ItemAction::kRemove:
+      case ItemAction::kResume:
+      case ItemAction::kShowInFolder:
+      case ItemAction::kUnpin:
+        break;
+    }
+  }
+
+  // TODO(http://b/311411775): Relocate recording wallpaper nudge histograms
+  // into the production metrics code path when cleaning up the experiment.
+  void OnHoldingSpacePodActionRecorded(
+      holding_space_metrics::PodAction action) override {
+    using holding_space_metrics::PodAction;
+    using holding_space_wallpaper_nudge_metrics::Interaction;
+
+    switch (action) {
+      case PodAction::kDragAndDropToPin:
+        RecordInteraction(Interaction::kDroppedFileOnHoldingSpace);
+        break;
+      case PodAction::kShowBubble:
+        RecordInteraction(Interaction::kOpenedHoldingSpace);
+        break;
+      case PodAction::kCloseBubble:
+      case PodAction::kHidePod:
+      case PodAction::kHidePreviews:
+      case PodAction::kShowContextMenu:
+      case PodAction::kShowPod:
+      case PodAction::kShowPreviews:
+        break;
+    }
+  }
+
   // SessionObserver:
   void OnChromeTerminating() override { session_observer_.Reset(); }
 
   void OnSessionStateChanged(session_manager::SessionState state) override {
-    // This override is only meant to happen right after session start.
-    if (state != session_manager::SessionState::ACTIVE) {
+    // Eligibility is only determined on primary account activation.
+    if (!user_education_util::IsPrimaryAccountActive()) {
       return;
     }
 
@@ -529,53 +625,67 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
 
   // Calculates and persists the user's eligibility for the nudge based on
   // account type and new-ness. This is a simple pref fetch once the eligibility
-  // is persisted. Returns true if the user is eligible.
+  // is persisted. Returns whether the user is eligible.
   bool DetermineEligibility() {
+    using IneligibleReason =
+        holding_space_wallpaper_nudge_metrics::IneligibleReason;
+
     const auto* const session_controller = Shell::Get()->session_controller();
-    PrefService* const prefs =
-        session_controller->GetLastActiveUserPrefService();
+    auto* const prefs = session_controller->GetLastActiveUserPrefService();
 
-    auto eligibility =
-        holding_space_wallpaper_nudge_prefs::GetUserEligibility(prefs);
+    // Return early if we've already persisted the user's eligibility.
+    if (std::optional<bool> eligibility =
+            holding_space_wallpaper_nudge_prefs::GetUserEligibility(prefs)) {
+      return eligibility.value();
+    }
 
-    // If there isn't a cached eligibility value for the user, determine and
-    // cache it now.
-    if (eligibility == std::nullopt) {
-      eligibility = true;
+    // Otherwise, determine the user's eligibility and persist it now.
+    std::optional<IneligibleReason> ineligible_reason;
 
-      // The nudge is supported for regular users only.
-      if (const auto user_type = session_controller->GetUserType();
-          user_type != user_manager::UserType::kRegular) {
-        eligibility = false;
-      }
+    // Only regular users are eligible.
+    if (const auto user_type = session_controller->GetUserType();
+        user_type != user_manager::UserType::kRegular) {
+      ineligible_reason = IneligibleReason::kUserTypeNotRegular;
+    }
 
-      // The nudge is not supported for managed accounts.
-      if (session_controller->IsActiveAccountManaged()) {
-        eligibility = false;
-      }
+    // Only un-managed users are eligible.
+    if (!ineligible_reason && session_controller->IsActiveAccountManaged()) {
+      ineligible_reason = IneligibleReason::kManagedAccount;
+    }
 
-      // For sanity, confirm that the user is also considered "new" locally in
-      // case the proxy check proves to be erroneous.
-      if (!session_controller->IsUserFirstLogin()) {
-        eligibility = false;
-      }
+    // Only new users are eligible. Note that this check of local newness is
+    // necessary in case the cross-device check below proves to be erroneous.
+    if (!ineligible_reason && !session_controller->IsUserFirstLogin()) {
+      ineligible_reason = IneligibleReason::kUserNotNewLocally;
+    }
 
+    // Check cross-device newness.
+    if (!ineligible_reason.has_value()) {
       const std::optional<bool>& is_new_user =
           UserEducationController::Get()->IsNewUser(
               user_education_private_api_key_);
 
-      // If we were unable to fetch cross device user new-ness, assume the user
-      // is not new.
-      if (!is_new_user.value_or(false)) {
-        eligibility = false;
+      // Only new users are eligible.
+      if (is_new_user == false) {
+        ineligible_reason = IneligibleReason::kUserNotNewCrossDevice;
       }
 
-      // Persist eligibility.
-      holding_space_wallpaper_nudge_prefs::SetUserEligibility(
-          prefs, eligibility.value());
+      // If we aren't sure if the user is new, err on the side of being overly
+      // conservative and treat the user as ineligible.
+      if (!is_new_user.has_value()) {
+        ineligible_reason = IneligibleReason::kUserNewnessNotAvailable;
+      }
     }
 
-    return eligibility.value();
+    // Persist the user's eligibility.
+    if (holding_space_wallpaper_nudge_prefs::SetUserEligibility(
+            prefs, /*eligible=*/!ineligible_reason.has_value())) {
+      holding_space_wallpaper_nudge_metrics::RecordUserEligibility(
+          ineligible_reason);
+    }
+
+    // Return the user's eligibility.
+    return !ineligible_reason.has_value();
   }
 
   // Indicates whether the nudge should be shown based on when it was last
@@ -670,6 +780,11 @@ class DragDropDelegate : public WallpaperDragDropDelegate,
   base::ScopedObservation<HoldingSpaceController,
                           HoldingSpaceControllerObserver>
       holding_space_controller_observer_{this};
+
+  // Observes holding space metrics events in order to record downstream
+  // wallpaper nudge experiment metrics.
+  holding_space_metrics::ScopedObservation holding_space_metrics_observer_{
+      this};
 
   // Observes session changes so that user eligibility can be saved after login.
   base::ScopedObservation<SessionController, SessionObserver> session_observer_{

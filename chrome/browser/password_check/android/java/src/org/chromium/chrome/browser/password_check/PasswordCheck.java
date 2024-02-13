@@ -114,4 +114,7 @@ public interface PasswordCheck extends PasswordCheckComponentUi.Delegate {
 
     /** Stops the password check, if one is running. Otherwise, does nothing. */
     void stopCheck();
+
+    /** Checks if user is signed into Chrome account to perform the password check. */
+    boolean hasAccountForRequest();
 }

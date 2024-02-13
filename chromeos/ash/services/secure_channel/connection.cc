@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/services/secure_channel/connection_observer.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/wire_message.h"
 
@@ -71,6 +72,16 @@ void Connection::RemoveObserver(ConnectionObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void Connection::AddNearbyConnectionObserver(
+    NearbyConnectionObserver* nearby_connection_observer) {
+  nearby_connection_state_observers_.AddObserver(nearby_connection_observer);
+}
+
+void Connection::RemoveNearbyConnectionObserver(
+    NearbyConnectionObserver* nearby_connection_observer) {
+  nearby_connection_state_observers_.RemoveObserver(nearby_connection_observer);
+}
+
 void Connection::GetConnectionRssi(
     base::OnceCallback<void(std::optional<int32_t>)> callback) {
   std::move(callback).Run(std::nullopt);
@@ -86,6 +97,14 @@ void Connection::SetStatus(Status status) {
   status_ = status;
   for (auto& observer : observers_)
     observer.OnConnectionStatusChanged(this, old_status, status_);
+}
+
+void Connection::SetNearbyConnectionSubStatus(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  for (auto& observer : nearby_connection_state_observers_) {
+    observer.OnNearbyConnectionStateChagned(step, result);
+  }
 }
 
 void Connection::OnDidSendMessage(const WireMessage& message, bool success) {

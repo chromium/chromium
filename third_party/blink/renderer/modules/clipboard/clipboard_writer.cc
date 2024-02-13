@@ -286,7 +286,7 @@ class ClipboardCustomFormatWriter final : public ClipboardWriter {
 ClipboardWriter* ClipboardWriter::Create(SystemClipboard* system_clipboard,
                                          const String& mime_type,
                                          ClipboardPromise* promise) {
-  DCHECK(ClipboardWriter::IsValidType(mime_type));
+  CHECK(ClipboardItem::supports(mime_type));
   String web_custom_format = Clipboard::ParseWebCustomFormat(mime_type);
   if (!web_custom_format.empty()) {
     // We write the custom MIME type without the "web " prefix into the web
@@ -329,20 +329,6 @@ ClipboardWriter::ClipboardWriter(SystemClipboard* system_clipboard,
       system_clipboard_(system_clipboard) {}
 
 ClipboardWriter::~ClipboardWriter() = default;
-
-// static
-bool ClipboardWriter::IsValidType(const String& type) {
-  if (!Clipboard::ParseWebCustomFormat(type).empty()) {
-    return type.length() < mojom::blink::ClipboardHost::kMaxFormatSize;
-  }
-  if (type == kMimeTypeImageSvg) {
-    return RuntimeEnabledFeatures::ClipboardSvgEnabled();
-  }
-
-  // TODO(https://crbug.com/1029857): Add support for other types.
-  return type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
-         type == kMimeTypeTextHTML;
-}
 
 void ClipboardWriter::WriteToSystem(Blob* blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -2263,12 +2263,25 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
 
   if (policy.has_deviceloginscreentouchvirtualkeyboardenabled()) {
-    if (const em::BooleanPolicyProto &
-            container(policy.deviceloginscreentouchvirtualkeyboardenabled());
-        container.has_value()) {
+    const em::BooleanPolicyProto& container(
+        policy.deviceloginscreentouchvirtualkeyboardenabled());
+    if (container.has_value()) {
       policies->Set(key::kTouchVirtualKeyboardEnabled, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.value()), nullptr);
+    }
+  }
+}
+
+// TODO(b/324221325): Move other Kiosk-related policies to this function.
+void DecodeKioskPolicies(const em::ChromeDeviceSettingsProto& policy,
+                         PolicyMap* policies) {
+  if (policy.has_deviceweeklyscheduledsuspend()) {
+    const em::StringPolicyProto& container(
+        policy.deviceweeklyscheduledsuspend());
+    if (container.has_value()) {
+      SetJsonDevicePolicy(key::kDeviceWeeklyScheduledSuspend, container.value(),
+                          policies);
     }
   }
 }
@@ -2328,6 +2341,7 @@ void DecodeDevicePolicy(
   DecodeAutoUpdatePolicies(policy, policies);
   DecodeAccessibilityPolicies(policy, policies);
   DecodeExternalDataPolicies(policy, external_data_manager, policies);
+  DecodeKioskPolicies(policy, policies);
   DecodeGenericPolicies(policy, policies);
 }
 

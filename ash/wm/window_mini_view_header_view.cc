@@ -129,7 +129,7 @@ gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
                            kWindowMiniViewHeaderCornerRadius, 0, 0));
 }
 
-BEGIN_METADATA(WindowMiniViewHeaderView, views::View)
+BEGIN_METADATA(WindowMiniViewHeaderView)
 END_METADATA
 
 }  // namespace ash

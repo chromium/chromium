@@ -78,6 +78,12 @@ double CSSMathFunctionValue::ComputeDegrees() const {
   return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
 }
 
+double CSSMathFunctionValue::ComputeDegrees(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK_EQ(kCalcAngle, expression_->Category());
+  return ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
+}
+
 double CSSMathFunctionValue::ComputeLengthPx(
     const CSSLengthResolver& length_resolver) const {
   // |CSSToLengthConversionData| only resolves relative length units, but not
@@ -103,6 +109,16 @@ double CSSMathFunctionValue::ComputeNumber(
   // percentages.
   DCHECK_EQ(kCalcNumber, expression_->Category());
   DCHECK(!expression_->HasPercentage());
+  double value =
+      ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
+  return std::isnan(value) ? 0.0 : value;
+}
+
+double CSSMathFunctionValue::ComputePercentage(
+    const CSSLengthResolver& length_resolver) const {
+  // |CSSToLengthConversionData| only resolves relative length units, but not
+  // percentages.
+  DCHECK_EQ(kCalcPercent, expression_->Category());
   double value =
       ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
   return std::isnan(value) ? 0.0 : value;

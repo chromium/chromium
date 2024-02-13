@@ -205,6 +205,7 @@ void MountPerformer::OnCreatePersistentUser(
   CHECK(reply->has_auth_properties());
   AuthPerformer::FillAuthenticationData(request_start, reply->auth_properties(),
                                         *context);
+  context->SetMountState(UserContext::MountState::kNewPersistent);
   std::move(callback).Run(std::move(context), std::nullopt);
 }
 
@@ -222,6 +223,7 @@ void MountPerformer::OnPrepareGuestVault(
     return;
   }
   CHECK(reply.has_value());
+  context->SetMountState(UserContext::MountState::kEphemeral);
   context->SetUserIDHash(reply->sanitized_username());
   std::move(callback).Run(std::move(context), std::nullopt);
 }
@@ -244,6 +246,7 @@ void MountPerformer::OnPrepareEphemeralVault(
   CHECK(reply->has_auth_properties());
   AuthPerformer::FillAuthenticationData(request_start, reply->auth_properties(),
                                         *context);
+  context->SetMountState(UserContext::MountState::kEphemeral);
   context->SetUserIDHash(reply->sanitized_username());
   std::move(callback).Run(std::move(context), std::nullopt);
 }
@@ -279,6 +282,9 @@ void MountPerformer::OnPreparePersistentVault(
     return;
   }
   CHECK(reply.has_value());
+  if (!context->GetMountState()) {
+    context->SetMountState(UserContext::MountState::kExistingPersistent);
+  }
   context->SetUserIDHash(reply->sanitized_username());
   std::move(callback).Run(std::move(context), std::nullopt);
 }
@@ -297,6 +303,8 @@ void MountPerformer::OnPrepareVaultForMigration(
     return;
   }
   CHECK(reply.has_value());
+  CHECK(!context->GetMountState());
+  context->SetMountState(UserContext::MountState::kExistingPersistent);
   context->SetUserIDHash(reply->sanitized_username());
   std::move(callback).Run(std::move(context), std::nullopt);
 }

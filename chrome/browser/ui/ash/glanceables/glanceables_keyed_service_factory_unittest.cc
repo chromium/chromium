@@ -9,52 +9,26 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
 class GlanceablesKeyedServiceFactoryTest : public BrowserWithTestWindowTest {
  public:
-  GlanceablesKeyedServiceFactoryTest()
-      : scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {}
-
-  void LogIn(const std::string& email) override {
-    const auto account_id = AccountId::FromUserEmail(email);
-    fake_chrome_user_manager()->AddUser(account_id);
-    fake_chrome_user_manager()->LoginUser(account_id);
-    session_controller_client()->AddUserSession(email);
-    session_controller_client()->SwitchActiveUser(account_id);
-  }
-
   TestingProfile* CreateProfile(const std::string& profile_name) override {
-    return profile_manager()->CreateTestingProfile(profile_name,
-                                                   /*is_main_profile=*/true);
-  }
-
-  // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-  FakeChromeUserManager* fake_chrome_user_manager() {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
-  TestSessionControllerClient* session_controller_client() {
-    return ash_test_helper()->test_session_controller_client();
-  }
-
-  TestingProfileManager* profile_manager() {
-    return BrowserWithTestWindowTest::profile_manager();
+    auto* profile =
+        profile_manager()->CreateTestingProfile(profile_name,
+                                                /*is_main_profile=*/true);
+    OnUserProfileCreated(profile_name, profile);
+    return profile;
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
-  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(GlanceablesKeyedServiceFactoryTest, NoSupportWhenFeatureIsDisabled) {

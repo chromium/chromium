@@ -94,25 +94,6 @@ class CreditCardFieldParserTestBase : public FormFieldParserTestBase {
     return CreditCardFieldParser::Parse(context, scanner);
   }
 
-  // Runs multiple parsing attempts until the end of the form is reached.
-  void ClassifyAndVerifyWithMultipleParses(
-      const LanguageCode& page_language = LanguageCode("")) {
-    ParsingContext context(GeoIpCountryCode(""), page_language,
-                           *GetActivePatternSource());
-    AutofillScanner scanner(list_);
-    while (!scanner.IsEnd()) {
-      // An empty page_language means the language is unknown and patterns of
-      // all languages are used.
-      field_ = Parse(context, &scanner);
-      if (field_ == nullptr) {
-        scanner.Advance();
-      } else {
-        field_->AddClassificationsForTesting(field_candidates_map_);
-      }
-    }
-    TestClassificationExpectations();
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -132,26 +113,26 @@ INSTANTIATE_TEST_SUITE_P(CreditCardFieldParserTest,
                          testing::ValuesIn(PatternProviderFeatureState::All()));
 
 TEST_P(CreditCardFieldParserTest, Empty) {
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, NonParse) {
   AddTextFormFieldData("", "", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseCreditCardNoNumber) {
   AddTextFormFieldData("ccmonth", "Exp Month", UNKNOWN_TYPE);
   AddTextFormFieldData("ccyear", "Exp Year", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseCreditCardNoDate) {
   AddTextFormFieldData("card_number", "Card Number", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseMiniumCreditCard) {
@@ -159,7 +140,7 @@ TEST_P(CreditCardFieldParserTest, ParseMiniumCreditCard) {
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Ensure that a placeholder hint for a 2-digit year is respected
@@ -169,8 +150,8 @@ TEST_P(CreditCardFieldParserTest, ParseMiniumCreditCardWith2DigitYearHint) {
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_2_DIGIT_YEAR);
-  list_.back()->placeholder = u"YY";
-  ClassifyAndVerify(ParseResult::PARSED);
+  fields_.back()->placeholder = u"YY";
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Ensure that a max-length can trump an incorrect 4-digit placeholder hint.
@@ -182,9 +163,9 @@ TEST_P(CreditCardFieldParserTest, ParseMiniumCreditCardWithMaxLength) {
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_2_DIGIT_YEAR);
   // Even though the placehodler indicates YYYY, the max-length only enables
   // a YY expiration format.
-  list_.back()->max_length = 2u;
-  list_.back()->placeholder = u"YYYY";
-  ClassifyAndVerify(ParseResult::PARSED);
+  fields_.back()->max_length = 2u;
+  fields_.back()->placeholder = u"YYYY";
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 struct CreditCardFieldYearTestCase {
@@ -233,9 +214,9 @@ TEST_P(CreditCardFieldYearTest, ParseMinimumCreditCardWithExpiryDateOptions) {
                             expected_type());
 
   if (ShouldSwapMonthAndYear())
-    std::swap(list_[1], list_[2]);
+    std::swap(fields_[1], fields_[2]);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -260,7 +241,7 @@ TEST_P(CreditCardFieldParserTest, ParseFullCreditCard) {
   AddSelectOneFormFieldData("Card Type", "card_type", {{u"visa", u"visa"}},
                             CREDIT_CARD_TYPE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseExpMonthYear) {
@@ -271,7 +252,7 @@ TEST_P(CreditCardFieldParserTest, ParseExpMonthYear) {
   AddTextFormFieldData("ExpDate", "ExpDate Month / Year",
                        CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseExpMonthYear2) {
@@ -282,7 +263,7 @@ TEST_P(CreditCardFieldParserTest, ParseExpMonthYear2) {
   AddTextFormFieldData("ExpDate", "Expiration date Month / Year",
                        CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseGiftCard) {
@@ -291,7 +272,7 @@ TEST_P(CreditCardFieldParserTest, ParseGiftCard) {
   AddTextFormFieldData("gift.certificate", "Gift certificate", UNKNOWN_TYPE);
   AddTextFormFieldData("gift-card", "Gift card", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 struct ParseExpFieldTestCase {
@@ -331,11 +312,11 @@ TEST_P(ParseExpFieldTest, ParseExpField) {
     // Expect failure and continue to next test case.
     // The expiry date is a required field for credit card forms, and thus the
     // parse sets |field_| to nullptr.
-    ClassifyAndVerify(ParseResult::NOT_PARSED);
+    ClassifyAndVerify(ParseResult::kNotParsed);
     return;
   }
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -517,7 +498,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CreditCardFieldParserTest, ParseCreditCardHolderNameWithCCFullName) {
   AddTextFormFieldData("ccfullname", "Name", CREDIT_CARD_NAME_FULL);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Verifies that <input type="month"> controls are able to be parsed correctly.
@@ -526,7 +507,7 @@ TEST_P(CreditCardFieldParserTest, ParseMonthControl) {
   AddFormFieldData(FormControlType::kInputMonth, "ccexp",
                    "Expiration date:", CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 // Verify that heuristics <input name="ccyear" maxlength="2"/> considers
@@ -538,7 +519,7 @@ TEST_P(CreditCardFieldParserTest, ParseCreditCardExpYear_2DigitMaxLength) {
                              "Expiration Date", 2,
                              CREDIT_CARD_EXP_2_DIGIT_YEAR);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseMultipleCreditCardNumbers) {
@@ -549,7 +530,7 @@ TEST_P(CreditCardFieldParserTest, ParseMultipleCreditCardNumbers) {
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseFirstAndLastNames) {
@@ -560,7 +541,7 @@ TEST_P(CreditCardFieldParserTest, ParseFirstAndLastNames) {
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseConsecutiveCvc) {
@@ -592,7 +573,7 @@ TEST_P(CreditCardFieldParserTest, ParseCreditCardContextualNameNotCard) {
   AddTextFormFieldData("accNum", "Account ID", UNKNOWN_TYPE);
   AddTextFormFieldData("name", "Account Name", UNKNOWN_TYPE);
   AddTextFormFieldData("toAcctNum", "Move to Account ID", UNKNOWN_TYPE);
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 TEST_P(CreditCardFieldParserTest,
@@ -602,7 +583,7 @@ TEST_P(CreditCardFieldParserTest,
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("acctName", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("toAcctNum", "Move to Account ID", CREDIT_CARD_NUMBER);
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest, ParseCreditCardContextualNameWithExpiration) {
@@ -610,7 +591,7 @@ TEST_P(CreditCardFieldParserTest, ParseCreditCardContextualNameWithExpiration) {
   AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
   AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(CreditCardFieldParserTest,
@@ -618,7 +599,7 @@ TEST_P(CreditCardFieldParserTest,
   AddTextFormFieldData("acctNum", "Account ID", CREDIT_CARD_NUMBER);
   AddTextFormFieldData("name", "Account Name", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("cvv", "Verification", CREDIT_CARD_VERIFICATION_CODE);
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 struct DetermineExpirationDateFormatTestCase {

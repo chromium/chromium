@@ -348,6 +348,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   auto service_worker_handle =
       std::make_unique<ServiceWorkerMainResourceHandle>(
           storage_partition_->GetServiceWorkerContext(), base::DoNothing());
+  service_worker_handle->set_parent_container_host(
+      creator.GetLastCommittedServiceWorkerHost());
   auto* service_worker_handle_raw = service_worker_handle.get();
   host->SetServiceWorkerHandle(std::move(service_worker_handle));
 

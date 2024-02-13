@@ -82,7 +82,7 @@ void IMEDetailedView::ShowSettings() {
   Shell::Get()->system_tray_model()->client()->ShowIMESettings();
 }
 
-BEGIN_METADATA(IMEDetailedView, ImeListView)
+BEGIN_METADATA(IMEDetailedView)
 END_METADATA
 
 }  // namespace ash

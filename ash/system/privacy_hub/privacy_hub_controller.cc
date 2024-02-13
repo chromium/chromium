@@ -57,12 +57,12 @@ PrivacyHubController::CreatePrivacyHubController() {
     privacy_hub_controller->camera_disabled_ =
         std::make_unique<CameraPrivacySwitchDisabled>();
   }
-  if (features::IsMicMuteNotificationsEnabled()) {
-    // TODO(b/264388354) Until PrivacyHub is enabled for all keep this around
-    // for the already existing microphone notifications to continue working.
-    privacy_hub_controller->microphone_controller_ =
-        std::make_unique<MicrophonePrivacySwitchController>();
-  }
+
+  // TODO(b/264388354) Until PrivacyHub is enabled for all keep this around
+  // for the already existing microphone notifications to continue working.
+  privacy_hub_controller->microphone_controller_ =
+      std::make_unique<MicrophonePrivacySwitchController>();
+
   return privacy_hub_controller;
 }
 

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_app_interface.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -100,7 +101,7 @@ constexpr char kFormZip[] = "form_zip";
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordSignInUff);
   }
-  if ([self isRunningTest:@selector(testOpenExpandedView)]) {
+  if ([self isRunningTest:@selector(testOpenExpandedManualFillView)]) {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
   }
   return config;
@@ -369,11 +370,11 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [self verifyAddressInfosHaveBeenFilled:profile];
 }
 
-// Tests that the manual fill button opens the password expanded view.
-- (void)testOpenExpandedView {
-  // The expanded view UI is not available on tablets.
+// Tests that the manual fill button opens the expanded manual fill view.
+- (void)testOpenExpandedManualFillView {
+  // The expanded manual fill view UI is not available on tablets.
   if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not support on iPad");
+    EARL_GREY_TEST_SKIPPED(@"Test not supported on iPad");
   }
 
   [self loadLoginPage];
@@ -389,13 +390,11 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [[EarlGrey selectElementWithMatcher:manual_fill_button]
       performAction:grey_tap()];
 
-  id<GREYMatcher> select_password = grey_text(l10n_util::GetNSString(
-      IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS));
+  id<GREYMatcher> expanded_manual_fill_view =
+      grey_accessibilityID(manual_fill::kExpandedManualFillViewID);
 
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:select_password];
-
-  [[EarlGrey selectElementWithMatcher:select_password]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:expanded_manual_fill_view]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

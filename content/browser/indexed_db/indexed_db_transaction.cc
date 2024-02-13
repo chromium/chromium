@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -299,7 +300,7 @@ bool IndexedDBTransaction::IsTransactionBlockingOtherClients() const {
   CHECK_EQ(state_, STARTED);
   for (const PartitionedLockId& lock_id : lock_ids_) {
     std::set<PartitionedLockHolder*> blocked_requests =
-        bucket_context_->lock_manager()->GetQueuedRequests(lock_id);
+        bucket_context_->lock_manager().GetQueuedRequests(lock_id);
     if (std::any_of(blocked_requests.begin(), blocked_requests.end(),
                     [&](PartitionedLockHolder* blocked_lock_holder) {
                       auto* lock_request_data =
@@ -546,8 +547,9 @@ leveldb::Status IndexedDBTransaction::BlobWriteComplete(
           base::ASCIIToUTF16(base::StringPrintf(
               "Failed to write blobs (%s)",
               WriteBlobToFileResultToString(error).c_str()))));
-      if (!status.ok())
-        bucket_context_->delegate().on_fatal_error.Run(status, {});
+      if (!status.ok()) {
+        bucket_context_->OnDatabaseError(status, {});
+      }
       // The result is ignored.
       return leveldb::Status::OK();
     }
@@ -712,7 +714,7 @@ leveldb::Status IndexedDBTransaction::CommitPhaseTwo() {
           mode() == blink::mojom::IDBTransactionMode::VersionChange ||
           backing_store_transaction_->durability() ==
               blink::mojom::IDBTransactionDurability::Strict;
-      bucket_context_->delegate().on_writing_transaction_complete.Run(did_sync);
+      bucket_context_->delegate().on_files_written.Run(did_sync);
     }
 
     if (database_) {
@@ -822,8 +824,9 @@ void IndexedDBTransaction::Timeout() {
   leveldb::Status result = Abort(
       IndexedDBDatabaseError(blink::mojom::IDBException::kTimeoutError,
                              u"Transaction timed out due to inactivity."));
-  if (!result.ok())
-    bucket_context_->delegate().on_fatal_error.Run(result, {});
+  if (!result.ok()) {
+    bucket_context_->OnDatabaseError(result, {});
+  }
 }
 
 void IndexedDBTransaction::CloseOpenCursors() {
@@ -832,10 +835,12 @@ void IndexedDBTransaction::CloseOpenCursors() {
 
   // IndexedDBCursor::Close() indirectly mutates |open_cursors_|, when it calls
   // IndexedDBTransaction::UnregisterOpenCursor().
-  std::set<IndexedDBCursor*> open_cursors = std::move(open_cursors_);
+  std::set<raw_ptr<IndexedDBCursor, SetExperimental>> open_cursors =
+      std::move(open_cursors_);
   open_cursors_.clear();
-  for (auto* cursor : open_cursors)
+  for (IndexedDBCursor* cursor : open_cursors) {
     cursor->Close();
+  }
 }
 
 std::vector<PartitionedLockManager::PartitionedLockRequest>

@@ -4,6 +4,7 @@
 
 #include "ui/gl/init/gl_factory.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_utils.h"
@@ -100,7 +100,7 @@ GLImplementationParts GetRequestedGLImplementation(
   }
 
   *fallback_to_software_gl = false;
-  absl::optional<GLImplementationParts> impl_from_cmdline =
+  std::optional<GLImplementationParts> impl_from_cmdline =
       GetRequestedGLImplementationFromCommandLine(cmd, fallback_to_software_gl);
 
   // The default implementation is always the first one in list.

@@ -34,13 +34,13 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(NumericQuantityFieldParserTest, ParseNumericQuantity) {
   AddTextFormFieldData("quantity", "quantity", NUMERIC_QUANTITY);
 
-  ClassifyAndVerify(ParseResult::PARSED);
+  ClassifyAndVerify(ParseResult::kParsed);
 }
 
 TEST_P(NumericQuantityFieldParserTest, ParseNonNumericQuantity) {
   AddTextFormFieldData("name", "Name", UNKNOWN_TYPE);
 
-  ClassifyAndVerify(ParseResult::NOT_PARSED);
+  ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
 }  // namespace autofill

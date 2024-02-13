@@ -6,6 +6,7 @@
 #define DEVICE_GAMEPAD_NINTENDO_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -289,7 +289,7 @@ class NintendoController final : public AbstractHapticGamepad {
   void OnReadInputReport(
       bool success,
       uint8_t report_id,
-      const absl::optional<std::vector<uint8_t>>& report_bytes);
+      const std::optional<std::vector<uint8_t>>& report_bytes);
 
   // Request to send an output report to the underlying HID device. If
   // |expect_reply| is true, a timeout is armed that will retry the current

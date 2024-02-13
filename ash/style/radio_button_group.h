@@ -20,9 +20,9 @@ namespace ash {
 // buttons. If they're not provided, the default values will be applied.
 class ASH_EXPORT RadioButtonGroup : public OptionButtonGroup,
                                     public OptionButtonBase::Delegate {
- public:
-  METADATA_HEADER(RadioButtonGroup);
+  METADATA_HEADER(RadioButtonGroup, OptionButtonGroup)
 
+ public:
   explicit RadioButtonGroup(int group_width);
 
   RadioButtonGroup(int group_width,

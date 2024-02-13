@@ -91,4 +91,12 @@ public interface ContextualSearchManagementDelegate {
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.
      */
     ScrimCoordinator getScrimCoordinator();
+
+    /**
+     * @param enabled Whether The user to choose fully Contextual Search privacy opt-in.
+     */
+    void setContextualSearchPromoCardSelection(boolean enabled);
+
+    /** Notifies that a promo card has been shown. */
+    void onPromoShown();
 }

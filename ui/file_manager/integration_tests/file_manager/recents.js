@@ -428,6 +428,39 @@ testcase.recentsPlayFiles = async () => {
 };
 
 /**
+ * Tests what happens if listing play files is interspersed with plain listing
+ * of another directory.
+ */
+// @ts-ignore: error TS4111: Property 'recentsSearchPlayFilesShowDownloads'
+// comes from an index signature, so it must be accessed with
+// ['recentsSearchPlayFilesShowDownloads'].
+testcase.recentsSearchPlayFilesShowDownloads = async () => {
+  // Populate Play Files.
+  await addPlayFileEntries();
+  const appId = await openNewWindow(RootPath.ANDROID_FILES, {});
+  // @ts-ignore: error TS2345: Argument of type 'boolean' is not assignable to
+  // parameter of type '(arg0: Object) => boolean | Object'.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+  // Verify that the Recent view is correct.
+  await verifyRecents(appId, [
+    RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO,
+  ]);
+
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  // Rapidly switch between listing Downloads and accessing them via the Recent
+  // view. We leave Downloads empty to make switching faster. The choice of 10
+  // switches is somewhat arbitrary. The main thing we are testing is that
+  // searches triggered by switching to Recent, even if not finished, do not
+  // cause a crash.
+  for (let i = 0; i < 10; i++) {
+    await directoryTree.selectItemByLabel('Recent');
+    await directoryTree.selectItemByLabel('Downloads');
+  }
+};
+
+/**
  * Tests that file entries populated in the My Files folder recently will be
  * displayed in the Recent folder.
  */

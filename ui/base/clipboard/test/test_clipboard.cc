@@ -5,8 +5,11 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 
 #include <stddef.h>
+
 #include <memory>
+#include <optional>
 #include <utility>
+
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
@@ -19,7 +22,6 @@
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
 #include "skia/ext/skia_utils_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -37,7 +39,7 @@ bool IsReadAllowed(base::optional_ref<const DataTransferEndpoint> src,
   auto* policy_controller = DataTransferPolicyController::Get();
   if (!policy_controller)
     return true;
-  return policy_controller->IsClipboardReadAllowed(src, dst, absl::nullopt);
+  return policy_controller->IsClipboardReadAllowed(src, dst, std::nullopt);
 }
 }  // namespace
 
@@ -60,7 +62,7 @@ void TestClipboard::SetLastModifiedTime(const base::Time& time) {
 
 void TestClipboard::OnPreShutdown() {}
 
-absl::optional<DataTransferEndpoint> TestClipboard::GetSource(
+std::optional<DataTransferEndpoint> TestClipboard::GetSource(
     ClipboardBuffer buffer) const {
   return GetStore(buffer).GetDataSource();
 }
@@ -339,7 +341,7 @@ void TestClipboard::WriteText(base::StringPiece text) {
 }
 
 void TestClipboard::WriteHTML(base::StringPiece markup,
-                              absl::optional<base::StringPiece> source_url) {
+                              std::optional<base::StringPiece> source_url) {
   GetDefaultStore().data[ClipboardFormatType::HtmlType()] = markup;
   GetDefaultStore().html_src_url = source_url.value_or("");
 }
@@ -422,11 +424,11 @@ void TestClipboard::DataStore::Clear() {
 }
 
 void TestClipboard::DataStore::SetDataSource(
-    absl::optional<DataTransferEndpoint> new_data_src) {
+    std::optional<DataTransferEndpoint> new_data_src) {
   data_src = std::move(new_data_src);
 }
 
-absl::optional<DataTransferEndpoint> TestClipboard::DataStore::GetDataSource()
+std::optional<DataTransferEndpoint> TestClipboard::DataStore::GetDataSource()
     const {
   return data_src;
 }
@@ -434,7 +436,7 @@ absl::optional<DataTransferEndpoint> TestClipboard::DataStore::GetDataSource()
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void TestClipboard::AddClipboardSourceToDataOffer(
     const ClipboardBuffer buffer) {
-  absl::optional<DataTransferEndpoint> data_src = GetSource(buffer);
+  std::optional<DataTransferEndpoint> data_src = GetSource(buffer);
 
   if (!data_src)
     return;

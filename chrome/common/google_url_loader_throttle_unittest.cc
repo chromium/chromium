@@ -391,7 +391,7 @@ TEST_P(GoogleURLLoaderThrottleTest,
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, kGoogleSubdomainURL);
   const auto kResumeTrigger =
-      chrome::mojom::ResumeBlockedRequestsTrigger::kNetworkConnectionOffline;
+      chrome::mojom::ResumeBlockedRequestsTrigger::kCookieRefreshFetchFailure;
   UnblockRequestAndVerifyCallbackAction(
       BoundSessionRequestThrottledHandler::UnblockAction::kResume,
       /*is_expected_navigation=*/false, kResumeTrigger);

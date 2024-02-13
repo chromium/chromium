@@ -95,6 +95,7 @@
 #include "ui/gfx/android/view_configuration.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/touch_selection/selection_event_type.h"
@@ -2102,6 +2103,7 @@ void RenderWidgetHostViewAndroid::StartObservingRootWindow() {
   }
 
   OnUpdateScopedSelectionHandles();
+  ObserveDevicePosturePlatformProvider();
 }
 
 void RenderWidgetHostViewAndroid::StopObservingRootWindow() {
@@ -2674,6 +2676,8 @@ void RenderWidgetHostViewAndroid::OnSizeChanged() {
   if (!IsFullscreenSurfaceSyncSupported())
     return;
   screen_state_change_handler_.OnVisibleViewportSizeChanged(view_.GetSize());
+  // The display feature depends on the view size so we need to recompute it.
+  ComputeDisplayFeature();
 }
 
 void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
@@ -3051,18 +3055,60 @@ void RenderWidgetHostViewAndroid::TransferTouches(
   // Touch transfer for Android is not implemented in content/.
 }
 
-std::optional<DisplayFeature> RenderWidgetHostViewAndroid::GetDisplayFeature() {
+void RenderWidgetHostViewAndroid::ObserveDevicePosturePlatformProvider() {
+  if (device_posture_observation_.IsObserving()) {
+    return;
+  }
+
+  DevicePosturePlatformProvider* platform_provider =
+      GetDevicePosturePlatformProvider();
+  if (!platform_provider) {
+    return;
+  }
+
+  device_posture_observation_.Observe(platform_provider);
+  OnDisplayFeatureBoundsChanged(platform_provider->GetDisplayFeatureBounds());
+}
+
+void RenderWidgetHostViewAndroid::OnDisplayFeatureBoundsChanged(
+    const gfx::Rect& display_feature_bounds) {
+  display_feature_ = std::nullopt;
+  display_feature_bounds_ = gfx::Rect();
+  // On some devices like the Galaxy Fold the display feature has a size of
+  // 0 (width or height depending on the orientation). IsEmpty() will fail here.
+  if (display_feature_bounds.size().IsZero()) {
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                std::nullopt);
+    return;
+  }
+  display_feature_bounds_ = display_feature_bounds;
+  ComputeDisplayFeature();
+  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                              std::nullopt);
+}
+
+void RenderWidgetHostViewAndroid::SetDisplayFeatureBoundsForTesting(
+    const gfx::Rect& bounds) {
+  display_feature_bounds_ = bounds;
+  ComputeDisplayFeature();
+}
+
+void RenderWidgetHostViewAndroid::ComputeDisplayFeature() {
+  if (display_feature_overridden_for_testing_) {
+    return;
+  }
+
+  display_feature_ = std::nullopt;
   gfx::Size view_size(view_.GetSize());
-  if (view_size.IsEmpty())
-    return std::nullopt;
+  // On some devices like the Galaxy Fold the display feature has a size of
+  // 0 (width or height depending on the orientation). IsEmpty() will fail here.
+  if (display_feature_bounds_.size().IsZero() || view_size.IsEmpty()) {
+    return;
+  }
 
   // On Android, the display feature is exposed as a rectangle as a generic
   // concept. Here in the content layer, we translate that to a more
   // constrained concept, see content::DisplayFeature.
-  std::optional<gfx::Rect> display_feature_rect = view_.GetDisplayFeature();
-  if (!display_feature_rect)
-    return std::nullopt;
-
   // The display feature and view location are both provided in device pixels,
   // relative to the window. Convert this to DIP and view relative coordinates,
   // first by applying the scale, converting the display feature to view
@@ -3072,38 +3118,40 @@ std::optional<DisplayFeature> RenderWidgetHostViewAndroid::GetDisplayFeature() {
   gfx::Point view_location = view_.GetLocationOfContainerViewInWindow();
   view_location = gfx::ScaleToRoundedPoint(view_location, dip_scale);
   gfx::Rect transformed_display_feature =
-      gfx::ScaleToRoundedRect(*display_feature_rect, dip_scale);
+      gfx::ScaleToRoundedRect(display_feature_bounds_, dip_scale);
 
   transformed_display_feature.Offset(-view_location.x(), -view_location.y());
-  transformed_display_feature.Intersect(gfx::Rect(view_size));
+  transformed_display_feature.InclusiveIntersect(gfx::Rect(view_size));
 
-  DisplayFeature display_feature;
   if (transformed_display_feature.x() == 0 &&
       transformed_display_feature.width() == view_size.width()) {
     // A horizontal display feature covers the view's width and starts at
     // an x-offset of 0.
-    display_feature = {DisplayFeature::Orientation::kHorizontal,
-                       transformed_display_feature.y(),
-                       transformed_display_feature.height()};
+    display_feature_ = {DisplayFeature::Orientation::kHorizontal,
+                        transformed_display_feature.y(),
+                        transformed_display_feature.height()};
   } else if (transformed_display_feature.y() == 0 &&
              transformed_display_feature.height() == view_size.height()) {
     // A vertical display feature covers the view's height and starts at
     // a y-offset of 0.
-    display_feature = {DisplayFeature::Orientation::kVertical,
-                       transformed_display_feature.x(),
-                       transformed_display_feature.width()};
-  } else {
-    return std::nullopt;
+    display_feature_ = {DisplayFeature::Orientation::kVertical,
+                        transformed_display_feature.x(),
+                        transformed_display_feature.width()};
   }
+}
 
-  return display_feature;
+std::optional<DisplayFeature> RenderWidgetHostViewAndroid::GetDisplayFeature() {
+  return display_feature_;
 }
 
 void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
     const DisplayFeature* display_feature) {
-  // RenderWidgetHostViewAndroid display feature mocking should be done via
-  // TestViewAndroidDelegate instead - see MockDisplayFeature.
-  NOTREACHED();
+  if (display_feature) {
+    display_feature_ = *display_feature;
+  } else {
+    display_feature_ = std::nullopt;
+  }
+  display_feature_overridden_for_testing_ = true;
 }
 
 void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(

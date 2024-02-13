@@ -10,6 +10,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Process;
+import android.os.SystemClock;
+import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -24,6 +26,11 @@ import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.Flags;
 import org.chromium.net.httpflags.HttpFlagsLoader;
 import org.chromium.net.httpflags.ResolvedFlags;
+import org.chromium.net.telemetry.Hash;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -50,23 +57,39 @@ public class CronetLibraryLoader {
     private static final ConditionVariable sHttpFlagsLoaded = new ConditionVariable();
     private static ResolvedFlags sHttpFlags;
 
+    /**
+     * A subset of {@code CronetLogger.CronetInitializedInfo} that this class is responsible for
+     * populating.
+     */
+    public static final class CronetInitializedInfo {
+        public int httpFlagsLatencyMillis = -1;
+        public Boolean httpFlagsSuccessful;
+        public List<Long> httpFlagsNames;
+        public List<Long> httpFlagsValues;
+    }
+
+    private static CronetInitializedInfo sInitializedInfo;
+
     @VisibleForTesting public static final String LOG_FLAG_NAME = "Cronet_log_me";
 
     /**
-     * Ensure that native library is loaded and initialized. Can be called from
-     * any thread, the load and initialization is performed on init thread.
+     * Ensure that native library is loaded and initialized. Can be called from any thread, the load
+     * and initialization is performed on init thread.
+     *
+     * @return True if the library was initialized as part of this call, false if it was already
+     *     initialized.
      */
-    public static void ensureInitialized(
+    public static boolean ensureInitialized(
             Context applicationContext, final CronetEngineBuilderImpl builder) {
-        ensureInitialized(applicationContext, builder, /* libAlreadyLoaded= */ false);
+        return ensureInitialized(applicationContext, builder, /* libAlreadyLoaded= */ false);
     }
 
-    public static void ensureInitialized(
+    public static boolean ensureInitialized(
             Context applicationContext,
             final CronetEngineBuilderImpl builder,
             boolean libAlreadyLoaded) {
         synchronized (sLoadLock) {
-            if (sInitialized) return;
+            if (sInitialized) return false;
             ContextUtils.initApplicationContext(applicationContext);
             // The init thread may already be running if a previous initialization attempt failed.
             // In this case there is no need to spin it up again.
@@ -100,6 +123,7 @@ public class CronetLibraryLoader {
             setNativeLoggingLevel();
             sWaitForLibLoad.open();
             sInitialized = true;
+            return true;
         }
     }
 
@@ -134,12 +158,22 @@ public class CronetLibraryLoader {
      */
     static void initializeOnInitThread() {
         assert onInitThread();
+        assert sInitializedInfo == null;
+        sInitializedInfo = new CronetInitializedInfo();
 
+        var httpFlagsLoadingStartUptimeMillis = SystemClock.uptimeMillis();
+        var applicationContext = ContextUtils.getApplicationContext();
         // Load HTTP flags. This is a potentially expensive call, so we do this in parallel with
         // library loading in the hope of minimizing impact on Cronet initialization latency.
         assert sHttpFlags == null;
-        Context applicationContext = ContextUtils.getApplicationContext();
-        Flags flags = HttpFlagsLoader.load(applicationContext);
+        Flags flags;
+        if (!CronetManifest.shouldReadHttpFlags(applicationContext)) {
+            Log.d(TAG, "Not loading HTTP flags because they are disabled in the manifest");
+            flags = null;
+        } else {
+            flags = HttpFlagsLoader.load(applicationContext);
+            sInitializedInfo.httpFlagsSuccessful = flags != null;
+        }
         sHttpFlags =
                 ResolvedFlags.resolve(
                         flags != null ? flags : Flags.newBuilder().build(),
@@ -150,6 +184,9 @@ public class CronetLibraryLoader {
         if (logMe != null) {
             Log.i(TAG, "HTTP flags log line: %s", logMe.getStringValue());
         }
+        populateCronetInitializedHttpFlagNamesValues();
+        sInitializedInfo.httpFlagsLatencyMillis =
+                (int) (SystemClock.uptimeMillis() - httpFlagsLoadingStartUptimeMillis);
 
         NetworkChangeNotifier.init();
         // Registers to always receive network notifications. Note
@@ -166,6 +203,58 @@ public class CronetLibraryLoader {
         // the undesired initial network change observer notification, which
         // will cause active requests to fail with ERR_NETWORK_CHANGED.
         CronetLibraryLoaderJni.get().cronetInitOnInitThread();
+    }
+
+    private static void populateCronetInitializedHttpFlagNamesValues() {
+        // Make sure the order is deterministic - this may potentially make it easier to
+        // deduplicate/aggregate the log entries down the line, by preventing two log entries from
+        // being treated as different even though they have the same set of flag names and values.
+        // Note we need to pair up the names and values before we do this, as we need the order to
+        // be consistent between the two.
+        var hashedNamesValues = new ArrayList<Pair<Long, Long>>();
+        for (var flag : sHttpFlags.flags().entrySet()) {
+            hashedNamesValues.add(
+                    new Pair<Long, Long>(
+                            Hash.hash(flag.getKey()),
+                            hashHttpFlagValueForLogging(flag.getValue())));
+        }
+        Collections.sort(hashedNamesValues, (left, right) -> left.first.compareTo(right.first));
+
+        sInitializedInfo.httpFlagsNames = new ArrayList<Long>();
+        sInitializedInfo.httpFlagsValues = new ArrayList<Long>();
+        for (var hashedNameValue : hashedNamesValues) {
+            sInitializedInfo.httpFlagsNames.add(hashedNameValue.first);
+            sInitializedInfo.httpFlagsValues.add(hashedNameValue.second);
+        }
+    }
+
+    private static long hashHttpFlagValueForLogging(ResolvedFlags.Value value) {
+        switch (value.getType()) {
+            case BOOL:
+                return value.getBoolValue() ? 1 : 0;
+            case INT:
+                return value.getIntValue();
+            case FLOAT:
+                // Converting to double first to avoid precision issues (e.g. 42.5 would end up as
+                // 42500001792 instead of 42500000000 otherwise)
+                return Math.round((double) value.getFloatValue() * 1_000_000_000d);
+            case STRING:
+                return Hash.hash(value.getStringValue());
+            case BYTES:
+                return Hash.hash(value.getBytesValue().toByteArray());
+            default:
+                throw new IllegalArgumentException(
+                        "Unexpected flag value type: " + value.getClass().getName());
+        }
+    }
+
+    /**
+     * Retrieves the initialization info for logging. Only safe to call after the init thread has
+     * become ready.
+     */
+    public static CronetInitializedInfo getCronetInitializedInfo() {
+        assert sInitializedInfo != null;
+        return sInitializedInfo;
     }
 
     /** Run {@code r} on the initialization thread. */

@@ -186,10 +186,9 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       content::RenderFrameHost::kNoFrameTreeNodeId,
       /*navigation_id=*/std::nullopt,
       /*url_real_time_lookup_enabled=*/false,
-      /*can_urt_check_subresource_url=*/false,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
       /*url_lookup_service_metric_suffix=*/".None",
-      /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
+      content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr,
       /*hash_realtime_service_on_ui=*/nullptr,
       /*hash_realtime_selection=*/

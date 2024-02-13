@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp"
-    enum="Boolean" expires_after="2024-06-02">
+    enum="Boolean" expires_after="2024-08-04">
   <owner>tommasin@chromium.org</owner>
   <owner>kartoffel-core-eng@google.com</owner>
   <summary>
@@ -828,7 +828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.GPU.LoadTime.ApplicationStartToGpuInitialized"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-08-04">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.GPU.LoadTime.ChromeMainToGpuInitialized" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2024-08-04">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -865,7 +865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.GPU.LoadTime.ProcessCreationToGpuInitialized"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2024-08-04">
   <owner>spvw@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -888,6 +888,16 @@ chromium-metrics-reviews@google.com.
     Records whether Incognito switch was present in commmand line switches and
     if Incognito mode was enforced or denied. This is recorded during browser
     startup when commandline is processed.
+  </summary>
+</histogram>
+
+<histogram name="Startup.InitializeFontConfigDuration" units="ms"
+    expires_after="2024-07-21">
+  <owner>thestig@chromium.org</owner>
+  <owner>thomasanderson@chromium.org</owner>
+  <summary>
+    The time taken to initialize FontConfig. Recorded once on startup on Linux
+    and ChromeOS.
   </summary>
 </histogram>
 
@@ -1070,7 +1080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.TimeFromProcessCreationToMainCall" units="ms"
-    expires_after="2024-06-02">
+    expires_after="2024-08-11">
   <owner>olivierrobin@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>

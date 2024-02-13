@@ -226,7 +226,7 @@ void AutoclickMenuView::OnPositionButtonPressed() {
       "Accessibility.CrosAutoclick.TrayMenu.ChangePosition"));
 }
 
-BEGIN_METADATA(AutoclickMenuView, views::BoxLayoutView)
+BEGIN_METADATA(AutoclickMenuView)
 END_METADATA
 
 }  // namespace ash

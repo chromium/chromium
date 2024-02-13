@@ -16,7 +16,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/cert_verifier_service.mojom.h"
+#include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace blink {

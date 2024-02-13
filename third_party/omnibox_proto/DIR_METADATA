@@ -2,3 +2,6 @@ monorail: {
   component: "UI>Browser>Omnibox"
 }
 team_email: "chrome-omnibox-team@google.com"
+buganizer_public: {
+  component_id: 1457180
+}

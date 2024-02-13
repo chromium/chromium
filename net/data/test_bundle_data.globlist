@@ -9,15 +9,10 @@ data/cache_tests/**
 data/cert_issuer_source_aia_unittest/*.pem
 data/cert_issuer_source_static_unittest/*.pem
 data/cert_net_fetcher_impl_unittest/**
-data/certificate_policies_unittest/*.pem
-data/crl_unittest/*.pem
 data/embedded_test_server/*
 data/filter_unittests/*
-data/name_constraints_unittest/*.pem
-data/ocsp_unittest/*.pem
 data/ov_name_constraints/*.pem
 data/pac_file_fetcher_unittest/**
-data/path_builder_unittest/**/*.pem
 data/parse_certificate_unittest/**/*.pem
 data/parse_certificate_unittest/*.pk8
 data/spdy_tests/**
@@ -26,5 +21,3 @@ data/url_request_unittest/*
 data/verify_certificate_chain_unittest/**/*.pem
 data/verify_certificate_chain_unittest/**/*.test
 data/verify_certificate_chain_unittest/pkits_errors/*.txt
-data/verify_name_match_unittest/names/*.pem
-data/verify_signed_data_unittest/*.pem

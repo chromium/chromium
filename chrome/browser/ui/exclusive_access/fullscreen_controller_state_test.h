@@ -12,7 +12,6 @@
 
 class Browser;
 class FullscreenController;
-class FullscreenNotificationObserver;
 
 // Utility definition for mapping enum values to strings in switch statements.
 #define ENUM_TO_STRING(enum) case enum: return #enum
@@ -77,10 +76,6 @@ class FullscreenControllerStateTest {
   // FullscreenController methods complete.
   static bool IsWindowFullscreenStateChangedReentrant();
 
-  // Returns true if |state| can be persistent. This is true for all of the
-  // states without "_TO_" in their name.
-  static bool IsPersistentState(State state);
-
   // Causes Fullscreen Controller to transition to an arbitrary state.
   void TransitionToState(State state);
 
@@ -102,10 +97,6 @@ class FullscreenControllerStateTest {
 
   // Checks that window state matches the expected controller state.
   virtual void VerifyWindowState();
-
-  // Wait for a fullscreen change if a notification should have been sent in
-  // transitioning to |state_| from the previous persistent state.
-  void MaybeWaitForNotification();
 
   // Tests all states with all permutations of multiple events to detect
   // lingering state issues that would bleed over to other states.
@@ -179,14 +170,6 @@ class FullscreenControllerStateTest {
  private:
   // The state the FullscreenController is expected to be in.
   State state_ = STATE_NORMAL;
-
-  // The state when the previous NOTIFICATION_FULLSCREEN_CHANGED notification
-  // was received.
-  State last_notification_received_state_ = STATE_NORMAL;
-
-  // Listens for the NOTIFICATION_FULLSCREEN_CHANGED notification.
-  std::unique_ptr<FullscreenNotificationObserver>
-      fullscreen_notification_observer_;
 
   // Human defined |State| that results given each [state][event] pair.
   State transition_table_[NUM_STATES][NUM_EVENTS];

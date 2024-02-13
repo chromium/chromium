@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
@@ -62,7 +63,7 @@ class UserScriptSetManager {
       content::RenderFrame* render_frame,
       int tab_id,
       const GURL& url,
-      const std::string& extension_id);
+      const ExtensionId& extension_id);
 
   // Append all injections from |static_scripts| and each of
   // |programmatic_scripts_| to |injections|.
@@ -73,7 +74,7 @@ class UserScriptSetManager {
       mojom::RunLocation run_location);
 
   // Get active extension IDs from `static_scripts_`.
-  void GetAllActiveExtensionIds(std::set<std::string>* ids) const;
+  void GetAllActiveExtensionIds(std::set<ExtensionId>* ids) const;
 
   // Handle the UpdateUserScripts extension message.
   void OnUpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
@@ -81,7 +82,7 @@ class UserScriptSetManager {
 
   // Invalidates script injections for the UserScriptSet in `scripts_`
   // corresponding to `extension_id` and deletes the script set.
-  void OnExtensionUnloaded(const std::string& extension_id);
+  void OnExtensionUnloaded(const ExtensionId& extension_id);
 
   void set_activity_logging_enabled(bool enabled) {
     activity_logging_enabled_ = enabled;

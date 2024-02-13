@@ -53,7 +53,7 @@ generate_grd("build_oobe_conditional_grd") {
     ":preprocess_conditional",
   ]
   input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
-  input_files = conditional_files
+  input_files = conditional_js_files
 }
 
 # Files that are served conditionally
@@ -201,8 +201,6 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "components:closure_compile",
-    "screens/common:closure_compile",
-    "screens/oobe:closure_compile",
     "test_api:closure_compile",
 
     # TODO(crbug.com/1229130)
@@ -217,14 +215,8 @@ js_type_check("closure_compile_local") {
   deps = [
     ":cr_ui",
     ":display_manager",
-    ":install_oobe_error_store",
-    ":login_ui_tools",
     ":multi_tap_detector",
   ]
-}
-
-js_library("i18n_setup") {
-  deps = [ "//ash/webui/common/resources:load_time_data.m" ]
 }
 
 js_library("cr_ui") {
@@ -237,6 +229,7 @@ js_library("cr_ui") {
     "//ash/webui/common/resources:load_time_data.m",
   ]
   extra_deps = [ ":copy_js" ]
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 js_library("display_manager") {
@@ -246,24 +239,8 @@ js_library("display_manager") {
   deps = [
     ":multi_tap_detector",
     "components:display_manager_types",
-    "components:keyboard_utils",
-    "components:keyboard_utils_oobe",
     "components:oobe_types",
   ]
-  extra_deps = [ ":copy_js" ]
-}
-
-js_library("install_oobe_error_store") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/install_oobe_error_store.js" ]
-  deps = []
-  extra_deps = [ ":copy_js" ]
-}
-
-js_library("login_ui_tools") {
-  sources = [
-    "$root_gen_dir/chrome/browser/resources/chromeos/login/login_ui_tools.js",
-  ]
-  deps = []
   extra_deps = [ ":copy_js" ]
 }
 
@@ -278,8 +255,6 @@ copy("copy_js") {
   sources = [
     "cr_ui.js",
     "display_manager.js",
-    "install_oobe_error_store.js",
-    "login_ui_tools.js",
     "multi_tap_detector.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
@@ -296,6 +271,7 @@ ts_library("build_ts") {
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
     "//tools/typescript/definitions/quick_unlock_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
@@ -303,9 +279,10 @@ ts_library("build_ts") {
   ]
   deps = [
     "//ash/webui/common/resources:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/cros-components:cros_components_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -325,5 +302,5 @@ ts_library("build_ts") {
 
   # These files can be added conditionally in the runtime, so they shouldn't
   # be added to the same grd file as the rest of the sources.
-  manifest_excludes = conditional_files
+  manifest_excludes = conditional_js_files
 }

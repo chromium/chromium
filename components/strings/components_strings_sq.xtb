@@ -53,7 +53,6 @@
 <translation id="1074497978438210769">Jo i sigurt</translation>
 <translation id="1075079914415273530">Agrikultura dhe pylltaria</translation>
 <translation id="1075364221219156102">Përdor një çelës kalimi</translation>
-<translation id="1078033282564106222">Është zgjedhur opsioni i numrit të ndërtesës</translation>
 <translation id="1080116354587839789">Përshtate sipas gjerësisë</translation>
 <translation id="1081061862829655580">Tabakaja 19</translation>
 <translation id="1082026381988252344">Lëviz dhe zmadho përmbajtjet e skedës së ndarë</translation>
@@ -247,6 +246,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1428729058023778569">Je duke e parë këtë paralajmërim pasi kjo faqe nuk mbështet HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Film me vetëngjitje</translation>
 <translation id="1430915738399379752">Printo</translation>
+<translation id="1431021750861456539">Ekrani i plotë automatik</translation>
 <translation id="1432187715652018471">faqja kërkon të instalojë një përpunues të shërbimit.</translation>
 <translation id="1432581352905426595">Menaxho motorët e kërkimit</translation>
 <translation id="1433225466058025572">Provo t'i zhvendosësh përsëri skedarët e tu</translation>
@@ -586,6 +586,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2075497153347571252">Administratorit yt e ka bllokuar <ph name="PERMISSION" /> në <ph name="ORIGIN" /></translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2080021694978766903">Kjo politikë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> hyrje.</translation>
+<translation id="2081482239432306393">Është zgjedhur opsioni i numrit të shtëpisë</translation>
 <translation id="20817612488360358">Cilësimet e përfaqësuesit të sistemit janë caktuar që të përdoren, por është specifikuar po ashtu një konfigurim i qartë i përfaqësuesit.</translation>
 <translation id="2082238445998314030">Rezultati <ph name="RESULT_NUMBER" /> nga <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2083256696566019397">Lejo në çdo vizitë</translation>
@@ -613,7 +614,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2126374524350484896">Prodhuesi i PDF-së:</translation>
 <translation id="2130448033692577677">Shabllonet që ke specifikuar mund të mos zbatohen për shkak se politika DnsOverHttpsMode nuk është caktuar.</translation>
 <translation id="2130699163006053678">A3x7</translation>
-<translation id="2131200882015008178">Po shkarkohet paketa gjuhësore në <ph name="LANGUAGE" />...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Veshjet për burra</translation>
 <translation id="2137891579555018930">Në pritje të lejes...</translation>
 <translation id="213826338245044447">Faqeshënuesit celularë</translation>
@@ -1387,7 +1387,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3681007416295224113">Informacioni i certifikatës</translation>
 <translation id="3681421644246505351">Chrome mban shënim temat e interesit bazuar në historikun më të fundit të shfletimit.</translation>
 <translation id="3682094733650754138">U zgjodh opsioni i plotësimit të adresës</translation>
-<translation id="3689867156802445220">Numri i ndërtesës</translation>
 <translation id="3693327506115126094">Zgjidh se si do të verifikosh që je ti</translation>
 <translation id="3698629142018988477">Butoni "Krijo sajt". Aktivizoje për të krijuar me shpejtësi një sajt të ri në Google Sites</translation>
 <translation id="3701325639446035885">Shitjet e biletave për ngjarjen</translation>
@@ -1412,6 +1411,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3723663469265383848">Gjatë përditësimit, nuk do të mund ta përdorësh pajisjen tënde për deri në 10 minuta.</translation>
 <translation id="372429172604983730">Aplikacionet që mund ta shkaktojnë këtë gabim përfshijnë softuerë antivirusi, murin mbrojtës, si dhe softuerë filtrimi uebi ose ndërmjetësues.</translation>
 <translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një prezantim të ri të Google te Slides</translation>
+<translation id="3727309136762649052">Hapësira e emrit</translation>
 <translation id="3727850735097852673">Për të përdorur "Menaxherin e fjalëkalimeve të Google" me macOS Keychain, rihap Chrome dhe lejo qasjen për Keychain. Skedat e tua do të hapen përsëri pas rihapjes.</translation>
 <translation id="3733139489341305600">Automjetet autonome</translation>
 <translation id="3736520371357197498">Nëse i kupton rreziqet për sigurinë tënde, mund <ph name="BEGIN_LINK" />ta vizitosh këtë faqe të pasigurt<ph name="END_LINK" /> para se të jenë hequr programet e rrezikshme.</translation>
@@ -1576,6 +1576,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4089152113577680600">Tabakaja 14</translation>
 <translation id="4092349052316400070">Plotëso adresën</translation>
 <translation id="4096237801206588987">11 x 15 inç</translation>
+<translation id="4098306082496067348">Trokit te detajet e kartës virtuale për ta shtuar te përfundimi i blerjes.</translation>
 <translation id="4098354747657067197">Sajt mashtrues përpara</translation>
 <translation id="4099048595830172239">Politika e administratorit nuk rekomandon ndarjen e ekranit me <ph name="APPLICATION_TITLE" /> kur përmbajtja konfidenciale është e dukshme:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të personalizuar madhësitë e fonteve dhe llojet e karaktereve në Chrome</translation>
@@ -1899,6 +1900,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4729147136006144950">Bamirësi dhe filantropi</translation>
 <translation id="4730977633786878901">Komentet</translation>
 <translation id="4731638775147756694">Ky aplikacion është bllokuar nga administratori yt</translation>
+<translation id="4732860731866514038">Po shkarkohet paketa gjuhësore në <ph name="LANGUAGE" />... <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> kërkon të përdorë vendndodhjen e pajisjes sate</translation>
 <translation id="4736491186715342415">Automjetet motorike</translation>
 <translation id="4736825316280949806">Rinis Chromium</translation>
@@ -1920,7 +1922,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4757022425116568383">Çelësi i kalimit nga profili yt i Chrome</translation>
 <translation id="4757993714154412917">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chromium rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="4758311279753947758">Shto informacionet e kontaktit</translation>
-<translation id="4761104368405085019">Përdor mikrofonin</translation>
 <translation id="4761326898079498987">Rishiko për detaje të mëtejshme</translation>
 <translation id="4761869838909035636">Ekzekuto "Kontrollin e sigurisë" të Chrome</translation>
 <translation id="4763196677855776703">Kushtet e përgjithshme të dhëna nga <ph name="URL" /></translation>
@@ -2258,7 +2259,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
             <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
             <ph name="LIST_ITEM" />Informacionet e futura në formularë
           <ph name="END_LIST" /></translation>
-<translation id="54430913453805768"><ph name="URL" /> dëshiron të kontrollojë dhe të riprogramojë pajisjet e tua MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
 <translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
 <translation id="5447765697759493033">Ky sajt nuk do të përkthehet</translation>
@@ -2285,6 +2285,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
     <ph name="LINE_BREAK" />
     Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="549333378215107354">Madhësia 3</translation>
+<translation id="5501712702042287009">ekrani i plotë automatik</translation>
 <translation id="550365051221576010">Plotësoji të gjitha</translation>
 <translation id="5509762909502811065">B0</translation>
 <translation id="5509780412636533143">Faqeshënuesit e menaxhuar</translation>
@@ -2471,7 +2472,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5877831137320480913">Estetika dhe fitnesi</translation>
 <translation id="5879989559903563723">Nuk lejohet në modalitetin "vizitor"</translation>
 <translation id="5880050725127890683">Shko te kontrolli i sigurisë i Chrome</translation>
-<translation id="5883861433316751031">Të kontrollohen dhe të riprogramohen pajisjet MIDI?</translation>
 <translation id="5884465125445718607">Zarf kinez nr. 6</translation>
 <translation id="5887400589839399685">Karta u ruajt</translation>
 <translation id="5887687176710214216">Vizituar së fundi dje</translation>
@@ -2821,7 +2821,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6556866813142980365">Ribëje</translation>
 <translation id="6557715786897013164">14 x 17 inç</translation>
 <translation id="6560786330438719938">Aplikacionet e instaluara ose të çinstaluara dhe sa shpesh përdoren</translation>
-<translation id="6567084950885568327">Kontrolli dhe riprogramimi i pajisjes MIDI</translation>
 <translation id="6568793038316600992">Butoni "Menaxho mënyrat e pagesës". Aktivizoje për të menaxhuar informacionet e pagesave dhe të kartave të kreditit te cilësimet e Chrome</translation>
 <translation id="6569060085658103619">Po shikon një faqe të shtesës</translation>
 <translation id="6569366777234823130">Filmat dramë</translation>
@@ -3204,6 +3203,7 @@ Detaje shtesë:
 <translation id="733354035281974745">Anulimi i llogarisë lokale të pajisjes</translation>
 <translation id="7334320624316649418">&amp;Ribëj renditjen</translation>
 <translation id="7335157162773372339">Mund të kërkojë të përdorë kamerën tënde</translation>
+<translation id="7336636595549675416">Numri i shtëpisë</translation>
 <translation id="7337248890521463931">Shfaq më shumë radhë</translation>
 <translation id="7337706099755338005">Nuk ofrohet në këtë platformë.</translation>
 <translation id="733923710415886693">Certifikata e serverit nuk është zbuluar përmes "Transparencës së certifikatave".</translation>
@@ -3910,7 +3910,6 @@ Detaje shtesë:
 <translation id="8671519637524426245">Vlera <ph name="SECURE_DNS_SALT" /> nuk përmbush kërkesat për madhësinë.</translation>
 <translation id="867224526087042813">Nënshkrimi</translation>
 <translation id="8672264262457010862">Biznesi dhe industrialet</translation>
-<translation id="8673776281896298303">Kontrollo dhe riprogramo pajisjet e tua MIDI (SysEx)</translation>
 <translation id="8676424191133491403">Pa vonesë</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, përgjigjja, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Faqja e uebit në <ph name="PAGE" /> nuk mund të ngarkohej sepse:</translation>
@@ -4151,7 +4150,6 @@ Detaje shtesë:
 <translation id="9148507642005240123">&amp;Zhbëje redaktimin</translation>
 <translation id="9148599396704355100">Çmimi është i ulët</translation>
 <translation id="9150025764986957246">Mund të futësh gjëra të tilla si:</translation>
-<translation id="9150045010208374699">Përdor kamerën</translation>
 <translation id="9150685862434908345">Administratori yt mund të ndryshojë konfigurimin e shfletuesit në distancë. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">I përditësuar</translation>
 <translation id="9155211586651734179">Pajisjet periferike audio të lidhura</translation>

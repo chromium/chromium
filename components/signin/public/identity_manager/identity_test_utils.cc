@@ -244,7 +244,7 @@ std::optional<signin::ConsentLevel> GetPrimaryAccountConsentLevel(
     return std::nullopt;
   }
 
-  // TODO(crbug.com/1462978): revisit this once `ConsentLevel::kSync` is
+  // TODO(crbug.com/40067058): revisit this once `ConsentLevel::kSync` is
   // removed.
   return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)
              ? signin::ConsentLevel::kSync
@@ -304,7 +304,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1462978): remove this function once `ConsentLevel::kSync` is
+// TODO(crbug.com/40067058): remove this function once `ConsentLevel::kSync` is
 // removed.
 void RevokeSyncConsent(IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync))

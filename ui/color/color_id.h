@@ -548,6 +548,7 @@
   E_CPONLY(kColorWebNativeControlScrollbarThumb) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbHovered) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbInactive) \
+  E_CPONLY(kColorWebNativeControlScrollbarThumbOverlayMinimalMode) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarTrack) \
   E_CPONLY(kColorWebNativeControlSlider) \

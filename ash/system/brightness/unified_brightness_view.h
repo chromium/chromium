@@ -21,9 +21,9 @@ namespace ash {
 class ASH_EXPORT UnifiedBrightnessView
     : public UnifiedSliderView,
       public UnifiedSystemTrayModel::Observer {
- public:
-  METADATA_HEADER(UnifiedBrightnessView);
+  METADATA_HEADER(UnifiedBrightnessView, UnifiedSliderView)
 
+ public:
   UnifiedBrightnessView(UnifiedBrightnessSliderController* controller,
                         scoped_refptr<UnifiedSystemTrayModel> model,
                         std::optional<views::Button::PressedCallback>

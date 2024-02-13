@@ -42,14 +42,16 @@ OptionButtonBase::OptionButtonBase(int button_width,
 OptionButtonBase::~OptionButtonBase() = default;
 
 void OptionButtonBase::SetSelected(bool selected) {
-  if (selected_ == selected)
+  if (selected_ == selected) {
     return;
+  }
 
   selected_ = selected;
   UpdateImage();
 
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnButtonSelected(this);
+  }
 
   NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
                            /*send_native_event=*/true);
@@ -111,8 +113,9 @@ void OptionButtonBase::OnThemeChanged() {
 }
 
 void OptionButtonBase::NotifyClick(const ui::Event& event) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnButtonClicked(this);
+  }
   views::LabelButton::NotifyClick(event);
 }
 
@@ -148,7 +151,7 @@ void OptionButtonBase::UpdateTextColor() {
                color_provider->GetColor(KColorAshTextDisabledColor));
 }
 
-BEGIN_METADATA(OptionButtonBase, views::LabelButton)
+BEGIN_METADATA(OptionButtonBase)
 END_METADATA
 
 }  // namespace ash

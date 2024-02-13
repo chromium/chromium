@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_color_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -643,15 +644,14 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
         CSSPropertyID::kColor, color_string,
         StrictCSSParserContext(SecureContextMode::kInsecureContext));
 
-    if (auto* window = DynamicTo<LocalDOMWindow>(GetTopExecutionContext())) {
-      color = window->document()->GetTextLinkColors().ColorFromCSSValue(
-          *color_mix_value, GetCurrentColor(), color_scheme_);
-    } else {
-      TextLinkColors text_link_colors = TextLinkColors();
-      color = text_link_colors.ColorFromCSSValue(
-          *color_mix_value, GetCurrentColor(), color_scheme_);
-    }
-
+    static const TextLinkColors kDefaultTextLinkColors{};
+    auto* window = DynamicTo<LocalDOMWindow>(GetTopExecutionContext());
+    const TextLinkColors& text_link_colors =
+        window ? window->document()->GetTextLinkColors()
+               : kDefaultTextLinkColors;
+    const StyleColor style_color =
+        ResolveColorValue(*color_mix_value, text_link_colors, color_scheme_);
+    color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
   }
   return parse_result;
@@ -1854,7 +1854,16 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
   scoped_refptr<Image> image;
   gfx::SizeF default_object_size(Width(), Height());
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  if (!image_source->IsVideoElement()) {
+  if (image_source->IsVideoElement()) {
+    if (!static_cast<HTMLVideoElement*>(image_source)
+             ->HasAvailableVideoFrame()) {
+      return;
+    }
+  } else if (image_source->IsVideoFrame()) {
+    if (!static_cast<VideoFrame*>(image_source)->frame()) {
+      return;
+    }
+  } else {
     image = image_source->GetSourceImageForCanvas(
         FlushReason::kDrawImage, &source_image_status, default_object_size);
     if (source_image_status == kUndecodableSourceImageStatus) {
@@ -1870,9 +1879,6 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
       return;
     }
     if (!image || !image->width() || !image->height())
-      return;
-  } else {
-    if (!static_cast<HTMLVideoElement*>(image_source)->HasAvailableVideoFrame())
       return;
   }
 
@@ -2174,11 +2180,42 @@ Mesh2DIndexBuffer* BaseRenderingContext2D::createMesh2DIndexBuffer(
                                 array->Data() + array->length())));
 }
 
-void BaseRenderingContext2D::drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
-                                      const Mesh2DUVBuffer* uv_buffer,
-                                      const Mesh2DIndexBuffer* index_buffer,
-                                      const V8CanvasImageSource* image,
-                                      ExceptionState& exception_state) {
+void BaseRenderingContext2D::drawMesh(
+    const Mesh2DVertexBuffer* vertex_buffer,
+    const Mesh2DUVBuffer* uv_buffer,
+    const Mesh2DIndexBuffer* index_buffer,
+    const V8CanvasImageSource* v8_image_source,
+    ExceptionState& exception_state) {
+  CanvasImageSource* image_source =
+      ToCanvasImageSource(v8_image_source, exception_state);
+  if (!image_source) {
+    return;
+  }
+
+  SourceImageStatus source_image_status = kInvalidSourceImageStatus;
+  scoped_refptr<Image> image = image_source->GetSourceImageForCanvas(
+      FlushReason::kDrawMesh, &source_image_status,
+      gfx::SizeF(Width(), Height()));
+  switch (source_image_status) {
+    case kUndecodableSourceImageStatus:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "The HTMLImageElement provided is in the 'broken' state.");
+      return;
+    case kLayersOpenInCanvasSource:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "`drawMesh()` with a canvas as a source cannot be called while "
+          "layers are open in the the source canvas.");
+      return;
+    default:
+      break;
+  }
+
+  if (!image || image->IsNull()) {
+    return;
+  }
+
   scoped_refptr<cc::RefCountedBuffer<SkPoint>> vertex_data =
       vertex_buffer->GetBuffer();
   CHECK_NE(vertex_data, nullptr);
@@ -2188,7 +2225,35 @@ void BaseRenderingContext2D::drawMesh(const Mesh2DVertexBuffer* vertex_buffer,
       index_buffer->GetBuffer();
   CHECK_NE(index_data, nullptr);
 
-  // TODO(fmalita): impl
+  WillDrawImage(image_source);
+
+  if (!origin_tainted_by_content_ && WouldTaintCanvasOrigin(image_source)) {
+    SetOriginTaintedByContent();
+  }
+
+  SkRect bounds;
+  bounds.setBounds(vertex_data->data().data(),
+                   SkToInt(vertex_data->data().size()));
+
+  Draw<OverdrawOp::kNone>(
+      /*draw_func=*/
+      [&image, &vertex_data, &uv_data, &index_data](
+          cc::PaintCanvas* c, const cc::PaintFlags* flags) {
+        const gfx::RectF src(image->width(), image->height());
+        // UV coordinates are normalized, relative to the texture size.
+        const SkMatrix local_matrix =
+            SkMatrix::Scale(1.0f / image->width(), 1.0f / image->height());
+
+        cc::PaintFlags scoped_flags(*flags);
+        image->ApplyShader(scoped_flags, local_matrix, src, ImageDrawOptions());
+        c->drawVertices(vertex_data, uv_data, index_data, scoped_flags);
+      },
+      kNoOverdraw,
+      gfx::RectF(bounds.x(), bounds.y(), bounds.width(), bounds.height()),
+      CanvasRenderingContext2DState::PaintType::kFillPaintType,
+      image_source->IsOpaque() ? CanvasRenderingContext2DState::kOpaqueImage
+                               : CanvasRenderingContext2DState::kNonOpaqueImage,
+      CanvasPerformanceMonitor::DrawType::kOther);
 }
 
 bool BaseRenderingContext2D::ComputeDirtyRect(const gfx::RectF& local_rect,
@@ -3092,7 +3157,13 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
     canvas->GetDocument().UpdateStyleAndLayoutTreeForElement(
         canvas, DocumentUpdateReason::kCanvas);
   }
+
   const Font& font = AccessFont(canvas);
+
+  if (HostAsOffscreenCanvas() && font.GetFontSelector() &&
+      !font.GetFontSelector()->GetExecutionContext()) {
+    return MakeGarbageCollected<TextMetrics>();
+  }
 
   const CanvasRenderingContext2DState& state = GetState();
   TextDirection direction = ToTextDirection(state.GetDirection(), canvas);

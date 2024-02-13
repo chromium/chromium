@@ -52,7 +52,7 @@ const char kBlueZUnknown[] = "br-connection-unknown";
 
 }  // namespace
 
-absl::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
+std::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
     const std::string& error_string) {
   if (base::Contains(error_string, kBlueZInvalidArgumentsError))
     return ConnectToServiceInsecurelyResult::kInvalidArgumentsError;
@@ -96,7 +96,7 @@ absl::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
   if (base::Contains(error_string, kBlueZFailedError))
     return ConnectToServiceInsecurelyResult::kFailedError;
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 ConnectToServiceFailureReason ExtractFailureReasonFromErrorString(

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/ash/services/secure_channel/register_payload_file_request.h"
 #include "chromeos/ash/services/secure_channel/single_client_proxy.h"
@@ -54,12 +55,17 @@ class FakeSingleClientProxy : public SingleClientProxy {
   void HandleReceivedMessage(const std::string& feature,
                              const std::string& payload) override;
   void HandleRemoteDeviceDisconnection() override;
+  void HandleNearbyConnectionStateChanged(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
 
   const base::UnguessableToken proxy_id_;
   base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback_;
 
   std::vector<std::pair<std::string, std::string>> processed_messages_;
   bool was_remote_device_disconnection_handled_ = false;
+  mojom::NearbyConnectionStep nearby_connection_step_;
+  mojom::NearbyConnectionStepResult nearby_connection_step_result_;
 };
 
 // Test SingleClientProxy::Delegate implementation.

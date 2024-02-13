@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 
 namespace {
 
@@ -176,14 +176,14 @@ const char kInfobarParcelTrackingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarPasswordSaveBannerEventHistogram,
                                 event);
       if (event == MobileMessagesBannerEvent::Accepted) {
-        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+        default_browser::NotifyPasswordSavedOrUpdated();
       }
       break;
     case InfobarType::kInfobarTypePasswordUpdate:
       UMA_HISTOGRAM_ENUMERATION(kInfobarPasswordUpdateBannerEventHistogram,
                                 event);
       if (event == MobileMessagesBannerEvent::Accepted) {
-        LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+        default_browser::NotifyPasswordSavedOrUpdated();
       }
       break;
     case InfobarType::kInfobarTypeSaveCard:

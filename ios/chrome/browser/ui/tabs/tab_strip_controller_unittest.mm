@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_controller.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
@@ -48,15 +49,15 @@ class TabStripControllerTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     mock_popup_menu_commands_handler_ =
         OCMStrictProtocolMock(@protocol(PopupMenuCommands));
-    mock_application_settings_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
+    mock_settings_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(SettingsCommands));
 
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_commands_handler_
                      forProtocol:@protocol(ApplicationCommands)];
     [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_settings_commands_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+        startDispatchingToTarget:mock_settings_commands_handler_
+                     forProtocol:@protocol(SettingsCommands)];
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_popup_menu_commands_handler_
                      forProtocol:@protocol(PopupMenuCommands)];
@@ -80,9 +81,7 @@ class TabStripControllerTest : public PlatformTest {
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager->SetVisibleItem(visible_navigation_item_.get());
     web_state->SetNavigationManager(std::move(navigation_manager));
-    browser_->GetWebStateList()->InsertWebState(
-        /*index=*/0, std::move(web_state), WebStateList::INSERT_NO_FLAGS,
-        WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(std::move(web_state));
   }
 
   void DetachWebStateForTesting(int index) {
@@ -99,7 +98,7 @@ class TabStripControllerTest : public PlatformTest {
   std::unique_ptr<web::NavigationItem> visible_navigation_item_;
   id mock_application_commands_handler_;
   id mock_popup_menu_commands_handler_;
-  id mock_application_settings_commands_handler_;
+  id mock_settings_commands_handler_;
   TabStripController* controller_;
   UIWindow* window_;
 };

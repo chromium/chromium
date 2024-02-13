@@ -126,7 +126,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
     bool is_animating = false;
 
     // Unowned.
-    raw_ptr<MessagePopupView, DanglingUntriaged> popup = nullptr;
+    raw_ptr<MessagePopupView> popup = nullptr;
   };
 
   // Returns the x-origin for the given popup bounds in the current work area.

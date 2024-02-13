@@ -10,6 +10,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -168,7 +169,7 @@ class InputMethodEngine : virtual public TextInputMethod,
       int context_id,
       int length_before_selection,
       int length_after_selection,
-      base::StringPiece16 replacement_text);
+      std::u16string_view replacement_text);
 
   // Commit the text currently being composed to the composition.
   // Fails if the context is not focused.

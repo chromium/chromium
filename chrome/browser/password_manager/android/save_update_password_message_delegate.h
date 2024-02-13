@@ -35,7 +35,8 @@ class PasswordManagerClient;
 // is responsible for populating message properties, managing message's
 // lifetime, saving password form in response to user interactions and recording
 // metrics.
-class SaveUpdatePasswordMessageDelegate {
+class SaveUpdatePasswordMessageDelegate
+    : public PasswordEditDialogBridgeDelegate {
  public:
   // When Chrome detects an unknown password being entered into a web page, it
   // shows the message asking if user wants to save or update (if there is
@@ -60,11 +61,10 @@ class SaveUpdatePasswordMessageDelegate {
   using PasswordEditDialogFactory =
       base::RepeatingCallback<std::unique_ptr<PasswordEditDialog>(
           content::WebContents*,
-          PasswordEditDialog::DialogAcceptedCallback,
-          PasswordEditDialog::DialogDismissedCallback)>;
+          PasswordEditDialogBridgeDelegate*)>;
 
   SaveUpdatePasswordMessageDelegate();
-  ~SaveUpdatePasswordMessageDelegate();
+  ~SaveUpdatePasswordMessageDelegate() override;
 
   // Test-only constructor. Allows test class to set device_lock_bridge_.
   SaveUpdatePasswordMessageDelegate(
@@ -89,6 +89,12 @@ class SaveUpdatePasswordMessageDelegate {
   // uses some of the dependencies (e.g. log manager) this method needs to be
   // called before the object is destroyed.
   void DismissSaveUpdatePasswordPrompt();
+
+  // Implementation of PasswordEditDialogBridgeDelegate interface.
+  void HandleDialogDismissed(bool dialogAccepted) override;
+  void HandleSavePasswordFromDialog(const std::u16string& username,
+                                    const std::u16string& password) override;
+  bool IsUsingProfileStore(const std::u16string& username) override;
 
  private:
   friend class SaveUpdatePasswordMessageDelegateTest;
@@ -121,6 +127,11 @@ class SaveUpdatePasswordMessageDelegate {
       const password_manager::PasswordForm& pending_credentials,
       bool update_password);
 
+  // Gets account name or email that should be displayed in the description
+  // messages. Returns a nullopt if account info should not be displayed.
+  std::optional<std::string> GetAccountForMessageDescription(
+      const std::optional<AccountInfo>& account_info);
+
   // Returns string id for the message primary button. Takes into account
   // whether this is save or update password scenario and whether the update
   // message will be followed by a username confirmation dialog.
@@ -141,9 +152,6 @@ class SaveUpdatePasswordMessageDelegate {
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
   bool HasMultipleCredentialsStored();
   void CreatePasswordEditDialog();
-  void HandleDialogDismissed(bool dialogAccepted);
-  void HandleSavePasswordFromDialog(const std::u16string& username,
-                                    const std::u16string& password);
 
   void ClearState();
 
@@ -169,8 +177,8 @@ class SaveUpdatePasswordMessageDelegate {
 
   raw_ptr<content::WebContents> web_contents_ = nullptr;
 
-  // Can be the empty string, the account email, or the account full name.
-  std::string account_email_;
+  // Can be a nullopt, the account email, or the account full name.
+  std::optional<std::string> account_email_;
   bool update_password_ = false;
 
   // ManagePasswordsState maintains the password form that is being

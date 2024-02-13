@@ -28,26 +28,26 @@ PRFInput& PRFInput::operator=(const PRFInput&) = default;
 PRFInput::~PRFInput() = default;
 
 // static
-absl::optional<PRFInput> PRFInput::FromCBOR(const cbor::Value& v) {
+std::optional<PRFInput> PRFInput::FromCBOR(const cbor::Value& v) {
   if (!v.is_map()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   const cbor::Value::MapValue& map = v.GetMap();
   const auto first_it = map.find(cbor::Value(kExtensionPRFFirst));
   if (first_it == map.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   PRFInput ret;
   if (!CBORToPRFValue(first_it->second, &ret.salt1)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   const auto second_it = map.find(cbor::Value(kExtensionPRFSecond));
   if (second_it != map.end()) {
     ret.salt2.emplace();
     if (!CBORToPRFValue(second_it->second, &ret.salt2.value())) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
   return ret;

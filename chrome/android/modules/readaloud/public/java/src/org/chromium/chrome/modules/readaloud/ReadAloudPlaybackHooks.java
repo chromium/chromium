@@ -7,6 +7,7 @@ package org.chromium.chrome.modules.readaloud;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
+import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 
 import java.util.ArrayList;
@@ -59,6 +60,11 @@ public interface ReadAloudPlaybackHooks {
     /** Creates the Highlighter. */
     default Highlighter createHighlighter() {
         return new Highlighter() {};
+    }
+
+    /** Creates the Extractor. */
+    default Extractor createExtractor() {
+        return new Extractor() {};
     }
 
     /// Voices methods

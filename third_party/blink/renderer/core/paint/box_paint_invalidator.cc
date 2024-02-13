@@ -389,6 +389,13 @@ void BoxPaintInvalidator::InvalidateBackground() {
         .SetShouldDoFullPaintInvalidationWithoutLayoutChange(
             PaintInvalidationReason::kBackground);
   }
+
+  if (background_invalidation_type == BackgroundInvalidationType::kNone &&
+      box_.ScrollsOverflow() &&
+      box_.PreviousScrollableOverflowRect() != box_.ScrollableOverflowRect()) {
+    // We need to re-record the hit test data for scrolling contents.
+    context_.painting_layer->SetNeedsRepaint();
+  }
 }
 
 void BoxPaintInvalidator::InvalidatePaint() {

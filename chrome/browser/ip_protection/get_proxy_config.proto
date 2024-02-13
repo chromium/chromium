@@ -17,6 +17,7 @@ message GetProxyConfigRequest {
 }
 
 message GetProxyConfigResponse {
+  reserved 1;
   reserved 2;
 
   // Chain of proxies.
@@ -31,8 +32,6 @@ message GetProxyConfigResponse {
     int32 chain_id = 3;
   }
 
-  // Hostnames for the first proxy hop. Ordered based on preference for use.
-  repeated string first_hop_hostnames = 1 [deprecated = true];
   // Proxy chain each request should be routed through.
   repeated ProxyChain proxy_chain = 3;
 }

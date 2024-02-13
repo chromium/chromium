@@ -76,8 +76,8 @@ class ResourcePoolTest : public testing::Test {
   }
 
   viz::TestSharedBitmapManager shared_bitmap_manager_;
-  raw_ptr<MockContextSupport, DanglingUntriaged> context_support_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
+  raw_ptr<MockContextSupport> context_support_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<ResourcePool> resource_pool_;

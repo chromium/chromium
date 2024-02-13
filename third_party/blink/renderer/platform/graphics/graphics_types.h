@@ -198,6 +198,8 @@ enum TextAlign {
   kRightTextAlign
 };
 
+enum TextPaintOrder { kFillStroke, kStrokeFill };
+
 enum TextDrawingMode {
   kTextModeFill = 1 << 0,
   kTextModeStroke = 1 << 1,
@@ -343,7 +345,12 @@ enum class FlushReason {
   // printing.
   kRecordingLimitExceeded = 29,
 
-  kMaxValue = kRecordingLimitExceeded,
+  // The canvas was used as a source image in a call to
+  // `CanvasRenderingContext2D.drawMesh`.
+  // This inhibits vector printing.
+  kDrawMesh = 30,
+
+  kMaxValue = kDrawMesh,
 };
 
 // Note that this is only appropriate to use in canvas globalCompositeOperator

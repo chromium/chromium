@@ -8,8 +8,8 @@
 
 #include <cstdint>
 
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
@@ -129,7 +129,7 @@ void WaylandSubsurface::CreateSubsurface() {
 bool WaylandSubsurface::ConfigureAndShowSurface(
     const gfx::RectF& bounds_px,
     const gfx::RectF& parent_bounds_px,
-    const absl::optional<gfx::Rect>& clip_rect_px,
+    const std::optional<gfx::Rect>& clip_rect_px,
     const absl::variant<gfx::OverlayTransform, gfx::Transform>& transform,
     float buffer_scale,
     WaylandSubsurface* new_below,
@@ -153,10 +153,10 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
           wl_fixed_from_double(bounds_dip_in_parent_surface.x()),
           wl_fixed_from_double(bounds_dip_in_parent_surface.y()));
     } else {
-      gfx::Rect enclosed_rect_in_parent =
-          gfx::ToEnclosedRect(bounds_dip_in_parent_surface);
-      wl_subsurface_set_position(subsurface_.get(), enclosed_rect_in_parent.x(),
-                                 enclosed_rect_in_parent.y());
+      gfx::Point origin_in_parent =
+          gfx::ToCeiledPoint(bounds_dip_in_parent_surface.origin());
+      wl_subsurface_set_position(subsurface_.get(), origin_in_parent.x(),
+                                 origin_in_parent.y());
     }
     // TODO(crbug.com/1506309): This commit might not be needed. Changes to the
     // position depend on the sync mode of the parent surface.
@@ -168,7 +168,7 @@ bool WaylandSubsurface::ConfigureAndShowSurface(
   if (augmented_subsurface_ &&
       connection_->surface_augmenter()->SupportsClipRect() &&
       !connection_->surface_augmenter()->SupportsClipRectOnAugmentedSurface()) {
-    absl::optional<gfx::RectF> clip_dip_in_parent_surface;
+    std::optional<gfx::RectF> clip_dip_in_parent_surface;
     if (clip_rect_px) {
       clip_dip_in_parent_surface = AdjustSubsurfaceBounds(
           gfx::RectF(*clip_rect_px), parent_bounds_px,

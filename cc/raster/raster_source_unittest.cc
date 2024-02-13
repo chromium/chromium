@@ -48,8 +48,7 @@ std::ostream& operator<<(std::ostream& os, const Color& color) {
 TEST(RasterSourceTest, AnalyzeIsSolidUnscaled) {
   gfx::Size layer_bounds(400, 400);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
 
   PaintFlags solid_flags;
   SkColor solid_color = SkColorSetARGB(255, 12, 23, 34);
@@ -119,8 +118,7 @@ TEST(RasterSourceTest, AnalyzeIsSolidScaled) {
   const std::vector<float> recording_scales = {1.25f, 1.33f, 1.5f,  1.6f,
                                                1.66f, 2.f,   2.25f, 2.5f};
   for (float recording_scale : recording_scales) {
-    std::unique_ptr<FakeRecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+    auto recording_source = FakeRecordingSource::Create(layer_bounds);
     recording_source->SetRecordingScaleFactor(recording_scale);
 
     PaintFlags solid_flags;
@@ -204,8 +202,7 @@ TEST(RasterSourceTest, AnalyzeIsSolidScaled) {
 TEST(RasterSourceTest, PixelRefIteratorDiscardableRefsOneTile) {
   gfx::Size layer_bounds(512, 512);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
 
   PaintImage discardable_image[2][2];
   discardable_image[0][0] = CreateDiscardablePaintImage(gfx::Size(32, 32));
@@ -276,8 +273,7 @@ TEST(RasterSourceTest, RasterFullContents) {
   float contents_scale = 1.5f;
   float raster_divisions = 2.f;
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->SetBackgroundColor(SkColors::kBlack);
 
   // Because the caller sets content opaque, it also promises that it
@@ -341,8 +337,7 @@ TEST(RasterSourceTest, RasterFullContentsWithRasterTranslation) {
   gfx::Size layer_bounds(3, 5);
   float raster_divisions = 2.f;
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->SetBackgroundColor(SkColors::kBlack);
 
   // Because the caller sets content opaque, it also promises that it
@@ -401,8 +396,7 @@ TEST(RasterSourceTest, RasterPartialContents) {
   gfx::Size layer_bounds(3, 5);
   float contents_scale = 1.5f;
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->SetBackgroundColor(SkColors::kGreen);
 
   // First record everything as white.
@@ -475,8 +469,7 @@ TEST(RasterSourceTest, RasterPartialContents) {
 TEST(RasterSourceTest, RasterPartialContentsWithRasterTranslation) {
   gfx::Size layer_bounds(3, 5);
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->SetBackgroundColor(SkColors::kGreen);
 
   // First record everything as white.
@@ -566,8 +559,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
   gfx::Size partial_bounds(2, 4);
   float contents_scale = 1.5f;
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->SetBackgroundColor(SkColors::kGreen);
   recording_source->SetRequiresClear(true);
 
@@ -604,8 +596,7 @@ TEST(RasterSourceTest, RasterPartialClear) {
       EXPECT_COLOR_EQ(pixel_dark, bitmap.getColor(i, j)) << i << "," << j;
   }
 
-  std::unique_ptr<FakeRecordingSource> recording_source_light =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source_light = FakeRecordingSource::Create(layer_bounds);
   recording_source_light->SetBackgroundColor(SkColors::kGreen);
   recording_source_light->SetRequiresClear(true);
 
@@ -641,8 +632,7 @@ TEST(RasterSourceTest, RasterContentsTransparent) {
   gfx::Size layer_bounds(5, 3);
   float contents_scale = 0.5f;
 
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(layer_bounds);
+  auto recording_source = FakeRecordingSource::Create(layer_bounds);
   recording_source->SetBackgroundColor(SkColors::kTransparent);
   recording_source->SetRequiresClear(true);
   recording_source->Rerecord();
@@ -672,8 +662,7 @@ TEST(RasterSourceTest, RasterContentsTransparent) {
 TEST(RasterSourceTest, RasterTransformWithoutRecordingScale) {
   gfx::Size size(100, 100);
   float recording_scale = 2.f;
-  std::unique_ptr<FakeRecordingSource> recording_source =
-      FakeRecordingSource::CreateFilledRecordingSource(size);
+  auto recording_source = FakeRecordingSource::Create(size);
   recording_source->Rerecord();
   recording_source->SetRecordingScaleFactor(recording_scale);
   scoped_refptr<RasterSource> raster_source =

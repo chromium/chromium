@@ -226,7 +226,7 @@ CTFontRef SystemFontForConstructorOfType(PlatformFontMac::SystemFontType type) {
   return base::apple::NSToCFPtrCast(font);
 }
 
-absl::optional<PlatformFontMac::SystemFontType>
+std::optional<PlatformFontMac::SystemFontType>
 SystemFontTypeFromUndocumentedCTFontRefInternals(CTFontRef font) {
   // The macOS APIs can't reliably derive one font from another. That's why for
   // non-system fonts PlatformFontMac::DeriveFont() uses the family name of the
@@ -250,7 +250,7 @@ SystemFontTypeFromUndocumentedCTFontRefInternals(CTFontRef font) {
     // enough.
     return PlatformFontMac::SystemFontType::kGeneral;
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -282,7 +282,7 @@ PlatformFontMac::PlatformFontMac(SystemFontType system_font_type)
                       system_font_type) {}
 
 PlatformFontMac::PlatformFontMac(CTFontRef ct_font)
-    : PlatformFontMac(ct_font, absl::nullopt) {
+    : PlatformFontMac(ct_font, std::nullopt) {
   DCHECK(ct_font);  // nil must not be passed to this constructor.
 }
 
@@ -290,12 +290,12 @@ PlatformFontMac::PlatformFontMac(const std::string& font_name, int font_size)
     : PlatformFontMac(
           CTFontWithSpec({font_name, font_size, Font::NORMAL, Weight::NORMAL})
               .get(),
-          absl::nullopt,
+          std::nullopt,
           {font_name, font_size, Font::NORMAL, Weight::NORMAL}) {}
 
 PlatformFontMac::PlatformFontMac(sk_sp<SkTypeface> typeface,
                                  int font_size_pixels,
-                                 const absl::optional<FontRenderParams>& params)
+                                 const std::optional<FontRenderParams>& params)
     : PlatformFontMac(SkTypeface_GetCTFontRef(typeface.get()),
                       SystemFontTypeFromUndocumentedCTFontRefInternals(
                           SkTypeface_GetCTFontRef(typeface.get())),
@@ -356,7 +356,7 @@ Font PlatformFontMac::DeriveFont(int size_delta,
     base::apple::ScopedCFTypeRef<CTFontRef> derived = CTFontWithSpec(
         {font_spec_.name, font_spec_.size + size_delta, style, weight});
     return Font(new PlatformFontMac(
-        derived.get(), absl::nullopt,
+        derived.get(), std::nullopt,
         {font_spec_.name, font_spec_.size + size_delta, style, weight}));
   }
 }
@@ -432,9 +432,8 @@ Weight PlatformFontMac::GetFontWeightFromCTFontForTesting(CTFontRef font) {
 ////////////////////////////////////////////////////////////////////////////////
 // PlatformFontMac, private:
 
-PlatformFontMac::PlatformFontMac(
-    CTFontRef ct_font,
-    absl::optional<SystemFontType> system_font_type)
+PlatformFontMac::PlatformFontMac(CTFontRef ct_font,
+                                 std::optional<SystemFontType> system_font_type)
     : PlatformFontMac(ct_font,
                       system_font_type,
                       {base::SysNSStringToUTF8(
@@ -443,10 +442,9 @@ PlatformFontMac::PlatformFontMac(
                        GetFontStyleFromCTFont(ct_font),
                        GetFontWeightFromCTFont(ct_font)}) {}
 
-PlatformFontMac::PlatformFontMac(
-    CTFontRef ct_font,
-    absl::optional<SystemFontType> system_font_type,
-    FontSpec spec)
+PlatformFontMac::PlatformFontMac(CTFontRef ct_font,
+                                 std::optional<SystemFontType> system_font_type,
+                                 FontSpec spec)
     : ct_font_(ct_font, base::scoped_policy::RETAIN),
       system_font_type_(system_font_type),
       font_spec_(spec) {
@@ -568,7 +566,7 @@ PlatformFont* PlatformFont::CreateFromNameAndSize(const std::string& font_name,
 PlatformFont* PlatformFont::CreateFromSkTypeface(
     sk_sp<SkTypeface> typeface,
     int font_size_pixels,
-    const absl::optional<FontRenderParams>& params) {
+    const std::optional<FontRenderParams>& params) {
   return new PlatformFontMac(typeface, font_size_pixels, params);
 }
 

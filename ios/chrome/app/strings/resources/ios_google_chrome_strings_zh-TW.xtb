@@ -73,7 +73,9 @@
 <translation id="2689064829982324496">如要從所有網站中登出 Google 帳戶，請<ph name="BEGIN_LINK" />登出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2702250627063295552">將閱讀清單項目加入 Chrome</translation>
+<translation id="2703746758996815929">如要取得 Chrome 的實用提示，請在 iOS 設定中開啟通知功能。</translation>
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
+<translation id="2750626042242931740">你隨時可以在 Chrome 設定中更新所選項目。</translation>
 <translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
 <translation id="2789947168960170215">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2868822340714096138">清除 Chrome 中的瀏覽資料</translation>
@@ -295,6 +297,7 @@
 如要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
 <translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
+<translation id="8874688701962049679">可協助你充分運用 Chrome 的各項提示。</translation>
 <translation id="8891935667620843985">只要將 Chrome 設為預設瀏覽器應用程式，即可自動在 Chrome 中開啟連結。</translation>
 <translation id="8897749957032330183">密碼會儲存至這部裝置的 Google 密碼管理工具。</translation>
 <translation id="8949681853939555434">將 Chrome 設為預設瀏覽器</translation>

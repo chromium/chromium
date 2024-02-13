@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
 
-#include "base/command_line.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
-#include "chrome/browser/ip_protection/ip_protection_switches.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -30,9 +28,7 @@ IpProtectionConfigProviderFactory::GetInstance() {
 
 // static
 ProfileSelections IpProtectionConfigProviderFactory::CreateProfileSelections() {
-  if (!base::FeatureList::IsEnabled(net::features::kEnableIpProtectionProxy) ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableIpProtectionProxy)) {
+  if (!IpProtectionConfigProvider::CanIpProtectionBeEnabled()) {
     return ProfileSelections::BuildNoProfilesSelected();
   }
   // IP Protection usage requires that a Gaia account is available when
@@ -70,7 +66,8 @@ IpProtectionConfigProviderFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<IpProtectionConfigProvider>(
       IdentityManagerFactory::GetForProfile(profile),
-      TrackingProtectionSettingsFactory::GetForProfile(profile), profile);
+      TrackingProtectionSettingsFactory::GetForProfile(profile),
+      profile->GetPrefs(), profile);
 }
 
 bool IpProtectionConfigProviderFactory::ServiceIsCreatedWithBrowserContext()

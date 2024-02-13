@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -116,6 +117,20 @@ bool IsEligibleForRaceNetworkRequest(
   }
 }
 
+std::string GetContainerHostClientId(int frame_tree_node_id) {
+  std::string client_uuid;
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (frame_tree_node) {
+    base::WeakPtr<ServiceWorkerContainerHost> container_host =
+        frame_tree_node->current_frame_host()
+            ->GetLastCommittedServiceWorkerHost();
+    if (container_host) {
+      client_uuid = container_host->client_uuid();
+    }
+  }
+  return client_uuid;
+}
+
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -158,6 +173,8 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     : fallback_callback_(std::move(fallback_callback)),
       container_host_(std::move(container_host)),
       frame_tree_node_id_(frame_tree_node_id),
+      is_browser_startup_completed_(
+          GetContentClient()->browser()->IsBrowserStartupComplete()),
       find_registration_start_time_(std::move(find_registration_start_time)) {
   TRACE_EVENT_WITH_FLOW0(
       "ServiceWorker",
@@ -334,7 +351,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                     head_update_params.router_info = std::move(router_info);
                     std::move(fallback_callback)
                         .Run(false /* reset_subresource_loader_params */,
-                             head_update_params);
+                             std::move(head_update_params));
                     if (active_worker->running_status() !=
                             blink::EmbeddedWorkerStatus::kRunning &&
                         base::FeatureList::IsEnabled(
@@ -387,11 +404,29 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     }
   }
 
+  std::string client_uuid;
+  // frame_tree_node_id_ can be empty for:
+  // - PlzSharedWorker (destination == sharedworker)
+  // - PlzDedicatedWorker (destination == worker)
+  // Otherwise frame_tree_node_id_ should be set, except for tests.
+  if (resource_request_.destination ==
+          network::mojom::RequestDestination::kSharedWorker ||
+      (resource_request_.destination ==
+           network::mojom::RequestDestination::kWorker &&
+       base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker))) {
+    client_uuid = worker_parent_client_uuid_;
+  } else if (frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    client_uuid = GetContainerHostClientId(frame_tree_node_id_);
+  } else {
+    // Unit tests may not set ids.
+    CHECK_IS_TEST();
+  }
+
   // Dispatch the fetch event.
   fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
       blink::mojom::FetchAPIRequest::From(resource_request_),
-      resource_request_.destination, container_host_->client_uuid(),
-      active_worker,
+      resource_request_.destination, client_uuid,
+      container_host_->client_uuid(), active_worker,
       base::BindOnce(&ServiceWorkerMainResourceLoader::DidPrepareFetchEvent,
                      weak_factory_.GetWeakPtr(), active_worker,
                      active_worker->running_status()),
@@ -893,7 +928,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info = response_head_->load_timing;
       std::move(fallback_callback_)
-          .Run(false /* reset_subresource_loader_params */, head_update_params);
+          .Run(false /* reset_subresource_loader_params */,
+               std::move(head_update_params));
     }
     return;
   }
@@ -1238,6 +1274,15 @@ void ServiceWorkerMainResourceLoader::
                     "InitialServiceWorkerStatus.",
                     "AnyOriginNavigation.", GetFrameTreeNodeTypeString()}),
       *initial_service_worker_status_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
+                    "InitialServiceWorkerStatus.",
+                    ComposeNavigationTypeString(resource_request_), ".",
+                    GetFrameTreeNodeTypeString(),
+                    is_browser_startup_completed_
+                        ? ".BrowserStartupCompleted"
+                        : ".BrowserStartupNotCompleted"}),
+      *initial_service_worker_status_);
 }
 
 void ServiceWorkerMainResourceLoader::
@@ -1263,6 +1308,9 @@ void ServiceWorkerMainResourceLoader::
   const net::LoadTimingInfo& load_timing = response_head_->load_timing;
   const std::string navigation_type_string =
       ComposeNavigationTypeString(resource_request_);
+  const std::string is_browser_startup_completed_str =
+      is_browser_startup_completed_ ? "BrowserStartupCompleted"
+                                    : "BrowserStartupNotCompleted";
   base::TimeDelta time = load_timing.service_worker_ready_time -
                          load_timing.service_worker_start_time;
   base::UmaHistogramMediumTimes(
@@ -1288,7 +1336,8 @@ void ServiceWorkerMainResourceLoader::
       "ServiceWorker",
       base::StrCat({"ForwardServiceWorkerToWorkerReady.",
                     GetInitialServiceWorkerStatusString(), ".",
-                    navigation_type_string})
+                    navigation_type_string, ".",
+                    is_browser_startup_completed_str})
           .c_str(),
       this, load_timing.service_worker_start_time,
       "initial_service_worker_status", GetInitialServiceWorkerStatusString());
@@ -1296,7 +1345,8 @@ void ServiceWorkerMainResourceLoader::
       "ServiceWorker",
       base::StrCat({"ForwardServiceWorkerToWorkerReady.",
                     GetInitialServiceWorkerStatusString(), ".",
-                    navigation_type_string})
+                    navigation_type_string, ".",
+                    is_browser_startup_completed_str})
           .c_str(),
       this, load_timing.service_worker_ready_time);
 }

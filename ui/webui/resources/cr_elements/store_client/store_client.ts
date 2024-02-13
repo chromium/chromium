@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action, DeferredAction, Store} from '//resources/js/store.js';
-import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {Action, DeferredAction, Store} from '//resources/js/store.js';
+import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * @fileoverview defines a helper function `makeStoreClientMixin` to create a

@@ -13,7 +13,7 @@ export const OobeScrollableBehavior = {
   /**
    * Init observers to keep track of the scrollable element size changes.
    */
-  initScrollableObservers(scrollableElement, ...sizeChangeObservableElemenets) {
+  initScrollableObservers(scrollableElement, ...sizeChangeObservableElements) {
     if (!scrollableElement || this.scrollableElement_) {
       return;
     }
@@ -23,8 +23,8 @@ export const OobeScrollableBehavior = {
     this.scrollableElement_.addEventListener(
       'scroll', this.applyScrollClassTags_.bind(this));
     this.resizeObserver_.observe(this.scrollableElement_);
-    for (let i = 0; i < sizeChangeObservableElemenets.length; ++i) {
-      this.resizeObserver_.observe(sizeChangeObservableElemenets[i]);
+    for (let i = 0; i < sizeChangeObservableElements.length; ++i) {
+      this.resizeObserver_.observe(sizeChangeObservableElements[i]);
     }
   },
 
@@ -50,6 +50,7 @@ export const OobeScrollableBehavior = {
 
 /** @interface */
 export class OobeScrollableBehaviorInterface {
-  initScrollableObservers(scrollableElement, ...sizeChangeObservableElemenets) {
-  }
+  initScrollableObservers(scrollableElement, ...sizeChangeObservableElements) {}
+  applyScrollClassTags_() {}
+  scrollToBottom() {}
 }

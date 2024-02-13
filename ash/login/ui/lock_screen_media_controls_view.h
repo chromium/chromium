@@ -44,9 +44,9 @@ class ASH_EXPORT LockScreenMediaControlsView
       public media_session::mojom::MediaControllerImageObserver,
       public base::PowerSuspendObserver,
       public ui::ImplicitAnimationObserver {
- public:
-  METADATA_HEADER(LockScreenMediaControlsView);
+  METADATA_HEADER(LockScreenMediaControlsView, views::View)
 
+ public:
   using MediaControlsEnabled = base::RepeatingCallback<bool()>;
 
   // The reason why the media controls were hidden. This is recorded in

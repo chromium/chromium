@@ -130,7 +130,7 @@ class SyncServiceImplTest : public ::testing::Test {
         kTestUser, signin::ConsentLevel::kSignin);
   }
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   void SignInWithSyncConsent() {
@@ -826,7 +826,7 @@ TEST_F(SyncServiceImplTest, RevokeAccessTokenFromTokenService) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  // TODO(crbug.com/1462552): Update once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Update once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const CoreAccountId primary_account_id =
@@ -868,7 +868,7 @@ TEST_F(SyncServiceImplTest, CredentialsRejectedByClient_StopSync) {
   TestSyncServiceObserver observer;
   service()->AddObserver(&observer);
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const CoreAccountId primary_account_id =
@@ -922,7 +922,7 @@ TEST_F(SyncServiceImplTest, SignOutRevokeAccessToken) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const CoreAccountId primary_account_id =
@@ -1056,7 +1056,7 @@ TEST_F(SyncServiceImplTest, CredentialErrorReturned) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const CoreAccountId primary_account_id =
@@ -1116,7 +1116,7 @@ TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const CoreAccountId primary_account_id =
@@ -1231,7 +1231,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
       service()->GetUserSettings()->IsSyncFeatureDisabledViaDashboard());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // TODO(crbug.com/1462552): Update once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Update once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   const std::string primary_account_gaia_id =
@@ -1251,7 +1251,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ash does not support signout.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   EXPECT_TRUE(
@@ -1278,7 +1278,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   // On Desktop and Lacros, the sync consent is revoked, but the primary account
   // is left at ConsentLevel::kSignin. Sync will restart in standalone transport
   // mode.
-  // TODO(crbug.com/1462552): Remove once kSync becomes unreachable or is
+  // TODO(crbug.com/40066949): Remove once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
   EXPECT_FALSE(
@@ -1363,6 +1363,105 @@ TEST_F(SyncServiceImplTest,
       "Sync.PassphraseTypeUponNotMyBirthdayOrEncryptionObsolete",
       /*sample=*/kPassphraseType,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(SyncServiceImplTest, DisableSyncOnClientClearsPassphrasePrefForAccount) {
+  const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
+
+  SignInWithoutSyncConsent();
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  base::RunLoop().RunUntilIdle();
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(kPassphraseType);
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  // Set the passphrase.
+  SyncPrefs sync_prefs(prefs());
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
+  ASSERT_EQ("token",
+            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+
+  // Clear sync from the dashboard.
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = NOT_MY_BIRTHDAY;
+  service()->OnActionableProtocolError(client_cmd);
+
+  // The passphrase for account pref cleared when sync is cleared from
+  // dashboard.
+  EXPECT_TRUE(
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+}
+
+TEST_F(SyncServiceImplTest,
+       DisableSyncOnClientClearsPassphrasePrefForSyncingAccount) {
+  const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
+
+  PopulatePrefsForInitialSyncFeatureSetupComplete();
+  SignInWithSyncConsent();
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  base::RunLoop().RunUntilIdle();
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(kPassphraseType);
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  // Set the passphrase.
+  SyncPrefs sync_prefs(prefs());
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
+  ASSERT_EQ("token",
+            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+
+  // Clear sync from the dashboard.
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = NOT_MY_BIRTHDAY;
+  service()->OnActionableProtocolError(client_cmd);
+
+  // The passphrase for account pref cleared when sync is cleared from
+  // dashboard.
+  EXPECT_TRUE(
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
+}
+
+TEST_F(SyncServiceImplTest, EncryptionObsoleteClearsPassphrasePrefForAccount) {
+  const PassphraseType kPassphraseType = PassphraseType::kCustomPassphrase;
+
+  SignInWithoutSyncConsent();
+  InitializeService({{AUTOFILL, false}, {AUTOFILL_WALLET_DATA, false}});
+  base::RunLoop().RunUntilIdle();
+
+  // This call represents the initial passphrase type coming in from the server.
+  service()->PassphraseTypeChanged(kPassphraseType);
+  ASSERT_EQ(kPassphraseType, service()->GetUserSettings()->GetPassphraseType());
+
+  // Set the passphrase.
+  SyncPrefs sync_prefs(prefs());
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia);
+  sync_prefs.SetEncryptionBootstrapTokenForAccount("token", gaia_id_hash);
+  ASSERT_EQ("token",
+            sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash));
+
+  SyncProtocolError client_cmd;
+  client_cmd.action = DISABLE_SYNC_ON_CLIENT;
+  client_cmd.error_type = ENCRYPTION_OBSOLETE;
+  service()->OnActionableProtocolError(client_cmd);
+
+  // The passphrase for account pref should be cleared.
+  EXPECT_TRUE(
+      sync_prefs.GetEncryptionBootstrapTokenForAccount(gaia_id_hash).empty());
 }
 
 // Verify a that local sync mode isn't impacted by sync being disabled.

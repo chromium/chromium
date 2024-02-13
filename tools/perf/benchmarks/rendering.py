@@ -146,8 +146,13 @@ class RenderingDesktopNoTracing(RenderingDesktop):
     return 'rendering.desktop.notracing'
 
   def CreateStorySet(self, options):
+    os_name = None
+    # Archive Validation does not perform OS validation
+    if hasattr(options, 'os_name'):
+      os_name = options.os_name
     return page_sets.RenderingStorySet(platform=self.PLATFORM_NAME,
-                                       disable_tracing=True)
+                                       disable_tracing=True,
+                                       os_name=os_name)
 
   def CreateCoreTimelineBasedMeasurementOptions(self):
     options = timeline_based_measurement.Options()

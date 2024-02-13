@@ -156,7 +156,8 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleSingleKeyRotation) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kSuccess));
-  EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.downloaded_keys,
+              ElementsAre(kKnownTrustedVaultKey, kTrustedVaultKey1));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 1));
 }
@@ -178,40 +179,9 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleKeyRotations) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kSuccess));
-  EXPECT_THAT(processed_response.new_keys,
-              ElementsAre(kTrustedVaultKey1, kTrustedVaultKey2));
-  EXPECT_THAT(processed_response.last_key_version,
-              Eq(kKnownTrustedVaultKeyVersion + 2));
-}
-
-// There might be keys, that predates latest client-side trusted vault key.
-// Server-side key chain is kTrustedVaultKey1 -> kKnownTrustedVaultKey ->
-// kTrustedVaultKey2 -> kTrustedVaultKey3.
-// Since kTrustedVaultKey1 can't be validated using kKnownTrustedVaultKey it
-// shouldn't be included in processed response.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandlePriorKeys) {
-  const DownloadKeysResponseHandler::ProcessedResponse processed_response =
-      handler().ProcessResponse(
-          /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
-          /*response_body=*/
-          CreateGetSecurityDomainMemberResponseWithSyncMembership(
-              /*trusted_vault_keys=*/
-              {kTrustedVaultKey1, kKnownTrustedVaultKey, kTrustedVaultKey2,
-               kTrustedVaultKey3},
-              /*trusted_vault_keys_versions=*/
-              {kKnownTrustedVaultKeyVersion - 1, kKnownTrustedVaultKeyVersion,
-               kKnownTrustedVaultKeyVersion + 1,
-               kKnownTrustedVaultKeyVersion + 2},
-              /*signing_keys=*/
-              {{},
-               kTrustedVaultKey1,
-               kKnownTrustedVaultKey,
-               kTrustedVaultKey2}));
-
-  EXPECT_THAT(processed_response.status,
-              Eq(TrustedVaultDownloadKeysStatus::kSuccess));
-  EXPECT_THAT(processed_response.new_keys,
-              ElementsAre(kTrustedVaultKey2, kTrustedVaultKey3));
+  EXPECT_THAT(
+      processed_response.downloaded_keys,
+      ElementsAre(kKnownTrustedVaultKey, kTrustedVaultKey1, kTrustedVaultKey2));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 2));
 }
@@ -238,7 +208,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kSuccess));
-  EXPECT_THAT(processed_response.new_keys,
+  EXPECT_THAT(processed_response.downloaded_keys,
               ElementsAre(kTrustedVaultKey1, kTrustedVaultKey2));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 2));
@@ -267,7 +237,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed));
-  EXPECT_THAT(processed_response.new_keys, IsEmpty());
+  EXPECT_THAT(processed_response.downloaded_keys, IsEmpty());
 }
 
 // The test populates undecryptable/corrupted |wrapped_key| field, handler
@@ -312,7 +282,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed));
-  EXPECT_THAT(processed_response.new_keys, IsEmpty());
+  EXPECT_THAT(processed_response.downloaded_keys, IsEmpty());
 }
 
 // The test populates invalid |rotation_proof| field for intermediate key when
@@ -335,22 +305,24 @@ TEST_F(DownloadKeysResponseHandlerTest,
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kKeyProofsVerificationFailed));
-  EXPECT_THAT(processed_response.new_keys, IsEmpty());
+  EXPECT_THAT(processed_response.downloaded_keys, IsEmpty());
 }
 
 // In this scenario client already has most recent trusted vault key.
 TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfNewKeys) {
-  EXPECT_THAT(handler()
-                  .ProcessResponse(
-                      /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
-                      /*response_body=*/
-                      CreateGetSecurityDomainMemberResponseWithSyncMembership(
-                          /*trusted_vault_keys=*/{kKnownTrustedVaultKey},
-                          /*trusted_vault_keys_versions=*/
-                          {kKnownTrustedVaultKeyVersion},
-                          /*signing_keys=*/{{}}))
-                  .status,
+  const DownloadKeysResponseHandler::ProcessedResponse processed_response =
+      handler().ProcessResponse(
+          /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+          /*response_body=*/
+          CreateGetSecurityDomainMemberResponseWithSyncMembership(
+              /*trusted_vault_keys=*/{kKnownTrustedVaultKey},
+              /*trusted_vault_keys_versions=*/
+              {kKnownTrustedVaultKeyVersion},
+              /*signing_keys=*/{{}}));
+  EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kNoNewKeys));
+  EXPECT_THAT(processed_response.downloaded_keys,
+              ElementsAre(kKnownTrustedVaultKey));
 }
 
 // Tests handling the situation, when response isn't a valid serialized
@@ -431,7 +403,8 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAllSecurityDomains) {
 
     EXPECT_THAT(processed_response.status,
                 Eq(TrustedVaultDownloadKeysStatus::kSuccess));
-    EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
+    EXPECT_THAT(processed_response.downloaded_keys,
+                ElementsAre(kTrustedVaultKey1));
     EXPECT_THAT(processed_response.last_key_version,
                 Eq(kKnownTrustedVaultKeyVersion + 1));
   }
@@ -462,7 +435,8 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
 
   EXPECT_THAT(processed_response.status,
               Eq(TrustedVaultDownloadKeysStatus::kSuccess));
-  EXPECT_THAT(processed_response.new_keys, ElementsAre(kTrustedVaultKey1));
+  EXPECT_THAT(processed_response.downloaded_keys,
+              ElementsAre(kTrustedVaultKey1));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 1));
 }

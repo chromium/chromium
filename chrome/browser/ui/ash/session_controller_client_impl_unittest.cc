@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/networking/policy_cert_service.h"
@@ -36,8 +35,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_test_util.h"
@@ -113,16 +114,15 @@ class SessionControllerClientImplTest : public testing::Test {
   ~SessionControllerClientImplTest() override {}
 
   void SetUp() override {
-    testing::Test::SetUp();
     ash::LoginState::Initialize();
 
     // Initialize the UserManager singleton.
-    user_manager_ = new TestChromeUserManager;
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_.get()));
-    controller_ = std::make_unique<ash::MultiProfileUserController>(
-        TestingBrowserProcess::GetGlobal()->local_state(), user_manager_);
-    user_manager_->set_multi_profile_user_controller(controller_.get());
+    user_manager_.Reset(std::make_unique<TestChromeUserManager>());
+    controller_ =
+        std::make_unique<user_manager::MultiUserSignInPolicyController>(
+            TestingBrowserProcess::GetGlobal()->local_state(),
+            user_manager_.Get());
+    user_manager_->set_multi_user_sign_in_policy_controller(controller_.get());
     // Initialize AssistantBrowserDelegate singleton.
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
@@ -139,11 +139,10 @@ class SessionControllerClientImplTest : public testing::Test {
   void TearDown() override {
     cros_settings_test_helper_.reset();
     browser_manager_.reset();
-    assistant_delegate_.reset();
-    user_manager_->set_multi_profile_user_controller(nullptr);
-    controller_.reset();
-    user_manager_enabler_.reset();
-    user_manager_ = nullptr;
+
+    for (user_manager::User* user : user_manager_->GetUsers()) {
+      user_manager_->OnUserProfileWillBeDestroyed(user->GetAccountId());
+    }
     profile_manager_.reset();
 
     // We must ensure that the network::CertVerifierWithTrustAnchors outlives
@@ -154,8 +153,12 @@ class SessionControllerClientImplTest : public testing::Test {
     // PolicyCertService::Shutdown()).
     base::RunLoop().RunUntilIdle();
 
+    assistant_delegate_.reset();
+    user_manager_->set_multi_user_sign_in_policy_controller(nullptr);
+    controller_.reset();
+    user_manager_.Reset();
+
     ash::LoginState::Shutdown();
-    testing::Test::TearDown();
   }
 
   // Add and log in a user to the session.
@@ -180,7 +183,7 @@ class SessionControllerClientImplTest : public testing::Test {
         .GetUserEmail();
   }
 
-  TestChromeUserManager* user_manager() { return user_manager_; }
+  TestChromeUserManager* user_manager() { return user_manager_.Get(); }
 
   // Adds a regular user with a profile.
   TestingProfile* InitForMultiProfile() {
@@ -199,27 +202,28 @@ class SessionControllerClientImplTest : public testing::Test {
     TestingProfile* profile =
         profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
     profile->set_profile_name(account_id.GetUserEmail());
+    user_manager()->OnUserProfileCreated(account_id, profile->GetPrefs());
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
     return profile;
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
-  session_manager::SessionManager session_manager_;
-  ash::SessionTerminationManager session_termination_manager_;
-
- protected:
-  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
+  session_manager::SessionManager& session_manager() {
+    return session_manager_;
+  }
+  ash::SessionTerminationManager& session_termination_manager() {
+    return session_termination_manager_;
+  }
 
  private:
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  // Owned by |user_manager_enabler_|.
-  raw_ptr<TestChromeUserManager, DanglingUntriaged> user_manager_ = nullptr;
-
-  std::unique_ptr<ash::MultiProfileUserController> controller_;
-
+  // Sorted in the production initialization order.
+  session_manager::SessionManager session_manager_;
+  ash::SessionTerminationManager session_termination_manager_;
+  content::BrowserTaskEnvironment task_environment_;
+  user_manager::TypedScopedUserManager<TestChromeUserManager> user_manager_;
+  std::unique_ptr<user_manager::MultiUserSignInPolicyController> controller_;
+  std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
 };
 
@@ -300,7 +304,7 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
   }
 
   user_profile->GetPrefs()->SetString(
-      user_manager::kMultiProfileUserBehaviorPref,
+      user_manager::prefs::kMultiProfileUserBehaviorPref,
       user_manager::MultiUserSignInPolicyToPrefValue(
           user_manager::MultiUserSignInPolicy::kNotAllowed));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER,
@@ -429,7 +433,7 @@ TEST_F(SessionControllerClientImplTest,
       AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
   user_profile->GetPrefs()->SetString(
-      user_manager::kMultiProfileUserBehaviorPref,
+      user_manager::prefs::kMultiProfileUserBehaviorPref,
       user_manager::MultiUserSignInPolicyToPrefValue(
           user_manager::MultiUserSignInPolicy::kNotAllowed));
   user_manager()->AddUser(
@@ -449,7 +453,7 @@ TEST_F(SessionControllerClientImplTest,
   const AccountId account_id(
       AccountId::FromUserEmailGaiaId(kUser, kUserGaiaId));
   user_manager()->LoginUser(account_id);
-  session_termination_manager_.SetDeviceLockedToSingleUser();
+  session_termination_manager().SetDeviceLockedToSingleUser();
   user_manager()->AddUser(
       AccountId::FromUserEmailGaiaId("bb@b.b", "4444444444"));
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER,
@@ -470,8 +474,8 @@ TEST_F(SessionControllerClientImplTest, SendUserSession) {
       AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
   const user_manager::User* user = user_manager()->AddUser(account_id);
   CreateTestingProfile(user);
-  session_manager_.CreateSession(account_id, user->username_hash(), false);
-  session_manager_.SetSessionState(SessionState::ACTIVE);
+  session_manager().CreateSession(account_id, user->username_hash(), false);
+  session_manager().SetSessionState(SessionState::ACTIVE);
 
   // User session was sent.
   EXPECT_EQ(1, session_controller.update_user_session_count());
@@ -521,14 +525,14 @@ TEST_F(SessionControllerClientImplTest, UserPrefsChange) {
   const AccountId account_id(
       AccountId::FromUserEmailGaiaId("user@test.com", "5555555555"));
   const user_manager::User* user = user_manager()->AddUser(account_id);
-  session_manager_.CreateSession(account_id, user->username_hash(), false);
+  session_manager().CreateSession(account_id, user->username_hash(), false);
 
   // Simulate the notification that the profile is ready.
   TestingProfile* const user_profile = CreateTestingProfile(user);
-  session_manager_.NotifyUserProfileLoaded(account_id);
+  session_manager().NotifyUserProfileLoaded(account_id);
 
   // User session could only be made active after user profile is loaded.
-  session_manager_.SetSessionState(SessionState::ACTIVE);
+  session_manager().SetSessionState(SessionState::ACTIVE);
 
   // Manipulate user prefs and verify SessionController is updated.
   PrefService* const user_prefs = user_profile->GetPrefs();

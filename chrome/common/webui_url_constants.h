@@ -52,7 +52,6 @@ extern const char kChromeUIChromeURLsHost[];
 extern const char kChromeUIChromeURLsURL[];
 extern const char kChromeUIComponentsHost[];
 extern const char kChromeUIComponentsUrl[];
-extern const char kChromeUIComposeHost[];
 extern const char kChromeUIConflictsHost[];
 extern const char kChromeUIConstrainedHTMLTestURL[];
 extern const char kChromeUICookieSettingsURL[];
@@ -226,6 +225,8 @@ extern const char kChromeUIThemeHost[];
 extern const char kChromeUIThemeURL[];
 extern const char kChromeUITopChromeDomain[];
 extern const char kChromeUITranslateInternalsHost[];
+extern const char kChromeUIUntrustedComposeHost[];
+extern const char kChromeUIUntrustedComposeUrl[];
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kChromeUIUntrustedHatsHost[];
 extern const char kChromeUIUntrustedHatsURL[];
@@ -502,8 +503,6 @@ extern const char kChromeUITabStripURL[];
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-extern const char kChromeUICommanderHost[];
-extern const char kChromeUICommanderURL[];
 extern const char kChromeUITabSearchHost[];
 extern const char kChromeUITabSearchURL[];
 #endif

@@ -526,7 +526,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   int64_t last_recorded_browser_context_network_bytes_ = 0;
 
   // Set of process hosts being prerendered.
-  using PrerenderProcessSet = std::set<content::RenderProcessHost*>;
+  using PrerenderProcessSet =
+      std::set<raw_ptr<content::RenderProcessHost, SetExperimental>>;
   PrerenderProcessSet prerender_process_hosts_;
 
   raw_ptr<const base::TickClock> tick_clock_;

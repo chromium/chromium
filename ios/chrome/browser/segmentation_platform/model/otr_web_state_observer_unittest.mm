@@ -77,22 +77,18 @@ class OTRWebStateObserverTest : public PlatformTest {
     browser_state_manager_.reset();
   }
 
-  void AddWebState(int index) {
+  void AddWebState() {
     web::WebState::CreateParams create_params(browser_state_);
     auto web_state = web::WebState::Create(create_params);
 
-    browser_->GetWebStateList()->InsertWebState(index, std::move(web_state),
-                                                WebStateList::INSERT_NO_FLAGS,
-                                                WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(std::move(web_state));
   }
 
-  void AddOtrWebState(int index) {
+  void AddOtrWebState() {
     web::WebState::CreateParams create_params(otr_browser_state_);
     auto web_state = web::WebState::Create(create_params);
 
-    otr_browser_->GetWebStateList()->InsertWebState(
-        index, std::move(web_state), WebStateList::INSERT_NO_FLAGS,
-        WebStateOpener());
+    otr_browser_->GetWebStateList()->InsertWebState(std::move(web_state));
   }
 
  protected:
@@ -113,17 +109,17 @@ TEST_F(OTRWebStateObserverTest, CreationNotifiesNoOTR) {
 }
 
 TEST_F(OTRWebStateObserverTest, CreateWithOTR) {
-  AddOtrWebState(0);
+  AddOtrWebState();
 
   MockObserverClient observer_client;
   EXPECT_CALL(observer_client, OnOTRWebStateCountChanged(true));
   observer_client.Observe(observer_.get());
 
   EXPECT_CALL(observer_client, OnOTRWebStateCountChanged(true));
-  AddOtrWebState(1);
+  AddOtrWebState();
 
   EXPECT_CALL(observer_client, OnOTRWebStateCountChanged(true));
-  AddWebState(0);
+  AddWebState();
   otr_browser_->GetWebStateList()->CloseWebStateAt(
       1, WebStateList::CLOSE_NO_FLAGS);
 
@@ -138,8 +134,8 @@ TEST_F(OTRWebStateObserverTest, AddOtrAfterCreation) {
   observer_client.Observe(observer_.get());
 
   EXPECT_CALL(observer_client, OnOTRWebStateCountChanged(true));
-  AddWebState(0);
-  AddOtrWebState(0);
+  AddWebState();
+  AddOtrWebState();
 }
 
 }  // namespace segmentation_platform

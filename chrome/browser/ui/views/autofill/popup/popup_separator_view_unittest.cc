@@ -21,7 +21,8 @@ class PopupSeparatorViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
     widget_ = CreateTestWidget();
-    view_ = widget_->SetContentsView(std::make_unique<PopupSeparatorView>());
+    view_ = widget_->SetContentsView(
+        std::make_unique<PopupSeparatorView>(/*vertical_padding=*/1));
     widget_->Show();
   }
 

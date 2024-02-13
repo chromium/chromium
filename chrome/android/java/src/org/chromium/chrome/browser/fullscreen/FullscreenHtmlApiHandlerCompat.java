@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -158,6 +159,11 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
     // TODO(crbug.com/1519669): Coordinate usage of #setDecorFitsSystemWindows
     @Override
     void setLayoutFullscreen(View contentView) {
+        // Avoid setting this on automotive, as automotive devices are inconsistent in their
+        // support for drawing edge-to-edge.
+        if (BuildInfo.getInstance().isAutomotive) {
+            return;
+        }
         // TODO(https://crbug.com/1519954): Account for floating windows.
         WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), false);
     }

@@ -14,6 +14,8 @@
 #include "chromeos/ash/services/secure_channel/connection_observer.h"
 #include "chromeos/ash/services/secure_channel/device_to_device_authenticator.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/nearby_connector.mojom-shared.h"
+#include "chromeos/ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom-forward.h"
 #include "chromeos/ash/services/secure_channel/secure_context.h"
 
@@ -24,7 +26,9 @@ namespace ash::secure_channel {
 // authenticating it via a security handshake once the connection has occurred.
 // Once the channel has been authenticated, messages sent are automatically
 // encrypted and messages received are automatically decrypted.
-class SecureChannel : public ConnectionObserver {
+class SecureChannel : public ConnectionObserver,
+                      public NearbyConnectionObserver,
+                      public AuthenticatorObserver {
  public:
   // Enumeration of possible states of connecting to a remote device.
   //   DISCONNECTED: There is no connection to the device, nor is there a
@@ -63,6 +67,15 @@ class SecureChannel : public ConnectionObserver {
     // corresponds to the value returned by an earlier call to SendMessage().
     virtual void OnMessageSent(SecureChannel* secure_channel,
                                int sequence_number) {}
+
+    virtual void OnNearbyConnectionStateChanged(
+        SecureChannel* secure_channel,
+        mojom::NearbyConnectionStep step,
+        mojom::NearbyConnectionStepResult result) {}
+
+    virtual void OnSecureChannelAuthenticationStateChanged(
+        SecureChannel* secure_channel,
+        mojom::SecureChannelState secure_channel_state) {}
   };
 
   class Factory {
@@ -131,8 +144,17 @@ class SecureChannel : public ConnectionObserver {
                        const WireMessage& wire_message,
                        bool success) override;
 
+  // NearbyConnectionObserver:
+  void OnNearbyConnectionStateChagned(
+      mojom::NearbyConnectionStep step,
+      mojom::NearbyConnectionStepResult result) override;
+
+  // AuthenticatorObserver:
+  void OnAuthenticationStateChanged(
+      mojom::SecureChannelState secure_channel_state) override;
+
  protected:
-  SecureChannel(std::unique_ptr<Connection> connection);
+  explicit SecureChannel(std::unique_ptr<Connection> connection);
 
   Status status_;
 

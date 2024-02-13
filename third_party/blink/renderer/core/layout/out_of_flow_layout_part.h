@@ -127,20 +127,14 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // This stores the information needed to update a multicol child inside an
   // existing multicol fragment. This is used during nested fragmentation of an
   // OOF positioned element.
+  //
+  // TODO(layout-dev): Remove? This class now only holds a break token pointer,
+  // so things can most likely be simplified.
   struct MulticolChildInfo {
     DISALLOW_NEW();
 
    public:
-    // The mutable link of a multicol child.
-    PhysicalFragmentLink* mutable_link;
-
-    // The multicol break token that stores a reference to |mutable_link|'s
-    // break token in its list of child break tokens.
     Member<const BlockBreakToken> parent_break_token;
-
-    explicit MulticolChildInfo(PhysicalFragmentLink* mutable_link,
-                               BlockBreakToken* parent_break_token = nullptr)
-        : mutable_link(mutable_link), parent_break_token(parent_break_token) {}
 
     void Trace(Visitor* visitor) const;
   };
@@ -374,6 +368,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       HeapVector<NodeToLayout>& pending_descendants,
       wtf_size_t index,
       LogicalOffset fragmentainer_progression,
+      LayoutUnit* monolithic_overflow,
       bool* has_actual_break_inside,
       HeapVector<NodeToLayout>* fragmented_descendants);
   void AddOOFToFragmentainer(NodeToLayout& descendant,
@@ -384,10 +379,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
                              bool* has_actual_break_inside,
                              SimplifiedOofLayoutAlgorithm* algorithm,
                              HeapVector<NodeToLayout>* fragmented_descendants);
-  void ReplaceFragmentainer(wtf_size_t index,
-                            LogicalOffset offset,
-                            bool create_new_fragment,
-                            SimplifiedOofLayoutAlgorithm* algorithm);
   LogicalOffset UpdatedFragmentainerOffset(
       LogicalOffset offset,
       wtf_size_t index,
@@ -400,10 +391,6 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       std::optional<LayoutUnit> clipped_container_block_offset,
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
-
-  void ReplaceFragment(const LayoutResult* new_result,
-                       const PhysicalBoxFragment& old_fragment,
-                       wtf_size_t index);
 
   // This saves the static-position for an OOF-positioned object into its
   // paint-layer.

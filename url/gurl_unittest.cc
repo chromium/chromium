@@ -392,6 +392,26 @@ class GURLTypedTest : public ::testing::TestWithParam<bool> {
     std::optional<std::string_view> expected;
   };
 
+  using ApplyReplacementsFunc = GURL(const GURL&);
+
+  struct ReplaceCase {
+    std::string_view base;
+    ApplyReplacementsFunc* apply_replacements;
+    std::string_view expected;
+  };
+
+  struct ReplaceHostCase {
+    std::string_view base;
+    std::string_view replacement_host;
+    std::string_view expected;
+  };
+
+  struct ReplacePathCase {
+    std::string_view base;
+    std::string_view replacement_path;
+    std::string_view expected;
+  };
+
   void TestResolve(const ResolveCase& resolve_case) {
     SCOPED_TRACE(testing::Message() << "base: " << resolve_case.base
                                     << ", relative: " << resolve_case.relative);
@@ -403,6 +423,27 @@ class GURLTypedTest : public ::testing::TestWithParam<bool> {
     } else {
       EXPECT_FALSE(output.is_valid());
     }
+  }
+
+  void TestReplace(const ReplaceCase& replace) {
+    GURL output = replace.apply_replacements(GURL(replace.base));
+    EXPECT_EQ(output.spec(), replace.expected);
+  }
+
+  void TestReplaceHost(const ReplaceHostCase& replace) {
+    GURL url(replace.base);
+    GURL::Replacements replacements;
+    replacements.SetHostStr(replace.replacement_host);
+    GURL output = url.ReplaceComponents(replacements);
+    EXPECT_EQ(output.spec(), replace.expected);
+  }
+
+  void TestReplacePath(const ReplacePathCase& replace) {
+    GURL url(replace.base);
+    GURL::Replacements replacements;
+    replacements.SetPathStr(replace.replacement_path);
+    GURL output = url.ReplaceComponents(replacements);
+    EXPECT_EQ(output.spec(), replace.expected);
   }
 
   bool use_standard_compliant_non_special_scheme_url_parsing_;
@@ -688,21 +729,6 @@ TEST(GURLTest, Replacements) {
              return url.ReplaceComponents(replacements);
            },
        .expected = "http://www.google.com/"},
-      {.base = "http://www.google.com/foo/bar.html?foo#bar",
-       .apply_replacements =
-           +[](const GURL& url) {
-             GURL::Replacements replacements;
-             replacements.SetSchemeStr("javascript");
-             replacements.ClearUsername();
-             replacements.ClearPassword();
-             replacements.ClearHost();
-             replacements.ClearPort();
-             replacements.SetPathStr("window.open('foo');");
-             replacements.ClearQuery();
-             replacements.ClearRef();
-             return url.ReplaceComponents(replacements);
-           },
-       .expected = "javascript:window.open('foo');"},
       {.base = "file:///C:/foo/bar.txt",
        .apply_replacements =
            +[](const GURL& url) {
@@ -772,7 +798,104 @@ TEST(GURLTest, Replacements) {
   }
 }
 
-TEST(GURLTest, ClearFragmentOnDataUrl) {
+TEST_P(GURLTypedTest, Replacements) {
+  // Test flag-dependent behavior.
+  // Existing tests in GURLTest::Replacements cover common cases.
+
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    ReplaceCase replace_cases[] = {
+        {.base = "git://a1/a2?a3=a4#a5",
+         .apply_replacements =
+             +[](const GURL& url) {
+               GURL::Replacements replacements;
+               replacements.SetHostStr("b1");
+               replacements.SetPortStr("99");
+               replacements.SetPathStr("b2");
+               replacements.SetQueryStr("b3=b4");
+               replacements.SetRefStr("b5");
+               return url.ReplaceComponents(replacements);
+             },
+         .expected = "git://b1:99/b2?b3=b4#b5"},
+        // URL Standard: https://url.spec.whatwg.org/#dom-url-username
+        // > 1. If this’s URL cannot have a username/password/port, then return.
+        {.base = "git:///",
+         .apply_replacements =
+             +[](const GURL& url) {
+               GURL::Replacements replacements;
+               replacements.SetUsernameStr("x");
+               return url.ReplaceComponents(replacements);
+             },
+         .expected = "git:///"},
+        // URL Standard: https://url.spec.whatwg.org/#dom-url-password
+        // > 1. If this’s URL cannot have a username/password/port, then return.
+        {.base = "git:///",
+         .apply_replacements =
+             +[](const GURL& url) {
+               GURL::Replacements replacements;
+               replacements.SetPasswordStr("x");
+               return url.ReplaceComponents(replacements);
+             },
+         .expected = "git:///"},
+        // URL Standard: https://url.spec.whatwg.org/#dom-url-port
+        // > 1. If this’s URL cannot have a username/password/port, then return.
+        {.base = "git:///",
+         .apply_replacements =
+             +[](const GURL& url) {
+               GURL::Replacements replacements;
+               replacements.SetPortStr("80");
+               return url.ReplaceComponents(replacements);
+             },
+         .expected = "git:///"}};
+
+    for (const ReplaceCase& c : replace_cases) {
+      TestReplace(c);
+    }
+
+    ReplaceHostCase replace_host_cases[] = {
+        {"git:/", "host", "git://host/"},
+        {"git:/a", "host", "git://host/a"},
+        {"git://", "host", "git://host"},
+        {"git:///", "host", "git://host/"},
+        {"git://h/a", "host", "git://host/a"},
+        // The following behavior is different from Web-facing URL APIs
+        // because DOMURLUtils::setHostname disallows setting an empty host.
+        //
+        // Web-facing URL API behavior is:
+        // > const url = new URL("git://u:p@h:80/");
+        // > url.hostname = "";
+        // > assertEquals(url.href, "git://u:p@h:80/");
+        {"git://u:p@h:80/", "", "git:///"}};
+    for (const ReplaceHostCase& c : replace_host_cases) {
+      TestReplaceHost(c);
+    }
+
+    ReplacePathCase replace_path_cases[] = {
+        {"git:/", "a", "git:/a"},
+        {"git://", "a", "git:///a"},
+        {"git:///", "a", "git:///a"},
+        {"git://host", "a", "git://host/a"},
+        {"git://host/b", "a", "git://host/a"}};
+    for (const ReplacePathCase& c : replace_path_cases) {
+      TestReplacePath(c);
+    }
+  } else {
+    // Non-compliant behaviors.
+    ReplaceHostCase replace_host_cases[] = {
+        {"git://host", "h2", "git://host"},
+    };
+    for (const ReplaceHostCase& c : replace_host_cases) {
+      TestReplaceHost(c);
+    }
+
+    // Non-compliant behaviors.
+    ReplacePathCase replace_path_cases[] = {{"git://host", "path", "git:path"}};
+    for (const ReplacePathCase& c : replace_path_cases) {
+      TestReplacePath(c);
+    }
+  }
+}
+
+TEST(GURLTypedTest, ClearFragmentOnDataUrl) {
   // http://crbug.com/291747 - a data URL may legitimately have trailing
   // whitespace in the spec after the ref is cleared. Test this does not trigger
   // the Parsed importing validation DCHECK in GURL.
@@ -1096,7 +1219,6 @@ TEST(GURLTest, ContentForNonStandardURLs) {
       // content not the scheme.
       {"view-source:http://example.com/path", "http://example.com/path"},
       {"blob:http://example.com/GUID", "http://example.com/GUID"},
-      {"blob://http://example.com/GUID", "//http://example.com/GUID"},
       {"blob:http://user:password@example.com/GUID",
        "http://user:password@example.com/GUID"},
 
@@ -1122,6 +1244,35 @@ TEST(GURLTest, ContentForNonStandardURLs) {
   }
 }
 
+TEST_P(GURLTypedTest, ContentForNonStandardURLs) {
+  struct TestCase {
+    const std::string_view url;
+    const std::string_view expected;
+  };
+
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "http//example.com/GUID"},
+        {"git://host/path#fragment", "host/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.GetContent(), test.expected) << test.url;
+      EXPECT_EQ(url.GetContentPiece(), test.expected) << test.url;
+    }
+  } else {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "//http://example.com/GUID"},
+        {"git://host/path#fragment", "//host/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.GetContent(), test.expected) << test.url;
+      EXPECT_EQ(url.GetContentPiece(), test.expected) << test.url;
+    }
+  }
+}
+
 // Tests that the URL path is properly extracted for unusual URLs. This can be
 // complex in cases such as multiple schemes (view-source:http:) or when
 // octothorpes ('#') are involved.
@@ -1135,7 +1286,6 @@ TEST(GURLTest, PathForNonStandardURLs) {
        "this is arbitrary content"},
       {"view-source:http://example.com/path", "http://example.com/path"},
       {"blob:http://example.com/GUID", "http://example.com/GUID"},
-      {"blob://http://example.com/GUID", "//http://example.com/GUID"},
       {"blob:http://user:password@example.com/GUID",
        "http://user:password@example.com/GUID"},
 
@@ -1151,6 +1301,33 @@ TEST(GURLTest, PathForNonStandardURLs) {
   for (const auto& test : cases) {
     GURL url(test.url);
     EXPECT_EQ(test.expected, url.path()) << test.url;
+  }
+}
+
+TEST_P(GURLTypedTest, PathForNonStandardURLs) {
+  struct TestCase {
+    const std::string_view url;
+    const std::string_view expected;
+  };
+
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "//example.com/GUID"},
+        {"git://host/path#fragment", "/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.path(), test.expected) << test.url;
+    }
+  } else {
+    TestCase cases[] = {
+        {"blob://http://example.com/GUID", "//http://example.com/GUID"},
+        {"git://host/path#fragment", "//host/path"},
+    };
+    for (const auto& test : cases) {
+      GURL url(test.url);
+      EXPECT_EQ(url.path(), test.expected) << test.url;
+    }
   }
 }
 

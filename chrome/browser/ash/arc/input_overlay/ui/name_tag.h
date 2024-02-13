@@ -52,6 +52,7 @@ class NameTag : public views::View {
   void SetState(bool is_error, const std::u16string& error_tooltip);
 
   views::ImageView* error_icon() const { return error_icon_; }
+  views::Label* title_label() { return title_label_; }
 
  private:
   friend class EditLabelTest;

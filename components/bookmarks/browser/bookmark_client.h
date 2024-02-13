@@ -49,8 +49,8 @@ class BookmarkClient {
   // default folder if relevant for the URL.
   virtual const BookmarkNode* GetSuggestedSaveLocation(const GURL& url);
 
-  // Requests a favicon from the history cache for the web page at |page_url|
-  // for icon type favicon_base::IconType::kFavicon. |callback| is run when the
+  // Requests a favicon from the history cache for the web page at `page_url`
+  // for icon type favicon_base::IconType::kFavicon. `callback` is run when the
   // favicon has been fetched, which returns gfx::Image is a multi-resolution
   // image of gfx::kFaviconSize DIP width and height. The data from the history
   // cache is resized if need be.
@@ -63,9 +63,9 @@ class BookmarkClient {
   virtual bool SupportsTypedCountForUrls();
 
   // Retrieves the number of times each bookmark URL has been typed in
-  // the Omnibox by the user. For each key (URL) in |url_typed_count_map|,
+  // the Omnibox by the user. For each key (URL) in `url_typed_count_map`,
   // the corresponding value will be updated with the typed count of that URL.
-  // |url_typed_count_map| must not be null.
+  // `url_typed_count_map` must not be null.
   virtual void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map);
 
   // Returns a task that will be used to load a managed root node. This task
@@ -73,27 +73,34 @@ class BookmarkClient {
   virtual LoadManagedNodeCallback GetLoadManagedNodeCallback() = 0;
 
   // Returns the current storage state to be added as suffix to metrics.
-  // TODO(crbug.com/1520418): Revisit this function as the notion of storage
+  // TODO(b/41493391): Revisit this function as the notion of storage
   // type is no longer an attribute of BookmarkModel or BookmarkClient and may
   // need to be BookmarkNode-specific.
   virtual metrics::StorageStateForUma GetStorageStateForUma() = 0;
 
-  // Returns true if the |permanent_node| can have its title updated.
+  // Returns true if the `permanent_node` can have its title updated.
   virtual bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) = 0;
 
-  // Returns true if |node| is considered a managed node.
+  // Returns true if `node` is considered a managed node.
   virtual bool IsNodeManaged(const BookmarkNode* node) = 0;
 
   // Encodes the bookmark sync data into a string blob. It's used by the
   // bookmark model to persist the sync metadata together with the bookmark
-  // model.
-  virtual std::string EncodeBookmarkSyncMetadata() = 0;
+  // model. It comes with two variants: the blob corresponding to the
+  // local-or-syncable bookmarks and the one for account bookmarks. In
+  // normal circumnstances, at most one of them is non-empty.
+  virtual std::string EncodeLocalOrSyncableBookmarkSyncMetadata() = 0;
+  virtual std::string EncodeAccountBookmarkSyncMetadata() = 0;
 
-  // Decodes a string represeting the sync metadata stored in |metadata_str|.
-  // The model calls this method after it has loaded the model data.
-  // |schedule_save_closure| is a repeating call back to trigger a model and
-  // metadata persistence process.
-  virtual void DecodeBookmarkSyncMetadata(
+  // Decodes a string representing the sync metadata stored in `metadata_str`.
+  // Same as with encoding, it comes with two variants, one for
+  // local-or-syncable bookmarks and one for account bookmarks. The model calls
+  // this method after it has loaded the model data. `schedule_save_closure` is
+  // a repeating call back to trigger a model and metadata persistence process.
+  virtual void DecodeLocalOrSyncableBookmarkSyncMetadata(
+      const std::string& metadata_str,
+      const base::RepeatingClosure& schedule_save_closure) = 0;
+  virtual void DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) = 0;
 

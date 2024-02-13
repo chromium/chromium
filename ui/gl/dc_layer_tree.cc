@@ -82,7 +82,7 @@ constexpr gfx::Size kSolidColorSurfaceSize = gfx::Size(1, 1);
 
 #if DCHECK_IS_ON()
 bool VisualTreeValid(
-    std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+    std::vector<std::optional<size_t>>& subtree_index_to_overlay,
     const std::vector<bool>& prev_subtree_is_attached_to_root) {
   for (size_t i = 0; i < subtree_index_to_overlay.size(); i++) {
     // Unused subtrees must be removed from the root.
@@ -166,7 +166,7 @@ class SolidColorSurface final {
   Microsoft::WRL::ComPtr<IDCompositionSurface> surface_;
 
   // Only set if |surface_| was successfully filled to this color.
-  absl::optional<SkColor4f> color_;
+  std::optional<SkColor4f> color_;
 };
 
 SolidColorSurfacePool::SolidColorSurfacePool(
@@ -503,7 +503,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     const gfx::Transform& quad_to_root_transform,
     const gfx::RRectF& rounded_corner_bounds,
     float opacity,
-    const absl::optional<gfx::Rect>& clip_rect_in_root) {
+    const std::optional<gfx::Rect>& clip_rect_in_root) {
   bool needs_commit = false;
 
   // Helper function to set |field| to |parameter| and return whether it
@@ -972,18 +972,18 @@ bool DCLayerTree::VisualTree::BuildTreeOptimized(
   // current frame for the given overlay index.
   // |overlay_index_to_reused_subtree| has an entry for every overlay in the
   // current frame. Each entry indexes into |visual_subtrees_|, which are the
-  // subtrees for the previous frame. Initialized with absl::nullopt,
+  // subtrees for the previous frame. Initialized with std::nullopt,
   // meaning not reused.
-  std::vector<absl::optional<size_t>> overlay_index_to_reused_subtree(
-      overlays.size(), absl::nullopt);
+  std::vector<std::optional<size_t>> overlay_index_to_reused_subtree(
+      overlays.size(), std::nullopt);
 
   // Index into the current frame overlay that uses the subtree of the previous
   // frame for the given subtree index. |subtree_index_to_overlay| has an entry
   // for every subtree in the previous frame. Each entry indexes into |overlays|
-  // of the current frame. Initialized with absl::nullopt, meaning the subtree
+  // of the current frame. Initialized with std::nullopt, meaning the subtree
   // is not being reused in the current frame.
-  std::vector<absl::optional<size_t>> subtree_index_to_overlay(
-      visual_subtrees_.size(), absl::nullopt);
+  std::vector<std::optional<size_t>> subtree_index_to_overlay(
+      visual_subtrees_.size(), std::nullopt);
 
   // |visual_subtrees| will become |visual_subtrees_| of the current frame;
   std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
@@ -1124,8 +1124,8 @@ DCLayerTree::VisualTree::VisualSubtreeMap
 DCLayerTree::VisualTree::BuildMapAndAssignMatchingSubtrees(
     const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
     std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-    std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-    std::vector<absl::optional<size_t>>& subtree_index_to_overlay) {
+    std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+    std::vector<std::optional<size_t>>& subtree_index_to_overlay) {
   CHECK_EQ(overlay_index_to_reused_subtree.size(), overlays.size());
   CHECK_EQ(new_visual_subtrees.size(), overlays.size());
   CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());
@@ -1170,8 +1170,8 @@ DCLayerTree::VisualTree::BuildMapAndAssignMatchingSubtrees(
 
 size_t DCLayerTree::VisualTree::ReuseUnmatchedSubtrees(
     std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-    std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-    std::vector<absl::optional<size_t>>& subtree_index_to_overlay) {
+    std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+    std::vector<std::optional<size_t>>& subtree_index_to_overlay) {
   CHECK_EQ(new_visual_subtrees.size(), overlay_index_to_reused_subtree.size());
   CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());
 
@@ -1230,8 +1230,8 @@ bool DCLayerTree::VisualTree::DetachUnusedSubtreesFromRoot(
 
 bool DCLayerTree::VisualTree::DetachReusedSubtreesThatNeedRepositioningFromRoot(
     const std::vector<std::unique_ptr<VisualSubtree>>& new_visual_subtrees,
-    const std::vector<absl::optional<size_t>>& overlay_index_to_reused_subtree,
-    const std::vector<absl::optional<size_t>>& subtree_index_to_overlay,
+    const std::vector<std::optional<size_t>>& overlay_index_to_reused_subtree,
+    const std::vector<std::optional<size_t>>& subtree_index_to_overlay,
     std::vector<bool>& prev_subtree_is_attached_to_root) {
   CHECK_EQ(new_visual_subtrees.size(), overlay_index_to_reused_subtree.size());
   CHECK_EQ(subtree_index_to_overlay.size(), visual_subtrees_.size());

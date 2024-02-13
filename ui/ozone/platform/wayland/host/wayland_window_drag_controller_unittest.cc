@@ -1888,6 +1888,7 @@ INSTANTIATE_TEST_SUITE_P(
     WaylandWindowDragControllerTest,
     Values(wl::ServerConfig{
         .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-        .use_aura_output_manager = true}));
+        .aura_output_manager_protocol =
+            wl::AuraOutputManagerProtocol::kEnabledV2}));
 
 }  // namespace ui

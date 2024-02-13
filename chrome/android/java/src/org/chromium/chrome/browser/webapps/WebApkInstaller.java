@@ -84,20 +84,21 @@ public class WebApkInstaller {
                 (Integer result) -> {
                     WebApkInstaller.this.notify(result);
                     if (result == WebApkInstallResult.FAILURE) return;
+                    var intentDataProvider =
+                            WebApkIntentDataProviderFactory.create(
+                                    new Intent(),
+                                    packageName,
+                                    null,
+                                    source,
+                                    /* forceNavigation= */ false,
+                                    /* canUseSplashFromContentProvider= */ false,
+                                    /* shareData= */ null,
+                                    /* shareDataActivityClassName= */ null);
+                    WebApkSyncService.onWebApkUsed(intentDataProvider);
 
                     // Stores the source info of WebAPK in WebappDataStorage.
                     WebappRegistry.FetchWebappDataStorageCallback fetchCallback =
                             (WebappDataStorage storage) -> {
-                                var intentDataProvider =
-                                        WebApkIntentDataProviderFactory.create(
-                                                new Intent(),
-                                                packageName,
-                                                null,
-                                                source,
-                                                /* forceNavigation= */ false,
-                                                /* canUseSplashFromContentProvider= */ false,
-                                                /* shareData= */ null,
-                                                /* shareDataActivityClassName= */ null);
                                 storage.updateFromWebappIntentDataProvider(intentDataProvider);
                                 storage.updateSource(source);
                                 storage.updateTimeOfLastCheckForUpdatedWebManifest();

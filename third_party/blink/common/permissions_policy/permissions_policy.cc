@@ -16,10 +16,14 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace blink {
-namespace {
 
-// Extracts an Allowlist from a ParsedPermissionsPolicyDeclaration.
-PermissionsPolicy::Allowlist AllowlistFromDeclaration(
+PermissionsPolicy::Allowlist::Allowlist() = default;
+
+PermissionsPolicy::Allowlist::Allowlist(const Allowlist& rhs) = default;
+
+PermissionsPolicy::Allowlist::~Allowlist() = default;
+
+PermissionsPolicy::Allowlist PermissionsPolicy::Allowlist::FromDeclaration(
     const ParsedPermissionsPolicyDeclaration& parsed_declaration) {
   auto result = PermissionsPolicy::Allowlist();
   if (parsed_declaration.self_if_matches) {
@@ -34,14 +38,6 @@ PermissionsPolicy::Allowlist AllowlistFromDeclaration(
 
   return result;
 }
-
-}  // namespace
-
-PermissionsPolicy::Allowlist::Allowlist() = default;
-
-PermissionsPolicy::Allowlist::Allowlist(const Allowlist& rhs) = default;
-
-PermissionsPolicy::Allowlist::~Allowlist() = default;
 
 void PermissionsPolicy::Allowlist::Add(
     const blink::OriginWithPossibleWildcards& origin) {
@@ -313,7 +309,8 @@ void PermissionsPolicy::SetHeaderPolicy(
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
-    allowlists_.emplace(feature, AllowlistFromDeclaration(parsed_declaration));
+    allowlists_.emplace(feature,
+                        Allowlist::FromDeclaration(parsed_declaration));
     if (parsed_declaration.reporting_endpoint.has_value()) {
       reporting_endpoints_.insert(
           {feature, parsed_declaration.reporting_endpoint.value()});
@@ -328,7 +325,8 @@ void PermissionsPolicy::SetHeaderPolicyForIsolatedApp(
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(feature != mojom::PermissionsPolicyFeature::kNotFound);
-    const auto header_allowlist = AllowlistFromDeclaration(parsed_declaration);
+    const auto header_allowlist =
+        Allowlist::FromDeclaration(parsed_declaration);
     auto& isolated_app_allowlist = allowlists_.at(feature);
 
     // If the header does not specify further restrictions we do not need to
@@ -368,7 +366,7 @@ void PermissionsPolicy::OverwriteHeaderPolicyForClientHints(
        parsed_header) {
     mojom::PermissionsPolicyFeature feature = parsed_declaration.feature;
     DCHECK(GetPolicyFeatureToClientHintMap().contains(feature));
-    allowlists_[feature] = AllowlistFromDeclaration(parsed_declaration);
+    allowlists_[feature] = Allowlist::FromDeclaration(parsed_declaration);
   }
 }
 
@@ -562,7 +560,7 @@ bool PermissionsPolicy::InheritedValueForFeature(
       // 9.7 5.1: If the allowlist for feature in container policy matches
       // origin, return "Enabled".
       // 9.7 5.2: Otherwise return "Disabled".
-      return AllowlistFromDeclaration(decl).Contains(origin_);
+      return Allowlist::FromDeclaration(decl).Contains(origin_);
     }
   }
   switch (feature.second) {

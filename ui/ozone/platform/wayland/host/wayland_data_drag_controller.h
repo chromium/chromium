@@ -7,14 +7,17 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <string>
 
 #include "base/files/scoped_file.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "base/synchronization/atomic_flag.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -119,6 +122,11 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void DumpState(std::ostream& out) const;
 
  private:
+  // Cancellation flags are ref-counted to ensure they remain valid even if the
+  // controller has already cancelled and released its instance so that it is
+  // able to track only the current fetching task, on which it's interested in.
+  using CancelFlag = base::RefCountedData<base::AtomicFlag>;
+
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, ReceiveDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDrag);
   FRIEND_TEST_ALL_PREFIXES(WaylandDataDragControllerTest, StartDragWithText);
@@ -158,18 +166,15 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   // using ThreadPool infra. Once data for all supported mime types is fetched,
   // the OnDataTransferFinished callback is fired.
   void PostDataTransferTask(const gfx::PointF& location,
-                            base::TimeTicks start_time);
+                            base::TimeTicks start_time,
+                            const scoped_refptr<CancelFlag>& cancel_flag);
 
   void OnDataTransferFinished(
       base::TimeTicks start_time,
       std::unique_ptr<ui::OSExchangeData> received_data);
-  // Calls the window's OnDragEnter with the given location and data,
-  // then immediately calls OnDragMotion to get the actual operation.
-  void PropagateOnDragEnter(const gfx::PointF& location,
-                            base::TimeTicks timestamp,
-                            std::unique_ptr<OSExchangeData> data);
+  void CancelDataTransferIfNeeded();
 
-  absl::optional<wl::Serial> GetAndValidateSerialForDrag(
+  std::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);
 
   void SetOfferedExchangeDataProvider(const OSExchangeData& data);
@@ -207,7 +212,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   const raw_ptr<WaylandTouch::Delegate> touch_delegate_;
 
   State state_ = State::kIdle;
-  absl::optional<mojom::DragEventSource> drag_source_;
+  std::optional<mojom::DragEventSource> drag_source_;
 
   // Data offered by us to the other side.
   std::unique_ptr<WaylandDataSource> data_source_;
@@ -254,6 +259,10 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   raw_ptr<WaylandWindow> pointer_grabber_for_window_drag_ = nullptr;
 
   std::unique_ptr<ScopedEventDispatcher> nested_dispatcher_;
+
+  // Flag used to notify the data fetcher task, which runs on thread pool, that
+  // it should abort the operation. i.e: used only in incoming dnd sessions.
+  scoped_refptr<CancelFlag> data_fetch_cancel_flag_;
 
   base::WeakPtrFactory<WaylandDataDragController> weak_factory_{this};
 };

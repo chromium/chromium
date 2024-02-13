@@ -32,7 +32,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);
   consoleModel.addEventListener(SDK.ConsoleModel.Events.MessageAdded, messageAddedListener);
   Console.ConsoleView.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
-  Common.Settings.moduleSetting('consoleGroupSimilar').set(false);
+  Common.Settings.moduleSetting('console-group-similar').set(false);
   TestRunner.addResult('Creating promise');
   TestRunner.evaluateInPageWithTimeout('createPromises()');
 

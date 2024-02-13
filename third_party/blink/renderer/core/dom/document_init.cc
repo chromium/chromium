@@ -136,11 +136,8 @@ DocumentInit& DocumentInit::WithToken(const DocumentToken& token) {
   return *this;
 }
 
-const DocumentToken& DocumentInit::GetToken() const {
-  if (!token_) {
-    token_.emplace();
-  }
-  return *token_;
+const std::optional<DocumentToken>& DocumentInit::GetToken() const {
+  return token_;
 }
 
 DocumentInit& DocumentInit::ForInitialEmptyDocument(bool empty) {

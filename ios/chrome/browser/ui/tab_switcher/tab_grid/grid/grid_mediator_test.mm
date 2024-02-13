@@ -123,8 +123,7 @@ void GridMediatorTestClass::SetUp() {
     ASSERT_FALSE(base::Contains(identifiers, identifier));
     identifiers.push_back(identifier);
     browser_->GetWebStateList()->InsertWebState(
-        i, std::move(web_state), WebStateList::INSERT_FORCE_INDEX,
-        WebStateOpener());
+        std::move(web_state), WebStateList::InsertionParams::AtIndex(i));
   }
   original_identifiers_ = identifiers;
   browser_->GetWebStateList()->ActivateWebStateAt(1);

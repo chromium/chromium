@@ -18,7 +18,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 namespace content {
 
@@ -33,7 +32,6 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   PrefetchNetworkContext(
       bool use_isolated_network_context,
       const PrefetchType& prefetch_type,
-      const blink::mojom::Referrer& referring_origin,
       const GlobalRenderFrameHostId& referring_render_frame_host_id);
   ~PrefetchNetworkContext();
 
@@ -58,8 +56,7 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   // Returns a URLLoaderFactory associated with the given |network_context|.
   scoped_refptr<network::SharedURLLoaderFactory> CreateNewURLLoaderFactory(
       BrowserContext* browser_context,
-      network::mojom::NetworkContext* network_context,
-      std::optional<net::IsolationInfo> isolation_info);
+      network::mojom::NetworkContext* network_context);
 
   // Bind |network_context_| to a new network context and configure it to use
   // the prefetch proxy. Also set up |url_loader_factory_| as a new URL loader
@@ -73,9 +70,8 @@ class CONTENT_EXPORT PrefetchNetworkContext {
   // Used to determine if the prefetch proxy should be used.
   const PrefetchType prefetch_type_;
 
-  // These parameters are used when considering to proxy |url_loader_factory_|
-  // by calling WillCreateURLLoaderFactory.
-  const blink::mojom::Referrer referrer_;
+  // The referring RenderFrameHost is used when considering to proxy
+  // |url_loader_factory_| by calling WillCreateURLLoaderFactory.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
 
   // The network context and URL loader factory to use when making prefetches.

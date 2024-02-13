@@ -132,7 +132,7 @@ SkPath GetVisibleArrowPath(BubbleBorder::Arrow arrow,
 
 const gfx::ShadowValues& GetShadowValues(
     const ui::ColorProvider* color_provider,
-    const absl::optional<int>& elevation,
+    const std::optional<int>& elevation,
     BubbleBorder::Shadow shadow_type) {
   // If the color provider does not exist the shadow values are being created in
   // order to calculate Insets. In that case the color plays no role so always
@@ -207,8 +207,8 @@ const gfx::ShadowValues& GetShadowValues(
   return shadow_map->find(key)->second;
 }
 
-bool ShouldDrawStrokeForArgs(const absl::optional<bool>& draw_border_stroke,
-                             const absl::optional<int>& elevation,
+bool ShouldDrawStrokeForArgs(const std::optional<bool>& draw_border_stroke,
+                             const std::optional<int>& elevation,
                              BubbleBorder::Shadow shadow_type) {
   return draw_border_stroke.value_or(!elevation.has_value() &&
                                      shadow_type != BubbleBorder::NO_SHADOW);
@@ -216,7 +216,7 @@ bool ShouldDrawStrokeForArgs(const absl::optional<bool>& draw_border_stroke,
 
 const cc::PaintFlags& GetBorderAndShadowFlags(
     const ui::ColorProvider* color_provider,
-    const absl::optional<int>& elevation,
+    const std::optional<int>& elevation,
     BubbleBorder::Shadow shadow_type) {
   // The flags are always the same for any elevation and color combination, so
   // construct them once and cache.
@@ -244,7 +244,7 @@ void DrawBorderAndShadowImpl(
     gfx::Canvas* canvas,
     const ui::ColorProvider* color_provider,
     bool draw_stroke = true,
-    const absl::optional<int>& elevation = absl::nullopt,
+    const std::optional<int>& elevation = std::nullopt,
     BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW) {
   if (draw_stroke) {
     // Provide a 1 px border outside the bounds.
@@ -269,8 +269,8 @@ BubbleBorder::~BubbleBorder() = default;
 
 // static
 gfx::Insets BubbleBorder::GetBorderAndShadowInsets(
-    const absl::optional<int>& elevation,
-    const absl::optional<bool>& draw_border_stroke,
+    const std::optional<int>& elevation,
+    const std::optional<bool>& draw_border_stroke,
     BubbleBorder::Shadow shadow_type) {
   return gfx::Insets(
              ShouldDrawStrokeForArgs(draw_border_stroke, elevation, shadow_type)

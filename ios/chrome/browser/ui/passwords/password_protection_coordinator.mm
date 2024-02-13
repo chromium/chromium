@@ -8,8 +8,8 @@
 #import "base/notreached.h"
 #import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -75,8 +75,8 @@
 #pragma mark - Private
 
 - (void)openSavedPasswordsSettings {
-  id<ApplicationSettingsCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ApplicationSettingsCommands);
+  id<SettingsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
 
   [handler showSavedPasswordsSettingsFromViewController:self.baseViewController
                                        showCancelButton:NO];

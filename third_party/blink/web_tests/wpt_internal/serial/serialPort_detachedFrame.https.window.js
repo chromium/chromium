@@ -1,6 +1,6 @@
 // META: script=/resources/test-only-api.js
 // META: script=/serial/resources/common.js
-// META: script=/serial/resources/automation.js
+// META: script=resources/automation.js
 
 async function getDetachedSerialPort() {
   let iframe = document.createElement('iframe');

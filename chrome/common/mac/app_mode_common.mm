@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
 #include "mojo/core/embedder/embedder.h"
 
@@ -118,15 +119,12 @@ ChromeConnectionConfig ChromeConnectionConfig::DecodeFromPath(
           .is_mojo_ipcz_enabled = parts[1] == "1"};
 }
 
-BASE_FEATURE(kUseAdHocSigningForWebAppShims,
-             "UseAdHocSigningForWebAppShims",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool UseAdHocSigningForWebAppShims() {
   if (@available(macOS 11.7, *)) {
     // macOS 11.7 and above can code sign at runtime without requiring that the
     // developer tools be installed.
-    return base::FeatureList::IsEnabled(kUseAdHocSigningForWebAppShims);
+    return base::FeatureList::IsEnabled(
+        features::kUseAdHocSigningForWebAppShims);
   }
 
   // Code signing on older macOS versions invokes `codesign_allocate` from the

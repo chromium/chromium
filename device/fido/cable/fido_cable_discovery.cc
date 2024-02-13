@@ -346,7 +346,7 @@ void FidoCableDiscovery::OnDeviceLost(
 
 void FidoCableDiscovery::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
-    absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
+    std::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
         error_code) {
   if (error_code) {
     FIDO_LOG(ERROR) << "Failed to start caBLE LE scan session, error_code = "
@@ -503,8 +503,7 @@ void FidoCableDiscovery::CableDeviceFound(BluetoothAdapter* adapter,
     return;
   }
 
-  absl::optional<V1DiscoveryDataAndEID> v1_match =
-      GetCableDiscoveryData(device);
+  std::optional<V1DiscoveryDataAndEID> v1_match = GetCableDiscoveryData(device);
   if (!v1_match) {
     return;
   }
@@ -554,7 +553,7 @@ void FidoCableDiscovery::ConductEncryptionHandshake(
 void FidoCableDiscovery::ValidateAuthenticatorHandshakeMessage(
     CableDiscoveryData::Version cable_version,
     FidoCableHandshakeHandler* handshake_handler,
-    absl::optional<std::vector<uint8_t>> handshake_response) {
+    std::optional<std::vector<uint8_t>> handshake_response) {
   const bool ok = handshake_response.has_value() &&
                   handshake_handler->ValidateAuthenticatorHandshakeMessage(
                       *handshake_response);
@@ -582,14 +581,14 @@ void FidoCableDiscovery::ValidateAuthenticatorHandshakeMessage(
   }
 }
 
-absl::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>
+std::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>
 FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
   const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(GoogleCableUUID());
   if (!service_data) {
     service_data = device->GetServiceDataForUUID(FIDOCableUUID());
   }
-  absl::optional<CableEidArray> maybe_eid_from_service_data =
+  std::optional<CableEidArray> maybe_eid_from_service_data =
       MaybeGetEidFromServiceData(device);
   std::vector<CableEidArray> uuids = GetUUIDs(device);
 
@@ -601,7 +600,7 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
     if (maybe_eid_from_service_data == data->service_data &&
         uuids == data->uuids) {
       // Duplicate data. Ignore.
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -613,7 +612,7 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
     FIDO_LOG(DEBUG) << "New caBLE device " << address << ":";
   }
 
-  absl::optional<FidoCableDiscovery::V1DiscoveryDataAndEID> result;
+  std::optional<FidoCableDiscovery::V1DiscoveryDataAndEID> result;
   if (maybe_eid_from_service_data.has_value()) {
     result =
         GetCableDiscoveryDataFromAuthenticatorEid(*maybe_eid_from_service_data);
@@ -652,24 +651,24 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
 }
 
 // static
-absl::optional<CableEidArray> FidoCableDiscovery::MaybeGetEidFromServiceData(
+std::optional<CableEidArray> FidoCableDiscovery::MaybeGetEidFromServiceData(
     const BluetoothDevice* device) {
   const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(GoogleCableUUID());
   if (!service_data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Received service data from authenticator must have a flag that signals that
   // the service data includes Cable EID.
   if (service_data->empty() || !(service_data->at(0) >> 5 & 1u))
-    return absl::nullopt;
+    return std::nullopt;
 
   CableEidArray received_authenticator_eid;
   bool extract_success = fido_parsing_utils::ExtractArray(
       *service_data, 2, &received_authenticator_eid);
   if (!extract_success)
-    return absl::nullopt;
+    return std::nullopt;
   return received_authenticator_eid;
 }
 
@@ -692,7 +691,7 @@ std::vector<CableEidArray> FidoCableDiscovery::GetUUIDs(
   return ret;
 }
 
-absl::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>
+std::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>
 FidoCableDiscovery::GetCableDiscoveryDataFromAuthenticatorEid(
     CableEidArray authenticator_eid) {
   for (const auto& candidate : discovery_data_) {
@@ -702,7 +701,7 @@ FidoCableDiscovery::GetCableDiscoveryDataFromAuthenticatorEid(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FidoCableDiscovery::StartInternal() {
@@ -713,7 +712,7 @@ void FidoCableDiscovery::StartInternal() {
 // static
 std::string FidoCableDiscovery::ResultDebugString(
     const CableEidArray& eid,
-    const absl::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>& result) {
+    const std::optional<FidoCableDiscovery::V1DiscoveryDataAndEID>& result) {
   static const uint8_t kAppleContinuity[16] = {
       0xd0, 0x61, 0x1e, 0x78, 0xbb, 0xb4, 0x45, 0x91,
       0xa5, 0xf8, 0x48, 0x79, 0x10, 0xae, 0x43, 0x66,

@@ -53,7 +53,7 @@ VirtualFidoDiscoveryFactory::Create(device::FidoTransportProtocol transport) {
 
 void VirtualFidoDiscoveryFactory::AuthenticatorAdded(
     VirtualAuthenticator* authenticator) {
-  for (auto* discovery : discoveries_) {
+  for (VirtualFidoDiscovery* discovery : discoveries_) {
     if (discovery->transport() == authenticator->transport()) {
       discovery->AddVirtualDevice(authenticator->ConstructDevice());
     }
@@ -62,7 +62,7 @@ void VirtualFidoDiscoveryFactory::AuthenticatorAdded(
 
 void VirtualFidoDiscoveryFactory::AuthenticatorRemoved(
     const std::string& authenticator_id) {
-  for (auto* discovery : discoveries_) {
+  for (VirtualFidoDiscovery* discovery : discoveries_) {
     discovery->RemoveVirtualDevice(authenticator_id);
   }
 }

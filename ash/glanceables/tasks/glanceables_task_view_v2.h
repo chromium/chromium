@@ -44,9 +44,9 @@ struct Task;
 // | +-----------------+ +---------------------------------------+ |
 // +---------------------------------------------------------------+
 class ASH_EXPORT GlanceablesTaskViewV2 : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(GlanceablesTaskViewV2);
+  METADATA_HEADER(GlanceablesTaskViewV2, views::FlexLayoutView)
 
+ public:
   using MarkAsCompletedCallback =
       base::RepeatingCallback<void(const std::string& task_id, bool completed)>;
   using SaveCallback = base::RepeatingCallback<void(

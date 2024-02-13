@@ -12,9 +12,10 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHOW_NTP_AT_ST
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_REFACTOR;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_RETURN_TIME;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
-import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,17 +61,6 @@ public class HubLayoutPublicTransitTest {
     private ChromeTabbedActivityPublicTransitEntryPoints mTransitEntryPoints =
             new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
 
-    @After
-    public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModelSelector selector =
-                            sActivityTestRule.getActivity().getTabModelSelector();
-                    assertEquals(1, selector.getModel(false).getCount());
-                    assertEquals(0, selector.getModel(true).getCount());
-                });
-    }
-
     @Test
     @LargeTest
     public void testEnterAndExitHub() {
@@ -81,6 +71,7 @@ public class HubLayoutPublicTransitTest {
         PageStation previousTab = tabSwitcher.leaveHubToPreviousTabViaBack();
 
         assertFinalDestination(previousTab);
+        assertFinalTabModelState();
     }
 
     @Test
@@ -99,6 +90,7 @@ public class HubLayoutPublicTransitTest {
         tabSwitcher = tabSwitcher.closeTabAtIndex(1, HubTabSwitcherStation.class);
         BasePageStation blankTab = tabSwitcher.selectTabAtIndex(0);
         assertFinalDestination(blankTab);
+        assertFinalTabModelState();
     }
 
     @Test
@@ -118,6 +110,7 @@ public class HubLayoutPublicTransitTest {
         tabSwitcher = incognitoTabSwitcher.closeTabAtIndex(0, HubTabSwitcherStation.class);
         BasePageStation blankTab = tabSwitcher.selectTabAtIndex(0);
         assertFinalDestination(blankTab);
+        assertFinalTabModelState();
     }
 
     @Test
@@ -145,6 +138,7 @@ public class HubLayoutPublicTransitTest {
         tabSwitcher = incognitoTabSwitcher.closeTabAtIndex(0, HubTabSwitcherStation.class);
         BasePageStation blankTab = tabSwitcher.selectTabAtIndex(0);
         assertFinalDestination(blankTab);
+        assertFinalTabModelState();
     }
 
     @Test
@@ -170,13 +164,14 @@ public class HubLayoutPublicTransitTest {
         tabSwitcher = tabSwitcher.closeTabAtIndex(1, HubTabSwitcherStation.class);
         page = tabSwitcher.selectTabAtIndex(0);
         assertFinalDestination(page);
+        assertFinalTabModelState();
     }
 
     private NewTabPageStation pauseAndResumeActivity(TransitStation currentStation) {
         NewTabPageStation destination =
                 new NewTabPageStation(
                         sActivityTestRule, /* incognito= */ false, /* isOpeningTab= */ false);
-        return Trip.travelSync(
+        Trip.travelSync(
                 currentStation,
                 destination,
                 (t) -> {
@@ -187,6 +182,30 @@ public class HubLayoutPublicTransitTest {
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
+                });
+
+        // crbug.com/324106495: Add an extra sleep in Android 12+ because SnapshotStartingWindow
+        // occludes the ChromeActivity and any input is considered an untrusted input until the
+        // SnapshotStartingWindow disappears.
+        // Since it is a system window being drawn on top, we don't have access to any signals that
+        // the SnapshotStartingWindow disappeared that we can wait for.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+            }
+        }
+
+        return destination;
+    }
+
+    private void assertFinalTabModelState() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelSelector selector =
+                            sActivityTestRule.getActivity().getTabModelSelector();
+                    assertEquals(1, selector.getModel(false).getCount());
+                    assertEquals(0, selector.getModel(true).getCount());
                 });
     }
 }

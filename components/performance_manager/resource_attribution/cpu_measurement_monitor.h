@@ -23,13 +23,9 @@
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/resource_attribution/graph_change.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 
-namespace performance_manager {
-class Graph;
-class PageNode;
-}
-
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // Periodically collect CPU usage from process nodes.
 //
@@ -37,10 +33,11 @@ namespace performance_manager::resource_attribution {
 // measurement for a node may not arrive until after it's removed from the
 // graph. So this is not a decorator as defined in
 // components/performance_manager/README.md
-class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
-                              public ProcessNode::ObserverDefaultImpl,
-                              public WorkerNode::ObserverDefaultImpl,
-                              public NodeDataDescriberDefaultImpl {
+class CPUMeasurementMonitor
+    : public FrameNode::ObserverDefaultImpl,
+      public ProcessNode::ObserverDefaultImpl,
+      public WorkerNode::ObserverDefaultImpl,
+      public performance_manager::NodeDataDescriberDefaultImpl {
  public:
   CPUMeasurementMonitor();
   ~CPUMeasurementMonitor() override;
@@ -206,6 +203,6 @@ class CPUMeasurementMonitor : public FrameNode::ObserverDefaultImpl,
   raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_CPU_MEASUREMENT_MONITOR_H_

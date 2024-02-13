@@ -3,19 +3,19 @@
 // found in the LICENSE file.
 import '../strings.m.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicyScope, PolicySource, PresetAtrributes, Presets, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
+import type {PolicyInfo, PolicySchema, PresetAtrributes} from './policy_test_browser_proxy.js';
+import {LevelNamesToValues, PolicyLevel, PolicyScope, PolicySource, Presets, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
 import {getTemplate} from './policy_test_row.html.js';
 
 export class PolicyTestRowElement extends CustomElement {
   private hasAnError_: boolean = false;
   private errorEvents_: EventTracker = new EventTracker();
   private inputType_: string|number|boolean|any[]|object;
-  private policyNamesToTypes_: {[key: string]: string};
+  private schema_?: PolicySchema;
 
   static override get template() {
     return getTemplate();
@@ -23,26 +23,56 @@ export class PolicyTestRowElement extends CustomElement {
 
   constructor() {
     super();
-    this.initialize_();
   }
 
   getErrorState(): boolean {
     return this.hasAnError_;
   }
 
-  // Event listener function for changing the input type when a policy name is
-  // selected.
-  private changeInputTypeEvent_(event: Event) {
-    this.changeInputType_(event.target! as HTMLInputElement);
+  setSchema(schema: PolicySchema) {
+    const hadSchema = !!this.schema_;
+    this.schema_ = schema;
+    if (hadSchema) {
+      this.updatePolicyNamespaces_();
+      this.updatePolicyNames();
+    } else {
+      this.initialize_();
+    }
   }
 
-  private changeInputType_(nameInput: HTMLInputElement) {
+  // Event listener function that clears the policy name when the namespace is
+  // changed.
+  private onPolicyNamespaceChanged_(_: Event) {
+    this.updatePolicyNames();
+    const nameInput = this.getRequiredElement<HTMLInputElement>('.name');
+    nameInput.value = '';
+    this.changeInputType_(
+        this.getRequiredElement<HTMLSelectElement>('.namespace'), nameInput,
+        false);
+  }
+
+  // Event listener function for changing the input type when a policy name is
+  // selected.
+  private onPolicyNameChanged_(_: Event) {
+    this.changeInputType_(
+        this.getRequiredElement<HTMLSelectElement>('.namespace'),
+        this.getRequiredElement<HTMLInputElement>('.name'));
+  }
+
+  private changeInputType_(
+      namespaceInput: HTMLSelectElement, nameInput: HTMLInputElement,
+      updateErrorState: boolean = true) {
+    assert(this.schema_);
+    assert(namespaceInput.value in this.schema_);
     // Return if invalid policy name
-    if (!this.isValidPolicyName_(nameInput.value)) {
-      this.setInErrorState_(nameInput);
+    if (!this.isValidPolicyName_(namespaceInput.value, nameInput.value)) {
+      if (updateErrorState) {
+        this.setInErrorState_(nameInput);
+      }
       return;
     }
-    const newValueType = this.policyNamesToTypes_[nameInput.value];
+    const ns = this.getNamespace();
+    const newValueType = this.schema_[ns]![nameInput.value];
     const inputElement = this.getRequiredElement<HTMLInputElement>('.value');
     const inputElementCell = inputElement.parentNode! as HTMLElement;
     inputElement.remove();
@@ -171,30 +201,86 @@ export class PolicyTestRowElement extends CustomElement {
   }
 
   // Function that verifies policy name is a valid.
-  private isValidPolicyName_(policyName: string) {
-    if (policyName in this.policyNamesToTypes_) {
+  private isValidPolicyName_(policyNamespace: string, policyName: string) {
+    if (this.schema_ && policyNamespace in this.schema_ &&
+        policyName in this.schema_[policyNamespace]!) {
       return true;
     } else {
       return false;
     }
   }
 
-  // Function that initializes the policy selection dropdowns and delete
-  // button for the current row.
-  private initialize_() {
-    const policyNameDatalist = this.getRequiredElement('#policy-name-list');
-    const policyNameInput = this.getRequiredElement('.name');
-    policyNameInput.addEventListener(
-        'change', this.changeInputTypeEvent_.bind(this));
+  getNamespace() {
+    return this.getRequiredElement<HTMLSelectElement>('.namespace').value;
+  }
 
-    // Populate the policy name dropdown with all policy names.
-    this.policyNamesToTypes_ =
-        JSON.parse(loadTimeData.getString('policyNamesToTypes'));
-    for (const name in this.policyNamesToTypes_) {
+  // Updates the policy namespaces <select> to match extensions from the schema.
+  private updatePolicyNamespaces_() {
+    assert(this.schema_);
+    const policyNamespaceInput =
+        this.getRequiredElement<HTMLSelectElement>('.namespace');
+    assert(policyNamespaceInput.value in this.schema_);
+    // Clear old values.
+    while (policyNamespaceInput.firstChild) {
+      policyNamespaceInput.removeChild(policyNamespaceInput.firstChild);
+    }
+    // Populate with extension IDs, keep sorted. 'Chrome' is always the first
+    // element for browser policies.
+    const sortedNamespacesWithChromeFirst =
+        Object.keys(this.schema_).toSorted((a, b) => {
+          if (a === 'chrome') {
+            return -1;
+          }
+          if (b === 'chrome') {
+            return 1;
+          }
+          return a < b ? -1 : (b < a ? 1 : 0);
+        });
+    for (const ns of sortedNamespacesWithChromeFirst) {
+      const currOption = document.createElement('option');
+      currOption.textContent = ns === 'chrome' ? 'Chrome' : ns;
+      currOption.value = ns;
+      policyNamespaceInput.appendChild(currOption);
+    }
+  }
+
+  // Updates the policy names <datalist> to match the current namespace.
+  updatePolicyNames() {
+    assert(this.schema_);
+    const ns = this.getNamespace();
+    const policyNameDatalist = this.getRequiredElement('#policy-name-list');
+    // Clear old values.
+    while (policyNameDatalist.firstChild) {
+      policyNameDatalist.removeChild(policyNameDatalist.firstChild);
+    }
+    // Populate with new values.
+    for (const name in this.schema_[ns]!) {
       const currOption = document.createElement('option');
       currOption.textContent = name;
       policyNameDatalist.appendChild(currOption);
     }
+    const policyNameInput = this.getRequiredElement<HTMLInputElement>('.name');
+    if (policyNameInput.value) {
+      this.changeInputType_(
+          this.getRequiredElement('.namespace'), policyNameInput);
+    }
+  }
+
+  // Function that initializes the policy selection dropdowns and delete
+  // button for the current row.
+  private initialize_() {
+    assert(this.schema_);
+    const policyNamespaceInput = this.getRequiredElement('.namespace');
+    policyNamespaceInput.addEventListener(
+        'change', this.onPolicyNamespaceChanged_.bind(this));
+
+    const policyNameInput = this.getRequiredElement('.name');
+    policyNameInput.addEventListener(
+        'change', this.onPolicyNameChanged_.bind(this));
+
+    // Populate the policy namespace & name dropdowns with <option>s.
+    this.updatePolicyNamespaces_();
+    this.updatePolicyNames();
 
     // Add an event listener for this row's delete button.
     this.getRequiredElement('.remove-btn')
@@ -249,6 +335,8 @@ export class PolicyTestRowElement extends CustomElement {
   // Class method for setting the name, source, scope, level and value cells for
   // this row.
   setInitialValues(initialValues: PolicyInfo) {
+    const policyNamespaceInput =
+        this.getRequiredElement<HTMLSelectElement>('.namespace');
     const policyNameInput = this.getRequiredElement<HTMLInputElement>('.name');
     const policySourceInput =
         this.getRequiredElement<HTMLInputElement>('.source');
@@ -257,13 +345,16 @@ export class PolicyTestRowElement extends CustomElement {
     const policyScopeInput =
         this.getRequiredElement<HTMLInputElement>('.scope');
 
+    policyNamespaceInput.value = String(initialValues.namespace);
+    this.updatePolicyNames();
+
     policySourceInput.value = String(initialValues.source);
     policyLevelInput.value = String(initialValues.level);
     policyScopeInput.value = String(initialValues.scope);
 
     // Change input type according to policy, set value to new input
     policyNameInput.value = initialValues.name;
-    this.changeInputType_(policyNameInput);
+    this.changeInputType_(policyNamespaceInput, policyNameInput);
 
     const policyValueInput =
         this.getRequiredElement<HTMLInputElement>('.value');
@@ -325,16 +416,30 @@ export class PolicyTestRowElement extends CustomElement {
     return '';
   }
 
+  getPolicyNamespace(): string {
+    assert(this.schema_);
+    const namespaceInput =
+        this.getRequiredElement<HTMLSelectElement>('.namespace');
+
+    if (namespaceInput.value in this.schema_) {
+      return namespaceInput.value;
+    } else {
+      this.setInErrorState_(namespaceInput);
+      return '';
+    }
+  }
+
   // Class method for returning the name for this policy (the value in the
   // name cell of this row)
   getPolicyName(): string {
-    const inputElement: HTMLInputElement =
-        this.getRequiredElement<HTMLInputElement>('.name');
+    const namespaceInput =
+        this.getRequiredElement<HTMLSelectElement>('.namespace');
+    const nameInput = this.getRequiredElement<HTMLInputElement>('.name');
 
-    if (this.isValidPolicyName_(inputElement.value)) {
-      return inputElement.value;
+    if (this.isValidPolicyName_(namespaceInput.value, nameInput.value)) {
+      return nameInput.value;
     } else {
-      this.setInErrorState_(inputElement);
+      this.setInErrorState_(nameInput);
       return '';
     }
   }

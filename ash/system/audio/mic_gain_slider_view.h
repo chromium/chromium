@@ -15,9 +15,9 @@ class MicGainSliderController;
 
 class MicGainSliderView : public UnifiedSliderView,
                           public CrasAudioHandler::AudioObserver {
- public:
-  METADATA_HEADER(MicGainSliderView);
+  METADATA_HEADER(MicGainSliderView, UnifiedSliderView)
 
+ public:
   explicit MicGainSliderView(MicGainSliderController* controller);
   MicGainSliderView(MicGainSliderController* controller,
                     uint64_t device_id,

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -40,7 +41,6 @@
 #include "net/http/http_security_headers.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -94,7 +94,7 @@ std::vector<uint8_t> CanonicalizeHost(const std::string& host) {
   // invalid characters in the host (via DNSDomainFromDot()).
   std::string lowered_host = base::ToLowerASCII(host);
 
-  absl::optional<std::vector<uint8_t>> new_host =
+  std::optional<std::vector<uint8_t>> new_host =
       dns_names_util::DottedNameToNetwork(
           lowered_host,
           /*require_valid_internet_hostname=*/true);
@@ -385,8 +385,8 @@ void TransportSecurityState::UpdatePinList(
       // entry, we will ignore that particular pin.
       continue;
     }
-    host_pins_.value()[pin.hostname_] = std::make_pair(
-        pinset_names_map[pin.pinset_name_], pin.include_subdomains_);
+    host_pins_.value()[pin.hostname_] =
+        std::pair(pinset_names_map[pin.pinset_name_], pin.include_subdomains_);
   }
 }
 
@@ -772,7 +772,7 @@ bool TransportSecurityState::GetDynamicSTSState(const std::string& host,
     // An entry matches if it is either an exact match, or if it is a prefix
     // match and the includeSubDomains directive was included.
     if (i == 0 || j->second.include_subdomains) {
-      absl::optional<std::string> dotted_name =
+      std::optional<std::string> dotted_name =
           dns_names_util::NetworkToDottedName(host_sub_chunk);
       if (!dotted_name)
         return false;
@@ -818,7 +818,7 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
     // implement HPKP, so this logic is only used via AddHPKP(), reachable from
     // Cronet.
     if (i == 0 || j->second.include_subdomains) {
-      absl::optional<std::string> dotted_name =
+      std::optional<std::string> dotted_name =
           dns_names_util::NetworkToDottedName(host_sub_chunk);
       if (!dotted_name)
         return false;

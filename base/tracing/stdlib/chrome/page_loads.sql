@@ -9,7 +9,7 @@
 
 INCLUDE PERFETTO MODULE common.slices;
 
-CREATE PERFETTO VIEW internal_fcp_metrics AS
+CREATE PERFETTO VIEW _fcp_metrics AS
 SELECT
   ts,
   dur,
@@ -19,7 +19,7 @@ SELECT
 FROM process_slice
 WHERE name = 'PageLoadMetrics.NavigationToFirstContentfulPaint';
 
-CREATE PERFETTO FUNCTION internal_page_load_metrics(event_name STRING)
+CREATE PERFETTO FUNCTION _page_load_metrics(event_name STRING)
 RETURNS TABLE(
   ts LONG,
   dur LONG,
@@ -92,22 +92,22 @@ SELECT
   timing_interactive.ts AS mark_interactive_ts,
   fcp.url,
   fcp.browser_upid
-FROM internal_fcp_metrics fcp
+FROM _fcp_metrics fcp
 LEFT JOIN
-  internal_page_load_metrics('PageLoadMetrics.NavigationToLargestContentfulPaint') lcp
+  _page_load_metrics('PageLoadMetrics.NavigationToLargestContentfulPaint') lcp
     USING (navigation_id, browser_upid)
 LEFT JOIN
-  internal_page_load_metrics('PageLoadMetrics.NavigationToDOMContentLoadedEventFired') load_fired
+  _page_load_metrics('PageLoadMetrics.NavigationToDOMContentLoadedEventFired') load_fired
     USING (navigation_id, browser_upid)
 LEFT JOIN
-  internal_page_load_metrics('PageLoadMetrics.NavigationToMainFrameOnLoad') start_load
+  _page_load_metrics('PageLoadMetrics.NavigationToMainFrameOnLoad') start_load
     USING (navigation_id, browser_upid)
 LEFT JOIN
-  internal_page_load_metrics('PageLoadMetrics.UserTimingMarkFullyLoaded') timing_loaded
+  _page_load_metrics('PageLoadMetrics.UserTimingMarkFullyLoaded') timing_loaded
     USING (navigation_id, browser_upid)
 LEFT JOIN
-  internal_page_load_metrics('PageLoadMetrics.UserTimingMarkFullyVisible') timing_visible
+  _page_load_metrics('PageLoadMetrics.UserTimingMarkFullyVisible') timing_visible
     USING (navigation_id, browser_upid)
 LEFT JOIN
-  internal_page_load_metrics('PageLoadMetrics.UserTimingMarkInteractive') timing_interactive
+  _page_load_metrics('PageLoadMetrics.UserTimingMarkInteractive') timing_interactive
     USING (navigation_id, browser_upid);

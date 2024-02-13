@@ -7,8 +7,10 @@ import './mojo_timedelta.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {ContentSettingsType} from './content_settings_types.mojom-webui.js';
-import {PageHandler, PageHandlerRemote} from './privacy_sandbox_internals.mojom-webui.js';
-import {defaultLogicalFn, LogicalFn, timestampLogicalFn} from './value_display.js';
+import type {PageHandlerRemote} from './privacy_sandbox_internals.mojom-webui.js';
+import {PageHandler} from './privacy_sandbox_internals.mojom-webui.js';
+import type {LogicalFn} from './value_display.js';
+import {defaultLogicalFn, timestampLogicalFn} from './value_display.js';
 
 interface PrefConfig {
   logicalFn?: LogicalFn;

@@ -5804,7 +5804,7 @@ TEST_F(AXPlatformNodeWinTest, IsUIAControlForStatusRole) {
 
 TEST_F(AXPlatformNodeWinTest, UIALandmarkType) {
   auto TestLandmarkType = [this](ax::mojom::Role node_role,
-                                 absl::optional<LONG> expected_landmark_type,
+                                 std::optional<LONG> expected_landmark_type,
                                  const std::string& node_name = {}) {
     AXNodeData root_data;
     root_data.id = 1;
@@ -7847,7 +7847,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_BulkFetch) {
 
   // Note: base::JSONReader is fine for unit tests, but production code
   // that parses untrusted JSON should always use DataDecoder instead.
-  absl::optional<base::Value> result_val =
+  std::optional<base::Value> result_val =
       base::JSONReader::Read(response, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(result_val);
   const base::Value::Dict& result = result_val->GetDict();

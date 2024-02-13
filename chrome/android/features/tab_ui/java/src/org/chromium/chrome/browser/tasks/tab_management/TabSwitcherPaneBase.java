@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConsta
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -21,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -103,6 +105,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
 
     private boolean mNativeInitialized;
     private @Nullable PaneHubController mPaneHubController;
+    private @Nullable Long mWaitForTabStateInitializedStartTimeMs;
 
     /**
      * @param context The activity context.
@@ -161,6 +164,8 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
             // need to know an animation is going to play and when it is finished (possibly using
             // the isAnimatingSupplier?).
             requestAccessibilityFocusOnCurrentTab();
+        } else {
+            cancelWaitForTabStateInitializedTimer();
         }
 
         if (loadHint == LoadHint.WARM) {
@@ -444,6 +449,26 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         mRootView.removeAllViews();
         mTabSwitcherCustomViewManager.setDelegate(null);
         coordinator.destroy();
+    }
+
+    protected void startWaitForTabStateInitializedTimer() {
+        if (mWaitForTabStateInitializedStartTimeMs != null) return;
+
+        mWaitForTabStateInitializedStartTimeMs = SystemClock.elapsedRealtime();
+    }
+
+    protected void finishWaitForTabStateInitializedTimer() {
+        if (mWaitForTabStateInitializedStartTimeMs != null) {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.GridTabSwitcher.TimeToTabStateInitializedFromShown",
+                    SystemClock.elapsedRealtime()
+                            - mWaitForTabStateInitializedStartTimeMs.longValue());
+            mWaitForTabStateInitializedStartTimeMs = null;
+        }
+    }
+
+    protected void cancelWaitForTabStateInitializedTimer() {
+        mWaitForTabStateInitializedStartTimeMs = null;
     }
 
     private void onTabClick(int tabId) {

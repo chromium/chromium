@@ -337,15 +337,14 @@ KWalletDBus::Error KWalletDBus::WriteEntry(const int wallet_handle,
                                            const std::string& folder_name,
                                            const std::string& key,
                                            const std::string& app_name,
-                                           const uint8_t* data,
-                                           const size_t length,
+                                           base::span<const uint8_t> data,
                                            int* return_code_ptr) {
   dbus::MethodCall method_call(kKWalletInterface, "writeEntry");
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(wallet_handle);                         // handle
   builder.AppendString(folder_name);                          // folder
   builder.AppendString(key);                                  // key
-  builder.AppendArrayOfBytes(base::make_span(data, length));  // value
+  builder.AppendArrayOfBytes(data);                           // value
   builder.AppendString(app_name);                             // appid
   std::unique_ptr<dbus::Response> response(
       kwallet_proxy_

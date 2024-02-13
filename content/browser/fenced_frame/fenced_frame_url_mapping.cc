@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/id_type.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -91,9 +90,7 @@ GURL SubstituteSizeIntoURL(const blink::AdDescriptor& ad_descriptor) {
 
 }  // namespace
 
-FencedFrameURLMapping::FencedFrameURLMapping() : unique_id_(GetNextId()) {
-  CHECK(unique_id_);
-}
+FencedFrameURLMapping::FencedFrameURLMapping() = default;
 
 FencedFrameURLMapping::~FencedFrameURLMapping() = default;
 
@@ -435,12 +432,6 @@ void FencedFrameURLMapping::SubstituteMappedURL(
     }
   }
   it->second = std::move(info);
-}
-
-// static
-FencedFrameURLMapping::Id FencedFrameURLMapping::GetNextId() {
-  static Id::Generator generator;
-  return generator.GenerateNextId();
 }
 
 bool FencedFrameURLMapping::IsMapped(const GURL& urn_uuid) const {

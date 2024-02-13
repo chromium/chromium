@@ -28,6 +28,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
+#include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/skia/include/core/SkOverdrawCanvas.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayListRecorder.h"
@@ -97,8 +98,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void Reshape(const ReshapeParams& params) override;
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override;
-  void SetGpuVSyncEnabled(bool enabled) override;
-  void SetGpuVSyncCallback(GpuVSyncCallback callback) override;
   void SetVSyncDisplayID(int64_t display_id) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   gfx::OverlayTransform GetDisplayTransform() override;
@@ -205,10 +204,20 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       std::vector<gpu::SyncToken> sync_tokens) override;
   void CheckAsyncWorkCompletionForTesting() override;
 
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_CHROMEOS) && \
+    BUILDFLAG(USE_V4L2_CODEC)
+  void DetileOverlay(gpu::Mailbox input,
+                     const gfx::Size& input_visible_size,
+                     gpu::SyncToken input_sync_token,
+                     gpu::Mailbox output,
+                     const gfx::RectF& display_rect,
+                     const gfx::RectF& crop_rect,
+                     gfx::OverlayTransform transform) override;
+#endif
+
  private:
   bool Initialize();
-  void InitializeOnGpuThread(GpuVSyncCallback vsync_callback_runner,
-                             bool* result);
+  void InitializeOnGpuThread(bool* result);
   GrSurfaceCharacterization CreateGrSurfaceCharacterizationRenderPass(
       const gfx::Size& surface_size,
       SkColorType color_type,
@@ -229,9 +238,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void ReleaseOverlays(const std::vector<gpu::Mailbox> released_overlays);
   void BufferPresented(const gfx::PresentationFeedback& feedback);
   void AddChildWindowToBrowser(gpu::SurfaceHandle child_window);
-
-  // Provided as a callback for the GPU thread.
-  void OnGpuVSync(base::TimeTicks timebase, base::TimeDelta interval);
 
   using GpuTask = base::OnceClosure;
   void EnqueueGpuTask(GpuTask task,
@@ -282,7 +288,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   uint64_t sync_fence_release_ = 0;
   raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
-  GpuVSyncCallback gpu_vsync_callback_;
   bool is_displayed_as_overlay_ = false;
   gpu::Mailbox last_swapped_mailbox_;
 

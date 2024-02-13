@@ -2159,20 +2159,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(GetFrame()));
 }
 
-class StorageAccessAPIWithPartitionedCookiesBrowserTest
-    : public StorageAccessAPIWithPromptsBrowserTest {
- public:
-  StorageAccessAPIWithPartitionedCookiesBrowserTest() = default;
-
-  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
-    std::vector<base::test::FeatureRefAndParams> enabled =
-        StorageAccessAPIWithPromptsBrowserTest::GetEnabledFeatures();
-    enabled.push_back({net::features::kPartitionedCookies, {}});
-    return enabled;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithPartitionedCookiesBrowserTest,
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithPromptsBrowserTest,
                        RequestStorageAccess_CoexistsWithPartitionedCookies) {
   SetBlockThirdPartyCookies(true);
 

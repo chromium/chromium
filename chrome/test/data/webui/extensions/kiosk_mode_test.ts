@@ -4,7 +4,8 @@
 
 /** @fileoverview Suite of tests for extension-kiosk-dialog. */
 
-import {CrCheckboxElement, ExtensionsKioskDialogElement, KioskApp, KioskAppSettings, KioskBrowserProxyImpl, KioskSettings} from 'chrome://extensions/extensions.js';
+import type {CrCheckboxElement, ExtensionsKioskDialogElement, KioskApp, KioskAppSettings, KioskSettings} from 'chrome://extensions/extensions.js';
+import {KioskBrowserProxyImpl} from 'chrome://extensions/extensions.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

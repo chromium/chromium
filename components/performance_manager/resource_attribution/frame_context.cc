@@ -16,11 +16,12 @@
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
@@ -123,4 +124,4 @@ std::string FrameContext::ToString() const {
   return s.str();
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

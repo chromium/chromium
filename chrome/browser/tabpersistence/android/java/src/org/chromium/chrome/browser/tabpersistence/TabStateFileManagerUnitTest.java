@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabpersistence;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import androidx.annotation.Nullable;
 
@@ -16,19 +17,23 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.StreamUtil;
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
+import org.chromium.chrome.browser.tabpersistence.FlatBufferTabStateSerializer.TabStateFlatBufferDeserializeResult;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 /** Unit tests for {@link TabStateFileManager}. */
@@ -44,16 +49,49 @@ public class TabStateFileManagerUnitTest {
     private static final @Nullable @TabLaunchType Integer LAUNCH_TYPE_AT_CREATION = null;
     private static final int ROOT_ID = 1;
     private static final @TabUserAgent int USER_AGENT = TabUserAgent.MOBILE;
+    private static final long TAB_GROUP_ID_TOKEN_HIGH = 0x1234567890L;
+    private static final long TAB_GROUP_ID_TOKEN_LOW = 0xABCDEF1234L;
 
     @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void testSaveTabStateWithMemoryMappedContentsState() throws IOException {
+    public void testSaveTabStateWithMemoryMappedContentsState_WithoutTabGroupId()
+            throws IOException {
+        Token tabGroupId = null;
         File file = createTestTabStateFile();
-        TabState state = createTabStateWithMappedByteBuffer(file);
+        TabState state = createTabStateWithMappedByteBuffer(file, tabGroupId);
         TabStateFileManager.saveStateInternal(file, state, false);
 
-        validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false));
+        validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false), tabGroupId);
+    }
+
+    @Test
+    public void testSaveTabStateWithMemoryMappedContentsState_WithTabGroupId() throws IOException {
+        Token tabGroupId = new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
+        File file = createTestTabStateFile();
+        TabState state = createTabStateWithMappedByteBuffer(file, tabGroupId);
+        TabStateFileManager.saveStateInternal(file, state, false);
+
+        validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false), tabGroupId);
+    }
+
+    @Test
+    public void testInvalidBuffer() {
+        byte[] bytes = new byte[5000];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) i;
+        }
+
+        var builder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Tabs.TabState.FlatBufferDeserializeResult",
+                                TabStateFlatBufferDeserializeResult
+                                        .FAILURE_INDEX_OUT_OF_BOUNDS_EXCEPTION);
+        HistogramWatcher histograms = builder.build();
+        FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(false);
+        Assert.assertNull(serializer.deserialize(ByteBuffer.wrap(bytes)));
+        histograms.assertExpected();
     }
 
     @Test
@@ -348,7 +386,8 @@ public class TabStateFileManagerUnitTest {
                 FlatBufferTabStateSerializer.getUserAgentTypeToFlatBuffer(TabUserAgent.SIZE));
     }
 
-    private TabState createTabStateWithMappedByteBuffer(File file) throws IOException {
+    private TabState createTabStateWithMappedByteBuffer(File file, @Nullable Token tabGroupId)
+            throws IOException {
         TabState state = new TabState();
         FileInputStream fileInputStream = null;
 
@@ -371,13 +410,14 @@ public class TabStateFileManagerUnitTest {
             state.rootId = ROOT_ID;
             state.userAgent = USER_AGENT;
             state.lastNavigationCommittedTimestampMillis = TIMESTAMP;
+            state.tabGroupId = tabGroupId;
         } finally {
             StreamUtil.closeQuietly(fileInputStream);
         }
         return state;
     }
 
-    private void validateTestTabState(TabState state) {
+    private void validateTestTabState(TabState state, @Nullable Token tabGroupId) {
         assertEquals(TIMESTAMP, state.timestampMillis);
         assertEquals(PARENT_ID, state.parentId);
         assertEquals(OPENER_APP_ID, state.openerAppId);
@@ -388,6 +428,11 @@ public class TabStateFileManagerUnitTest {
         assertEquals(CONTENTS_STATE_BYTES.length, state.contentsState.buffer().remaining());
         assertEquals(USER_AGENT, state.userAgent);
         assertEquals(TIMESTAMP, state.lastNavigationCommittedTimestampMillis);
+        if (tabGroupId == null) {
+            assertNull(state.tabGroupId);
+        } else {
+            assertEquals(tabGroupId, state.tabGroupId);
+        }
 
         byte[] bytesFromFile = new byte[CONTENTS_STATE_BYTES.length];
         state.contentsState.buffer().get(bytesFromFile);

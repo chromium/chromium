@@ -194,13 +194,13 @@ class FlatlandClientNativePixmapFactory
     }
 
     // Validate that all planes refer to a single memory object.
-    const absl::optional<zx_koid_t> first_plane_koid =
+    const std::optional<zx_koid_t> first_plane_koid =
         base::GetKoid(handle.planes[0].vmo);
     if (!first_plane_koid) {
       return nullptr;
     }
     for (const auto& plane : handle.planes) {
-      const absl::optional<zx_koid_t> plane_koid = base::GetKoid(plane.vmo);
+      const std::optional<zx_koid_t> plane_koid = base::GetKoid(plane.vmo);
       DCHECK(plane.vmo.is_valid() || !plane_koid);
       if (plane_koid != first_plane_koid) {
         return nullptr;

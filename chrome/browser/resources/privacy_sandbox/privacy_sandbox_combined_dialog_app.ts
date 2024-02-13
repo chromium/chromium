@@ -10,14 +10,14 @@ import './shared_style.css.js';
 import './privacy_sandbox_dialog_consent_step.js';
 import './privacy_sandbox_dialog_notice_step.js';
 
-import {CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import type {CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_sandbox_combined_dialog_app.html.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
-import {PrivacySandboxDialogMixinInterface} from './privacy_sandbox_dialog_mixin';
+import type {PrivacySandboxDialogMixinInterface} from './privacy_sandbox_dialog_mixin';
 import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 
 export enum PrivacySandboxCombinedDialogStep {

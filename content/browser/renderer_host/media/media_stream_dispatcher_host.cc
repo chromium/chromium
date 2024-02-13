@@ -736,22 +736,6 @@ void MediaStreamDispatcherHost::SendWheel(
                                    std::move(action), std::move(callback));
 }
 
-void MediaStreamDispatcherHost::GetZoomLevel(
-    const base::UnguessableToken& device_id,
-    GetZoomLevelCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kCapturedSurfaceControlKillswitch)) {
-    std::move(callback).Run(std::nullopt,
-                            CapturedSurfaceControlResult::kUnknownError);
-    return;
-  }
-
-  media_stream_manager_->GetZoomLevel(render_frame_host_id_, device_id,
-                                      std::move(callback));
-}
-
 void MediaStreamDispatcherHost::SetZoomLevel(
     const base::UnguessableToken& device_id,
     int32_t zoom_level,

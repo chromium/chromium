@@ -223,15 +223,6 @@ class AppBannerManager : public content::WebContentsObserver,
   const GURL& validated_url() { return validated_url_; }
   const std::vector<Screenshot>& screenshots() { return screenshots_; }
 
-  // Tracks the route taken to an install of a PWA (whether the bottom sheet
-  // was shown or the infobar/install) and what triggered it (install source).
-  // Only used on Android.
-  void TrackInstallPath(bool bottom_sheet, WebappInstallSource install_source);
-
-  // Tracks that the IPH has been shown. Only used on Android.
-  void TrackIphWasShown();
-
-
   // This is called by the MLInstallabilityPromoter when, for this current web
   // contents:
   // - There is no existing install (tracked by the MlInstallOperationTracker).
@@ -480,10 +471,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // The scope of the most recent installability check that was non-promotable
   // due to being already installed, otherwise invalid.
   GURL last_already_installed_web_app_scope_;
-
-  // Keeps track of the path the user took through the UI, before deciding to
-  // install.
-  PwaInstallPathTracker install_path_tracker_;
 
   base::ObserverList<Observer, true> observer_list_;
 

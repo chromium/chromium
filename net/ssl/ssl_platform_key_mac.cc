@@ -11,6 +11,7 @@
 #include <Security/SecKey.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "net/ssl/ssl_platform_key_util.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/threaded_ssl_private_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
@@ -123,7 +123,7 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
     }
     base::span<const uint8_t> digest = base::make_span(digest_buf, digest_len);
 
-    absl::optional<std::vector<uint8_t>> pss_storage;
+    std::optional<std::vector<uint8_t>> pss_storage;
     if (pss_fallback) {
       // Implement RSA-PSS by adding the padding manually and then using
       // kSecKeyAlgorithmRSASignatureRaw.

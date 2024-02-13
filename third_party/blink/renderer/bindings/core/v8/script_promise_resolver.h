@@ -316,19 +316,15 @@ class CORE_EXPORT ScriptPromiseResolver
     return V8String(isolate, value);
   }
 
-  template <size_t sizeOfValue>
-  static v8::Local<v8::Value> ToV8SignedIntegerInternal(int64_t value,
-                                                        v8::Isolate*);
-
-  template <>
-  v8::Local<v8::Value> ToV8SignedIntegerInternal<4>(int64_t value,
-                                                    v8::Isolate* isolate) {
-    return v8::Integer::New(isolate, static_cast<int32_t>(value));
+  static v8::Local<v8::Value> ToV8(int32_t value,
+                                   v8::Local<v8::Object> creation_context,
+                                   v8::Isolate* isolate) {
+    return v8::Integer::New(isolate, value);
   }
 
-  template <>
-  v8::Local<v8::Value> ToV8SignedIntegerInternal<8>(int64_t value,
-                                                    v8::Isolate* isolate) {
+  static v8::Local<v8::Value> ToV8(int64_t value,
+                                   v8::Local<v8::Object> creation_context,
+                                   v8::Isolate* isolate) {
     int32_t value_in32_bit = static_cast<int32_t>(value);
     if (value_in32_bit == value) {
       return v8::Integer::New(isolate, value_in32_bit);
@@ -337,49 +333,21 @@ class CORE_EXPORT ScriptPromiseResolver
     return v8::Number::New(isolate, value);
   }
 
-  template <size_t sizeOfValue>
-  static v8::Local<v8::Value> ToV8UnsignedIntegerInternal(uint64_t value,
-                                                          v8::Isolate*);
-
-  template <>
-  v8::Local<v8::Value> ToV8UnsignedIntegerInternal<4>(uint64_t value,
-                                                      v8::Isolate* isolate) {
-    return v8::Integer::NewFromUnsigned(isolate, static_cast<uint32_t>(value));
+  static v8::Local<v8::Value> ToV8(uint32_t value,
+                                   v8::Local<v8::Object> creation_context,
+                                   v8::Isolate* isolate) {
+    return v8::Integer::NewFromUnsigned(isolate, value);
   }
 
-  template <>
-  v8::Local<v8::Value> ToV8UnsignedIntegerInternal<8>(uint64_t value,
-                                                      v8::Isolate* isolate) {
+  static v8::Local<v8::Value> ToV8(uint64_t value,
+                                   v8::Local<v8::Object> creation_context,
+                                   v8::Isolate* isolate) {
     uint32_t value_in32_bit = static_cast<uint32_t>(value);
     if (value_in32_bit == value) {
       return v8::Integer::NewFromUnsigned(isolate, value_in32_bit);
     }
     // V8 doesn't have a 64-bit integer implementation.
     return v8::Number::New(isolate, value);
-  }
-
-  static v8::Local<v8::Value> ToV8(int32_t value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8SignedIntegerInternal<sizeof value>(value, isolate);
-  }
-
-  static v8::Local<v8::Value> ToV8(int64_t value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8SignedIntegerInternal<sizeof value>(value, isolate);
-  }
-
-  static v8::Local<v8::Value> ToV8(uint32_t value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8UnsignedIntegerInternal<sizeof value>(value, isolate);
-  }
-
-  static v8::Local<v8::Value> ToV8(uint64_t value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return ToV8UnsignedIntegerInternal<sizeof value>(value, isolate);
   }
 
   static v8::Local<v8::Value> ToV8(bool value,

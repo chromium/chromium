@@ -63,6 +63,8 @@ String ToString(CSSMathOperator op) {
       return "sign";
     case CSSMathOperator::kProgress:
       return "progress";
+    case CSSMathOperator::kCalcSize:
+      return "calc-size";
     default:
       NOTREACHED();
       return String();

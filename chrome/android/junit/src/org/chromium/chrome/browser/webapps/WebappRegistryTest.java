@@ -763,10 +763,11 @@ public class WebappRegistryTest {
 
         assertNull(WebappRegistry.getInstance().getWebappDataStorageForManifestId(testManifestId));
 
-        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder =
-                new WebApkIntentDataProviderBuilder(testPackageName, START_URL);
-        webApkIntentDataProviderBuilder.setWebApkManifestId(testManifestId);
-        registerWebapp(webApkIntentDataProviderBuilder.build());
+        BrowserServicesIntentDataProvider intentDataProvider =
+                new WebApkIntentDataProviderBuilder(testPackageName, START_URL)
+                        .setWebApkManifestId(testManifestId)
+                        .build();
+        registerWebapp(intentDataProvider);
 
         WebappDataStorage storage =
                 WebappRegistry.getInstance().getWebappDataStorageForManifestId(testManifestId);
@@ -787,10 +788,11 @@ public class WebappRegistryTest {
 
         assertNull(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
 
-        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder =
-                new WebApkIntentDataProviderBuilder(testPackageName, START_URL);
-        webApkIntentDataProviderBuilder.setWebApkManifestId(testManifestId);
-        registerWebapp(webApkIntentDataProviderBuilder.build());
+        BrowserServicesIntentDataProvider intentDataProvider =
+                new WebApkIntentDataProviderBuilder(testPackageName, START_URL)
+                        .setWebApkManifestId(testManifestId)
+                        .build();
+        registerWebapp(intentDataProvider);
 
         assertEquals(
                 WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId),
@@ -840,53 +842,46 @@ public class WebappRegistryTest {
         Map<String, BrowserServicesIntentDataProvider> expectedIntentDataProviders =
                 new HashMap<String, BrowserServicesIntentDataProvider>();
 
-        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder1 =
-                new WebApkIntentDataProviderBuilder(testPackageName1, testStartUrl1);
-        webApkIntentDataProviderBuilder1.setWebApkManifestId(testManifestId1);
-        webApkIntentDataProviderBuilder1.setName(testName1);
-        webApkIntentDataProviderBuilder1.setShortName(testShortName1);
-        webApkIntentDataProviderBuilder1.setToolbarColor(testToolbarColor1);
-        webApkIntentDataProviderBuilder1.setScope(testScope1);
-
         BrowserServicesIntentDataProvider intentDataProvider1 =
-                webApkIntentDataProviderBuilder1.build();
+                new WebApkIntentDataProviderBuilder(testPackageName1, testStartUrl1)
+                        .setWebApkManifestId(testManifestId1)
+                        .setName(testName1)
+                        .setShortName(testShortName1)
+                        .setToolbarColor(testToolbarColor1)
+                        .setScope(testScope1)
+                        .build();
         expectedIntentDataProviders.put(testScope1, intentDataProvider1);
 
-        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder2 =
-                new WebApkIntentDataProviderBuilder(testPackageName2, testStartUrl2);
-        webApkIntentDataProviderBuilder2.setWebApkManifestId(testManifestId2);
-        webApkIntentDataProviderBuilder2.setName(testName2);
-        webApkIntentDataProviderBuilder2.setShortName(testShortName2);
-        webApkIntentDataProviderBuilder2.setToolbarColor(testToolbarColor2);
-        webApkIntentDataProviderBuilder2.setScope(testScope2);
-
         BrowserServicesIntentDataProvider intentDataProvider2 =
-                webApkIntentDataProviderBuilder2.build();
+                new WebApkIntentDataProviderBuilder(testPackageName2, testStartUrl2)
+                        .setWebApkManifestId(testManifestId2)
+                        .setName(testName2)
+                        .setShortName(testShortName2)
+                        .setToolbarColor(testToolbarColor2)
+                        .setScope(testScope2)
+                        .build();
         expectedIntentDataProviders.put(testScope2, intentDataProvider2);
 
-        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder3 =
-                new WebApkIntentDataProviderBuilder(testPackageName3, testStartUrl3);
-        webApkIntentDataProviderBuilder3.setWebApkManifestId(testManifestId3);
-        webApkIntentDataProviderBuilder3.setName(testName3);
-        webApkIntentDataProviderBuilder3.setShortName(testShortName3);
-        webApkIntentDataProviderBuilder3.setToolbarColor(testToolbarColor3);
-        webApkIntentDataProviderBuilder3.setScope(testScope3);
-
+        // This one will not be returned because it has no manifest id.
         BrowserServicesIntentDataProvider intentDataProvider3 =
-                webApkIntentDataProviderBuilder3.build();
+                new WebApkIntentDataProviderBuilder(testPackageName3, testStartUrl3)
+                        .setWebApkManifestId(testManifestId3)
+                        .setName(testName3)
+                        .setShortName(testShortName3)
+                        .setToolbarColor(testToolbarColor3)
+                        .setScope(testScope3)
+                        .build();
         expectedIntentDataProviders.put(testScope3, intentDataProvider3);
-
-        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder4 =
-                new WebApkIntentDataProviderBuilder(testPackageName4, testStartUrl4);
-        webApkIntentDataProviderBuilder4.setWebApkManifestId(testManifestId4);
-        webApkIntentDataProviderBuilder4.setName(testName4);
-        webApkIntentDataProviderBuilder4.setShortName(testShortName4);
-        webApkIntentDataProviderBuilder4.setToolbarColor(testToolbarColor4);
-        webApkIntentDataProviderBuilder4.setScope(testScope4);
 
         // This one will not be returned because it has no scope.
         BrowserServicesIntentDataProvider intentDataProvider4 =
-                webApkIntentDataProviderBuilder4.build();
+                new WebApkIntentDataProviderBuilder(testPackageName4, testStartUrl4)
+                        .setWebApkManifestId(testManifestId4)
+                        .setName(testName4)
+                        .setShortName(testShortName4)
+                        .setToolbarColor(testToolbarColor4)
+                        .setScope(testScope4)
+                        .build();
 
         GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting =
                 (scope) -> {
@@ -903,7 +898,7 @@ public class WebappRegistryTest {
 
         List<WebApkSpecifics> webApkSpecificsList =
                 webApkRegistry.getWebApkSpecificsImpl(setWebappInfoForTesting);
-        assertEquals(3, webApkSpecificsList.size());
+        assertEquals(2, webApkSpecificsList.size());
 
         Set<String> visitedScopes = new HashSet<String>();
         for (WebApkSpecifics webApkSpecifics : webApkSpecificsList) {
@@ -938,7 +933,7 @@ public class WebappRegistryTest {
             visitedScopes.add(webApkSpecifics.getScope());
         }
 
-        assertEquals(3, visitedScopes.size());
+        assertEquals(2, visitedScopes.size());
     }
 
     private Set<String> addWebappsToRegistry(String... webapps) {

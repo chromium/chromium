@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSessionPageHandlerFactory, ComposeSessionPageHandlerRemote, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from './compose.mojom-webui.js';
+import type {CloseReason, ComposeState, OpenMetadata, StyleModifiers, UserFeedback} from './compose.mojom-webui.js';
+import {ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter, ComposeSessionPageHandlerFactory, ComposeSessionPageHandlerRemote} from './compose.mojom-webui.js';
 
 /** @interface */
 export interface ComposeApiProxy {
   acceptComposeResult(): Promise<boolean>;
+  logCancelEdit(): void;
   completeFirstRun(): void;
   closeUi(reason: CloseReason): void;
   compose(input: string, edited: boolean): void;
   rewrite(style: StyleModifiers|null): void;
+  logEditInput(): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
   openComposeLearnMorePage(): void;
@@ -53,6 +56,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
         res => res.success);
   }
 
+  logCancelEdit(): void {
+    this.composeSessionPageHandler.logCancelEdit();
+  }
+
   completeFirstRun(): void {
     this.composeClientPageHandler.completeFirstRun();
   }
@@ -71,6 +78,10 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
 
   rewrite(style: StyleModifiers|null): void {
     this.composeSessionPageHandler.rewrite(style);
+  }
+
+  logEditInput(): void {
+    this.composeSessionPageHandler.logEditInput();
   }
 
   getRouter() {

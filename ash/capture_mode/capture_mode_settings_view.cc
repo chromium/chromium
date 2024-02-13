@@ -510,7 +510,7 @@ void CaptureModeSettingsView::OnDemoToolsButtonToggled() {
   CaptureModeController::Get()->EnableDemoTools(/*enable=*/!was_on);
 }
 
-BEGIN_METADATA(CaptureModeSettingsView, views::ScrollView)
+BEGIN_METADATA(CaptureModeSettingsView)
 END_METADATA
 
 }  // namespace ash

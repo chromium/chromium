@@ -42,10 +42,10 @@ namespace {
 
 using FakeTaskCallback =
     base::OnceCallback<void(CtapDeviceResponseCode status_code,
-                            absl::optional<std::vector<uint8_t>>)>;
+                            std::optional<std::vector<uint8_t>>)>;
 using FakeHandlerCallbackReceiver =
     test::StatusAndValuesCallbackReceiver<bool,
-                                          absl::optional<std::vector<uint8_t>>,
+                                          std::optional<std::vector<uint8_t>>,
                                           const FidoAuthenticator*>;
 
 enum class FakeTaskResponse : uint8_t {
@@ -158,8 +158,7 @@ class FakeFidoTask : public FidoTask {
                        weak_factory_.GetWeakPtr()));
   }
 
-  void CompletionCallback(
-      absl::optional<std::vector<uint8_t>> device_response) {
+  void CompletionCallback(std::optional<std::vector<uint8_t>> device_response) {
     DCHECK(device_response && device_response->size() == 1);
     switch (static_cast<FakeTaskResponse>(device_response->front())) {
       case FakeTaskResponse::kSuccess:
@@ -174,18 +173,18 @@ class FakeFidoTask : public FidoTask {
 
       case FakeTaskResponse::kOperationDenied:
         std::move(callback_).Run(
-            CtapDeviceResponseCode::kCtap2ErrOperationDenied, absl::nullopt);
+            CtapDeviceResponseCode::kCtap2ErrOperationDenied, std::nullopt);
         return;
       case FakeTaskResponse::kProcessingError:
       default:
         std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                                 absl::nullopt);
+                                 std::nullopt);
         return;
     }
   }
 
  private:
-  absl::optional<FidoDevice::CancelToken> token_;
+  std::optional<FidoDevice::CancelToken> token_;
   FakeTaskCallback callback_;
   base::WeakPtrFactory<FakeFidoTask> weak_factory_{this};
 };
@@ -194,7 +193,7 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
  public:
   using CompletionCallback =
       base::OnceCallback<void(bool,
-                              absl::optional<std::vector<uint8_t>>,
+                              std::optional<std::vector<uint8_t>>,
                               const FidoAuthenticator*)>;
 
   FakeFidoRequestHandler(test::FakeFidoDiscoveryFactory* fake_discovery_factory,
@@ -236,7 +235,7 @@ class FakeFidoRequestHandler : public FidoRequestHandlerBase {
 
   void HandleResponse(FidoAuthenticator* authenticator,
                       CtapDeviceResponseCode status,
-                      absl::optional<std::vector<uint8_t>> response) {
+                      std::optional<std::vector<uint8_t>> response) {
     auto* device_authenticator =
         static_cast<FidoDeviceAuthenticator*>(authenticator);
     device_authenticator->SetTaskForTesting(nullptr);
@@ -327,7 +326,7 @@ TEST_F(FidoRequestHandlerTest, TestSingleDeviceSuccess) {
 
   auto device = std::make_unique<MockFidoDevice>();
   device->ExpectCtap2CommandAndRespondWith(
-      CtapRequestCommand::kAuthenticatorGetInfo, absl::nullopt);
+      CtapRequestCommand::kAuthenticatorGetInfo, std::nullopt);
   EXPECT_CALL(*device, GetId()).WillRepeatedly(testing::Return("device0"));
   // Device returns success response.
   device->ExpectRequestAndRespondWith(std::vector<uint8_t>(),

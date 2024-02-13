@@ -16,7 +16,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/key_data_prefs_delegate.h"
-#include "components/metrics/structured/key_util.h"
+#include "components/metrics/structured/lib/key_util.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
 #include "components/metrics/structured/proto/event_storage.pb.h"
 #include "components/metrics/structured/structured_events.h"

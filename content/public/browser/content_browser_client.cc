@@ -20,7 +20,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/webid/digital_credentials/digital_credential_provider.h"
+#include "content/browser/webid/digital_credentials/digital_identity_provider.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -1416,11 +1416,11 @@ void ContentBrowserClient::IsClipboardPasteAllowedByPolicy(
 }
 
 void ContentBrowserClient::IsClipboardCopyAllowedByPolicy(
-    content::BrowserContext* browser_context,
-    const GURL& url,
-    size_t data_size_in_bytes,
+    const ClipboardEndpoint& source,
+    const ClipboardMetadata& metadata,
+    const std::u16string& data,
     IsClipboardCopyAllowedCallback callback) {
-  std::move(callback).Run(std::move(std::nullopt));
+  std::move(callback).Run(data, std::nullopt);
 }
 
 #if BUILDFLAG(ENABLE_VR)
@@ -1488,8 +1488,8 @@ ContentBrowserClient::CreateIdentityRequestDialogController(
   return std::make_unique<IdentityRequestDialogController>();
 }
 
-std::unique_ptr<DigitalCredentialProvider>
-ContentBrowserClient::CreateDigitalCredentialProvider() {
+std::unique_ptr<DigitalIdentityProvider>
+ContentBrowserClient::CreateDigitalIdentityProvider() {
   return nullptr;
 }
 
@@ -1600,6 +1600,11 @@ bool ContentBrowserClient::
   return true;
 }
 
+bool ContentBrowserClient::IsTransientActivationRequiredForHtmlFullscreen(
+    content::RenderFrameHost* render_frame_host) {
+  return true;
+}
+
 bool ContentBrowserClient::ShouldUseFirstPartyStorageKey(
     const url::Origin& origin) {
   return false;
@@ -1667,5 +1672,10 @@ ContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
 void ContentBrowserClient::MaybePrewarmHttpDiskCache(
     BrowserContext& browser_context,
     const GURL& navigation_url) {}
+
+void ContentBrowserClient::NotifyMultiCaptureStateChanged(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    const std::string& label,
+    MultiCaptureChanged state) {}
 
 }  // namespace content

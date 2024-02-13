@@ -28,8 +28,9 @@ class UserActionRecorder;
 
 class ASH_EXPORT CameraRollThumbnail : public views::MenuButton,
                                        public views::ContextMenuController {
+  METADATA_HEADER(CameraRollThumbnail, views::MenuButton)
+
  public:
-  METADATA_HEADER(CameraRollThumbnail);
   CameraRollThumbnail(const int index,
                       const phonehub::CameraRollItem& item,
                       phonehub::CameraRollManager* camera_roll_manager,

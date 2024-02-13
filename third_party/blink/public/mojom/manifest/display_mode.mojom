@@ -33,6 +33,11 @@ enum DisplayMode {
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/borderless-explainer.md.
   kBorderless,
 
+  // This value is used only for the "display-mode" CSS media feature:
+  // https://drafts.csswg.org/mediaqueries-5/#display-mode-picture-in-picture
+  // It is not used in the web app manifest.
+  kPictureInPicture,
+
   /**
    * This enum is persisted to logs, and therefore is append-only and should not be reordered.
    */

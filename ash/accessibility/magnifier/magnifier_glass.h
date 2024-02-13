@@ -85,15 +85,16 @@ class ASH_EXPORT MagnifierGlass : public aura::WindowObserver,
   // location follows the mouse, which causes the layers to also move.
   raw_ptr<views::Widget> host_widget_ = nullptr;
 
+  // Draws a multicolored black/white/black border on top of |border_layer_|.
+  // Also draws a shadow around the border. This must be ordered before
+  // |border_layer_| so that it gets destroyed after |border_layer_|, otherwise
+  // |border_layer_| will have a pointer to a deleted delegate.
+  std::unique_ptr<BorderRenderer> border_renderer_;
+
   // Draws the background with a zoom filter applied.
   std::unique_ptr<ui::Layer> zoom_layer_;
   // Draws an outline that is overlaid on top of |zoom_layer_|.
   std::unique_ptr<ui::Layer> border_layer_;
-  // Draws a multicolored black/white/black border on top of |border_layer_|.
-  // Also draws a shadow around the border. This must be ordered after
-  // |border_layer_| so that it gets destroyed after |border_layer_|, otherwise
-  // |border_layer_| will have a pointer to a deleted delegate.
-  std::unique_ptr<BorderRenderer> border_renderer_;
 };
 
 }  // namespace ash

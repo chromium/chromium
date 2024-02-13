@@ -12,12 +12,20 @@ struct VisualElementImpression {
   int type = -1;
   int parent = -1;
   int context = -1;
+  int width = -1;
+  int height = -1;
 };
 
 struct ImpressionEvent {
   ImpressionEvent();
   ~ImpressionEvent();
   std::vector<VisualElementImpression> impressions;
+};
+
+struct ResizeEvent {
+  int veid = -1;
+  int width = -1;
+  int height = -1;
 };
 
 struct ClickEvent {

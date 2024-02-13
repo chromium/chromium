@@ -105,18 +105,6 @@ TEST_F(PasswordModelTypeControllerTest,
   context.configuration_start_time = base::Time::Now();
   controller()->LoadModels(context, base::DoNothing());
 }
-
-TEST_F(PasswordModelTypeControllerTest, BlockSyncIfUPMLocalMigrationPending) {
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(
-          password_manager::prefs::UseUpmLocalAndSeparateStoresState::
-              kOffAndMigrationPending));
-
-  EXPECT_EQ(
-      controller()->GetPreconditionState(),
-      PasswordModelTypeController::PreconditionState::kMustStopAndKeepData);
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

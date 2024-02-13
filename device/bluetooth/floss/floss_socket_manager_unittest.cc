@@ -168,7 +168,7 @@ class FlossSocketManagerTest : public testing::Test {
   void SendOutgoingConnectionResult(
       FlossSocketManager::SocketId id,
       BtifStatus status,
-      const absl::optional<FlossSocketManager::FlossSocket>& socket,
+      const std::optional<FlossSocketManager::FlossSocket>& socket,
       dbus::ExportedObject::ResponseSender response) {
     dbus::MethodCall method_call(socket_manager::kCallbackInterface,
                                  socket_manager::kOnOutgoingConnectionResult);
@@ -383,7 +383,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
         base::BindOnce(
             [](bool* complete, BtifStatus* cb_status, int* fpsm,
                BtifStatus status,
-               absl::optional<FlossSocketManager::FlossSocket>&& socket) {
+               std::optional<FlossSocketManager::FlossSocket>&& socket) {
               *complete = true;
               *cb_status = status;
               if (socket) {
@@ -397,7 +397,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
     EXPECT_FALSE(callback_completed);
     EXPECT_EQ(BtifStatus::kNotReady, callback_status);
 
-    absl::optional<FlossSocketManager::FlossSocket> sock =
+    std::optional<FlossSocketManager::FlossSocket> sock =
         FlossSocketManager::FlossSocket();
     sock->id = socket_id_ctr_ - 1;
     sock->port = psm;
@@ -428,7 +428,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
         base::BindOnce(
             [](bool* complete, BtifStatus* cb_status, int* fpsm,
                BtifStatus status,
-               absl::optional<FlossSocketManager::FlossSocket>&& socket) {
+               std::optional<FlossSocketManager::FlossSocket>&& socket) {
               *complete = true;
               *cb_status = status;
               if (socket) {
@@ -442,7 +442,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
     EXPECT_FALSE(callback_completed);
     EXPECT_EQ(BtifStatus::kNotReady, callback_status);
 
-    absl::optional<FlossSocketManager::FlossSocket> sock =
+    std::optional<FlossSocketManager::FlossSocket> sock =
         FlossSocketManager::FlossSocket();
     sock->id = socket_id_ctr_ - 1;
     sock->port = psm;
@@ -473,7 +473,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
         base::BindOnce(
             [](bool* complete, BtifStatus* cb_status, device::BluetoothUUID* uu,
                BtifStatus status,
-               absl::optional<FlossSocketManager::FlossSocket>&& socket) {
+               std::optional<FlossSocketManager::FlossSocket>&& socket) {
               *complete = true;
               *cb_status = status;
               if (socket && socket->uuid) {
@@ -487,7 +487,7 @@ TEST_F(FlossSocketManagerTest, ConnectToSockets) {
     EXPECT_FALSE(callback_completed);
     EXPECT_EQ(BtifStatus::kNotReady, callback_status);
 
-    absl::optional<FlossSocketManager::FlossSocket> sock =
+    std::optional<FlossSocketManager::FlossSocket> sock =
         FlossSocketManager::FlossSocket();
     sock->id = socket_id_ctr_ - 1;
     sock->uuid = uuid;

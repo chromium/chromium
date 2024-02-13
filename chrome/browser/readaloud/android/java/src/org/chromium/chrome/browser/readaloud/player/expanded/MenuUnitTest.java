@@ -64,7 +64,7 @@ public class MenuUnitTest {
 
     @Test
     public void testAddGetItem() {
-        MenuItem item = mMenu.addItem(1, 0, "test item", Action.NONE);
+        MenuItem item = mMenu.addItem(1, 0, "test item", /* header= */ null, Action.NONE);
         MenuItem recievedItem = mMenu.getItem(1);
         assertEquals(item, recievedItem);
 
@@ -74,14 +74,14 @@ public class MenuUnitTest {
 
     @Test
     public void testExpandAction() {
-        MenuItem item = mMenu.addItem(1, 0, "Expand action", Action.EXPAND);
+        MenuItem item = mMenu.addItem(1, 0, "Expand action", /* header= */ null, Action.EXPAND);
         assertEquals(mMenu.getItem(1), item);
     }
 
     @Test
     public void testActionToggle() {
         // addItem and setValue
-        MenuItem item = mMenu.addItem(1, 0, "Toggle action", Action.TOGGLE);
+        MenuItem item = mMenu.addItem(1, 0, "Toggle action", /* header= */ null, Action.TOGGLE);
         item.setValue(true);
         SwitchCompat toggle = (SwitchCompat) item.findViewById(R.id.toggle_switch);
         assertTrue(toggle.isChecked());
@@ -99,7 +99,7 @@ public class MenuUnitTest {
     @Test
     public void testActionRadio() {
         // addItem and setValue
-        MenuItem item = mMenu.addItem(1, 0, "Radio action", Action.RADIO);
+        MenuItem item = mMenu.addItem(1, 0, "Radio action", /* header= */ null, Action.RADIO);
         item.setValue(true);
         RadioButton radioButton = (RadioButton) item.findViewById(R.id.readaloud_radio_button);
         assertTrue(radioButton.isChecked());
@@ -120,7 +120,7 @@ public class MenuUnitTest {
 
     @Test
     public void testSetItemEnabled() {
-        MenuItem item = mMenu.addItem(1, 0, "test item", Action.TOGGLE);
+        MenuItem item = mMenu.addItem(1, 0, "test item", /* header= */ null, Action.TOGGLE);
         item.setToggleHandler(mToggleHandler);
         item.setItemEnabled(false);
 
@@ -130,7 +130,7 @@ public class MenuUnitTest {
 
     @Test
     public void testClearItems() {
-        MenuItem item = mMenu.addItem(1, 0, "test item", Action.NONE);
+        MenuItem item = mMenu.addItem(1, 0, "test item", /* header= */ null, Action.NONE);
         assertEquals(item, mMenu.getItem(1));
         mMenu.clearItems();
         assertEquals(null, mMenu.getItem(1));
@@ -146,7 +146,7 @@ public class MenuUnitTest {
     @Test
     public void testAddPlayButton_OnPlayButtonClicked() {
         mMenu.setPlayButtonClickHandler(mHandler);
-        MenuItem item = mMenu.addItem(1, 0, "test item", Action.NONE);
+        MenuItem item = mMenu.addItem(1, 0, "test item", /* header= */ null, Action.NONE);
         item.addPlayButton();
         ImageView playButton = (ImageView) item.findViewById(R.id.play_button);
         assertEquals(View.VISIBLE, playButton.getVisibility());
@@ -164,7 +164,7 @@ public class MenuUnitTest {
     public void testOnRadioButtonSelected() {
         mMenu.setRadioTrueHandler(mHandler);
         for (int i = 0; i < 3; i++) {
-            mMenu.addItem(i, 0, "test item", Action.RADIO);
+            mMenu.addItem(i, 0, "test item", /* header= */ null, Action.RADIO);
         }
         mMenu.onRadioButtonSelected(0);
         mMenu.onRadioButtonSelected(1);
@@ -179,7 +179,7 @@ public class MenuUnitTest {
 
     @Test
     public void testMenuItemLayoutInflated() {
-        MenuItem item = mMenu.addItem(1, 0, "testToggle", Action.TOGGLE);
+        MenuItem item = mMenu.addItem(1, 0, "testToggle", /* header= */ null, Action.TOGGLE);
         LinearLayout layout =
                 (LinearLayout)
                         mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu_item, null);
@@ -222,7 +222,7 @@ public class MenuUnitTest {
 
     @Test
     public void testMenuItemLayoutInflated_NothingForActionExpand() {
-        MenuItem item = mMenu.addItem(1, 0, "testExpand", Action.EXPAND);
+        MenuItem item = mMenu.addItem(1, 0, "testExpand", /* header= */ null, Action.EXPAND);
         LinearLayout layout =
                 (LinearLayout)
                         mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu_item, null);

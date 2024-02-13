@@ -16,6 +16,7 @@
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/sea_pen_provider.h"
 #include "ash/webui/common/sea_pen_resources.h"
+#include "ash/webui/common/sea_pen_resources_generated.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
@@ -363,6 +364,7 @@ void AddStrings(content::WebUIDataSource* source) {
   source->AddLocalizedStrings(kLocalizedStrings);
 
   ::ash::common::AddSeaPenStrings(source);
+  ::ash::common::AddSeaPenWallpaperTemplateStrings(source);
 
   source->AddString("googlePhotosURL", GetGooglePhotosURL());
 
@@ -537,12 +539,16 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isCrosPrivacyHubLocationEnabled",
                      features::IsCrosPrivacyHubLocationEnabled());
 
+  const bool common_sea_pen_requirements =
+      sea_pen_provider_->IsEligibleForSeaPen();
   source->AddBoolean("isSeaPenEnabled",
                      ::ash::features::IsSeaPenEnabled() &&
-                         manta::features::IsMantaServiceEnabled());
+                         manta::features::IsMantaServiceEnabled() &&
+                         common_sea_pen_requirements);
   source->AddBoolean("isSeaPenTextInputEnabled",
                      ::ash::features::IsSeaPenTextInputEnabled() &&
-                         manta::features::IsMantaServiceEnabled());
+                         manta::features::IsMantaServiceEnabled() &&
+                         common_sea_pen_requirements);
 }
 
 void PersonalizationAppUI::AddIntegers(content::WebUIDataSource* source) {

@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -65,7 +66,8 @@ void OnAcceptTeleportWarning(const AccountId& account_id,
     return;
 
   PrefService* pref = ProfileManager::GetActiveUserProfile()->GetPrefs();
-  pref->SetBoolean(prefs::kMultiProfileWarningShowDismissed, no_show_again);
+  pref->SetBoolean(user_manager::prefs::kMultiProfileWarningShowDismissed,
+                   no_show_again);
 
   MultiUserWindowManagerHelper::GetWindowManager()->ShowWindowForUser(
       window_, account_id);
@@ -127,10 +129,11 @@ void ExecuteVisitDesktopCommand(int command_id, aura::Window* window) {
            it != logged_in_users.end(); ++it) {
         if (multi_user_util::GetProfileFromAccountId((*it)->GetAccountId())
                 ->GetPrefs()
-                ->GetBoolean(prefs::kMultiProfileWarningShowDismissed)) {
+                ->GetBoolean(
+                    user_manager::prefs::kMultiProfileWarningShowDismissed)) {
           bool active_user_show_option =
               ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-                  prefs::kMultiProfileWarningShowDismissed);
+                  user_manager::prefs::kMultiProfileWarningShowDismissed);
           std::move(on_accept).Run(true, active_user_show_option);
           return;
         }

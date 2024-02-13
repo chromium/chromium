@@ -13,27 +13,18 @@ import {afterNextRender} from '//resources/polymer/v3_0/polymer/polymer_bundled.
 /** @polymerBehavior */
 export const OobeFocusBehavior = {
   /**
-   * @private
-   * Focuses the element. As cr-input uses focusInput() instead of focus() due
-   * to bug, we have to handle this separately.
-   * TODO(crbug.com/882612): Replace this with focus() in focusMarkedElement().
-   */
-  focusOnElement_(element) {
-    if (element.focusInput) {
-      element.focusInput();
-      return;
-    }
-    element.focus();
-  },
-
-  /**
    * Called when the screen is shown to handle initial focus.
    */
   focusMarkedElement(root) {
     if (!root) {
       return;
     }
-    const focusedElements = root.getElementsByClassName('focus-on-show');
+
+    const outerCandidates = root.querySelectorAll('.focus-on-show');
+    const nestedCandidates =
+        root.shadowRoot?.querySelectorAll('.focus-on-show');
+    const focusedElements = [...outerCandidates, ...nestedCandidates];
+
     let focused = false;
     for (let i = 0; i < focusedElements.length; ++i) {
       if (focusedElements[i].hidden) {
@@ -41,11 +32,11 @@ export const OobeFocusBehavior = {
       }
 
       focused = true;
-      afterNextRender(this, () => this.focusOnElement_(focusedElements[i]));
+      afterNextRender(this, () => focusedElements[i].focus());
       break;
     }
     if (!focused && focusedElements.length > 0) {
-      afterNextRender(this, () => this.focusOnElement_(focusedElements[0]));
+      afterNextRender(this, () => focusedElements[0].focus());
     }
 
     this.dispatchEvent(

@@ -10,13 +10,13 @@
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
 
 class PasswordManagerClient;
 class PasswordManagerDriver;
 
-using ForPasswordField = base::StrongAlias<class ForPasswordFieldTag, bool>;
 using OffersGeneration = base::StrongAlias<class OffersGenerationTag, bool>;
 using ShowAllPasswords = base::StrongAlias<class ShowAllPasswordsTag, bool>;
 using ShowPasswordSuggestions =
@@ -35,23 +35,24 @@ class PasswordSuggestionGenerator {
   // credential suggestions will be generated. `page_favicon` represents the
   // favicon for the credentials offered on the current page. `username_filter`
   // specifies the value typed into the username form field. This value is empty
-  // if the suggestions are triggered on a password field. `for_password_field`
-  // specifies whether suggestions were triggered on a password field.
-  // `show_all_passwords` specifies whether suggestions should be filtered based
-  // on the `username_filter`. `offers_generation` specifies whether password
-  // generation suggestion should be added. `show_password_suggestions`
-  // specifies whether suggestions should be specified from the `fill_data`.
-  // `show_webauthn_credentials` specifies whether web auth credential
-  // suggestion should be added.
+  // if the suggestions are triggered on a password field. `offers_generation`
+  // specifies whether password generation suggestion should be added.
+  // `show_password_suggestions` specifies whether suggestions should be
+  // specified from the `fill_data`. `show_webauthn_credentials` specifies
+  // whether web auth credential suggestion should be added.
   std::vector<autofill::Suggestion> GetSuggestionsForDomain(
       base::optional_ref<const autofill::PasswordFormFillData> fill_data,
       const gfx::Image& page_favicon,
       const std::u16string& username_filter,
-      ForPasswordField for_password_field,
-      ShowAllPasswords show_all_passwords,
       OffersGeneration offers_generation,
       ShowPasswordSuggestions show_password_suggestions,
       ShowWebAuthnCredentials show_webauthn_credentials) const;
+
+  // Generates suggestions shown when user triggers password Autofill from the
+  // Chrome context menu. Every suggestion will have several sub suggestions to
+  // fill username, password and open credential details dialog.
+  std::vector<autofill::Suggestion> GetManualFallbackSuggestions(
+      const std::vector<CredentialUIEntry>& credentials) const;
 
  private:
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;

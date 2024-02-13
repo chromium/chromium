@@ -9,7 +9,7 @@
 
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "base/base64.h"
-#include "base/notreached.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
@@ -19,10 +19,14 @@
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "url/gurl.h"
 
 namespace ash::personalization_app {
@@ -86,6 +90,43 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
     // Public account users must be able to see personalization app since retail
     // demo mode is implemented as a public account.
     case user_manager::UserType::kPublicAccount:
+      return true;
+  }
+}
+
+bool IsEligibleForSeaPen(Profile* profile) {
+  if (!profile) {
+    LOG(ERROR) << __func__ << " no profile";
+    return false;
+  }
+
+  // Show for Googlers.
+  if (gaia::IsGoogleInternalAccountEmail(profile->GetProfileUserName())) {
+    DVLOG(1) << __func__ << " Google internal account";
+    return true;
+  }
+
+  // Do not show for managed profiles.
+  if (profile->GetProfilePolicyConnector()->IsManaged()) {
+    DVLOG(1) << __func__ << " managed profile";
+    return false;
+  }
+
+  const auto* user = GetUser(profile);
+  if (!user) {
+    LOG(ERROR) << __func__ << " no user";
+    return false;
+  }
+  DVLOG(1) << __func__ << " user_type=" << user->GetType();
+  switch (user->GetType()) {
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kGuest:
+      return false;
+    case user_manager::UserType::kRegular:
       return true;
   }
 }

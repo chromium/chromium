@@ -70,11 +70,13 @@ void PepperAudioController::SetVolume(double volume) {
   if (!instance_)
     return;
 
-  for (auto* ppb_audio : ppb_audios_)
+  for (PPB_Audio_Impl* ppb_audio : ppb_audios_) {
     ppb_audio->SetVolume(volume);
+  }
 
-  for (auto* audio_output_host : audio_output_hosts_)
+  for (PepperAudioOutputHost* audio_output_host : audio_output_hosts_) {
     audio_output_host->SetVolume(volume);
+  }
 }
 
 void PepperAudioController::OnPepperInstanceDeleted() {

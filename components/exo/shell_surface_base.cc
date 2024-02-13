@@ -1361,13 +1361,20 @@ void ShellSurfaceBase::GetWidgetHitTestMask(SkPath* mask) const {
 
   GetHitTestMask(mask);
 
-  SkMatrix matrix;
   const float scale = GetScale();
-  // `matrix` should be on Widget space, so use `origin_` as an origin instead
-  // of the root surface origin.
-  matrix.setScaleTranslate(SkFloatToScalar(1.0f / scale),
-                           SkFloatToScalar(1.0f / scale), origin_.x(),
-                           origin_.y());
+
+  // `mask` should be in the Widget's coordinates, but the above
+  // GetHitTestMask() call returns the mask in the root_surface's coordinates.
+  // We need to offset the difference.
+  auto widget_bounds = widget_->GetWindowBoundsInScreen().origin();
+  auto root_surface_bounds =
+      root_surface()->window()->GetBoundsInScreen().origin();
+  auto offset = root_surface_bounds - widget_bounds.OffsetFromOrigin();
+
+  SkMatrix matrix;
+  matrix.setScaleTranslate(
+      SkFloatToScalar(1.0f / scale), SkFloatToScalar(1.0f / scale),
+      SkIntToScalar(offset.x()), SkIntToScalar(offset.y()));
   mask->transform(matrix);
 }
 

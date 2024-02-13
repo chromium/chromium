@@ -274,7 +274,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     bool show_auto_reauthn_checkbox,
-    Browser* browser,
+    content::WebContents* web_contents,
     views::View* anchor_view,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AccountSelectionViewBase::Observer* observer,
@@ -285,7 +285,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
           // anchored to the `anchor_view`, which effectively means the bubble
           // will be on top of the `anchor_view`, aligned on its right side.
           views::BubbleBorder::Arrow::BOTTOM_RIGHT),
-      AccountSelectionViewBase(browser,
+      AccountSelectionViewBase(web_contents,
                                observer,
                                widget_observer,
                                std::move(url_loader_factory)) {
@@ -329,7 +329,7 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
 void AccountSelectionBubbleView::InitDialogWidget() {
-  if (!browser_ || !widget_observer_) {
+  if (!web_contents_) {
     return;
   }
 
@@ -339,7 +339,11 @@ void AccountSelectionBubbleView::InitDialogWidget() {
     return;
   }
 
-  widget->AddObserver(widget_observer_);
+  // Add the widget observer, if available. It is null in tests.
+  if (widget_observer_) {
+    widget->AddObserver(widget_observer_);
+  }
+
   dialog_widget_ = widget->GetWeakPtr();
 }
 
@@ -577,12 +581,15 @@ void AccountSelectionBubbleView::ShowErrorDialog(
 }
 
 void AccountSelectionBubbleView::CloseDialog() {
-  if (!dialog_widget_ || !widget_observer_) {
+  if (!dialog_widget_) {
     return;
   }
 
   CancelDialog();
-  dialog_widget_->RemoveObserver(widget_observer_);
+  // Remove the widget observer, if available. It is null in tests.
+  if (widget_observer_) {
+    dialog_widget_->RemoveObserver(widget_observer_);
+  }
   dialog_widget_.reset();
 }
 
@@ -751,9 +758,12 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
     auto_reauthn_checkbox_->SetChecked(true);
   }
 
-  // Do not add disclosure text if this is a sign in.
-  if (account.login_state == Account::LoginState::kSignIn)
+  // Do not add disclosure text if this is a sign in or if we were requested
+  // to skip it.
+  if (account.login_state == Account::LoginState::kSignIn ||
+      !idp_display_data.request_permission) {
     return row;
+  }
 
   // Add disclosure text. It requires a StyledLabel so that we can add the links
   // to the privacy policy and terms of service URLs.

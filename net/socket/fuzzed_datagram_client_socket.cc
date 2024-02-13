@@ -214,7 +214,12 @@ int FuzzedDatagramClientSocket::SetDoNotFragment() {
   return OK;
 }
 
-int FuzzedDatagramClientSocket::SetRecvEcn() {
+int FuzzedDatagramClientSocket::SetRecvTos() {
+  return OK;
+}
+
+int FuzzedDatagramClientSocket::SetTos(DiffServCodePoint dscp,
+                                       EcnCodePoint ecn) {
   return OK;
 }
 
@@ -236,6 +241,12 @@ void FuzzedDatagramClientSocket::OnWriteComplete(
 
   write_pending_ = false;
   std::move(callback).Run(result);
+}
+
+DscpAndEcn FuzzedDatagramClientSocket::GetLastTos() const {
+  uint8_t tos;
+  data_provider_->ConsumeData(&tos, 1);
+  return TosToDscpAndEcn(tos);
 }
 
 }  // namespace net

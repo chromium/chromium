@@ -87,7 +87,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProviderImpl
   void OnReadValue(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender,
-      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      std::optional<device::BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value);
 
   // Called by the Delegate in response to a method to call to write the value

@@ -287,10 +287,10 @@ class WebAppCommandScheduler {
   // uninstalls them too if they have no other install sources. Adds the
   // uninstall web app to `UserUninstalledPreinstalledWebAppPrefs` if it was
   // default installed.
-  void UninstallWebApp(const webapps::AppId& app_id,
-                       webapps::WebappUninstallSource uninstall_source,
-                       UninstallJob::Callback callback,
-                       const base::Location& location = FROM_HERE);
+  virtual void UninstallWebApp(const webapps::AppId& app_id,
+                               webapps::WebappUninstallSource uninstall_source,
+                               UninstallJob::Callback callback,
+                               const base::Location& location = FROM_HERE);
 
   // Schedules a command that uninstalls all user-installed web apps.
   void UninstallAllUserInstalledWebApps(

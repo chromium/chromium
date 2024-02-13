@@ -51,18 +51,19 @@ class SampleForAnnotationProcessor {
         Object[] returnObjects();
     }
 
-    void test() {
+    public static void test() {
         int[] x = new int[] {1, 2, 3, 4, 5};
         String[] strs = new String[] {"the", "quick", "brown", "fox"};
         strs = SampleForAnnotationProcessorJni.get().sendToNative(strs);
 
+        SampleForAnnotationProcessor sample =
+                SampleForAnnotationProcessorJni.get().bar(new SampleForAnnotationProcessor());
         SampleForAnnotationProcessor[] samples =
-                new SampleForAnnotationProcessor[] {this, this, this};
+                new SampleForAnnotationProcessor[] {sample, sample};
         samples = SampleForAnnotationProcessorJni.get().sendSamplesToNative(samples);
 
         // Instance of Natives accessed through (classname + "Jni").get().
         SampleForAnnotationProcessorJni.get().foo();
-        SampleForAnnotationProcessor sample = SampleForAnnotationProcessorJni.get().bar(this);
         boolean hasPhalange = SampleForAnnotationProcessorJni.get().hasPhalange();
         String s = SampleForAnnotationProcessorJni.get().revString("abcd");
     }

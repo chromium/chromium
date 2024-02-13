@@ -13,6 +13,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/content/public/all_download_item_notifier.h"
@@ -101,7 +102,8 @@ class DownloadsListTracker
     bool operator()(const download::DownloadItem* a,
                     const download::DownloadItem* b) const;
   };
-  using SortedSet = std::set<download::DownloadItem*, StartTimeComparator>;
+  using SortedSet = std::set<raw_ptr<download::DownloadItem, SetExperimental>,
+                             StartTimeComparator>;
 
   // Called by both constructors to initialize common state.
   void Init();

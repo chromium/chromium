@@ -26,9 +26,12 @@ enum class WebFilterType {
   // The web filter is set to "Only allow certain sites".
   kCertainSites = 2,
 
+  // Used for UMA only. There are multiple web filters on the device.
+  kMixed = 3,
+
   // Used for UMA. Update kMaxValue to the last value. Add future entries
   // above this comment. Sync with enums.xml.
-  kMaxValue = kCertainSites,
+  kMaxValue = kMixed,
 };
 
 // These values corresponds to SupervisedUserSafetyFilterResult in
@@ -80,6 +83,7 @@ extern const char kGeolocationDisabled[];
 extern const char kSafeSitesEnabled[];
 extern const char kSigninAllowed[];
 extern const char kSigninAllowedOnNextStartup[];
+extern const char kSkipParentApprovalToInstallExtensions[];
 
 // A special supervised user ID used for child accounts.
 extern const char kChildAccountSUID[];
@@ -105,6 +109,10 @@ GURL KidsManagementClassifyURLRequestURL();
 
 // Histogram name to log FamilyLink user type segmentation.
 extern const char kFamilyLinkUserLogSegmentHistogramName[];
+
+// Histogram name to log Family Link user web filter type segmentation.
+// This filter only applies to supervised user accounts.
+extern const char kFamilyLinkUserLogSegmentWebFilterHistogramName[];
 
 // Histogram name to log URL filtering results with reason for filter and page
 // transition.

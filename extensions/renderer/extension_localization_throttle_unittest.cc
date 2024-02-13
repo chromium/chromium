@@ -74,7 +74,6 @@ class FakeDelegate : public blink::URLLoaderThrottle::Delegate {
   }
   void Resume() override { NOTREACHED(); }
 
-  void SetPriority(net::RequestPriority priority) override { NOTREACHED(); }
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,
       mojo::ScopedDataPipeConsumerHandle body) override {

@@ -3,10 +3,13 @@
 <translationbundle lang="pt-PT">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Quer fechá-los?</translation>
 <translation id="1155815720264022949">Quer fechar os separadores antigos?</translation>
+<translation id="1197088940767939838">Laranja</translation>
 <translation id="1215127405478249895">Reveja os separadores</translation>
 <translation id="125153950246128346">Toque para ver outro separador.</translation>
 <translation id="1326271443836399892">Reveja as definições de organização atuais.</translation>
 <translation id="1499635324672558517">Fechar todos os separadores anónimos?</translation>
+<translation id="1555130319947370107">Azul</translation>
+<translation id="161042844686301425">Turquesa</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado aos marcadores}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados aos marcadores}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupar separador}other{Agrupar separadores}}</translation>
 <translation id="3996880007329611795">Receber notificações</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>
+<translation id="4159784952369912983">Roxo</translation>
 <translation id="4212246570487010370">Continue a navegar</translation>
 <translation id="427987768447457592">Novo grupo separadores</translation>
 <translation id="4648718555153979859">Os separadores estão agrupados aqui.</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Título obrigatório</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tem <ph name="TABS_COUNT_ONE" /> separador que não usou recentemente}other{Tem <ph name="TABS_COUNT_MANY" /> separadores que não usou recentemente}}</translation>
 <translation id="5339733443032484186">O seu último separador</translation>
+<translation id="5400836586163650660">Cinzento</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5545379293264651575">Fechar sem rever</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Quer obter alertas para descidas de preços?</translation>
 <translation id="58326064309361797">Arraste os separadores para os agrupar.</translation>
 <translation id="5846292395804797011">Feche o grupo <ph name="TITLE_OF_GROUP" /> com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
+<translation id="5901630391730855834">Amarelo</translation>
 <translation id="5972844218283131174">Desmarcar tudo</translation>
+<translation id="6017514345406065928">Verde</translation>
 <translation id="6054741997831917303">O preço deste artigo desceu recentemente de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecione separadores</translation>
 <translation id="6228793724645064692">(classificação da loja)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Agrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> crítica}other{Classificação de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> críticas}}</translation>
 <translation id="7885132941432959125">Mover separador para a direita</translation>
+<translation id="7942349550061667556">Vermelho</translation>
 <translation id="7966321538264951561">Ignore as sugestões.</translation>
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>
 <translation id="8205266828577616993">Mover separador para cima</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Adicionar um novo separador ao grupo</translation>
 <translation id="955558140275419384">Reveja todos os separadores arquivados para maior organização acedendo a este editor.</translation>
 <translation id="959682366969460160">Organize-se</translation>
+<translation id="992256792861109788">Rosa</translation>
 </translationbundle>

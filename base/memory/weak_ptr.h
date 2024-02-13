@@ -84,7 +84,13 @@
 #include "base/memory/safe_ref_traits.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
-#include "base/types/pass_key.h"
+
+namespace performance_manager {
+class FrameNodeImpl;
+class PageNodeImpl;
+class ProcessNodeImpl;
+class WorkerNodeImpl;
+}  // namespace performance_manager
 
 namespace base {
 
@@ -294,6 +300,16 @@ class TRIVIAL_ABI WeakPtr {
     ptr_ = nullptr;
   }
 
+  // Do not use this method. Almost all callers should instead use operator
+  // bool().
+  //
+  // There are a few rare cases where the caller intentionally needs to check
+  // validity of a base::WeakPtr on a sequence different from the bound sequence
+  // as an unavoidable performance optimization. This is the only valid use-case
+  // for this method. See
+  // https://docs.google.com/document/d/1IGzq9Nx69GS_2iynGmPWo5sFAD2DcCyBY1zIvZwF7k8
+  // for details.
+  //
   // Returns false if the WeakPtr is confirmed to be invalid. This call is safe
   // to make from any thread, e.g. to optimize away unnecessary work, but
   // RefIsValid() must always be called, on the correct sequence, before
@@ -361,6 +377,25 @@ class BASE_EXPORT WeakPtrFactoryBase {
 };
 }  // namespace internal
 
+namespace subtle {
+
+// Restricts access to WeakPtrFactory::BindToCurrentSequence() to authorized
+// callers.
+class BASE_EXPORT BindWeakPtrFactoryPassKey {
+ private:
+  // Avoid =default to disallow creation by uniform initialization.
+  BindWeakPtrFactoryPassKey() {}
+
+  friend class BindWeakPtrFactoryForTesting;
+  friend class performance_manager::FrameNodeImpl;
+  friend class performance_manager::PageNodeImpl;
+  friend class performance_manager::ProcessNodeImpl;
+  friend class performance_manager::WorkerNodeImpl;
+  friend class sequence_manager::internal::TaskQueueImpl;
+};
+
+}  // namespace subtle
+
 // A class may be composed of a WeakPtrFactory and thereby
 // control how it exposes weak pointers to itself.  This is helpful if you only
 // need weak pointers within the implementation of a class.  This class is also
@@ -423,11 +458,10 @@ class WeakPtrFactory : public internal::WeakPtrFactoryBase {
     return weak_reference_owner_.HasRefs();
   }
 
-  // Rebind the factory to the current sequence. This allows creating a task
-  // queue and associated weak pointers on a different thread from the one they
-  // are used on.
-  void BindToCurrentSequence(
-      PassKey<sequence_manager::internal::TaskQueueImpl>) {
+  // Rebind the factory to the current sequence. This allows creating an object
+  // and associated weak pointers on a different thread from the one they are
+  // used on.
+  void BindToCurrentSequence(subtle::BindWeakPtrFactoryPassKey) {
     weak_reference_owner_.BindToCurrentSequence();
   }
 };

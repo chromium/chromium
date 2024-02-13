@@ -6,15 +6,12 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy_impl.h"
-#include "third_party/blink/renderer/modules/sensor/sensor_proxy_inspector_impl.h"
 
 namespace blink {
 
 // SensorProviderProxy
 SensorProviderProxy::SensorProviderProxy(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window),
-      sensor_provider_(&window),
-      inspector_mode_(false) {}
+    : Supplement<LocalDOMWindow>(window), sensor_provider_(&window) {}
 
 void SensorProviderProxy::InitializeIfNeeded() {
   if (sensor_provider_.is_bound())
@@ -56,13 +53,8 @@ SensorProxy* SensorProviderProxy::CreateSensorProxy(
     Page* page) {
   DCHECK(!GetSensorProxy(type));
 
-  SensorProxy* sensor =
-      inspector_mode_
-          ? static_cast<SensorProxy*>(
-                MakeGarbageCollected<SensorProxyInspectorImpl>(type, this,
-                                                               page))
-          : static_cast<SensorProxy*>(
-                MakeGarbageCollected<SensorProxyImpl>(type, this, page));
+  SensorProxy* sensor = static_cast<SensorProxy*>(
+      MakeGarbageCollected<SensorProxyImpl>(type, this, page));
   sensor_proxies_.insert(sensor);
 
   return sensor;

@@ -51,13 +51,9 @@ export interface TabSearchApiProxy {
 
   triggerFeedback(sessionId: number): void;
 
-  triggerSync(): void;
-
   triggerSignIn(): void;
 
   openHelpPage(): void;
-
-  openSyncSettings(): void;
 
   setUserFeedback(
       sessionId: number, organizationId: number, feedback: UserFeedback): void;
@@ -151,20 +147,12 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
     this.handler.triggerFeedback(sessionId);
   }
 
-  triggerSync() {
-    this.handler.triggerSync();
-  }
-
   triggerSignIn() {
     this.handler.triggerSignIn();
   }
 
   openHelpPage() {
     this.handler.openHelpPage();
-  }
-
-  openSyncSettings() {
-    this.handler.openSyncSettings();
   }
 
   setUserFeedback(

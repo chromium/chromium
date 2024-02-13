@@ -608,7 +608,7 @@ BASE_FEATURE(kUseWritePixelsYUV,
 BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
              "UseMultiPlaneFormatForHardwareVideo",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(IS_LINUX)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -619,7 +619,8 @@ BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
 // software video decoders.
 BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
              "UseMultiPlaneFormatForSoftwareVideo",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -905,15 +906,20 @@ BASE_FEATURE(kVideoToolboxAv1Decoding,
 // Expiry: When VTVideoDecodeAccelerator is deleted
 BASE_FEATURE(kVideoToolboxVideoDecoder,
              "VideoToolboxVideoDecoder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_APPLE)
 
-// A video encoder is enabled to drop a frame in cast mirroring.
+// A video encoder is allowed to drop a frame in cast mirroring.
 BASE_FEATURE(kCastVideoEncoderFrameDrop,
              "CastVideoEncoderFrameDrop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A hardware video encoder is enabled to drop a frame in WebRTC.
+// A video encoder is allowed to drop a frame in WebCodecs.
+BASE_FEATURE(kWebCodecsVideoEncoderFrameDrop,
+             "WebCodecsVideoEncoderFrameDrop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A hardware video encoder is allowed to drop a frame in WebRTC.
 BASE_FEATURE(kWebRTCHardwareVideoEncoderFrameDrop,
              "WebRTCHardwareVideoEncoderFrameDrop",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1753,6 +1759,13 @@ BASE_FEATURE(kCrOSLegacyMediaFormats,
              "CrOSLegacyMediaFormats",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+#endif
+
+#if BUILDFLAG(IS_WIN)
+// Controls whether to use D3D12 video decoder instead of D3D11 when supported.
+BASE_FEATURE(kD3D12VideoDecoder,
+             "D3D12VideoDecoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 bool IsChromeWideEchoCancellationEnabled() {

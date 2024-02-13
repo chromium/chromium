@@ -145,12 +145,18 @@ component("evdev") {
     sources += [
       "fake_keyboard_heuristic_metrics.cc",
       "fake_keyboard_heuristic_metrics.h",
+      "heatmap_palm_detector.cc",
+      "heatmap_palm_detector.h",
       "numberpad_metrics.cc",
       "numberpad_metrics.h",
     ]
     deps += [
       "//ash/constants",
       "//chromeos/ash/components/feature_usage",
+    ]
+    visibility += [
+      "//chrome/browser/ui:ui",
+      "//chromeos/ash/components/heatmap/*",
     ]
   }
 

@@ -80,6 +80,8 @@ void DeviceToDeviceAuthenticator::Authenticate(
 
   callback_ = std::move(callback);
   if (!connection_->IsConnected()) {
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kFailureNotConnectedToRemoteDevice);
     Fail("Not connected to remote device", Result::DISCONNECTED);
     return;
   }
@@ -88,6 +90,8 @@ void DeviceToDeviceAuthenticator::Authenticate(
 
   // Generate a key-pair for this individual session.
   state_ = State::GENERATING_SESSION_KEYS;
+  NotifyAuthenticationStateChanged(
+      mojom::SecureChannelState::kGeneratingSessionKeys);
   secure_message_delegate_->GenerateKeyPair(
       base::BindOnce(&DeviceToDeviceAuthenticator::OnKeyPairGenerated,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -98,6 +102,8 @@ void DeviceToDeviceAuthenticator::OnKeyPairGenerated(
     const std::string& private_key) {
   DCHECK(state_ == State::GENERATING_SESSION_KEYS);
   if (public_key.empty() || private_key.empty()) {
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kFailedToGenerateSessionKeys);
     Fail("Failed to generate session keys");
     return;
   }
@@ -105,6 +111,7 @@ void DeviceToDeviceAuthenticator::OnKeyPairGenerated(
 
   // Create the [Initiator Hello] message to send to the remote device.
   state_ = State::SENDING_HELLO;
+  NotifyAuthenticationStateChanged(mojom::SecureChannelState::kSendingHello);
   helper_->CreateHelloMessage(
       public_key, connection_->remote_device().persistent_symmetric_key(),
       secure_message_delegate_.get(),
@@ -120,6 +127,8 @@ void DeviceToDeviceAuthenticator::OnHelloMessageCreated(
     const std::string& message) {
   DCHECK(state_ == State::SENDING_HELLO);
   if (message.empty()) {
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kFailedToGenerateHelloMessage);
     Fail("Failed to create [Initiator Hello]");
     return;
   }
@@ -135,6 +144,7 @@ void DeviceToDeviceAuthenticator::OnHelloMessageCreated(
 
   // Send the [Initiator Hello] message to the remote device.
   state_ = State::SENT_HELLO;
+  NotifyAuthenticationStateChanged(mojom::SecureChannelState::kSentHello);
   hello_message_ = message;
   connection_->SendMessage(std::make_unique<WireMessage>(
       hello_message_, std::string(Authenticator::kAuthenticationFeature)));
@@ -142,6 +152,8 @@ void DeviceToDeviceAuthenticator::OnHelloMessageCreated(
 
 void DeviceToDeviceAuthenticator::OnResponderAuthTimedOut() {
   DCHECK(state_ == State::SENT_HELLO);
+  NotifyAuthenticationStateChanged(
+      mojom::SecureChannelState::kFailedToWaitForResponderAuth);
   Fail("Timed out waiting for [Responder Auth]");
 }
 
@@ -149,6 +161,8 @@ void DeviceToDeviceAuthenticator::OnResponderAuthValidated(
     bool validated,
     const SessionKeys& session_keys) {
   if (!validated) {
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kFailedToValidateReponderAuth);
     Fail("Unable to validated [Responder Auth]");
     return;
   }
@@ -156,6 +170,8 @@ void DeviceToDeviceAuthenticator::OnResponderAuthValidated(
   PA_LOG(VERBOSE) << "Successfully validated [Responder Auth]! "
                   << "Sending [Initiator Auth]...";
   state_ = State::VALIDATED_RESPONDER_AUTH;
+  NotifyAuthenticationStateChanged(
+      mojom::SecureChannelState::kValidatedResponderAuth);
   session_keys_ = session_keys;
 
   // Create the [Initiator Auth] message to send to the remote device.
@@ -170,11 +186,15 @@ void DeviceToDeviceAuthenticator::OnInitiatorAuthCreated(
     const std::string& message) {
   DCHECK(state_ == State::VALIDATED_RESPONDER_AUTH);
   if (message.empty()) {
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kFailedToGenerateInitiatorAuth);
     Fail("Failed to create [Initiator Auth]");
     return;
   }
 
   state_ = State::SENT_INITIATOR_AUTH;
+  NotifyAuthenticationStateChanged(
+      mojom::SecureChannelState::kSentInitiatorAuth);
   connection_->SendMessage(std::make_unique<WireMessage>(
       message, std::string(Authenticator::kAuthenticationFeature)));
 }
@@ -201,6 +221,8 @@ void DeviceToDeviceAuthenticator::Succeed() {
   PA_LOG(VERBOSE) << "Authentication succeeded!";
 
   state_ = State::AUTHENTICATION_SUCCESS;
+  NotifyAuthenticationStateChanged(
+      mojom::SecureChannelState::kAuthenticationSuccess);
   connection_->RemoveObserver(this);
   std::move(callback_).Run(
       Result::SUCCESS,
@@ -215,6 +237,8 @@ void DeviceToDeviceAuthenticator::OnConnectionStatusChanged(
     Connection::Status new_status) {
   // We do not expect the connection to drop during authentication.
   if (new_status == Connection::Status::DISCONNECTED) {
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kFailureDisconnectDuringAuthentication);
     Fail("Disconnected while authentication is in progress",
          Result::DISCONNECTED);
   }
@@ -228,6 +252,8 @@ void DeviceToDeviceAuthenticator::OnMessageReceived(
     PA_LOG(VERBOSE) << "Received [Responder Auth] message, payload_size="
                     << message.payload().size();
     state_ = State::RECEIVED_RESPONDER_AUTH;
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kReceivedResponderAuth);
     timer_.reset();
     responder_auth_message_ = message.payload();
 
@@ -242,6 +268,8 @@ void DeviceToDeviceAuthenticator::OnMessageReceived(
         base::BindOnce(&DeviceToDeviceAuthenticator::OnResponderAuthValidated,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kReceivedUnexpectedMessage);
     Fail("Unexpected message received");
   }
 }
@@ -252,10 +280,15 @@ void DeviceToDeviceAuthenticator::OnSendCompleted(const Connection& connection,
   if (state_ == State::SENT_INITIATOR_AUTH) {
     if (success)
       Succeed();
-    else
+    else {
+      NotifyAuthenticationStateChanged(
+          mojom::SecureChannelState::kFailedToSendInitiatorAuth);
       Fail("Failed to send [Initiator Auth]");
+    }
   } else if (!success && state_ == State::SENT_HELLO) {
     DCHECK(message.payload() == hello_message_);
+    NotifyAuthenticationStateChanged(
+        mojom::SecureChannelState::kFailedToSendHelloMessage);
     Fail("Failed to send [Initiator Hello]");
   }
 }

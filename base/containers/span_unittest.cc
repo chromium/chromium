@@ -1988,29 +1988,106 @@ TEST(SpanTest, SplitAt) {
 // API decides to use it. The size() and data() convention should mean
 // that everyone's spans are compatible with each other.
 TEST(SpanTest, FromStdSpan) {
-  const int kData[] = {10, 11, 12};
-  std::span std_span(kData);
+  int kData[] = {10, 11, 12};
+  std::span<const int> std_span(kData);
+  std::span<int> mut_std_span(kData);
+  std::span<const int, 3u> fixed_std_span(kData);
+  std::span<int, 3u> mut_fixed_std_span(kData);
 
-  base::span base_span(std_span);
-  EXPECT_EQ(base_span.size(), 3u);
-  EXPECT_EQ(base_span.data(), kData);
+  // Tests *implicit* conversions through assignment construction.
+  {
+    base::span<const int> base_span = std_span;
+    EXPECT_EQ(base_span.size(), 3u);
+    EXPECT_EQ(base_span.data(), kData);
+  }
+  {
+    base::span<const int> base_span = mut_std_span;
+    EXPECT_EQ(base_span.size(), 3u);
+    EXPECT_EQ(base_span.data(), kData);
+  }
+  {
+    base::span<const int> base_span = fixed_std_span;
+    EXPECT_EQ(base_span.size(), 3u);
+    EXPECT_EQ(base_span.data(), kData);
+  }
+  {
+    base::span<const int> base_span = mut_fixed_std_span;
+    EXPECT_EQ(base_span.size(), 3u);
+    EXPECT_EQ(base_span.data(), kData);
+  }
 
-  auto base_made_span = base::make_span(std_span);
-  EXPECT_EQ(base_made_span.size(), 3u);
-  EXPECT_EQ(base_made_span.data(), kData);
+  {
+    base::span<const int, 3u> base_span = fixed_std_span;
+    EXPECT_EQ(base_span.size(), 3u);
+    EXPECT_EQ(base_span.data(), kData);
+  }
+  {
+    base::span<const int, 3u> base_span = mut_fixed_std_span;
+    EXPECT_EQ(base_span.size(), 3u);
+    EXPECT_EQ(base_span.data(), kData);
+  }
+  {
+    base::span<int, 3u> base_span = mut_fixed_std_span;
+    EXPECT_EQ(base_span.size(), 3u);
+    EXPECT_EQ(base_span.data(), kData);
+  }
 
-  auto base_byte_span = base::as_byte_span(std_span);
-  EXPECT_EQ(base_byte_span.size(), sizeof(int) * 3u);
-  EXPECT_EQ(base_byte_span.data(), reinterpret_cast<const uint8_t*>(kData));
+  {
+    auto base_made_span = base::make_span(std_span);
+    EXPECT_EQ(base_made_span.size(), 3u);
+    EXPECT_EQ(base_made_span.data(), kData);
+  }
+  {
+    auto base_byte_span = base::as_byte_span(std_span);
+    EXPECT_EQ(base_byte_span.size(), sizeof(int) * 3u);
+    EXPECT_EQ(base_byte_span.data(), reinterpret_cast<const uint8_t*>(kData));
+  }
 }
 
 TEST(SpanTest, ToStdSpan) {
-  const int kData[] = {10, 11, 12};
-  base::span base_span(kData);
+  int kData[] = {10, 11, 12};
+  base::span<const int> base_span(kData);
+  base::span<int> mut_base_span(kData);
+  base::span<const int, 3u> fixed_base_span(kData);
+  base::span<int, 3u> mut_fixed_base_span(kData);
 
-  std::span std_span(base_span);
-  EXPECT_EQ(std_span.size(), 3u);
-  EXPECT_EQ(std_span.data(), kData);
+  // Tests *implicit* conversions through assignment construction.
+  {
+    std::span<const int> std_span = base_span;
+    EXPECT_EQ(std_span.size(), 3u);
+    EXPECT_EQ(std_span.data(), kData);
+  }
+  {
+    std::span<const int> std_span = mut_base_span;
+    EXPECT_EQ(std_span.size(), 3u);
+    EXPECT_EQ(std_span.data(), kData);
+  }
+  {
+    std::span<const int> std_span = fixed_base_span;
+    EXPECT_EQ(std_span.size(), 3u);
+    EXPECT_EQ(std_span.data(), kData);
+  }
+  {
+    std::span<const int> std_span = mut_fixed_base_span;
+    EXPECT_EQ(std_span.size(), 3u);
+    EXPECT_EQ(std_span.data(), kData);
+  }
+
+  {
+    std::span<const int, 3u> std_span = fixed_base_span;
+    EXPECT_EQ(std_span.size(), 3u);
+    EXPECT_EQ(std_span.data(), kData);
+  }
+  {
+    std::span<const int, 3u> std_span = mut_fixed_base_span;
+    EXPECT_EQ(std_span.size(), 3u);
+    EXPECT_EQ(std_span.data(), kData);
+  }
+  {
+    std::span<int, 3u> std_span = mut_fixed_base_span;
+    EXPECT_EQ(std_span.size(), 3u);
+    EXPECT_EQ(std_span.data(), kData);
+  }
 
   // no make_span() or as_byte_span() in std::span.
 }

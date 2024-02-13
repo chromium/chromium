@@ -182,7 +182,7 @@ bool WaylandOutput::IsReady() const {
   // metrics before the first wl_output.done event. zaura_output_manager is
   // responsible for updating `metrics_` in an atomic and consistent way as soon
   // as it receives all its necessary output metrics events.
-  if (IsUsingZAuraOutputManager()) {
+  if (connection_->IsUsingZAuraOutputManager()) {
     // WaylandOutput should be considered ready after the first atomic update to
     // `metrics_`.
     return metrics_.output_id == output_id_;
@@ -240,10 +240,6 @@ void WaylandOutput::UpdateMetrics() {
   }
 }
 
-bool WaylandOutput::IsUsingZAuraOutputManager() const {
-  return connection_->zaura_output_manager() != nullptr;
-}
-
 // static
 void WaylandOutput::OnGeometry(void* data,
                                wl_output* output,
@@ -287,7 +283,7 @@ void WaylandOutput::OnDone(void* data, wl_output* output) {
 
   // zaura_output_manager takes responsibility of keeping `metrics_` up to date
   // and triggering delegate notifications.
-  if (!self || self->IsUsingZAuraOutputManager()) {
+  if (!self || self->connection_->IsUsingZAuraOutputManager()) {
     return;
   }
 

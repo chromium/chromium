@@ -51,7 +51,8 @@ class MandatoryReauthManagerTest : public testing::Test {
         /*history_service=*/nullptr,
         /*sync_service=*/nullptr,
         /*strike_database=*/nullptr,
-        /*image_fetcher=*/nullptr);
+        /*image_fetcher=*/nullptr,
+        /*shared_storage_manager=*/nullptr);
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
                             "1");
@@ -173,7 +174,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
   autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kLocalCard));
+      NonInteractivePaymentMethodType::kLocalCard));
   ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
 }
 
@@ -188,7 +189,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard_FlagOff) {
   autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kLocalCard));
+      NonInteractivePaymentMethodType::kLocalCard));
 }
 
 // Test that the MandatoryReauthManager returns that we should not offer re-auth
@@ -203,7 +204,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
   autofill_client_->set_is_off_the_record(true);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kLocalCard));
+      NonInteractivePaymentMethodType::kLocalCard));
   ExpectUniqueOfferOptInDecision(
       MandatoryReauthOfferOptInDecision::kIncognitoMode);
 }
@@ -223,7 +224,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_VirtualCard) {
       features::kAutofillEnablePaymentsMandatoryReauth);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kVirtualCard));
+      NonInteractivePaymentMethodType::kVirtualCard));
   ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
 }
 
@@ -242,7 +243,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_MaskedServerCard) {
       features::kAutofillEnablePaymentsMandatoryReauth);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kMaskedServerCard));
+      NonInteractivePaymentMethodType::kMaskedServerCard));
   ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
 }
 
@@ -266,7 +267,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
   autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kLocalCard));
+      NonInteractivePaymentMethodType::kLocalCard));
   EXPECT_TRUE(autofill_client_->GetPrefs()->GetUserPrefValue(
       prefs::kAutofillPaymentMethodsMandatoryReauth));
 }
@@ -292,7 +293,7 @@ TEST_F(MandatoryReauthManagerTest,
   autofill_client_->GetPersonalDataManager()->AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kLocalCard));
+      NonInteractivePaymentMethodType::kLocalCard));
   ExpectUniqueOfferOptInDecision(
       MandatoryReauthOfferOptInDecision::kNoSupportedReauthMethod);
 }
@@ -347,7 +348,7 @@ TEST_F(
   // Test that if the last filled card is the matching local card, we offer
   // re-auth opt-in.
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
-      CreditCard::RecordType::kLocalCard));
+      NonInteractivePaymentMethodType::kLocalCard));
   ExpectUniqueOfferOptInDecision(MandatoryReauthOfferOptInDecision::kOffered);
 }
 
@@ -459,24 +460,28 @@ TEST_F(MandatoryReauthManagerTest, OnUserClosedOptInPrompt) {
 }
 
 // Params of the MandatoryReauthManagerOptInFlowTest:
-// -- CreditCard::RecordType record_type
+// -- NonInteractivePaymentMethodType non-interactive payment method type
 class MandatoryReauthManagerOptInFlowTest
     : public MandatoryReauthManagerTest,
-      public testing::WithParamInterface<CreditCard::RecordType> {
+      public testing::WithParamInterface<NonInteractivePaymentMethodType> {
  public:
   MandatoryReauthManagerOptInFlowTest() = default;
   ~MandatoryReauthManagerOptInFlowTest() override = default;
 
   std::string GetOptInSource() {
     switch (GetParam()) {
-      case CreditCard::RecordType::kLocalCard:
+      case NonInteractivePaymentMethodType::kLocalCard:
         return "CheckoutLocalCard";
-      case CreditCard::RecordType::kFullServerCard:
+      case NonInteractivePaymentMethodType::kFullServerCard:
         return "CheckoutFullServerCard";
-      case CreditCard::RecordType::kVirtualCard:
+      case NonInteractivePaymentMethodType::kVirtualCard:
         return "CheckoutVirtualCard";
-      case CreditCard::RecordType::kMaskedServerCard:
+      case NonInteractivePaymentMethodType::kMaskedServerCard:
         return "CheckoutMaskedServerCard";
+      case NonInteractivePaymentMethodType::kLocalIban:
+        return "CheckoutLocalIban";
+      case NonInteractivePaymentMethodType::kServerIban:
+        return "CheckoutServerIban";
     }
   }
 
@@ -598,9 +603,7 @@ TEST_P(MandatoryReauthManagerOptInFlowTest, OptInShownButAuthFailure) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     MandatoryReauthManagerOptInFlowTest,
-    testing::Values(CreditCard::RecordType::kLocalCard,
-                    CreditCard::RecordType::kFullServerCard,
-                    CreditCard::RecordType::kVirtualCard,
-                    CreditCard::RecordType::kMaskedServerCard));
+    testing::ValuesIn(MandatoryReauthManager::
+                          GetAllNonInteractivePaymentMethodTypesForTesting()));
 
 }  // namespace autofill::payments

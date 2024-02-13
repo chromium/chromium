@@ -271,8 +271,9 @@ bool RadioInputType::ShouldAppearIndeterminate() const {
 HTMLInputElement* RadioInputType::NextRadioButtonInGroup(
     HTMLInputElement* current,
     bool forward) {
-  // TODO(tkent): Staying within form() is incorrect.  This code ignore input
-  // elements associated by |form| content attribute.
+  // TODO(https://crbug.com/323953913): Staying within form() is
+  // incorrect.  This code ignore input elements associated by |form|
+  // content attribute.
   // TODO(tkent): Comparing name() with == is incorrect.  It should be
   // case-insensitive.
   for (HTMLInputElement* input_element =

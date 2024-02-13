@@ -34,7 +34,7 @@ class AutocompleteControllerTest : public testing::Test {
   AutocompleteControllerTest() : controller_(&task_environment_) {}
 
   void SetAutocompleteMatches(const std::vector<AutocompleteMatch>& matches) {
-    controller_.internal_result_.Reset();
+    controller_.internal_result_.ClearMatches();
     controller_.internal_result_.AppendMatches(matches);
   }
 
@@ -90,6 +90,19 @@ class AutocompleteControllerTest : public testing::Test {
                                 allowed_to_be_default_match, false,
                                 traditional_relevance, std::nullopt);
     match.keyword = u"keyword";
+    return match;
+  }
+
+  AutocompleteMatch CreatePersonalizedZeroPrefixMatch(
+      std::string name,
+      int traditional_relevance) {
+    auto match = CreateAutocompleteMatch(
+        name, AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED, false, false,
+        traditional_relevance, std::nullopt);
+    match.keyword = u"keyword";
+    match.suggestion_group_id = omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
+    match.subtypes.emplace(omnibox::SUBTYPE_PERSONAL);
+    match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX);
     return match;
   }
 
@@ -588,26 +601,124 @@ TEST_F(AutocompleteControllerTest, UpdateResult_Ranking) {
                   "history400",
               }));
 
-  // Shortcut boosted suggestions should be ranked above searches, even if
-  // they're scored lower.
-  EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
-                  CreateHistoryUrlMlScoredMatch("history800", true, 800, 1),
-                  CreateHistoryUrlMlScoredMatch("history850", true, 850, 1),
-                  CreateSearchMatch("search700", true, 700),
-                  CreateSearchMatch("search750", true, 750),
-                  CreateBoostedShortcutMatch("shortcut600", 600, 1),
-                  CreateBoostedShortcutMatch("shortcut650", 650, 1),
-              }),
-              testing::ElementsAreArray({
-                  "history850",
-                  "shortcut650",
-                  "shortcut600",
-                  "search750",
-                  "search700",
-                  "history800",
-              }));
+  // Shortcut boosting is re-distributed when ML Scoring is enabled.  That is
+  // tested in the `MlRanking` test below.
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_config;
+  if (!scoped_config.GetMLConfig().ml_url_scoring) {
+    // Shortcut boosted suggestions should be ranked above searches, even if
+    // they're scored lower.
+    EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                    CreateHistoryUrlMlScoredMatch("history800", true, 800, 1),
+                    CreateHistoryUrlMlScoredMatch("history850", true, 850, 1),
+                    CreateSearchMatch("search700", true, 700),
+                    CreateSearchMatch("search750", true, 750),
+                    CreateBoostedShortcutMatch("shortcut600", 600, 1),
+                    CreateBoostedShortcutMatch("shortcut650", 650, 1),
+                }),
+                testing::ElementsAreArray({
+                    "history850",
+                    "shortcut650",
+                    "shortcut600",
+                    "search750",
+                    "search700",
+                    "history800",
+                }));
+  }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+}
+
+TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
+  auto zps_input = FakeAutocompleteController::CreateInput(u"");
+  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+
+  {
+    SCOPED_TRACE("Zero-prefix suggestions are offered synchronously");
+    EXPECT_THAT(controller_.SimulateAutocompletePass(
+                    /*sync=*/true, /*done=*/false,
+                    {
+                        CreatePersonalizedZeroPrefixMatch("zps_1", 1450),
+                        CreatePersonalizedZeroPrefixMatch("zps_2", 1449),
+                    },
+                    zps_input),
+                testing::ElementsAreArray({
+                    "zps_1",
+                    "zps_2",
+                }));
+    // Whether zero-prefix suggestions were enabled in the session is updated.
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
+    // The count of zero-prefix suggestions offered in the session is updated.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              2u);
+  }
+  {
+    SCOPED_TRACE("More zero-prefix suggestions are offered asynchronously");
+    EXPECT_THAT(controller_.SimulateAutocompletePass(
+                    /*sync=*/false, /*done=*/false,
+                    {
+                        CreatePersonalizedZeroPrefixMatch("zps_1", 1450),
+                        CreatePersonalizedZeroPrefixMatch("zps_2", 1449),
+                        CreatePersonalizedZeroPrefixMatch("zps_3", 1448),
+                        CreatePersonalizedZeroPrefixMatch("zps_4", 1447),
+                    },
+                    zps_input),
+                testing::ElementsAreArray({
+                    "zps_1",
+                    "zps_2",
+                    "zps_3",
+                    "zps_4",
+                }));
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
+    // If zero-prefix suggestions are offered multiple times in the session, the
+    // most recent count is logged.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+  }
+  {
+    SCOPED_TRACE("Stop with clear_result=false is called due to user idleness");
+    controller_.Stop(/*clear_result=*/false);
+    // Stop with clear_result=false does not clear the result set or notify
+    // `OnResultChanged()`.
+    EXPECT_FALSE(controller_.published_result_.empty());
+    // Whether zero-prefix suggestions were enabled in the session is unchanged.
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
+    // The count of zero-prefix suggestions offered in the session is unchanged.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+  }
+  {
+    SCOPED_TRACE("Prefix suggestions are offered synchronously");
+    EXPECT_THAT(controller_.SimulateAutocompletePass(
+                    /*sync=*/true, /*done=*/true,
+                    {
+                        CreateSearchMatch("search_1", true, 900),
+                    }),
+                testing::ElementsAreArray({
+                    "search_1",
+                }));
+    // Whether zero-prefix suggestions were enabled in the session is unchanged.
+    EXPECT_TRUE(controller_.published_result_.zero_prefix_enabled_in_session());
+    // The count of zero-prefix suggestions offered in the session is unchanged.
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              4u);
+  }
+  {
+    SCOPED_TRACE("Stop with clear_result=true is called due to popup closing");
+    controller_.Stop(/*clear_result=*/true);
+    // Stop with clear_result=true clears the result set and notifies
+    // `OnResultChanged()`. Whether zero-prefix suggestions were enabled and the
+    // count of zero-prefix suggestions offered in the session is also reset.
+    EXPECT_TRUE(controller_.published_result_.empty());
+    EXPECT_FALSE(
+        controller_.published_result_.zero_prefix_enabled_in_session());
+    EXPECT_EQ(controller_.published_result_
+                  .num_zero_prefix_suggestions_shown_in_session(),
+              0u);
+  }
 }
 
 // Android and iOS aren't ready for ML and won't pass this test because they
@@ -803,7 +914,7 @@ TEST_F(AutocompleteControllerTest, MlRanking) {
 
   // When transferring matches, culls the lowest ML ranked matches, rather than
   // the lowest traditional ranked matches.
-  controller_.internal_result_.Reset();
+  controller_.internal_result_.ClearMatches();
   EXPECT_THAT(
       controller_.SimulateAutocompletePass(
           true, false,
@@ -1028,7 +1139,7 @@ TEST_F(AutocompleteControllerTest, MlRanking_StableSearchRanking) {
 
   // When transferring matches, culls the lowest ML ranked matches, rather than
   // the lowest traditional ranked matches.
-  controller_.internal_result_.Reset();
+  controller_.internal_result_.ClearMatches();
   EXPECT_THAT(
       controller_.SimulateAutocompletePass(
           true, false,
@@ -1077,6 +1188,209 @@ TEST_F(AutocompleteControllerTest, MlRanking_StableSearchRanking) {
           "search 1220",
           "search 1210",
           "history 1000 .9",
+      }));
+}
+
+TEST_F(AutocompleteControllerTest, MlRanking_MappedSearchBlending) {
+  OmniboxFieldTrial::ScopedMLConfigForTesting scoped_ml_config;
+  scoped_ml_config.GetMLConfig().ml_url_scoring = true;
+  scoped_ml_config.GetMLConfig().url_scoring_model = true;
+  scoped_ml_config.GetMLConfig().mapped_search_blending = true;
+
+  scoped_ml_config.GetMLConfig().mapped_search_blending_min = 600;
+  scoped_ml_config.GetMLConfig().mapped_search_blending_max = 2800;
+  scoped_ml_config.GetMLConfig().mapped_search_blending_grouping_threshold =
+      1400;
+
+  EXPECT_THAT(controller_.SimulateCleanAutocompletePass({}),
+              testing::ElementsAre());
+
+  // If ML ranks a URL 0, then the final relevance score should be set to the
+  // value of `mapped_search_blending_min` (since ML scores are mapped using the
+  // formula "final_score = min + ml_score * (max - min))".
+  EXPECT_THAT(controller_.SimulateCleanAutocompletePass({
+                  CreateHistoryUrlMlScoredMatch("history", true, 1400, 0),
+                  CreateSearchMatch("search", true, 1300),
+              }),
+              testing::ElementsAreArray({
+                  "search",
+                  "history",
+              }));
+
+  // Simple case of ranking with linear score mapping.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1700 (== 600 + 0.5 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1350 .5", true, 1350, .5),
+          // Final score: 2580 (== 600 + 0.9 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1200 .9", true, 1200, .9),
+          // Final score: 820 (== 600 + 0.1 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1100 .1", false, 1100, .1),
+          // Final score: 1040 (== 600 + 0.2 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 500 .2", true, 500, .2),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .9",
+          "history 1350 .5",
+          "history 500 .2",
+          "history 1100 .1",
+      }));
+
+  // Verify that URLs are grouped above searches if their final score is
+  // greater than `grouping_threshold` (i.e. "shortcut boosting").
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1700 (== 600 + 0.5 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1350 .5", true, 1350, .5),
+          CreateSearchMatch("search 1400", false, 1400),
+          CreateSearchMatch("search 800", true, 800),
+          CreateSearchMatch("search 600", false, 600),
+          // Final score: 2580 (== 600 + 0.9 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1200 .9", true, 1200, .9),
+          // Final score: 820 (== 600 + 0.1 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1100 .1", false, 1100, .1),
+          // Final score: 1040 (== 600 + 0.2 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 500 .2", true, 500, .2),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .9",
+          "history 1350 .5",
+          "search 1400",
+          "search 800",
+          "search 600",
+          "history 500 .2",
+          "history 1100 .1",
+      }));
+
+  // When multiple URL suggestions have been assigned the same score by the ML
+  // model, those suggestions which were top-ranked according to legacy scoring
+  // should continue to be top-ranked once ML scoring has run.
+  EXPECT_THAT(
+      // Each of the below URL suggestions are assigned an initial relevance
+      // score of 1040 (== 600 + 0.2 * (2800 - 600)). After initial assignment,
+      // score adjustment logic is applied in order to generate the final
+      // relevance scores (which are guaranteed to be distinct).
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1039
+          CreateHistoryUrlMlScoredMatch("history B 1200 .2", true, 1200, .2),
+          // Final score: 1036
+          CreateHistoryUrlMlScoredMatch("history E 200 .2", true, 200, .2),
+          // Final score: 1040
+          CreateHistoryUrlMlScoredMatch("history A 1350 .2", true, 1350, .2),
+          // Final score: 1037
+          CreateHistoryUrlMlScoredMatch("history D 300 .2", true, 300, .2),
+          // Final score: 1038
+          CreateHistoryUrlMlScoredMatch("history C 1100 .2", false, 1100, .2),
+          // Final score: 1035
+          CreateHistoryUrlMlScoredMatch("history F 100 .2", true, 100, .2),
+      }),
+      testing::ElementsAreArray({
+          "history A 1350 .2",
+          "history B 1200 .2",
+          "history C 1100 .2",
+          "history D 300 .2",
+          "history E 200 .2",
+          "history F 100 .2",
+      }));
+
+  // Can change the default suggestion from 1 history to another.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1040 (== 600 + 0.2 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1400 .2", true, 1400, .2),
+          CreateSearchMatch("search", true, 1100),
+          // Final score: 1260 (== 600 + 0.3 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1200 .3", true, 1200, .3),
+      }),
+      testing::ElementsAreArray({
+          "history 1200 .3",
+          "search",
+          "history 1400 .2",
+      }));
+
+  // Can change the default from search to history (unlike StableSearchRanking
+  // variant).
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateSearchMatch("search 1200", true, 1200),
+          // Final score: 1040 (== 600 + 0.2 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1400 .2", false, 1400, .2),
+          // Final score: 1260 (== 600 + 0.3 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1100 .3", true, 1100, .3),
+      }),
+      testing::ElementsAreArray({
+          "history 1100 .3",
+          "search 1200",
+          "history 1400 .2",
+      }));
+
+  // Can change the default from history to search (unlike StableSearchRanking
+  // variant).
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          // Final score: 1040 (== 600 + 0.2 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1400 .2", true, 1400, .2),
+          CreateSearchMatch("search 1300", true, 1300),
+          // Final score: 820 (== 600 + 0.1 * (2800 - 600))
+          CreateHistoryUrlMlScoredMatch("history 1200 .1", false, 1200, .1),
+      }),
+      testing::ElementsAreArray({
+          "search 1300",
+          "history 1400 .2",
+          "history 1200 .1",
+      }));
+
+  // When transferring matches, culls the lowest ML ranked matches, rather than
+  // the lowest traditional ranked matches.
+  controller_.internal_result_.Reset();
+  EXPECT_THAT(
+      controller_.SimulateAutocompletePass(
+          true, false,
+          {
+              CreateSearchMatch("search 1270", true, 1270),
+              CreateSearchMatch("search 1260", true, 1260),
+              CreateSearchMatch("search 1250", true, 1250),
+              CreateSearchMatch("search 1240", true, 1240),
+              CreateSearchMatch("search 1230", true, 1230),
+              CreateSearchMatch("search 1220", true, 1220),
+              CreateSearchMatch("search 1210", true, 1210),
+              CreateHistoryUrlMlScoredMatch("history 1100 .1", true, 1100, .1),
+              CreateHistoryUrlMlScoredMatch("history 1000 .2", true, 1000, .2),
+          }),
+      testing::ElementsAreArray({
+          "search 1270",
+          "search 1260",
+          "search 1250",
+          "search 1240",
+          "search 1230",
+          "search 1220",
+          "search 1210",
+          "history 1000 .2",
+      }));
+
+  // When not transferring matches, like above, culls the lowest ML ranked
+  // matches, rather than the lowest traditional ranked matches.
+  EXPECT_THAT(
+      controller_.SimulateCleanAutocompletePass({
+          CreateSearchMatch("search 1270", true, 1270),
+          CreateSearchMatch("search 1260", true, 1260),
+          CreateSearchMatch("search 1250", true, 1250),
+          CreateSearchMatch("search 1240", true, 1240),
+          CreateSearchMatch("search 1230", true, 1230),
+          CreateSearchMatch("search 1220", true, 1220),
+          CreateSearchMatch("search 1210", true, 1210),
+          CreateHistoryUrlMlScoredMatch("history 1100 .1", true, 1100, .1),
+          CreateHistoryUrlMlScoredMatch("history 1000 .2", true, 1000, .2),
+      }),
+      testing::ElementsAreArray({
+          "search 1270",
+          "search 1260",
+          "search 1250",
+          "search 1240",
+          "search 1230",
+          "search 1220",
+          "search 1210",
+          "history 1000 .2",
       }));
 }
 
@@ -1436,7 +1750,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
     // Should not force default when `prevent_inline_autocomplete_` is true.
     SCOPED_TRACE("Enabled prevent inline autocomplete");
     auto enabled_config = set_feature(true);
-    controller_.internal_result_.Reset();
+    controller_.internal_result_.ClearMatches();
     EXPECT_THAT(
         controller_.SimulateAutocompletePass(
             true, true,
@@ -1444,7 +1758,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ForceAllowedToBeDefault) {
                 CreateSearchMatch("search", true, 200),
                 CreateAutocompleteMatch("history",
                                         AutocompleteMatchType::HISTORY_CLUSTER,
-                                        false, false, 1000, 1),
+                                        false, false, 1000, std::nullopt),
             },
             FakeAutocompleteController::CreateInput(u"test", false, true)),
         testing::ElementsAreArray({

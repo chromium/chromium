@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
 
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_runner.h"
@@ -98,10 +98,10 @@ std::string CheckAndResolveLocales(const std::string& languages) {
 }
 
 // Appends tokens from |src| that are not in |dest| to |dest|.
-void MergeLists(std::vector<base::StringPiece>* dest,
-                const std::vector<base::StringPiece>& src) {
+void MergeLists(std::vector<std::string_view>* dest,
+                const std::vector<std::string_view>& src) {
   // Keep track of already-added tokens.
-  std::set<base::StringPiece> unique_tokens(dest->begin(), dest->end());
+  std::set<std::string_view> unique_tokens(dest->begin(), dest->end());
 
   for (const auto& token : src) {
     // Skip token if it's already in |dest|.
@@ -171,8 +171,8 @@ void InputMethodSyncer::MergeSyncedPrefs() {
   prefs_->SetBoolean(prefs::kLanguageShouldMergeInputMethods, false);
   merging_ = true;
 
-  std::vector<base::StringPiece> synced_tokens;
-  std::vector<base::StringPiece> new_tokens;
+  std::vector<std::string_view> synced_tokens;
+  std::vector<std::string_view> new_tokens;
 
   // First, set the syncable prefs to the union of the local and synced prefs.
   std::string preferred_languages_syncable =
@@ -210,8 +210,8 @@ void InputMethodSyncer::MergeSyncedPrefs() {
       base::SplitStringPiece(preload_engines_syncable, ",",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  new_tokens = std::vector<base::StringPiece>(new_token_values.begin(),
-                                              new_token_values.end());
+  new_tokens = std::vector<std::string_view>(new_token_values.begin(),
+                                             new_token_values.end());
   MergeLists(&new_tokens, synced_tokens);
   preload_engines_syncable_.SetValue(base::JoinString(new_tokens, ","));
 
@@ -239,7 +239,7 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
     const std::string& pref,
     const std::string& synced_pref,
     const char* pref_name) {
-  std::vector<base::StringPiece> old_tokens = base::SplitStringPiece(
+  std::vector<std::string_view> old_tokens = base::SplitStringPiece(
       pref, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   std::vector<std::string> new_token_values = base::SplitString(
       synced_pref, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -266,8 +266,8 @@ std::string InputMethodSyncer::AddSupportedInputMethodValues(
   }
 
   // Do the actual merging.
-  std::vector<base::StringPiece> new_tokens(new_token_values.begin(),
-                                            new_token_values.end());
+  std::vector<std::string_view> new_tokens(new_token_values.begin(),
+                                           new_token_values.end());
   MergeLists(&old_tokens, new_tokens);
   return base::JoinString(old_tokens, ",");
 }

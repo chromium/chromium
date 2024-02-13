@@ -76,7 +76,8 @@ class MockIdleTimeProvider : public ui::IdleTimeProvider {
 
 class BrowserCloseWaiter : public BrowserListObserver {
  public:
-  explicit BrowserCloseWaiter(std::set<Browser*> browsers) {
+  explicit BrowserCloseWaiter(
+      std::set<raw_ptr<Browser, SetExperimental>> browsers) {
     BrowserList::AddObserver(this);
     waiting_browsers_ = std::move(browsers);
   }
@@ -94,7 +95,7 @@ class BrowserCloseWaiter : public BrowserListObserver {
 
  private:
   base::RunLoop run_loop_;
-  std::set<Browser*> waiting_browsers_;
+  std::set<raw_ptr<Browser, SetExperimental>> waiting_browsers_;
 };
 
 }  // namespace
@@ -116,6 +117,7 @@ class IdleServiceTest : public InProcessBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     polling_service().SetTaskRunnerForTest(task_runner_);
+    polling_service().SetPollIntervalForTest(base::Seconds(1));
 
     auto time_provider =
         std::make_unique<testing::NiceMock<MockIdleTimeProvider>>();

@@ -219,3 +219,25 @@ executable("ftl_signaling_playground") {
     "//services/network:network_service",
   ]
 }
+
+if (enable_me2me_host && is_linux) {
+  # A binary for testing and fiddling the SessionAuthz service.
+  executable("session_authz_playground") {
+    testonly = true
+    sources = [
+      "session_authz_playground.cc",
+      "session_authz_playground.h",
+      "session_authz_playground_main.cc",
+    ]
+    deps = [
+      ":test_support",
+      "//mojo/core/embedder",
+      "//remoting/base",
+      "//remoting/base:authorization",
+      "//remoting/base:logging",
+      "//remoting/host",
+      "//remoting/proto:internal_structs",
+      "//services/network:network_service",
+    ]
+  }
+}

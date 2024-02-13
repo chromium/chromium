@@ -1330,6 +1330,11 @@ targets.binaries.windowed_test_launcher(
     label = "//chrome/notification_helper:notification_helper_unittests",
 )
 
+targets.binaries.generated_script(
+    name = "ondevice_stability_tests",
+    label = "//components/optimization_guide/internal/testing:ondevice_stability_tests",
+)
+
 targets.binaries.console_test_launcher(
     name = "openscreen_unittests",
     label = "//chrome/browser/media/router:openscreen_unittests",

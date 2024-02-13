@@ -173,6 +173,11 @@ void FakeSyncService::RecordReasonIfWaitingForUpdates(
 
 void FakeSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
+bool FakeSyncService::SupportsExplicitPassphrasePlatformClient() {
+  return false;
+}
+void FakeSyncService::SendExplicitPassphraseToPlatformClient() {}
+
 void FakeSyncService::Shutdown() {}
 
 void FakeSyncService::GetTypesWithUnsyncedData(

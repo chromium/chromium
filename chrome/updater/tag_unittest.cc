@@ -7,13 +7,14 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -141,21 +142,20 @@ class RuntimeModeArgsBuilder {
 };
 
 void VerifyTagParseSuccess(
-    base::StringPiece tag,
-    std::optional<base::StringPiece> app_installer_data_args,
+    std::string_view tag,
+    std::optional<std::string_view> app_installer_data_args,
     const TagArgs& expected) {
   TagArgs actual;
-  ASSERT_EQ(ErrorCode::kSuccess, Parse(tag, app_installer_data_args, &actual));
+  ASSERT_EQ(ErrorCode::kSuccess, Parse(tag, app_installer_data_args, actual));
 
   updater::test::ExpectTagArgsEqual(actual, expected);
 }
 
-void VerifyTagParseFail(
-    base::StringPiece tag,
-    std::optional<base::StringPiece> app_installer_data_args,
-    ErrorCode expected) {
+void VerifyTagParseFail(std::string_view tag,
+                        std::optional<std::string_view> app_installer_data_args,
+                        ErrorCode expected) {
   TagArgs args;
-  ASSERT_EQ(expected, Parse(tag, app_installer_data_args, &args));
+  ASSERT_EQ(expected, Parse(tag, app_installer_data_args, args));
 }
 
 }  // namespace
@@ -820,6 +820,15 @@ TEST(TagParserTest, BrandCodeValid) {
               AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
           .WithBrandCode("GOOG")
           .Build());
+  VerifyTagParseSuccess(
+      "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&"
+      "brand=GOOGLE",
+      std::nullopt,
+      TagArgsBuilder()
+          .WithApp(
+              AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
+          .WithBrandCode("GOOGLE")
+          .Build());
 }
 
 TEST(TagParserTest, ClientIdValid) {
@@ -958,8 +967,8 @@ TEST(TagParserTest, InstallDataIndexValid) {
 }
 
 TEST(TagParserTest, BrowserTypeValid) {
-  std::tuple<base::StringPiece, TagArgs::BrowserType>
-      pairs[static_cast<int>(TagArgs::BrowserType::kMax)] = {
+  std::tuple<std::string_view, TagArgs::BrowserType>
+      pairs[base::to_underlying(TagArgs::BrowserType::kMax)] = {
           {"0", TagArgs::BrowserType::kUnknown},
           {"1", TagArgs::BrowserType::kDefault},
           {"2", TagArgs::BrowserType::kInternetExplorer},
@@ -967,16 +976,16 @@ TEST(TagParserTest, BrowserTypeValid) {
           {"4", TagArgs::BrowserType::kChrome},
       };
 
-  for (const auto& pair : pairs) {
+  for (const auto& [browser, browser_type] : pairs) {
     std::stringstream tag;
     tag << "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&";
-    tag << "browser=" << std::get<0>(pair);
+    tag << "browser=" << browser;
     VerifyTagParseSuccess(
         tag.str(), std::nullopt,
         TagArgsBuilder()
             .WithApp(
                 AppArgsBuilder("8617ee50-f91c-4dc1-b937-0969eef59b0b").Build())
-            .WithBrowserType(std::get<1>(pair))
+            .WithBrowserType(browser_type)
             .Build());
   }
 }
@@ -1484,7 +1493,7 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
               GetParam().expected_success);
     if (GetParam().expected_success && !GetParam().tag_string.empty()) {
       tagging::TagArgs tag_args;
-      ASSERT_EQ(tagging::Parse(GetParam().tag_string, {}, &tag_args),
+      ASSERT_EQ(tagging::Parse(GetParam().tag_string, {}, tag_args),
                 tagging::ErrorCode::kSuccess);
       test::ExpectTagArgsEqual(
           tagging::BinaryReadTag(!out_msi_file.empty() ? out_msi_file

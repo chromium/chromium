@@ -5,6 +5,7 @@
 #include "net/url_request/url_request_context_builder.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -50,7 +51,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_throttler_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -246,7 +246,7 @@ void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
 
 void URLRequestContextBuilder::BindToNetwork(
     handles::NetworkHandle network,
-    absl::optional<HostResolver::ManagerOptions> options) {
+    std::optional<HostResolver::ManagerOptions> options) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
   // DNS lookups for this context will need to target `network`. NDK to do that

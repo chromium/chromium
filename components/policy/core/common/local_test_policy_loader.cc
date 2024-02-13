@@ -24,6 +24,7 @@ namespace {
 const char kLevel[] = "level";
 const char kScope[] = "scope";
 const char kSource[] = "source";
+const char kNamespace[] = "namespace";
 const char kName[] = "name";
 const char kValue[] = "value";
 const char kLocalTestId[] = "local_test_id";
@@ -76,8 +77,13 @@ void LocalTestPolicyLoader::SetPolicyListJson(
     std::string key = base::StringPrintf(
         "%i_%i_%i", *policy_dict.FindInt(kLevel), *policy_dict.FindInt(kScope),
         *policy_dict.FindInt(kSource));
-    PolicyMap& policy_map =
-        bundles[key].Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
+    base::Value* component_id = policy_dict.Find(kNamespace);
+    PolicyNamespace ns =
+        (!component_id || *component_id == "chrome")
+            ? PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())
+            : PolicyNamespace(POLICY_DOMAIN_EXTENSIONS,
+                              component_id->GetString());
+    PolicyMap& policy_map = bundles[key].Get(ns);
     // Add affiliation id if user should be affiliated.
     if (is_user_affiliated_ && !policy_map.IsUserAffiliated()) {
       base::flat_set<std::string> user_ids(policy_map.GetUserAffiliationIds());
@@ -116,6 +122,9 @@ void LocalTestPolicyLoader::VerifyJsonContents(base::Value::Dict* policy_dict) {
   CHECK(source_int.has_value() &&
         *source_int < static_cast<int>(PolicySource::POLICY_SOURCE_COUNT))
       << "Invalid source found";
+  if (policy_dict->Find(kNamespace)) {
+    CHECK(policy_dict->FindString(kNamespace)) << "Invalid namespace found";
+  }
   CHECK(policy_dict->FindString(kName)) << "Invalid name found";
   CHECK(policy_dict->contains(kValue)) << "Invalid value found";
 }

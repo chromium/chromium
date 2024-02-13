@@ -974,20 +974,24 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
-      r'/(\babsl::Span\b|#include <span>)',
+      r'/(\babsl::Span\b|#include <span>|\bstd::span\b)',
       (
-        'absl::Span is banned and <span> is not allowed yet ',
+        'absl::Span and std::span are not allowed ',
         '(https://crbug.com/1414652). Use base::span instead.',
       ),
       True,
       [
+        # Included for conversions between base and std.
+        r'base/containers/span.h',
         # Test base::span<> compatibility against std::span<>.
         r'base/containers/span_unittest.cc',
         # Needed to use QUICHE API.
         r'services/network/web_transport\.cc',
         r'chrome/browser/ip_protection/.*',
         # Not an error in third_party folders.
-        _THIRD_PARTY_EXCEPT_BLINK
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # //base/numerics can't use base or absl.
+        r'base/numerics/.*'
       ],
     ),
     BanRule(
@@ -998,6 +1002,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       True,
       [
         # Needed to use liburlpattern API.
+        r'components/url_pattern/.*',
+        r'services/network/shared_dictionary/simple_url_pattern_matcher\.cc',
         r'third_party/blink/renderer/core/url_pattern/.*',
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
         # Needed to use QUICHE API.
@@ -1192,13 +1198,28 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
+      r'/\bstd::execution::(par|seq)\b',
+      (
+           'std::execution::(par|seq) is banned; they do not fit into '
+           ' Chrome\'s threading model, and libc++ doesn\'t have full '
+           'support.'
+      ),
+      True,
+      [_THIRD_PARTY_EXCEPT_BLINK],
+    ),
+    BanRule(
       r'/\bstd::bit_cast\b',
       (
         'std::bit_cast is banned; use base::bit_cast instead for values and '
         'standard C++ casting when pointers are involved.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+      [
+        # Don't warn in third_party folders.
+        _THIRD_PARTY_EXCEPT_BLINK,
+        # //base/numerics can't use base or absl.
+        r'base/numerics/.*'
+      ],
     ),
     BanRule(
       r'/\bstd::(c8rtomb|mbrtoc8)\b',
@@ -1758,7 +1779,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
-      pattern = r'\bg_signal_connect',
+      pattern = r'/\bg_signal_connect',
       explanation = (
         'Use ScopedGSignal instead of g_signal_connect*()',
       ),
@@ -1783,6 +1804,17 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         '^chrome/browser/ui/startup/bad_flags_prompt.cc',
         '^content/shell/browser/shell_content_browser_client.cc'
       )
+    ),
+    BanRule(
+      pattern = r'/\babsl::(optional|nullopt|make_optional|in_place|in_place_t)\b',
+      explanation = (
+         'Don\'t use `absl::optional`. Use `std::optional`.',
+      ),
+      # TODO(b/40288126): Enforce after completing the rewrite.
+      treat_as_error = False,
+      excluded_paths = [
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ]
     ),
 )
 
@@ -6280,10 +6312,10 @@ def CheckStrings(input_api, output_api):
         """
         valid_types = {
             'plural': (frozenset(
-                ['=0', '=1', 'zero', 'one', 'two', 'few', 'many',
+                ['=0', '=1', '=2', '=3', 'zero', 'one', 'two', 'few', 'many',
                  'other']), frozenset(['=1', 'other'])),
             'selectordinal': (frozenset(
-                ['=0', '=1', 'zero', 'one', 'two', 'few', 'many',
+                ['=0', '=1', '=2', '=3', 'zero', 'one', 'two', 'few', 'many',
                  'other']), frozenset(['one', 'other'])),
             'select': (frozenset(), frozenset(['other'])),
         }

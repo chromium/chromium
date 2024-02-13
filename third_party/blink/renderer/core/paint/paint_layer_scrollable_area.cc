@@ -1490,13 +1490,15 @@ static inline const LayoutObject& ScrollbarStyleSource(
     // can scroll.
     Element* body = doc.body();
     if (body && body->GetLayoutObject() && body->GetLayoutObject()->IsBox() &&
-        body->GetLayoutObject()->StyleRef().HasCustomScrollbarStyle())
+        body->GetLayoutObject()->StyleRef().HasCustomScrollbarStyle(doc)) {
       return *body->GetLayoutObject();
+    }
 
     // If the <body> didn't have a custom style, then the root element might.
     Element* doc_element = doc.documentElement();
     if (doc_element && doc_element->GetLayoutObject() &&
-        doc_element->GetLayoutObject()->StyleRef().HasCustomScrollbarStyle() &&
+        doc_element->GetLayoutObject()->StyleRef().HasCustomScrollbarStyle(
+            doc) &&
         !layout_box.StyleRef().UsesStandardScrollbarStyle()) {
       return *doc_element->GetLayoutObject();
     }
@@ -1543,7 +1545,8 @@ int PaintLayerScrollableArea::ComputeHypotheticalScrollbarThickness(
     return scrollbar->ScrollbarThickness();
 
   const LayoutObject& style_source = ScrollbarStyleSource(*GetLayoutBox());
-  if (style_source.StyleRef().HasCustomScrollbarStyle()) {
+  if (style_source.StyleRef().HasCustomScrollbarStyle(
+          style_source.GetDocument())) {
     return CustomScrollbar::HypotheticalScrollbarThickness(this, orientation,
                                                            &style_source);
   }
@@ -1561,7 +1564,8 @@ bool PaintLayerScrollableArea::NeedsScrollbarReconstruction() const {
 
   const LayoutObject& style_source = ScrollbarStyleSource(*GetLayoutBox());
   bool needs_custom =
-      style_source.IsBox() && style_source.StyleRef().HasCustomScrollbarStyle();
+      style_source.IsBox() && style_source.StyleRef().HasCustomScrollbarStyle(
+                                  style_source.GetDocument());
 
   Scrollbar* scrollbars[] = {HorizontalScrollbar(), VerticalScrollbar()};
 
@@ -1646,9 +1650,10 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
     // only appear when scrolling, we don't create them if there isn't overflow
     // to scroll. Thus, overlay scrollbars can't be "always on". i.e.
     // |overlay:scroll| behaves like |overlay:auto|.
+    Document& document = GetLayoutBox()->GetDocument();
     bool has_custom_scrollbar_style = ScrollbarStyleSource(*GetLayoutBox())
                                           .StyleRef()
-                                          .HasCustomScrollbarStyle();
+                                          .HasCustomScrollbarStyle(document);
     bool will_be_overlay = GetPageScrollbarTheme().UsesOverlayScrollbars() &&
                            !has_custom_scrollbar_style;
     if (will_be_overlay) {
@@ -1918,21 +1923,8 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
   if (!data.size())
     return std::nullopt;
 
-  // If the document has a focused element that is coincident with the snap
-  // target, update the snap target to point to the focused element. This
-  // ensures that we stay snapped to the focused element after a relayout.
-  // TODO(crbug.com/1199911): If the focused element is not a snap target but
-  // has an ancestor that is, perhaps the rule should be applied for the
-  // ancestor element.
-  CompositorElementId active_element_id = CompositorElementId();
-  if (auto* active_element = GetDocument()->ActiveElement()) {
-    active_element_id =
-        CompositorElementIdFromDOMNodeId(active_element->GetDomNodeId());
-  }
-
   std::optional<gfx::PointF> snap_point;
-  cc::SnapPositionData snap =
-      data.FindSnapPosition(strategy, active_element_id);
+  cc::SnapPositionData snap = data.FindSnapPosition(strategy);
   if (snap.type != cc::SnapPositionData::Type::kNone) {
     snap_point = gfx::PointF(snap.position.x(), snap.position.y());
   }
@@ -2659,7 +2651,8 @@ Scrollbar* PaintLayerScrollableArea::ScrollbarManager::CreateScrollbar(
   Scrollbar* scrollbar = nullptr;
   const LayoutObject& style_source =
       ScrollbarStyleSource(*ScrollableArea()->GetLayoutBox());
-  if (style_source.StyleRef().HasCustomScrollbarStyle()) {
+  if (style_source.StyleRef().HasCustomScrollbarStyle(
+          style_source.GetDocument())) {
     DCHECK(style_source.GetNode() && style_source.GetNode()->IsElementNode());
     scrollbar = MakeGarbageCollected<CustomScrollbar>(
         ScrollableArea(), orientation, &style_source);

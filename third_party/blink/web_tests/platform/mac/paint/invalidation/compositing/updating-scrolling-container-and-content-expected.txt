@@ -27,7 +27,7 @@
     },
     {
       "name": "LayoutNGBlockFlow (children-inline) DIV id='container'",
-      "bounds": [75, 234],
+      "bounds": [185, 234],
       "invalidations": [
         [0, 216, 75, 18],
         [0, 198, 75, 18],

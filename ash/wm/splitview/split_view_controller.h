@@ -19,6 +19,7 @@
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/layout_divider_controller.h"
+#include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state_observer.h"
@@ -50,7 +51,6 @@ namespace ash {
 class AutoSnapController;
 class OverviewSession;
 class SplitViewOverviewSession;
-class SplitViewDivider;
 class SplitViewMetricsController;
 class SplitViewObserver;
 class SplitViewOverviewSessionTest;
@@ -162,7 +162,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   State state() const { return state_; }
   SnapPosition default_snap_position() const { return default_snap_position_; }
-  SplitViewDivider* split_view_divider() { return split_view_divider_.get(); }
+  SplitViewDivider* split_view_divider() { return &split_view_divider_; }
   EndReason end_reason() const { return end_reason_; }
   SplitViewMetricsController* split_view_metrics_controller() {
     return split_view_metrics_controller_.get();
@@ -625,7 +625,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // will be used in these two cases:
   // 1. Tablet splitview mode;
   // 2. Clamshell splitview mode when `kSnapGroup` is enabled.
-  std::unique_ptr<SplitViewDivider> split_view_divider_;
+  SplitViewDivider split_view_divider_;
 
   // A black scrim layer that fades in over a window when its width drops under
   // 1/3 of the width of the screen, increasing in opacity as the divider gets

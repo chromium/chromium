@@ -49,7 +49,6 @@ public class PageInfoIPHControllerUnitTest {
 
     @Before
     public void setUp() {
-        Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
 
         mView = new View(ContextUtils.getApplicationContext());
@@ -58,13 +57,12 @@ public class PageInfoIPHControllerUnitTest {
 
     @After
     public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
         TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
     public void onPermissionDialogShown() {
-        mController.onPermissionDialogShown(TIMEOUT);
+        mController.onPermissionDialogShown(mProfile, TIMEOUT);
         verify(mHelper).requestShowIPH(mIPHCmdCaptor.capture());
         var cmd = mIPHCmdCaptor.getValue();
         cmd.fetchFromResources();

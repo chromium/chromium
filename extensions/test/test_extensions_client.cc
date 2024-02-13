@@ -109,8 +109,9 @@ std::set<base::FilePath> TestExtensionsClient::GetBrowserImagePaths(
     const Extension* extension) {
   std::set<base::FilePath> result =
       ExtensionsClient::GetBrowserImagePaths(extension);
-  for (auto* filter : browser_image_filters_)
+  for (BrowserImagePathsFilter* filter : browser_image_filters_) {
     filter->Filter(extension, &result);
+  }
   return result;
 }
 

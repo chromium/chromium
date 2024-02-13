@@ -269,6 +269,13 @@ message DeviceRegisterRequest {
     // Attestation re-enrollment just failed, attempt manual enrollment as
     // fallback.
     FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_MANUAL_FALLBACK = 17;
+    // Device state downloaded from the server indicated that initial enrollment
+    // is mandatory and should be token-based.
+    FLAVOR_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED = 18;
+    // Device state downloaded from the server indicated that initial
+    // token-based enrollment is mandatory, but it failed and we are doing
+    // fallback to manual enrollment.
+    FLAVOR_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK = 19;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when
@@ -912,6 +919,13 @@ message PolicyFetchResponse {
   // to new_public_key_verification_data_signature, but is computed over
   // DEPRECATEDPolicyPublicKeyAndDomain (which is equivalent to
   // PublicKeyVerificationData proto with version field unset).
+  //
+  // Do not remove this unless you know for sure that this is not required by
+  // managed devices any more, including devices that might be pinned to
+  // milestones older than current Stable.
+  // Note: As of February 2024, this is still strictly required by
+  // CloudPolicyValidator, see
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/policy/core/common/cloud/cloud_policy_validator.cc;drc=08b91b49531894cbe9061a1148fd535155c2554b;l=407
   optional bytes new_public_key_verification_signature_deprecated = 7
       [deprecated = true];
 
@@ -3154,6 +3168,18 @@ message CertificateBasedDeviceRegisterRequest {
   optional SignedData signed_request = 1;
 }
 
+// Request from device to server to register a device (authenticated with an
+// enrollment token).
+message TokenBasedDeviceRegisterRequest {
+  optional DeviceRegisterRequest device_register_request = 1;
+}
+
+// Response to a token-based device registration request
+// (@code `TokenBasedDeviceRegisterRequest`).
+message TokenBasedDeviceRegisterResponse {
+  optional DeviceRegisterResponse device_register_response = 1;
+}
+
 // Requested configuration to be passed along a registration request.
 message DeviceRegisterConfiguration {
   // The device owner's email address.
@@ -4444,13 +4470,20 @@ message BrowserPublicKeyUploadRequest {
 
   // Public key in EC_NID_X9_62_PRIME256V1_PUBLIC_DER format.
   optional bytes public_key = 1;
+
   // Signature of the new public key signed using the existing key, empty for
   // initial upload.
   optional bytes signature = 2;
+
   // Trust Level of the key.
   optional KeyTrustLevel key_trust_level = 3;
+
   // Type of the key.
   optional KeyType key_type = 4;
+
+  // Whether the server should create a client certificate for that public key
+  // and return it as part of the response or not.
+  optional bool provision_certificate = 5;
 }
 
 // Response from server to device for cert upload request.
@@ -4463,6 +4496,10 @@ message BrowserPublicKeyUploadResponse {
     INVALID_SIGNATURE = 2;
   }
   optional ResponseCode response_code = 1;
+
+  // If the request had `provision_certificate` as true, this property will
+  // contain the X.509 client certificate in PEM format.
+  optional string pem_encoded_certificate = 2;
 }
 
 // Additional detail about the error which can be used to clarify user messaging
@@ -4523,7 +4560,7 @@ enum DeviceManagementErrorDetail {
 //   * deviceid: MUST BE no more than 64-char in [\x21-\x7E].
 //   * agent: MUST BE no more than 64-char long.
 // * HTTP Authorization header MUST be in the following formats:
-//   * For register for Chrome browsers
+//   * For register for Chrome browsers and token_based_register requests.
 //     Authorization: GoogleEnrollmentToken token=<enrollment token>
 //
 //   * For unregister, policy, status, cert_upload, remote_commands,
@@ -4708,7 +4745,12 @@ message DeviceManagementRequest {
   // HTTP query parameter 'request': 'chrome_profile_report'
   optional ChromeProfileReportRequest chrome_profile_report_request = 40;
 
-  // Next id: 41.
+  // Request to register a device with an enrollment token.
+  // HTTP query parameter 'request': 'token_based_register'
+  optional TokenBasedDeviceRegisterRequest token_based_device_register_request =
+      41;
+
+  // Next id: 42.
 }
 
 // Response from server to device.
@@ -4721,7 +4763,8 @@ message DeviceManagementRequest {
 // Possible HTTP status codes:
 // 200 OK: valid response is returned to client.
 // 400 Bad Request: invalid argument or payload.
-// 401 Unauthorized: invalid auth cookie/OAuth token or DMToken.
+// 401 Unauthorized: invalid auth cookie/OAuth token, DMToken or enrollment
+//     token.
 // 402 Missing license.
 // 403 Forbidden: device management is not allowed (e.g. user may not enroll).
 // 404 Not Found: the request URL is invalid.
@@ -4863,7 +4906,11 @@ message DeviceManagementResponse {
   // Response to a Chrome Profile report request.
   optional ChromeProfileReportResponse chrome_profile_report_response = 38;
 
-  // Next id: 40.
+  // Response to a token-based register request.
+  optional TokenBasedDeviceRegisterResponse
+      token_based_device_register_response = 40;
+
+  // Next id: 41.
 }
 
 // Device State Information stored in the server is retrieval at

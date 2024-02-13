@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
@@ -132,11 +132,11 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
         ResourceScaleFactor scale_factor) = 0;
 
     // Supports intercepting of ResourceBundle::LoadDataResourceString(): Return
-    // a populated absl::optional instance to override the value that
+    // a populated std::optional instance to override the value that
     // ResourceBundle::LoadDataResourceString() would return by default, or an
-    // empty absl::optional instance to pass through to the default behavior of
+    // empty std::optional instance to pass through to the default behavior of
     // ResourceBundle::LoadDataResourceString().
-    virtual absl::optional<std::string> LoadDataResourceString(
+    virtual std::optional<std::string> LoadDataResourceString(
         int resource_id) = 0;
 
     // Retrieve a raw data resource. Return true if a resource was provided or
@@ -304,10 +304,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   gfx::Image& GetNativeImageNamed(int resource_id);
 
   // Loads a Lottie resource from `resource_id` and returns its decompressed
-  // contents. Returns `absl::nullopt` if `resource_id` does not index a
+  // contents. Returns `std::nullopt` if `resource_id` does not index a
   // Lottie resource. The output of this is suitable for passing to
   // `SkottieWrapper`.
-  absl::optional<LottieData> GetLottieData(int resource_id) const;
+  std::optional<LottieData> GetLottieData(int resource_id) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets a themed Lottie image (not animated) with the specified |resource_id|

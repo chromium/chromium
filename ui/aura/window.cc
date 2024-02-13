@@ -83,7 +83,7 @@ namespace metadata {
 template <>
 struct TypeConverter<viz::SurfaceId> : public BaseTypeConverter<true> {
   static std::u16string ToString(const viz::SurfaceId& source_value);
-  static absl::optional<viz::SurfaceId> FromString(
+  static std::optional<viz::SurfaceId> FromString(
       const std::u16string& source_value);
   static ValidStrings GetValidStrings();
 };
@@ -96,9 +96,9 @@ std::u16string TypeConverter<viz::SurfaceId>::ToString(
 }
 
 // static
-absl::optional<viz::SurfaceId> TypeConverter<viz::SurfaceId>::FromString(
+std::optional<viz::SurfaceId> TypeConverter<viz::SurfaceId>::FromString(
     const std::u16string& source_value) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // static
@@ -840,7 +840,7 @@ bool Window::HasCapture() {
 }
 
 std::unique_ptr<ScopedKeyboardHook> Window::CaptureSystemKeyEvents(
-    absl::optional<base::flat_set<ui::DomCode>> dom_codes) {
+    std::optional<base::flat_set<ui::DomCode>> dom_codes) {
   Window* root_window = GetRootWindow();
   if (!root_window)
     return nullptr;
@@ -893,13 +893,19 @@ void Window::GetDebugInfo(const aura::Window* active_window,
   if (name.empty())
     name = "\"\"";
   const gfx::Vector2dF& subpixel_position_offset = layer()->GetSubpixelOffset();
+  bool can_occlude_others = aura::Env::GetInstance()
+                                ->GetWindowOcclusionTracker()
+                                ->VisibleWindowCanOccludeOtherWindows(this);
+  bool has_opaque_regions = !opaque_regions_for_occlusion().empty();
   *out << " " << name << "<" << GetId() << ">";
   *out << " (" << this << ")" << " type=" << GetType();
   *out << ((this == active_window) ? " [active]" : "")
        << ((this == focused_window) ? " [focused]" : "")
        << ((this == capture_window) ? " [capture]" : "")
        << (GetTransparent() ? " [transparent]" : "")
-       << (IsVisible() ? " [visible]" : "") << " "
+       << (IsVisible() ? " [visible]" : "")
+       << (has_opaque_regions ? " [opaque_regions]" : "")
+       << (can_occlude_others ? " [occlude others]" : "")
        << (GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN
                ? base::UTF16ToUTF8(
                      aura::Window::OcclusionStateToString(GetOcclusionState()))
@@ -907,12 +913,31 @@ void Window::GetDebugInfo(const aura::Window* active_window,
                : "")
        << " " << bounds().ToString()
        << " scale=" + transform().To2dScale().ToString();
+
   if (!subpixel_position_offset.IsZero()) {
     *out << " subpixel offset=" + subpixel_position_offset.ToString();
   }
-
   *out << base::StringPrintf(" opacity=%.1f", layer()->opacity());
-  *out << (layer()->GetTargetVisibility() ? " layer-visible" : " layer-hidden");
+
+  switch (layer()->type()) {
+    case ui::LAYER_NOT_DRAWN:
+      *out << " layer(not_drawn ";
+      break;
+    case ui::LAYER_TEXTURED:
+      *out << " layer(textured ";
+      if (layer()->fills_bounds_opaquely()) {
+        *out << " opaque ";
+      }
+      break;
+    case ui::LAYER_SOLID_COLOR:
+      *out << " layer(solid ";
+      break;
+    case ui::LAYER_NINE_PATCH:
+      *out << " layer(nine_patch ";
+      break;
+  }
+
+  *out << (layer()->GetTargetVisibility() ? " visible)" : " hidden)");
 }
 
 #if DCHECK_IS_ON()
@@ -1370,7 +1395,7 @@ void Window::InvalidateLocalSurfaceId(bool also_invalidate_allocation_group) {
 }
 
 void Window::UpdateLocalSurfaceIdFromEmbeddedClient(
-    const absl::optional<viz::LocalSurfaceId>&
+    const std::optional<viz::LocalSurfaceId>&
         embedded_client_local_surface_id) {
   if (embedded_client_local_surface_id) {
     parent_local_surface_id_allocator_->UpdateFromChild(

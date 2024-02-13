@@ -19,11 +19,10 @@ class Graph;
 
 // Draws legend view.
 class Legend : public views::View {
+  METADATA_HEADER(Legend, views::View)
+
  public:
   using Formatter = base::RepeatingCallback<std::u16string(float)>;
-
-  METADATA_HEADER(Legend);
-
   struct Entry {
     Entry(const Graph& graph,
           std::u16string label,

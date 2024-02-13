@@ -90,6 +90,10 @@ NSString* GetPromoLabelString(
                          !sync_types_disabled_by_policy.Has(
                              syncer::UserSelectableType::kTabs));
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_RECENT_TABS);
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+      return l10n_util::GetNSString(
+          IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT);
     case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
       // No text.
       return nil;
@@ -104,7 +108,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
     case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
     case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
-    case signin_metrics::AccessPoint::ACCESS_POINT_CLOUD_PRINT:
     case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
     case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
@@ -144,6 +147,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::
         ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
     case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

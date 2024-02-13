@@ -63,11 +63,6 @@ namespace {
 // Time delay before the install button is enabled after initial display.
 int g_install_delay_in_ms = 500;
 
-// The name of the histogram that records decision made by user on the cloud
-// extension request dialog.
-constexpr char kCloudExtensionRequestMetricsName[] =
-    "Enterprise.CloudExtensionRequestDialogAction";
-
 // These values are logged to UMA. Entries should not be renumbered and numeric
 // values should never be reused. Please keep in sync with "BooleanSent" in
 // src/tools/metrics/histograms/enums.xml.
@@ -529,7 +524,6 @@ void ExtensionInstallDialogView::OnDialogCanceled() {
   // being uninstalled).
   extension_registry_observation_.Reset();
 
-  UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(false);
   prompt_->OnDialogCanceled();
   std::move(done_callback_)
       .Run(ExtensionInstallPrompt::DoneCallbackPayload(
@@ -549,7 +543,6 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
       ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT;
   DCHECK(expect_justification == !!justification_view_);
 
-  UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(true);
   prompt_->OnDialogAccepted();
 
   // Permissions are withheld at installation when the prompt specifies it and
@@ -726,20 +719,6 @@ void ExtensionInstallDialogView::ContentsChanged(
 void ExtensionInstallDialogView::EnableInstallButton() {
   install_button_enabled_ = true;
   DialogModelChanged();
-}
-
-void ExtensionInstallDialogView::
-    UpdateEnterpriseCloudExtensionRequestDialogActionHistogram(
-        bool accepted) const {
-  if (prompt_->type() == ExtensionInstallPrompt::EXTENSION_REQUEST_PROMPT) {
-    if (accepted) {
-      base::UmaHistogramEnumeration(kCloudExtensionRequestMetricsName,
-                                    CloudExtensionRequestMetricEvent::kSent);
-    } else {
-      base::UmaHistogramEnumeration(kCloudExtensionRequestMetricsName,
-                                    CloudExtensionRequestMetricEvent::kNotSent);
-    }
-  }
 }
 
 BEGIN_METADATA(ExtensionInstallDialogView, views::BubbleDialogDelegateView)

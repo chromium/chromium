@@ -886,17 +886,12 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   GrantNotificationPermissionForTest();
 
   // Set the page fullscreen
-  browser()->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-
-  {
-    FullscreenStateWaiter fs_state(browser(), true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       browser()->window()->GetNativeWindow()));
 
+  ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   ASSERT_TRUE(browser()->window()->IsActive())
       << "Browser is active after going fullscreen";
 
@@ -920,25 +915,16 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_EQ("ok", RunScript("DisplayPersistentNotification('display_normal')"));
 
   // Set the notifcation page fullscreen
-  browser()->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-  {
-    FullscreenStateWaiter fs_state(browser(), true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   // Set the other browser fullscreen
-  other_browser->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-  {
-    FullscreenStateWaiter fs_state(other_browser, true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(other_browser);
 
   ASSERT_TRUE(browser()->exclusive_access_manager()->context()->IsFullscreen());
   ASSERT_TRUE(
       other_browser->exclusive_access_manager()->context()->IsFullscreen());
 
+  ui_test_utils::BrowserActivationWaiter(other_browser).WaitForActivation();
   ASSERT_FALSE(browser()->window()->IsActive());
   ASSERT_TRUE(other_browser->window()->IsActive());
 

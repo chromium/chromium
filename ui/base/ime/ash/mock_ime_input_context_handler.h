@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   void SetAutocorrectRange(const gfx::Range& range,
                            SetAutocorrectRangeDoneCallback callback) override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
-  absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() override;
+  std::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
   void DeleteSurroundingText(uint32_t num_char16s_before_cursor,

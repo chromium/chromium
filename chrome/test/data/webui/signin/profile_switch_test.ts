@@ -4,8 +4,9 @@
 
 import 'chrome://profile-picker/lazy_load.js';
 
-import {ProfileSwitchElement} from 'chrome://profile-picker/lazy_load.js';
-import {ManageProfilesBrowserProxyImpl, ProfileState} from 'chrome://profile-picker/profile_picker.js';
+import type {ProfileSwitchElement} from 'chrome://profile-picker/lazy_load.js';
+import type {ProfileState} from 'chrome://profile-picker/profile_picker.js';
+import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';

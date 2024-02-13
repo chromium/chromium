@@ -321,6 +321,11 @@ class VariationsService
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, DoNotRetryAfterARetry);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
                            DoNotRetryIfInsecureURLIsHTTPS);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // For the test to access |limited_entropy_synthetic_trial_|.
+  FRIEND_TEST_ALL_PREFIXES(VariationsServiceBrowserTest,
+                           LimitedEntropySyntheticTrialSeedTransfer);
+#endif
 
   void InitResourceRequestedAllowedNotifier();
 

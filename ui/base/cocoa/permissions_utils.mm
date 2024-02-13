@@ -6,14 +6,68 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 #include <Foundation/Foundation.h>
+#import <ScreenCaptureKit/ScreenCaptureKit.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/task/thread_pool.h"
 
 namespace ui {
+namespace {
+
+BASE_FEATURE(kWarmScreenCaptureSonoma,
+             "WarmScreenCaptureSonoma",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Capture a screenshot and throw away the result.
+void CaptureScreenshot() {
+  if (@available(macOS 14.0, *)) {
+    CHECK(base::FeatureList::IsEnabled(kWarmScreenCaptureSonoma));
+    // Capturing a screenshot using SCK involves three asynchronous steps:
+    //   1. Request shareable contents (getShareableContent...),
+    //   2. Instruct SCScreenshotManager to take a screenshot (captureImage...),
+    //   3. Receive a callback with the actual image.
+    auto shareable_content_handler = ^(SCShareableContent* content,
+                                       NSError* error) {
+      if (!content.displays.count || error) {
+        LOG(WARNING)
+            << "Failed to get shareable content during WarmScreenCapture.";
+        return;
+      }
+
+      SCDisplay* first_display = content.displays.firstObject;
+      SCStreamConfiguration* config = [[SCStreamConfiguration alloc] init];
+      // Set the size to something small to make it clear to anyone reading the
+      // code that the screenshot contains no real information.
+      config.width = 16;
+      config.height = 10;
+      auto screenshot_handler = ^(CGImageRef sampleBuffer, NSError* sc_error) {
+        // Do nothing.
+      };
+
+      SCContentFilter* filter =
+          [[SCContentFilter alloc] initWithDisplay:first_display
+                                  excludingWindows:@[]];
+      [SCScreenshotManager captureImageWithFilter:filter
+                                    configuration:config
+                                completionHandler:screenshot_handler];
+    };
+    [SCShareableContent
+        getShareableContentExcludingDesktopWindows:true
+                               onScreenWindowsOnly:true
+                                 completionHandler:shareable_content_handler];
+  } else {
+    base::apple::ScopedCFTypeRef<CGImageRef>(
+        CGWindowListCreateImage(CGRectInfinite, kCGWindowListOptionOnScreenOnly,
+                                kCGNullWindowID, kCGWindowImageDefault));
+  }
+}
+
+}  // namespace
 
 // Note that the SDK has `CGPreflightScreenCaptureAccess()` and
 // `CGRequestScreenCaptureAccess()` listed as available on 10.15, but using
@@ -77,7 +131,8 @@ bool TryPromptUserForScreenCapture() {
 }
 
 void WarmScreenCapture() {
-  if (base::mac::MacOSMajorVersion() >= 14) {
+  if (base::mac::MacOSMajorVersion() >= 14 &&
+      !base::FeatureList::IsEnabled(kWarmScreenCaptureSonoma)) {
     // Starting in macOS 14, a "your screen is being captured" chip shows in the
     // menu bar while an app is capturing the screen, and if it's a one-time
     // image capture, it shows for ten seconds. Doing the warmup below would
@@ -99,9 +154,7 @@ void WarmScreenCapture() {
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce([] {
         if (IsScreenCaptureAllowed()) {
-          base::apple::ScopedCFTypeRef<CGImageRef>(CGWindowListCreateImage(
-              CGRectInfinite, kCGWindowListOptionOnScreenOnly, kCGNullWindowID,
-              kCGWindowImageDefault));
+          CaptureScreenshot();
         }
       }));
 }

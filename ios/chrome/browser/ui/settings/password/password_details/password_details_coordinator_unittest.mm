@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -93,10 +94,9 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
         std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    // Mock ApplicationCommands. Since ApplicationCommands conforms to
-    // ApplicationSettingsCommands, it must be mocked as well.
+    // Mock ApplicationCommands and SettingsCommands
     HandleCommand(@protocol(ApplicationCommands), dispatcher);
-    HandleCommand(@protocol(ApplicationSettingsCommands), dispatcher);
+    HandleCommand(@protocol(SettingsCommands), dispatcher);
 
     // Mock SnackbarCommands.
     HandleCommand(@protocol(SnackbarCommands), dispatcher);

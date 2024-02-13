@@ -341,8 +341,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, DisplayFeature) {
 
   // Set a vertical display feature, and verify this is reflected in the
   // computed display feature.
-  test_view_android_delegate_->SetDisplayFeatureForTesting(
-      gfx::Rect(95, 0, 10, 400));
+  rwhva->SetDisplayFeatureBoundsForTesting(gfx::Rect(95, 0, 10, 400));
   DisplayFeature expected_display_feature = {
       DisplayFeature::Orientation::kVertical,
       /* offset */ 95,
@@ -353,27 +352,23 @@ TEST_F(RenderWidgetHostViewAndroidTest, DisplayFeature) {
   // being exposed as a content::DisplayFeature (we currently only consider
   // display features that completely cover one of the view's dimensions).
   rwhva->GetNativeView()->SetLayoutForTesting(0, 0, 400, 200);
-  test_view_android_delegate_->SetDisplayFeatureForTesting(
-      gfx::Rect(200, 100, 100, 200));
+  rwhva->SetDisplayFeatureBoundsForTesting(gfx::Rect(200, 100, 100, 200));
   EXPECT_EQ(std::nullopt, rwhv->GetDisplayFeature());
 
   // Verify that horizontal display feature is correctly validated.
-  test_view_android_delegate_->SetDisplayFeatureForTesting(
-      gfx::Rect(0, 90, 400, 20));
+  rwhva->SetDisplayFeatureBoundsForTesting(gfx::Rect(0, 90, 400, 20));
   expected_display_feature = {DisplayFeature::Orientation::kHorizontal,
                               /* offset */ 90,
                               /* mask_length */ 20};
   EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
 
-  test_view_android_delegate_->SetDisplayFeatureForTesting(
-      gfx::Rect(0, 95, 600, 10));
+  rwhva->SetDisplayFeatureBoundsForTesting(gfx::Rect(0, 95, 600, 10));
   expected_display_feature = {DisplayFeature::Orientation::kHorizontal,
                               /* offset */ 95,
                               /* mask_length */ 10};
   EXPECT_EQ(expected_display_feature, *rwhv->GetDisplayFeature());
 
-  test_view_android_delegate_->SetDisplayFeatureForTesting(
-      gfx::Rect(195, 0, 10, 300));
+  rwhva->SetDisplayFeatureBoundsForTesting(gfx::Rect(195, 0, 10, 300));
   expected_display_feature = {DisplayFeature::Orientation::kVertical,
                               /* offset */ 195,
                               /* mask_length */ 10};

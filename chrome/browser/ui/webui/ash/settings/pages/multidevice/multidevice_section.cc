@@ -668,30 +668,31 @@ void MultiDeviceSection::AddLoadTimeData(
       "multideviceForgetDeviceDialogMessage",
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_FORGET_DEVICE_DIALOG_MESSAGE));
+
+  const std::u16string kBetterTogetherLearnMoreUrl = base::UTF8ToUTF16(
+      multidevice_setup::GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
+          .spec());
   html_source->AddString(
       "multideviceVerificationText",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MULTIDEVICE_VERIFICATION_TEXT,
-          base::UTF8ToUTF16(
-              multidevice_setup::
-                  GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
-                      .spec())));
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_VERIFICATION_TEXT,
+                                 kBetterTogetherLearnMoreUrl));
   html_source->AddString(
       "multideviceSetupSummary",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MULTIDEVICE_SETUP_SUMMARY, ui::GetChromeOSDeviceName(),
-          base::UTF8ToUTF16(
-              multidevice_setup::
-                  GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
-                      .spec())));
-  html_source->AddString(
-      "multideviceNoHostText",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
-          base::UTF8ToUTF16(
-              multidevice_setup::
-                  GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
-                      .spec())));
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_SETUP_SUMMARY,
+                                 ui::GetChromeOSDeviceName(),
+                                 kBetterTogetherLearnMoreUrl));
+  if (ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    html_source->AddString(
+        "multideviceNoHostText",
+        l10n_util::GetStringFUTF16(
+            IDS_OS_SETTINGS_REVAMP_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
+            ui::GetChromeOSDeviceName(), kBetterTogetherLearnMoreUrl));
+  } else {
+    html_source->AddString(
+        "multideviceNoHostText",
+        l10n_util::GetStringFUTF16(IDS_SETTINGS_MULTIDEVICE_NO_ELIGIBLE_HOSTS,
+                                   kBetterTogetherLearnMoreUrl));
+  }
   html_source->AddString(
       "multideviceSmartLockItemSummary",
       l10n_util::GetStringFUTF16(

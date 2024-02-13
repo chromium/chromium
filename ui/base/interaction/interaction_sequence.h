@@ -6,6 +6,8 @@
 #define UI_BASE_INTERACTION_INTERACTION_SEQUENCE_H_
 
 #include <map>
+#include <optional>
+#include <string>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -13,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -222,7 +223,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
 
     // If this failure was due to a subsequence failing, the failure information
     // for the subsequences will be stored here.
-    std::vector<absl::optional<AbortedData>> subsequence_failures;
+    //
+    // This also stores the next step when a step fails due to e.g. an element
+    // losing visibility.
+    std::vector<std::optional<AbortedData>> subsequence_failures;
   };
 
   // Callback for when the user aborts the sequence by failing to follow the
@@ -259,8 +263,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // These will always have values when the sequence is built, but can be
     // unspecified during construction. If unspecified, they will be set to
     // appropriate defaults for `type`.
-    absl::optional<bool> must_be_visible;
-    absl::optional<bool> must_remain_visible;
+    std::optional<bool> must_be_visible;
+    std::optional<bool> must_remain_visible;
     bool transition_only_on_event = false;
 
     StepStartCallback start_callback;

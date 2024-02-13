@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.LensWebImageProcessTime" units="ms"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>hujasonx@google.com</owner>
   <owner>lens-in-bling-team@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mobile.ContextMenu.{EntryPoint}.Actions" enum="IOSMenuAction"
-    expires_after="2024-06-02">
+    expires_after="2024-08-04">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
@@ -611,6 +611,17 @@ chromium-metrics-reviews@google.com.
     Records the notification permission state every time Android notifies Chrome
     of a change, this includes when granting access via the OS prompt and
     granting/blocking access via the OS settings.
+  </summary>
+</histogram>
+
+<histogram
+    name="Mobile.SystemNotification.Permission.OneTapUnsubscribe.SuspendedNotificationCount"
+    units="notifications" expires_after="2024-07-07">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Records the number of notifications that were suspended, each time the user
+    hits the `PRE_UNSUBSCRIBE` action button. The count includes the clicked
+    notification.
   </summary>
 </histogram>
 

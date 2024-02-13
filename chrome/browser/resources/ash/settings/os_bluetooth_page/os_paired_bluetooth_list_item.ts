@@ -16,10 +16,11 @@ import 'chrome://resources/ash/common/bluetooth/bluetooth_icon.js';
 import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js';
 
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
-import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getBatteryPercentage, getDeviceNameUnsafe, hasAnyDetailedBatteryInfo} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {FocusRowMixin} from 'chrome://resources/ash/common/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -101,8 +102,9 @@ export class SettingsPairedBluetoothListItemElement extends
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICE_DETAIL, params);
   }
 
-  private getDeviceName_(device: PairedBluetoothDeviceProperties): string {
-    return getDeviceName(device);
+  private getDeviceNameUnsafe_(device: PairedBluetoothDeviceProperties):
+      string {
+    return getDeviceNameUnsafe(device);
   }
 
   private shouldShowBatteryInfo_(device: PairedBluetoothDeviceProperties):
@@ -159,9 +161,9 @@ export class SettingsPairedBluetoothListItemElement extends
   private getAriaLabel_(device: PairedBluetoothDeviceProperties): string {
     // Start with the base information of the device name and location within
     // the list of devices with the same connection state.
-    let a11yLabel = this.i18n(
+    let a11yLabel = loadTimeData.getStringF(
         'bluetoothA11yDeviceName', this.itemIndex + 1, this.listSize,
-        this.getDeviceName_(device));
+        this.getDeviceNameUnsafe_(device));
 
     // Include the connection status.
     a11yLabel +=

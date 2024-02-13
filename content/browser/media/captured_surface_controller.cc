@@ -222,43 +222,6 @@ CapturedSurfaceControlResult DoSetZoomLevel(
   return CapturedSurfaceControlResult::kSuccess;
 }
 
-// Get the zoom level of the tab indicated by `captured_wc`.
-//
-// Return the zoom_level if successful or nullopt otherwise.
-std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
-    GlobalRenderFrameHostId capturer_rfh_id,
-    base::WeakPtr<WebContents> captured_wc) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  WebContentsImpl* const capturer_wc = WebContentsImpl::FromRenderFrameHostImpl(
-      RenderFrameHostImpl::FromID(capturer_rfh_id));
-  if (!capturer_wc) {
-    // The capturing frame or tab appears to have closed asynchronously.
-    return std::make_pair(std::nullopt,
-                          CapturedSurfaceControlResult::kCapturerNotFoundError);
-  }
-
-  if (!captured_wc) {
-    return std::make_pair(
-        std::nullopt,
-        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
-  }
-
-  if (capturer_wc == captured_wc.get()) {
-    return std::make_pair(
-        std::nullopt,
-        CapturedSurfaceControlResult::kDisallowedForSelfCaptureError);
-  }
-
-  // The requirement that the capturer be focused does not apply here
-  // as it does for SendWheel() and SetZoomLevel().
-
-  const double zoom_level = blink::PageZoomLevelToZoomFactor(
-      HostZoomMap::GetZoomLevel(captured_wc.get()));
-  return std::make_pair(std::round(100 * zoom_level),
-                        CapturedSurfaceControlResult::kSuccess);
-}
-
 void OnPermissionCheckResult(
     base::OnceCallback<CapturedSurfaceControlResult()> action_callback,
     base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback,
@@ -390,29 +353,6 @@ void CapturedSurfaceController::SendWheel(
 
   permission_manager_->CheckPermission(
       ComposeCallbacks(std::move(action_callback), std::move(reply_callback)));
-}
-
-void CapturedSurfaceController::GetZoomLevel(
-    GetZoomLevelReplyCallback reply_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!captured_wc_.has_value()) {
-    std::move(reply_callback)
-        .Run(std::nullopt,
-             CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
-    return;
-  }
-
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&DoGetZoomLevel, capturer_rfh_id_, captured_wc_.value()),
-      base::BindOnce(
-          [](GetZoomLevelReplyCallback reply_callback,
-             std::pair<std::optional<int>, CapturedSurfaceControlResult>
-                 result) {
-            std::move(reply_callback).Run(result.first, result.second);
-          },
-          std::move(reply_callback)));
 }
 
 void CapturedSurfaceController::SetZoomLevel(

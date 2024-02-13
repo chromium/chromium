@@ -1,5 +1,5 @@
 file://components/download/OWNERS
-chlily@chromium.org
+file://chrome/browser/download/bubble/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -10,7 +10,7 @@
 namespace gfx {
 
 base::apple::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   if (!hdr_metadata || !hdr_metadata->cta_861_3 ||
       hdr_metadata->cta_861_3->max_content_light_level == 0.f ||
       hdr_metadata->cta_861_3->max_frame_average_light_level == 0.f) {
@@ -36,7 +36,7 @@ base::apple::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
 }
 
 base::apple::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
-    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+    const std::optional<gfx::HDRMetadata>& hdr_metadata) {
   // This is a SMPTEST2086 Mastering Display Color Volume box.
   struct MasteringDisplayColorVolumeSEI {
     vector_ushort2 primaries[3];  // GBR

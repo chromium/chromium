@@ -75,7 +75,9 @@ Stvari za razmatranje:
 <translation id="2689064829982324496">Da se odjavite s Google računa na svim web lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="2702250627063295552">Dodavanje stavke na listu za čitanje u Chromeu</translation>
+<translation id="2703746758996815929">Da dobijate korisne savjete za Chrome, uključite obavještenja u postavkama iOS-a.</translation>
 <translation id="2736805085127235148">Obavještenja Chromea su trenutno isključena u postavkama uređaja.</translation>
+<translation id="2750626042242931740">Možete ažurirati odabire bilo kada u Postavkama Chromea.</translation>
 <translation id="2767464022270041271">Nije sačuvana nijedna lozinka. Google upravitelj lozinki može provjeriti vaše lozinke kada ih sačuvate.</translation>
 <translation id="2789947168960170215">Ako ste zaboravili pristupni izraz ili želite promijeniti ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="2868822340714096138">Obriši podatke o pregledanju u Chromeu</translation>
@@ -229,6 +231,7 @@ Za više postavki koje koriste podatke radi poboljšanja iskustva u Chromeu idit
 <translation id="7261678641327190792">Chrome ne može provjeriti vaše lozinke</translation>
 <translation id="7272930098487145294">Da sačuvate slike, dodirnite Postavke da omogućite Chromeu dodavanje u vaše fotografije</translation>
 <translation id="7275945473750112644">Računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromea obrisati s ovog uređaja</translation>
+<translation id="7304491752269485262">Prošireni prikaz automatskog popunjavanja u Chromeu</translation>
 <translation id="7349129508108954623">Dozvolite Chromeu da koristi Google Mape da vam dâ upute i lokalne informacije o otkrivenim adresama.</translation>
 <translation id="7394108421562933108">Mape u Chromeu</translation>
 <translation id="7400722733683201933">O Google Chromeu</translation>
@@ -297,6 +300,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 Da promijenite ovu postavku, <ph name="BEGIN_LINK" />obrišite podatke Chromea na računu<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google upravitelj lozinki nije uspio provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
 <translation id="8865415417596392024">Podaci Chromea na vašem računu</translation>
+<translation id="8874688701962049679">Savjeti za iskorištavanje svih prednosti Chromea.</translation>
 <translation id="8891935667620843985">Možete automatski otvarati linkove u Chromeu ako ga postavite kao zadanu aplikaciju preglednika.</translation>
 <translation id="8897749957032330183">Lozinke se pohranjuju u Google upravitelju lozinki na ovom uređaju.</translation>
 <translation id="8949681853939555434">Postavite Chrome kao zadani preglednik</translation>

@@ -23,12 +23,14 @@ class ProgressIconAnimation;
 class ProgressRingAnimation;
 
 // A class owning a `ui::Layer` which paints indication of progress.
-// NOTE: The owned `layer()` is not painted if progress == `1.f`.
+// NOTE: The owned `layer()` is not painted if progress == `1.f`, but we can
+// paint the `layer()` by setting the progress back to `kForcedShow`.
 class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
                                      public ui::LayerDelegate {
  public:
   static constexpr char kClassName[] = "ProgressIndicator";
   static constexpr float kProgressComplete = 1.f;
+  static constexpr float kForcedShow = 0.999999f;
 
   ProgressIndicator(const ProgressIndicator&) = delete;
   ProgressIndicator& operator=(const ProgressIndicator&) = delete;

@@ -108,6 +108,15 @@ class POLICY_EXPORT PolicyConversionsClient {
   // Returns the embedder's ConfigurationPolicyHandlerList.
   virtual const ConfigurationPolicyHandlerList* GetHandlerList() const = 0;
 
+  // Returns whether this client was configured to get device local account
+  // policies on ChromeOS.
+  bool GetDeviceLocalAccountPoliciesEnabled() const;
+  // Returns whether this client was configured to get device basic information
+  // on ChromeOS.
+  bool GetDeviceInfoEnabled() const;
+  // Returns whether this client was configured to get all user scope policies.
+  bool GetUserPoliciesEnabled() const;
+
  protected:
   // Returns a copy of |value|. If necessary (which is specified by
   // |convert_values_enabled_|), converts some values to a representation that
@@ -154,15 +163,6 @@ class POLICY_EXPORT PolicyConversionsClient {
   std::optional<PolicyConversions::PolicyToSchemaMap> GetKnownPolicies(
       const scoped_refptr<SchemaMap> schema_map,
       const PolicyNamespace& policy_namespace) const;
-
-  // Returns whether this client was configured to get device local account
-  // policies on ChromeOS.
-  bool GetDeviceLocalAccountPoliciesEnabled() const;
-  // Returns whether this client was configured to get device basic information
-  // on ChromeOS.
-  bool GetDeviceInfoEnabled() const;
-  // Returns whether this client was configured to get all user scope policies.
-  bool GetUserPoliciesEnabled() const;
 
  private:
   friend class PolicyConversionsClientTest;

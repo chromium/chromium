@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -31,7 +32,6 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/resources/transferable_resource.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer_animator.h"
@@ -213,7 +213,6 @@ Layer::Layer(LayerType type)
       layer_mask_back_link_(nullptr),
       zoom_(1),
       zoom_inset_(0),
-      delegate_(nullptr),
       owner_(nullptr),
       cc_layer_(nullptr),
       device_scale_factor_(1.0f),
@@ -1585,7 +1584,7 @@ bool Layer::ConvertPointFromAncestor(const Layer* ancestor,
             : GetTransformRelativeTo(ancestor, &transform))) {
     return false;
   }
-  const absl::optional<gfx::PointF> transformed_point =
+  const std::optional<gfx::PointF> transformed_point =
       transform.InverseMapPoint(*point);
   if (!transformed_point.has_value())
     return false;
@@ -1788,12 +1787,12 @@ LayerAnimatorCollection* Layer::GetLayerAnimatorCollection() {
   return compositor ? compositor->layer_animator_collection() : nullptr;
 }
 
-absl::optional<int> Layer::GetFrameNumber() const {
+std::optional<int> Layer::GetFrameNumber() const {
   if (const Compositor* compositor = GetCompositor()) {
     return compositor->activated_frame_count();
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 float Layer::GetRefreshRate() const {

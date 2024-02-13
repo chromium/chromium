@@ -201,6 +201,11 @@ class ViewTransitionStyleTracker
   // the initial capture was taken.
   bool SnapshotRootDidChangeSize() const;
 
+  // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
+  // Returns the class list for a captured element by name.
+  const Vector<AtomicString>& GetViewTransitionClassList(
+      const AtomicString& name) const;
+
  private:
   class ImageWrapperPseudoElement;
 
@@ -270,6 +275,9 @@ class ViewTransitionStyleTracker
     // This only contains properties that need to be animated, which is a
     // subset of `captured_css_properties`.
     base::flat_map<CSSPropertyID, String> cached_animated_css_properties;
+
+    // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
+    Vector<AtomicString> class_list;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the

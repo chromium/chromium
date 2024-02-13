@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarksApiProxyImpl, getDisplayedList, SelectFolderAction, StartSearchAction, Store} from 'chrome://bookmarks/bookmarks.js';
+import type {SelectFolderAction, StartSearchAction} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksApiProxyImpl, getDisplayedList, Store} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

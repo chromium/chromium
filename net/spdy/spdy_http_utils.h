@@ -5,6 +5,8 @@
 #ifndef NET_SPDY_SPDY_HTTP_UTILS_H_
 #define NET_SPDY_SPDY_HTTP_UTILS_H_
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
 #include "net/base/net_export.h"
@@ -12,7 +14,6 @@
 #include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_framer.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -57,7 +58,7 @@ SpdyHeadersToHttpResponseHeadersUsingBuilder(
 // HttpRequestHeaders.
 NET_EXPORT void CreateSpdyHeadersFromHttpRequest(
     const HttpRequestInfo& info,
-    absl::optional<RequestPriority> priority,
+    std::optional<RequestPriority> priority,
     const HttpRequestHeaders& request_headers,
     spdy::Http2HeaderBlock* headers);
 

@@ -942,8 +942,10 @@ TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
       // parameters. Preliminary testing indicates that rotation in particular
       // might have a substantial impact on performance.
       vulkan_image_processor->Process(
-          input_access->GetVulkanImage(), test_coded_size, test_image_size,
-          output_access->GetVulkanImage(), gfx::Rect(test_coded_size),
+          input_access->GetVulkanImage(), test_image_size,
+          output_access->GetVulkanImage(),
+          gfx::RectF(static_cast<float>(test_coded_size.width()),
+                     static_cast<float>(test_coded_size.height())),
           gfx::RectF(1.0f, 1.0f), gfx::OVERLAY_TRANSFORM_NONE, begin_semaphores,
           end_semaphores);
     }

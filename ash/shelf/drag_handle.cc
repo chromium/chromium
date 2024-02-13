@@ -136,8 +136,9 @@ bool DragHandle::MaybeShowDragHandleNudge() {
   if (!show_drag_handle_nudge_timer_.IsRunning())
     overview_observation_.Reset();
 
-  if (!features::AreContextualNudgesEnabled())
+  if (!features::IsHideShelfControlsInTabletModeEnabled()) {
     return false;
+  }
 
   // Do not show drag handle nudge if it is already shown or drag handle is not
   // visible.
@@ -252,7 +253,7 @@ void DragHandle::UpdateColor() {
 }
 
 void DragHandle::OnGestureEvent(ui::GestureEvent* event) {
-  if (!features::AreContextualNudgesEnabled() ||
+  if (!features::IsHideShelfControlsInTabletModeEnabled() ||
       !gesture_nudge_target_visibility_) {
     return;
   }

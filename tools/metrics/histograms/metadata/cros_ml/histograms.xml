@@ -559,6 +559,9 @@ chromium-metrics-reviews@google.com.
     <variant name="DocumentScanner.LoadModelResult"/>
     <variant name="HandwritingModel.LoadModelResult"/>
     <variant name="HandwritingModel.Recognize"/>
+    <variant name="ImageAnnotator.AnnotateEncodedImage"/>
+    <variant name="ImageAnnotator.AnnotateRawImage"/>
+    <variant name="ImageAnnotator.LoadModelResult"/>
     <variant name="SmartDimModel.CreateGraphExecutorResult"/>
     <variant name="SmartDimModel.ExecuteResult"/>
     <variant name="SmartDimModel.LoadModelResult"/>
@@ -620,6 +623,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="RequestName">
     <variant name="DocumentScanner"/>
+    <variant name="ImageAnnotator"/>
     <variant name="SmartDimModel"/>
     <variant name="TestModel"/>
     <variant name="TextClassifier"/>
@@ -639,6 +643,9 @@ chromium-metrics-reviews@google.com.
     <variant name="DocumentScanner.LoadModelResult"/>
     <variant name="HandwritingModel.LoadModelResult"/>
     <variant name="HandwritingModel.Recognize"/>
+    <variant name="ImageAnnotator.AnnotateEncodedImage"/>
+    <variant name="ImageAnnotator.AnnotateRawImage"/>
+    <variant name="ImageAnnotator.LoadModelResult"/>
     <variant name="SmartDimModel.CreateGraphExecutorResult"/>
     <variant name="SmartDimModel.ExecuteResult"/>
     <variant name="SmartDimModel.LoadModelResult"/>

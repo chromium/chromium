@@ -4,6 +4,7 @@
 #ifndef DEVICE_BLUETOOTH_TEST_FAKE_PERIPHERAL_H_
 #define DEVICE_BLUETOOTH_TEST_FAKE_PERIPHERAL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/compiler_specific.h"
@@ -12,7 +13,6 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/fake_central.h"
 #include "device/bluetooth/test/fake_remote_gatt_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 class BluetoothUUID;
@@ -34,7 +34,7 @@ class FakePeripheral : public device::BluetoothDevice {
   ~FakePeripheral() override;
 
   // Changes the name of the device.
-  void SetName(absl::optional<std::string> name);
+  void SetName(std::optional<std::string> name);
 
   // Set it to indicate if the system has connected to the Peripheral outside of
   // the Bluetooth interface e.g. the user connected to the device through
@@ -87,7 +87,7 @@ class FakePeripheral : public device::BluetoothDevice {
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  absl::optional<std::string> GetName() const override;
+  std::optional<std::string> GetName() const override;
   std::u16string GetNameForDisplay() const override;
   bool IsPaired() const override;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -128,7 +128,7 @@ class FakePeripheral : public device::BluetoothDevice {
       ConnectToServiceErrorCallback error_callback) override;
   void CreateGattConnection(
       GattConnectionCallback callback,
-      absl::optional<device::BluetoothUUID> service_uuid) override;
+      std::optional<device::BluetoothUUID> service_uuid) override;
   bool IsGattServicesDiscoveryComplete() const override;
 #if BUILDFLAG(IS_CHROMEOS)
   void ExecuteWrite(base::OnceClosure callback,
@@ -138,7 +138,7 @@ class FakePeripheral : public device::BluetoothDevice {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
-  void CreateGattConnectionImpl(absl::optional<device::BluetoothUUID>) override;
+  void CreateGattConnectionImpl(std::optional<device::BluetoothUUID>) override;
   void DisconnectGatt() override;
 
  private:
@@ -146,7 +146,7 @@ class FakePeripheral : public device::BluetoothDevice {
   void DispatchDiscoveryResponse();
 
   const std::string address_;
-  absl::optional<std::string> name_;
+  std::optional<std::string> name_;
   // True when the system has connected to the device outside of the Bluetooth
   // interface e.g. the user connected to the device through system settings.
   bool system_connected_;
@@ -164,10 +164,10 @@ class FakePeripheral : public device::BluetoothDevice {
 
   // Used to decide which callback should be called when
   // CreateGattConnection is called.
-  absl::optional<uint16_t> next_connection_response_;
+  std::optional<uint16_t> next_connection_response_;
 
   // Used to decide if the GattServicesDiscovered method is called.
-  absl::optional<uint16_t> next_discovery_response_;
+  std::optional<uint16_t> next_discovery_response_;
 
   // Mutable because IsGattServicesDiscoveryComplete needs to post a task but
   // is const.

@@ -42,6 +42,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .didSelectTab(
                         mNativeTabModelObserverJniBridge,
@@ -54,6 +55,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .willCloseTab(
                         mNativeTabModelObserverJniBridge,
@@ -86,6 +88,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void willAddTab(Tab tab, @TabLaunchType int type) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .willAddTab(
                         mNativeTabModelObserverJniBridge,
@@ -101,6 +104,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
             @TabCreationState int creationState,
             boolean markedForSelection) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .didAddTab(
                         mNativeTabModelObserverJniBridge,
@@ -112,6 +116,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void didMoveTab(Tab tab, int newIndex, int curIndex) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .didMoveTab(
                         mNativeTabModelObserverJniBridge,
@@ -124,6 +129,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void tabPendingClosure(Tab tab) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .tabPendingClosure(
                         mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
@@ -132,6 +138,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void tabClosureUndone(Tab tab) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .tabClosureUndone(
                         mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
@@ -140,6 +147,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void tabClosureCommitted(Tab tab) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .tabClosureCommitted(
                         mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
@@ -168,6 +176,7 @@ class TabModelObserverJniBridge implements TabModelObserver {
     @Override
     public final void tabRemoved(Tab tab) {
         assert mNativeTabModelObserverJniBridge != 0;
+        assert tab.isInitialized();
         TabModelObserverJniBridgeJni.get()
                 .tabRemoved(mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab);
     }

@@ -40,7 +40,7 @@ import java.util.List;
  * {@link StripLayoutTab} is used to keep track of the strip position and rendering information for
  * a particular tab so it can draw itself onto the GL canvas.
  */
-public class StripLayoutTab implements VirtualView {
+public class StripLayoutTab implements StripLayoutView {
     /** An observer interface for StripLayoutTab. */
     public interface Observer {
         /** @param visible Whether the StripLayoutTab is visible. */
@@ -350,6 +350,7 @@ public class StripLayoutTab implements VirtualView {
         mCloseButton.setAccessibilityDescription(closeButtonDescription, closeButtonDescription);
     }
 
+    /** {@link org.chromium.chrome.browser.layouts.components.VirtualView} Implementation */
     @Override
     public String getAccessibilityDescription() {
         return mAccessibilityDescription;
@@ -671,68 +672,53 @@ public class StripLayoutTab implements VirtualView {
         checkCloseButtonVisibility(animate);
     }
 
-    /**
-     * @param x The actual position in the strip, taking into account stacking, scrolling, etc.
-     */
+    /** {@link StripLayoutView} Implementation */
+    @Override
     public void setDrawX(float x) {
-        mCloseButton.setX(mCloseButton.getX() + (x - mDrawX));
+        mCloseButton.setDrawX(mCloseButton.getDrawX() + (x - mDrawX));
         mDrawX = x;
         mTouchTarget.left = mDrawX + mLeftInset;
         mTouchTarget.right = mDrawX + mWidth - mRightInset;
     }
 
-    /**
-     * @return The actual position in the strip, taking into account stacking, scrolling, etc.
-     */
+    @Override
     public float getDrawX() {
         return mDrawX;
     }
 
-    /**
-     * @param y The vertical position for the tab.
-     */
+    @Override
     public void setDrawY(float y) {
-        mCloseButton.setY(mCloseButton.getY() + (y - mDrawY));
+        mCloseButton.setDrawY(mCloseButton.getDrawY() + (y - mDrawY));
         mDrawY = y;
         mTouchTarget.top = mDrawY;
         mTouchTarget.bottom = mDrawY + mHeight;
     }
 
-    /**
-     * @return The vertical position for the tab.
-     */
+    @Override
     public float getDrawY() {
         return mDrawY;
     }
 
-    /**
-     * @param width The width of the tab.
-     */
+    @Override
     public void setWidth(float width) {
         mWidth = width;
         resetCloseRect();
         mTouchTarget.right = mDrawX + mWidth - mRightInset;
     }
 
-    /**
-     * @return The width of the tab.
-     */
+    @Override
     public float getWidth() {
         return mWidth;
     }
 
-    /**
-     * @param height The height of the tab.
-     */
+    @Override
     public void setHeight(float height) {
         mHeight = height;
         resetCloseRect();
         mTouchTarget.bottom = mDrawY + mHeight;
     }
 
-    /**
-     * @return The height of the tab.
-     */
+    @Override
     public float getHeight() {
         return mHeight;
     }
@@ -896,8 +882,8 @@ public class StripLayoutTab implements VirtualView {
         RectF closeRect = getCloseRect();
         mCloseButton.setWidth(closeRect.width());
         mCloseButton.setHeight(closeRect.height());
-        mCloseButton.setX(closeRect.left);
-        mCloseButton.setY(closeRect.top);
+        mCloseButton.setDrawX(closeRect.left);
+        mCloseButton.setDrawY(closeRect.top);
     }
 
     private RectF getCloseRect() {

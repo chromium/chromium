@@ -4,6 +4,7 @@
 
 #include "net/first_party_sets/global_first_party_sets.h"
 
+#include <optional>
 #include <set>
 #include <tuple>
 
@@ -20,7 +21,6 @@
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/local_set_declaration.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -118,21 +118,21 @@ GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
                               manual_config_.Clone(), manual_aliases_);
 }
 
-absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
+std::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
     const SchemefulSite& site,
     const FirstPartySetsContextConfig& config) const {
   return FindEntry(site, &config);
 }
 
-absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
+std::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
     const SchemefulSite& site,
     const FirstPartySetsContextConfig* config) const {
   // Check if `site` can be found in the customizations first.
   if (config) {
     if (const auto override = config->FindOverride(site);
         override.has_value()) {
-      return override->IsDeletion() ? absl::nullopt
-                                    : absl::make_optional(override->GetEntry());
+      return override->IsDeletion() ? std::nullopt
+                                    : std::make_optional(override->GetEntry());
     }
   }
 
@@ -140,8 +140,8 @@ absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
   if (const auto manual_override = manual_config_.FindOverride(site);
       manual_override.has_value()) {
     return manual_override->IsDeletion()
-               ? absl::nullopt
-               : absl::make_optional(manual_override->GetEntry());
+               ? std::nullopt
+               : std::make_optional(manual_override->GetEntry());
   }
 
   // Finally, look up in `entries_`, applying an alias if applicable.
@@ -153,7 +153,7 @@ absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
     return entry_it->second;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 base::flat_map<SchemefulSite, FirstPartySetEntry>
@@ -162,7 +162,7 @@ GlobalFirstPartySets::FindEntries(
     const FirstPartySetsContextConfig& config) const {
   std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> sites_to_entries;
   for (const SchemefulSite& site : sites) {
-    const absl::optional<FirstPartySetEntry> entry = FindEntry(site, config);
+    const std::optional<FirstPartySetEntry> entry = FindEntry(site, config);
     if (entry.has_value()) {
       sites_to_entries.emplace_back(site, entry.value());
     }
@@ -174,9 +174,9 @@ FirstPartySetMetadata GlobalFirstPartySets::ComputeMetadata(
     const SchemefulSite& site,
     const SchemefulSite* top_frame_site,
     const FirstPartySetsContextConfig& fps_context_config) const {
-  absl::optional<FirstPartySetEntry> top_frame_entry =
+  std::optional<FirstPartySetEntry> top_frame_entry =
       top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
-                     : absl::nullopt;
+                     : std::nullopt;
 
   return FirstPartySetMetadata(
       base::OptionalToPtr(FindEntry(site, fps_context_config)),
@@ -305,7 +305,7 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
                                            member == entry->second.primary()
                                                ? SiteType::kPrimary
                                                : SiteType::kAssociated,
-                                           absl::nullopt));
+                                           std::nullopt));
           }
           if (member == set_entry.primary())
             return true;
@@ -390,7 +390,7 @@ GlobalFirstPartySets::NormalizeAdditionSets(
             normalized
                 .emplace(child_site_and_entry.first,
                          FirstPartySetEntry(rep_primary, SiteType::kAssociated,
-                                            absl::nullopt))
+                                            std::nullopt))
                 .second;
         CHECK(inserted);
       }

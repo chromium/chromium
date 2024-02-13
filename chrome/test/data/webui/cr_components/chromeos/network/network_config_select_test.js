@@ -104,8 +104,10 @@ suite('NetworkConfigSelectTest', function() {
       configSelect.prefilledValue = prefilledValue;
       if (shouldBeValid) {
         assertEquals(configSelect.value, configSelect.prefilledValue);
+        assertTrue(configSelect.disabled);
       } else {
         assertNotEquals(configSelect.value, configSelect.prefilledValue);
+        assertFalse(configSelect.disabled);
       }
     }
   });

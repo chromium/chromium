@@ -72,7 +72,7 @@ const AuthenticatorSupportedOptions& ChromeOSAuthenticator::Options() const {
   return *options;
 }
 
-absl::optional<FidoTransportProtocol>
+std::optional<FidoTransportProtocol>
 ChromeOSAuthenticator::AuthenticatorTransport() const {
   return FidoTransportProtocol::kInternal;
 }
@@ -93,7 +93,7 @@ void ChromeOSAuthenticator::InitializeAuthenticator(
 
 void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
     base::OnceClosure callback,
-    absl::optional<u2f::GetAlgorithmsResponse> response) {
+    std::optional<u2f::GetAlgorithmsResponse> response) {
   if (response && response->status() ==
                       u2f::GetAlgorithmsResponse_GetAlgorithmsStatus_SUCCESS) {
     supported_algorithms_ = std::vector<int32_t>();
@@ -104,7 +104,7 @@ void ChromeOSAuthenticator::OnGetAlgorithmsResponse(
     // Keep `supported_algorithms_` as nullopt if fetching supported algorithms
     // from u2fd failed, since the caller of `GetAlgorithms` method might want
     // to provide defaults.
-    supported_algorithms_ = absl::nullopt;
+    supported_algorithms_ = std::nullopt;
   }
 
   std::move(callback).Run();
@@ -117,12 +117,12 @@ void ChromeOSAuthenticator::OnIsPowerButtonModeEnabled(
   std::move(callback).Run();
 }
 
-absl::optional<base::span<const int32_t>>
+std::optional<base::span<const int32_t>>
 ChromeOSAuthenticator::GetAlgorithms() {
   if (supported_algorithms_) {
     return base::span<const int32_t>(*supported_algorithms_);
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ChromeOSAuthenticator::MakeCredential(
@@ -196,11 +196,11 @@ void ChromeOSAuthenticator::MakeCredential(
 void ChromeOSAuthenticator::OnMakeCredentialResponse(
     CtapMakeCredentialRequest request,
     MakeCredentialCallback callback,
-    absl::optional<u2f::MakeCredentialResponse> response) {
+    std::optional<u2f::MakeCredentialResponse> response) {
   if (!response) {
     FIDO_LOG(ERROR) << "MakeCredential dbus call failed";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
@@ -208,27 +208,27 @@ void ChromeOSAuthenticator::OnMakeCredentialResponse(
   if (response->status() !=
       u2f::MakeCredentialResponse_MakeCredentialStatus_SUCCESS) {
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOperationDenied,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
-  absl::optional<AuthenticatorData> authenticator_data =
+  std::optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
           base::as_bytes(base::make_span(response->authenticator_data())));
   if (!authenticator_data) {
     FIDO_LOG(ERROR) << "Authenticator data corrupted.";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
 
-  absl::optional<cbor::Value> statement_map = cbor::Reader::Read(
+  std::optional<cbor::Value> statement_map = cbor::Reader::Read(
       base::as_bytes(base::make_span(response->attestation_statement())));
   if (!statement_map ||
       statement_map.value().type() != cbor::Value::Type::MAP) {
     FIDO_LOG(ERROR) << "Attestation statement is not a CBOR map.";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther,
-                            absl::nullopt);
+                            std::nullopt);
     return;
   }
   auto statement = std::make_unique<OpaqueAttestationStatement>(
@@ -301,7 +301,7 @@ void ChromeOSAuthenticator::GetPlatformCredentialInfoForRequest(
 
 void ChromeOSAuthenticator::OnHasCredentialInformationForRequest(
     GetPlatformCredentialInfoForRequestCallback callback,
-    absl::optional<u2f::HasCredentialsResponse> response) {
+    std::optional<u2f::HasCredentialsResponse> response) {
   std::move(callback).Run(
       /*credentials=*/{},
       response &&
@@ -317,7 +317,7 @@ void ChromeOSAuthenticator::OnHasCredentialInformationForRequest(
 void ChromeOSAuthenticator::OnGetAssertionResponse(
     CtapGetAssertionRequest request,
     GetAssertionCallback callback,
-    absl::optional<u2f::GetAssertionResponse> response) {
+    std::optional<u2f::GetAssertionResponse> response) {
   if (!response) {
     FIDO_LOG(ERROR) << "GetAssertion dbus call failed";
     std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrOther, {});
@@ -335,7 +335,7 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
 
   u2f::Assertion assertion = response->assertion(0);
 
-  absl::optional<AuthenticatorData> authenticator_data =
+  std::optional<AuthenticatorData> authenticator_data =
       AuthenticatorData::DecodeAuthenticatorData(
           base::as_bytes(base::make_span(assertion.authenticator_data())));
   if (!authenticator_data) {
@@ -376,7 +376,7 @@ void ChromeOSAuthenticator::HasLegacyU2fCredentialForGetAssertionRequest(
       req,
       base::BindOnce(
           [](base::OnceCallback<void(bool has_credential)> callback,
-             absl::optional<u2f::HasCredentialsResponse> response) {
+             std::optional<u2f::HasCredentialsResponse> response) {
             std::move(callback).Run(
                 response &&
                 response->status() ==
@@ -399,7 +399,7 @@ void ChromeOSAuthenticator::Cancel() {
 }
 
 void ChromeOSAuthenticator::OnCancelResponse(
-    absl::optional<u2f::CancelWebAuthnFlowResponse> response) {
+    std::optional<u2f::CancelWebAuthnFlowResponse> response) {
   current_request_id_.clear();
 
   if (!response) {
@@ -427,7 +427,7 @@ void ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailable(
             u2f::IsUvpaaRequest(),
             base::BindOnce(
                 [](base::OnceCallback<void(bool is_available)> callback,
-                   absl::optional<u2f::IsUvpaaResponse> response) {
+                   std::optional<u2f::IsUvpaaResponse> response) {
                   std::move(callback).Run(response &&
                                           !response->not_available());
                 },
@@ -442,7 +442,7 @@ void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
       u2f::IsU2fEnabledRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(bool is_enabled)> callback,
-             absl::optional<u2f::IsU2fEnabledResponse> response) {
+             std::optional<u2f::IsU2fEnabledResponse> response) {
             std::move(callback).Run(response && response->enabled());
           },
           std::move(callback)));
@@ -454,7 +454,7 @@ void ChromeOSAuthenticator::IsLacrosSupported(
       u2f::GetSupportedFeaturesRequest(),
       base::BindOnce(
           [](base::OnceCallback<void(bool is_enabled)> callback,
-             absl::optional<u2f::GetSupportedFeaturesResponse> response) {
+             std::optional<u2f::GetSupportedFeaturesResponse> response) {
             std::move(callback).Run(response && response->support_lacros());
           },
           std::move(callback)));

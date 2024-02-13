@@ -77,10 +77,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
     SocketId id = FlossSocketManager::kInvalidSocketId;
     SocketType type;
     int flags;
-    absl::optional<int> psm;
-    absl::optional<int> channel;
-    absl::optional<std::string> name;
-    absl::optional<device::BluetoothUUID> uuid;
+    std::optional<int> psm;
+    std::optional<int> channel;
+    std::optional<std::string> name;
+    std::optional<device::BluetoothUUID> uuid;
 
     FlossListeningSocket();
     FlossListeningSocket(const FlossListeningSocket&);
@@ -95,9 +95,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
     FlossDeviceId remote_device;
     SocketType type;
     int flags;
-    absl::optional<base::ScopedFD> fd;
+    std::optional<base::ScopedFD> fd;
     int port;
-    absl::optional<device::BluetoothUUID> uuid;
+    std::optional<device::BluetoothUUID> uuid;
     int max_rx_size;
     int max_tx_size;
 
@@ -130,7 +130,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
 
   // Callback when a connection socket completes.
   using ConnectionCompleted =
-      base::OnceCallback<void(BtifStatus, absl::optional<FlossSocket>&&)>;
+      base::OnceCallback<void(BtifStatus, std::optional<FlossSocket>&&)>;
 
   // Error: Callback id is invalid.
   static const char kErrorInvalidCallback[];
@@ -166,10 +166,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   // variants capable of supporting a use-case, such as when manually
   // constructing SDP records for a listening socket.
   virtual void ListenUsingRfcommAlt(
-      const absl::optional<std::string> name,
-      const absl::optional<device::BluetoothUUID> application_uuid,
-      const absl::optional<int> channel,
-      const absl::optional<int> flags,
+      const std::optional<std::string> name,
+      const std::optional<device::BluetoothUUID> application_uuid,
+      const std::optional<int> channel,
+      const std::optional<int> flags,
       ResponseCallback<BtifStatus> callback,
       ConnectionStateChanged ready_cb,
       ConnectionAccepted new_connection_cb);
@@ -204,7 +204,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   // Accept new connections on |id|. If the given SocketId is not a listening
   // socket or closed, the callback will receive a failing |BtifStatus| value.
   virtual void Accept(const SocketId id,
-                      absl::optional<uint32_t> timeout_ms,
+                      std::optional<uint32_t> timeout_ms,
                       ResponseCallback<BtifStatus> callback);
 
   // Closes the socket on |id|. Only works for listening sockets. For connecting

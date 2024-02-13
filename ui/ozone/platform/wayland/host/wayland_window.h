@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -21,11 +22,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event_target.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
+#include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -122,7 +123,7 @@ class WaylandWindow : public PlatformWindow,
   // subsurface_stack_below_.size() >= below.
   bool ArrangeSubsurfaceStack(size_t above, size_t below);
   bool CommitOverlays(uint32_t frame_id,
-                      int64_t seq,
+                      const gfx::FrameData& data,
                       std::vector<wl::WaylandOverlayConfig>& overlays);
 
   // Called when the focus changed on this window.
@@ -156,7 +157,7 @@ class WaylandWindow : public PlatformWindow,
   // as it seems like an expectation of Wayland. However, if all the entered
   // outputs have the same scale factor, the very first entered output is chosen
   // as there is no way to figure out what output the window occupies the most.
-  absl::optional<WaylandOutput::Id> GetPreferredEnteredOutputId();
+  std::optional<WaylandOutput::Id> GetPreferredEnteredOutputId();
 
   // Returns current type of the window.
   PlatformWindowType type() const { return type_; }
@@ -224,6 +225,10 @@ class WaylandWindow : public PlatformWindow,
   std::unique_ptr<EventTargetIterator> GetChildIterator() const override;
   EventTargeter* GetEventTargeter() override;
 
+  // WaylandZAuraSurface::Delegate:
+  void OcclusionStateChanged(
+      PlatformWindowOcclusionState occlusion_state) override;
+
   // Handles the configuration events coming from the shell objects.
   // The width and height come in DIP of the output that the surface is
   // currently bound to.
@@ -250,8 +255,7 @@ class WaylandWindow : public PlatformWindow,
     WindowTiledEdges tiled_edges;
 #endif
 
-    // Dumps the values of the states that are part of the standard
-    // xdg_toplevel.state enum into a string;
+    // Dumps the values of the states into a string.
     std::string ToString() const;
   };
 
@@ -280,6 +284,11 @@ class WaylandWindow : public PlatformWindow,
     pending_configure_state_.raster_scale = scale;
   }
 
+  // Sets the raster scale to be applied on the next configure.
+  void SetPendingOcclusionState(PlatformWindowOcclusionState occlusion_state) {
+    pending_configure_state_.occlusion_state = occlusion_state;
+  }
+
   // See comments on the member variable for an explanation of this.
   const PlatformWindowDelegate::State& applied_state() const {
     return applied_state_;
@@ -303,9 +312,9 @@ class WaylandWindow : public PlatformWindow,
 
   // Notifies about drag/drop session events. |point| is in DIP as wayland
   // sends coordinates in "surface-local" coordinates.
-  virtual void OnDragEnter(const gfx::PointF& point, int operation);
+  virtual void OnDragEnter(const gfx::PointF& point, int operations);
   virtual void OnDragDataAvailable(std::unique_ptr<OSExchangeData> data);
-  virtual int OnDragMotion(const gfx::PointF& point, int operation);
+  virtual int OnDragMotion(const gfx::PointF& point, int operations);
   virtual void OnDragDrop();
   virtual void OnDragLeave();
   virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
@@ -456,9 +465,10 @@ class WaylandWindow : public PlatformWindow,
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {
-    absl::optional<gfx::Rect> bounds_dip;
-    absl::optional<gfx::Size> size_px;
-    absl::optional<float> raster_scale;
+    std::optional<gfx::Rect> bounds_dip;
+    std::optional<gfx::Size> size_px;
+    std::optional<float> raster_scale;
+    std::optional<PlatformWindowOcclusionState> occlusion_state;
   };
 
   // This holds the requested state for the next configure from the server.
@@ -571,7 +581,7 @@ class WaylandWindow : public PlatformWindow,
   // area of the window that is visible to the user as the actual window).  The
   // areas outside the geometry are used to draw client-side window decorations.
   // TODO(crbug.com/1306688): Use DIP for frame insets.
-  absl::optional<gfx::Insets> frame_insets_px_;
+  std::optional<gfx::Insets> frame_insets_px_;
 
   bool has_touch_focus_ = false;
   // The UI scale may be forced through the command line, which means that it
@@ -651,6 +661,9 @@ class WaylandWindow : public PlatformWindow,
   // values provided by the client, until we get an actual configure from the
   // server. See the comments on applied_state_ for further explanation.
   PlatformWindowDelegate::State latched_state_;
+
+  // Stores the insets in DIP at the time of the last latched state.
+  gfx::Insets latched_insets_;
 
   // In-flight state requests. Once a frame comes from the GPU
   // process with the appropriate viz sequence number, ack_configure request

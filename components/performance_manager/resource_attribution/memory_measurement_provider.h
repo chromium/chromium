@@ -14,12 +14,9 @@
 #include "components/performance_manager/public/resource_attribution/memory_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 
-namespace performance_manager {
-class Graph;
-}
-
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 class MemoryMeasurementProvider {
  public:
@@ -57,6 +54,6 @@ class MemoryMeasurementProvider {
   raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 };
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_MEMORY_MEASUREMENT_PROVIDER_H_

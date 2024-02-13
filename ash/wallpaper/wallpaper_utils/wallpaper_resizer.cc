@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -23,6 +24,14 @@
 
 namespace ash {
 namespace {
+
+// Kilobyte granularity is unnecessary because this metric is purely to prove
+// that decoded wallpaper typically occupies several MBs, rather than 20 or 40.
+constexpr int kDecodedWallpaperMetricMinMB = 1;
+// Assuming 4 bytes per pixel (RGBA), 50 MB should be an image that's roughly
+// 3630x3620. This exceeds the expected wallpaper size by a large margin.
+constexpr int kDecodedWallpaperMetricMaxMB = 50;
+constexpr int kDecodedWallpaperMetricNumBuckets = 10;
 
 // Resizes `image` to `target_size` using `layout`.
 //
@@ -134,6 +143,13 @@ void WallpaperResizer::StartResize(base::OnceClosure on_resize_done) {
 
 void WallpaperResizer::OnResizeFinished(base::OnceClosure on_resize_done,
                                         const SkBitmap& resized_bitmap) {
+  static constexpr size_t kBytesPerMegabyte = 1024 * 1024;
+  base::UmaHistogramCustomCounts(
+      "Ash.Wallpaper.DecodedSizeMB",
+      base::ClampRound(static_cast<float>(resized_bitmap.computeByteSize()) /
+                       kBytesPerMegabyte),
+      kDecodedWallpaperMetricMinMB, kDecodedWallpaperMetricMaxMB,
+      kDecodedWallpaperMetricNumBuckets);
   auto resized_image = gfx::ImageSkia::CreateFrom1xBitmap(resized_bitmap);
 
   DVLOG(2) << __func__ << " old=" << image_.size().ToString()

@@ -31,10 +31,10 @@ class TestListGridView : public View {
   void UnsetTableSize();
 
  private:
-  absl::optional<int> aria_row_count = absl::nullopt;
-  absl::optional<int> aria_column_count = absl::nullopt;
-  absl::optional<int> table_row_count = absl::nullopt;
-  absl::optional<int> table_column_count = absl::nullopt;
+  std::optional<int> aria_row_count = std::nullopt;
+  std::optional<int> aria_column_count = std::nullopt;
+  std::optional<int> table_row_count = std::nullopt;
+  std::optional<int> table_column_count = std::nullopt;
 };
 
 }  // namespace test

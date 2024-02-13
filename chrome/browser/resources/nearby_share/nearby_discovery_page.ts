@@ -17,14 +17,16 @@ import '/shared/nearby_page_template.js';
 import '/shared/nearby_preview.js';
 import './strings.m.js';
 
-import {NearbyDeviceElement} from '/shared/nearby_device.js';
-import {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, SelectShareTargetResult, ShareTarget, ShareTargetListenerCallbackRouter, StartDiscoveryResult, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
+import type {NearbyDeviceElement} from '/shared/nearby_device.js';
+import type {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, ShareTarget, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';
+import {SelectShareTargetResult, ShareTargetListenerCallbackRouter, StartDiscoveryResult} from '/shared/nearby_share.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {ArraySelector, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {ArraySelector} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDiscoveryManager, observeDiscoveryManager} from './discovery_manager.js';
 import {getTemplate} from './nearby_discovery_page.html.js';

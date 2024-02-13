@@ -6,8 +6,7 @@
 
 #include "base/check.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 SmbKerberosCredentialsUpdater::SmbKerberosCredentialsUpdater(
     KerberosCredentialsManager* credentials_manager,
@@ -53,5 +52,4 @@ void SmbKerberosCredentialsUpdater::UpdateActiveAccount(
   }
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

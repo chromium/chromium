@@ -1,5 +1,3 @@
 UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
-++++++UNKNOWN hidden
-++++++++STATIC_TEXT hidden label='Test to check noscript tag.'

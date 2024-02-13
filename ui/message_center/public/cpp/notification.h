@@ -103,7 +103,7 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   // The placeholder string that should be displayed in the input field for
   // text input type buttons until the user has entered a response themselves.
   // If the value is null, there is no input field associated with the button.
-  absl::optional<std::u16string> placeholder;
+  std::optional<std::u16string> placeholder;
 
   // Describes the button intended usage. This is used by the underlying
   // platform to take behavioral and stylistic decisions.
@@ -143,7 +143,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // The path to the file that backs `image`. Set if `image` is file backed.
-  absl::optional<base::FilePath> image_path;
+  std::optional<base::FilePath> image_path;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Small badge to display on the notification to illustrate the source of the
@@ -234,13 +234,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Usually, it should not be set directly.
   // For system notification, ash::CreateSystemNotification with
   // SystemNotificationWarningLevel should be used.
-  absl::optional<SkColor> accent_color;
+  std::optional<SkColor> accent_color;
 
   // Similar to `accent_color`, but store a ColorId instead of SkColor so that
   // the notification view can use this id to correctly handle theme change. In
   // CrOS notification, if `accent_color_id` is provided, `accent_color` will
   // not be used.
-  absl::optional<ui::ColorId> accent_color_id;
+  std::optional<ui::ColorId> accent_color_id;
 
   // Controls whether a settings button should appear on the notification. See
   // enum definition. TODO(estade): turn this into a boolean. See
@@ -515,14 +515,14 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
     return optional_fields_.accessible_name;
   }
 
-  absl::optional<SkColor> accent_color() const {
+  std::optional<SkColor> accent_color() const {
     return optional_fields_.accent_color;
   }
   void set_accent_color(SkColor accent_color) {
     optional_fields_.accent_color = accent_color;
   }
 
-  absl::optional<ui::ColorId> accent_color_id() const {
+  std::optional<ui::ColorId> accent_color_id() const {
     return optional_fields_.accent_color_id;
   }
   void set_accent_color_id(ui::ColorId accent_color_id) {

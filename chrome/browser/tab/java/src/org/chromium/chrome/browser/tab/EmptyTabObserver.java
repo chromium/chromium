@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
@@ -158,4 +161,7 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onRootIdChanged(Tab tab, int newRootId) {}
+
+    @Override
+    public void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {}
 }

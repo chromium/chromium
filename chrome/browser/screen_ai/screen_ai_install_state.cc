@@ -24,19 +24,12 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/cpu.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include "base/files/file_util.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN)
-#include "base/native_library.h"
 #endif
 
 namespace {
 const int kScreenAICleanUpDelayInDays = 30;
-const char kMinExpectedVersion[] = "121.1";
+const char kMinExpectedVersion[] = "123.1";
 
 bool IsDeviceCompatible() {
   // Check if the CPU has the required instruction set to run the Screen AI
@@ -56,8 +49,8 @@ enum class LibraryVerificationResult {
   kVersionInvalid = 1,
   kVersionLow = 2,
   kPathUnexpected = 3,
-  kLoadFailed = 4,
-  kMaxValue = kLoadFailed,
+  kDeprecatedLoadFailed = 4,
+  kMaxValue = kDeprecatedLoadFailed,
 };
 
 void RecordLibraryVerificationResult(LibraryVerificationResult result) {
@@ -110,6 +103,8 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
     const base::FilePath& install_dir) {
   // Check the file iterator heuristic to find the library in the sandbox
   // returns the same directory as `install_dir`.
+  // TODO(b/41489907): Convert path unexpected case to DumpWithoutCrash to
+  // investigate paths and update the UMA description.
   base::FilePath binary_path = screen_ai::GetLatestComponentBinaryPath();
   if (binary_path.DirName() != install_dir) {
     RecordLibraryVerificationResult(LibraryVerificationResult::kPathUnexpected);
@@ -117,28 +112,8 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
     return false;
   }
 
-#if !BUILDFLAG(IS_WIN)
   RecordLibraryVerificationResult(LibraryVerificationResult::kOk);
   return true;
-#else
-  // Sometimes the library cannot be loaded due to an installation error or OS
-  // limitations.
-  base::NativeLibraryLoadError lib_error;
-  base::NativeLibrary library =
-      base::LoadNativeLibrary(binary_path, &lib_error);
-  bool available = (library != nullptr);
-  base::UmaHistogramSparse("Accessibility.ScreenAI.LibraryAccessResultOnVerify",
-                           lib_error.code);
-  if (available) {
-    base::UnloadNativeLibrary(library);
-    RecordLibraryVerificationResult(LibraryVerificationResult::kOk);
-  } else {
-    RecordLibraryVerificationResult(LibraryVerificationResult::kLoadFailed);
-    VLOG(0) << "Library could not be loaded.";
-  }
-
-  return available;
-#endif
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {
@@ -269,18 +244,6 @@ bool ScreenAIInstallState::MayTryDownload() {
 void ScreenAIInstallState::ResetForTesting() {
   state_ = State::kNotDownloaded;
   component_binary_path_.clear();
-}
-
-void ScreenAIInstallState::SetComponentFolderForTesting() {
-  CHECK_IS_TEST();
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-  // Set the path to the ScreenAI test files. For more details, see the
-  // `screen_ai_test_files` rule in the accessibility_common BUILD file.
-  base::FilePath screenai_library_path =
-      screen_ai::GetLatestComponentBinaryPath();
-  CHECK(base::PathExists(screenai_library_path));
-  SetComponentFolder(screenai_library_path.DirName());
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 }
 
 void ScreenAIInstallState::SetStateForTesting(State state) {

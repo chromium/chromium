@@ -24,6 +24,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/normalized_geometry.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -807,10 +808,10 @@ void AnimatingLayoutManager::CalculateFadeInfos() {
   fade_infos_.clear();
 
   struct ChildInfo {
-    absl::optional<size_t> start;
+    std::optional<size_t> start;
     NormalizedRect start_bounds;
     bool start_visible = false;
-    absl::optional<size_t> target;
+    std::optional<size_t> target;
     NormalizedRect target_bounds;
     bool target_visible = false;
   };
@@ -945,7 +946,8 @@ void AnimatingLayoutManager::ResolveFades() {
     View* const child = fade_info.child_view;
     if (fade_info.fade_type == LayoutFadeType::kFadingOut &&
         host_view()->GetIndexOf(child).has_value() &&
-        !IsChildViewIgnoredByLayout(child) && !IsChildIncludedInLayout(child)) {
+        !child->GetProperty(kViewIgnoredByLayoutKey) &&
+        !IsChildIncludedInLayout(child)) {
       SetViewVisibility(child, false);
     }
   }

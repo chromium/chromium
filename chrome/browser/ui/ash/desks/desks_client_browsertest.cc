@@ -814,18 +814,19 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   ASSERT_TRUE(data);
 
   // Verify window info are correctly captured.
-  EXPECT_THAT(data->current_bounds, Optional(browser_bounds));
+  EXPECT_THAT(data->window_info.current_bounds, Optional(browser_bounds));
   // `visible_on_all_workspaces` should have been reset even though
   // the captured window is visible on all workspaces.
-  EXPECT_FALSE(data->desk_id.has_value());
+  EXPECT_FALSE(data->window_info.desk_id.has_value());
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
-  EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
-            chromeos::ToWindowShowState(data->window_state_type.value()));
+  EXPECT_EQ(
+      window->GetProperty(aura::client::kShowStateKey),
+      chromeos::ToWindowShowState(data->window_info.window_state_type.value()));
   // We don't capture the window's desk_id as a template will always
   // create in a new desk.
-  EXPECT_FALSE(data->desk_id.has_value());
+  EXPECT_FALSE(data->window_info.desk_id.has_value());
 
   // Find Setting app's app restore data.
   const app_restore::AppRestoreData* data2 = ash::QueryRestoreData(
@@ -837,15 +838,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
             data2->disposition.value());
   // Verify window info are correctly captured.
-  EXPECT_THAT(data2->current_bounds, Optional(settings_app_bounds));
-  EXPECT_FALSE(data2->desk_id.has_value());
+  EXPECT_THAT(data2->window_info.current_bounds, Optional(settings_app_bounds));
+  EXPECT_FALSE(data2->window_info.desk_id.has_value());
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
-  EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
-            chromeos::ToWindowShowState(data->window_state_type.value()));
-  EXPECT_EQ(window->GetProperty(aura::client::kShowStateKey),
-            chromeos::ToWindowShowState(data->window_state_type.value()));
-  EXPECT_FALSE(data2->desk_id.has_value());
+  EXPECT_EQ(
+      window->GetProperty(aura::client::kShowStateKey),
+      chromeos::ToWindowShowState(data->window_info.window_state_type.value()));
 }
 
 // Tests that launching the same desk template multiple times creates desks with
@@ -1122,10 +1121,11 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithFloatedWindow) {
       *desk_template, app_constants::kChromeAppId, browser_window_id);
   ASSERT_TRUE(data);
 
-  // Verify floated window bounds is correctly captured.
-  EXPECT_THAT(data->current_bounds, Optional(browser_bounds));
+  // Verify floated window bounds and state is correctly captured.
+  EXPECT_THAT(data->window_info.current_bounds, Optional(browser_bounds));
   // Verify window float state is correctly captured.
-  EXPECT_EQ(chromeos::WindowStateType::kFloated, data->window_state_type);
+  EXPECT_THAT(data->window_info.window_state_type,
+              Optional(chromeos::WindowStateType::kFloated));
 
   // Launch saved template and test floated window is restored correctly.
   SetAndLaunchTemplate(std::move(desk_template));
@@ -1350,7 +1350,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
   ASSERT_TRUE(data);
 
   // Verify window info are correctly captured.
-  EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
+  EXPECT_THAT(data->window_info.current_bounds, Optional(pwa_bounds));
   EXPECT_THAT(data->browser_extra_info.app_type_browser, Optional(true));
   EXPECT_THAT(data->browser_extra_info.app_name, Optional(*app_name));
 
@@ -1398,7 +1398,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
   ASSERT_TRUE(data);
 
   // Verify window info are correctly captured.
-  EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
+  EXPECT_THAT(data->window_info.current_bounds, Optional(pwa_bounds));
   EXPECT_THAT(data->browser_extra_info.app_type_browser, Optional(true));
   EXPECT_THAT(data->browser_extra_info.app_name, Optional(*app_name));
   const std::vector<GURL> urls = GetURLsForBrowserWindow(pwa_browser);
@@ -2129,7 +2129,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   ASSERT_TRUE(data);
 
   // Verify window info are correctly captured.
-  EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
+  EXPECT_THAT(data->window_info.current_bounds, Optional(pwa_bounds));
   EXPECT_THAT(data->browser_extra_info.app_type_browser, Optional(true));
   EXPECT_THAT(data->browser_extra_info.app_name, Optional(*app_name));
 
@@ -2227,21 +2227,22 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
       *desk_template, app_constants::kChromeAppId, browser_window_id);
   ASSERT_TRUE(data);
   // Verify window info are correctly captured.
-  EXPECT_THAT(data->current_bounds, Optional(browser_bounds));
+  EXPECT_THAT(data->window_info.current_bounds, Optional(browser_bounds));
   // `visible_on_all_workspaces` should have been reset even though
   // the captured window is visible on all workspaces.
-  EXPECT_FALSE(data->desk_id.has_value());
+  EXPECT_FALSE(data->window_info.desk_id.has_value());
   auto* screen = display::Screen::GetScreen();
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
   auto normalize_state = [](ui::WindowShowState state) {
     return state == ui::SHOW_STATE_DEFAULT ? ui::SHOW_STATE_NORMAL : state;
   };
-  EXPECT_EQ(normalize_state(window->GetProperty(aura::client::kShowStateKey)),
-            chromeos::ToWindowShowState(data->window_state_type.value()));
+  EXPECT_EQ(
+      normalize_state(window->GetProperty(aura::client::kShowStateKey)),
+      chromeos::ToWindowShowState(data->window_info.window_state_type.value()));
   // We don't capture the window's desk_id as a template will always
   // create in a new desk.
-  EXPECT_FALSE(data->desk_id.has_value());
+  EXPECT_FALSE(data->window_info.desk_id.has_value());
 
   // Find Setting app's app restore data.
   const app_restore::AppRestoreData* data2 = ash::QueryRestoreData(
@@ -2253,15 +2254,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
             data2->disposition.value());
   // Verify window info are correctly captured.
-  EXPECT_THAT(data2->current_bounds, Optional(settings_app_bounds));
-  EXPECT_FALSE(data2->desk_id.has_value());
+  EXPECT_THAT(data2->window_info.current_bounds, Optional(settings_app_bounds));
+  EXPECT_FALSE(data2->window_info.desk_id.has_value());
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
-  EXPECT_EQ(normalize_state(window->GetProperty(aura::client::kShowStateKey)),
-            chromeos::ToWindowShowState(data->window_state_type.value()));
-  EXPECT_EQ(normalize_state(window->GetProperty(aura::client::kShowStateKey)),
-            chromeos::ToWindowShowState(data->window_state_type.value()));
-  EXPECT_FALSE(data2->desk_id.has_value());
+  EXPECT_EQ(
+      normalize_state(window->GetProperty(aura::client::kShowStateKey)),
+      chromeos::ToWindowShowState(data->window_info.window_state_type.value()));
 }
 
 // Tests that launching a template that contains a chrome app works as expected.
@@ -3824,13 +3823,13 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
       ash::QueryRestoreData(*updated_template, {}, /*window_id=*/1);
   ASSERT_TRUE(data1);
   EXPECT_TRUE(data1->display_id.has_value());
-  EXPECT_TRUE(data1->current_bounds.has_value());
+  EXPECT_TRUE(data1->window_info.current_bounds.has_value());
 
   const app_restore::AppRestoreData* data2 =
       ash::QueryRestoreData(*updated_template, {}, /*window_id=*/2);
   ASSERT_TRUE(data2);
   EXPECT_TRUE(data2->display_id.has_value());
-  EXPECT_TRUE(data2->current_bounds.has_value());
+  EXPECT_TRUE(data2->window_info.current_bounds.has_value());
 
   // Clear the stored template. It will be populated again when the tracked
   // windows are updated.
@@ -3854,15 +3853,15 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
   // Verify that both windows have had their bounds updated in the template.
   data1 = ash::QueryRestoreData(*updated_template, {}, /*window_id=*/1);
   ASSERT_TRUE(data1);
-  EXPECT_THAT(data1->current_bounds, Optional(window1_set_bounds));
+  EXPECT_THAT(data1->window_info.current_bounds, Optional(window1_set_bounds));
 
   data2 = ash::QueryRestoreData(*updated_template, {}, /*window_id=*/2);
   ASSERT_TRUE(data2);
-  EXPECT_THAT(data2->current_bounds, Optional(window2_set_bounds));
+  EXPECT_THAT(data2->window_info.current_bounds, Optional(window2_set_bounds));
 
   // Verify that Z ordering was preserved
-  EXPECT_EQ(data1->activation_index, 0);
-  EXPECT_EQ(data2->activation_index, -1);
+  EXPECT_EQ(data1->window_info.activation_index, 0);
+  EXPECT_EQ(data2->window_info.activation_index, -1);
 }
 
 IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateHistograms) {

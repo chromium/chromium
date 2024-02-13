@@ -69,7 +69,7 @@ std::optional<int64_t> RTCRtpSource::SenderCaptureTimeOffset() const {
            ->estimated_capture_clock_offset.has_value()) {
     return std::nullopt;
   }
-  return webrtc::UQ32x32ToInt64Ms(
+  return webrtc::Q32x32ToInt64Ms(
       source_.absolute_capture_time()->estimated_capture_clock_offset.value());
 }
 

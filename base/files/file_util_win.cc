@@ -816,11 +816,11 @@ bool NormalizeFilePath(const FilePath& path, FilePath* real_path) {
   // The expansion of |path| into a full path may make it longer.
   constexpr int kMaxPathLength = MAX_PATH + 10;
   wchar_t native_file_path[kMaxPathLength];
-  // kMaxPathLength includes space for trailing '\0' so we subtract 1.
-  // Returned length, used_wchars, does not include trailing '\0'.
-  // Failure is indicated by returning 0 or >= kMaxPathLength.
+  // On success, `used_wchars` returns the number of written characters, not
+  // include the trailing '\0'. Thus, failure is indicated by returning 0 or >=
+  // kMaxPathLength.
   DWORD used_wchars = ::GetFinalPathNameByHandle(
-      file.GetPlatformFile(), native_file_path, kMaxPathLength - 1,
+      file.GetPlatformFile(), native_file_path, kMaxPathLength,
       FILE_NAME_NORMALIZED | VOLUME_NAME_NT);
 
   if (used_wchars >= kMaxPathLength || used_wchars == 0)

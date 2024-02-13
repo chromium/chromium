@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 
 #include <sys/mman.h>
+#include <optional>
+#include <string>
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
@@ -23,6 +25,9 @@
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
+#include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
+#include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -30,6 +35,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
@@ -108,6 +114,7 @@
 #include "chromeos/crosapi/mojom/login.mojom.h"
 #include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
 #include "chromeos/crosapi/mojom/login_state.mojom.h"
+#include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "chromeos/crosapi/mojom/media_ui.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics.mojom.h"
@@ -163,12 +170,18 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/component_cloud_policy_service.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/ukm_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
+#include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "device/bluetooth/floss/floss_features.h"
@@ -212,10 +225,58 @@ constexpr char kAshShelfNewWindowFix[] = "crbug/1490336";
 // M123.
 constexpr char kAshFeedbackFlowAi[] = "crbug/1501057";
 
+policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManager(
+    const user_manager::User& user) {
+  DCHECK(user.HasGaiaAccount());
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&user));
+  DCHECK(profile);
+  return profile->GetUserCloudPolicyManagerAsh();
+}
+
+policy::DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker(
+    const user_manager::User& user) {
+  DCHECK(user.IsDeviceLocalAccount());
+  policy::DeviceLocalAccountPolicyService* policy_service =
+      g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->GetDeviceLocalAccountPolicyService();
+  // `policy_service` can be nullptr, e.g. in unit tests.
+  return policy_service ? policy_service->GetBrokerForUser(
+                              user.GetAccountId().GetUserEmail())
+                        : nullptr;
+}
+
+std::optional<std::string> GetDeviceAccountPolicyForUser(
+    const user_manager::User& user) {
+  policy::CloudPolicyCore* core = GetCloudPolicyCoreForUser(user);
+  if (!core) {
+    return std::nullopt;
+  }
+  const policy::CloudPolicyStore* store = core->store();
+  if (!store || !store->policy_fetch_response()) {
+    return std::nullopt;
+  }
+  return store->policy_fetch_response()->SerializeAsString();
+}
+
+std::optional<policy::ComponentPolicyMap>
+GetDeviceAccountComponentPolicyForUser(const user_manager::User& user) {
+  policy::ComponentCloudPolicyService* component_policy_service =
+      GetComponentCloudPolicyServiceForUser(user);
+  if (!component_policy_service) {
+    return std::nullopt;
+  }
+  if (component_policy_service->component_policy_map().empty()) {
+    return std::nullopt;
+  }
+  return policy::CopyComponentPolicyMap(
+      component_policy_service->component_policy_map());
+}
+
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
-std::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
-    EnvironmentProvider* environment_provider) {
+std::optional<std::vector<uint8_t>> GetDeviceAccountPolicy() {
   if (!user_manager::UserManager::IsInitialized()) {
     LOG(ERROR) << "User not initialized.";
     return std::nullopt;
@@ -225,21 +286,24 @@ std::optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
     LOG(ERROR) << "No primary user.";
     return std::nullopt;
   }
-  std::string policy_data = environment_provider->GetDeviceAccountPolicy();
+  std::string policy_data =
+      GetDeviceAccountPolicyForUser(*primary_user).value_or(std::string());
   return std::vector<uint8_t>(policy_data.begin(), policy_data.end());
 }
 
 // Returns the map containing component policy for each namespace. The values
 // represent the JSON policy for the namespace.
-std::optional<policy::ComponentPolicyMap> GetDeviceAccountComponentPolicy(
-    EnvironmentProvider* environment_provider) {
-  const policy::ComponentPolicyMap& map =
-      environment_provider->GetDeviceAccountComponentPolicy();
-  if (map.empty()) {
+std::optional<policy::ComponentPolicyMap> GetDeviceAccountComponentPolicy() {
+  if (!user_manager::UserManager::IsInitialized()) {
+    LOG(ERROR) << "User not initialized.";
     return std::nullopt;
   }
-
-  return policy::CopyComponentPolicyMap(map);
+  const auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user) {
+    LOG(ERROR) << "No primary user.";
+    return std::nullopt;
+  }
+  return GetDeviceAccountComponentPolicyForUser(*primary_user);
 }
 
 bool GetIsCurrentUserOwner() {
@@ -314,7 +378,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 131,
+static_assert(crosapi::mojom::Crosapi::Version_ == 132,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -394,6 +458,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::LoginState>(),
     MakeInterfaceVersionEntry<
         chromeos::machine_learning::mojom::MachineLearningService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::MahiBrowserDelegate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MediaUI>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MessageCenter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Metrics>(),
@@ -560,6 +625,15 @@ void InjectBrowserInitParams(
 
   params->device_properties = GetDeviceProperties();
   params->device_settings = GetDeviceSettings();
+
+  // Syncing the randomization seed ensures that the group membership of the
+  // limited entropy synthetic trial will be the same between Ash Chrome and
+  // Lacros.
+  // TODO(crbug.com/1508150): Remove after completing the trial.
+  params->limited_entropy_synthetic_trial_seed =
+      variations::LimitedEntropySyntheticTrial::GetRandomizationSeed(
+          local_state);
+
   // |metrics_service| could be nullptr in tests.
   if (auto* metrics_service = g_browser_process->metrics_service()) {
     // Send metrics service client id to Lacros if it's present.
@@ -738,7 +812,7 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
   params->cros_user_id_hash =
       ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
           ProfileManager::GetPrimaryUserProfile());
-  params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
+  params->device_account_policy = GetDeviceAccountPolicy();
   params->last_policy_fetch_attempt_timestamp =
       environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
 
@@ -747,8 +821,7 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
   params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
   params->publish_hosted_apps = crosapi::IsStandaloneBrowserHostedAppsEnabled();
 
-  params->device_account_component_policy =
-      GetDeviceAccountComponentPolicy(environment_provider);
+  params->device_account_component_policy = GetDeviceAccountComponentPolicy();
 
   params->is_current_user_device_owner = GetIsCurrentUserOwner();
   params->is_current_user_ephemeral = IsCurrentUserEphemeral();
@@ -944,6 +1017,50 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
   }
 
   return result;
+}
+
+policy::CloudPolicyCore* GetCloudPolicyCoreForUser(
+    const user_manager::User& user) {
+  switch (user.GetType()) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild: {
+      policy::UserCloudPolicyManagerAsh* manager =
+          GetUserCloudPolicyManager(user);
+      return manager ? manager->core() : nullptr;
+    }
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kWebKioskApp: {
+      policy::DeviceLocalAccountPolicyBroker* broker =
+          GetDeviceLocalAccountPolicyBroker(user);
+      return broker ? broker->core() : nullptr;
+    }
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kArcKioskApp:
+      return nullptr;
+  }
+}
+
+policy::ComponentCloudPolicyService* GetComponentCloudPolicyServiceForUser(
+    const user_manager::User& user) {
+  switch (user.GetType()) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild: {
+      policy::UserCloudPolicyManagerAsh* manager =
+          GetUserCloudPolicyManager(user);
+      return manager ? manager->component_policy_service() : nullptr;
+    }
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kWebKioskApp: {
+      policy::DeviceLocalAccountPolicyBroker* broker =
+          GetDeviceLocalAccountPolicyBroker(user);
+      return broker ? broker->component_policy_service() : nullptr;
+    }
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kArcKioskApp:
+      return nullptr;
+  }
 }
 
 }  // namespace browser_util

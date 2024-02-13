@@ -72,9 +72,9 @@ class TasksComboboxModel;
 
 class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
                                    public views::ViewObserver {
- public:
-  METADATA_HEADER(TasksBubbleView);
+  METADATA_HEADER(TasksBubbleView, GlanceablesTasksViewBase)
 
+ public:
   explicit TasksBubbleView(const ui::ListModel<api::TaskList>* task_lists);
   TasksBubbleView(const TasksBubbleView&) = delete;
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;

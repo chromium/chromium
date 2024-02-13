@@ -102,7 +102,9 @@ class V8Unwinder : public base::Unwinder {
 
   // Records the currently active V8 modules, ordered by their extents in
   // memory.
-  std::set<const base::ModuleCache::Module*, ModuleCompare> modules_;
+  std::set<raw_ptr<const base::ModuleCache::Module, SetExperimental>,
+           ModuleCompare>
+      modules_;
 };
 
 #endif  // CHROME_RENDERER_V8_UNWINDER_H_

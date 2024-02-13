@@ -177,6 +177,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Allow All Sites"/>
   <int value="1" label="Try To Block Mature Sites"/>
   <int value="2" label="Only allow Certain Sites"/>
+  <int value="3" label="Mixed web filters on device"/>
 </enum>
 
 <enum name="FamilyUserLogSegment">

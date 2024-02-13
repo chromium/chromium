@@ -28,12 +28,12 @@ namespace ash {
 // A view that mirrors the client area of a single (source) window.
 class ASH_EXPORT WindowMirrorView : public views::View,
                                     public aura::WindowObserver {
- public:
-  METADATA_HEADER(WindowMirrorView);
+  METADATA_HEADER(WindowMirrorView, views::View)
 
+ public:
   explicit WindowMirrorView(aura::Window* source,
                             bool show_non_client_view = false,
-                            bool sync_bounds = false);
+                            bool sync_bounds = true);
 
   WindowMirrorView(const WindowMirrorView&) = delete;
   WindowMirrorView& operator=(const WindowMirrorView&) = delete;

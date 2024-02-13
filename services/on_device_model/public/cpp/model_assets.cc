@@ -11,19 +11,29 @@
 #include "build/build_config.h"
 
 namespace on_device_model {
+namespace {
+
+// NOTE: Weights ultimately need to be mapped copy-on-write, but Fuchsia
+// (due to an apparent bug?) doesn't seem to support copy-on-write mapping of
+// file objects which are not writable. So we open as writable on Fuchsia even
+// though nothing should write through to the file.
+#if BUILDFLAG(IS_FUCHSIA)
+constexpr uint32_t kWeightsFlags =
+    base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE;
+#else
+constexpr uint32_t kWeightsFlags =
+    base::File::FLAG_OPEN | base::File::FLAG_READ;
+#endif
+
+}  // namespace
 
 ModelAssetPaths::ModelAssetPaths() = default;
-
 ModelAssetPaths::ModelAssetPaths(const ModelAssetPaths&) = default;
-
 ModelAssetPaths::~ModelAssetPaths() = default;
 
 ModelAssets::ModelAssets() = default;
-
 ModelAssets::ModelAssets(ModelAssets&&) = default;
-
 ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
-
 ModelAssets::~ModelAssets() = default;
 
 ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
@@ -45,18 +55,24 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
         base::File(paths.language_detection_model,
                    base::File::FLAG_OPEN | base::File::FLAG_READ);
   }
+  assets.weights = base::File(paths.weights, kWeightsFlags);
+  return assets;
+}
 
-  // NOTE: Weights ultimately need to be mapped copy-on-write, but Fuchsia
-  // (due to an apparent bug?) doesn't seem to support copy-on-write mapping of
-  // file objects which are not writable. So we open as writable on Fuchsia even
-  // though nothing should write through to the file.
-#if BUILDFLAG(IS_FUCHSIA)
-  constexpr uint32_t kWeightsFlags =
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE;
-#else
-  constexpr uint32_t kWeightsFlags =
-      base::File::FLAG_OPEN | base::File::FLAG_READ;
-#endif
+AdaptationAssetPaths::AdaptationAssetPaths() = default;
+AdaptationAssetPaths::AdaptationAssetPaths(const AdaptationAssetPaths&) =
+    default;
+AdaptationAssetPaths::~AdaptationAssetPaths() = default;
+
+AdaptationAssets::AdaptationAssets() = default;
+AdaptationAssets::AdaptationAssets(AdaptationAssets&&) = default;
+AdaptationAssets& AdaptationAssets::operator=(AdaptationAssets&&) = default;
+AdaptationAssets::~AdaptationAssets() = default;
+
+AdaptationAssets LoadAdaptationAssets(const AdaptationAssetPaths& paths) {
+  AdaptationAssets assets;
+  assets.model =
+      base::File(paths.model, base::File::FLAG_OPEN | base::File::FLAG_READ);
   assets.weights = base::File(paths.weights, kWeightsFlags);
   return assets;
 }

@@ -8,9 +8,9 @@
 #include <ApplicationServices/ApplicationServices.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/strings/string_piece.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/printing_context.h"
@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextMac : public PrintingContext {
 
   // Sets key-value pair in PMPrintSettings.
   // Returns true is the pair is set.
-  bool SetKeyValue(base::StringPiece key, base::StringPiece value);
+  bool SetKeyValue(std::string_view key, std::string_view value);
 
   // Starts a new page.
   mojom::ResultCode NewPage();

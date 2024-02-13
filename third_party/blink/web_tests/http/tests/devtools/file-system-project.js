@@ -147,7 +147,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     },
 
     function testExcludesSettings(next) {
-      Common.Settings.Settings.instance().createLocalSetting('workspaceExcludedFolders', {}).set({'file:///var/www2': ['/html/']});
+      Common.Settings.Settings.instance().createLocalSetting('workspace-excluded-folders', {}).set({'file:///var/www2': ['/html/']});
       createFileSystem('/var/www2', dumpExcludes);
 
       function dumpExcludes(fs) {

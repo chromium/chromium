@@ -25,6 +25,7 @@
 #include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -45,9 +46,8 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
                  controller->GetUiModel().cancel_action_text);
   SetCancelCallback(base::BindOnce(
       &VirtualCardEnrollBubbleViews::OnDialogDeclined, base::Unretained(this)));
-  SetAcceptCallback(base::BindOnce(
+  SetAcceptCallbackWithClose(base::BindRepeating(
       &VirtualCardEnrollBubbleViews::OnDialogAccepted, base::Unretained(this)));
-
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -68,9 +68,17 @@ void VirtualCardEnrollBubbleViews::Hide() {
   controller_ = nullptr;
 }
 
-void VirtualCardEnrollBubbleViews::OnDialogAccepted() {
-  if (controller_)
-    controller_->OnAcceptButton();
+bool VirtualCardEnrollBubbleViews::OnDialogAccepted() {
+  bool did_switch_to_loading_state = false;
+  if (controller_) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+      SwitchToLoadingState();
+      did_switch_to_loading_state = true;
+    }
+    controller_->OnAcceptButton(did_switch_to_loading_state);
+  }
+  return !did_switch_to_loading_state;
 }
 
 void VirtualCardEnrollBubbleViews::OnDialogDeclined() {
@@ -199,6 +207,11 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   AddChildView(CreateLegalMessageView())
       ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
+    loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
+  }
 }
 
 std::unique_ptr<views::View>
@@ -231,6 +244,39 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
             base::Unretained(this))));
   }
   return legal_message_view;
+}
+
+std::unique_ptr<views::View>
+VirtualCardEnrollBubbleViews::CreateLoadingProgressRow() {
+  auto progress_loading_row = std::make_unique<views::BoxLayoutView>();
+
+  // Set `progress_loading_row` initially hidden because it should only be
+  // visible after the user accepts virtual card enrollment.
+  progress_loading_row->SetVisible(false);
+
+  progress_loading_row->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  progress_loading_row->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  loading_throbber_ =
+      progress_loading_row->AddChildView(std::make_unique<views::Throbber>());
+  loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);
+
+  return progress_loading_row;
+}
+
+views::View* VirtualCardEnrollBubbleViews::GetLoadingProgressRowForTesting() {
+  return loading_progress_row_.get();
+}
+
+void VirtualCardEnrollBubbleViews::SwitchToLoadingState() {
+  if (loading_progress_row_ == nullptr) {
+    return;
+  }
+  loading_throbber_->Start();
+  loading_progress_row_->SetVisible(true);
+  SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogModelChanged();
 }
 
 void VirtualCardEnrollBubbleViews::LearnMoreLinkClicked() {

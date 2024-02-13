@@ -1130,18 +1130,21 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
     FieldType trigger_field_type,
     std::optional<FieldTypeSet> last_targeted_fields,
     AutofillSuggestionTriggerSource trigger_source) {
-  // If the user manually triggered suggestions from the context menu, all
-  // available profiles should be shown. Selecting a suggestion overwrites the
-  // triggering field's value.
-  const std::u16string field_value_for_filtering =
-      trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress
-          ? trigger_field.value
-          : u"";
-
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      profiles_to_suggest =
-          GetProfilesToSuggest(trigger_field_type, field_value_for_filtering,
-                               trigger_field.is_autofilled, field_types);
+      profiles_to_suggest;
+  if (IsAddressAutofillManuallyTriggered(trigger_source)) {
+    // If the user manually triggered suggestions from the context menu, all
+    // available profiles should be shown. Selecting a suggestion overwrites the
+    // triggering field's value.
+    for (const AutofillProfile* profile :
+         personal_data_->GetProfilesToSuggest()) {
+      profiles_to_suggest.push_back(profile);
+    }
+  } else {
+    profiles_to_suggest =
+        GetProfilesToSuggest(trigger_field_type, trigger_field.value,
+                             trigger_field.is_autofilled, field_types);
+  }
 
   // Find the profiles that were hidden prior to the effects of the feature
   // kAutofillUseAddressRewriterInProfileSubsetComparison.
@@ -1159,13 +1162,15 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   // main text, to be filled in the triggering field, differs regardless of
   // the other fields.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      previously_suggested_profiles =
-          street_address_field_types.contains(trigger_field_type)
-              ? profiles_to_suggest
-              : GetProfilesToSuggest(trigger_field_type,
-                                     field_value_for_filtering,
-                                     trigger_field.is_autofilled,
-                                     field_types_without_address_types);
+      previously_suggested_profiles;
+  if (IsAddressAutofillManuallyTriggered(trigger_source) ||
+      street_address_field_types.contains(trigger_field_type)) {
+    previously_suggested_profiles = profiles_to_suggest;
+  } else {
+    previously_suggested_profiles = GetProfilesToSuggest(
+        trigger_field_type, trigger_field.value, trigger_field.is_autofilled,
+        field_types_without_address_types);
+  }
   for (const AutofillProfile* profile : previously_suggested_profiles) {
     previously_hidden_profiles_guid.erase(profile->guid());
   }

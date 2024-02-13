@@ -9,6 +9,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -25,7 +26,6 @@
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/pin.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -182,7 +182,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // make_credential_attachment contains the attachment preference for
     // makeCredential requests. See also `request_is_internal_only`, which isn't
     // specific to makeCredential requests.
-    absl::optional<AuthenticatorAttachment> make_credential_attachment;
+    std::optional<AuthenticatorAttachment> make_credential_attachment;
 
     // conditional_ui_treatment_ controls how conditional UI will be handled for
     // this request.

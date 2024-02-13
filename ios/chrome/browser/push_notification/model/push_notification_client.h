@@ -77,6 +77,10 @@ class PushNotificationClient {
 
   ChromeBrowserState* GetLastUsedBrowserState();
 
+  // Returns the first active browser found with scene level
+  // SceneActivationLevelForegroundActive.
+  Browser* GetSceneLevelForegroundActiveBrowser();
+
  private:
   friend class ::CommercePushNotificationClientTest;
   std::vector<GURL> urls_delayed_for_loading_;
@@ -84,10 +88,6 @@ class PushNotificationClient {
   // Allows tests to override the last used ChromeBrowserState returned in
   // GetLastUsedBrowserState().
   raw_ptr<ChromeBrowserState> last_used_browser_state_for_testing_ = nullptr;
-
-  // Returns the first active browser found with scene level
-  // SceneActivationLevelForegroundActive.
-  Browser* GetSceneLevelForegroundActiveBrowser();
 
   // Loads a url in a new tab for a given browser.
   void loadUrlInNewTab(const GURL& url, Browser* browser);

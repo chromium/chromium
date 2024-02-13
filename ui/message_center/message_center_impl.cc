@@ -243,7 +243,7 @@ Notification* MessageCenterImpl::FindParentNotification(
       if (notifications.size() < 4) {
         return nullptr;
       }
-      for (auto* n : notifications) {
+      for (Notification* n : notifications) {
         if (n->group_parent() || n->group_child()) {
           continue;
         }
@@ -521,7 +521,7 @@ void MessageCenterImpl::ClickOnNotification(const std::string& id) {
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, absl::nullopt, absl::nullopt),
+                     base::Unretained(this), id, std::nullopt, std::nullopt),
       base::OnceClosure());
 }
 
@@ -534,7 +534,7 @@ void MessageCenterImpl::ClickOnNotificationButton(const std::string& id,
 
   lock_screen_controller_->DismissLockScreenThenExecute(
       base::BindOnce(&MessageCenterImpl::ClickOnNotificationUnlocked,
-                     base::Unretained(this), id, button_index, absl::nullopt),
+                     base::Unretained(this), id, button_index, std::nullopt),
       base::OnceClosure());
 }
 
@@ -555,8 +555,8 @@ void MessageCenterImpl::ClickOnNotificationButtonWithReply(
 
 void MessageCenterImpl::ClickOnNotificationUnlocked(
     const std::string& id,
-    const absl::optional<int>& button_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& button_index,
+    const std::optional<std::u16string>& reply) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This method must be called under unlocked screen.

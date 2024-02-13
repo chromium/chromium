@@ -13,6 +13,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
@@ -27,7 +28,7 @@ ChromeExtensionFrameHost::ChromeExtensionFrameHost(
 ChromeExtensionFrameHost::~ChromeExtensionFrameHost() = default;
 
 void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     RequestScriptInjectionPermissionCallback callback) {
@@ -78,7 +79,7 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
 
   content::RenderFrameHost* render_frame_host =
       receivers_.GetCurrentTargetFrame();
-  std::string extension_id = util::GetExtensionIdFromFrame(render_frame_host);
+  ExtensionId extension_id = util::GetExtensionIdFromFrame(render_frame_host);
   if (extension_id.empty())
     extension_id = GURL(source).host();
 
@@ -93,7 +94,7 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
 }
 
 void ChromeExtensionFrameHost::ContentScriptsExecuting(
-    const base::flat_map<std::string, std::vector<std::string>>&
+    const base::flat_map<ExtensionId, std::vector<std::string>>&
         extension_id_to_scripts,
     const GURL& frame_url) {
   ActivityLog::GetInstance(web_contents_->GetBrowserContext())

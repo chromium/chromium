@@ -42,9 +42,7 @@ TEST_F(UpgradeCenterBrowserAgentTest, AddsInfoBarManagerOnWebStateInsert) {
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   NSString* stable_identifier = fake_web_state->GetStableIdentifier();
 
-  browser_->GetWebStateList()->InsertWebState(
-      WebStateList::kInvalidIndex, std::move(fake_web_state),
-      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(fake_web_state));
 
   ASSERT_NE(nullptr, fake_upgrade_center_.infoBarManagers[stable_identifier]);
   ASSERT_EQ(fake_upgrade_center_.infoBarManagers.count, 1U);
@@ -54,9 +52,7 @@ TEST_F(UpgradeCenterBrowserAgentTest, RemovesInfoBarManagerOnWebStateDetach) {
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   NSString* stable_identifier = fake_web_state->GetStableIdentifier();
 
-  browser_->GetWebStateList()->InsertWebState(
-      WebStateList::kInvalidIndex, std::move(fake_web_state),
-      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(std::move(fake_web_state));
 
   ASSERT_NE(nullptr, fake_upgrade_center_.infoBarManagers[stable_identifier]);
   ASSERT_EQ(fake_upgrade_center_.infoBarManagers.count, 1U);

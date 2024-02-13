@@ -11,7 +11,7 @@ GEN('#include "chromeos/ash/components/standalone_browser/standalone_browser_fea
 GEN('#include "content/public/test/browser_test.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
-var OSSettingsBrowserTest = class extends PolymerTest {
+const OSSettingsBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings';
@@ -34,8 +34,8 @@ var OSSettingsBrowserTest = class extends PolymerTest {
   {
     enabled: [
       'ash::standalone_browser::features::kLacrosOnly',
-      'ash::standalone_browser::features::kLacrosProfileMigrationForceOff'
-    ]
+      'ash::standalone_browser::features::kLacrosProfileMigrationForceOff',
+    ],
   },
 ],
 ].forEach(test => registerTest(...test));

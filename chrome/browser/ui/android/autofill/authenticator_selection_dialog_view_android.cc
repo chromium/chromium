@@ -12,8 +12,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AuthenticatorSelectionDialogBridge_jni.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller.h"
+#include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "components/grit/components_scaled_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
@@ -34,26 +35,6 @@ AuthenticatorSelectionDialogViewAndroid::
 
 AuthenticatorSelectionDialogViewAndroid::
     ~AuthenticatorSelectionDialogViewAndroid() = default;
-
-// static
-CardUnmaskAuthenticationSelectionDialog*
-CardUnmaskAuthenticationSelectionDialog::CreateAndShow(
-    CardUnmaskAuthenticationSelectionDialogController* controller,
-    content::WebContents* web_contents) {
-  ui::ViewAndroid* view_android = web_contents->GetNativeView();
-  DCHECK(view_android);
-  ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
-  if (!window_android) {
-    return nullptr;
-  }
-  AuthenticatorSelectionDialogViewAndroid* dialog_view =
-      new AuthenticatorSelectionDialogViewAndroid(controller);
-  if (!dialog_view->ShowDialog(window_android)) {
-    delete dialog_view;
-    return nullptr;
-  }
-  return dialog_view;
-}
 
 void AuthenticatorSelectionDialogViewAndroid::Dismiss(bool user_closed_dialog,
                                                       bool server_success) {
@@ -141,6 +122,24 @@ void AuthenticatorSelectionDialogViewAndroid::
       ConvertUTF8ToJavaString(env, option.id.value()),
       ConvertUTF16ToJavaString(env, option.challenge_info),
       static_cast<int>(option.type));
+}
+
+CardUnmaskAuthenticationSelectionDialog*
+CreateAndShowCardUnmaskAuthenticationSelectionDialog(
+    content::WebContents* web_contents,
+    CardUnmaskAuthenticationSelectionDialogController* controller) {
+  ui::ViewAndroid* view_android = web_contents->GetNativeView();
+  ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
+  if (!window_android) {
+    return nullptr;
+  }
+  AuthenticatorSelectionDialogViewAndroid* dialog_view =
+      new AuthenticatorSelectionDialogViewAndroid(controller);
+  if (!dialog_view->ShowDialog(window_android)) {
+    delete dialog_view;
+    return nullptr;
+  }
+  return dialog_view;
 }
 
 }  // namespace autofill

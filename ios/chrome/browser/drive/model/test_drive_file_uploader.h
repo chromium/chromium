@@ -27,6 +27,8 @@ class TestDriveFileUploader final : public DriveFileUploader {
       std::vector<DriveFileUploadProgress> progress_elements);
   // Sets file upload progress result to be reported by `UploadFile()`.
   void SetFileUploadResult(const DriveFileUploadResult& result);
+  // Sets storage quota result to be reported by `FetchStorageQuota()`.
+  void SetStorageQuotaResult(const DriveStorageQuotaResult& result);
   // Sets `quit_closure_`.
   void SetQuitClosure(base::RepeatingClosure quit_closure);
 
@@ -59,6 +61,8 @@ class TestDriveFileUploader final : public DriveFileUploader {
                   NSString* folder_identifier,
                   DriveFileUploadProgressCallback progress_callback,
                   DriveFileUploadCompletionCallback completion_callback) final;
+  void FetchStorageQuota(
+      DriveStorageQuotaCompletionCallback completion_callback) final;
 
  private:
   // Calls `completion_callback` with `folder_search_result` and calls
@@ -81,6 +85,11 @@ class TestDriveFileUploader final : public DriveFileUploader {
   void ReportFileUploadResult(
       DriveFileUploadCompletionCallback completion_callback,
       DriveFileUploadResult file_upload_result);
+  // Calls `completion_callback` with `storage_quota_result` and calls
+  // `quit_closure_`.
+  void ReportStorageQuotaResult(
+      DriveStorageQuotaCompletionCallback completion_callback,
+      DriveStorageQuotaResult storage_quota_result);
 
   // Runs `quit_closure_`.
   void RunQuitClosure();
@@ -92,6 +101,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   DriveFolderResult GetFolderCreationResult() const;
   std::vector<DriveFileUploadProgress> GetFileUploadProgressElements() const;
   DriveFileUploadResult GetFileUploadResult() const;
+  DriveStorageQuotaResult GetStorageQuotaResult() const;
 
   id<SystemIdentity> identity_;
 
@@ -110,6 +120,7 @@ class TestDriveFileUploader final : public DriveFileUploader {
   std::optional<DriveFolderResult> folder_creation_result_;
   std::vector<DriveFileUploadProgress> file_upload_progress_elements_;
   std::optional<DriveFileUploadResult> file_upload_result_;
+  std::optional<DriveStorageQuotaResult> storage_quota_result_;
 
   // Quit closure.
   base::RepeatingClosure quit_closure_ = base::DoNothing();

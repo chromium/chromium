@@ -3663,7 +3663,7 @@ void HWNDMessageHandler::SizeWindowToAspectRatio(UINT param,
   min_window_size = delegate_->DIPToScreenSize(min_window_size);
   max_window_size = delegate_->DIPToScreenSize(max_window_size);
 
-  absl::optional<gfx::Size> max_size_param;
+  std::optional<gfx::Size> max_size_param;
   if (!max_window_size.IsEmpty())
     max_size_param = max_window_size;
 

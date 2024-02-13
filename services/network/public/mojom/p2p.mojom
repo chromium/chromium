@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/network_interface.mojom";
@@ -62,11 +63,13 @@ interface P2PSocketManager {
                            int32 address_family,
                            bool enable_mdns) => (array<IPAddress> addresses);
 
+  // Creates a P2PSocket
   CreateSocket(P2PSocketType type,
                IPEndPoint local_address,
                P2PPortRange port_range,
                P2PHostAndIPEndPoint remote_address,
                MutableNetworkTrafficAnnotationTag traffic_annotation,
+               mojo_base.mojom.UnguessableToken? devtools_token,
                pending_remote<P2PSocketClient> client,
                pending_receiver<P2PSocket> socket);
 };

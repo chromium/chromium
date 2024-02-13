@@ -561,6 +561,10 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
   RenderFrameImpl::PostAccessibilityEvent(event);
 }
 
+void WebFrameTestProxy::HandleAXObjectDetachedForTest(unsigned axid) {
+  accessibility_controller_.Remove(axid);
+}
+
 void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
     const blink::WebAXObject& object,
     const char* event_name,

@@ -10,7 +10,8 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {ResetPasswordHandler, ResetPasswordHandlerRemote} from './reset_password.mojom-webui.js';
+import type {ResetPasswordHandlerRemote} from './reset_password.mojom-webui.js';
+import {ResetPasswordHandler} from './reset_password.mojom-webui.js';
 
 let pageHandler: ResetPasswordHandlerRemote;
 

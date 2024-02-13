@@ -23,7 +23,7 @@ class FakeOrcaService : public ash::orca::mojom::OrcaService {
   explicit FakeOrcaService(OrcaLogger* logger) : logger_(logger) {}
 
   void BindEditor(
-      mojo::PendingAssociatedRemote<ash::orca::mojom::TextActuator>
+      mojo::PendingAssociatedRemote<ash::orca::mojom::SystemActuator>
           text_actuator,
       mojo::PendingAssociatedRemote<ash::orca::mojom::TextQueryProvider>
           text_query_provider,

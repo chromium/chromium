@@ -11,6 +11,8 @@ static_library("feature_status_tracker") {
   sources = [
     "base_enabled_provider.cc",
     "base_enabled_provider.h",
+    "battery_saver_active_provider.cc",
+    "battery_saver_active_provider.h",
     "bluetooth_enabled_provider.cc",
     "bluetooth_enabled_provider.h",
     "fast_pair_enabled_provider.cc",
@@ -25,6 +27,8 @@ static_library("feature_status_tracker") {
     "hardware_offloading_supported_provider.h",
     "logged_in_user_enabled_provider.cc",
     "logged_in_user_enabled_provider.h",
+    "power_connected_provider.cc",
+    "power_connected_provider.h",
     "quick_pair_feature_status_tracker.h",
     "quick_pair_feature_status_tracker_impl.cc",
     "quick_pair_feature_status_tracker_impl.h",
@@ -84,11 +88,13 @@ source_set("unit_tests") {
 
   sources = [
     "base_enabled_provider_unittest.cc",
+    "battery_saver_active_provider_unittest.cc",
     "bluetooth_enabled_provider_unittest.cc",
     "fast_pair_enabled_provider_unittest.cc",
     "fast_pair_support_utils_unittest.cc",
     "hardware_offloading_supported_provider_unittest.cc",
     "logged_in_user_enabled_provider_unittest.cc",
+    "power_connected_provider_unittest.cc",
     "screen_state_enabled_provider_unittest.cc",
   ]
 

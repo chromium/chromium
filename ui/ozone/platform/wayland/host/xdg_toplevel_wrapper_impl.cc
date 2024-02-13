@@ -7,11 +7,12 @@
 #include <aura-shell-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 
+#include <optional>
+
 #include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/common/features.h"
@@ -60,7 +61,7 @@ uint32_t ToInt32(XDGToplevelWrapperImpl::DecorationMode mode) {
   }
 }
 
-absl::optional<wl::Serial> GetSerialForMoveResize(
+std::optional<wl::Serial> GetSerialForMoveResize(
     WaylandConnection* connection) {
   return connection->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
                                                  wl::SerialType::kMousePress,
@@ -452,6 +453,19 @@ void XDGToplevelWrapperImpl::OnOverviewChange(void* data,
       in_overview_as_uint);
 }
 
+// static
+void XDGToplevelWrapperImpl::OnConfigureOcclusionState(
+    void* data,
+    struct zaura_toplevel* zaura_toplevel,
+    uint32_t mode) {
+  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
+  DCHECK(surface);
+  auto* wayland_window = static_cast<WaylandWindow*>(surface->wayland_window_);
+  auto occlusion_state =
+      WaylandOcclusionStateToPlatformWindowOcclusionState(mode);
+  wayland_window->SetPendingOcclusionState(occlusion_state);
+}
+
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_)
@@ -588,7 +602,8 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
       .origin_change = &OnOriginChange,
       .configure_raster_scale = &OnConfigureRasterScale,
       .rotate_focus = &OnRotateFocus,
-      .overview_change = &OnOverviewChange};
+      .overview_change = &OnOverviewChange,
+      .configure_occlusion_state = &OnConfigureOcclusionState};
   zaura_toplevel_add_listener(aura_toplevel_.get(), &kAuraToplevelListener,
                               this);
 }

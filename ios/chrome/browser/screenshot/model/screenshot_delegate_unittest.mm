@@ -75,9 +75,8 @@ TEST_F(ScreenshotDelegateTest, ScreenshotService) {
                  frame.size.width, frame.size.height);
 
   // Insert the web_state into the Browser.
-  int insertion_index = browser.GetWebStateList()->InsertWebState(
-      WebStateList::kInvalidIndex, std::move(web_state),
-      WebStateList::INSERT_NO_FLAGS, WebStateOpener());
+  int insertion_index =
+      browser.GetWebStateList()->InsertWebState(std::move(web_state));
   browser.GetWebStateList()->ActivateWebStateAt(insertion_index);
 
   // Add the Browser to StubBrowserProvider.

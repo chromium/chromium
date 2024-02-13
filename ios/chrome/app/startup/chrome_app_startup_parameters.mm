@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -187,7 +188,9 @@ enum class IOSExternalAction {
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
 void LogWidgetKitAction(WidgetKitExtensionAction action) {
   UmaHistogramEnumeration("IOS.WidgetKit.Action", action);
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+
+  // Notify Default Browser promo that user opened Chrome with widget.
+  default_browser::NotifyStartWithWidget();
 }
 
 bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
@@ -296,8 +299,6 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         LogWidgetKitAction(
             WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_GAME);
       }
-
-      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 
       GURL URL(
           base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
@@ -438,11 +439,12 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     }
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram, action,
                               MOBILE_SESSION_START_ACTION_COUNT);
-    // An HTTP(S) URL open that opened Chrome (e.g. default browser open) should
-    // be logged as significant activity for a potential user that would want
-    // Chrome as their default browser in case the user changes away from
-    // Chrome. This will leave a trace of this activity for re-prompting.
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
+    // An HTTP(S) URL open that opened Chrome (e.g. default browser open or
+    // explictly opened from first party apps) should be logged as significant
+    // activity for a potential user that would want Chrome as their default
+    // browser in case the user changes away from Chrome. This will leave a
+    // trace of this activity for re-prompting.
+    default_browser::NotifyStartWithURL();
 
     if (action == START_ACTION_OPEN_HTTP_FROM_OS ||
         action == START_ACTION_OPEN_HTTPS_FROM_OS) {
@@ -758,17 +760,6 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
             applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:SEARCH_PASSWORDS];
     action = ACTION_NO_ACTION;
-  }
-
-  if (action != ACTION_NO_ACTION) {
-    // An external action that opened Chrome (i.e. GrowthKit link open, open
-    // Search, search clipboard content) is activity that should indicate a user
-    // that would be interested in setting Chrome as the default browser.
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-
-    // Log browser started indirectly for default browser promo experiment
-    // stats.
-    LogBrowserIndirectlylaunched();
   }
 
   if ([secureAppID

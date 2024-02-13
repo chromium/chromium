@@ -6,6 +6,8 @@ source_set("model") {
   sources = [
     "ios_chrome_hints_manager.h",
     "ios_chrome_hints_manager.mm",
+    "ios_chrome_prediction_model_store.h",
+    "ios_chrome_prediction_model_store.mm",
     "optimization_guide_service.h",
     "optimization_guide_service.mm",
     "optimization_guide_service_factory.h",

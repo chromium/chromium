@@ -18,9 +18,9 @@ namespace ash {
 
 // A customized notification view for scalable IPH that adds the summary text.
 class ASH_EXPORT ScalableIphAshNotificationView : public AshNotificationView {
- public:
-  METADATA_HEADER(ScalableIphAshNotificationView);
+  METADATA_HEADER(ScalableIphAshNotificationView, AshNotificationView)
 
+ public:
   ScalableIphAshNotificationView(
       const message_center::Notification& notification,
       bool shown_in_popup);

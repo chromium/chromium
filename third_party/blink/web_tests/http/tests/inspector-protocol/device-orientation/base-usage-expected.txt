@@ -1,0 +1,16 @@
+Tests DeviceOrientation.SetDeviceOrientationOverride() basic usage
+PASS: Overriding with first set of values
+[
+    [0] : 1
+    [1] : 2
+    [2] : 3
+    [3] : false
+]
+PASS: Overriding with new set of values
+[
+    [0] : 42
+    [1] : 34
+    [2] : -90
+    [3] : false
+]
+

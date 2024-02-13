@@ -35,8 +35,7 @@ suite('SpeedPage', function() {
 
   setup(function() {
     settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs()) as
-        unknown as typeof chrome.settingsPrivate;
+    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
     settingsPrefs.initialize(settingsPrivate);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -109,31 +108,33 @@ suite('SpeedPage', function() {
     assertTrue(speedPage.$.preloadingExtended.expanded);
   });
 
-  test('testPreloadPagesStandardExpand', function() {
+  test('testPreloadPagesStandardExpand', async function() {
     // By default, the preloadingStandard option will be selected and collapsed.
     assertFalse(speedPage.$.preloadingStandard.expanded);
 
-    speedPage.$.preloadingStandard.$.expandButton.click();
-    flush();
+    const expandButton = speedPage.$.preloadingStandard.$.expandButton;
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertTrue(speedPage.$.preloadingStandard.expanded);
 
-    speedPage.$.preloadingStandard.$.expandButton.click();
-    flush();
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertFalse(speedPage.$.preloadingStandard.expanded);
   });
 
-  test('testPreloadPagesExtendedExpand', function() {
+  test('testPreloadPagesExtendedExpand', async function() {
     assertFalse(speedPage.$.preloadingExtended.expanded);
 
-    speedPage.$.preloadingExtended.$.expandButton.click();
-    flush();
+    const expandButton = speedPage.$.preloadingExtended.$.expandButton;
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertTrue(speedPage.$.preloadingExtended.expanded);
 
-    speedPage.$.preloadingExtended.$.expandButton.click();
-    flush();
+    expandButton.click();
+    await expandButton.updateComplete;
 
     assertFalse(speedPage.$.preloadingExtended.expanded);
   });

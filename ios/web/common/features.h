@@ -63,6 +63,11 @@ BASE_DECLARE_FEATURE(kScrollViewProxyScrollEnabledWorkaround);
 // Feature flag to prevent navigation without user interaction.
 BASE_DECLARE_FEATURE(kPreventNavigationWithoutUserInteraction);
 
+// Feature flag to allow a window to open an external app from another window.
+// This flag can be used to kill the cross window limitation in case it breaks a
+// legitimate use case.
+BASE_DECLARE_FEATURE(kAllowCrossWindowExternalAppNavigation);
+
 // Feature flag to enable Web Inspector support.
 BASE_DECLARE_FEATURE(kEnableWebInspector);
 
@@ -87,6 +92,9 @@ bool IsLoadSimulatedRequestAPIEnabled();
 
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();
+
+// Feature flag to disable the raccoon.
+BASE_DECLARE_FEATURE(kDisableRaccoon);
 
 }  // namespace features
 }  // namespace web

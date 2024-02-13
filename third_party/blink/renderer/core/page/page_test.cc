@@ -12,10 +12,12 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/scoped_browsing_context_group_pauser.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
 TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
+  test::TaskEnvironment task_environment;
   EmptyChromeClient client;
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
   auto bcg_info = BrowsingContextGroupInfo::CreateUnique();
@@ -29,6 +31,7 @@ TEST(PageTest, CreateOrdinaryBrowsingContextGroup) {
 }
 
 TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
+  test::TaskEnvironment task_environment;
   EmptyChromeClient client;
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
 
@@ -41,6 +44,7 @@ TEST(PageTest, CreateNonOrdinaryBrowsingContextGroup) {
 }
 
 TEST(PageTest, BrowsingContextGroupUpdate) {
+  test::TaskEnvironment task_environment;
   EmptyChromeClient client;
   auto* scheduler = scheduler::CreateDummyAgentGroupScheduler();
   auto initial_bcg_info = BrowsingContextGroupInfo::CreateUnique();
@@ -63,6 +67,7 @@ TEST(PageTest, BrowsingContextGroupUpdate) {
 }
 
 TEST(PageTest, BrowsingContextGroupUpdateWithPauser) {
+  test::TaskEnvironment task_environment;
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kPausePagesPerBrowsingContextGroup);

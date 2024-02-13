@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/performance_script_timing.h"
 
+#include <cstdint>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
@@ -159,26 +161,14 @@ AtomicString PerformanceScriptTiming::invokerType() const {
   }
 }
 
-WTF::String PerformanceScriptTiming::sourceLocation() const {
-  const ScriptTimingInfo::ScriptSourceLocation& source_location =
-      info_->GetSourceLocation();
-  if (!source_location.url) {
-    return WTF::String("");
-  }
-
-  StringBuilder builder;
-  if (!source_location.function_name.empty()) {
-    builder.Append(source_location.function_name);
-    builder.Append("@");
-  }
-
-  builder.Append(source_location.url);
-  if (source_location.start_position >= 0) {
-    builder.Append(":");
-    builder.AppendNumber(source_location.start_position);
-  }
-
-  return builder.ToString();
+WTF::String PerformanceScriptTiming::sourceURL() const {
+  return info_->GetSourceLocation().url;
+}
+WTF::String PerformanceScriptTiming::sourceFunctionName() const {
+  return info_->GetSourceLocation().function_name;
+}
+int32_t PerformanceScriptTiming::sourceCharPosition() const {
+  return info_->GetSourceLocation().char_position;
 }
 
 PerformanceEntryType PerformanceScriptTiming::EntryTypeEnum() const {
@@ -194,7 +184,9 @@ void PerformanceScriptTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddNumber("forcedStyleAndLayoutDuration",
                     forcedStyleAndLayoutDuration());
   builder.AddNumber("pauseDuration", pauseDuration());
-  builder.AddString("sourceLocation", sourceLocation());
+  builder.AddString("sourceURL", sourceURL());
+  builder.AddString("sourceFunctionName", sourceFunctionName());
+  builder.AddNumber("sourceCharPosition", sourceCharPosition());
 }
 
 void PerformanceScriptTiming::Trace(Visitor* visitor) const {

@@ -397,7 +397,7 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
       if (!event.ReadKeyData<ui::mojom::KeyDataPtr>(&key_data))
         return false;
 
-      absl::optional<ui::DomKey> dom_key =
+      std::optional<ui::DomKey> dom_key =
           ui::DomKey::FromBase(key_data->dom_key);
       if (!dom_key)
         return false;
@@ -508,7 +508,7 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
   if (!event.ReadLatency((*out)->latency()))
     return false;
 
-  absl::optional<ui::Event::Properties> properties;
+  std::optional<ui::Event::Properties> properties;
   if (!event.ReadProperties(&properties))
     return false;
   if (properties && !properties->empty())

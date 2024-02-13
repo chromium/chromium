@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
@@ -20,11 +21,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace {
 
-using ResourceAttrPageContextTest = PerformanceManagerTestHarness;
+using ResourceAttrPageContextTest =
+    performance_manager::PerformanceManagerTestHarness;
 using ResourceAttrPageContextNoPMTest = content::RenderViewHostTestHarness;
 
 TEST_F(ResourceAttrPageContextTest, PageContexts) {
@@ -37,7 +39,7 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
   base::WeakPtr<PageNode> page_node = page_context->GetWeakPageNode();
   base::WeakPtr<PageNode> page_node_from_pm =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents.get());
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     ASSERT_TRUE(page_node);
     ASSERT_TRUE(page_node_from_pm);
     EXPECT_EQ(page_node.get(), page_node_from_pm.get());
@@ -69,7 +71,7 @@ TEST_F(ResourceAttrPageContextTest, PageContexts) {
   web_contents.reset();
 
   EXPECT_EQ(nullptr, page_context->GetWebContents());
-  RunInGraph([&] {
+  performance_manager::RunInGraph([&] {
     EXPECT_FALSE(page_node);
     EXPECT_EQ(nullptr, page_context->GetPageNode());
     EXPECT_EQ(std::nullopt, PageContext::FromWeakPageNode(page_node));
@@ -95,12 +97,13 @@ TEST_F(ResourceAttrPageContextNoPMTest, PageContextWithoutPM) {
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
 
   // Verify that PM didn't see the page.
-  RunInGraph([node = PerformanceManager::GetPrimaryPageNodeForWebContents(
-                  web_contents.get())] { EXPECT_FALSE(node); });
+  performance_manager::RunInGraph(
+      [node = PerformanceManager::GetPrimaryPageNodeForWebContents(
+           web_contents.get())] { EXPECT_FALSE(node); });
 
   EXPECT_FALSE(PageContext::FromWebContents(web_contents.get()));
 }
 
 }  // namespace
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution

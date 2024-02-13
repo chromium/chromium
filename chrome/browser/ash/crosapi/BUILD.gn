@@ -401,6 +401,7 @@ source_set("crosapi") {
     "//components/session_manager/core",
     "//components/ukm:ukm",
     "//components/user_prefs:user_prefs",
+    "//components/variations/service",
     "//components/version_info:channel",
     "//content/public/common",
     "//extensions/browser/api",

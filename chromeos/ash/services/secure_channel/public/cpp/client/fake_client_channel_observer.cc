@@ -18,4 +18,11 @@ void FakeClientChannelObserver::OnMessageReceived(const std::string& payload) {
   received_messages_.push_back(payload);
 }
 
+void FakeClientChannelObserver::OnNearbyConnectionStateChagned(
+    mojom::NearbyConnectionStep step,
+    mojom::NearbyConnectionStepResult result) {
+  nearby_connection_step_ = step;
+  nearby_connection_step_result_ = result;
+}
+
 }  // namespace ash::secure_channel

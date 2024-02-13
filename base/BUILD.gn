@@ -44,6 +44,11 @@ import("//build_overrides/build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
+if (is_ios) {
+  # Used to access ios_is_app_extension variable definition.
+  import("//build/config/ios/ios_sdk.gni")
+}
+
 if (is_mac) {
   # Used to generate fuzzer corpus :base_mach_port_rendezvous_convert_corpus.
   import("//third_party/protobuf/proto_library.gni")
@@ -287,7 +292,6 @@ component("base") {
     "containers/lru_cache.h",
     "containers/map_util.h",
     "containers/small_map.h",
-    "containers/span.h",
     "containers/stack.h",
     "containers/unique_ptr_adapters.h",
     "containers/util.h",
@@ -784,9 +788,6 @@ component("base") {
     "task/thread_pool/environment_config.h",
     "task/thread_pool/job_task_source.cc",
     "task/thread_pool/job_task_source.h",
-    "task/thread_pool/job_task_source_interface.h",
-    "task/thread_pool/job_task_source_old.cc",
-    "task/thread_pool/job_task_source_old.h",
     "task/thread_pool/pooled_parallel_task_runner.cc",
     "task/thread_pool/pooled_parallel_task_runner.h",
     "task/thread_pool/pooled_sequenced_task_runner.cc",
@@ -931,6 +932,7 @@ component("base") {
     "types/expected_macros.h",
     "types/fixed_array.h",
     "types/id_type.h",
+    "types/is_complete.h",
     "types/is_instantiation.h",
     "types/optional_ref.h",
     "types/optional_util.h",
@@ -1060,6 +1062,7 @@ component("base") {
     "//base/third_party/dynamic_annotations",
     "//build:blink_buildflags",
     "//build:branding_buildflags",
+    "//build:ios_buildflags",
     "//build/config/compiler:compiler_buildflags",
     "//third_party/modp_b64",
   ]
@@ -1228,8 +1231,6 @@ component("base") {
       "android/thread_instruction_count.h",
       "android/timezone_utils.cc",
       "android/timezone_utils.h",
-      "android/token_android.cc",
-      "android/token_android.h",
       "android/unguessable_token_android.cc",
       "android/unguessable_token_android.h",
       "debug/stack_trace_android.cc",
@@ -1338,12 +1339,15 @@ component("base") {
       "android/library_loader/library_loader_hooks.h",
       "android/native_uma_recorder.cc",
       "android/scoped_java_ref.h",
+      "android/token_android.cc",
+      "android/token_android.h",
       "android/trace_event_binding.cc",
       "android/trace_event_binding.h",
     ]
     deps += [
       ":base_jni",
       ":process_launcher_jni",
+      "//build:robolectric_buildflags",
     ]
     public_deps += [ "//third_party/jni_zero:jni_zero" ]
   }  # is_android || is_robolectric
@@ -2102,7 +2106,6 @@ component("base") {
     sources += [
       "base_paths_ios.h",
       "base_paths_ios.mm",
-      "critical_closure_internal_ios.mm",
       "ios/block_types.h",
       "ios/crb_protocol_observers.h",
       "ios/crb_protocol_observers.mm",
@@ -2113,8 +2116,6 @@ component("base") {
       "ios/ns_error_util.h",
       "ios/ns_error_util.mm",
       "ios/ns_range.h",
-      "ios/scoped_critical_action.h",
-      "ios/scoped_critical_action.mm",
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/process_metrics_ios.cc",
@@ -2122,6 +2123,14 @@ component("base") {
       "profiler/stack_sampler_ios.cc",
       "system/sys_info_ios.mm",
     ]
+
+    if (!ios_is_app_extension) {
+      sources += [
+        "critical_closure_internal_ios.mm",
+        "ios/scoped_critical_action.h",
+        "ios/scoped_critical_action.mm",
+      ]
+    }
 
     if (use_blink) {
       sources += [
@@ -3479,6 +3488,7 @@ test("base_unittests") {
     "types/expected_unittest.cc",
     "types/fixed_array_unittest.cc",
     "types/id_type_unittest.cc",
+    "types/is_complete_unittest.cc",
     "types/is_instantiation_unittest.cc",
     "types/optional_ref_unittest.cc",
     "types/optional_unittest.cc",
@@ -3531,6 +3541,7 @@ test("base_unittests") {
     ":path_service_unittest",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
+    "//base/numerics:unittests",
     "//base/test:native_library_test_utils",
     "//base/test:proto_test_support",
     "//base/test:run_all_unittests",
@@ -4303,6 +4314,18 @@ if (is_android || is_robolectric) {
   generate_jni("base_shared_preferences_jni") {
     sources = [ "android/java/src/org/chromium/base/shared_preferences/SharedPreferencesManager.java" ]
   }
+
+  shared_library_with_jni("libbase_junit_tests") {
+    testonly = true
+    enable_target = is_robolectric
+    sources = [ "android/robolectric_jni_onload.cc" ]
+    deps = [ ":base($robolectric_toolchain)" ]
+    java_targets = [ ":base_junit_tests" ]
+    visibility = [ ":*" ]
+
+    # Make jni.h available.
+    configs += [ "//third_party/jdk" ]
+  }
 }  # is_android || is_robolectric
 
 if (is_android) {
@@ -4613,7 +4636,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/AdvancedMockContextTest.java",
       "android/javatests/src/org/chromium/base/AssertsTest.java",
       "android/javatests/src/org/chromium/base/CommandLineFlagsTest.java",
-      "android/javatests/src/org/chromium/base/CommandLineInitUtilTest.java",
       "android/javatests/src/org/chromium/base/CommandLineTest.java",
       "android/javatests/src/org/chromium/base/EarlyTraceEventTest.java",
       "android/javatests/src/org/chromium/base/IntentUtilsTest.java",
@@ -4621,7 +4643,6 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/ObserverListTest.java",
       "android/javatests/src/org/chromium/base/PackageUtilsTest.java",
       "android/javatests/src/org/chromium/base/StrictModeContextTest.java",
-      "android/javatests/src/org/chromium/base/TokenTest.java",
       "android/javatests/src/org/chromium/base/UserDataHostTest.java",
       "android/javatests/src/org/chromium/base/jank_tracker/JankTrackerTest.java",
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
@@ -4704,7 +4725,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
       "test/android/javatests/src/org/chromium/base/test/MockitoErrorHandler.java",
       "test/android/javatests/src/org/chromium/base/test/ResetCachedFlagValuesTestHook.java",
-      "test/android/javatests/src/org/chromium/base/test/ResettersForTestingTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
       "test/android/javatests/src/org/chromium/base/test/TestListInstrumentationRunListener.java",
       "test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
@@ -4827,6 +4847,7 @@ if (is_android) {
       "test/android/junit/src/org/chromium/base/task/test/PausedExecutorTestRule.java",
       "test/android/junit/src/org/chromium/base/task/test/ShadowPostTask.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricAndroidConfigurer.java",
+      "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestListener.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRule.java",
       "test/android/junit/src/org/chromium/base/test/BaseRobolectricTestRunner.java",
       "test/android/junit/src/org/chromium/base/test/ShadowBuildInfo.java",
@@ -4854,6 +4875,7 @@ if (is_android) {
   }
 
   robolectric_binary("base_junit_tests") {
+    shared_libraries = [ ":libbase_junit_tests($robolectric_toolchain)" ]
     sources = [
       "android/junit/src/org/chromium/base/ApplicationStatusTest.java",
       "android/junit/src/org/chromium/base/BuildInfoTest.java",

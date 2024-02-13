@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/extensions/file_manager/private_api_media_parser.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/apps/platform_apps/api/media_galleries/blob_data_source_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_media_parser_util.h"
@@ -185,7 +186,7 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
 
   if (image && size && !image->type.empty()) {  // Attach thumbnail image.
     std::string url =
-        base::Base64Encode(base::StringPiece(image->data.data(), size));
+        base::Base64Encode(std::string_view(image->data.data(), size));
     url.insert(0, base::StrCat({"data:", image->type, ";base64,"}));
 
     base::Value::Dict media_thumbnail_image;

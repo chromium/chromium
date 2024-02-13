@@ -4,6 +4,8 @@
 
 #include "ui/actions/actions.h"
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -11,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/class_property.h"
 
 namespace actions {
@@ -153,7 +154,7 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
   EXPECT_TRUE(action->GetEnabled());
   EXPECT_TRUE(action->GetVisible());
   EXPECT_EQ(action->GetInvokeCount(), 0);
-  EXPECT_EQ(action->GetLastInvokeTime(), absl::nullopt);
+  EXPECT_EQ(action->GetLastInvokeTime(), std::nullopt);
   auto action_id = action->GetActionId();
   ASSERT_TRUE(action_id);
   EXPECT_EQ(*action_id, kActionCut);

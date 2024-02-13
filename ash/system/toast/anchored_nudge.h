@@ -41,9 +41,9 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
                                  public ShelfObserver,
                                  public ShellObserver,
                                  public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(AnchoredNudge);
+  METADATA_HEADER(AnchoredNudge, views::BubbleDialogDelegateView)
 
+ public:
   explicit AnchoredNudge(AnchoredNudgeData& nudge_data);
   AnchoredNudge(const AnchoredNudge&) = delete;
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;

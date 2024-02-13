@@ -7,7 +7,6 @@ braille_display_private.idl
 chromeos_info_private.json
 command_line_private.json
 crash_report_private.idl
-file_manager_private.idl
 file_system_provider.idl
 input_method_private.json
 language_settings_private.idl

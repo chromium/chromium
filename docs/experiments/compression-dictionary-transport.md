@@ -193,32 +193,21 @@ Developers can check the related HTTP request and response headers
 - [cbrbug.com/1479809](crbug.com/1479809): Can't use large (>8MB) dictionaries
   for Shared Zstd. Fixed in M118.
 
-## Following spec changes
+## Changes in M123
 
-Currently there are two backend implementations, V1 and V2. V2 is under active
-construction to catch up the following spec changes:
+The following changes have been made to Chrome since M123 to keep up with the
+changes in specifications.
 
-- Change Content-Encoding name "br-d" "zstd-d"
-  - Stauts: Implemented by https://crrev.com/c/5185977.
+- Changed Content-Encoding name "br-d" "zstd-d"
 - Changed match to use URLPattern
-  - Stauts: Not yet implemented.
 - Added support for a server-provided dictionary id
-  - Stauts: Not yet implemented.
 - Stop using "expires" value of "Use-As-Dictionary" header, and use the cache
   expiration time calculated from the response's freshness instead.
-  - Stauts: Removed by https://crrev.com/c/5227360.
 - Removed support for hash negotiation and force use of sha-256
-  - Stauts: Removed by https://crrev.com/c/5223985.
 - Added the dictionary hash to the compressed response
-  - Stauts: Implemented by https://crrev.com/c/5226641.
 - Dictionary hashes changed to sf-binary
-  - Stauts: Implemented by https://crrev.com/c/5224886.
 - Use "Available-Dictionary" header instead of "Sec-Available-Dictionary"
-  - Stauts: Implemented by https://crrev.com/c/5224886.
-
-You can try the experimental V2 implementation by selecting
-"Enabled experimental V2" in
-[chrome://flags/#enable-compression-dictionary-transport-backend][backend-flag].
+- Added support for match-dest option
 
 ## Demo sites
 

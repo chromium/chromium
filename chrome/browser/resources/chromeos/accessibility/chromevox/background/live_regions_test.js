@@ -309,11 +309,11 @@ AX_TEST_F(
       let clicks = 0;
       div.addEventListener('click', () => {
         clicks++;
-        if (clicks == 1) {
+        if (clicks === 1) {
           input.value = 'bb';
           input.selectionStart = 2;
           input.selectionEnd = 2;
-        } else if (clicks == 2) {
+        } else if (clicks === 2) {
           input.value = 'bba';
           input.selectionStart = 3;
           input.selectionEnd = 3;

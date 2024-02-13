@@ -272,7 +272,7 @@ class BluetoothGattBlueZTest : public testing::Test {
   void SuccessCallback() { ++success_callback_count_; }
 
   void ValueCallback(
-      absl::optional<BluetoothGattService::GattErrorCode> error_code,
+      std::optional<BluetoothGattService::GattErrorCode> error_code,
       const std::vector<uint8_t>& value) {
     if (error_code.has_value()) {
       ++error_callback_count_;
@@ -285,7 +285,7 @@ class BluetoothGattBlueZTest : public testing::Test {
 
   void GattConnectionCallback(
       std::unique_ptr<BluetoothGattConnection> conn,
-      absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+      std::optional<BluetoothDevice::ConnectErrorCode> error) {
     if (error.has_value()) {
       ++error_callback_count_;
       return;
@@ -1489,7 +1489,7 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue_Nested_Read_Read) {
                                      .value());
 
   characteristic->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](std::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         ValueCallback(error_code, data);
         EXPECT_EQ(1, success_callback_count_);
@@ -1648,7 +1648,7 @@ TEST_F(BluetoothGattBlueZTest, GattCharacteristicValue_Nested_Read_Write) {
                                      .value());
 
   characteristic->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](std::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         ValueCallback(error_code, data);
         EXPECT_EQ(1, success_callback_count_);
@@ -1707,7 +1707,7 @@ TEST_F(BluetoothGattBlueZTest,
                                      .value());
 
   characteristic->ReadRemoteCharacteristic(base::BindLambdaForTesting(
-      [&](absl::optional<BluetoothGattService::GattErrorCode> error_code,
+      [&](std::optional<BluetoothGattService::GattErrorCode> error_code,
           const std::vector<uint8_t>& data) {
         ValueCallback(error_code, data);
         EXPECT_EQ(1, success_callback_count_);

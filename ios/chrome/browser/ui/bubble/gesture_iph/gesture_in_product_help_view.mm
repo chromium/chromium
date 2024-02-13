@@ -220,14 +220,20 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 
   // Number of times the animation has already repeated.
   int _currentAnimationRepeatCount;
+
+  // If `YES`, a static view, instead of an animation, would be displayed and
+  // auto-dismissed on timeout.
+  BOOL _reduceMotion;
 }
 
 - (instancetype)initWithText:(NSString*)text
           bubbleBoundingSize:(CGSize)bubbleBoundingSize
-              arrowDirection:(BubbleArrowDirection)direction {
+              arrowDirection:(BubbleArrowDirection)direction
+       voiceOverAnnouncement:(NSString*)voiceOverAnnouncement {
   if (self = [super initWithFrame:CGRectZero]) {
-    self.isAccessibilityElement = YES;
-    _text = text;
+    _text = UIAccessibilityIsVoiceOverRunning() && voiceOverAnnouncement
+                ? voiceOverAnnouncement
+                : text;
     _needsRepositionBubbleAndGestureIndicator = NO;
     _currentAnimationRepeatCount = 0;
     _dismissCallback = ^(IPHDismissalReasonType reason,
@@ -235,6 +241,10 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     };
     _animationRepeatCount = 3;
     _bidirectional = NO;
+    _reduceMotion = UIAccessibilityIsReduceMotionEnabled() ||
+                    UIAccessibilityIsVoiceOverRunning();
+    self.isAccessibilityElement = YES;
+    self.accessibilityViewIsModal = YES;
 
     // Background view.
     UIView* backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -262,16 +272,31 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     ];
     [NSLayoutConstraint activateConstraints:_gestureIndicatorSizeConstraints];
 
-    // Dismiss button.
-    __weak GestureInProductHelpView* weakSelf = self;
-    UIAction* dismissButtonAction = [UIAction actionWithHandler:^(UIAction* _) {
-      [weakSelf dismissWithReason:IPHDismissalReasonType::kTappedClose];
-    }];
-    _dismissButton = CreateDismissButton(dismissButtonAction);
-    [self addSubview:_dismissButton];
-    [NSLayoutConstraint activateConstraints:[self dismissButtonConstraints]];
+    if (!UIAccessibilityIsVoiceOverRunning()) {
+      // Dismiss button. It will be untappable in voice over mode, so only show
+      // it to non-voiceOver users. VoiceOver users are able to dismiss the
+      // view by swiping to the next accessibility element, and therefore don't
+      // need the button.
+      __weak GestureInProductHelpView* weakSelf = self;
+      UIAction* dismissButtonAction =
+          [UIAction actionWithHandler:^(UIAction* _) {
+            [weakSelf dismissWithReason:IPHDismissalReasonType::kTappedClose];
+          }];
+      _dismissButton = CreateDismissButton(dismissButtonAction);
+      [self addSubview:_dismissButton];
+      [NSLayoutConstraint activateConstraints:[self dismissButtonConstraints]];
+    }
   }
   return self;
+}
+
+- (instancetype)initWithText:(NSString*)text
+          bubbleBoundingSize:(CGSize)bubbleBoundingSize
+              arrowDirection:(BubbleArrowDirection)direction {
+  return [self initWithText:text
+         bubbleBoundingSize:bubbleBoundingSize
+             arrowDirection:direction
+      voiceOverAnnouncement:nil];
 }
 
 - (CGSize)systemLayoutSizeFittingSize:(CGSize)targetSize {
@@ -281,7 +306,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   CGFloat min_height = _bubbleView.frame.size.height +
                        [_dismissButton intrinsicContentSize].height +
                        kDismissButtonMargin;
-  if (UIAccessibilityIsReduceMotionEnabled()) {
+  if (_reduceMotion) {
     return CGSizeMake(min_width, min_height);
   }
   switch (_bubbleView.direction) {
@@ -339,10 +364,22 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
 - (void)startAnimationAfterDelay:(base::TimeDelta)delay {
   CHECK(self.superview);
   CHECK_GT(self.animationRepeatCount, 0);
-  __weak GestureInProductHelpView* weakSelf = self;
 
+  if (UIAccessibilityIsVoiceOverRunning()) {
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    _text);
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector
+           (handleUIAccessibilityAnnouncementDidFinishNotification:)
+               name:UIAccessibilityAnnouncementDidFinishNotification
+             object:nil];
+  }
+
+  __weak GestureInProductHelpView* weakSelf = self;
   if (UIAccessibilityIsReduceMotionEnabled()) {
-    // Dismiss after the same timeout as with animation enabled.
+    // Dismiss after the same timeout as with animation enabled, or when
+    // voiceover stops.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(^{
           [weakSelf dismissWithReason:IPHDismissalReasonType::kTimedOut];
@@ -477,6 +514,11 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   }
 }
 
+- (void)handleUIAccessibilityAnnouncementDidFinishNotification:
+    (NSNotification*)notification {
+  [self dismissWithReason:IPHDismissalReasonType::kVoiceOverAnnouncementEnded];
+}
+
 #pragma mark - Initial positioning helpers
 
 // Initial bubble setup and positioning.
@@ -489,8 +531,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   _bubbleView.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
   _bubbleView.accessibilityIdentifier = kGestureInProductHelpViewBubbleAXId;
   [self addSubview:_bubbleView];
-  [_bubbleView setArrowHidden:!UIAccessibilityIsReduceMotionEnabled()
-                     animated:NO];
+  [_bubbleView setArrowHidden:!_reduceMotion animated:NO];
 }
 
 // Initial distance between the bubble and the center of the gesture indicator

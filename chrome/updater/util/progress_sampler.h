@@ -24,33 +24,34 @@ class ProgressSampler {
   ~ProgressSampler();
 
   // Adds a sample for the current time.
-  void AddSample(int sample_value);
+  void AddSample(int64_t sample_value);
 
   // Gets how much time is remaining based on the samples provided previously
   // and `total`.
-  std::optional<base::TimeDelta> GetRemainingTime(int total);
+  std::optional<base::TimeDelta> GetRemainingTime(int64_t total);
 
  private:
   // Helpers.
-  void AddSample(const base::Time& timestamp, int sample_value);
+  void AddSample(const base::Time& timestamp, int64_t sample_value);
   bool HasEnoughSamples() const;
-  std::optional<int> GetAverageSpeedPerMs() const;
+  std::optional<double> GetAverageSpeedPerMs() const;
   void Reset();
 
   const base::TimeDelta sample_time_range_;
   const base::TimeDelta minimum_range_required_;
 
   struct Sample {
-    Sample(const base::Time& local_timestamp, int local_value)
+    Sample(const base::Time& local_timestamp, int64_t local_value)
         : timestamp(local_timestamp), value(local_value) {}
 
     const base::Time timestamp;
-    const int value;
+    const int64_t value;
   };
 
   std::queue<Sample> samples_;
 
   FRIEND_TEST_ALL_PREFIXES(ProgressSampler, Samples);
+  FRIEND_TEST_ALL_PREFIXES(ProgressSampler, PercentageRange);
 };
 
 }  // namespace updater

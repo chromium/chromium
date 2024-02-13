@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
    public:
     RegisterDictionaryResult(
         int64_t primary_key_in_database,
-        absl::optional<base::UnguessableToken> replaced_disk_cache_key_token,
+        std::optional<base::UnguessableToken> replaced_disk_cache_key_token,
         std::set<base::UnguessableToken> evicted_disk_cache_key_tokens,
         uint64_t total_dictionary_size,
         uint64_t total_dictionary_count);
@@ -65,8 +65,8 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
     RegisterDictionaryResult& operator=(RegisterDictionaryResult&& other);
 
     int64_t primary_key_in_database() const { return primary_key_in_database_; }
-    const absl::optional<base::UnguessableToken>&
-    replaced_disk_cache_key_token() const {
+    const std::optional<base::UnguessableToken>& replaced_disk_cache_key_token()
+        const {
       return replaced_disk_cache_key_token_;
     }
     const std::set<base::UnguessableToken>& evicted_disk_cache_key_tokens()
@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
 
    private:
     int64_t primary_key_in_database_;
-    absl::optional<base::UnguessableToken> replaced_disk_cache_key_token_;
+    std::optional<base::UnguessableToken> replaced_disk_cache_key_token_;
     std::set<base::UnguessableToken> evicted_disk_cache_key_tokens_;
     uint64_t total_dictionary_size_;
     uint64_t total_dictionary_count_;

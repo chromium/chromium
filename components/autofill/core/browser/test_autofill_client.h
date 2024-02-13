@@ -201,7 +201,8 @@ class TestAutofillClientTemplate : public T {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
           /*client=*/this,
-          /*personal_data_manager=*/nullptr, /*app_locale=*/"en-US"));
+          /*personal_data_manager=*/nullptr, /*history_service=*/nullptr,
+          /*app_locale=*/"en-US"));
     }
 
     return form_data_importer_.get();
@@ -394,8 +395,6 @@ class TestAutofillClientTemplate : public T {
 
     std::move(callback).Run(get_save_card_offer_user_decision(), {});
   }
-
-  void CreditCardUploadCompleted(bool card_saved) override {}
 
   void ConfirmCreditCardFillAssist(const CreditCard& card,
                                    base::OnceClosure callback) override {

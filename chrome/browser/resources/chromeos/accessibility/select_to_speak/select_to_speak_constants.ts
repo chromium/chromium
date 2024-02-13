@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {KeyCodeData} from '/common/key_code.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 
 export namespace SelectToSpeakConstants {
   export const SEARCH_KEY_CODE: number = KeyCodeData.SEARCH.code;
@@ -30,3 +31,6 @@ export namespace SelectToSpeakConstants {
     useVoiceSwitching: boolean;
   }
 }
+
+TestImportManager.exportForTesting(
+    ['SelectToSpeakConstants', SelectToSpeakConstants]);

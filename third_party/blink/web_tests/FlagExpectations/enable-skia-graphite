@@ -36,6 +36,10 @@ crbug.com/1517847 virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Pas
 crbug.com/1518086 external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-new-with-class-old-without.html [ Failure ]
+crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-view-transition-group.html [ Failure ]
+crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/pseudo-with-classes-view-transition-group.html [ Failure ]
+crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple.html [ Failure ]
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Timeout ]
 crbug.com/626703 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-opacity-1e.html [ Failure ]

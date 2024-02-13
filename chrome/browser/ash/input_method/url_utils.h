@@ -6,20 +6,20 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_URL_UTILS_H_
 
 #include <optional>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "url/gurl.h"
 
 namespace ash {
 namespace input_method {
 
 // Checks if domain is a sub-domain of url
-bool IsSubDomain(const GURL& url, const base::StringPiece domain);
+bool IsSubDomain(const GURL& url, const std::string_view domain);
 
 // Checks if url belongs to domain and has the path_prefix
 bool IsSubDomainWithPathPrefix(const GURL& url,
-                               const base::StringPiece domain,
-                               const base::StringPiece path_prefix);
+                               const std::string_view domain,
+                               const std::string_view path_prefix);
 
 }  // namespace input_method
 }  // namespace ash

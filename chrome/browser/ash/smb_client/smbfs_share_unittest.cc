@@ -33,8 +33,7 @@ using testing::AllOf;
 using testing::Property;
 using testing::Unused;
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 namespace {
 
 constexpr char kSharePath[] = "smb://share/path";
@@ -490,5 +489,4 @@ TEST_F(SmbFsShareTest, GenerateStableMountId) {
   EXPECT_EQ(mount_id2.size(), 64u);
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

@@ -19,8 +19,8 @@ namespace media {
 class VideoFrameMapper;
 
 // A software image processor which uses libyuv to perform format conversion.
-// It expects input VideoFrame is mapped into CPU space, and output VideoFrame
-// is allocated in user space.
+// It expects input FrameResource is mapped into CPU space, and output
+// FrameResource is allocated in user space.
 class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
     : public ImageProcessorBackend {
  public:
@@ -50,9 +50,9 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
       delete;
 
   // ImageProcessorBackend override
-  void Process(scoped_refptr<VideoFrame> input_frame,
-               scoped_refptr<VideoFrame> output_frame,
-               FrameReadyCB cb) override;
+  void ProcessFrame(scoped_refptr<FrameResource> input_frame,
+                    scoped_refptr<FrameResource> output_frame,
+                    FrameResourceReadyCB cb) override;
 
   bool needs_linear_output_buffers() const override;
 
@@ -66,8 +66,8 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
   LibYUVImageProcessorBackend(
       std::unique_ptr<VideoFrameMapper> input_frame_mapper,
       std::unique_ptr<VideoFrameMapper> output_frame_mapper,
-      scoped_refptr<VideoFrame> intermediate_frame,
-      scoped_refptr<VideoFrame> crop_intermediate_frame,
+      scoped_refptr<FrameResource> intermediate_frame,
+      scoped_refptr<FrameResource> crop_intermediate_frame,
       const PortConfig& input_config,
       const PortConfig& output_config,
       OutputMode output_mode,
@@ -78,7 +78,8 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
   void NotifyError();
 
   // Execute Libyuv function for the conversion from |input| to |output|.
-  int DoConversion(const VideoFrame* const input, VideoFrame* const output);
+  int DoConversion(const FrameResource* const input,
+                   FrameResource* const output);
 
   const gfx::Rect input_visible_rect_;
   const gfx::Rect output_visible_rect_;
@@ -86,11 +87,11 @@ class MEDIA_GPU_EXPORT LibYUVImageProcessorBackend
   const std::unique_ptr<VideoFrameMapper> input_frame_mapper_;
   const std::unique_ptr<VideoFrameMapper> output_frame_mapper_;
 
-  // A VideoFrame for intermediate format conversion when there is no direct
+  // A FrameResource for intermediate format conversion when there is no direct
   // conversion method in libyuv, e.g., RGBA -> I420 (pivot) -> NV12.
-  scoped_refptr<VideoFrame> intermediate_frame_;
-  // A VideoFrame to be used as a pivot if we need to crop.
-  scoped_refptr<VideoFrame> crop_intermediate_frame_;
+  scoped_refptr<FrameResource> intermediate_frame_;
+  // A frame to be used as a pivot if we need to crop.
+  scoped_refptr<FrameResource> crop_intermediate_frame_;
 };
 
 }  // namespace media

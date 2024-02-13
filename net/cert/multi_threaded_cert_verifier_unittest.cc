@@ -45,14 +45,15 @@ void FailTest(int /* result */) {
 class MockCertVerifyProc : public CertVerifyProc {
  public:
   MockCertVerifyProc() : CertVerifyProc(CRLSet::BuiltinCRLSet()) {}
-  MOCK_METHOD7(VerifyInternal,
+  MOCK_METHOD8(VerifyInternal,
                int(X509Certificate*,
                    const std::string&,
                    const std::string&,
                    const std::string&,
                    int,
                    CertVerifyResult*,
-                   const NetLogWithSource&));
+                   const NetLogWithSource&,
+                   std::optional<base::Time> time_now));
   MOCK_CONST_METHOD0(SupportsAdditionalTrustAnchors, bool());
 
  private:
@@ -105,7 +106,7 @@ class MultiThreadedCertVerifierTest : public TestWithTaskEnvironment {
                 mock_new_verify_proc_))) {
     EXPECT_CALL(*mock_verify_proc_, SupportsAdditionalTrustAnchors())
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_verify_proc_, VerifyInternal(_, _, _, _, _, _, _))
+    EXPECT_CALL(*mock_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _))
         .WillRepeatedly(
             DoAll(SetCertVerifyResult(), Return(ERR_CERT_COMMON_NAME_INVALID)));
   }
@@ -276,7 +277,7 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsConfigToFlags) {
     verifier_->SetConfig(config);
 
     EXPECT_CALL(*mock_verify_proc_,
-                VerifyInternal(_, _, _, _, test_config.expected_flag, _, _))
+                VerifyInternal(_, _, _, _, test_config.expected_flag, _, _, _))
         .WillRepeatedly(
             DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
 
@@ -307,7 +308,7 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsFlagsToFlags) {
   EXPECT_CALL(
       *mock_verify_proc_,
       VerifyInternal(_, _, _, _, CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES,
-                     _, _))
+                     _, _, _))
       .WillRepeatedly(
           DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
 
@@ -340,7 +341,7 @@ TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeChromeRootStore) {
 
   EXPECT_EQ(observer_counter.change_count(), 0u);
 
-  EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _))
+  EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _))
       .WillRepeatedly(
           DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
   verifier_->UpdateVerifyProcData(nullptr, {}, {});

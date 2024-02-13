@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/webid/digital_identity_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -25,6 +26,7 @@ class AuthenticationExtensionsPRFValues;
 class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class Credential;
+class DigitalCredentialProvider;
 class IdentityCredentialDisconnectOptions;
 class IdentityProviderConfig;
 class IdentityProviderRequestOptions;
@@ -227,10 +229,10 @@ struct TypeConverter<blink::mojom::blink::IdentityProviderRequestOptionsPtr,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::IdentityProviderPtr,
-                     blink::IdentityProviderRequestOptions> {
-  static blink::mojom::blink::IdentityProviderPtr Convert(
-      const blink::IdentityProviderRequestOptions&);
+struct TypeConverter<blink::mojom::blink::DigitalCredentialProviderPtr,
+                     blink::DigitalCredentialProvider> {
+  static blink::mojom::blink::DigitalCredentialProviderPtr Convert(
+      const blink::DigitalCredentialProvider&);
 };
 
 template <>

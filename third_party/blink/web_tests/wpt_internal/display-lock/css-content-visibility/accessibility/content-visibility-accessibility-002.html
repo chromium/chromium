@@ -33,8 +33,9 @@ async_test((t) => {
   let target = document.getElementById("target");
   let axTarget = axElementById("target");
   t.step(() => { assert_false(axTarget.isIgnored); });
-  // Note that it's 5 ignored children: one text node "target", two divs and two whitespace text nodes between divs
-  t.step(() => { assert_equals(axTarget.childrenCount, 5); });
+  // Note that all children are ignored: most are not included in the tree. The
+  // one child that is included, is the target of an aria-labelledby relation.
+  t.step(() => { assert_equals(axTarget.childrenCount, 1); });
   t.step(() => { assert_equals(axTarget.name, "Label"); });
   for (let i = 0; i < axTarget.childrenCount; ++i) {
     const axChild = axTarget.childAtIndex(i);

@@ -27,6 +27,10 @@
         margin-inline-end: 16px;
         vertical-align: middle;
       }
+
+      #summaryTermsLink {
+        text-decoration: none;
+      }
     </style>
     <div class="list-item" role="row">
       <div class="type-column" role="cell">
@@ -40,8 +44,12 @@
             [[creditCard.metadata.summaryLabel]]
           </div>
           <div id="summarySublabel"
-              class="ellipses sub-label" aria-hidden="true">
+              class="sub-label" aria-hidden="true">
             [[getSummarySublabel_(creditCard)]]
+            <template is="dom-if" if="[[isCardBenefitsProductUrlAvailable_(creditCard)]]">
+              (<a id="summaryTermsLink" href="[[getCardBenefitsProductUrl_(creditCard)]]"
+                  target="_blank">$i18n{benefitsTermsTagForCreditCardListEntry}</a>)
+            </template>
           </div>
         </div>
       </div>

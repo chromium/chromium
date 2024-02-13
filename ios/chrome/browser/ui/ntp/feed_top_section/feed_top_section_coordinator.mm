@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -213,17 +214,18 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), SnackbarCommands);
-    __weak __typeof(self) weakSelf = self;
-    [snackbarHandler
-        showSnackbarWithMessage:l10n_util::GetNSString(
-                                    IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE)
-                     buttonText:
-                         l10n_util::GetNSString(
-                             IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE)
-                  messageAction:^{
-                    [weakSelf showNotificationSettings];
-                  }
-               completionAction:nil];
+    id<SettingsCommands> settingsHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), SettingsCommands);
+    NSString* title =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE);
+    NSString* buttonText = l10n_util::GetNSString(
+        IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE);
+    [snackbarHandler showSnackbarWithMessage:title
+                                  buttonText:buttonText
+                               messageAction:^{
+                                 [settingsHandler showNotificationsSettings];
+                               }
+                            completionAction:nil];
   });
 }
 
@@ -232,12 +234,6 @@
 - (void)dimissAlertCoordinator {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
-}
-
-// Display the notification settings.
-- (void)showNotificationSettings {
-  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                      ApplicationSettingsCommands) showNotificationsSettings];
 }
 
 @end

@@ -320,6 +320,7 @@ void Data(perfetto::TracedValue context,
           uint64_t identifier,
           LocalFrame*,
           const ResourceRequest&,
+          ResourceType resource_type,
           RenderBlockingBehavior);
 }
 

@@ -64,11 +64,11 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     /** The interface that the Opt-in promo uses to communicate with this Panel. */
     interface ContextualSearchPromoHost extends ContextualSearchPanelSectionHost {
-        /** Notifies that the user has opted in. */
-        void onPromoOptIn();
+        /** Notifies the host that the promo was shown. */
+        void onPromoShown();
 
-        /** Notifies that the user has opted out. */
-        void onPromoOptOut();
+        /** Notifies the host whether the user enabled the feature via the promotion. */
+        void setContextualSearchPromoCardSelection(boolean enabled);
     }
 
     /** The interface that the Related Searches section uses to communicate with this Panel. */
@@ -254,8 +254,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     public void setPanelState(@PanelState int toState, @StateChangeReason int reason) {
         @PanelState int fromState = getPanelState();
 
-        mPanelMetrics.onPanelStateChanged(
-                fromState, toState, reason, Profile.getLastUsedRegularProfile());
+        mPanelMetrics.onPanelStateChanged(fromState, toState, reason, getProfile());
 
         if (toState == PanelState.CLOSED || toState == PanelState.UNDEFINED) {
             mManagementDelegate.onPanelFinishedShowing();
@@ -1065,10 +1064,14 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                         }
 
                         @Override
-                        public void onPromoOptIn() {}
+                        public void onPromoShown() {
+                            mManagementDelegate.onPromoShown();
+                        }
 
                         @Override
-                        public void onPromoOptOut() {}
+                        public void setContextualSearchPromoCardSelection(boolean enabled) {
+                            mManagementDelegate.setContextualSearchPromoCardSelection(enabled);
+                        }
                     };
         }
 

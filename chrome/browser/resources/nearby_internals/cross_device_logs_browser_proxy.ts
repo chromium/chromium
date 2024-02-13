@@ -4,7 +4,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {LogMessage} from './types';
+import type {LogMessage} from './types';
 
 /**
  * JavaScript hooks into the native WebUI handler to pass LogMessages to the

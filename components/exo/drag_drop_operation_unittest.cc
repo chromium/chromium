@@ -27,6 +27,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/test/test_data_source_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -40,6 +41,7 @@
 namespace exo {
 namespace {
 
+using test::TestDataSourceDelegate;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Property;
@@ -191,7 +193,7 @@ TEST_F(DragDropOperationTestWithWebUITabStripTest,
   auto delegate = std::make_unique<TestDataSourceDelegate>();
   auto data_source = std::make_unique<DataSource>(delegate.get());
   data_source->Offer(kWindowDragMimeType);
-  delegate->SetData(kWindowDragMimeType, std::vector<uint8_t>());
+  delegate->SetData(kWindowDragMimeType, std::string());
 
   ON_CALL(*mock_shell_delegate(), IsTabDrag(_)).WillByDefault(Return(true));
 
@@ -406,8 +408,7 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromLacros) {
   const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";
 
   data_source->Offer(kDteMimeType);
-  delegate->SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                       kEncodedTestDte.end()));
+  delegate->SetData(kDteMimeType, kEncodedTestDte);
 
   auto origin_surface = std::make_unique<Surface>();
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());
@@ -472,8 +473,7 @@ TEST_F(DragDropOperationTest, DragDropCheckSourceFromNonLacros) {
   const std::string kDteMimeType = "chromium/x-data-transfer-endpoint";
 
   data_source->Offer(kDteMimeType);
-  delegate->SetData(kDteMimeType, std::vector<uint8_t>(kEncodedTestDte.begin(),
-                                                       kEncodedTestDte.end()));
+  delegate->SetData(kDteMimeType, kEncodedTestDte);
 
   auto origin_surface = std::make_unique<Surface>();
   ash::Shell::GetPrimaryRootWindow()->AddChild(origin_surface->window());

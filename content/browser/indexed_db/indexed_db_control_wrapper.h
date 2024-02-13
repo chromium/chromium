@@ -12,10 +12,6 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/quota/storage_policy_observer.h"
 
-namespace blink {
-class StorageKey;
-}
-
 namespace content {
 
 // This wrapper is created, destroyed, and operated on the UI thread in the
@@ -50,8 +46,6 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
           client_state_checker_remote,
       const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
-  void DeleteForStorageKey(const blink::StorageKey& storage_key,
-                           DeleteForStorageKeyCallback callback) override;
   void ForceClose(storage::BucketId bucket_id,
                   storage::mojom::ForceCloseReason reason,
                   base::OnceClosure callback) override;

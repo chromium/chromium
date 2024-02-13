@@ -220,9 +220,6 @@ struct FormData {
   // trees. For details, see RenderFrameHost::GetMainFrame().
   url::Origin main_frame_origin;
 
-  // True if this form is a form tag.
-  bool is_form_tag = true;
-
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
   LocalFrameToken host_frame;

@@ -26,52 +26,68 @@ TEST(SpdySessionKeyTest, Equality) {
   SpdySessionKey key(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow);
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true);
   EXPECT_EQ(key,
             SpdySessionKey(HostPortPair("www.example.org", 80),
                            PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                            SessionUsage::kDestination, SocketTag(),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow));
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*disable_cert_verification_network_fetches=*/true));
   EXPECT_NE(
       key, SpdySessionKey(HostPortPair("otherproxy", 80), PRIVACY_MODE_DISABLED,
                           ProxyChain::Direct(), SessionUsage::kDestination,
                           SocketTag(), NetworkAnonymizationKey(),
-                          SecureDnsPolicy::kAllow));
+                          SecureDnsPolicy::kAllow,
+                          /*disable_cert_verification_network_fetches=*/true));
   EXPECT_NE(key,
             SpdySessionKey(HostPortPair("www.example.org", 80),
                            PRIVACY_MODE_ENABLED, ProxyChain::Direct(),
                            SessionUsage::kDestination, SocketTag(),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow));
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*disable_cert_verification_network_fetches=*/true));
   EXPECT_NE(key, SpdySessionKey(
                      HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::FromSchemeHostAndPort(
                          ProxyServer::Scheme::SCHEME_HTTPS, "otherproxy", 443),
                      SessionUsage::kDestination, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow));
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true));
   EXPECT_NE(key, SpdySessionKey(
                      HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow));
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true));
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_NE(key,
             SpdySessionKey(HostPortPair("www.example.org", 80),
                            PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                            SessionUsage::kDestination, SocketTag(999, 999),
-                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow));
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                           /*disable_cert_verification_network_fetches=*/true));
 #endif  // BUILDFLAG(IS_ANDROID)
   if (NetworkAnonymizationKey::IsPartitioningEnabled()) {
-    EXPECT_NE(key, SpdySessionKey(HostPortPair("www.example.org", 80),
-                                  PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                                  SessionUsage::kDestination, SocketTag(),
-                                  NetworkAnonymizationKey::CreateSameSite(
-                                      SchemefulSite(GURL("http://a.test/"))),
-                                  SecureDnsPolicy::kAllow));
+    EXPECT_NE(key,
+              SpdySessionKey(
+                  HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
+                  ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+                  NetworkAnonymizationKey::CreateSameSite(
+                      SchemefulSite(GURL("http://a.test/"))),
+                  SecureDnsPolicy::kAllow,
+                  /*disable_cert_verification_network_fetches=*/true));
   }
-  EXPECT_NE(key, SpdySessionKey(HostPortPair("www.example.org", 80),
-                                PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                                SessionUsage::kDestination, SocketTag(),
-                                NetworkAnonymizationKey(),
-                                SecureDnsPolicy::kDisable));
+  EXPECT_NE(key,
+            SpdySessionKey(HostPortPair("www.example.org", 80),
+                           PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                           SessionUsage::kDestination, SocketTag(),
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
+                           /*disable_cert_verification_network_fetches=*/true));
+  EXPECT_NE(
+      key, SpdySessionKey(HostPortPair("www.example.org", 80),
+                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
+                          SessionUsage::kDestination, SocketTag(),
+                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                          /*disable_cert_verification_network_fetches=*/false));
 }
 
 // The operator< implementation is suitable for storing distinct keys in a set.
@@ -80,20 +96,24 @@ TEST(SpdySessionKeyTest, Set) {
       SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow),
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true),
       SpdySessionKey(HostPortPair("otherproxy", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow),
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true),
       SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_ENABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow),
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true),
       SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::FromSchemeHostAndPort(
                          ProxyServer::Scheme::SCHEME_HTTPS, "otherproxy", 443),
                      SessionUsage::kDestination, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true),
       SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain({
                          ProxyServer::FromSchemeHostAndPort(
@@ -102,28 +122,38 @@ TEST(SpdySessionKeyTest, Set) {
                              ProxyServer::Scheme::SCHEME_HTTPS, "proxy2", 443),
                      }),
                      SessionUsage::kDestination, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true),
       SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kProxy, SocketTag(),
-                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow),
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true),
 #if BUILDFLAG(IS_ANDROID)
       SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(999, 999), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kAllow),
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/true),
 #endif  // BUILDFLAG(IS_ANDROID)
       SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
                      ProxyChain::Direct(), SessionUsage::kDestination,
                      SocketTag(), NetworkAnonymizationKey(),
-                     SecureDnsPolicy::kDisable),
+                     SecureDnsPolicy::kDisable,
+                     /*disable_cert_verification_network_fetches=*/true),
+      SpdySessionKey(HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
+                     ProxyChain::Direct(), SessionUsage::kDestination,
+                     SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow,
+                     /*disable_cert_verification_network_fetches=*/false),
   };
   if (NetworkAnonymizationKey::IsPartitioningEnabled()) {
-    session_keys.emplace_back(HostPortPair("www.example.org", 80),
-                              PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
-                              SessionUsage::kDestination, SocketTag(),
-                              NetworkAnonymizationKey::CreateSameSite(
-                                  SchemefulSite(GURL("http://a.test/"))),
-                              SecureDnsPolicy::kAllow);
+    session_keys.emplace_back(
+        HostPortPair("www.example.org", 80), PRIVACY_MODE_DISABLED,
+        ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+        NetworkAnonymizationKey::CreateSameSite(
+            SchemefulSite(GURL("http://a.test/"))),
+        SecureDnsPolicy::kAllow,
+        /*disable_cert_verification_network_fetches=*/true);
   }
   std::set<SpdySessionKey> key_set(session_keys.begin(), session_keys.end());
   ASSERT_EQ(session_keys.size(), key_set.size());

@@ -6,11 +6,11 @@
 #define UI_VIEWS_CONTROLS_ANIMATED_IMAGE_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -60,8 +60,8 @@ class VIEWS_EXPORT AnimatedImageView : public ImageViewBase,
 
   // Plays the animation. If a null |playback_config| is provided, the default
   // one is used.
-  void Play(absl::optional<lottie::Animation::PlaybackConfig> playback_config =
-                absl::nullopt);
+  void Play(std::optional<lottie::Animation::PlaybackConfig> playback_config =
+                std::nullopt);
 
   // Stops any animation and resets it to the start frame.
   void Stop();

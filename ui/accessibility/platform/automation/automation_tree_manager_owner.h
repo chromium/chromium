@@ -53,8 +53,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
       AXTreeID tree_id,
       const gfx::Point& mouse_location,
       const AXEvent& event,
-      absl::optional<AXEventGenerator::Event> generated_event_type =
-          absl::optional<AXEventGenerator::Event>());
+      std::optional<AXEventGenerator::Event> generated_event_type =
+          std::optional<AXEventGenerator::Event>());
 
   // Gets the hosting node in a parent tree.
   AXNode* GetHostInParentTree(
@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
                              const std::vector<AXEvent>& events,
                              gfx::Point mouse_location);
 
-  absl::optional<gfx::Rect> GetAccessibilityFocusedLocation() const;
+  std::optional<gfx::Rect> GetAccessibilityFocusedLocation() const;
 
   void SendAccessibilityFocusedLocationChange(const gfx::Point& mouse_location);
 
@@ -196,7 +196,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void DispatchGetTextLocationResult(
       const ui::AXActionData& data,
-      const absl::optional<gfx::Rect>& rect) override;
+      const std::optional<gfx::Rect>& rect) override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Mojo receiver to the Automation interface, implemented by this class.

@@ -175,6 +175,8 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
           NativeThemeScrollbarOverlayColorTheme(
               scrollbar_thumb.scrollbar_theme);
       native_scrollbar_thumb.thumb_color = scrollbar_thumb.thumb_color;
+      native_scrollbar_thumb.is_thumb_minimal_mode =
+          scrollbar_thumb.is_thumb_minimal_mode;
       return ui::NativeTheme::ExtraParams(native_scrollbar_thumb);
     }
     case WebThemeEngine::kPartScrollbarDownArrow:

@@ -228,11 +228,6 @@
       public: true,
     },
     {
-      name: "AccessibilityExposeIgnoredNodes",
-      base_feature: "none",
-      public: true,
-    },
-    {
       name: "AccessibilityObjectModel",
       status: "experimental",
       base_feature: "none",
@@ -689,7 +684,7 @@
     {
       name: "CompressionDictionaryTransport",
       base_feature: "none",
-      origin_trial_feature_name: "CompressionDictionaryTransportForTest",
+      origin_trial_feature_name: "CompressionDictionaryTransportV2",
       origin_trial_allows_third_party: true,
       public: true,
     },
@@ -821,6 +816,11 @@
       base_feature: "none",
     },
     {
+      // https://chromestatus.com/feature/5196713071738880
+      name: "CSSCalcSizeFunction",
+      status: "experimental",
+    },
+    {
       name: "CSSCapFontUnits",
       status: "stable",
     },
@@ -873,6 +873,10 @@
       status: "stable",
     },
     {
+      name: "CSSDisplayModePictureInPicture",
+      status: "experimental",
+    },
+    {
       // crbug.com/880802
       name: "CssDisplayRuby",
       depends_on: ["RubySimplePairing"],
@@ -896,7 +900,7 @@
     {
       // crbug.com/1447058
       name: "CssFieldSizing",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Don't allow new line as preceding character for ::first-letter.
@@ -1025,6 +1029,12 @@
     // progress(), media-progress(), container-progress()
     {
       name: "CSSProgressNotation",
+      status: "experimental",
+    },
+    {
+      // Enables the :open and :closed pseudo-selectors.
+      // https://chromestatus.com/feature/5085419215781888
+      name: "CSSPseudoOpenClosed",
       status: "experimental",
     },
     {
@@ -1310,6 +1320,12 @@
       base_feature: "none",
     },
     {
+      // This feature makes the <dialog> element close properly when its "open"
+      // attribute is removed. https://github.com/whatwg/html/issues/5802
+      name: "DialogCloseWhenOpenRemoved",
+      status: "experimental",
+    },
+    {
       name: "DialogNewFocusBehavior",
       status: "experimental",
     },
@@ -1490,7 +1506,8 @@
       base_feature: "none",
     },
     // Controls whether DOMParser.parseFromString() attempts to use the
-    // html fast path parser. This is a kill switch.
+    // html fast path parser. This flag is to be used as a killswitch in case
+    // of any issues.
     {
       name: "DOMParserUsesHTMLFastPathParser",
       status: "stable"
@@ -2049,9 +2066,10 @@
       implied_by: ["HitTestTransparency"],
     },
     {
-      // Whether we use cc::HitTestOpaqueness::kTransparent for
-      // non-hit-testable objects, e.g. with pointer-events:none.
+      // Whether we use cc::HitTestOpaqueness::kTransparent on cc::Layer
+      // for non-hit-testable objects e.g. with pointer-events:none.
       name: "HitTestTransparency",
+      status: "experimental",
     },
     {
       name: "HrefTranslate",
@@ -2212,6 +2230,13 @@
       status: "experimental",
     },
     {
+      // This feature makes HTMLLabelElement::DefaultEventHandler always call
+      // HTMLElement::DefaultEventHandler instead of only doing so
+      // conditionally. Shipping in M123 so should be safe to remove in M127.
+      name: "LabelEventHandlerCallSuper",
+      status: "stable",
+    },
+    {
       name: "LangAttributeAwareFormControlUI",
       base_feature: "none",
       settable_from_internals: true,
@@ -2244,6 +2269,12 @@
       name: "LazyLoadScrollMargin",
       public: true,
       status: "stable",
+    },
+    {
+      // If enabled, the lazy load iframe observer will use a scroll margin in
+      // its init dictionary instead of a root margin.
+      name: "LazyLoadScrollMarginIframe",
+      status: "test",
     },
     {
       name: "LCPAnimatedImagesWebExposed",
@@ -2443,7 +2474,7 @@
     },
     {
       name: "MessagePortCloseEvent",
-      status: "stable",
+      status: "test",
     },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
@@ -2554,6 +2585,8 @@
       // inner-spin-button, push-button, searchfield-cancel-button,
       // slider-horizontal, square-button. Disable this feature to stop
       // parsing or allowing these values.
+      // This feature is disabled in fieldtrial testing config because we are
+      // testing the deprecation via Finch.
       // https://drafts.csswg.org/css-ui-4/#appearance-switching
       name: "NonStandardAppearanceValuesHighUsage",
       status: "stable",
@@ -2816,7 +2849,7 @@
     },
     {
       name: "PageRevealEvent",
-      status: "experimental",
+      status: "stable",
       implied_by: ["ViewTransitionOnNavigation"],
     },
     {
@@ -3010,7 +3043,11 @@
       status: "stable",
     },
     {
-      // https://crbug.com/1126305
+      // Used to allow chrome://flags to turn off prerendering. (Without using
+      // the user-facing preloading settings page to turn off other
+      // preloading.) See https://crbug.com/1494471.
+      //
+      // It also has some feature params defined throughout the codebase.
       name: "Prerender2",
       status: "stable",
     },
@@ -3024,7 +3061,7 @@
       // When enabled, gives the option to pretty-print JSON documents to
       // cleanly format the JSON and make it readable.
       name:"PrettyPrintJSONDocument",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Privacy intervention to disable reading the system accent-color via
@@ -3116,7 +3153,7 @@
     },
     {
       name: "ReduceCookieIPCs",
-      status: "test",
+      status: "stable",
     },
     {
       // If enabled, the deviceModel will be reduced to "K" and the
@@ -3494,6 +3531,11 @@
       public: true,
     },
     {
+      name: "SharedStorageAPIM123",
+      base_feature: "none",
+      public: true,
+    },
+    {
       name: "SharedWorker",
       public: true,
       // Android does not yet support SharedWorker. crbug.com/154571
@@ -3703,10 +3745,6 @@
     {
       name: "StylusHandwriting",
       base_feature: "none",
-    },
-    {
-      name: "SuggestionPickerDarkModeSupport",
-      status: "stable",
     },
     {
       name: "SvgCrossOriginAttribute",
@@ -4478,6 +4516,13 @@
     {
       name: "WindowPlacementPermissionAlias",
       status: "stable",
+    },
+    {
+      // Allows browser-providers writing suggestions to be turned on/off
+      // through the attribute.
+      // https://chromestatus.com/feature/5153375153029120
+      name: "WritingSuggestions",
+      status: "experimental",
     },
     // Flag guard for change to XML parser to merge adjacent CDATA sections.
     // See https://crrev.com/c/4790343.

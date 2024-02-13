@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -196,6 +197,11 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       std::unique_ptr<IpcNetworkManager> network_manager,
       base::WaitableEvent* event);
   void CleanupPeerConnectionFactory();
+
+  void DoGetDevtoolsToken(
+      base::OnceCallback<void(std::optional<base::UnguessableToken>)> then);
+  std::optional<base::UnguessableToken> GetDevtoolsToken();
+  scoped_refptr<base::SequencedTaskRunner> context_task_runner_;
 
   // network_manager_ must be deleted on the network thread. The network manager
   // uses |p2p_socket_dispatcher_|.

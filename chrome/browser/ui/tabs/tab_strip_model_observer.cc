@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
@@ -183,9 +184,9 @@ TabGroupChange::TabGroupChange(TabStripModel* model,
 TabStripModelObserver::TabStripModelObserver() {}
 
 TabStripModelObserver::~TabStripModelObserver() {
-  std::set<TabStripModel*> models(observed_models_.begin(),
-                                  observed_models_.end());
-  for (auto* model : models) {
+  std::set<raw_ptr<TabStripModel, SetExperimental>> models(
+      observed_models_.begin(), observed_models_.end());
+  for (TabStripModel* model : models) {
     model->RemoveObserver(this);
   }
 }

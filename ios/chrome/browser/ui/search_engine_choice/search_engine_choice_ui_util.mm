@@ -9,6 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engines_switches.h"
 #import "components/search_engines/template_url.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -137,9 +138,4 @@ UIImage* SearchEngineFaviconFromTemplateURL(const TemplateURL& template_url) {
   }
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
   return resource_bundle.GetNativeImageNamed(resource_id).ToUIImage();
-}
-
-bool IsSearchEngineForceEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kSearchEngineForceEnabled);
 }

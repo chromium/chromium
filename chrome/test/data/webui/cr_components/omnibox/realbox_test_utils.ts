@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AutocompleteMatch, PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 

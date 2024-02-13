@@ -233,19 +233,6 @@ class PDFExtensionPrintingTest
         std::make_unique<printing::PrinterBasicInfo>(printer_info));
   }
 
-  content::WebContents* GetEmbedderWebContents() {
-    content::WebContents* contents = GetActiveWebContents();
-
-    // OOPIF PDF viewer only has a single `WebContents`.
-    if (UseOopif()) {
-      return contents;
-    }
-
-    MimeHandlerViewGuest* guest =
-        pdf_extension_test_util::GetOnlyMimeHandlerView(contents);
-    return guest ? guest->embedder_web_contents() : nullptr;
-  }
-
   void SetupPrintViewManagerForJobMonitoring(content::RenderFrameHost* frame) {
     auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
     auto manager = std::make_unique<printing::TestPrintViewManager>(

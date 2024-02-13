@@ -12,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/device_id_helper.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -63,6 +64,9 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
       return "LogoutTabHelper::PrimaryPageChanged";
     case SourceForRefreshTokenOperation::kForceSigninReauthWithDifferentAccount:
       return "ForceSigninReauthWithDifferentAccount";
+    case SourceForRefreshTokenOperation::
+        kAccountReconcilor_RevokeTokensNotInCookies:
+      return "AccountReconcilor::RevokeTokensNotInCookies";
   }
 }
 }  // namespace

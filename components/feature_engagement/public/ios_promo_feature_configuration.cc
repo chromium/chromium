@@ -203,6 +203,22 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
                                   feature_engagement::kMaxStoragePeriod);
   }
 
+  if (kIPHiOSPostDefaultAbandonmentPromoFeature.name == feature->name) {
+    config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config->used = EventConfig("post_default_abandonment_promo_used",
+                               Comparator(ANY, 0), 365, 365);
+    config->trigger =
+        EventConfig("post_default_abandonment_promo_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    return config;
+  }
+
   // All standard promos can only be shown once per month.
   if (config) {
     config->event_configs.insert(

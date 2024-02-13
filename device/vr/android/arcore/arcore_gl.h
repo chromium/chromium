@@ -74,12 +74,12 @@ using ArCoreGlCreateSessionCallback =
 
 struct ArCoreGlInitializeResult {
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
-  absl::optional<device::mojom::XRDepthConfig> depth_configuration;
+  std::optional<device::mojom::XRDepthConfig> depth_configuration;
   viz::FrameSinkId frame_sink_id;
 
   ArCoreGlInitializeResult(
       std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
-      absl::optional<device::mojom::XRDepthConfig> depth_configuration,
+      std::optional<device::mojom::XRDepthConfig> depth_configuration,
       viz::FrameSinkId frame_sink_id);
   ArCoreGlInitializeResult(ArCoreGlInitializeResult&& other);
   ~ArCoreGlInitializeResult();
@@ -254,7 +254,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   // the session and only send out necessary data related to reference spaces to
   // blink. Valid after the call to |Initialize()| method.
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features_;
-  absl::optional<device::mojom::XRDepthConfig> depth_configuration_;
+  std::optional<device::mojom::XRDepthConfig> depth_configuration_;
 
   base::OnceClosure session_shutdown_callback_;
 
@@ -380,7 +380,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   uint32_t stage_parameters_id_;
 
   // Currently estimated floor height.
-  absl::optional<float> floor_height_estimate_;
+  std::optional<float> floor_height_estimate_;
 
   // Touch-related data.
   // Android will report touch events via MotionEvent - see XrImmersiveOverlay

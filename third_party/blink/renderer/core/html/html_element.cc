@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -357,9 +358,7 @@ void HTMLElement::CollectStyleForPresentationAttribute(
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kDirection, "ltr");
       }
-      if (!HasTagName(html_names::kBdiTag) &&
-          !HasTagName(html_names::kBdoTag) &&
-          !HasTagName(html_names::kOutputTag)) {
+      if (!HasTagName(html_names::kBdoTag)) {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kUnicodeBidi, CSSValueID::kIsolate);
       }
@@ -1156,14 +1155,20 @@ void HTMLElement::UpdatePopoverAttribute(const AtomicString& value) {
       return;
     }
   }
+  if (auto* listbox = DynamicTo<HTMLDataListElement>(this)) {
+    if (listbox->ParentSelect()) {
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      // Select datalist listboxes manage their own popover state.
+      return;
+    }
+  }
 
   PopoverValueType type = GetPopoverTypeFromAttributeValue(value);
   if (type == PopoverValueType::kManual &&
       !EqualIgnoringASCIICase(value, keywords::kManual)) {
-    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "Found a 'popover' attribute with an invalid value."));
+    AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
+                      mojom::blink::ConsoleMessageLevel::kWarning,
+                      "Found a 'popover' attribute with an invalid value.");
     UseCounter::Count(GetDocument(), WebFeature::kPopoverTypeInvalid);
   }
   if (HasPopoverAttribute()) {
@@ -1267,7 +1272,9 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
 
   auto* listbox = DynamicTo<HTMLListboxElement>(this);
   bool is_selectlist_listbox = listbox && listbox->OwnerSelectList();
-  if (!HasPopoverAttribute() && !is_selectlist_listbox) {
+  auto* datalist = DynamicTo<HTMLDataListElement>(this);
+  bool is_select_listbox = datalist && datalist->ParentSelect();
+  if (!HasPopoverAttribute() && !is_selectlist_listbox && !is_select_listbox) {
     maybe_throw_exception(DOMExceptionCode::kNotSupportedError,
                           "Not supported on elements that do not have a valid "
                           "value for the 'popover' attribute.");
@@ -1756,11 +1763,11 @@ void HTMLElement::HidePopoverInternal(
         stack_containing_this->back() != this) {
       CHECK(PopoverType() == PopoverValueType::kAuto ||
             PopoverType() == PopoverValueType::kHint);
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      AddConsoleMessage(
           mojom::blink::ConsoleMessageSource::kOther,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "The `beforetoggle` event handler for a popover triggered another "
-          "popover to be shown. This is not recommended."));
+          "popover to be shown. This is not recommended.");
       HideAllPopoversUntil(this, document, focus_behavior,
                            HidePopoverTransitionBehavior::kNoEventsNoWaiting);
     }
@@ -2386,9 +2393,8 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       return true;
     } else {
       String message = "Cannot request fullscreen without a user gesture.";
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning, message));
+      AddConsoleMessage(mojom::ConsoleMessageSource::kJavaScript,
+                        mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
   } else if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
@@ -2400,9 +2406,8 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       return true;
     } else {
       String message = "Cannot request fullscreen without a user gesture.";
-      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::ConsoleMessageSource::kJavaScript,
-          mojom::ConsoleMessageLevel::kWarning, message));
+      AddConsoleMessage(mojom::ConsoleMessageSource::kJavaScript,
+                        mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
   } else if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
@@ -3180,6 +3185,33 @@ void HTMLElement::FinishParsingChildren() {
   Element::FinishParsingChildren();
   if (IsFormAssociatedCustomElement())
     EnsureElementInternals().TakeStateAndRestore();
+}
+
+AtomicString HTMLElement::writingSuggestions() const {
+  CHECK(RuntimeEnabledFeatures::WritingSuggestionsEnabled());
+  for (const Element* element = this; element;
+       element = element->ParentOrShadowHostElement()) {
+    const AtomicString& value =
+        element->FastGetAttribute(html_names::kWritingsuggestionsAttr);
+    if (value == g_null_atom) {
+      continue;
+    } else if (EqualIgnoringASCIICase(value, keywords::kFalse)) {
+      return keywords::kFalse;
+    } else {
+      // The invalid value default is 'true'.
+      return keywords::kTrue;
+    }
+  }
+  // Default is 'true'.
+  return keywords::kTrue;
+}
+
+void HTMLElement::setWritingSuggestions(const AtomicString& value) {
+  CHECK(RuntimeEnabledFeatures::WritingSuggestionsEnabled());
+  setAttribute(html_names::kWritingsuggestionsAttr,
+               EqualIgnoringASCIICase(value, keywords::kFalse)
+                   ? keywords::kFalse
+                   : keywords::kTrue);
 }
 
 }  // namespace blink

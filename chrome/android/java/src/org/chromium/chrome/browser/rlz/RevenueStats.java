@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.rlz;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -16,7 +18,6 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Utility class for managing revenue sharing information. */
 @JNINamespace("chrome::android")
 public class RevenueStats {
-
     private static RevenueStats sInstance;
 
     /** Returns the singleton instance of ExternalAuthUtils, creating it if needed. */
@@ -31,6 +32,9 @@ public class RevenueStats {
 
     /** Notifies tab creation event. */
     public void tabCreated(Tab tab) {}
+
+    /** Read and apply RLZ and ClientID values. */
+    public void retrieveAndApplyTrackingIds() {}
 
     /** Returns whether the RLZ provider has been notified that the first search has occurred. */
     protected static boolean getRlzNotified() {
@@ -54,9 +58,9 @@ public class RevenueStats {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting
+    public interface Natives {
         void setSearchClient(String client);
-
         void setRlzParameterValue(String rlz);
     }
 }

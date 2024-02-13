@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -25,11 +26,13 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -75,6 +78,9 @@ public class TabStateAttributesTest {
                         return true;
                     }
                 };
+        mTab.setCanGoForward(false);
+        mTab.setCanGoBack(false);
+
         doNothing().when(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
     }
 
@@ -388,6 +394,54 @@ public class TabStateAttributesTest {
                 TabStateAttributes.from(mTab).getDirtinessState());
         Mockito.verify(mAttributesObserver)
                 .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        mTab.setRootId(56);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        Mockito.verify(mAttributesObserver, times(2))
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.CONTENT_SCHEME + "://hello_world"));
+        mTab.setRootId(100);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+    }
+
+    @Test
+    public void testTabGroupIdUpdates() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.setTabGroupId(new Token(1L, 2L));
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        Mockito.verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        mTab.setTabGroupId(null);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        Mockito.verify(mAttributesObserver, times(2))
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.CONTENT_SCHEME + "://hello_world"));
+        mTab.setTabGroupId(new Token(2L, 1L));
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
     }
 
     @Test
@@ -468,7 +522,6 @@ public class TabStateAttributesTest {
     @Test
     public void testDirtyCannotBecomeUntidy() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_FOR_LAZY_LOAD);
-        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.DIRTY,
                 TabStateAttributes.from(mTab).getDirtinessState());
@@ -477,9 +530,49 @@ public class TabStateAttributesTest {
         Assert.assertEquals(
                 TabStateAttributes.DirtinessState.DIRTY,
                 TabStateAttributes.from(mTab).getDirtinessState());
-        Mockito.verifyNoMoreInteractions(mAttributesObserver);
-        Mockito.reset(mAttributesObserver);
+    }
 
-        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
+    @Test
+    public void testUpdateDirtinessPredicate() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.setCanGoForward(false);
+        mTab.setCanGoBack(true);
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.UNTIDY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setCanGoForward(true);
+        mTab.setCanGoBack(false);
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.UNTIDY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setCanGoForward(false);
+        mTab.setCanGoBack(false);
+        mTab.setUrl(new GURL(UrlConstants.CONTENT_SCHEME + "://hello_world"));
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.setUrl(new GURL("https://www.foo.com/"));
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        Assert.assertEquals(
+                TabStateAttributes.DirtinessState.UNTIDY,
+                TabStateAttributes.from(mTab).getDirtinessState());
     }
 }

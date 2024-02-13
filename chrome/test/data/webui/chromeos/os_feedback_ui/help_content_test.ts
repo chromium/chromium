@@ -11,7 +11,6 @@ import {HelpContentList} from 'chrome://os-feedback/feedback_types.js';
 import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 import {HelpContentType} from 'chrome://os-feedback/os_feedback_ui.mojom-webui.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -225,43 +224,7 @@ suite('helpContentTestSuite', () => {
    * Test that the offline-only elements render when offline, and that the
    * online-only elements render when online.
    */
-  // TODO(crbug.com/1401615): Re-enable flaky test.
-  test.skip('OfflineMessage', async () => {
-    loadTimeData.overrideValues({'isJellyEnabledForOsFeedback': false});
-    await initializeHelpContentElement(
-        fakePopularHelpContentList, /* isQueryEmpty= */ true,
-        /* isPopularContent= */ true);
-
-    await goOffline();
-
-    // Offline-only content should exist in the DOM when offline.
-    assertTrue(isVisible(strictQuery(
-        offlineImgSelector, helpContentElement.shadowRoot, HTMLElement)));
-    // Content not available image should be invisible.
-    assertFalse(isVisible(strictQuery(
-        noContentImgSelector, helpContentElement.shadowRoot, HTMLElement)));
-
-    // Online-only content should *not* exist in the DOM when offline.
-    assertFalse(isVisible(strictQuery(
-        '.help-item-icon', helpContentElement.shadowRoot, HTMLElement)));
-
-    await goOnline();
-
-    // Offline-only content should *not* exist in the DOM when online.
-    assertFalse(isVisible(strictQuery(
-        'offlineImgSelector', helpContentElement.shadowRoot, HTMLElement)));
-
-    // Online-only content should exist in the DOM when online.
-    assertTrue(isVisible(strictQuery(
-        '.help-item-icon', helpContentElement.shadowRoot, HTMLElement)));
-    // Content not available image should be invisible.
-    assertFalse(isVisible(strictQuery(
-        noContentImgSelector, helpContentElement.shadowRoot, HTMLElement)));
-  });
-
-  // Test that the correct SVG appears when jelly colors enabled.
-  test('OfflineMessage_JellyEnabled', async () => {
-    loadTimeData.overrideValues({'isJellyEnabledForOsFeedback': true});
+  test('OfflineMessage', async () => {
     await initializeHelpContentElement(
         fakePopularHelpContentList, /* isQueryEmpty= */ true,
         /* isPopularContent= */ true);
@@ -357,35 +320,7 @@ suite('helpContentTestSuite', () => {
    *
    * Case 1: the query is empty.
    */
-  // TODO(crbug.com/1401615): Flaky.
-  test.skip('TopHelpContentNotAvailable', async () => {
-    loadTimeData.overrideValues({'isJellyEnabledForOsFeedback': false});
-    // Initialize element with no content and empty query.
-    await initializeHelpContentElement(
-        /* contentList= */[], /* isQueryEmpty= */ true,
-        /* isPopularContent= */ true);
-
-    // Verify the title is what we expect when showing top content.
-    const title = strictQuery(
-        '.help-content-label', helpContentElement.shadowRoot, HTMLElement);
-    assertTrue(!!title);
-    assertEquals('Top help content', title.textContent);
-
-    // Content not available image should be visible.
-    assertTrue(isVisible(getElement(noContentImgSelector)));
-    assertFalse(isVisible(getElement(offlineImgSelector)));
-
-    await goOffline();
-
-    // When offline, should show offline message.
-    assertTrue(isVisible(getElement(offlineImgSelector)));
-    // Content not available image should be invisible.
-    assertFalse(isVisible(getElement(noContentImgSelector)));
-  });
-
-  // Test that the correct SVG appears when Jelly colors enabled.
-  test('TopHelpContentNotAvailable_JellyEnabled', async () => {
-    loadTimeData.overrideValues({'isJellyEnabledForOsFeedback': true});
+  test('TopHelpContentNotAvailable', async () => {
     // Initialize element with no content and empty query.
     await initializeHelpContentElement(
         /* contentList= */[], /* isQueryEmpty= */ true,

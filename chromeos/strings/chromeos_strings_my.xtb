@@ -7,8 +7,10 @@
 <translation id="1018656279737460067">ဖျက်သိမ်းခဲ့သည်</translation>
 <translation id="1020274983236703756">အထူးသီးသန့် <ph name="PRODUCT_NAME" /> ပိုင်ဆိုင်မှုများကို ယခု ရနိုင်ပြီ</translation>
 <translation id="1022628058306505708">ကမ္ဘာမြေ လည်ပတ်မှု</translation>
+<translation id="1026212596705997935">ဖြတ်လမ်းလင့်ခ်ကို “<ph name="CONFLICT_ACCEL_NAME" />” အတွက် သုံးထားသည်။ ဖြတ်လမ်းလင့်ခ်အသစ်တစ်ခုကို နှိပ်ပါ။ ရှိပြီးသား ဖြတ်လမ်းလင့်ခ်ကို အစားထိုးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (အတွဲ <ph name="THREAD_COUNT" /> ခု၊ <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ဝန်ဆောင်မှုအသစ် ရနိုင်သည်၊ ပိုမိုလေ့လာရန် အပေါ်ညွှန်မြားကို အသုံးပြုပါ။</translation>
+<translation id="1049663189809099096">အဝါဖျော့</translation>
 <translation id="1059913517121127803">စကင်ဖတ်ရန် စတင်၍မရပါ</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> အနက် <ph name="INDEX" />၊ <ph name="NAME" />။</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -21,7 +23,6 @@
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">အမြှောက်</translation>
 <translation id="1145018782460575098">ပြင်ပစက်ပစ္စည်းများအတွက် ဖာမ်းဝဲအပ်ဒိတ်ဝင်းဒိုး ဖွင့်ထားသည်။ <ph name="NUM_UPDATES" /> အပ်ဒိတ်များ ရနိုင်ပါပြီ။</translation>
 <translation id="1145516343487477149">မေးလေ့ရှိသော Chromebook မေးခွန်းများအတွက် အကူအညီပေးဆောင်းပါးနှင့် အဖြေများ ရှာဖွေနိုင်သည်</translation>
 <translation id="1154390310959620237">ဖြတ်လမ်းလင့်ခ် ၅ ခုသာ စိတ်ကြိုက်လုပ်နိုင်သည်။ ဖြတ်လမ်းလင့်ခ်အသစ်ထည့်ရန် လက်ရှိတစ်ခုကို ဖျက်ပါ။</translation>
@@ -65,6 +66,7 @@
 <translation id="1407069428457324124">အမှောင်နောက်ခံ</translation>
 <translation id="1413240736185167732">မအောင်မြင်ပါ - ဆန်ခါ ရပ်သွားသည်</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="1418991483994088776">သစ်ခွပန်း</translation>
 <translation id="142228117786570094">ကျွန်ုပ်တွင် ကီးအတွဲရှိသည်</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> ခလုတ် နှိပ်မထားပါ</translation>
 <translation id="1435763214710588005">လစဉ်လတိုင်း ရွေးချယ်ထားသည့်နေ့တွင် ဒေတာသုံးစွဲမှုကို အလိုအလျောက် ပြင်ဆင်သတ်မှတ်သည်</translation>
@@ -85,11 +87,11 @@
 <translation id="1515129336378114413">ဘရောင်ဇာ ပင်မစာမျက်နှာ</translation>
 <translation id="1526389707933164996">စခရင်နားချိန်ပုံ လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="152892567002884378">အသံချဲ့ရန်</translation>
+<translation id="1531886272553347340">ရန်နန်ကျူးလပ်စ်ပန်း</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
 <translation id="155865706765934889">တို့ထိရန် အပြား</translation>
 <translation id="1561927818299383735">နောက်ခံမီးအရောင်</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> အပ်ဒိတ်လုပ်၍ မရပါ</translation>
-<translation id="1566493343215789965">အစား</translation>
 <translation id="1567064801249837505">အယ်လ်ဘမ်များ</translation>
 <translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1578784163189013834">စခရင်နားချိန်ပုံ နောက်ခံရွေးရန်</translation>
@@ -124,6 +126,7 @@
 <translation id="1745577949879301685">ပုံများဖွင့်၍ မရပါ။ ကွန်ရက်ချိတ်ဆက်မှုကို စစ်ဆေးပါ (သို့) ပုံများကို ထပ်ဖွင့်ကြည့်ပါ။</translation>
 <translation id="1751249301761991853">ကိုယ်ပိုင်</translation>
 <translation id="1753496554272155572">နောက်ခံအစမ်းကြည့်ရှုခြင်းမှ ထွက်ရန်</translation>
+<translation id="1754578112426924640"><ph name="ACCELERATOR_INFO" /> အတွက် တည်းဖြတ်ရန်ခလုတ်။</translation>
 <translation id="1755556344721611131">Diagnostics အက်ပ်</translation>
 <translation id="175763766237925754">ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -161,6 +164,7 @@
 <translation id="1977994649430373166">Google ပရိုဖိုင်ဓာတ်ပုံ</translation>
 <translation id="1979103255016296513">စကားဝှက်ပြောင်းလဲမှု သက်တမ်းကုန်သွားပါပြီ</translation>
 <translation id="1999615961760456652">စတင်ဝင်ရန် စာမျက်နှာ</translation>
+<translation id="2004572381882349402">လေစုတ်တံသုံးထားခြင်း</translation>
 <translation id="200669432486043882">ဖိုင် အစားထိုးရန်</translation>
 <translation id="2006864819935886708">ချိတ်ဆက်နိုင်မှု</translation>
 <translation id="2008685064673031089">အဓိက ရှာဖွေမှု</translation>
@@ -195,6 +199,7 @@
 <translation id="222447520299472966">အနည်းဆုံး အနုပညာပြခန်း အယ်လ်ဘမ်တစ်ခုကို ရွေးရန် လိုအပ်သည်</translation>
 <translation id="2230005943220647148">စင်တီဂရိတ်</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">နောက်ထပ် ပြုလုပ်ရန်</translation>
 <translation id="2236746079896696523">ကီးဘုတ်နောက်ခံမီး ခလုတ်</translation>
 <translation id="2240366984605217732">အပြင်အဆင် ပြောင်းရန်</translation>
 <translation id="225692081236532131">စဖွင့်ခြင်း အခြေအနေ</translation>
@@ -218,6 +223,7 @@
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="2407209115954268704">ဆင်းမ်ကတ်လော့ခ် အခြေအနေ</translation>
 <translation id="241419523391571119">စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ</translation>
+<translation id="2414660853550118611">နောက်ခံအကြောင်း</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
 <translation id="2418150275289244458">ဆက်တင်များတွင် ဖွင့်ရန်</translation>
 <translation id="2421798028054665193">ပုံ <ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
@@ -235,6 +241,7 @@
 <translation id="2521835766824839541">ယခင်တစ်ပုဒ်သို့ သွားရန်</translation>
 <translation id="2526590354069164005">ဒက်စက်တော့</translation>
 <translation id="253029298928638905">ပြန်စနေသည်…</translation>
+<translation id="2531772459602846206">ခြောက်လပန်း</translation>
 <translation id="2533048460510040082">အကြံပြုထားသော အကူအညီ အကြောင်းအရာ</translation>
 <translation id="2536159006530886390">အင်တာနက်သို့ ချိတ်ဆက်၍မရပါ။</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> စစ်ဆေးမှု လုပ်ဆောင်နေသည်...</translation>
@@ -269,7 +276,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
 <translation id="2880569433548999039">တိမ်များလွှင့်နေသည့် စခရင်နားချိန်ပုံ</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
-<translation id="2938573842839598578">ခန့်မှန်းခြေရလဒ်အတွက် <ph name="CATEGORY_TEXT" /> တန်ဖိုးကို<ph name="CONVERSION_RATE" /> နှင့် <ph name="OPERATOR_TEXT" /> ပါ</translation>
 <translation id="2940811910881150316">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ။</translation>
 <translation id="2941112035454246133">နိမ့်</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
@@ -360,6 +366,7 @@
 <translation id="361575905210396100">သင့်အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3651050199673793219">အပူချိန်ယူနစ်ရွေးရန်</translation>
+<translation id="3654530588944650786">ရွှန်းစိုနေသော <ph name="FLOWER_COLOR" /> ဖြင့် ဖူးပွင့်နေသည့် <ph name="FLOWER_TYPE" /></translation>
 <translation id="3668449597372804501">တိမ်များလွှင့်နေသည့် နောက်ခံ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
@@ -400,6 +407,7 @@
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3969602104473960991">ChromeOS စကားဝှက် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
+<translation id="3981099166243641873">အစိမ်းဖျော့</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3993704782688964914">ယခု သင့် <ph name="DEVICE_NAME" /> အပ်ဒိတ်ဖြစ်နေပါပြီ</translation>
 <translation id="3998976413398910035">ပရင်တာများကို စီမံခန့်ခွဲရန်</translation>
@@ -411,6 +419,7 @@
 <translation id="404928562651467259">သတိပေးချက်</translation>
 <translation id="4054683689023980771">ပုံကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="4060260348856573701">APN အသစ်</translation>
+<translation id="4063039537646912479">အပြာဖျော့</translation>
 <translation id="4093865285251893588">ပရိုဖိုင်ပုံ</translation>
 <translation id="409427325554347132">စာသားအသေးစိတ် သိမ်းရန်</translation>
 <translation id="409469431304488632">စမ်းသပ်မှု</translation>
@@ -460,7 +469,6 @@
 <translation id="4394049700291259645">ပိတ်ထားရန်</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ပြန်စနေသည်</translation>
 <translation id="4395835743215824109">ကီးဘုတ် စိတ်ကြိုက်ပြင်ရန်</translation>
-<translation id="4403262788869804671"><ph name="META_KEY" /> ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) <ph name="KEY" /> ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
 <translation id="4415951057168511744">လက်ရှိ ကိုယ်စားပြုပုံ</translation>
 <translation id="4417830657741848074">သင့်စီမံခန့်ခွဲသူက အက်ပ်အချို့ကို အလိုအလျောက်စတင်ရန် စနစ်ထည့်သွင်းထားသည်။ ၎င်းအက်ပ်များအနက်အချို့ကို ပိတ်မည်မဟုတ်ပါ။</translation>
 <translation id="4422041425070339732">အောက်ညွှန်မြား</translation>
@@ -604,6 +612,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">ယခု အသစ်တစ်ခု ရွေးရန်</translation>
 <translation id="5333530671332546086">အမျိုးအမည်မသိ စာမျက်နှာအခြေအနေ</translation>
+<translation id="5335373365677455232">ပန်းရောင်</translation>
 <translation id="5346687412805619883">အိမ်တွင်းသုံးကွန်ရက်</translation>
 <translation id="5358174242040570474">တစ်ခုခုမှားသွားသည်။ နောက်ခံကို ထပ်မံရွေးချယ်ကြည့်ပါ သို့မဟုတ် အက်ပ်ကို ပြန်ဖွင့်ပါ။</translation>
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
@@ -611,6 +620,7 @@
 <translation id="5378184552853359930">IP အမျိုးအစား</translation>
 <translation id="5389159777326897627">နောက်ခံနှင့် စတိုင်</translation>
 <translation id="5389224261615877010">သက်သန့်</translation>
+<translation id="5396811372860835203">လက်ထပ်ပန်း</translation>
 <translation id="5400907029458559844">ကိရိယာ ချိတ်ဆက်နေသည်။</translation>
 <translation id="5401938042319910061">'ပုံမှန်အစီအစဉ်" အားလုံး အသုံးပြုရန်</translation>
 <translation id="5423849171846380976">အသက်သွင်းပြီး</translation>
@@ -625,6 +635,7 @@
 <translation id="5502931783115429516">Android မလုပ်ဆောင်တော့ပါ</translation>
 <translation id="551689408806449779">စက်ကို ချိတ်ဆက်မှုဖြုတ်ထားသည်။ စမ်းသပ်ရန် ပြန်လည်ချိတ်ဆက်ကြည့်ပါ</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">လော့ခ်ချထားသည်</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">နေဝင်ချိန်တွင် အမှောင်နောက်ခံသို့ အလိုအလျောက်ပြောင်းရန်</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -632,7 +643,9 @@
 <translation id="5583640892426849032">နောက်ပြန်</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ခလုတ် စမ်းသပ်ထားသည်</translation>
 <translation id="5620281292257375798">ရုံးတွင်းသာ</translation>
+<translation id="5631759159893697722">ကောက်နုတ်ချက်</translation>
 <translation id="5649768706273821470">နားထောင်</translation>
+<translation id="5654356773042347102">နတ်သမီးရေခွက်ပန်း</translation>
 <translation id="5655283760733841251">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
 <translation id="5655296450510165335">စက်ပစ္စည်း စာရင်းသွင်းခြင်း</translation>
 <translation id="5655776422854483175">ပရင့်ထုတ်ရန် ဖိုင်များ မရှိပါ</translation>
@@ -645,6 +658,7 @@
 <translation id="5701381305118179107">အလယ်</translation>
 <translation id="5703716265115423771">အသံ လျှော့ပါ</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
+<translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> အတွက် တည်းဖြတ်ရန်ခလုတ်။</translation>
 <translation id="5733298426544876109"><ph name="DEVICE_NAME" /> ကို အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="574392208103952083">အလယ်အလတ်</translation>
 <translation id="5757187557809630523">နောက်တစ်ပုဒ်</translation>
@@ -675,12 +689,13 @@
 <translation id="5916084858004523819">တားမြစ်ထားသည်</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{သင်၏ဖိုင်ကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}other{သင်၏ဖိုင်များကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}}</translation>
+<translation id="5928411637936685857"><ph name="ACCELERATOR_INFO" /> အတွက် ဖျက်ရန်ခလုတ်။</translation>
 <translation id="5931523347251946569">ဖိုင်ကို ရှာမတွေ့ပါ</translation>
-<translation id="593880865674747800">ဤပုံစံအတိုင်း နောက်ထပ်ပြုလုပ်ရန်</translation>
 <translation id="5939518447894949180">ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="594552776027197022">ကျပန်းကီးအတွဲ ထုတ်ရန်</translation>
 <translation id="5946538341867151940">သင်မချိတ်ဆက်ရသေးပါဘူး။ သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီက စိတ်ကြိုက် APN ကို အကြံပြုလျှင် “+ APN အသစ်” ကိုရွေးပြီး APN အချက်အလက်ထည့်ပါ</translation>
 <translation id="5972388717451707488">အင်ဂျင် အပ်ဒိတ်လုပ်ရန်</translation>
+<translation id="5975130252842127517">သန္တာရောင်</translation>
 <translation id="5984145644188835034">မူရင်း နောက်ခံ</translation>
 <translation id="6017514345406065928">အစိမ်းရောင်</translation>
 <translation id="6019566113895157499">လက်ကွက်ဖြတ်လမ်းများ</translation>
@@ -705,12 +720,14 @@
 <translation id="6117895505466548728"><ph name="TITLE" />၊ + နောက်ထပ်အယ်လ်ဘမ် <ph name="NUMBER" /> ခု</translation>
 <translation id="6122191549521593678">အွန်လိုင်း</translation>
 <translation id="6122277663991249694">ChromeOS လက်ကွက်ဝန်ဆောင်မှု</translation>
+<translation id="6127426868813166163">အဖြူ</translation>
 <translation id="6136285399872347291">နောက်ပြန်</translation>
 <translation id="6137767437444130246">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ်</translation>
 <translation id="6146993107019042706">အပြီးသတ်ရန် သင့်စကားဝှက်အသစ်ကို ထည့်ပါ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319"><ph name="DATE" /> တွင် ပြုလုပ်ထားသည်</translation>
 <translation id="6189418609903030344">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
 <translation id="6191293864534840972">ပုံပျက်နေသော အမည်ဆာဗာများ</translation>
 <translation id="6196607555925437199">ပြန်ပြုလုပ်ရန်</translation>
@@ -734,6 +751,7 @@
 <translation id="6321407676395378991">စခရင်နားချိန်ပုံ ဖွင့်ရန်</translation>
 <translation id="6324916366299863871">ဖြတ်လမ်းလင့်ခ်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="6325525973963619867">အောင်မြင်ပါ</translation>
+<translation id="6327262166342360252">ဤနောက်ခံကို ဖော်ပြပါစာသားသုံး၍ AI ဖြင့် ပြုလုပ်ထားသည်- "<ph name="PROMPT" />။"</translation>
 <translation id="6331191339300272798">အလိုအလျောက် အမှောင်နောက်ခံ</translation>
 <translation id="6340526405444716530">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း</translation>
 <translation id="6348738456043757611">အသုံးပြုသူအမည်နှင့် စကားဝှက်</translation>
@@ -756,6 +774,7 @@
 <translation id="6462978824459367242">‘APN ထည့်ရန်’ ခလုတ်ကို ယခု ဖွင့်လိုက်သည်</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{စာမျက်နှာကို စကင်ပြန်ဖတ်မလား။}=1{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်မလား။}other{စာမျက်နှာ {PAGE_NUMBER} ကို စကင်ပြန်ဖတ်မလား။}}</translation>
 <translation id="6472207088655375767">OTP</translation>
+<translation id="64778964625672495">အနီရင့်</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> က စီမံခန့်ခွဲသည်</translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> သီးသန့် စခရင်နားချိန်ပုံ</translation>
 <translation id="649050271426829538">ရပ်သွားသည် - စာရွက်ညပ်နေသည်</translation>
@@ -802,10 +821,13 @@
 <translation id="6766275201586212568">DNS ဖြေရှင်းချက်များ မအောင်မြင်ပါ</translation>
 <translation id="6768237774506518020">DNS ဖြေရှင်းချက် ကျရှုံးမှုနှုန်း မြင့်သည်</translation>
 <translation id="6791471867139427246">ကီးဘုတ်မီးအရောင်</translation>
+<translation id="6796229976413584781">ဖြတ်လမ်းလင့်ခ်ကို ဖျက်လိုက်ပါပြီ</translation>
 <translation id="6798678288485555829">စာသား လမ်းညွှန်မှု</translation>
 <translation id="680983167891198932">ကီး</translation>
 <translation id="6816797338148849397">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရနိုင်သည်။ ဝင်ကြည့်ရန် အပေါ်ညွှန်မြား အသုံးပြုပါ။</translation>
 <translation id="6853312040151791195">အားလျော့နှုန်း</translation>
+<translation id="6866732840889595464">ဒေစီပန်း</translation>
+<translation id="6871256179359663621">ခရမ်းဖျော့</translation>
 <translation id="6889786074662672253">ပြန်စနေစဉ် ဤပြင်ပစက်ပစ္စည်းကို ပလတ်မဖြုတ်ပါနှင့် (သို့) သင့်ကွန်ပျူတာကို အပြီးမပိတ်ပါနှင့်။ ဤဝင်းဒိုးကို ချုံ့နိုင်သည်။ မိနစ်အနည်းငယ်ကြာနိုင်ပြီး ဤအချိန်အတွင်း သင်၏ပြင်ပစက်ပစ္စည်း အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="6900701049656042631">ဤအယ်လ်ဘမ်တွင် ဓာတ်ပုံများမရှိပါ။ ဓာတ်ပုံများ ထည့်ရန် <ph name="LINK" /> သို့သွားပါ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> သို့ ပြန်သွားရန်</translation>
@@ -819,6 +841,7 @@
 <translation id="6965978654500191972">စက်ပစ္စည်း</translation>
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
+<translation id="6988803763488977828">အနီမိုနီပန်း</translation>
 <translation id="7005833343836210400">စက်အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
@@ -856,6 +879,7 @@
 <translation id="7212547870105584639">ကွန်ရက် APN ဆက်တင်များကို စီမံနိုင်သည်။ APN များက ဆယ်လူလာ ကွန်ရက်နှင့် အင်တာနက်အကြား ချိတ်ဆက်ပေးသည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ပြင်ပစက်များအတွက် ဖာမ်းဝဲအပ်ဒိတ်များ</translation>
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="7233782086689993269">ဖြတ်လမ်းလင့်ခ်ကို ပြန်ယူလိုက်ပါပြီ</translation>
 <translation id="725133483556299729">အီးမေးလ်ရွေးရန်</translation>
 <translation id="7271040990581020067">စကင်ဖတ်စက်ကို လက်ရှိ သုံးနေသည်။ နောက်မှ ထပ်စမ်းပါ။</translation>
 <translation id="7271932918253517778">ထိပ်ဆုံးတန်းခလုတ်များပါဝင်သော ဖြတ်လမ်းလင့်ခ်တွင် <ph name="META_KEY" /> ခလုတ် လိုအပ်သည်။</translation>
@@ -871,6 +895,7 @@
 <translation id="7311368985037279727">ကီးဘုတ်အရောင်</translation>
 <translation id="7317831949569936035">ကျောင်းအပ်နှံမှု</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7328475450575141167">ပရဒိသုငှက်ပန်း</translation>
 <translation id="7331297744262591636">သင်သည် အနည်းဆုံးအသက် ၁၈ နှစ် ရှိရမည်ဖြစ်ပြီး AI နောက်ခံများကို အသုံးပြုခြင်းသည် <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> နှင့် <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ထုတ်လုပ်မှု AI ထပ်ဆောင်းဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" /> ကို လိုက်နာရမည်ဖြစ်ကြောင်း သင်သဘောတူသည်။
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -917,7 +942,9 @@
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>
 <translation id="7656388927906093505">ကိရိယာသည် မောက်စ်ဖြစ်သည်။</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />၊ <ph name="ACCELERATOR_INFO" />၊ <ph name="ROW_STATUS" />။</translation>
 <translation id="7665800271478495366">ချန်နယ်ပုံပြောင်းရန်</translation>
+<translation id="7673177760638264939">ဥယျာဉ်နှင်းဆီပန်း</translation>
 <translation id="7683228889864052081">ကီးဘုတ် အရောင်အသွေး</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7701040980221191251">မရှိ</translation>
@@ -926,6 +953,7 @@
 <translation id="7718231387947923843">ကီးဘုတ် အလင်း</translation>
 <translation id="7730077286107534951">အကောင့်နှင့် စနစ်အချက်အလက်အချို့ကို Google သို့ ပေးပို့နိုင်သည်။ ကျွန်ုပ်တို့၏ <ph name="BEGIN_LINK2" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK2" /> နှင့် <ph name="BEGIN_LINK3" />ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK3" /> အရ ဝန်ဆောင်မှုများ ပိုမိုကောင်းမွန်စေရန်နှင့် နည်းပညာဆိုင်ရာ ပြဿနာများ ကူညီဖြေရှင်းပေးရန် ဤအချက်အလက်ကို ကျွန်ုပ်တို့ အသုံးပြုသည်။ အကြောင်းအရာ ပြောင်းလဲမှုများကို တောင်းဆိုရန် <ph name="BEGIN_LINK1" />ဥပဒေဆိုင်ရာ အကူအညီ<ph name="END_LINK1" /> သို့သွားပါ။</translation>
 <translation id="773153675489693198">သုံးစွဲမှု အကြိမ်ရေ</translation>
+<translation id="7746357909584236306">တည်းဖြတ်နိုင်သည်</translation>
 <translation id="7747039790905080783">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
 <translation id="7752963721013053477">မိုးသောက်ချိန်မှ မှောင်မိုက်ချိန်အထိ - အထူးသီးသန့်</translation>
 <translation id="7762130827864645708">သင်၏စကားဝှက်ကို ပြောင်းပြီးပြီ။ ယခုမှစ၍ စကားဝှက်အသစ် သုံးပါ။</translation>
@@ -944,6 +972,7 @@
 <translation id="7841134249932030522">အမှောင်မုဒ် ဖွင့်ရန်</translation>
 <translation id="7846634333498149051">ကီးဘုတ်</translation>
 <translation id="7850847810298646851">Google AI က ပံ့ပိုးထားသော နောက်ခံ</translation>
+<translation id="785170686607360576">ကျူးလစ်ပန်း</translation>
 <translation id="7856267634822906833">ဘလူးတုသ် တို့ထိမျက်နှာပြင်</translation>
 <translation id="7869143217755017858">အမှောင်မုဒ် ပိတ်ရန်</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1061,7 +1090,6 @@
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>
 <translation id="8775713578693478175">မိုဒမ် APN</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8789196995628578448">ဖြတ်လမ်းလင့်ခ်ကို “<ph name="CONFLICT_ACCEL_NAME" />” အတွက် သုံးထားသည်။ ဖြတ်လမ်းလင့်ခ်အသစ်တစ်ခုကို နှိပ်ပါ။ မူရင်းဖြတ်လမ်းလင့်ခ်ကို အစားထိုးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="879568662008399081">ဤကွန်ရက်တွင် စတင်ဝင်ရန်စာမျက်နှာ ရှိနိုင်သည်</translation>
 <translation id="8798099450830957504">ပုံသေ</translation>
 <translation id="8798441408945964110">ပံ့ပိုးသူ အမည်</translation>
@@ -1113,6 +1141,7 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS ဖြေရှင်းမှုသည် တုံ့ပြန်ချိန်မြင့်သည်</translation>
 <translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
+<translation id="9068296451330120661">ရေဆေး</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9082718469794970195">ဤဗီဒီယိုသုံးရန်</translation>

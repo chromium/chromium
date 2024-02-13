@@ -101,19 +101,17 @@ CreateIconButtonInstancesGridView() {
         grid_view->AddInstance(u"", std::unique_ptr<IconButton>(nullptr));
       } else {
         IconButtonInfo type_info = types[idx];
-        auto* button = grid_view->AddInstance(
-            /*name=*/type_info.name,
-            std::make_unique<IconButton>(IconButton::PressedCallback(),
-                                         /*type=*/type_info.type,
-                                         &kSettingsIcon,
-                                         /*accessible_name=*/type_info.name,
-                                         /*is_togglable=*/true,
-                                         /*has_border=*/true));
-        button->SetToggled(type_info.is_toggled);
-        button->SetEnabled(type_info.is_enabled);
+        IconButton::Builder builder;
+        builder.SetType(type_info.type)
+            .SetVectorIcon(&kSettingsIcon)
+            .SetAccessibleName(type_info.name)
+            .SetTogglable(type_info.is_toggled)
+            .SetEnabled(type_info.is_enabled)
+            .SetBorder(/*has_border*/ true);
         if (type_info.bg_img) {
-          button->SetBackgroundImage(*type_info.bg_img);
+          builder.SetBackgroundImage(*type_info.bg_img);
         }
+        grid_view->AddInstance(/*name=*/type_info.name, builder.Build());
       }
     }
   }

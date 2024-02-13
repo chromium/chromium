@@ -569,7 +569,8 @@ TEST_F(SegmentationPlatformServiceFactoryTest, TestAndroidHomeModuleRanker) {
       segmentation_platform::kAndroidHomeModuleRankerKey);
   PredictionOptions prediction_options;
 
-  std::vector<std::string> result = {kPriceChange, kSingleTab};
+  std::vector<std::string> result = {kPriceChange, kSingleTab,
+                                     kTabResumptionForAndroidHome};
   ExpectGetClassificationResult(
       segmentation_platform::kAndroidHomeModuleRankerKey, prediction_options,
       nullptr,

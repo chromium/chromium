@@ -149,7 +149,7 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
   // ui::ComboboxModel overrides
   size_t GetItemCount() const override;
   std::u16string GetItemAt(size_t index) const override;
-  absl::optional<size_t> GetDefaultIndex() const override;
+  std::optional<size_t> GetDefaultIndex() const override;
 
   raw_ptr<BoxLayoutView> designer_container_ = nullptr;
   raw_ptr<DesignerSurface> designer_panel_ = nullptr;

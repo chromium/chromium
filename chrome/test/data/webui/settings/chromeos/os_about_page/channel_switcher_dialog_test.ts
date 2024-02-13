@@ -10,8 +10,9 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestAboutPageBrowserProxy} from '../test_about_page_browser_proxy.js';
 import {clearBody} from '../utils.js';
+
+import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
 
 suite('<settings-channel-switcher-dialog>', () => {
   let dialog: SettingsChannelSwitcherDialogElement;

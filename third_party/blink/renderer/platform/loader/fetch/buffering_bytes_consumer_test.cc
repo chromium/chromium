@@ -82,7 +82,7 @@ TEST_F(BufferingBytesConsumerTest, ReadWithDelay) {
   replaying_bytes_consumer->Add(Command(Command::kData, "8"));
   replaying_bytes_consumer->Add(Command(Command::kDone));
 
-  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelay(
+  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelayForTest(
       replaying_bytes_consumer,
       scheduler::GetSingleThreadTaskRunnerForTesting());
 
@@ -150,7 +150,7 @@ TEST_F(BufferingBytesConsumerTest, BufferingWithDelay) {
   replaying_bytes_consumer->Add(Command(Command::kData, "8"));
   replaying_bytes_consumer->Add(Command(Command::kDone));
 
-  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelay(
+  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelayForTest(
       replaying_bytes_consumer,
       scheduler::GetSingleThreadTaskRunnerForTesting());
 
@@ -239,7 +239,7 @@ TEST_F(BufferingBytesConsumerTest, DrainAsDataPipeSucceedsWithDelay) {
       MakeGarbageCollected<DataPipeBytesConsumer>(task_runner, MakeDataPipe(),
                                                   &notifier);
 
-  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelay(
+  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelayForTest(
       data_pipe_consumer, scheduler::GetSingleThreadTaskRunnerForTesting());
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, bytes_consumer->GetPublicState());
@@ -255,7 +255,7 @@ TEST_F(BufferingBytesConsumerTest, DrainAsDataPipeFailsWithExpiredDelay) {
       MakeGarbageCollected<DataPipeBytesConsumer>(task_runner, MakeDataPipe(),
                                                   &notifier);
 
-  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelay(
+  auto* bytes_consumer = BufferingBytesConsumer::CreateWithDelayForTest(
       data_pipe_consumer, scheduler::GetSingleThreadTaskRunnerForTesting());
 
   task_environment_.FastForwardBy(base::Milliseconds(51));

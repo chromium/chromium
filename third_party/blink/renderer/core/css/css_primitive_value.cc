@@ -294,6 +294,15 @@ double CSSPrimitiveValue::ComputeDotsPerPixel() const {
   return To<CSSNumericLiteralValue>(this)->ComputeDotsPerPixel();
 }
 
+double CSSPrimitiveValue::ComputeDegrees(
+    const CSSLengthResolver& length_resolver) const {
+  double result =
+      IsCalculated()
+          ? To<CSSMathFunctionValue>(this)->ComputeDegrees(length_resolver)
+          : To<CSSNumericLiteralValue>(this)->ComputeDegrees();
+  return CSSValueClampingUtils::ClampAngle(result);
+}
+
 template <>
 int CSSPrimitiveValue::ComputeLength(
     const CSSLengthResolver& length_resolver) const {
@@ -363,6 +372,14 @@ double CSSPrimitiveValue::ComputeNumber(
   return IsCalculated()
              ? To<CSSMathFunctionValue>(this)->ComputeNumber(length_resolver)
              : To<CSSNumericLiteralValue>(this)->ComputeNumber();
+}
+
+double CSSPrimitiveValue::ComputePercentage(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK(IsPercentage());
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->ComputePercentage(
+                              length_resolver)
+                        : To<CSSNumericLiteralValue>(this)->ComputePercentage();
 }
 
 double CSSPrimitiveValue::ComputeLengthDouble(

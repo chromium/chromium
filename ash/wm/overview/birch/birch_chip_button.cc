@@ -35,7 +35,6 @@ constexpr int kBetweenChildSpacing = 8;
 constexpr gfx::Insets kBorderInsetsWithoutActionButton(12);
 constexpr gfx::Insets kBorderInsetsWithActionButton =
     gfx::Insets::TLBR(12, 12, 12, 8);
-constexpr gfx::Size kChipSize(228, 62);
 constexpr int kRoundedCornerRadius = 12;
 constexpr ui::ColorId kBackgroundColorId =
     cros_tokens::kCrosSysSystemOnBaseOpaque;
@@ -121,7 +120,6 @@ BirchChipButton::BirchChipButton()
           views::HighlightBorder::Type::kHighlightBorderNoShadow))
       .SetBackground(views::CreateThemedRoundedRectBackground(
           kBackgroundColorId, kRoundedCornerRadius))
-      .SetPreferredSize(kChipSize)
       // TODO(zxdan): verbalize all the contents in following changes.
       .SetAccessibleName(u"Birch Chip")
       .AddChildren(
@@ -210,7 +208,7 @@ void BirchChipButton::OnRemoveComponentPressed() {
   }
 }
 
-BEGIN_METADATA(BirchChipButton, views::Button)
+BEGIN_METADATA(BirchChipButton)
 END_METADATA
 
 }  // namespace ash

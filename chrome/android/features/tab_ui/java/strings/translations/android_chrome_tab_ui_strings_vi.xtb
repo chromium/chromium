@@ -3,10 +3,13 @@
 <translationbundle lang="vi">
 <translation id="1075622780330595106">Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> trong tổng số các thẻ của mình. Bạn có muốn đóng các thẻ này không?</translation>
 <translation id="1155815720264022949">Bạn muốn đóng các thẻ cũ?</translation>
+<translation id="1197088940767939838">Màu cam</translation>
 <translation id="1215127405478249895">Xem lại thẻ</translation>
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
 <translation id="1326271443836399892">Xem lại chế độ cài đặt sắp xếp gọn gàng hiện tại.</translation>
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
+<translation id="1555130319947370107">Xanh lam</translation>
+<translation id="161042844686301425">Lục lam</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Đánh dấu <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đánh dấu <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Nhóm thẻ}other{Nhóm các thẻ}}</translation>
 <translation id="3996880007329611795">Nhận thông báo</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
+<translation id="4159784952369912983">Tím</translation>
 <translation id="4212246570487010370">Tiếp tục duyệt web</translation>
 <translation id="427987768447457592">Nhóm thẻ mới</translation>
 <translation id="4648718555153979859">Các thẻ của bạn được nhóm với nhau tại đây</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Cần có tiêu đề</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Có <ph name="TABS_COUNT_ONE" /> thẻ mà gần đây bạn không dùng đến}other{Có <ph name="TABS_COUNT_MANY" /> thẻ mà gần đây bạn không dùng đến}}</translation>
 <translation id="5339733443032484186">Thẻ bạn truy cập gần đây nhất</translation>
+<translation id="5400836586163650660">Màu xám</translation>
 <translation id="5490235265819901748">Đã mở rộng nhóm thẻ</translation>
 <translation id="5494920125229734069">Chọn tất cả</translation>
 <translation id="5545379293264651575">Đóng mà không xem lại</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Nhận thông báo khi có mặt hàng giảm giá?</translation>
 <translation id="58326064309361797">Kéo các thẻ để nhóm lại với nhau</translation>
 <translation id="5846292395804797011">Đóng nhóm <ph name="TITLE_OF_GROUP" /> có <ph name="NUMBER_OF_TABS" /> thẻ</translation>
+<translation id="5901630391730855834">Vàng</translation>
 <translation id="5972844218283131174">Bỏ chọn tất cả</translation>
+<translation id="6017514345406065928">Xanh lục</translation>
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
 <translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Nhóm <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Nhóm <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> bài đánh giá}other{Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> bài đánh giá}}</translation>
 <translation id="7885132941432959125">Chuyển thẻ sang phải</translation>
+<translation id="7942349550061667556">Đỏ</translation>
 <translation id="7966321538264951561">Đóng nội dung đề xuất.</translation>
 <translation id="8029301326595421733">Thông tin về cửa hàng này đã mở trên toàn màn hình</translation>
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
 <translation id="955558140275419384">Vào trình chỉnh sửa này để xem lại tất cả thẻ đã lưu trữ nhằm sắp xếp gọn gàng.</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>
+<translation id="992256792861109788">Màu hồng</translation>
 </translationbundle>

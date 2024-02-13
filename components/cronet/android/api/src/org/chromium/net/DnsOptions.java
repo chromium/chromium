@@ -6,11 +6,13 @@ package org.chromium.net;
 
 import android.os.Build.VERSION_CODES;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresOptIn;
 
 import java.time.Duration;
+import java.util.Objects;
 
 /**
  * A class configuring Cronet's host resolution functionality. Note that while we refer to {@code
@@ -173,7 +175,8 @@ public final class DnsOptions {
              * @return the builder for chaining
              */
             @RequiresApi(VERSION_CODES.O)
-            public Builder setFreshLookupTimeout(Duration freshLookupTimeout) {
+            public Builder setFreshLookupTimeout(@NonNull Duration freshLookupTimeout) {
+                Objects.requireNonNull(freshLookupTimeout);
                 return setFreshLookupTimeoutMillis(freshLookupTimeout.toMillis());
             }
 
@@ -194,7 +197,8 @@ public final class DnsOptions {
              * @return the builder for chaining
              */
             @RequiresApi(VERSION_CODES.O)
-            public Builder setMaxExpiredDelayMillis(Duration maxExpiredDelay) {
+            public Builder setMaxExpiredDelay(@NonNull Duration maxExpiredDelay) {
+                Objects.requireNonNull(maxExpiredDelay);
                 return setMaxExpiredDelayMillis(maxExpiredDelay.toMillis());
             }
 
@@ -333,7 +337,8 @@ public final class DnsOptions {
          * @return the builder for chaining
          */
         @RequiresApi(api = VERSION_CODES.O)
-        public Builder setPersistDelay(Duration persistToDiskPeriod) {
+        public Builder setPersistDelay(@NonNull Duration persistToDiskPeriod) {
+            Objects.requireNonNull(persistToDiskPeriod);
             return setPersistHostCachePeriodMillis(persistToDiskPeriod.toMillis());
         }
 

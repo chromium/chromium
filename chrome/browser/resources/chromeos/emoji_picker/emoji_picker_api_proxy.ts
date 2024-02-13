@@ -4,6 +4,7 @@
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {PageHandlerFactory, PageHandlerRemote, Status, TenorGifResponse} from './emoji_picker.mojom-webui.js';
+import {EmojiSearch, SearchResults} from './emoji_search.mojom-webui.js';
 import {NewWindowProxy} from './new_window_proxy.mojom-webui.js';
 import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
 
@@ -29,6 +30,12 @@ export interface EmojiPickerApiProxy {
   searchGifs(query: string, pos?: string):
       Promise<{status: Status, searchGifs: TenorGifResponse}>;
 
+  searchEmoji(query: string): Promise<{
+    emojiResults: SearchResults,
+    symbolResults: SearchResults,
+    emoticonResults: SearchResults,
+  }>;
+
   getGifsByIds(ids: string[]):
       Promise<{status: Status, selectedGifs: VisualContent[]}>;
 
@@ -42,6 +49,8 @@ export interface EmojiPickerApiProxy {
 export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
   handler = new PageHandlerRemote();
   newWindowProxy = NewWindowProxy.getRemote();
+  // TODO(b/309343774): Once search is always on, remove function wrapper.
+  searchProxy = () => EmojiSearch.getRemote();
   static instance: EmojiPickerApiProxy|null = null;
   constructor() {
     const factory = PageHandlerFactory.getRemote();
@@ -120,6 +129,10 @@ export class EmojiPickerApiProxyImpl implements EmojiPickerApiProxy {
     }
 
     return this.handler.searchGifs(query, pos || null);
+  }
+
+  searchEmoji(query: string) {
+    return this.searchProxy().searchEmoji(query);
   }
 
   /** @override */

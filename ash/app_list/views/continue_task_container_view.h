@@ -21,11 +21,6 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/views/view.h"
 
-namespace views {
-class FlexLayout;
-class TableLayout;
-}  // namespace views
-
 namespace ash {
 
 class AppListViewDelegate;
@@ -93,18 +88,15 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   // manager, and disables the view.
   void RemoveViewFromLayout(ContinueTaskView* view);
 
-  // Initializes the view's layout manager to use |flex_layout_|. FlexLayout is
-  // used in tablet mode only. Views will be laid out in a single row centered
-  // in the container. Number of items displayed will depend on available space.
-  // This will not enforce any number of `columns_`.
-  void InitializeFlexLayout();
+  // Lays out children in a single row centered in the container. Number of
+  // items displayed will depend on available space. This will not enforce any
+  // number of `columns_`.
+  void InitializeTabletLayout();
 
-  // Initializes the view's layout manager to use |table_layout_|. TableLayout
-  // is used in clamshell mode only. Views are laid out in a table with a
-  // specific number of `columns_`. This displays views to stretch as to use
-  // all vertical space available in the container. Extra views are added in
-  // multiple rows.
-  void InitializeTableLayout();
+  // Lays out children in a table with a specific number of `columns_`. This
+  // displays views to stretch as to use all vertical space available in the
+  // container. Extra views are added in multiple rows.
+  void InitializeClamshellLayout();
 
   // Describes how old task views should animate when the set of tasks shown in
   // the container updates.
@@ -171,14 +163,6 @@ class ASH_EXPORT ContinueTaskContainerView : public ui::ListModelObserver,
   OnResultsChanged update_callback_;
   raw_ptr<SearchModel::SearchResults> results_ =
       nullptr;  // Owned by SearchModel.
-
-  // Only one of the layouts is to be set.
-  // `flex_layout_`  aligns the views as a single row centered in the container.
-  // Used in tablet mode.
-  raw_ptr<views::FlexLayout> flex_layout_ = nullptr;
-  // `table_layout_`  aligns the views as a table with multiple rows stretched
-  // to fill the container. Used in clamshell mode.
-  raw_ptr<views::TableLayout> table_layout_ = nullptr;
 
   // The list of tasks views for the container.
   std::vector<raw_ptr<ContinueTaskView, VectorExperimental>>

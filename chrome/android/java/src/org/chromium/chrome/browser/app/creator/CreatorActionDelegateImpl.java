@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.app.creator;
 
-import android.content.Context;
+import android.app.Activity;
 
 import androidx.annotation.StringRes;
 
@@ -35,23 +35,26 @@ import org.chromium.url.GURL;
 public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private static final String TAG = "Cormorant";
 
-    private final Context mActivityContext;
+    private final Activity mActivity;
     private final Profile mProfile;
     private final SnackbarManager mSnackbarManager;
     private final CreatorCoordinator mCreatorCoordinator;
     private final int mParentId;
+    private final BottomSheetController mBottomSheetController;
 
     public CreatorActionDelegateImpl(
-            Context activityContext,
+            Activity activity,
             Profile profile,
             SnackbarManager snackbarManager,
             CreatorCoordinator creatorCoordinator,
-            int parentId) {
-        mActivityContext = activityContext;
+            int parentId,
+            BottomSheetController bottomSheetController) {
+        mActivity = activity;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
         mCreatorCoordinator = creatorCoordinator;
         mParentId = parentId;
+        mBottomSheetController = bottomSheetController;
     }
 
     @Override
@@ -93,19 +96,20 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                 () -> {
                     assert ThreadUtils.runningOnUiThread();
                     BookmarkUtils.addToReadingList(
-                            new GURL(url),
-                            title,
-                            mSnackbarManager,
+                            mActivity,
                             bookmarkModel,
-                            mActivityContext,
-                            mProfile);
+                            title,
+                            new GURL(url),
+                            mSnackbarManager,
+                            mProfile,
+                            mBottomSheetController);
                 });
     }
 
     @Override
     public void showSyncConsentActivity(int signinAccessPoint) {
         SyncConsentActivityLauncherImpl.get()
-                .launchActivityForPromoDefaultFlow(mActivityContext, signinAccessPoint, null);
+                .launchActivityForPromoDefaultFlow(mActivity, signinAccessPoint, null);
     }
 
     @Override

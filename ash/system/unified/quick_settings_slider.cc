@@ -225,10 +225,10 @@ bool ReadOnlySlider::CanAcceptEvent(const ui::Event& event) {
   return false;
 }
 
-BEGIN_METADATA(QuickSettingsSlider, views::View)
+BEGIN_METADATA(QuickSettingsSlider)
 END_METADATA
 
-BEGIN_METADATA(ReadOnlySlider, views::View)
+BEGIN_METADATA(ReadOnlySlider)
 END_METADATA
 
 }  // namespace ash

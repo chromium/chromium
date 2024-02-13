@@ -970,7 +970,7 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='scroller'",
-      "bounds": [4000, 20000],
+      "bounds": [4000, 20060],
       "invalidations": [
         [40, 10010, 60, 40]
       ],

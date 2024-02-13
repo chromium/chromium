@@ -124,9 +124,6 @@ static_library("content_shell_app") {
       "app/ios/web_tests_support_ios.mm",
     ]
   }
-  if (is_chromeos) {
-    deps += [ "//ui/gfx/linux:gbm" ]
-  }
   defines = [
     "CONTENT_SHELL_VERSION=\"$content_shell_version\"",
     "CONTENT_SHELL_MAJOR_VERSION=\"$content_shell_major_version\"",

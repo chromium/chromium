@@ -93,7 +93,7 @@ WaylandZcrColorManager::~WaylandZcrColorManager() = default;
 void WaylandZcrColorManager::OnColorSpaceCreated(
     gfx::ColorSpace color_space,
     scoped_refptr<WaylandZcrColorSpace> zcr_color_space,
-    absl::optional<uint32_t> error) {
+    std::optional<uint32_t> error) {
   if (error.has_value()) {
     // TODO(mrfemi): Store in a creation failed map.
     LOG(ERROR) << "Failed to create WaylandZcrColorSpace";

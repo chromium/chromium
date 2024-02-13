@@ -57,6 +57,8 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // views::View:
   void Layout(PassKey) override;
 
+  views::ImageView* image_view() { return image_view_; }
+
   FocusModeCountdownView* countdown_view_for_testing() {
     return countdown_view_;
   }
@@ -102,6 +104,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // Updates the progression of the progress indicator.
   void UpdateProgressRing();
 
+  // This is used to track the current session snapshot, if any.
+  std::optional<FocusModeSession::Snapshot> session_snapshot_;
+
   // Image view of the focus mode lamp.
   const raw_ptr<views::ImageView> image_view_;
 
@@ -120,6 +125,10 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
 
   // An object that draws and updates the progress ring.
   std::unique_ptr<ProgressIndicator> progress_indicator_;
+
+  // True to show the progress ring after the pulse animation of
+  // `progress_indicator_`.
+  bool show_progress_ring_after_animation_ = false;
 
   base::WeakPtrFactory<FocusModeTray> weak_ptr_factory_{this};
 };

@@ -31,7 +31,7 @@ class XdgActivation::Token {
   Token(wl::Object<xdg_activation_token_v1> token,
         wl_surface* surface,
         wl_seat* seat,
-        absl::optional<wl::Serial> serial,
+        std::optional<wl::Serial> serial,
         ActivationDoneCallback callback);
   Token(const Token&) = delete;
   Token& operator=(const Token&) = delete;
@@ -128,7 +128,7 @@ void XdgActivation::OnActivateDone(wl_surface* surface, std::string token) {
 XdgActivation::Token::Token(wl::Object<xdg_activation_token_v1> token,
                             wl_surface* surface,
                             wl_seat* seat,
-                            absl::optional<wl::Serial> serial,
+                            std::optional<wl::Serial> serial,
                             ActivationDoneCallback callback)
     : token_(std::move(token)), callback_(std::move(callback)) {
   static constexpr xdg_activation_token_v1_listener kXdgActivationListener = {

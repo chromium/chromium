@@ -181,6 +181,12 @@ TEST(LanguagePacksUtil, ResolveLocaleTts) {
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "ja-jp"), "ja");
 }
 
+TEST(LanguagePacksUtil, ResolveLocaleFonts) {
+  // Language pack resolution is handled by the client.
+  EXPECT_EQ(ResolveLocale(kFontsFeatureId, "ja"), "ja");
+  EXPECT_EQ(ResolveLocale(kFontsFeatureId, "ko"), "ko");
+}
+
 TEST(LanguagePacksUtil, MapThenFilterStringsNoInput) {
   EXPECT_THAT(MapThenFilterStrings(
                   {}, base::BindRepeating(

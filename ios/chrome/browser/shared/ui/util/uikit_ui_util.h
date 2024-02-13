@@ -198,4 +198,7 @@ UIActivityIndicatorView* GetLargeUIActivityIndicatorView();
 bool IsScrollViewScrolledToTop(UIScrollView* scroll_view);
 bool IsScrollViewScrolledToBottom(UIScrollView* scroll_view);
 
+// Returns the approximate corner radius of the current device.
+CGFloat DeviceCornerRadius();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_UIKIT_UI_UTIL_H_

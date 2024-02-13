@@ -16,8 +16,8 @@ Dictation*
 *DictationTest*
 ExtensionKeeplistAllowPerfettoTest*
 ExtensionKeeplistTest*
-# Note: Some of FileTaskBrowserTest* runs only on branded ash and lacros builds.
-FileTaskBrowserTest*
+# Note: Some of FileTasksBrowserTest* runs only on branded ash and lacros builds.
+*FileTasksBrowserTest*
 NonKioskAcceleratorLacrosTest*
 SelectToSpeak*
 StickyKeysBrowserTest*

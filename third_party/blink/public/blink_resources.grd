@@ -45,7 +45,6 @@
         <include name="IDR_TIME_PICKER_JS" file="../renderer/core/html/forms/resources/time_picker.js" type="BINDATA" compress="brotli"/>
         <include name="IDR_DATETIMELOCAL_PICKER_JS" file="../renderer/core/html/forms/resources/datetimelocal_picker.js" type="BINDATA" compress="brotli"/>
         <include name="IDR_SUGGESTION_PICKER_CSS" file="../renderer/core/html/forms/resources/suggestion_picker.css" type="BINDATA" compress="brotli"/>
-        <include name="IDR_SUGGESTION_PICKER_DARK_CSS" file="../renderer/core/html/forms/resources/suggestion_picker_dark.css" type="BINDATA" compress="brotli"/>
         <include name="IDR_SUGGESTION_PICKER_JS" file="../renderer/core/html/forms/resources/suggestion_picker.js" type="BINDATA" compress="brotli"/>
         <include name="IDR_COLOR_PICKER_COMMON_JS" file="../renderer/core/html/forms/resources/color_picker_common.js" type="BINDATA" compress="brotli"/>
         <include name="IDR_COLOR_SUGGESTION_PICKER_CSS" file="../renderer/core/html/forms/resources/color_suggestion_picker.css" type="BINDATA" compress="brotli"/>
@@ -56,6 +55,7 @@
         <include name="IDR_LIST_PICKER_JS" file="../renderer/core/html/forms/resources/list_picker.js" type="BINDATA" compress="brotli"/>
       </if>
       <include name="IDR_AUDIO_SPATIALIZATION_COMPOSITE" file="../renderer/platform/audio/resources/Composite.flac" type="BINDATA"/>
+      <include name="IDR_UASTYLE_JSON_DOCUMENT_CSS" file="../renderer/core/css/json-document.css" type="BINDATA" compress="brotli"/>
     </includes>
   </release>
 </grit>

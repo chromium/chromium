@@ -62,7 +62,7 @@ using ABI::Windows::Foundation::IClosable;
 using Microsoft::WRL::ComPtr;
 
 void PostTask(BluetoothPairingWinrt::ConnectCallback callback,
-              absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+              std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), error_code));
 }
@@ -239,7 +239,7 @@ uint16_t BluetoothDeviceWinrt::GetAppearance() const {
   return 0;
 }
 
-absl::optional<std::string> BluetoothDeviceWinrt::GetName() const {
+std::optional<std::string> BluetoothDeviceWinrt::GetName() const {
   if (!ble_device_)
     return local_name_;
 
@@ -369,7 +369,7 @@ void BluetoothDeviceWinrt::Pair(PairingDelegate* pairing_delegate,
   // Wrap callback, so that it cleans up the pairing object when run.
   auto wrapped_callback = base::BindOnce(
       [](base::WeakPtr<BluetoothDeviceWinrt> device, ConnectCallback callback,
-         absl::optional<ConnectErrorCode> error_code) {
+         std::optional<ConnectErrorCode> error_code) {
         if (device)
           device->pairing_.reset();
         std::move(callback).Run(error_code);
@@ -438,7 +438,7 @@ std::string BluetoothDeviceWinrt::CanonicalizeAddress(uint64_t address) {
 }
 
 void BluetoothDeviceWinrt::UpdateLocalName(
-    absl::optional<std::string> local_name) {
+    std::optional<std::string> local_name) {
   if (!local_name)
     return;
 
@@ -446,7 +446,7 @@ void BluetoothDeviceWinrt::UpdateLocalName(
 }
 
 void BluetoothDeviceWinrt::CreateGattConnectionImpl(
-    absl::optional<BluetoothUUID> service_uuid) {
+    std::optional<BluetoothUUID> service_uuid) {
   ComPtr<IBluetoothLEDeviceStatics> device_statics;
   HRESULT hr = GetBluetoothLEDeviceStaticsActivationFactory(&device_statics);
   if (FAILED(hr)) {
@@ -584,7 +584,7 @@ void BluetoothDeviceWinrt::OnBluetoothLEDeviceFromBluetoothAddress(
     // in a GATT connection attempt as well and trigger
     // OnConnectionStatusChanged on success.
     if (IsGattConnected()) {
-      DidConnectGatt(/*error_code=*/absl::nullopt);
+      DidConnectGatt(/*error_code=*/std::nullopt);
     }
     StartGattDiscovery();
     return;
@@ -673,7 +673,7 @@ void BluetoothDeviceWinrt::OnGattSessionFromDeviceId(
   // Check whether we missed the initial GattSessionStatus change notification
   // because the OS had already established a connection.
   if (IsGattConnected()) {
-    DidConnectGatt(/*error_code=*/absl::nullopt);
+    DidConnectGatt(/*error_code=*/std::nullopt);
     StartGattDiscovery();
   }
 }
@@ -706,7 +706,7 @@ void BluetoothDeviceWinrt::OnGattSessionStatusChanged(
   }
 
   if (IsGattConnected()) {
-    DidConnectGatt(/*error_code=*/absl::nullopt);
+    DidConnectGatt(/*error_code=*/std::nullopt);
     StartGattDiscovery();
   } else {
     gatt_discoverer_.reset();
@@ -735,7 +735,7 @@ void BluetoothDeviceWinrt::OnConnectionStatusChanged(
   }
 
   if (IsGattConnected()) {
-    DidConnectGatt(/*error_code=*/absl::nullopt);
+    DidConnectGatt(/*error_code=*/std::nullopt);
   } else {
     gatt_discoverer_.reset();
     ClearGattServices();

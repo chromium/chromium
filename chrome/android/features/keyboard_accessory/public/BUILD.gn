@@ -33,6 +33,7 @@ android_library("public_java") {
   srcjar_deps = [
     ":java_enums_srcjar",
     ":jni",
+    "//chrome/browser/keyboard_accessory/android:java_enums",
   ]
 }
 

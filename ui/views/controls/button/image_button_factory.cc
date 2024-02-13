@@ -60,7 +60,7 @@ class ColorTrackingVectorImageButton : public ImageButton {
 std::unique_ptr<ImageButton> CreateVectorImageButtonWithNativeTheme(
     Button::PressedCallback callback,
     const gfx::VectorIcon& icon,
-    absl::optional<int> dip_size,
+    std::optional<int> dip_size,
     SkColor icon_color,
     SkColor icon_disabled_color) {
   // We can't use `value_or` as that ALWAYS evaluates the false case, which is
@@ -141,7 +141,7 @@ void SetImageFromVectorIconWithColorId(ImageButton* button,
                                        const gfx::VectorIcon& icon,
                                        ui::ColorId icon_color_id,
                                        ui::ColorId icon_disabled_color_id,
-                                       absl::optional<int> icon_size) {
+                                       std::optional<int> icon_size) {
   // A ternary must be used here instead of `value_or` to prevent a DCHECK when
   // the icon does not contain a size in it's definition.
   int dip_size = icon_size.has_value() ? icon_size.value()
@@ -161,7 +161,7 @@ void SetToggledImageFromVectorIconWithColorId(
     const gfx::VectorIcon& icon,
     ui::ColorId icon_color_id,
     ui::ColorId icon_disabled_color_id,
-    absl::optional<int> icon_size) {
+    std::optional<int> icon_size) {
   // A ternary must be used here instead of `value_or` to prevent a DCHECK when
   // the icon does not contain a size in it's definition.
   int dip_size = icon_size.has_value() ? icon_size.value()

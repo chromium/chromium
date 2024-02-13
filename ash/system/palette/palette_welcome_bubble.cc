@@ -37,8 +37,9 @@ constexpr int kBubbleContentLabelPreferredWidthDp = 380;
 // Controlled by PaletteWelcomeBubble and anchored to a PaletteTray.
 class PaletteWelcomeBubble::WelcomeBubbleView
     : public views::BubbleDialogDelegateView {
+  METADATA_HEADER(WelcomeBubbleView, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(WelcomeBubbleView);
   WelcomeBubbleView(views::View* anchor, views::BubbleBorder::Arrow arrow)
       : views::BubbleDialogDelegateView(anchor, arrow) {
     SetTitle(

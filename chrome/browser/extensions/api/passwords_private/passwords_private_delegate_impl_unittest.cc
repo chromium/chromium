@@ -1047,7 +1047,11 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestShouldReauthForOptIn) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
-       TestShouldNotReauthForOptOutAndShouldSetPref) {
+       TestShouldNotReauthForOptOutAndShouldResetPref) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kButterOnDesktopFollowup);
+
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto* client =
       MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
@@ -1061,6 +1065,28 @@ TEST_F(PasswordsPrivateDelegateImplTest,
                   signin_metrics::ReauthAccessPoint::kPasswordSettings, _))
       .Times(0);
   EXPECT_CALL(*feature_manager, OptOutOfAccountStorageAndClearSettings);
+
+  auto delegate = CreateDelegate();
+  delegate->SetAccountStorageOptIn(false, web_contents.get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       TestShouldNotReauthForOptOutAndShouldSetPref) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      password_manager::features::kButterOnDesktopFollowup);
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  password_manager::MockPasswordFeatureManager* feature_manager =
+      client->GetPasswordFeatureManager();
+  ON_CALL(*feature_manager, IsOptedInForAccountStorage)
+      .WillByDefault(Return(true));
+
+  EXPECT_CALL(*client,
+              TriggerReauthForPrimaryAccount(
+                  signin_metrics::ReauthAccessPoint::kPasswordSettings, _))
+      .Times(0);
+  EXPECT_CALL(*feature_manager, OptOutOfAccountStorage);
 
   auto delegate = CreateDelegate();
   delegate->SetAccountStorageOptIn(false, web_contents.get());

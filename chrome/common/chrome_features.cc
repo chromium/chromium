@@ -72,6 +72,12 @@ BASE_FEATURE(kAppShimLaunchChromeSilently,
 BASE_FEATURE(kAppShimNotificationAttribution,
              "AppShimNotificationAttribution",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, app shims used by PWAs will be signed with an ad-hoc signature
+// https://crbug.com/40276068
+BASE_FEATURE(kUseAdHocSigningForWebAppShims,
+             "UseAdHocSigningForWebAppShims",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -278,6 +284,17 @@ BASE_FEATURE(kChromeStructuredMetrics,
              "ChromeStructuredMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for Controlled Frame. This is enabled by default but is only
+// tested to ensure it's enabled before proceeding with the rest of the feature
+// checks like testing for IWA support or Kiosk mode. If this feature flag is
+// disabled, such as via Finch, then Controlled Frame will no longer be
+// available in IWA or Kiosk mode.
+// See https://github.com/WICG/controlled-frame/blob/main/README.md for more
+// info.
+BASE_FEATURE(kControlledFrame,
+             "ControlledFrame",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When installing default installed PWAs, we wait for service workers
 // to cache resources.
 BASE_FEATURE(kDesktopPWAsCacheDuringDefaultInstall,
@@ -350,6 +367,9 @@ BASE_FEATURE(kDesktopPWAsTabStripSettings,
 BASE_FEATURE(kChromeAppsDeprecation,
              "ChromeAppsDeprecation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kShortcutsNotApps,
+             "ShortcutsNotApps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_FUCHSIA)
 
@@ -1625,6 +1645,10 @@ BASE_FEATURE(kWebAppSyncGeneratedIconRetroactiveFix,
 BASE_FEATURE(kWebAppSyncGeneratedIconUpdateFix,
              "WebAppSyncGeneratedIconUpdateFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kWebAppUniversalInstall,
+             "WebAppUniversalInstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,

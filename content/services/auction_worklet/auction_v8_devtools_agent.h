@@ -92,7 +92,7 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
 
     // Owned by `sessions_` in the AuctionV8DevToolsAgent object; stale entries
     // removed by its SessionDestroyed().
-    std::set<AuctionV8DevToolsSession*> sessions;
+    std::set<raw_ptr<AuctionV8DevToolsSession, SetExperimental>> sessions;
   };
 
   AuctionV8Helper* v8_helper() { return v8_helper_; }

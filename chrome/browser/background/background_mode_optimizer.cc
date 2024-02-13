@@ -24,8 +24,8 @@ BackgroundModeOptimizer::~BackgroundModeOptimizer() {
 
 // static
 std::unique_ptr<BackgroundModeOptimizer> BackgroundModeOptimizer::Create() {
-  // If the -keep-alive-for-test flag is passed, then always keep chrome running
-  // in the background until the user explicitly terminates it.
+  // If the --keep-alive-for-test flag is passed, then always keep the browser
+  // running in the background until the user explicitly terminates it.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kKeepAliveForTest)) {
     return nullptr;
@@ -33,6 +33,7 @@ std::unique_ptr<BackgroundModeOptimizer> BackgroundModeOptimizer::Create() {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(features::kBackgroundModeAllowRestart)) {
+    // Private ctor.
     return base::WrapUnique(new BackgroundModeOptimizer());
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

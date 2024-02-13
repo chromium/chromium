@@ -91,6 +91,7 @@ TEST_F(PasswordSyncUtilTest, SyncDisabled) {
   EXPECT_EQ(
       std::string(),
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kNotActive, GetPasswordSyncState(&sync_service));
 }
 
 TEST_F(PasswordSyncUtilTest, SyncEnabledButNotForPasswords) {
@@ -104,6 +105,7 @@ TEST_F(PasswordSyncUtilTest, SyncEnabledButNotForPasswords) {
   EXPECT_EQ(
       std::string(),
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kNotActive, GetPasswordSyncState(&sync_service));
 }
 
 TEST_F(PasswordSyncUtilTest, SyncEnabled) {
@@ -118,6 +120,8 @@ TEST_F(PasswordSyncUtilTest, SyncEnabled) {
   EXPECT_EQ(
       active_info.email,
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithNormalEncryption,
+            GetPasswordSyncState(&sync_service));
 }
 
 TEST_F(PasswordSyncUtilTest, SyncPaused) {
@@ -131,6 +135,57 @@ TEST_F(PasswordSyncUtilTest, SyncPaused) {
   EXPECT_NE(
       std::string(),
       GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kNotActive, GetPasswordSyncState(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, SyncEnabledWithCustomPassphrase) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(true);
+  AccountInfo active_info;
+  active_info.email = "test@email.com";
+  sync_service.SetAccountInfo(active_info);
+  sync_service.SetIsUsingExplicitPassphrase(true);
+  EXPECT_TRUE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_TRUE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      active_info.email,
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithCustomPassphrase,
+            GetPasswordSyncState(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, AccountPasswordsActive) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(false);
+  AccountInfo active_info;
+  active_info.email = "test@email.com";
+  sync_service.SetAccountInfo(active_info);
+  EXPECT_FALSE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      std::string(),
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithNormalEncryption,
+            GetPasswordSyncState(&sync_service));
+}
+
+TEST_F(PasswordSyncUtilTest, AccountPasswordsActiveAndCustomPassphrase) {
+  syncer::TestSyncService sync_service;
+  sync_service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  sync_service.SetHasSyncConsent(false);
+  AccountInfo active_info;
+  active_info.email = "test@email.com";
+  sync_service.SetAccountInfo(active_info);
+  sync_service.SetIsUsingExplicitPassphrase(true);
+  EXPECT_FALSE(IsSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_FALSE(IsSyncFeatureActiveIncludingPasswords(&sync_service));
+  EXPECT_EQ(
+      std::string(),
+      GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(&sync_service));
+  EXPECT_EQ(SyncState::kActiveWithCustomPassphrase,
+            GetPasswordSyncState(&sync_service));
 }
 
 }  // namespace sync_util

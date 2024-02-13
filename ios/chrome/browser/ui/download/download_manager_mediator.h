@@ -70,10 +70,10 @@ class DownloadManagerMediator : public web::DownloadTaskObserver,
   // Returns whether Drive should be presented as a destination for downloads.
   bool IsSaveToDriveAvailable() const;
 
- private:
-  // Updates consumer from web::DownloadTask.
+  // Updates consumer.
   void UpdateConsumer();
 
+ private:
   // Moves the downloaded file to user's Documents if it exists.
   void MoveToUserDocumentsIfFileExists(base::FilePath task_path,
                                        bool file_exists);

@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabDownloadObserver;
+import org.chromium.chrome.browser.customtabs.CustomTabFeatureOverridesManager;
 import org.chromium.chrome.browser.customtabs.CustomTabIncognitoManager;
 import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
@@ -86,6 +87,8 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
     Verifier resolveVerifier();
 
     CustomTabMinimizationManagerHolder resolveCustomTabMinimizationManagerHolder();
+
+    CustomTabFeatureOverridesManager resolveCustomTabFeatureOverridesManager();
 
     // Webapp & WebAPK only
     WebappActivityCoordinator resolveWebappActivityCoordinator();

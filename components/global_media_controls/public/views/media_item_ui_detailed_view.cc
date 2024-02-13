@@ -510,6 +510,12 @@ void MediaItemUIDetailedView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 }
 
+bool MediaItemUIDetailedView::OnKeyPressed(const ui::KeyEvent& event) {
+  // As soon as the media view gets the focus, it should be able to handle key
+  // events that can change the progress.
+  return squiggly_progress_view_->OnKeyPressed(event);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // MediaItemUIDetailedView implementations:
 
@@ -703,6 +709,11 @@ views::Button* MediaItemUIDetailedView::GetActionButtonForTesting(
   const auto i = base::ranges::find(action_buttons_, static_cast<int>(action),
                                     &views::View::GetID);
   return (i == action_buttons_.end()) ? nullptr : *i;
+}
+
+media_message_center::MediaSquigglyProgressView*
+MediaItemUIDetailedView::GetProgressViewForTesting() {
+  return squiggly_progress_view_;
 }
 
 media_session::MediaPosition MediaItemUIDetailedView::GetPositionForTesting() {

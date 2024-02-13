@@ -6,10 +6,10 @@
 #define UI_GFX_COLOR_TRANSFORM_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/feature_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"
@@ -47,7 +47,7 @@ class COLOR_SPACE_EXPORT ColorTransform {
     float multiplier = 1.f;
 
     // Used for tone mapping PQ sources.
-    absl::optional<gfx::HDRMetadata> src_hdr_metadata;
+    std::optional<gfx::HDRMetadata> src_hdr_metadata;
 
     // Used for interpreting color spaces whose definition depends on an SDR
     // white point and for tone mapping.

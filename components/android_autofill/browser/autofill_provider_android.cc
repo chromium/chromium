@@ -527,9 +527,6 @@ void AutofillProviderAndroid::OnDidFillAutofillFormData(
     base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager != manager_.get() || !IsIdOfLinkedForm(form.global_id())) {
-    base::UmaHistogramBoolean(
-        "Autofill.WebView.OnDidFillAutofillFormDataEarlyReturnReason",
-        manager == manager_.get());
     return;
   }
   // TODO(crbug.com/1198811): Investigate passing the actually filled fields, in

@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_UTILS_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_UTILS_H_
 
+#include "ui/views/view.h"
+
 namespace gfx {
 class Rect;
-class Size;
 }  // namespace gfx
 
 namespace chromeos::editor_menu {
@@ -19,12 +20,63 @@ enum class CardType {
   kEditorMenu = 1
 };
 
+// Spacing between the editor menu and the anchor view (context menu).
+inline constexpr int kEditorMenuMarginDip = 8;
+
+// Width of the editor menu when it's rendered on the side of anchor view
+// (context menu).
+inline constexpr int kEditorMenuWidthOnSideDip = 320;
+
 // Helper to compute editor menu bounds that for the provided anchor view
 // bounds. This tries to position the editor menu somewhere above/below/around
 // the anchor view while keeping the editor menu on-screen. Provided anchor view
 // bounds and returned editor menu bounds are both in screen coordinates.
+//
+// How does this work internally?
+//
+// Given the position of context menu (anchor_view_bounds), we need to find
+// the best on-screen position to fit the editor menu widget.
+//
+// There 6 possible candidates of the position:
+//
+//  1. Top.
+//  2. Bottom.
+//  3. Top left corner.
+//  4. Top right corner.
+//  5. Bottom left corner.
+//  6. Bottom right corner.
+//
+// Extract constraints:
+//
+//  1. Top and bottom (1&2) candidate must have the same width as context
+//     menu.
+//  2. The width of side candidtes (4-6) must be 320 px.
+//  3. Side canddiates will move closer to cursor point vertically if
+//     they are on the same side of cursor point.
+//
+// We will pick the best candidate based on the following priorities:
+//
+//  1) Maximize visible area.
+//  2) Minimize the distance from editor menu widget to cursor point.
+//
+// +------------------------------------------------------------------------+
+// |     +-------+                                                   screen |
+// |     |   1   |                                                          |
+// | +---+-------+---------+                                                |
+// | | 3 |       |    4    |                                                |
+// | +---+       +---------+                                                |
+// |     |  menu |                                                          |
+// | +---+       +---------+                                                |
+// | | 5 |       |    6    |                                                |
+// | +---+-------+---------+                                                |
+// |     |   2   |                                                          |
+// |     +-------+                                                          |
+// |                                                                        |
+// |                                                                        |
+// +------------------------------------------------------------------------+
+//
 gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
-                              const gfx::Size& editor_menu_preferred_size);
+                              const views::View* target);
 
 }  // namespace chromeos::editor_menu
 

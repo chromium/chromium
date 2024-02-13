@@ -25,6 +25,12 @@ const PrefType = chrome.settingsPrivate.PrefType;
 
 // Sorted and grouped by page alphabetically.
 const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
+  // Crostini settings
+  'crostini.mic_allowed': {
+    setting: Setting.kCrostiniMicAccess,
+    type: PrefType.BOOLEAN,
+  },
+
   // Date and time settings
   'settings.clock.use_24hour_clock': {
     setting: Setting.k24HourClock,
@@ -32,6 +38,12 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
   },
   'generated.resolve_timezone_by_geolocation_on_off': {
     setting: Setting.kChangeTimeZone,
+    type: PrefType.BOOLEAN,
+  },
+
+  // Multitasking settings
+  'ash.snap_window_suggestions.enabled': {
+    setting: Setting.kSnapWindowSuggestions,
     type: PrefType.BOOLEAN,
   },
 

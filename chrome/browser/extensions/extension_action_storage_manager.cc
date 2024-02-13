@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_id.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -246,7 +247,7 @@ void ExtensionActionStorageManager::WriteToStorage(
 }
 
 void ExtensionActionStorageManager::ReadFromStorage(
-    const std::string& extension_id,
+    const ExtensionId& extension_id,
     std::optional<base::Value> value) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)->
       enabled_extensions().GetByID(extension_id);

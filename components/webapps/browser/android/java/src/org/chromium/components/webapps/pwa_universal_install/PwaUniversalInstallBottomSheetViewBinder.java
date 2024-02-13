@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.components.webapps.R;
@@ -20,6 +22,22 @@ class PwaUniversalInstallBottomSheetViewBinder {
         if (propertyKey.equals(PwaUniversalInstallProperties.TITLE)) {
             ((TextView) view.getContentView().findViewById(R.id.title))
                     .setText(model.get(PwaUniversalInstallProperties.TITLE));
+        } else if (propertyKey.equals(
+                PwaUniversalInstallProperties.INSTALL_BUTTON_ON_CLICK_CALLBACK)) {
+            OnClickListener listener =
+                    model.get(PwaUniversalInstallProperties.INSTALL_BUTTON_ON_CLICK_CALLBACK);
+            // Both the arrow and the underlying view should trigger the listener callback.
+            ((ImageView) view.getContentView().findViewById(R.id.arrow_install))
+                    .setOnClickListener(listener);
+            view.getContentView().findViewById(R.id.option_install).setOnClickListener(listener);
+        } else if (propertyKey.equals(
+                PwaUniversalInstallProperties.ADD_SHORTCUT_BUTTON_ON_CLICK_CALLBACK)) {
+            OnClickListener listener =
+                    model.get(PwaUniversalInstallProperties.ADD_SHORTCUT_BUTTON_ON_CLICK_CALLBACK);
+            // Both the arrow and the underlying view should trigger the listener callback.
+            ((ImageView) view.getContentView().findViewById(R.id.arrow_shortcut))
+                    .setOnClickListener(listener);
+            view.getContentView().findViewById(R.id.option_shortcut).setOnClickListener(listener);
         }
     }
 }

@@ -77,6 +77,10 @@ a[href] {
   color: var(--cr-link-color);
 }
 
+a[href]:focus {
+  outline-color: var(--cros-sys-focus_ring);
+}
+
 settings-toggle-button.primary-toggle {
   color: var(--cros-sys-on_surface_variant);
   font: var(--cros-button-2-font);

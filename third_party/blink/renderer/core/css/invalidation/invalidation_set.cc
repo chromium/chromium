@@ -60,13 +60,19 @@ bool BackingEqual(const InvalidationSet::BackingFlags& a_flags,
   return true;
 }
 
-}  // namespace
+const unsigned char* GetCachedTracingFlags() {
+  DEFINE_STATIC_LOCAL(
+      const unsigned char*, tracing_enabled,
+      (TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT(
+          "devtools.timeline.invalidationTracking"))));
+  return tracing_enabled;
+}
 
-static const unsigned char* g_tracing_enabled = nullptr;
+}  // namespace
 
 #define TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART_IF_ENABLED( \
     element, reason, invalidationSet, singleSelectorPart)             \
-  if (UNLIKELY(*g_tracing_enabled))                                   \
+  if (UNLIKELY(*GetCachedTracingFlags()))                             \
     TRACE_STYLE_INVALIDATOR_INVALIDATION_SELECTORPART(                \
         element, reason, invalidationSet, singleSelectorPart);
 
@@ -107,11 +113,6 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
                       other.tag_names_) &&
          BackingEqual(backing_flags_, attributes_, other.backing_flags_,
                       other.attributes_);
-}
-
-void InvalidationSet::CacheTracingFlag() {
-  g_tracing_enabled = TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"));
 }
 
 InvalidationSet::InvalidationSet(InvalidationType type)

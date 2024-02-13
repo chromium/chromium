@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -70,6 +71,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
+#include "chrome/browser/ash/policy/local_user_files/policy_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -129,7 +131,7 @@ namespace {
 using file_manager::Volume;
 using file_manager::VolumeManager;
 
-std::string Redact(const base::StringPiece s) {
+std::string Redact(const std::string_view s) {
   return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
 }
 
@@ -592,7 +594,7 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
   }
 
   // For fusebox volumes, get the underlying (aka regular) volume.
-  const auto fusebox = base::StringPiece(file_manager::util::kFuseBox);
+  const auto fusebox = std::string_view(file_manager::util::kFuseBox);
   if (base::StartsWith(volume->file_system_type(), fusebox)) {
     std::string volume_id = params->volume_id;
 
@@ -630,9 +632,9 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
             this));
   } else if (volume->type() == file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER) {
     std::string authority;
-    std::string root_document_id;
+    std::string root_id;
     if (!arc::ParseDocumentsProviderPath(volume->mount_path(), &authority,
-                                         &root_document_id)) {
+                                         &root_id)) {
       return RespondNow(Error("File path was invalid"));
     }
 
@@ -642,7 +644,7 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
     if (!root_map) {
       return RespondNow(Error("File not found"));
     }
-    auto* root = root_map->Lookup(authority, root_document_id);
+    auto* root = root_map->Lookup(authority, root_id);
     if (!root) {
       return RespondNow(Error("File not found"));
     }
@@ -1514,10 +1516,11 @@ void FileManagerPrivateInternalSearchFilesFunction::RunFileSearchByName(
     ash::RecentSource::FileType file_type,
     size_t max_results,
     OnResultsReadyCallback callback) {
-  // If trash is enabled for the given profile, generate all trash paths that
-  // are to be excluded when searching for matching files.
+  // If trash is enabled for the given profile and by local user files policy,
+  // generate all trash paths that are to be excluded when searching for
+  // matching files.
   std::vector<base::FilePath> excluded_paths;
-  if (file_manager::trash::IsTrashEnabledForProfile((profile))) {
+  if (file_manager::trash::IsTrashEnabledForProfile(profile)) {
     auto enabled_trash_locations =
         file_manager::trash::GenerateEnabledTrashLocationsForProfile(
             profile, /*base_path=*/base::FilePath());

@@ -370,9 +370,13 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.isDndEnabled_ = enabled;
   }
 
-  private getAppListCountDescription_(): string {
+  private getAppNotificationsRowSublabel_(): string {
+    if (this.isRevampWayfindingEnabled_) {
+      return this.i18n('appNotificationsRowSublabel');
+    }
+
     return this.isDndEnabled_ ?
-        this.i18n('appNotificationsDoNotDisturbDescription') :
+        this.i18n('appNotificationsDoNotDisturbEnabledDescription') :
         this.i18n(
             'appNotificationsCountDescription',
             this.appsWithNotifications_.length);

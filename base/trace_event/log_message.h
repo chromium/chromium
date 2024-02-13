@@ -8,9 +8,9 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/base_export.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 
 namespace base {
@@ -19,7 +19,7 @@ namespace trace_event {
 
 class BASE_EXPORT LogMessage : public ConvertableToTraceFormat {
  public:
-  LogMessage(const char* file, base::StringPiece message, int line);
+  LogMessage(const char* file, std::string_view message, int line);
   LogMessage(const LogMessage&) = delete;
   LogMessage& operator=(const LogMessage&) = delete;
   ~LogMessage() override;

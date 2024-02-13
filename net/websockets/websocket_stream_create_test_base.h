@@ -6,6 +6,7 @@
 #define NET_WEBSOCKETS_WEBSOCKET_STREAM_CREATE_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -21,7 +22,6 @@
 #include "net/test/test_with_task_environment.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_test_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -108,7 +108,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   base::OnceCallback<void(const AuthCredentials*)> on_auth_required_callback_;
 
   // This value will be copied to |*credentials| on OnAuthRequired.
-  absl::optional<AuthCredentials> auth_credentials_;
+  std::optional<AuthCredentials> auth_credentials_;
   // OnAuthRequired returns this value.
   int on_auth_required_rv_ = OK;
 

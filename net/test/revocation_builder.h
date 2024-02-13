@@ -5,11 +5,11 @@
 #ifndef NET_TEST_REVOCATION_BUILDER_H_
 #define NET_TEST_REVOCATION_BUILDER_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/pki/ocsp.h"
 #include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
@@ -54,18 +54,17 @@ std::string BuildOCSPResponse(
 std::string BuildOCSPResponseWithResponseData(
     EVP_PKEY* responder_key,
     const std::string& response_data,
-    absl::optional<bssl::SignatureAlgorithm> signature_algorithm =
-        absl::nullopt);
+    std::optional<bssl::SignatureAlgorithm> signature_algorithm = std::nullopt);
 
 // Creates a CRL issued by |crl_issuer_subject| and signed by |crl_issuer_key|,
 // marking |revoked_serials| as revoked. If |signature_algorithm| is nullopt, a
 // default algorithm will be chosen based on the key type.
 // Returns the DER-encoded CRL.
-std::string BuildCrl(const std::string& crl_issuer_subject,
-                     EVP_PKEY* crl_issuer_key,
-                     const std::vector<uint64_t>& revoked_serials,
-                     absl::optional<bssl::SignatureAlgorithm>
-                         signature_algorithm = absl::nullopt);
+std::string BuildCrl(
+    const std::string& crl_issuer_subject,
+    EVP_PKEY* crl_issuer_key,
+    const std::vector<uint64_t>& revoked_serials,
+    std::optional<bssl::SignatureAlgorithm> signature_algorithm = std::nullopt);
 
 std::string BuildCrlWithAlgorithmTlvAndDigest(
     const std::string& crl_issuer_subject,

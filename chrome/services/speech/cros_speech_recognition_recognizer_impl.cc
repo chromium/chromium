@@ -8,7 +8,9 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "chrome/services/speech/soda/cros_soda_client.h"
+#include "components/soda/constants.h"
 #include "google_apis/google_api_keys.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_sample_types.h"
@@ -75,6 +77,28 @@ CrosSpeechRecognitionRecognizerImpl::CrosSpeechRecognitionRecognizerImpl(
   cros_soda_client_ = std::make_unique<soda::CrosSodaClient>();
 }
 
+chromeos::machine_learning::mojom::SodaMultilangConfigPtr
+CrosSpeechRecognitionRecognizerImpl::AddLiveCaptionLanguagesToConfig(
+    const std::string& primary_language_name,
+    const base::flat_map<std::string, base::FilePath>& config_paths,
+    const std::vector<std::string>& live_caption_languages) {
+  auto multi_lang_config =
+      chromeos::machine_learning::mojom::SodaMultilangConfig::New();
+
+  for (const auto& config_path : config_paths) {
+    if (config_path.first == primary_language_name) {
+      continue;
+    } else if (!base::Contains(live_caption_languages, config_path.first)) {
+      VLOG(1) << "Skipping multilang on captions of " << config_path.first
+              << " as it is not listed as a live caption language.";
+      continue;
+    }
+    multi_lang_config->locale_to_language_pack_map[config_path.first] =
+        config_path.second.value();
+  }
+  return multi_lang_config;
+}
+
 void CrosSpeechRecognitionRecognizerImpl::
     SendAudioToSpeechRecognitionServiceInternal(
         media::mojom::AudioDataS16Ptr buffer) {
@@ -104,6 +128,14 @@ void CrosSpeechRecognitionRecognizerImpl::
     config->library_dlc_path = binary_path_.value();
     config->recognition_mode =
         GetSodaSpeechRecognitionMode(options_->recognition_mode);
+    if (options_->recognition_mode ==
+            media::mojom::SpeechRecognitionMode::kCaption &&
+        base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+      config->multi_lang_config = AddLiveCaptionLanguagesToConfig(
+          primary_language_name(), config_paths(),
+          speech::GetLiveCaptionEnabledLanguages());
+    }
+
     config->enable_formatting =
         options_->enable_formatting
             ? chromeos::machine_learning::mojom::OptionalBool::kTrue

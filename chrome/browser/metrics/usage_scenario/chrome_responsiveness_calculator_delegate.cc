@@ -41,6 +41,25 @@ bool IsChromeUsedInScenario(Scenario scenario) {
   }
 }
 
+const char* GetSuffixForExtensionCount(size_t extension_count) {
+  if (extension_count >= 16) {
+    return "16";
+  }
+  if (extension_count >= 8) {
+    return "8";
+  }
+  if (extension_count >= 4) {
+    return "4";
+  }
+  if (extension_count >= 2) {
+    return "2";
+  }
+  if (extension_count == 1) {
+    return "1";
+  }
+  return "0";
+}
+
 }  // namespace
 
 // static
@@ -63,8 +82,10 @@ ChromeResponsivenessCalculatorDelegate::
     ~ChromeResponsivenessCalculatorDelegate() = default;
 
 void ChromeResponsivenessCalculatorDelegate::OnMeasurementIntervalEnded() {
-  interval_scenario_params_ =
-      GetLongIntervalScenario(usage_scenario_data_store_->ResetIntervalData());
+  auto interval_data = usage_scenario_data_store_->ResetIntervalData();
+  interval_scenario_params_ = GetLongIntervalScenario(interval_data);
+  extensions_with_content_scripts_in_interval_ =
+      interval_data.num_extensions_with_content_scripts;
 }
 
 void ChromeResponsivenessCalculatorDelegate::OnResponsivenessEmitted(
@@ -82,6 +103,14 @@ void ChromeResponsivenessCalculatorDelegate::OnResponsivenessEmitted(
     base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion.Used",
                                    num_congested_slices, min, exclusive_max,
                                    buckets);
+  }
+  if (extensions_with_content_scripts_in_interval_.has_value()) {
+    base::UmaHistogramCustomCounts(
+        base::StrCat(
+            {"Browser.MainThreadsCongestion.ExtensionContentScripts.",
+             GetSuffixForExtensionCount(
+                 extensions_with_content_scripts_in_interval_.value())}),
+        num_congested_slices, min, exclusive_max, buckets);
   }
 }
 

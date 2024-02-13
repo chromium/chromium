@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] relu float32 1D constant tensor / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] relu float32 1D tensor / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] relu float32 2D tensor / async

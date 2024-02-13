@@ -49,8 +49,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -334,13 +334,12 @@ class SafeBrowsingPrivateEventRouterTest
     : public SafeBrowsingPrivateEventRouterTestBase {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  public:
-  SafeBrowsingPrivateEventRouterTest() {
-    test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
-  }
+  SafeBrowsingPrivateEventRouterTest() = default;
 
  protected:
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  std::unique_ptr<ash::ScopedTestUserManager> test_user_manager_;
+  user_manager::ScopedUserManager test_user_manager_{
+      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
@@ -1536,18 +1535,16 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
-    const user_manager::User* user = user_manager->AddUserWithAffiliation(
+    const user_manager::User* user = user_manager_->AddUserWithAffiliation(
         account_id, /*is_affiliated=*/is_manageable_);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                                  profile_);
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false,
-                               /*is_child=*/false);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                /*browser_restart=*/false,
+                                /*is_child=*/false);
     profile_->ScopedCrosSettingsTestHelper()
         ->InstallAttributes()
         ->SetCloudManaged("domain.com", "device_id");
@@ -1562,7 +1559,8 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
  private:
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
 #endif
 };
 

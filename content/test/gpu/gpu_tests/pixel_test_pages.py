@@ -44,10 +44,11 @@ VERY_PERMISSIVE_SOBEL_ALGO = algo.SobelMatchingAlgorithm(
 
 # The optimizer script spat out pretty similar values for most MP4 tests, so
 # combine into a single set of parameters.
-GENERAL_MP4_ALGO = algo.SobelMatchingAlgorithm(max_different_pixels=56300,
-                                               pixel_delta_threshold=35,
-                                               edge_threshold=80,
-                                               ignored_border_thickness=1)
+GENERAL_MP4_ALGO = algo.SobelMatchingAlgorithm(
+    max_different_pixels=56300,
+    pixel_per_channel_delta_threshold=15,
+    edge_threshold=80,
+    ignored_border_thickness=1)
 
 ROUNDING_ERROR_ALGO = algo.FuzzyMatchingAlgorithm(
     max_different_pixels=100000000, pixel_per_channel_delta_threshold=1)
@@ -281,7 +282,8 @@ class PixelTestPages():
                       base_name + '_Canvas2DRedBox',
                       test_rect=[0, 0, 300, 300],
                       matching_algorithm=algo.FuzzyMatchingAlgorithm(
-                          max_different_pixels=130, pixel_delta_threshold=3)),
+                          max_different_pixels=130,
+                          pixel_per_channel_delta_threshold=2)),
         PixelTestPage('pixel_canvas2d_untagged.html',
                       base_name + '_Canvas2DUntagged',
                       test_rect=[0, 0, 257, 257]),
@@ -356,7 +358,7 @@ class PixelTestPages():
             test_rect=[0, 0, 240, 135],
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=41700,
-                pixel_delta_threshold=15,
+                pixel_per_channel_delta_threshold=5,
                 edge_threshold=40,
                 ignored_border_thickness=1)),
         PixelTestPage(
@@ -384,7 +386,7 @@ class PixelTestPages():
             test_rect=[0, 0, 240, 135],
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=30500,
-                pixel_delta_threshold=15,
+                pixel_per_channel_delta_threshold=5,
                 edge_threshold=70,
                 ignored_border_thickness=1)),
         PixelTestPage('pixel_video_vp9.html?width=240&height=135&use_timer=1',
@@ -392,7 +394,7 @@ class PixelTestPages():
                       test_rect=[0, 0, 240, 135],
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=114000,
-                          pixel_delta_threshold=30,
+                          pixel_per_channel_delta_threshold=15,
                           edge_threshold=20,
                           ignored_border_thickness=1)),
         PixelTestPage('pixel_video_av1.html?width=240&height=135&use_timer=1',
@@ -400,7 +402,7 @@ class PixelTestPages():
                       test_rect=[0, 0, 240, 135],
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=114000,
-                          pixel_delta_threshold=30,
+                          pixel_per_channel_delta_threshold=15,
                           edge_threshold=20,
                           ignored_border_thickness=1)),
         PixelTestPage('pixel_video_hevc.html?width=240&height=135&use_timer=1',
@@ -408,7 +410,7 @@ class PixelTestPages():
                       test_rect=[0, 0, 240, 135],
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=114000,
-                          pixel_delta_threshold=30,
+                          pixel_per_channel_delta_threshold=15,
                           edge_threshold=20,
                           ignored_border_thickness=1)),
         PixelTestPage(
@@ -429,7 +431,8 @@ class PixelTestPages():
             # threshold, so use fuzzy for now since it's slightly more
             # efficient.
             matching_algorithm=algo.FuzzyMatchingAlgorithm(
-                max_different_pixels=31700, pixel_delta_threshold=20),
+                max_different_pixels=31700,
+                pixel_per_channel_delta_threshold=10),
             expected_per_process_crashes={
                 CRASH_TYPE_GPU: 1,
             }),
@@ -441,7 +444,7 @@ class PixelTestPages():
                       test_rect=[0, 0, 240, 135],
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=54400,
-                          pixel_delta_threshold=30,
+                          pixel_per_channel_delta_threshold=15,
                           edge_threshold=250,
                           ignored_border_thickness=1),
                       expected_per_process_crashes={
@@ -453,7 +456,7 @@ class PixelTestPages():
             test_rect=[0, 0, 240, 135],
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=1000,
-                pixel_delta_threshold=20,
+                pixel_per_channel_delta_threshold=10,
                 edge_threshold=40,
                 ignored_border_thickness=1)),
         PixelTestPage('pixel_webgl_premultiplied_alpha_false.html',
@@ -702,7 +705,7 @@ class PixelTestPages():
             browser_args=browser_args,
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=10,
-                pixel_delta_threshold=30,
+                pixel_per_channel_delta_threshold=15,
                 edge_threshold=100),
             # Small Fuchsia screens result in an incomplete capture
             # without this.
@@ -745,8 +748,8 @@ class PixelTestPages():
 
     # The sRGB tests have been observed to create a large number
     # (~15,000) of pixels with difference ~3.
-    srgb_fuzzy_algo = algo.FuzzyMatchingAlgorithm(max_different_pixels=20000,
-                                                  pixel_delta_threshold=3)
+    srgb_fuzzy_algo = algo.FuzzyMatchingAlgorithm(
+        max_different_pixels=20000, pixel_per_channel_delta_threshold=2)
 
     return [
         PixelTestPage('pixel_offscreenCanvas_transfer_after_style_resize.html',
@@ -955,7 +958,7 @@ class PixelTestPages():
     # portions of the image are prone to noise, hence the large max different
     # pixels value.
     filter_effect_fuzzy_algo = algo.FuzzyMatchingAlgorithm(
-        max_different_pixels=57500, pixel_delta_threshold=15)
+        max_different_pixels=57500, pixel_per_channel_delta_threshold=10)
 
     return [
         PixelTestPage('pixel_canvas2d_webgl.html',
@@ -1155,17 +1158,17 @@ class PixelTestPages():
     # value for each parameter in that tier.
     strict_dc_sobel_algorithm = algo.SobelMatchingAlgorithm(
         max_different_pixels=1000,
-        pixel_delta_threshold=5,
+        pixel_per_channel_delta_threshold=3,
         edge_threshold=250,
         ignored_border_thickness=1)
     permissive_dc_sobel_algorithm = algo.SobelMatchingAlgorithm(
         max_different_pixels=16800,
-        pixel_delta_threshold=20,
+        pixel_per_channel_delta_threshold=10,
         edge_threshold=30,
         ignored_border_thickness=1)
     very_permissive_dc_sobel_algorithm = algo.SobelMatchingAlgorithm(
         max_different_pixels=30400,
-        pixel_delta_threshold=45,
+        pixel_per_channel_delta_threshold=20,
         edge_threshold=10,
         ignored_border_thickness=1,
     )
@@ -1290,7 +1293,7 @@ class PixelTestPages():
             # Much larger image than other VP9 tests.
             matching_algorithm=algo.SobelMatchingAlgorithm(
                 max_different_pixels=504000,
-                pixel_delta_threshold=10,
+                pixel_per_channel_delta_threshold=5,
                 edge_threshold=10,
                 ignored_border_thickness=1,
             )),

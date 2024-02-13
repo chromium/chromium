@@ -236,7 +236,7 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   TokenCallback callback_;
   const Mode mode_;
 
-  // TODO(crbug.com/1462858): Remove this field once
+  // TODO(crbug.com/40067025): Remove this field once
   // kReplaceSyncPromosWithSignInPromos launches.
   const bool should_verify_scope_access_;
 

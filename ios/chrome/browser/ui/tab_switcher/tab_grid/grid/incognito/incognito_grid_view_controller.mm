@@ -61,6 +61,18 @@
 
 #endif
 
+- (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
+           itemsForBeginningDragSession:(id<UIDragSession>)session
+                            atIndexPath:(NSIndexPath*)indexPath {
+  if (self.contentNeedsAuthentication) {
+    // Don't support dragging items if the drag&drop handler is not set.
+    return @[];
+  }
+  return [super collectionView:collectionView
+      itemsForBeginningDragSession:session
+                       atIndexPath:indexPath];
+}
+
 #pragma mark - IncognitoReauthConsumer
 
 - (void)setItemsRequireAuthentication:(BOOL)require {

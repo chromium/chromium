@@ -4,8 +4,6 @@
 
 # TODO: Move this to the target public_java too.
 start_surface_java_sources = [
-  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/magic_stack/ChromeHomeModulesConfigManager.java",
-  "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/magic_stack/ChromeHomeModulesConfigSettings.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/BackgroundTabAnimation.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinator.java",
   "//chrome/android/features/start_surface/java/src/org/chromium/chrome/features/start_surface/ExploreSurfaceCoordinatorFactory.java",

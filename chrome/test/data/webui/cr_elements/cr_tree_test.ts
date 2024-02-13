@@ -6,8 +6,9 @@
 import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 
-import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
-import {CrTreeItemElement, SELECTED_ATTR} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import type {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
+import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import { SELECTED_ATTR} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

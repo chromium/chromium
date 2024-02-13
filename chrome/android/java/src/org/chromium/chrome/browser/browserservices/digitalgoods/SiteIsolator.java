@@ -17,8 +17,7 @@ import org.chromium.url.GURL;
 public class SiteIsolator {
     private SiteIsolator() {}
 
-    public static void startIsolatingSite(GURL url) {
-        Profile profile = Profile.getLastUsedRegularProfile();
+    public static void startIsolatingSite(Profile profile, GURL url) {
         SiteIsolatorJni.get().startIsolatingSite(profile, url);
     }
 

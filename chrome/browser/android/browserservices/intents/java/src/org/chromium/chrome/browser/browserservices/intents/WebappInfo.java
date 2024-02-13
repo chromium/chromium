@@ -240,6 +240,10 @@ public class WebappInfo {
         return getWebApkExtras().shortcutItems;
     }
 
+    public long lastUpdateTime() {
+        return getWebApkExtras().lastUpdateTime;
+    }
+
     /**
      * Returns true if the WebappInfo was created for an Intent fired from a launcher shortcut (as
      * opposed to an intent from a push notification or other internal source).

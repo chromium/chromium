@@ -68,63 +68,15 @@ class FontPlatformDataCache final {
   void Purge(const FontDataCache& font_data_cache);
 
  private:
-  // `SizedFontPlatformDataSet` maps rounded font size to `FontPlatformData`.
-  class SizedFontPlatformDataSet final
-      : public ThreadSafeRefCounted<SizedFontPlatformDataSet> {
-   public:
-    static scoped_refptr<SizedFontPlatformDataSet> Create();
-
-    ~SizedFontPlatformDataSet();
-
-    SizedFontPlatformDataSet(const SizedFontPlatformDataSet&) = delete;
-    SizedFontPlatformDataSet(SizedFontPlatformDataSet&&) = delete;
-
-    SizedFontPlatformDataSet& operator=(const SizedFontPlatformDataSet&) =
-        delete;
-    SizedFontPlatformDataSet operator=(SizedFontPlatformDataSet&&) = delete;
-
-    FontPlatformData* GetOrCreateFontPlatformData(
-        FontCache* font_cache,
-        const FontDescription& font_description,
-        const FontFaceCreationParams& creation_params,
-        float size,
-        AlternateFontName alternate_font_name,
-        unsigned rounded_size);
-
-    // Returns true if `map_` is empty.
-    bool Purge(const FontDataCache& font_data_cache);
-
-    void Set(unsigned rounded_size, FontPlatformData* platform_data);
-
-   private:
-    using SizeToDataMap = HashMap<unsigned,
-                                  std::unique_ptr<FontPlatformData>,
-                                  IntWithZeroKeyHashTraits<unsigned>>;
-
-    SizedFontPlatformDataSet();
-
-    SizeToDataMap size_to_data_map_;
-  };
-
-  SizedFontPlatformDataSet& GetOrCreateSizeMap(const FontCacheKey& key);
-
-  HashMap<FontCacheKey, scoped_refptr<SizedFontPlatformDataSet>> map_;
+  HashMap<FontCacheKey, std::unique_ptr<FontPlatformData>> map_;
 
   // A maximum float value to which we limit incoming font sizes. This is the
   // smallest float so that multiplying it by
   // FontCacheKey::PrecisionMultiplier() is still smaller than
   // std::numeric_limits<unsigned>::max() - 1 in order to avoid hitting
   // HashMap sentinel values (placed at std::numeric_limits<unsigned>::max()
-  // and std::numeric_limits<unsigned>::max() - 1) for
-  // SizedFontPlatformDataSet and FontPlatformDataCache.
+  // and std::numeric_limits<unsigned>::max() - 1) for FontPlatformDataCache.
   const float font_size_limit_;
-
-  // When true, the font size is removed from primary keys in |map_|.
-  // The font size is not necessary in the primary key, because per-size
-  // FontPlatformData are held in a nested map.
-  // This is controlled by a base::Feature to assess impact with an
-  // experiment.
-  const bool no_size_in_key_;
 };
 
 }  // namespace blink

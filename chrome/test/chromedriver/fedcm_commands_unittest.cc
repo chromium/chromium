@@ -56,6 +56,17 @@ class MockResponseWebView : public StubWebView {
 
   const std::string& GetLastCommand() const { return last_command_; }
 
+  bool IsDetached() const override { return false; }
+
+  Status CallFunctionWithTimeout(
+      const std::string& frame,
+      const std::string& function,
+      const base::Value::List& args,
+      const base::TimeDelta& timeout,
+      std::unique_ptr<base::Value>* result) override {
+    return Status{kOk};
+  }
+
  private:
   FedCmTracker tracker_;
   std::string last_command_;

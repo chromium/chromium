@@ -93,7 +93,6 @@
 #include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/os_flags_system_web_app_info.h"
@@ -148,6 +147,7 @@
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -177,8 +177,6 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
@@ -608,17 +606,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
     if (StartWebAppProviderForMainProfile())
       StartWebAppProvider(profile());
-  }
-
-  void LogIn(const std::string& email) override {
-    // TODO(crbug.com/1494005): merge into BrowserWithTestWindowTest.
-    AccountId account_id = AccountId::FromUserEmail(email);
-    user_manager()->AddUser(account_id);
-    user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
   }
 
   virtual bool StartWebAppProviderForMainProfile() const { return true; }
@@ -1653,8 +1640,9 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     return CreateProfile(email);
   }
 
-  // Switch to another user.
-  void SwitchActiveUser(const AccountId& account_id) {
+  // Switch to another user by AccountId.
+  // TODO(b/40286020): Migrate into SwitchActiveUser().
+  void SwitchActiveUserByAccountId(const AccountId& account_id) {
     user_manager()->SwitchActiveUser(account_id);
     ash::MultiUserWindowManagerImpl::Get()->SetAnimationSpeedForTest(
         ash::MultiUserWindowManagerImpl::ANIMATION_SPEED_DISABLED);
@@ -2858,7 +2846,7 @@ TEST_F(ChromeShelfControllerMultiProfileWithArcTest, DISABLED_ArcMultiUser) {
   EXPECT_TRUE(shelf_controller_->GetItem(ash::ShelfID(arc_app_id2)));
 
   shelf_controller_->SetProfileForTest(profile2);
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
 
   EXPECT_FALSE(shelf_controller_->GetItem(ash::ShelfID(arc_app_id1)));
   EXPECT_FALSE(shelf_controller_->GetItem(ash::ShelfID(arc_app_id2)));
@@ -2873,7 +2861,7 @@ TEST_F(ChromeShelfControllerMultiProfileWithArcTest, DISABLED_ArcMultiUser) {
   arc_test_.app_instance()->SendTaskDestroyed(2);
 
   shelf_controller_->SetProfileForTest(profile());
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
 
   EXPECT_TRUE(shelf_controller_->GetItem(ash::ShelfID(arc_app_id1)));
   EXPECT_FALSE(shelf_controller_->GetItem(ash::ShelfID(arc_app_id2)));
@@ -3340,11 +3328,11 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
         multi_user_util::GetAccountIdFromProfile(profile2));
     const AccountId account_id(
         multi_user_util::GetAccountIdFromProfile(profile()));
-    SwitchActiveUser(account_id2);
+    SwitchActiveUserByAccountId(account_id2);
     EXPECT_EQ(1, model_->item_count());
 
     // After switching back the item should be back.
-    SwitchActiveUser(account_id);
+    SwitchActiveUserByAccountId(account_id);
     EXPECT_EQ(2, model_->item_count());
     // Note we destroy now the gmail app with the closure end.
   }
@@ -3371,19 +3359,19 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     EXPECT_EQ(1, model_->item_count());
 
     // However - switching to the user should show it.
-    SwitchActiveUser(account_id2);
+    SwitchActiveUserByAccountId(account_id2);
     EXPECT_EQ(2, model_->item_count());
 
     // Second test: Remove the app when the user is not active and see that it
     // works.
-    SwitchActiveUser(account_id);
+    SwitchActiveUserByAccountId(account_id);
     EXPECT_EQ(1, model_->item_count());
     // Note: the closure ends and the browser will go away.
   }
   EXPECT_EQ(1, model_->item_count());
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_EQ(1, model_->item_count());
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
   EXPECT_EQ(1, model_->item_count());
 }
 
@@ -3405,11 +3393,11 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     std::unique_ptr<V1App> v1_app(CreateRunningV1App(
         profile(), extension_misc::kGmailAppId, kGmailLaunchURL));
     EXPECT_EQ(2, model_->item_count());
-    SwitchActiveUser(account_id2);
+    SwitchActiveUserByAccountId(account_id2);
     EXPECT_EQ(1, model_->item_count());
   }
   // After the app was destroyed, switch back. (which caused already a crash).
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
 
   // Create the same app again - which was also causing the crash.
   EXPECT_EQ(1, model_->item_count());
@@ -3419,7 +3407,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
         profile(), extension_misc::kGmailAppId, kGmailLaunchURL));
     EXPECT_EQ(2, model_->item_count());
   }
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_EQ(1, model_->item_count());
 }
 
@@ -3436,7 +3424,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
       multi_user_util::GetAccountIdFromProfile(profile()));
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   {
     // Create a "windowed gmail app".
     std::unique_ptr<V1App> v1_app(
@@ -3444,19 +3432,19 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     EXPECT_EQ(1, model_->item_count());
 
     // However - switching to the user should show it.
-    SwitchActiveUser(account_id);
+    SwitchActiveUserByAccountId(account_id);
     EXPECT_EQ(2, model_->item_count());
 
     // Second test: Remove the app when the user is not active and see that it
     // works.
-    SwitchActiveUser(account_id2);
+    SwitchActiveUserByAccountId(account_id2);
     EXPECT_EQ(1, model_->item_count());
     v1_app.reset();
   }
   EXPECT_EQ(1, model_->item_count());
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
   EXPECT_EQ(1, model_->item_count());
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_EQ(1, model_->item_count());
 }
 
@@ -3535,7 +3523,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Switch to the secondary user, and verify the app only installed in the
   // primary profile is removed from the model.
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
 
   EXPECT_EQ(std::vector<std::string>({app_constants::kChromeAppId}),
             GetAppsShownInShelf());
@@ -4177,7 +4165,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Switch to the other user and make sure that only that browser window gets
   // shown.
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   CheckAppMenu(shelf_controller_.get(), item_browser, 1, one_menu_item2);
 
   // Transferred browsers of other users should not show up in the list.
@@ -4288,7 +4276,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   TestingProfile* profile2 = CreateMultiUserProfile(user2);
   const AccountId account_id2(
       multi_user_util::GetAccountIdFromProfile(profile2));
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
 
   // No item should have content yet.
   CheckAppMenu(shelf_controller_.get(), item_browser, 0, nullptr);
@@ -4323,11 +4311,11 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
       multi_user_util::GetAccountIdFromProfile(profile2));
 
   // After switching users the item should go away.
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_EQ(1, model_->item_count());
 
   // And it should come back when switching back.
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
   EXPECT_EQ(2, model_->item_count());
 }
 
@@ -4347,7 +4335,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_EQ(1, model_->item_count());
 
   // Switch to an inactive user.
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_EQ(1, model_->item_count());
 
   // Add the v2 app to the inactive user and check that no item was added to
@@ -4358,12 +4346,12 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     EXPECT_EQ(1, model_->item_count());
 
     // Switch to the primary user and check that the item is shown.
-    SwitchActiveUser(account_id);
+    SwitchActiveUserByAccountId(account_id);
     EXPECT_EQ(2, model_->item_count());
 
     // Switch to the second user and check that the item goes away - even if the
     // item gets closed.
-    SwitchActiveUser(account_id2);
+    SwitchActiveUserByAccountId(account_id2);
     EXPECT_EQ(1, model_->item_count());
   }
 
@@ -4372,7 +4360,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Switching then back to the default user should not show the additional
   // item anymore.
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
   EXPECT_EQ(1, model_->item_count());
 }
 
@@ -4457,14 +4445,14 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
           base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
   extension_service1->Init();
 
-  SwitchActiveUser(account_id1);
+  SwitchActiveUserByAccountId(account_id1);
 
   // A v2 app for user #1 should be shown first and get hidden when switching
   // to desktop #2.
   extension_service1->AddExtension(extension1_.get());
   V2App v2_app_1(profile1, extension1_.get());
   EXPECT_TRUE(v2_app_1.window()->GetNativeWindow()->IsVisible());
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_FALSE(v2_app_1.window()->GetNativeWindow()->IsVisible());
 
   // Add a v2 app for user #1 while on desktop #2 should not be shown.
@@ -4487,7 +4475,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Switching back to desktop#1 and creating an app for user #1 should move
   // the app on desktop #1.
-  SwitchActiveUser(account_id1);
+  SwitchActiveUserByAccountId(account_id1);
   V2App v2_app_4(profile1, extension1_.get());
   EXPECT_FALSE(v2_app_1.window()->GetNativeWindow()->IsVisible());
   EXPECT_TRUE(v2_app_2.window()->GetNativeWindow()->IsVisible());
@@ -4496,15 +4484,15 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Switching to desktop #3 and creating an app for user #1 should place it
   // on that user's desktop (#1).
-  SwitchActiveUser(account_id3);
+  SwitchActiveUserByAccountId(account_id3);
   V2App v2_app_5(profile1, extension1_.get());
   EXPECT_FALSE(v2_app_5.window()->GetNativeWindow()->IsVisible());
-  SwitchActiveUser(account_id1);
+  SwitchActiveUserByAccountId(account_id1);
   EXPECT_TRUE(v2_app_5.window()->GetNativeWindow()->IsVisible());
 
   // Switching to desktop #2, hiding the app window and creating an app should
   // teleport there automatically.
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   v2_app_1.window()->Hide();
   V2App v2_app_6(profile1, extension1_.get());
   EXPECT_FALSE(v2_app_1.window()->GetNativeWindow()->IsVisible());
@@ -4524,11 +4512,11 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // If switch to account_id2 is not run, the following switch to account_id
   // is invalid, because the user account is not changed, so switch to
   // account_id2 first.
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
 
   const AccountId account_id(
       multi_user_util::GetAccountIdFromProfile(profile()));
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
   EXPECT_EQ(1, model_->item_count());
 
   AddExtension(extension1_.get());
@@ -4544,7 +4532,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   }
   {
     // Switch user, hide and show the app and switch back.
-    SwitchActiveUser(account_id2);
+    SwitchActiveUserByAccountId(account_id2);
     EXPECT_EQ(1, model_->item_count());
 
     v2_app_1.window()->Hide();
@@ -4553,18 +4541,18 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     v2_app_1.window()->Show(extensions::AppWindow::SHOW_ACTIVE);
     EXPECT_EQ(1, model_->item_count());
 
-    SwitchActiveUser(account_id);
+    SwitchActiveUserByAccountId(account_id);
     EXPECT_EQ(2, model_->item_count());
   }
   {
     // Switch user, hide the app, switch back and then show it again.
-    SwitchActiveUser(account_id2);
+    SwitchActiveUserByAccountId(account_id2);
     EXPECT_EQ(1, model_->item_count());
 
     v2_app_1.window()->Hide();
     EXPECT_EQ(1, model_->item_count());
 
-    SwitchActiveUser(account_id);
+    SwitchActiveUserByAccountId(account_id);
     // The following expectation does not work in current impl. It was working
     // before because MultiProfileSupport is not attached to user associated
     // with profile() hence not actually handling windows for the user. It is
@@ -4616,12 +4604,12 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
   // Switch to a new profile
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
   // Switch back
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
   EXPECT_EQ(2, model_->item_count());
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
@@ -4664,13 +4652,13 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
   // Switch to a new profile
-  SwitchActiveUser(account_id2);
+  SwitchActiveUserByAccountId(account_id2);
   EXPECT_FALSE(shelf_controller_->IsAppPinned(app_id));
   EXPECT_EQ(1, model_->item_count());
   EXPECT_FALSE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));
 
   // Switch back
-  SwitchActiveUser(account_id);
+  SwitchActiveUserByAccountId(account_id);
   EXPECT_TRUE(shelf_controller_->IsAppPinned(app_id));
   EXPECT_EQ(2, model_->item_count());
   EXPECT_TRUE(shelf_controller_->GetShelfSpinnerController()->HasApp(app_id));

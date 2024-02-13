@@ -18,7 +18,7 @@ const net::SchemefulSite kSite2(GURL("https://origin2.test/"));
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreate) {
   url::Origin origin = url::Origin::Create(kUrl1);
-  const absl::optional<SharedDictionaryIsolationKey> isolation_key =
+  const std::optional<SharedDictionaryIsolationKey> isolation_key =
       SharedDictionaryIsolationKey::MaybeCreate(
           net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
                                      origin, origin, net::SiteForCookies()));
@@ -26,7 +26,7 @@ TEST(SharedDictionaryIsolationKeyTest, MaybeCreate) {
 }
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreateOpaqueTopFrameOrigin) {
-  const absl::optional<SharedDictionaryIsolationKey> isolation_key =
+  const std::optional<SharedDictionaryIsolationKey> isolation_key =
       SharedDictionaryIsolationKey::MaybeCreate(net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, url::Origin(),
           url::Origin::Create(kUrl1), net::SiteForCookies()));
@@ -35,7 +35,7 @@ TEST(SharedDictionaryIsolationKeyTest, MaybeCreateOpaqueTopFrameOrigin) {
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreateOpaqueFrameOrigin) {
   url::Origin origin = url::Origin::Create(kUrl1);
-  const absl::optional<SharedDictionaryIsolationKey> isolation_key =
+  const std::optional<SharedDictionaryIsolationKey> isolation_key =
       SharedDictionaryIsolationKey::MaybeCreate(net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, origin, url::Origin(),
           net::SiteForCookies()));
@@ -43,7 +43,7 @@ TEST(SharedDictionaryIsolationKeyTest, MaybeCreateOpaqueFrameOrigin) {
 }
 
 TEST(SharedDictionaryIsolationKeyTest, MaybeCreateWithNonce) {
-  const absl::optional<SharedDictionaryIsolationKey> isolation_key =
+  const std::optional<SharedDictionaryIsolationKey> isolation_key =
       SharedDictionaryIsolationKey::MaybeCreate(net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kOther, url::Origin::Create(kUrl1),
           url::Origin(), net::SiteForCookies(),

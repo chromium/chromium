@@ -164,18 +164,8 @@ class LoginShelfViewTest : public LoginTestBase {
   }
 
   void FocusOnLoginShelfButton() {
-    // TODO(https://crbug.com/1343114): refactor the code below after the login
-    // shelf widget is ready.
-
-    views::Widget* login_shelf_widget = GetLoginShelfWidget();
-    if (features::IsUseLoginShelfWidgetEnabled()) {
-      static_cast<LoginShelfWidget*>(login_shelf_widget)
-          ->SetDefaultLastFocusableChild(/*reverse=*/false);
-    } else {
-      static_cast<ShelfWidget*>(login_shelf_widget)
-          ->set_default_last_focusable_child(
-              /*default_last_focusable_child=*/false);
-    }
+    LoginShelfWidget* login_shelf_widget = GetLoginShelfWidget();
+    login_shelf_widget->SetDefaultLastFocusableChild(/*reverse=*/false);
 
     Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
     ExpectFocused(login_shelf_widget->GetContentsView());
@@ -197,15 +187,10 @@ class LoginShelfViewTest : public LoginTestBase {
   }
 
   // Returns the widget where the login shelf view lives.
-  views::Widget* GetLoginShelfWidget() {
-    // TODO(https://crbug.com/1343114): refactor the code below after the login
-    // shelf widget is ready.
-
+  LoginShelfWidget* GetLoginShelfWidget() {
     Shelf* shelf =
         Shelf::ForWindow(login_shelf_view_->GetWidget()->GetNativeWindow());
-    return features::IsUseLoginShelfWidgetEnabled()
-               ? static_cast<views::Widget*>(shelf->login_shelf_widget())
-               : shelf->shelf_widget();
+    return shelf->login_shelf_widget();
   }
 
   TestTrayActionClient tray_action_client_;
@@ -1075,11 +1060,6 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
 
   ~LoginShelfViewWithShutdownConfirmationTest() override = default;
 
-  void SetUp() override {
-    LoginShelfViewTest::SetUp();
-    feature_list_.InitAndEnableFeature(features::kShutdownConfirmationBubble);
-  }
-
   base::HistogramTester& histograms() { return histograms_; }
 
  protected:
@@ -1131,8 +1111,6 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
  private:
   // Histogram value verifier.
   base::HistogramTester histograms_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Checks that shutdown confirmation bubble appears after pressing the

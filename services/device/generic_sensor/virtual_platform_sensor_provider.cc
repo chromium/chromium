@@ -110,22 +110,9 @@ void VirtualPlatformSensorProvider::CreateSensorInternal(
     return;
   }
 
-  std::optional<SensorReading> pending_reading;
-  metadata->pending_reading.swap(pending_reading);
-
   auto sensor = base::MakeRefCounted<VirtualPlatformSensor>(
-      type, reading_buffer, this, std::move(pending_reading));
-  if (metadata->mojo_metadata->minimum_frequency.has_value()) {
-    sensor->set_minimum_supported_frequency(
-        metadata->mojo_metadata->minimum_frequency.value());
-  }
-  if (metadata->mojo_metadata->maximum_frequency.has_value()) {
-    sensor->set_maximum_supported_frequency(
-        metadata->mojo_metadata->maximum_frequency.value());
-  }
-  if (metadata->mojo_metadata->reporting_mode.has_value()) {
-    sensor->set_reporting_mode(metadata->mojo_metadata->reporting_mode.value());
-  }
+      type, reading_buffer, this, metadata->pending_reading,
+      *metadata->mojo_metadata);
   std::move(callback).Run(std::move(sensor));
 }
 

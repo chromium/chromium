@@ -13,7 +13,7 @@
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // The Resource Attribution result and metadata structs described in
 // https://bit.ly/resource-attribution-api#heading=h.k8fjwkwxxdj6.
@@ -108,6 +108,6 @@ struct QueryResults {
 // A map from a ResourceContext to all query results received for that context.
 using QueryResultMap = std::map<ResourceContext, QueryResults>;
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_QUERY_RESULTS_H_

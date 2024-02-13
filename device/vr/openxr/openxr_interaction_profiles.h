@@ -86,7 +86,6 @@ struct OpenXrControllerInteractionProfile {
   mojom::OpenXrInteractionProfileType type;
   std::string path;
   std::string required_extension;
-  GamepadMapping mapping;
   std::vector<OpenXrButtonPathMap> common_button_maps;
   std::vector<OpenXrButtonPathMap> left_button_maps;
   std::vector<OpenXrButtonPathMap> right_button_maps;
@@ -96,7 +95,6 @@ struct OpenXrControllerInteractionProfile {
       mojom::OpenXrInteractionProfileType type,
       std::string path,
       std::string required_extension,
-      GamepadMapping mapping,
       std::vector<OpenXrButtonPathMap> common_button_maps,
       std::vector<OpenXrButtonPathMap> left_button_maps,
       std::vector<OpenXrButtonPathMap> right_button_maps,

@@ -5,6 +5,8 @@
 #ifndef ASH_STYLE_ICON_BUTTON_H_
 #define ASH_STYLE_ICON_BUTTON_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -35,9 +37,9 @@ class BlurredBackgroundShield;
 // this is done to help differentiating focus ring from the content of the
 // button.
 class ASH_EXPORT IconButton : public views::ImageButton {
- public:
-  METADATA_HEADER(IconButton);
+  METADATA_HEADER(IconButton, views::ImageButton)
 
+ public:
   using ColorVariant = absl::variant<SkColor, ui::ColorId>;
 
   enum class Type {
@@ -66,6 +68,45 @@ class ASH_EXPORT IconButton : public views::ImageButton {
 
     // The button will display on/off status of toggle.
     kCanDisplayDisabledToggleValue = 1,
+  };
+
+  class Builder {
+   public:
+    Builder();
+    ~Builder();
+
+    // Returns a completely constructed `IconButton`. Fields that are not set
+    // use defaults unless they are required. Builder becomes invalid after
+    // `Build()` is called.
+    std::unique_ptr<IconButton> Build();
+
+    Builder& SetCallback(PressedCallback callback);
+    Builder& SetType(Type type);
+
+    // Set the icon for the button to `icon`. Must be non-null or it will cause
+    // a crash.
+    Builder& SetVectorIcon(const gfx::VectorIcon* icon);
+
+    Builder& SetAccessibleNameId(int accessible_name_id);
+    Builder& SetAccessibleName(const std::u16string& accessible_name);
+    Builder& SetTogglable(bool is_togglable);
+    Builder& SetBorder(bool has_border);
+    Builder& SetViewId(int view_id);
+    Builder& SetEnabled(bool enabled);
+    Builder& SetBackgroundImage(const gfx::ImageSkia& background_image);
+    Builder& SetBackgroundColor(ui::ColorId color_id);
+
+   private:
+    PressedCallback callback_;
+    Type type_;
+    raw_ptr<const gfx::VectorIcon> icon_;
+    absl::variant<int, std::u16string> accessible_name_;
+    bool is_togglable_;
+    bool has_border_;
+    std::optional<int> view_id_;
+    std::optional<bool> enabled_;
+    std::optional<gfx::ImageSkia> background_image_;
+    std::optional<ui::ColorId> background_color_;
   };
 
   IconButton(PressedCallback callback,

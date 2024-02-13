@@ -111,6 +111,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
     Allowlist(const Allowlist& rhs);
     ~Allowlist();
 
+    // Extracts an Allowlist from a ParsedPermissionsPolicyDeclaration.
+    static Allowlist FromDeclaration(
+        const ParsedPermissionsPolicyDeclaration& parsed_declaration);
+
     // Adds a single origin with possible wildcards to the allowlist.
     void Add(const blink::OriginWithPossibleWildcards& origin);
 

@@ -17,7 +17,7 @@ import 'chrome://resources/ash/common/bluetooth/bluetooth_device_battery_info.js
 
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
-import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getBatteryPercentage, getDeviceNameUnsafe, hasAnyDetailedBatteryInfo, hasDefaultImage, hasTrueWirelessImages} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
@@ -211,11 +211,8 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
         this.i18n('bluetoothDeviceDetailDisconnected');
   }
 
-  private getDeviceName_(): string {
-    if (!this.device_) {
-      return '';
-    }
-    return getDeviceName(this.device_);
+  private getDeviceNameUnsafe_(): string {
+    return getDeviceNameUnsafe(this.device_);
   }
 
   private shouldShowConnectDisconnectBtn_(): boolean {
@@ -235,7 +232,7 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
       return;
     }
     (this.parentNode as OsSettingsSubpageElement).pageTitle =
-        getDeviceName(this.device_);
+        getDeviceNameUnsafe(this.device_);
 
     // Special case a where user is still on detail page and has
     // tried to connect to device but failed. The current |pageState_|
@@ -299,9 +296,9 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
       return '';
     }
 
-    return this.i18n(
+    return loadTimeData.getStringF(
         'bluetoothDeviceDetailChangeDeviceNameBtnA11yLabel',
-        this.getDeviceName_());
+        getDeviceNameUnsafe(this.device_));
   }
 
   private getMultipleBatteryInfoA11yLabel_(): string {
@@ -363,20 +360,22 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
 
     switch (this.pageState_) {
       case PageState.CONNECTING:
-        return this.i18n(
-            'bluetoothDeviceDetailConnectingA11yLabel', this.getDeviceName_());
+        return loadTimeData.getStringF(
+            'bluetoothDeviceDetailConnectingA11yLabel',
+            getDeviceNameUnsafe(this.device_));
       case PageState.CONNECTED:
-        return this.i18n(
-            'bluetoothDeviceDetailConnectedA11yLabel', this.getDeviceName_());
+        return loadTimeData.getStringF(
+            'bluetoothDeviceDetailConnectedA11yLabel',
+            getDeviceNameUnsafe(this.device_));
       case PageState.CONNECTION_FAILED:
-        return this.i18n(
+        return loadTimeData.getStringF(
             'bluetoothDeviceDetailConnectionFailureA11yLabel',
-            this.getDeviceName_());
+            getDeviceNameUnsafe(this.device_));
       case PageState.DISCONNECTED:
       case PageState.DISCONNECTING:
-        return this.i18n(
+        return loadTimeData.getStringF(
             'bluetoothDeviceDetailDisconnectedA11yLabel',
-            this.getDeviceName_());
+            getDeviceNameUnsafe(this.device_));
       default:
         assertNotReached();
     }
@@ -525,8 +524,9 @@ export class SettingsBluetoothDeviceDetailSubpageElement extends
   }
 
   private getForgetA11yLabel_(): string {
-    return this.i18n(
-        'bluetoothDeviceDetailForgetA11yLabel', this.getDeviceName_());
+    return loadTimeData.getStringF(
+        'bluetoothDeviceDetailForgetA11yLabel',
+        getDeviceNameUnsafe(this.device_));
   }
 
   private onForgetButtonClicked_(): void {

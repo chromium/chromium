@@ -8,14 +8,13 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
 class URLLoaderMockFactory;
 
-class FetchTestingPlatformSupport
-    : public TestingPlatformSupportWithMockScheduler {
+class FetchTestingPlatformSupport : public TestingPlatformSupport {
  public:
   FetchTestingPlatformSupport();
   FetchTestingPlatformSupport(const FetchTestingPlatformSupport&) = delete;

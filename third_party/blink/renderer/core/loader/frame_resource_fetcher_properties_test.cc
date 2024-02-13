@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 
@@ -21,6 +22,7 @@ class FrameResourceFetcherPropertiesTest : public testing::Test {
             dummy_page_holder_->GetDocument())) {}
 
  protected:
+  test::TaskEnvironment task_environment_;
   const std::unique_ptr<DummyPageHolder> dummy_page_holder_;
   const Persistent<FrameResourceFetcherProperties> properties_;
 };

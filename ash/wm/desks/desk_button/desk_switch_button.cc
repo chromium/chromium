@@ -104,8 +104,6 @@ void DeskSwitchButton::Init(DeskButtonContainer* desk_button_container,
       this, gfx::Insets(kDeskButtonSwitchButtonFocusRingHaloInset),
       kDeskButtonCornerRadius);
 
-  UpdateLocaleSpecificSettings();
-
   // Use shelf view as the context menu controller so that it shows the same
   // context menu.
   set_context_menu_controller(
@@ -145,18 +143,22 @@ void DeskSwitchButton::UpdateUi(const Desk* active_desk) {
   // normal, e.g. right clicks on the button.
   SetBackgroundVisible(GetEnabled() && IsMouseHovered() &&
                        GetState() == ButtonState::STATE_HOVERED);
+
+  UpdateLocaleSpecificSettings();
 }
 
 void DeskSwitchButton::UpdateLocaleSpecificSettings() {
   const auto* desk_controller = DesksController::Get();
-  const Desk* active_desk = desk_controller->active_desk();
-  const int index = desk_controller->GetDeskIndex(active_desk) +
-                    (type_ == Type::kPrev ? -1 : 1);
-  const int id = type_ == Type::kPrev ? IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE
-                                      : IDS_SHELF_NEXT_DESK_BUTTON_TITLE;
-  if (index >= 0 && index < desk_controller->GetNumberOfDesks()) {
+  const int target_index =
+      desk_controller->GetActiveDeskIndex() + (type_ == Type::kPrev ? -1 : 1);
+  const int desk_count = desk_controller->GetNumberOfDesks();
+  if (target_index >= 0 && target_index < desk_count) {
+    const Desk* target_desk = desk_controller->GetDeskAtIndex(target_index);
+    const int id = type_ == Type::kPrev ? IDS_SHELF_PREVIOUS_DESK_BUTTON_TITLE
+                                        : IDS_SHELF_NEXT_DESK_BUTTON_TITLE;
     SetAccessibleName(l10n_util::GetStringFUTF16(
-        id, active_desk->name(), base::NumberToString16(index + 1)));
+        id, target_desk->name(), base::NumberToString16(target_index + 1),
+        base::NumberToString16(desk_count)));
   }
 }
 

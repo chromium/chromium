@@ -46,17 +46,18 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
         value: false,
       },
 
-      is3pcdRedesignEnabled_: {
+      isCookiesUiV2_: {
         type: Boolean,
         value: () =>
-            loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
+            (loadTimeData.getBoolean('isCookieSettingsUiAlignmentEnabled') ||
+             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')),
       },
     };
   }
 
   prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
   private showDialog_: boolean;
-  private is3pcdRedesignEnabled_: boolean;
+  private isCookiesUiV2_: boolean;
 
   private onDomChange_() {
     if (this.showDialog_) {

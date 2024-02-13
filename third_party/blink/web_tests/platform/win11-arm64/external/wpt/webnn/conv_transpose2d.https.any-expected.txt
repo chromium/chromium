@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
 [FAIL] convTranspose2d float32 4D input and filter(non-constant) tensors default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+[FAIL] convTranspose2d float32 4D both input and filter constant tensors default options / async
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] convTranspose2d float32 4D input and filter tensors default options / async
   promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 [FAIL] convTranspose2d float32 4D input and filter tensors options.groups / async

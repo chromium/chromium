@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
@@ -23,16 +24,20 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 
 namespace autofill {
 
 class AddressProfileSaveManager;
 class CreditCardSaveManager;
+enum class NonInteractivePaymentMethodType;
 
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
 // Owned by `ChromeAutofillClient`.
-class FormDataImporter : public PersonalDataManagerObserver {
+class FormDataImporter : public PersonalDataManagerObserver,
+                         public history::HistoryServiceObserver {
  public:
   // Record type of the credit card extracted from the form, if one exists.
   // TODO(crbug.com/1412326): Remove this enum and user CreditCard::RecordType
@@ -54,10 +59,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
   };
 
   // The parameters should outlive the FormDataImporter.
-  FormDataImporter(
-      AutofillClient* client,
-      PersonalDataManager* personal_data_manager,
-      const std::string& app_locale);
+  FormDataImporter(AutofillClient* client,
+                   PersonalDataManager* personal_data_manager,
+                   history::HistoryService* history_service,
+                   const std::string& app_locale);
 
   FormDataImporter(const FormDataImporter&) = delete;
   FormDataImporter& operator=(const FormDataImporter&) = delete;
@@ -124,8 +129,10 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   // PersonalDataManagerObserver
   void OnPersonalDataChanged() override;
-  void OnBrowsingHistoryCleared(
-      const history::DeletionInfo& deletion_info) override;
+
+  // history::HistoryServiceObserver
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
 
   // See `FormAssociator::GetFormAssociations()`.
   std::optional<FormStructure::FormAssociations> GetFormAssociations(
@@ -134,14 +141,14 @@ class FormDataImporter : public PersonalDataManagerObserver {
   }
 
   // This should only set
-  // `card_record_type_if_non_interactive_authentication_flow_completed_` to a
-  // value when there was an autofill with no interactive authentication,
+  // `payment_method_type_if_non_interactive_authentication_flow_completed_` to
+  // a value when there was an autofill with no interactive authentication,
   // otherwise it should set to nullopt.
-  void SetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted(
-      std::optional<CreditCard::RecordType>
-          card_record_type_if_non_interactive_authentication_flow_completed_);
-  std::optional<CreditCard::RecordType>
-  GetCardRecordTypeIfNonInteractiveAuthenticationFlowCompleted() const;
+  void SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
+      std::optional<NonInteractivePaymentMethodType>
+          payment_method_type_if_non_interactive_authentication_flow_completed_);
+  std::optional<NonInteractivePaymentMethodType>
+  GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted() const;
 
  private:
   // Defines a candidate for address profile import.
@@ -342,6 +349,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // Weak reference.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
+  base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
+
   // Represents the type of the credit card import candidate from the submitted
   // form. It will be used to determine whether to offer upload save or card
   // migration. Will be passed to `credit_card_save_manager_` for metrics. If no
@@ -365,12 +375,13 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   // If the most recent payments autofill flow had a non-interactive
   // authentication,
-  // `card_record_type_if_non_interactive_authentication_flow_completed_` will
-  // contain the record type of the card that had the non-interactive
-  // authentication, otherwise it will be nullopt. The reason we store a
-  // `CreditCard::RecordType` here instead of a boolean is for logging purposes.
-  std::optional<CreditCard::RecordType>
-      card_record_type_if_non_interactive_authentication_flow_completed_;
+  // `payment_method_type_if_non_interactive_authentication_flow_completed_`
+  // will contain the type of payment method that had the non-interactive
+  // authentication, otherwise it will be nullopt. This is for logging purposes
+  // to log the type of non interactive payment method type that triggers
+  // mandatory reauth.
+  std::optional<NonInteractivePaymentMethodType>
+      payment_method_type_if_non_interactive_authentication_flow_completed_;
 
   // The instrument id of the card that has been most recently retrieved via
   // Autofill Downstream (card retrieval from server). This can be used to

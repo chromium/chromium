@@ -501,6 +501,12 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="kUpstreamNoInternet: Hotspot disabled due to upstream network
              has no Internet connectivity."/>
+  <int value="9"
+      label="kDownstreamLinkDisconnect: Hotspot disabled due to downsteam
+             link disconnected."/>
+  <int value="10"
+      label="kDownstreamNetworkDisconnect: Hotspot disabled due to downstream
+             network disconnected."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">
@@ -578,6 +584,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Eligible"/>
 </enum>
 
+<enum name="IpProtectionProxyChainId">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Chain 1"/>
+  <int value="2" label="Chain 2"/>
+  <int value="3" label="Chain 3"/>
+</enum>
+
 <enum name="IpProtectionProxyLayer">
   <int value="0" label="Proxy A"/>
   <int value="1" label="Proxy B"/>
@@ -594,6 +607,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Failed - BSA Error Other"/>
   <int value="8" label="Transient OAuth Token Failure"/>
   <int value="9" label="Persistent OAuth Token Failure"/>
+  <int value="10" label="Disabled by User"/>
 </enum>
 
 <enum name="ManagedApnMigrationType">
@@ -1203,6 +1217,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Tether"/>
   <int value="5" label="VPN"/>
   <int value="6" label="Unknown"/>
+</enum>
+
+<enum name="NetworkTechnologyMeterSubtype">
+  <int value="0" label="Ethernet"/>
+  <int value="1" label="WiFi"/>
+  <int value="2" label="WiFi Metered"/>
+  <int value="3" label="Cellular"/>
+  <int value="4" label="Cellular Metered"/>
+  <int value="5" label="Tether"/>
+  <int value="6" label="Tether Metered"/>
 </enum>
 
 <enum name="NotificationSuppressionState">
@@ -2385,6 +2409,11 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Does not support 802.11r"/>
   <int value="1" label="Supports Over-the-Air FT Roaming"/>
   <int value="2" label="Supports Over-the-DS FT Roaming"/>
+</enum>
+
+<enum name="WiFiAp80211uANQPSupport">
+  <int value="0" label="Does not support 802.11u ANQP"/>
+  <int value="1" label="Supports ANQP"/>
 </enum>
 
 <enum name="WiFiAp80211vBSSMaxIdlePeriodSupport">

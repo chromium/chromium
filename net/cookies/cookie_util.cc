@@ -138,7 +138,7 @@ ComputeContextRedirectTypeBug1221316(bool url_chain_is_length_one,
 ComputeSameSiteContextResult ComputeSameSiteContext(
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& initiator,
+    const std::optional<url::Origin>& initiator,
     bool is_http,
     bool is_main_frame_navigation,
     bool compute_schemefully) {
@@ -254,7 +254,7 @@ void NormalizeStrictToLaxForSet(ComputeSameSiteContextResult& result) {
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& initiator,
+    const std::optional<url::Origin>& initiator,
     bool is_http,
     bool is_main_frame_navigation) {
   CookieOptions::SameSiteCookieContext same_site_context;
@@ -281,22 +281,6 @@ bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
 
 void FireStorageAccessHistogram(StorageAccessResult result) {
   UMA_HISTOGRAM_ENUMERATION("API.StorageAccess.AllowedRequests2", result);
-}
-
-void FireStorageAccessInputHistogram(bool has_opt_in, bool has_grant) {
-  StorageAccessInputState input_state;
-  if (has_opt_in && has_grant) {
-    input_state = StorageAccessInputState::kOptInWithGrant;
-  } else if (has_opt_in && !has_grant) {
-    input_state = StorageAccessInputState::kOptInWithoutGrant;
-  } else if (!has_opt_in && has_grant) {
-    input_state = StorageAccessInputState::kGrantWithoutOptIn;
-  } else if (!has_opt_in && !has_grant) {
-    input_state = StorageAccessInputState::kNoOptInNoGrant;
-  } else {
-    NOTREACHED_NORETURN();
-  }
-  base::UmaHistogramEnumeration("API.StorageAccess.InputState", input_state);
 }
 
 bool DomainIsHostOnly(const std::string& domain_string) {
@@ -701,7 +685,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
     const std::string& http_method,
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& initiator,
+    const std::optional<url::Origin>& initiator,
     bool is_main_frame_navigation,
     bool force_ignore_site_for_cookies) {
   // Set SameSiteCookieContext according to the rules laid out in
@@ -768,7 +752,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForRequest(
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
-                                   const absl::optional<url::Origin>& initiator,
+                                   const std::optional<url::Origin>& initiator,
                                    bool force_ignore_site_for_cookies) {
   if (force_ignore_site_for_cookies)
     return CookieOptions::SameSiteCookieContext::MakeInclusive();
@@ -788,7 +772,7 @@ ComputeSameSiteContextForScriptGet(const GURL& url,
 CookieOptions::SameSiteCookieContext ComputeSameSiteContextForResponse(
     const std::vector<GURL>& url_chain,
     const SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& initiator,
+    const std::optional<url::Origin>& initiator,
     bool is_main_frame_navigation,
     bool force_ignore_site_for_cookies) {
   if (force_ignore_site_for_cookies)
@@ -853,7 +837,7 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForScriptSet(
   // with the url. We don't check the redirect chain for script access to
   // cookies (only the URL itself).
   return ComputeSameSiteContextForSet(
-      {url}, site_for_cookies, absl::nullopt /* initiator */,
+      {url}, site_for_cookies, std::nullopt /* initiator */,
       false /* is_http */, false /* is_main_frame_navigation */);
 }
 
@@ -899,7 +883,7 @@ bool IsSchemefulSameSiteEnabled() {
   return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }
 
-absl::optional<
+std::optional<
     std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
 ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& request_site,
@@ -915,8 +899,8 @@ ComputeFirstPartySetMetadataMaybeAsync(
         std::move(callback));
   }
 
-  return std::make_pair(FirstPartySetMetadata(),
-                        FirstPartySetsCacheFilter::MatchInfo());
+  return std::pair(FirstPartySetMetadata(),
+                   FirstPartySetsCacheFilter::MatchInfo());
 }
 
 CookieOptions::SameSiteCookieContext::ContextMetadata::HttpMethod

@@ -93,7 +93,7 @@ class PasswordsModelDelegateMock : public PasswordsModelDelegate {
               NavigateToPasswordCheckup,
               (password_manager::PasswordCheckReferrer),
               (override));
-  MOCK_METHOD(void, EnableSync, (const AccountInfo& account), (override));
+  MOCK_METHOD(void, SignIn, (const AccountInfo& account), (override));
   MOCK_METHOD(void, OnDialogHidden, (), (override));
   MOCK_METHOD(void,
               AuthenticateUserWithMessage,

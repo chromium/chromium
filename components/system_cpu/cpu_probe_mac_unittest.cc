@@ -11,7 +11,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "components/system_cpu/cpu_probe.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 #include "components/system_cpu/pressure_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +38,7 @@ TEST_F(CpuProbeMacTest, ProductionDataNoCrash) {
 
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_GE(sample->cpu_utilization, 0.0);
   EXPECT_LE(sample->cpu_utilization, 1.0);

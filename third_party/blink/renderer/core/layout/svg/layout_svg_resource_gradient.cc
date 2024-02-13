@@ -125,12 +125,15 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
         object_bounding_box.width(), object_bounding_box.height());
   }
 
+  if (!attributes.GradientTransform().IsInvertible()) {
+    return gradient_data;
+  }
+
   // Create gradient object
   gradient_data->gradient = BuildGradient();
   gradient_data->gradient->AddColorStops(attributes.Stops());
 
-  AffineTransform gradient_transform = attributes.GradientTransform();
-  gradient_data->userspace_transform *= gradient_transform;
+  gradient_data->userspace_transform *= attributes.GradientTransform();
 
   return gradient_data;
 }

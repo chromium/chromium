@@ -187,10 +187,6 @@ void SkiaOutputDevice::SetEnableDCLayers(bool enable) {
   NOTREACHED();
 }
 
-void SkiaOutputDevice::SetGpuVSyncEnabled(bool enabled) {
-  NOTREACHED();
-}
-
 bool SkiaOutputDevice::IsPrimaryPlaneOverlay() const {
   return false;
 }

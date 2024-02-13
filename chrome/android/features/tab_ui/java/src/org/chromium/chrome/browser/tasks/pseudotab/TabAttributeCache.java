@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,9 +28,13 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.url.GURL;
 
+import java.util.Objects;
+
 /** Cache for attributes of {@link PseudoTab} to be available before native is ready. */
 public class TabAttributeCache {
     private static final String PREFERENCES_NAME = "tab_attribute_cache";
+    private static final long NO_TAB_GROUP_ID = 0L;
+
     private static SharedPreferences sPref;
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
@@ -85,6 +90,13 @@ public class TabAttributeCache {
                     }
 
                     @Override
+                    public void onTabGroupIdChanged(Tab tab, @Nullable Token tabGroupId) {
+                        if (tab.isIncognito()) return;
+                        assert Objects.equals(tabGroupId, tab.getTabGroupId());
+                        cacheTabGroupId(tab.getId(), tabGroupId);
+                    }
+
+                    @Override
                     public void onTimestampChanged(Tab tab, long timestampMillis) {
                         if (tab.isIncognito()) return;
                         assert timestampMillis == tab.getTimestampMillis();
@@ -113,6 +125,8 @@ public class TabAttributeCache {
                                 .remove(getUrlKey(id))
                                 .remove(getTitleKey(id))
                                 .remove(getRootIdKey(id))
+                                .remove(getTabGroupIdHighKey(id))
+                                .remove(getTabGroupIdLowKey(id))
                                 .remove(getTimestampMillisKey(id))
                                 .remove(getLastSearchTermKey(id))
                                 .apply();
@@ -138,6 +152,11 @@ public class TabAttributeCache {
                             editor.putString(getUrlKey(id), tab.getUrl().serialize());
                             editor.putString(getTitleKey(id), tab.getTitle());
                             editor.putInt(getRootIdKey(id), tab.getRootId());
+                            @Nullable Token tabGroupId = tab.getTabGroupId();
+                            if (tabGroupId != null) {
+                                editor.putLong(getTabGroupIdHighKey(id), tabGroupId.getHigh());
+                                editor.putLong(getTabGroupIdLowKey(id), tabGroupId.getLow());
+                            }
                             editor.putLong(getTimestampMillisKey(id), tab.getTimestampMillis());
                         }
                         editor.apply();
@@ -225,6 +244,45 @@ public class TabAttributeCache {
 
     private static void cacheRootId(int id, int rootId) {
         getSharedPreferences().edit().putInt(getRootIdKey(id), rootId).apply();
+    }
+
+    private static String getTabGroupIdHighKey(int id) {
+        return id + "_tabGroupIDHigh";
+    }
+
+    private static String getTabGroupIdLowKey(int id) {
+        return id + "_tabGroupIDLow";
+    }
+
+    /**
+     * Get the tab group ID of a {@link PseudoTab}.
+     *
+     * @param id The ID of the {@link PseudoTab}.
+     * @return The tab group ID
+     */
+    public static @Nullable Token getTabGroupId(int id) {
+        var sharedPrefs = getSharedPreferences();
+        long high = sharedPrefs.getLong(getTabGroupIdHighKey(id), NO_TAB_GROUP_ID);
+        long low = sharedPrefs.getLong(getTabGroupIdLowKey(id), NO_TAB_GROUP_ID);
+        Token tabGroupId = new Token(high, low);
+        return tabGroupId.isZero() ? null : tabGroupId;
+    }
+
+    private static void cacheTabGroupId(int id, @Nullable Token tabGroupId) {
+        var sharedPrefs = getSharedPreferences();
+        if (tabGroupId == null) {
+            sharedPrefs
+                    .edit()
+                    .remove(getTabGroupIdHighKey(id))
+                    .remove(getTabGroupIdLowKey(id))
+                    .apply();
+        } else {
+            sharedPrefs
+                    .edit()
+                    .putLong(getTabGroupIdHighKey(id), tabGroupId.getHigh())
+                    .putLong(getTabGroupIdLowKey(id), tabGroupId.getLow())
+                    .apply();
+        }
     }
 
     /**

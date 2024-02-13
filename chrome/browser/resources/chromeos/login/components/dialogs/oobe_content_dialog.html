@@ -10,18 +10,12 @@ found in the LICENSE file.
   several parts: content area; and buttons containers at the top for back
   navigation and for other buttons at the bottom.
 
-  When shown (i.e. when outside container calls .show()):
-    1. If this dialog has tags in class "focus-on-show", the first one will be
-  focused.
-    2. 'show-dialog' is fired.
-
   Please include oobe-dialog-host-styles shared style if you use oobe-content-dialog.
 
   Example:
     <style include="oobe-dialog-host-styles"></style>
-    <oobe-content-dialog on-show-dialog="onTestDialogShown_">
+    <oobe-content-dialog>
       <div slot="content">
-        <div class="focus-on-show">...</div>
         ...
       </div>
       <div slot="back-navigation">

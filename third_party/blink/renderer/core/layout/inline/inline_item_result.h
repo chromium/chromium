@@ -114,13 +114,17 @@ struct CORE_EXPORT InlineItemResult {
   // Used only during line breaking.
   bool can_break_after = false;
 
-  // True if this item contains only trailing spaces.
+  // True if this item contains only trailing spaces that may hang with
+  // 'white-space: pre-wrap'.
   // Trailing spaces are measured differently that they are split from other
   // text items.
-  // Used only when 'white-space: pre-wrap', because collapsible spaces are
-  // removed, and if 'pre', trailing spaces are not different from other
-  // characters.
-  bool has_only_trailing_spaces = false;
+  bool has_only_pre_wrap_trailing_spaces = false;
+
+  // True if this item contains only trailing spaces whose bidirectional
+  // character type is WS (whitespace neutral).
+  // The direction and bidi level of such items will be ignored and treated as
+  // if they had the base direction.
+  bool has_only_bidi_trailing_spaces = false;
 
   // The previous value of |break_anywhere_if_overflow| in the
   // InlineItemResults list. Like |should_create_line_box|, this value is used

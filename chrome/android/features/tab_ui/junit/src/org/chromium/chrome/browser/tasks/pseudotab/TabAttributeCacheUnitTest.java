@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
@@ -190,6 +191,43 @@ public class TabAttributeCacheUnitTest {
 
         mTabObserverCaptor.getValue().onRootIdChanged(mTab1, rootId);
         Assert.assertNotEquals(rootId, TabAttributeCache.getRootId(TAB1_ID));
+    }
+
+    @Test
+    public void updateTabGroupId() {
+        Token tabGroupId = new Token(0x1337L, 0xBADL);
+        doReturn(tabGroupId).when(mTab1).getTabGroupId();
+
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 1. Set token.
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, tabGroupId);
+        Assert.assertEquals(tabGroupId, TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 2. Null token.
+        doReturn(null).when(mTab1).getTabGroupId();
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, null);
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 3. Set token.
+        doReturn(tabGroupId).when(mTab1).getTabGroupId();
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, tabGroupId);
+        Assert.assertEquals(tabGroupId, TabAttributeCache.getTabGroupId(TAB1_ID));
+
+        // 4. Delete on close tab.
+        mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
+        mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
+    }
+
+    @Test
+    public void updateTabGroupId_incognito() {
+        Token tabGroupId = new Token(0x1337L, 0xBADL);
+        doReturn(tabGroupId).when(mTab1).getTabGroupId();
+        doReturn(true).when(mTab1).isIncognito();
+
+        mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab1, tabGroupId);
+        Assert.assertNull(TabAttributeCache.getTabGroupId(TAB1_ID));
     }
 
     @Test

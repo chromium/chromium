@@ -40,6 +40,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace first_run {
@@ -101,7 +102,9 @@ class AppLauncher final : public ProfileObserver {
   AppLauncher& operator=(const AppLauncher&) = delete;
 
   void LaunchHelpApp() {
-    LaunchSystemWebAppAsync(profile_, SystemWebAppType::HELP);
+    ash::SystemAppLaunchParams params;
+    params.launch_source = apps::LaunchSource::kFromFirstRun;
+    LaunchSystemWebAppAsync(profile_, SystemWebAppType::HELP, params);
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);
     delete this;
   }

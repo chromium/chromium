@@ -92,8 +92,8 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // the current buffer pool utilization relative to a sustainable maximum (not
   // the absolute maximum).  This method should only be called if the last call
   // to ObserveEventAndDecideCapture() returned true.
-  void RecordCapture(double pool_utilization);
-  void RecordWillNotCapture(double pool_utilization);
+  void RecordCapture(float pool_utilization);
+  void RecordWillNotCapture(float pool_utilization);
 
   // Notify of the completion of a capture, and whether it was successful.
   // Returns true iff the captured frame should be delivered.  |frame_timestamp|

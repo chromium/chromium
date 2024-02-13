@@ -54,6 +54,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_output_manager_v2.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
@@ -151,6 +152,8 @@ bool WaylandConnection::Initialize(bool use_threaded_polling) {
                               &SurfaceAugmenter::Instantiate);
   RegisterGlobalObjectFactory(WaylandZAuraOutputManager::kInterfaceName,
                               &WaylandZAuraOutputManager::Instantiate);
+  RegisterGlobalObjectFactory(WaylandZAuraOutputManagerV2::kInterfaceName,
+                              &WaylandZAuraOutputManagerV2::Instantiate);
   RegisterGlobalObjectFactory(WaylandDataDeviceManager::kInterfaceName,
                               &WaylandDataDeviceManager::Instantiate);
   RegisterGlobalObjectFactory(WaylandDrm::kInterfaceName,
@@ -531,6 +534,13 @@ bool WaylandConnection::ShouldUseOverlayDelegation() const {
   return IsWaylandOverlayDelegationEnabled() && !overlay_delegation_disabled_;
 }
 
+bool WaylandConnection::IsUsingZAuraOutputManager() const {
+  // TODO(crbug.com/324111902): Remove zaura_output_manager after
+  // zaura_output_manager_v2 has landed and existed for sufficient version
+  // skew.
+  return zaura_output_manager_ || zaura_output_manager_v2_;
+}
+
 // static
 void WaylandConnection::OnGlobal(void* data,
                                  wl_registry* registry,
@@ -547,6 +557,13 @@ void WaylandConnection::OnGlobalRemove(void* data,
                                        wl_registry* registry,
                                        uint32_t name) {
   auto* self = static_cast<WaylandConnection*>(data);
+
+  if (self->zaura_output_manager_v2_) {
+    // Removal will be handled by the aura output manager and the end of the
+    // output-change transaction.
+    self->zaura_output_manager_v2_->ScheduleRemoveWaylandOutput(name);
+    return;
+  }
   // The Wayland protocol distinguishes global objects by unique numeric names,
   // which the WaylandOutputManager uses as unique output ids. But, it is only
   // possible to figure out, what global object is going to be removed on the
@@ -710,9 +727,9 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
   } else if (!xdg_output_manager_ &&
              strcmp(interface, "zxdg_output_manager_v1") == 0) {
     // Responsibilities of zxdg_output_manager_v1 have been subsumed into the
-    // zaura_output_manager. If using the zaura_output_manager avoid binding
-    // unnecessarily.
-    if (zaura_output_manager_) {
+    // zaura output manager extensions. If using the either extensions avoid
+    // binding unnecessarily.
+    if (IsUsingZAuraOutputManager()) {
       LOG(WARNING) << "Skipping bind to zxdg_output_manager_v1";
       return;
     }

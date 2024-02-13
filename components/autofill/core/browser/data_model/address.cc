@@ -314,4 +314,20 @@ void Address::SetAddressCountryCode(const std::u16string& country_code,
                           verification_status);
 }
 
+bool Address::IsAddressFieldSettingAccessible(FieldType field_type) const {
+  // Default to US in case of empty country codes.
+  AutofillCountry country(GetAddressCountryCode()->empty()
+                              ? "US"
+                              : GetAddressCountryCode().value());
+
+  for (AddressComponent* component =
+           address_component_store_.GetNodeForType(field_type);
+       component != nullptr; component = component->Parent()) {
+    if (country.IsAddressFieldSettingAccessible(component->GetStorageType())) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace autofill

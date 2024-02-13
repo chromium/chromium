@@ -1215,8 +1215,11 @@
     <message name="IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the language options. Only visible by screen reader software.">
       Show language options
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC" desc="Explanatory message about the list of preferred languages.">
-      Websites will show content in your preferred languages, when possible
+    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_HEADER" desc="Header of the explanatory message about the list of preferred languages.">
+      Websites in your languages
+    </message>
+    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC" desc="Description text of the explanatory message about the list of preferred languages.">
+      Let websites know the languages you speak. They'll show content in those languages, when possible.
     </message>
     <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_ENABLE_TRANSLATE" desc="The label of the check-box that enables the prompt to translate a page.">
       Use Google Translate
@@ -1659,7 +1662,7 @@
     Done
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_LABEL" desc="Text of the Privacy Sandbox label in the completion card of the 'Privacy Guide'.">
-    Privacy Sandbox trial
+    Ad privacy
   </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the 'Privacy Guide'.">
     Web &#38; App Activity
@@ -2183,14 +2186,11 @@
     Manage
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS" desc="Text for secure DNS toggle in Privacy options">
-    Encrypt the names of sites you visit
-  </message>
-  <message name="IDS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-    Use secure Domain Name System (DNS) to prevent people with access to your internet traffic from seeing which sites you visit
+    Use secure DNS
   </message>
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-      Use secure Domain Name System (DNS) to prevent people with access to your internet traffic from seeing which sites you visit. This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
+      Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
     </message>
   </if>
   <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in auto-upgrade mode">
@@ -2802,19 +2802,19 @@
     Not allowed to use your microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DESCRIPTION" desc="Description of the MIDI devices content setting.">
-    Sites usually use MIDI devices for features for creating and editing music
+    Sites usually ask to control and reprogram MIDI devices to create music, edit music, or update device firmware
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED" desc="Label for the enabled option of the MIDI devices content setting.">
-    Sites can ask to use your MIDI devices
+    Sites can ask to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED" desc="Label for the disabled option of the MIDI devices content setting.">
-    Don't allow sites to use your MIDI devices
+    Don't allow sites to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the MIDI devices content setting.">
-    Allowed to use your MIDI devices
+    Allowed to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the MIDI devices content setting.">
-    Not allowed to use your MIDI devices
+    Not allowed to control and reprogram your MIDI devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_DESCRIPTION" desc="Description of the motion sensors content setting.">
     Sites usually use your device's motion sensors for features like virtual reality or fitness tracking
@@ -3036,6 +3036,9 @@
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_HEADING" desc="A label on a permissions page. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Default behavior
   </message>
+  <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ALIGNED_PAGE_DESCRIPTION" desc="Descriptive text on the 'Third-party cookies' settings page explaining that controls on the page are for managing information sites can use for tracking." translateable="false">
+    Manage the types of information sites can use to track you as you browse.
+  </message>
   <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_PAGE_DEFAULT_BEHAVIOR_DESCRIPTION" desc="A description of what 'Default behavior' means. For example, see the Microphone permission at chrome://settings/content/microphone.">
     Sites automatically follow this setting when you visit them
   </message>
@@ -3140,6 +3143,15 @@
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADVANCED_LABEL" desc="Label for a section on the Tracking Protection settings page containing advanced options.">
     Advanced
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that lets users turn on IP protection to hide their IP address." translateable="false">
+    Hide your IP address
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some requests will be sent through privacy servers when the feature is on. Provides a link to a help center article." translateable="false">
+    When you’re signed in to Chrome, this setting can limit what suspected trackers can see as you browse. When a page loads, some requests for content get sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="$1" aria-label="$2" aria-description="$3" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the sub-label text of the IP protection toggle." translateable="false">
+    Learn more about hiding your IP address
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_THIRD_PARTY_COOKIES_TOGGLE_LABEL" desc="Label for a toggle that blocks all third-party cookies when on.">
     Block all third-party cookies

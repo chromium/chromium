@@ -342,7 +342,7 @@ void SetIPv6Address(IPEndPoint* address) {
 
 MockTransportClientSocketFactory::Rule::Rule(
     Type type,
-    absl::optional<std::vector<IPEndPoint>> expected_addresses,
+    std::optional<std::vector<IPEndPoint>> expected_addresses,
     Error connect_error)
     : type(type),
       expected_addresses(std::move(expected_addresses)),

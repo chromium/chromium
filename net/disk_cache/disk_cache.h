@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -631,7 +631,7 @@ class BackendFileOperations {
     // Returns the next file in the directory, if any. Returns nullopt if there
     // are no further files (including the error case). The path of the
     // returned entry should be a full path.
-    virtual absl::optional<FileEnumerationEntry> Next() = 0;
+    virtual std::optional<FileEnumerationEntry> Next() = 0;
 
     // Returns true if we've found an error during traversal.
     virtual bool HasError() const = 0;
@@ -662,7 +662,7 @@ class BackendFileOperations {
                            base::File::Error* error) = 0;
 
   // Returns information about the given path.
-  virtual absl::optional<base::File::Info> GetFileInfo(
+  virtual std::optional<base::File::Info> GetFileInfo(
       const base::FilePath& path) = 0;
 
   // Creates an object that can be used to enumerate files in the specified
@@ -729,7 +729,7 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,
                    base::File::Error* error) override;
-  absl::optional<base::File::Info> GetFileInfo(
+  std::optional<base::File::Info> GetFileInfo(
       const base::FilePath& path) override;
   std::unique_ptr<FileEnumerator> EnumerateFiles(
       const base::FilePath& path) override;

@@ -30,6 +30,10 @@
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
 namespace views {
 
 namespace {
@@ -42,7 +46,16 @@ void ViewsTestBase::WidgetCloser::operator()(Widget* widget) const {
 
 ViewsTestBase::ViewsTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)) {}
+    : task_environment_(std::move(task_environment)) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // ViewsTestBase is also used by a number of Lacros interactive_ui_tests.
+  // Lacros interactive_ui_tests are expected to process the
+  // --lacros-mojo-socket-for-testing command line switch in order to set up
+  // crosapi. However, ViewsTestBase doesn't implement that as it's also used by
+  // other tests and doesn't need crosapi. Hence disable crosapi explicitly.
+  chromeos::BrowserParamsProxy::DisableCrosapiForTesting();
+#endif
+}
 
 ViewsTestBase::~ViewsTestBase() {
   CHECK(setup_called_)
@@ -55,7 +68,7 @@ void ViewsTestBase::SetUp() {
   testing::Test::SetUp();
   setup_called_ = true;
 
-  absl::optional<ViewsDelegate::NativeWidgetFactory> factory;
+  std::optional<ViewsDelegate::NativeWidgetFactory> factory;
   if (native_widget_type_ == NativeWidgetType::kDesktop) {
     factory = base::BindRepeating(&ViewsTestBase::CreateNativeWidgetForTest,
                                   base::Unretained(this));

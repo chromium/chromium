@@ -23,6 +23,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "net/http/http_cache.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "url/gurl.h"
 
 using storage::BigIOBuffer;
@@ -50,7 +51,8 @@ void CheckValidKeys(const GURL& resource_url,
       resource_url.SchemeIs(content::kChromeUIScheme) ||
       resource_url.SchemeIs(content::kChromeUIUntrustedScheme);
   DCHECK(resource_url.SchemeIsHTTPOrHTTPS() ||
-         resource_url_is_chrome_or_chrome_untrusted);
+         resource_url_is_chrome_or_chrome_untrusted ||
+         blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.scheme()));
 
   // |origin_lock| should be either empty or should have
   // Http/Https/chrome/chrome-untrusted schemes and it should not be a URL with
@@ -59,10 +61,12 @@ void CheckValidKeys(const GURL& resource_url,
   bool origin_lock_is_chrome_or_chrome_untrusted =
       origin_lock.SchemeIs(content::kChromeUIScheme) ||
       origin_lock.SchemeIs(content::kChromeUIUntrustedScheme);
-  DCHECK(origin_lock.is_empty() ||
-         ((origin_lock.SchemeIsHTTPOrHTTPS() ||
-           origin_lock_is_chrome_or_chrome_untrusted) &&
-          !url::Origin::Create(origin_lock).opaque()));
+  DCHECK(
+      origin_lock.is_empty() ||
+      ((origin_lock.SchemeIsHTTPOrHTTPS() ||
+        origin_lock_is_chrome_or_chrome_untrusted ||
+        blink::CommonSchemeRegistry::IsExtensionScheme(origin_lock.scheme())) &&
+       !url::Origin::Create(origin_lock).opaque()));
 
   // The chrome and chrome-untrusted schemes are only used with the WebUI
   // code cache type.

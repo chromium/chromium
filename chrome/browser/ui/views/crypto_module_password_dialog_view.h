@@ -50,6 +50,8 @@ class CryptoModulePasswordDialogView : public views::DialogDelegateView,
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& keystroke) override;
 
+  void DialogAcceptedOrCancelled(bool accepted);
+
   // Initialize views and layout.
   void Init(const std::string& server,
             const std::string& slot_name,

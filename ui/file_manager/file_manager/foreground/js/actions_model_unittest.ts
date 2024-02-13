@@ -143,20 +143,15 @@ export async function testDriveDirectoryEntry() {
 
   await model.initialize();
   let actions = model.getActions();
-  assertEquals(5, Object.keys(actions).length);
-
-  // 'Share' should be disabled in offline mode.
-  const shareAction = actions[CommonActionId.SHARE]!;
-  assertTrue(!!shareAction);
-  mockVolumeManager.driveConnectionState = {
-    type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
-    reason: undefined,
-  };
-  assertFalse(shareAction.canExecute());
+  assertEquals(4, Object.keys(actions).length);
 
   // 'Manage in Drive' should be disabled in offline mode.
   const manageInDriveAction = actions[InternalActionId.MANAGE_IN_DRIVE]!;
   assertTrue(!!manageInDriveAction);
+  mockVolumeManager.driveConnectionState = {
+    type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
+    reason: undefined,
+  };
   assertFalse(manageInDriveAction.canExecute());
 
   // 'Create Shortcut' should be enabled, until it's executed, then
@@ -179,8 +174,7 @@ export async function testDriveDirectoryEntry() {
   });
   await model.initialize();
   actions = model.getActions();
-  assertEquals(6, Object.keys(actions).length);
-  assertTrue(!!actions[CommonActionId.SHARE]);
+  assertEquals(5, Object.keys(actions).length);
   assertTrue(!!actions[InternalActionId.MANAGE_IN_DRIVE]);
   assertTrue(!!actions[InternalActionId.REMOVE_FOLDER_SHORTCUT]);
 
@@ -212,8 +206,7 @@ export async function testDriveFileEntry() {
 
   await model.initialize();
   let actions = model.getActions();
-  assertEquals(3, Object.keys(actions).length);
-  assertTrue(!!actions[CommonActionId.SHARE]);
+  assertEquals(2, Object.keys(actions).length);
 
   // 'Save for Offline' should be enabled.
   const saveForOfflineAction = actions[CommonActionId.SAVE_FOR_OFFLINE]!;
@@ -255,8 +248,7 @@ export async function testDriveFileEntry() {
       ui, [driveFileSystem.entries!['/test.txt']]);
   await model.initialize();
   actions = model.getActions();
-  assertEquals(3, Object.keys(actions).length);
-  assertTrue(!!actions[CommonActionId.SHARE]);
+  assertEquals(2, Object.keys(actions).length);
 
   // 'Offline not Necessary' should be enabled.
   const offlineNotNecessaryAction =
@@ -502,12 +494,7 @@ export async function testTeamDriveRootEntry() {
 
   await model.initialize();
   const actions = model.getActions();
-  assertEquals(4, Object.keys(actions).length);
-
-  // "share" action is enabled for Team Drive Root entries.
-  const shareAction = actions[CommonActionId.SHARE]!;
-  assertTrue(!!shareAction);
-  assertTrue(shareAction.canExecute());
+  assertEquals(3, Object.keys(actions).length);
 
   // "manage in drive" action is disabled for Team Drive Root entries.
   const manageAction = actions[InternalActionId.MANAGE_IN_DRIVE]!;
@@ -534,12 +521,7 @@ export async function testTeamDriveDirectoryEntry() {
 
   await model.initialize();
   const actions = model.getActions();
-  assertEquals(5, Object.keys(actions).length);
-
-  // "Share" is enabled for Team Drive directories.
-  const shareAction = actions[CommonActionId.SHARE]!;
-  assertTrue(!!shareAction);
-  assertTrue(shareAction.canExecute());
+  assertEquals(4, Object.keys(actions).length);
 
   // "Available Offline" toggle is enabled for Team Drive directories.
   const saveForOfflineAction = actions[CommonActionId.SAVE_FOR_OFFLINE]!;
@@ -585,17 +567,12 @@ export async function testTeamDriveFileEntry() {
 
   await model.initialize();
   const actions = model.getActions();
-  assertEquals(3, Object.keys(actions).length);
+  assertEquals(2, Object.keys(actions).length);
 
   // "save for offline" action is enabled for Team Drive file entries.
   const saveForOfflineAction = actions[CommonActionId.SAVE_FOR_OFFLINE]!;
   assertTrue(!!saveForOfflineAction);
   assertTrue(saveForOfflineAction.canExecute());
-
-  // "share" action is enabled for Team Drive file entries.
-  const shareAction = actions[CommonActionId.SHARE]!;
-  assertTrue(!!shareAction);
-  assertTrue(shareAction.canExecute());
 
   // "manage in drive" action is enabled for Team Drive file entries.
   const manageAction = actions[InternalActionId.MANAGE_IN_DRIVE]!;

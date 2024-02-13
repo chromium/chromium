@@ -834,13 +834,15 @@ class CompositingSimTest : public PaintTestConfigurations, public SimTest {
     return layers.empty() ? nullptr : layers[0];
   }
 
-  const cc::Layer* CcLayerByOwnerNodeId(Node* node) {
-    DOMNodeId id = node->GetDomNodeId();
-    for (auto& layer : RootCcLayer()->children()) {
-      if (layer->debug_info() && layer->debug_info()->owner_node_id == id)
-        return layer.get();
+  const cc::Layer* CcLayerByOwnerNode(Node* node) {
+    return CcLayerByOwnerNodeId(RootCcLayer(), node->GetDomNodeId());
+  }
+
+  const cc::Layer* CcLayerForIFrameContent(Document* iframe_doc) {
+    if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+      return CcLayerByOwnerNode(iframe_doc);
     }
-    return nullptr;
+    return CcLayerByOwnerNode(iframe_doc->documentElement());
   }
 
   Element* GetElementById(const char* id) {
@@ -1966,8 +1968,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframe) {
   Compositor().BeginFrame();
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc->documentElement();
-  auto* layer = CcLayerByOwnerNodeId(owner_node);
+  auto* layer = CcLayerForIFrameContent(iframe_doc);
   EXPECT_TRUE(layer);
   EXPECT_EQ(layer->bounds(), gfx::Size(300, 150));
 }
@@ -1989,8 +1990,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterLoading) {
 
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc->documentElement();
-  EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
+  EXPECT_TRUE(CcLayerForIFrameContent(iframe_doc));
 }
 
 // An iframe that is cross-origin to the parent should be composited. This test
@@ -2016,13 +2016,12 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParent) {
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("main_iframe"))
           ->contentDocument();
-  EXPECT_TRUE(CcLayerByOwnerNodeId(iframe_doc));
+  EXPECT_TRUE(CcLayerByOwnerNode(iframe_doc));
 
   iframe_doc = To<HTMLFrameOwnerElement>(
                    iframe_doc->getElementById(AtomicString("child_iframe")))
                    ->contentDocument();
-  Node* owner_node = iframe_doc->documentElement();
-  EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
+  EXPECT_TRUE(CcLayerForIFrameContent(iframe_doc));
 }
 
 // Initially the iframe is cross-origin and should be composited. After changing
@@ -2044,8 +2043,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterDomainChange) {
 
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc->documentElement();
-  EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
+  EXPECT_TRUE(CcLayerForIFrameContent(iframe_doc));
 
   NonThrowableExceptionState exception_state;
   GetDocument().setDomain(String("origin-a.com"), exception_state);
@@ -2057,8 +2055,7 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterDomainChange) {
 
   iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  owner_node = iframe_doc->documentElement();
-  EXPECT_FALSE(CcLayerByOwnerNodeId(owner_node));
+  EXPECT_FALSE(CcLayerForIFrameContent(iframe_doc));
 }
 
 // This test sets up nested frames with domains A -> B -> A. Initially, the
@@ -2085,13 +2082,12 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("main_iframe"))
           ->contentDocument();
-  EXPECT_TRUE(CcLayerByOwnerNodeId(iframe_doc));
+  EXPECT_TRUE(CcLayerByOwnerNode(iframe_doc));
 
   iframe_doc = To<HTMLFrameOwnerElement>(
                    iframe_doc->getElementById(AtomicString("child_iframe")))
                    ->contentDocument();
-  Node* owner_node = iframe_doc->documentElement();
-  EXPECT_TRUE(CcLayerByOwnerNodeId(owner_node));
+  EXPECT_TRUE(CcLayerForIFrameContent(iframe_doc));
 
   auto* main_iframe_element = To<HTMLIFrameElement>(
       GetDocument().getElementById(AtomicString("main_iframe")));
@@ -2111,13 +2107,12 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
   UpdateAllLifecyclePhases();
   iframe_doc = To<HTMLFrameOwnerElement>(GetElementById("main_iframe"))
                    ->contentDocument();
-  EXPECT_FALSE(CcLayerByOwnerNodeId(iframe_doc));
+  EXPECT_FALSE(CcLayerByOwnerNode(iframe_doc));
 
   iframe_doc = To<HTMLFrameOwnerElement>(
                    iframe_doc->getElementById(AtomicString("child_iframe")))
                    ->contentDocument();
-  owner_node = iframe_doc->documentElement();
-  EXPECT_FALSE(CcLayerByOwnerNodeId(owner_node));
+  EXPECT_FALSE(CcLayerForIFrameContent(iframe_doc));
 }
 
 // Regression test for https://crbug.com/1095167. Render surfaces require that
@@ -2346,8 +2341,7 @@ TEST_P(CompositingSimTest, FrameAttribution) {
   // containing document.
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc->documentElement();
-  auto* iframe_layer = CcLayerByOwnerNodeId(owner_node);
+  auto* iframe_layer = CcLayerForIFrameContent(iframe_doc);
   ASSERT_TRUE(iframe_layer);
   auto* iframe_transform_node = GetTransformNode(iframe_layer);
   EXPECT_TRUE(iframe_transform_node);
@@ -2371,7 +2365,7 @@ TEST_P(CompositingSimTest, VisibleFrameRootLayers) {
   Compositor().BeginFrame();
 
   // Ensure that the toplevel is marked as a visible root.
-  auto* toplevel_layer = CcLayerByOwnerNodeId(&GetDocument());
+  auto* toplevel_layer = CcLayerByOwnerNode(&GetDocument());
   ASSERT_TRUE(toplevel_layer);
   auto* toplevel_transform_node = GetTransformNode(toplevel_layer);
   ASSERT_TRUE(toplevel_transform_node);
@@ -2381,8 +2375,7 @@ TEST_P(CompositingSimTest, VisibleFrameRootLayers) {
   // Ensure that the iframe is marked as a visible root.
   Document* iframe_doc =
       To<HTMLFrameOwnerElement>(GetElementById("iframe"))->contentDocument();
-  Node* owner_node = iframe_doc->documentElement();
-  auto* iframe_layer = CcLayerByOwnerNodeId(owner_node);
+  auto* iframe_layer = CcLayerForIFrameContent(iframe_doc);
   ASSERT_TRUE(iframe_layer);
   auto* iframe_transform_node = GetTransformNode(iframe_layer);
   ASSERT_TRUE(iframe_transform_node);
@@ -2396,7 +2389,7 @@ TEST_P(CompositingSimTest, VisibleFrameRootLayers) {
 
   UpdateAllLifecyclePhases();
 
-  iframe_layer = CcLayerByOwnerNodeId(owner_node);
+  iframe_layer = CcLayerForIFrameContent(iframe_doc);
   ASSERT_TRUE(iframe_layer);
   iframe_transform_node = GetTransformNode(iframe_layer);
   ASSERT_TRUE(iframe_transform_node);

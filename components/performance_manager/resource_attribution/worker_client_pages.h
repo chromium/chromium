@@ -8,13 +8,9 @@
 #include <set>
 
 #include "components/performance_manager/resource_attribution/graph_change.h"
+#include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 
-namespace performance_manager {
-class PageNode;
-class WorkerNode;
-}  // namespace performance_manager
-
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 // Returns the complete set of pages that are clients of `worker_node`.
 // `graph_change` is a change to the graph topology in progress that may affect
@@ -23,6 +19,6 @@ std::set<const PageNode*> GetWorkerClientPages(
     const WorkerNode* worker_node,
     GraphChange graph_change = NoGraphChange{});
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_RESOURCE_ATTRIBUTION_WORKER_CLIENT_PAGES_H_

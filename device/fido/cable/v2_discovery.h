@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -20,7 +21,6 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_discovery.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device::cablev2 {
 
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   Discovery(
       FidoRequestType request_type,
       network::mojom::NetworkContext* network_context,
-      absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
+      std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
       std::unique_ptr<AdvertEventStream> advert_stream,
       // contact_device_stream contains a series of pairings indicating that the
       // given device should be contacted. The pairings may be duplicated. It
@@ -47,14 +47,14 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
       const std::vector<CableDiscoveryData>& extension_contents,
       // pairing_callback will be called when a QR-initiated connection
       // receives pairing information from the peer.
-      absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+      std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
           pairing_callback,
       // invalidated_pairing_callback will be called when a pairing is reported
       // to be invalid by the tunnel server.
-      absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+      std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
           invalidated_pairing_callback,
       // event_callback receives updates on cablev2 events.
-      absl::optional<base::RepeatingCallback<void(Event)>> event_callback);
+      std::optional<base::RepeatingCallback<void(Event)>> event_callback);
   ~Discovery() override;
   Discovery(const Discovery&) = delete;
   Discovery& operator=(const Discovery&) = delete;
@@ -74,22 +74,22 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
   void OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert);
   void OnContactDevice(std::unique_ptr<Pairing> pairing);
   void PairingIsInvalid(std::unique_ptr<Pairing> pairing);
-  static absl::optional<UnpairedKeys> KeysFromQRGeneratorKey(
-      absl::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
+  static std::optional<UnpairedKeys> KeysFromQRGeneratorKey(
+      std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
   static std::vector<UnpairedKeys> KeysFromExtension(
       const std::vector<CableDiscoveryData>& extension_contents);
 
   const FidoRequestType request_type_;
   const raw_ptr<network::mojom::NetworkContext> network_context_;
-  const absl::optional<UnpairedKeys> qr_keys_;
+  const std::optional<UnpairedKeys> qr_keys_;
   const std::vector<UnpairedKeys> extension_keys_;
   std::unique_ptr<AdvertEventStream> advert_stream_;
   std::unique_ptr<EventStream<std::unique_ptr<Pairing>>> contact_device_stream_;
-  const absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+  const std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
       pairing_callback_;
-  const absl::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
+  const std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
       invalidated_pairing_callback_;
-  const absl::optional<base::RepeatingCallback<void(Event)>> event_callback_;
+  const std::optional<base::RepeatingCallback<void(Event)>> event_callback_;
   std::vector<std::unique_ptr<FidoTunnelDevice>> tunnels_pending_advert_;
   base::flat_set<std::array<uint8_t, kAdvertSize>> observed_adverts_;
   bool started_ = false;

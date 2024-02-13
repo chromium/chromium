@@ -110,4 +110,9 @@ std::string IntelMediaCompressedModifierToString(uint64_t modifier) {
   return "";
 }
 
+std::vector<uint64_t> GetIntelMediaCompressedModifiers() {
+  return {I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS,
+          I915_FORMAT_MOD_4_TILED_MTL_MC_CCS};
+}
+
 }  // namespace media

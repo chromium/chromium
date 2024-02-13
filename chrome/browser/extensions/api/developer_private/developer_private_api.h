@@ -90,12 +90,12 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   ~DeveloperPrivateEventRouter() override;
 
   // Add or remove an ID to the list of extensions subscribed to events.
-  void AddExtensionId(const std::string& extension_id);
-  void RemoveExtensionId(const std::string& extension_id);
+  void AddExtensionId(const ExtensionId& extension_id);
+  void RemoveExtensionId(const ExtensionId& extension_id);
 
   // Called when the configuration (such as user preferences) for an extension
   // has changed in a way that may affect the chrome://extensions UI.
-  void OnExtensionConfigurationChanged(const std::string& extension_id);
+  void OnExtensionConfigurationChanged(const ExtensionId& extension_id);
 
  private:
   // ExtensionRegistryObserver:
@@ -113,14 +113,14 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
 
   // ErrorConsole::Observer:
   void OnErrorAdded(const ExtensionError* error) override;
-  void OnErrorsRemoved(const std::set<std::string>& extension_ids) override;
+  void OnErrorsRemoved(const std::set<ExtensionId>& extension_ids) override;
 
   // ProcessManagerObserver:
   void OnExtensionFrameRegistered(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::RenderFrameHost* render_frame_host) override;
   void OnExtensionFrameUnregistered(
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       content::RenderFrameHost* render_frame_host) override;
   void OnServiceWorkerRegistered(const WorkerId& worker_id) override;
   void OnServiceWorkerUnregistered(const WorkerId& worker_id) override;
@@ -130,19 +130,19 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void OnAppWindowRemoved(AppWindow* window) override;
 
   // CommandService::Observer:
-  void OnExtensionCommandAdded(const std::string& extension_id,
+  void OnExtensionCommandAdded(const ExtensionId& extension_id,
                                const Command& added_command) override;
-  void OnExtensionCommandRemoved(const std::string& extension_id,
+  void OnExtensionCommandRemoved(const ExtensionId& extension_id,
                                  const Command& removed_command) override;
 
   // ExtensionPrefsObserver:
-  void OnExtensionDisableReasonsChanged(const std::string& extension_id,
+  void OnExtensionDisableReasonsChanged(const ExtensionId& extension_id,
                                         int disable_reasons) override;
   void OnExtensionRuntimePermissionsChanged(
-      const std::string& extension_id) override;
+      const ExtensionId& extension_id) override;
 
   // ExtensionAllowlist::Observer
-  void OnExtensionAllowlistWarningStateChanged(const std::string& extension_id,
+  void OnExtensionAllowlistWarningStateChanged(const ExtensionId& extension_id,
                                                bool show_warning) override;
 
   // ExtensionManagement::Observer:
@@ -174,10 +174,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
 
   // Broadcasts an event to all listeners.
   void BroadcastItemStateChanged(api::developer_private::EventType event_type,
-                                 const std::string& id);
+                                 const ExtensionId& id);
   void BroadcastItemStateChangedHelper(
       api::developer_private::EventType event_type,
-      const std::string& extension_id,
+      const ExtensionId& extension_id,
       std::unique_ptr<ExtensionInfoGenerator> info_generator,
       std::vector<api::developer_private::ExtensionInfo> infos);
 
@@ -214,7 +214,7 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   // don't want to send information about the subscribing extension in an
   // update. In particular, we want to avoid entering a loop, which could happen
   // when, e.g., the Apps Developer Tool throws an error.
-  std::set<std::string> extension_ids_;
+  std::set<ExtensionId> extension_ids_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
@@ -345,11 +345,11 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
 
   // Returns the extension with the given |id| from the registry, including
   // all possible extensions (enabled, disabled, terminated, etc).
-  const Extension* GetExtensionById(const std::string& id);
+  const Extension* GetExtensionById(const ExtensionId& id);
 
   // Returns the extension with the given |id| from the registry, only checking
   // enabled extensions.
-  const Extension* GetEnabledExtensionById(const std::string& id);
+  const Extension* GetEnabledExtensionById(const ExtensionId& id);
 };
 
 class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {

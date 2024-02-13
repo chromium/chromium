@@ -214,6 +214,13 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_NTP_WALLPAPER_SEARCH_GENERIC_ERROR_DESCRIPTION_WITH_HISTORY_AND_INSPIRATION},
       {"wallpaperSearchDescriptorsChangedA11yMessage",
        IDS_NTP_WALLPAPER_SEARCH_DESCRIPTORS_CHANGED_A11Y_MESSAGE},
+      // Side Panel Extension Card.
+      {"webstoreShoppingCategoryLabel",
+       IDS_NTP_WEBSTORE_SHOPPING_CATEOGRY_LABEL},
+      {"webstoreWritingHelpCollectionLabel",
+       IDS_NTP_WEBSTORE_WRITTING_HELP_COLLECTION_LABEL},
+      {"webstoreProductivityCategoryLabel",
+       IDS_NTP_WEBSTORE_PRODUCTIVITY_CATEOGRY_LABEL},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 

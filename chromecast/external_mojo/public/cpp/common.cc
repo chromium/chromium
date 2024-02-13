@@ -4,11 +4,12 @@
 
 #include "chromecast/external_mojo/public/cpp/common.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chromecast/base/chromecast_switches.h"
 
@@ -20,7 +21,7 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 // Default path for Unix domain socket used by external Mojo services to connect
 // to Mojo services within cast_shell.
-constexpr base::StringPiece kDefaultBrokerPath("/tmp/cast_mojo_broker");
+constexpr std::string_view kDefaultBrokerPath("/tmp/cast_mojo_broker");
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

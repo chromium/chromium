@@ -22,19 +22,19 @@
 JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
     kClassPath_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests[];
 const char kClassPath_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests[] =
-    "this.is.a.package.prefix.org.jni_zero.samples.SampleForTests";
+    "this/is/a/package/prefix/org/jni_zero/samples/SampleForTests";
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
     kClassPath_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructA[];
 const char
     kClassPath_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructA[] =
-    "this.is.a.package.prefix.org.jni_zero.samples.SampleForTests$InnerStructA";
+    "this/is/a/package/prefix/org/jni_zero/samples/SampleForTests$InnerStructA";
 
 JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
     kClassPath_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB[];
 const char
     kClassPath_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_00024InnerStructB[] =
-    "this.is.a.package.prefix.org.jni_zero.samples.SampleForTests$InnerStructB";
+    "this/is/a/package/prefix/org/jni_zero/samples/SampleForTests$InnerStructB";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
 JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
     g_this_is_a_package_prefix_org_jni_1zero_samples_SampleForTests_clazz(nullptr);
@@ -78,8 +78,8 @@ inline jclass
 
 
 // Step 3: Method stubs.
-namespace base {
-namespace android {
+namespace jni_zero {
+namespace samples {
 
 JNI_BOUNDARY_EXPORT void
     Java_this_is_a_package_prefix_org_jni_1zero_GEN_1JNI_this_1is_1a_1package_1prefix_1org_1jni_11zero_1samples_1SampleForTests_1addStructB(
@@ -621,7 +621,7 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNIEnv* 
   return jni_zero::ScopedJavaLocalRef<jstring>(env, ret);
 }
 
-}  // namespace android
-}  // namespace base
+}  // namespace samples
+}  // namespace jni_zero
 
 #endif  // this_is_a_package_prefix_org_jni_zero_samples_SampleForTests_JNI

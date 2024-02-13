@@ -4,7 +4,8 @@
 
 import 'chrome://performance-side-panel.top-chrome/app.js';
 
-import {MemorySaverCardApiProxy, MemorySaverCardApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/memory_saver_card_api_proxy.js';
+import type {MemorySaverCardApiProxy} from 'chrome://performance-side-panel.top-chrome/memory_saver_card_api_proxy.js';
+import {MemorySaverCardApiProxyImpl} from 'chrome://performance-side-panel.top-chrome/memory_saver_card_api_proxy.js';
 import {MemorySaverCardCallbackRouter, MemorySaverCardHandlerRemote} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
 import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';

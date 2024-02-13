@@ -18,7 +18,7 @@ TEST_F(ViewsTypeConversionTest, CheckIsSerializable) {
   EXPECT_FALSE(
       ui::metadata::TypeConverter<views::FocusRing*>::IsSerializable());
 
-  // Test absl::optional type.
+  // Test std::optional type.
   EXPECT_FALSE(ui::metadata::TypeConverter<
-               absl::optional<views::FocusRing*>>::IsSerializable());
+               std::optional<views::FocusRing*>>::IsSerializable());
 }

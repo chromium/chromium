@@ -270,7 +270,6 @@ class AutocorrectManager {
 
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;
-  bool in_diacritical_autocorrect_session_ = false;
 
   ui::ime::AssistiveWindowButton undo_button_;
   ui::ime::AssistiveWindowButton learn_more_button_;

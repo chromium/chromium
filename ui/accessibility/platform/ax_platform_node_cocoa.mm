@@ -1470,7 +1470,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIAColumnCount {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> ariaColCount =
+  std::optional<int> ariaColCount =
       _node->GetDelegate()->GetTableAriaColCount();
   if (!ariaColCount)
     return nil;
@@ -1481,7 +1481,7 @@ void CollectAncestorRoles(
   if (![self instanceActive])
     return nil;
 
-  absl::optional<int> ariaColIndex =
+  std::optional<int> ariaColIndex =
       _node->GetDelegate()->GetTableCellAriaColIndex();
   if (!ariaColIndex)
 
@@ -1506,7 +1506,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIARowCount {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> ariaRowCount =
+  std::optional<int> ariaRowCount =
       _node->GetDelegate()->GetTableAriaRowCount();
   if (!ariaRowCount)
     return nil;
@@ -1516,7 +1516,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIARowIndex {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> ariaRowIndex =
+  std::optional<int> ariaRowIndex =
       _node->GetDelegate()->GetTableCellAriaRowIndex();
   if (!ariaRowIndex)
     return nil;
@@ -1949,7 +1949,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIAPosInSet {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> posInSet = _node->GetPosInSet();
+  std::optional<int> posInSet = _node->GetPosInSet();
   if (!posInSet)
     return nil;
   return @(*posInSet);
@@ -1958,7 +1958,7 @@ void CollectAncestorRoles(
 - (NSNumber*)AXARIASetSize {
   if (![self instanceActive])
     return nil;
-  absl::optional<int> setSize = _node->GetSetSize();
+  std::optional<int> setSize = _node->GetSetSize();
   if (!setSize)
     return nil;
   return @(*setSize);
@@ -2451,7 +2451,7 @@ void CollectAncestorRoles(
     return nil;
   }
 
-  absl::optional<int> column = delegate->GetTableCellColIndex();
+  std::optional<int> column = delegate->GetTableCellColIndex();
   if (!column) {
     return nil;
   }

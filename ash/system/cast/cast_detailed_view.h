@@ -29,9 +29,9 @@ class PillButton;
 // |CastSelectDefaultView|.
 class ASH_EXPORT CastDetailedView : public TrayDetailedView,
                                     public CastConfigController::Observer {
- public:
-  METADATA_HEADER(CastDetailedView);
+  METADATA_HEADER(CastDetailedView, TrayDetailedView)
 
+ public:
   explicit CastDetailedView(DetailedViewDelegate* delegate);
 
   CastDetailedView(const CastDetailedView&) = delete;

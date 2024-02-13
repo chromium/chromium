@@ -270,7 +270,7 @@ NSString* ExpirationDateNSString() {
   [[EarlGrey selectElementWithMatcher:continueButton] performAction:grey_tap()];
 
   // Verify the CVC requester is visible.
-  [[EarlGrey selectElementWithMatcher:grey_text(@"Confirm Card")]
+  [[EarlGrey selectElementWithMatcher:grey_text(@"Verification")]
       assertWithMatcher:grey_notNil()];
 
   GREYAssertNil(
@@ -518,16 +518,15 @@ NSString* ExpirationDateNSString() {
 
 // Tests that both the virtual card and the original card are shown
 // in the Payments Bottom Sheet.
-// TODO(crbug.com/1524066): This test flakily crashes the browser.
-- (void)DISABLED_testPaymentsBottomSheetShowsVirtualCard {
-  // Add a credit card enrolled in VCN to the Personal Data Manager.
-  [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
+- (void)testPaymentsBottomSheetShowsVirtualCard {
+  // TODO(b/324870929): This test is flaky on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails flakily on iPad.");
+  }
 
-  NSString* virtualCardAccessibleName =
-      @"Virtual card Mastercard ending in 2 1 0 9, , 1 of 3";
-  NSString* creditCardAccessibleName = [NSString
-      stringWithFormat:@"Mastercard ending in 2 1 0 9, expires on %@, , 2 of 3",
-                       ExpirationDateNSString()];
+  // Add a credit card enrolled in VCN to the Personal Data Manager.
+  NSString* enrolledCardNameAndLastFour =
+      [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
 
   [self loadPaymentsPage];
 
@@ -537,11 +536,17 @@ NSString* ExpirationDateNSString() {
 
   // Confirm virtual card is displayed.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(virtualCardAccessibleName)]
+      selectElementWithMatcher:grey_accessibilityID([NSString
+                                   stringWithFormat:@"%@ %@",
+                                                    enrolledCardNameAndLastFour,
+                                                    @"Virtual card"])]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Confirm original card is displayed.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(creditCardAccessibleName)]
+      selectElementWithMatcher:grey_accessibilityID([NSString
+                                   stringWithFormat:@"%@ %@",
+                                                    enrolledCardNameAndLastFour,
+                                                    ExpirationDateNSString()])]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Dismiss the bottom sheet by tapping outside.

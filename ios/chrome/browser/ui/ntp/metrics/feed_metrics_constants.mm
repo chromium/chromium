@@ -88,8 +88,6 @@ const char kFollowCountAfterFollow[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow";
 const char kFollowCountAfterUnfollow[] =
     "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow";
-const char kFollowCountWhenEngaged[] =
-    "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged";
 const char kDiscoverIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.CardIndexOnSwitch";
 const char kFollowingIndexWhenSwitchingFeed[] =

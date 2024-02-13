@@ -343,8 +343,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   // Instruct Chrome to show the password dropdown.
   autofill::FormData form;
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      kElementId, form, 0, 0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0,
-      element_bounds));
+      kElementId, form,
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
   autofill::ChromeAutofillClient* autofill_client =
       autofill::ChromeAutofillClient::FromWebContentsForTesting(WebContents());
   autofill::AutofillPopupController* controller =
@@ -368,8 +369,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
   // Reshow the dropdown.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      kElementId, form, 0, 0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0,
-      element_bounds));
+      kElementId, form,
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
   controller = autofill_client->popup_controller_for_testing().get();
   ASSERT_TRUE(controller);
   EXPECT_EQ(3, controller->GetLineCount());
@@ -388,8 +390,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForPasswordStore();
   // Reshow the dropdown won't work because there is nothing to suggest.
   driver->ShowPasswordSuggestions(autofill::PasswordSuggestionRequest(
-      kElementId, form, 0, 0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0,
-      element_bounds));
+      kElementId, form,
+      autofill::AutofillSuggestionTriggerSource::kFormControlElementClicked, 0,
+      0, base::i18n::LEFT_TO_RIGHT, std::u16string(), 0, element_bounds));
   EXPECT_FALSE(autofill_client->popup_controller_for_testing());
 
   WaitForElementValue("username_field", "");

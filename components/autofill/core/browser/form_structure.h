@@ -295,7 +295,8 @@ class FormStructure {
 
   bool has_password_field() const { return has_password_field_; }
 
-  bool is_form_tag() const { return is_form_tag_; }
+  // Returns whether the form comes from an HTML form with a <form> tag.
+  bool is_form_element() const;
 
   void set_submission_event(mojom::SubmissionIndicatorEvent submission_event) {
     submission_event_ = submission_event;
@@ -499,9 +500,6 @@ class FormStructure {
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;
-
-  // True if the form is a <form>.
-  bool is_form_tag_ = true;
 
   // True if all form fields are password fields.
   bool all_fields_are_passwords_ = false;

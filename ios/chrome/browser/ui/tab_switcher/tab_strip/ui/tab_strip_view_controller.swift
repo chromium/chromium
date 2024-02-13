@@ -77,7 +77,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = UIColor(named: kGrey200Color)
+    view.backgroundColor = UIColor(named: kGroupedPrimaryBackgroundColor)
 
     collectionView.translatesAutoresizingMaskIntoConstraints = false
     collectionView.clipsToBounds = true
@@ -123,6 +123,19 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     ])
   }
 
+  override func viewWillTransition(
+    to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator
+  ) {
+    super.viewWillTransition(to: size, with: coordinator)
+    weak var weakSelf = self
+    coordinator.animate(alongsideTransition: nil) { _ in
+      // The tab cell size must be updated after the transition completes.
+      // Otherwise the collection view width won't be updated.
+      weakSelf?.layout.calculateTabCellSize()
+      weakSelf?.layout.invalidateLayout()
+    }
+  }
+
   // MARK: - TabStripConsumer
 
   func populate(items: [TabSwitcherItem]?, selectedItem: TabSwitcherItem?) {
@@ -133,9 +146,20 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     snapshot.appendSections([.tabs])
     snapshot.appendItems(items, toSection: .tabs)
 
-    applySnapshot(
-      diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
-    selectItem(selectedItem)
+    if let selectedItem = selectedItem,
+      let diffableDataSource = diffableDataSource,
+      diffableDataSource.indexPath(for: selectedItem) != nil
+    {
+      // If the newly selected item is already in the data source, select it first.
+      selectItem(selectedItem)
+      applySnapshot(
+        diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
+    } else {
+      // If the newly selected item is a new item, select it after applying snapshot.
+      applySnapshot(
+        diffableDataSource: diffableDataSource, snapshot: snapshot, animatingDifferences: true)
+      selectItem(selectedItem)
+    }
 
     /// Scroll to the end of the collection view if a new tab has been opened.
     if newTabOpened {

@@ -79,6 +79,8 @@ class FakeSyncService : public SyncService {
       ModelType type,
       const std::string& histogram_name) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  bool SupportsExplicitPassphrasePlatformClient() override;
+  void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
       ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> cb) const override;

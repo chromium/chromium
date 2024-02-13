@@ -38,16 +38,16 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
      * supply a bitmap to and a runnable to execute once fulfilled. Weak references are necessary in
      * the event this callback somehow gets stuck in native thumbnail capture code and a reference
      * to it is held for an extended duration. If this happens a fallback animator will run and it
-     * is desirable for the view and runnable to be available for garabage collection.
+     * is desirable for the view and runnable to be available for garbage collection.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting()
     static class ImageViewWeakRefBitmapCallback implements Callback<Bitmap> {
         private final WeakReference<ImageView> mViewRef;
         private final WeakReference<Runnable> mOnFinishedRunnableRef;
 
         ImageViewWeakRefBitmapCallback(ImageView view, Runnable onFinishedRunnable) {
-            mViewRef = new WeakReference<ImageView>(view);
-            mOnFinishedRunnableRef = new WeakReference<Runnable>(onFinishedRunnable);
+            mViewRef = new WeakReference<>(view);
+            mOnFinishedRunnableRef = new WeakReference<>(onFinishedRunnable);
         }
 
         @Override
@@ -113,7 +113,7 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                 : "Invalid shrink expand HubLayoutAnimationType: " + animationType;
         mAnimationType = animationType;
         mHubContainerView = hubContainerView;
-        mAnimatorSupplier = new SyncOneshotSupplierImpl<HubLayoutAnimator>();
+        mAnimatorSupplier = new SyncOneshotSupplierImpl<>();
         mAnimationDataSupplier = animationDataSupplier;
         mDurationMs = durationMs;
         mOnAlphaChange = onAlphaChange;

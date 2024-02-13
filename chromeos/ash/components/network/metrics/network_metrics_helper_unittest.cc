@@ -701,7 +701,7 @@ TEST_F(NetworkMetricsHelperTest, CellularPSim) {
 }
 
 TEST_F(NetworkMetricsHelperTest, VPN) {
-  const std::vector<const std::string> kProviders{{
+  const std::vector<std::string> kProviders{{
       shill::kProviderIKEv2,
       shill::kProviderL2tpIpsec,
       shill::kProviderArcVpn,

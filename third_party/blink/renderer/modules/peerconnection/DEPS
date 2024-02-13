@@ -17,6 +17,7 @@ include_rules = [
     # TODO(crbug.com/787254): Remove the use of base::CurrentThread.
     "+base/task/current_thread.h",
     "+base/threading/thread.h",
+    "+base/unguessable_token.h",
     "+base/values.h",
     "+crypto/openssl_util.h",
     "+components/webrtc/thread_wrapper.h",

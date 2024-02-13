@@ -49,10 +49,10 @@ export function recordSearch(): void {
 }
 
 /**
- * All new code should pass a value for |setting| and, if applicable, |value|.
+ * All new code should pass a value for `setting` and, if applicable, `value`.
  * The zero-parameter version of this function is reserved for
  * legacy code which has not yet been converted.
- * TODO(b/263414450): make |setting| non-optional when migration is complete.
+ * TODO(b/324480501): Make `setting` non-optional when migration is complete.
  */
 export function recordSettingChange(
     setting?: Setting, value?: SettingChangeValue): void {

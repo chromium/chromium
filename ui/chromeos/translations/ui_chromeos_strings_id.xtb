@@ -687,12 +687,12 @@
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
 <translation id="6295542640242147836">Kunci SIM</translation>
 <translation id="6296410173147755564">PUK tidak valid</translation>
-<translation id="6308243004861726558">File ini bersifat rahasia dan tunduk pada kebijakan administrator. Tindakan akses dan transfer file berikut berlaku.</translation>
+<translation id="6308243004861726558">File ini bersifat rahasia dan tunduk kepada kebijakan administrator. Tindakan akses dan transfer file berikut berlaku.</translation>
 <translation id="6312403991423642364">Kesalahan jaringan tidak dikenal</translation>
 <translation id="6317608858038767920">Server nama khusus <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">Arsip <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Melambaikan tangan</translation>
-<translation id="6327785803543103246">Penemuan otomatis proksi web</translation>
+<translation id="6327785803543103246">Penemuan otomatis proxy web</translation>
 <translation id="6337014272874260727">Lepaskan dari file cepat</translation>
 <translation id="6339145975392024142">Internasional AS (PC)</translation>
 <translation id="6356685157277930264">Jendela masukan file</translation>
@@ -1015,7 +1015,7 @@
 <translation id="8656768832129462377">Jangan periksa</translation>
 <translation id="8688591111840995413">Sandi salah</translation>
 <translation id="8698464937041809063">Gambar Google</translation>
-<translation id="8698877009525468705">File ini bersifat rahasia dan tunduk pada pembatasan oleh kebijakan administrator.</translation>
+<translation id="8698877009525468705">File ini bersifat rahasia dan tunduk kepada pembatasan oleh kebijakan administrator.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8713112442029511308">Malta</translation>
 <translation id="8714138378966541668">Dikunci oleh penyedia</translation>

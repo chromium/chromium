@@ -31,9 +31,9 @@ class StackedNotificationBar;
 // Manages scrolling of notification list.
 class ASH_EXPORT NotificationCenterView : public views::View,
                                           public views::ViewObserver {
- public:
-  METADATA_HEADER(NotificationCenterView);
+  METADATA_HEADER(NotificationCenterView, views::View)
 
+ public:
   NotificationCenterView();
 
   NotificationCenterView(const NotificationCenterView&) = delete;

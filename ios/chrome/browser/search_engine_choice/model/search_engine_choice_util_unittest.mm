@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -58,7 +57,7 @@ class SearchEngineChoiceUtilTest : public PlatformTest {
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
         browser_state_.get());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        kSearchEngineForceEnabled);
+        switches::kForceSearchEngineChoiceScreen);
   }
 
   TestChromeBrowserState& browser_state() { return *browser_state_; }

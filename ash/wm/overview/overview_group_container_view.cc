@@ -16,7 +16,7 @@ OverviewGroupContainerView::OverviewGroupContainerView(
 
 OverviewGroupContainerView::~OverviewGroupContainerView() = default;
 
-BEGIN_METADATA(OverviewGroupContainerView, views::View)
+BEGIN_METADATA(OverviewGroupContainerView)
 END_METADATA
 
 }  // namespace ash

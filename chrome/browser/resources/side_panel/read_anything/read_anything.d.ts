@@ -233,6 +233,9 @@ declare namespace chrome {
     // and is available to consume.
     function updateContent(): void;
 
+    // Redraws links when the enabled state changes.
+    function updateLinks(): void;
+
     // Ping that the selection has been updated.
     function updateSelection(): void;
 

@@ -214,8 +214,11 @@ enum class WebappUninstallSource {
   // sessions.
   kHealthcareUserInstallCleanup = 21,
 
+  // Isolated Web App Enterprise policy.
+  kIwaEnterprisePolicy = 22,
+
   // Add any new values above this one.
-  kMaxValue = kHealthcareUserInstallCleanup,
+  kMaxValue = kIwaEnterprisePolicy,
 };
 
 // This is the result of the promotability check that is recorded in the

@@ -67,19 +67,19 @@ struct StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
 
 template <>
 struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
-  static const absl::optional<gfx::HdrMetadataCta861_3>& cta_861_3(
+  static const std::optional<gfx::HdrMetadataCta861_3>& cta_861_3(
       const gfx::HDRMetadata& input) {
     return input.cta_861_3;
   }
-  static const absl::optional<gfx::HdrMetadataSmpteSt2086>& smpte_st_2086(
+  static const std::optional<gfx::HdrMetadataSmpteSt2086>& smpte_st_2086(
       const gfx::HDRMetadata& input) {
     return input.smpte_st_2086;
   }
-  static const absl::optional<gfx::HdrMetadataNdwl>& ndwl(
+  static const std::optional<gfx::HdrMetadataNdwl>& ndwl(
       const gfx::HDRMetadata& input) {
     return input.ndwl;
   }
-  static const absl::optional<gfx::HdrMetadataExtendedRange>& extended_range(
+  static const std::optional<gfx::HdrMetadataExtendedRange>& extended_range(
       const gfx::HDRMetadata& input) {
     return input.extended_range;
   }

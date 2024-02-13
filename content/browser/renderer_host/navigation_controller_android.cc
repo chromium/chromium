@@ -257,7 +257,8 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
     jboolean should_clear_history_list,
     const base::android::JavaParamRef<jobject>& j_additional_navigation_params,
     jlong input_start,
-    jlong navigation_ui_data_ptr) {
+    jlong navigation_ui_data_ptr,
+    jboolean is_pdf) {
   DCHECK(url);
   NavigationController::LoadURLParams params(
       GURL(ConvertJavaStringToUTF8(env, url)));
@@ -275,6 +276,7 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
   params.should_replace_current_entry = should_replace_current_entry;
   params.has_user_gesture = has_user_gesture;
   params.should_clear_history_list = should_clear_history_list;
+  params.is_pdf = is_pdf;
 
   if (j_additional_navigation_params) {
     params.initiator_frame_token =

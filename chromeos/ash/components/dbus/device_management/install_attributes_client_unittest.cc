@@ -1,15 +1,18 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/dbus/device_management/install_attributes_client.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -18,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/device_management/dbus-constants.h"
 
+using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -27,19 +31,11 @@ namespace ash {
 
 namespace {
 
-// Runs |callback| with |response|. Needed due to ResponseCallback expecting a
+// Runs `callback` with `response`. Needed due to ResponseCallback expecting a
 // bare pointer rather than an std::unique_ptr.
 void RunResponseCallback(dbus::ObjectProxy::ResponseCallback callback,
                          std::unique_ptr<dbus::Response> response) {
   std::move(callback).Run(response.get());
-}
-
-bool ProtobufEquals(const google::protobuf::MessageLite& a,
-                    const google::protobuf::MessageLite& b) {
-  std::string a_serialized, b_serialized;
-  a.SerializeToString(&a_serialized);
-  b.SerializeToString(&b_serialized);
-  return a_serialized == b_serialized;
 }
 
 // FakeTaskRunner will run all tasks posted to it immediately in the PostTask()
@@ -72,10 +68,10 @@ class FakeTaskRunner : public base::SingleThreadTaskRunner {
 
  private:
   // For reference counting.
-  ~FakeTaskRunner() override {}
+  ~FakeTaskRunner() override = default;
 };
 
-// Create a callback that would copy the input argument passed to it into |out|.
+// Create a callback that would copy the input argument passed to it into `out`.
 // This is used mostly to create a callback that would catch the reply from
 // dbus.
 template <typename T>
@@ -93,11 +89,11 @@ class InstallAttributesClientTest : public testing::Test {
   void SetUp() override {
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    bus_ = new dbus::MockBus(options);
+    bus_ = base::MakeRefCounted<dbus::MockBus>(options);
 
     dbus::ObjectPath object_path =
         dbus::ObjectPath(::device_management::kDeviceManagementServicePath);
-    proxy_ = new dbus::MockObjectProxy(
+    proxy_ = base::MakeRefCounted<dbus::MockObjectProxy>(
         bus_.get(), ::device_management::kDeviceManagementServiceName,
         object_path);
 
@@ -166,7 +162,7 @@ class InstallAttributesClientTest : public testing::Test {
   bool shall_message_parsing_fail_ = false;
 
  private:
-  // Handles calls to |proxy_|'s `CallMethod()`.
+  // Handles calls to `proxy_`'s `CallMethod()`.
   void OnCallMethod(dbus::MethodCall* method_call,
                     int timeout_ms,
                     dbus::ObjectProxy::ResponseCallback* callback) {
@@ -176,9 +172,9 @@ class InstallAttributesClientTest : public testing::Test {
       // 0x02 => Field 0, Type String
       // (0xFF)*6 => Varint, the size of the string, it is not terminated and is
       // a very large value so the parsing will fail.
-      constexpr uint8_t invalid_protobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
+      constexpr uint8_t kInvalidProtobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
                                               0xFF, 0xFF, 0xFF};
-      writer.AppendArrayOfBytes(invalid_protobuf);
+      writer.AppendArrayOfBytes(kInvalidProtobuf);
     } else if (method_call->GetMember() ==
                ::device_management::kInstallAttributesGet) {
       writer.AppendProtoAsArrayOfBytes(expected_install_attributes_get_reply_);
@@ -203,14 +199,14 @@ class InstallAttributesClientTest : public testing::Test {
       writer.AppendProtoAsArrayOfBytes(
           expected_get_firmware_management_parameters_reply_);
     } else {
-      ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
+      LOG(FATAL) << "Unrecognized member: " << method_call->GetMember();
     }
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(RunResponseCallback, std::move(*callback),
                                   std::move(response)));
   }
 
-  // Handles blocking call to |proxy_|'s `CallMethodAndBlock`.
+  // Handles blocking call to `proxy_`'s `CallMethodAndBlock`.
   base::expected<std::unique_ptr<dbus::Response>, dbus::Error>
   OnBlockingCallMethod(dbus::MethodCall* method_call, int timeout_ms) {
     std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
@@ -219,9 +215,9 @@ class InstallAttributesClientTest : public testing::Test {
       // 0x02 => Field 0, Type String
       // (0xFF)*6 => Varint, the size of the string, it is not terminated and is
       // a very large value so the parsing will fail.
-      constexpr uint8_t invalid_protobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
+      constexpr uint8_t kInvalidProtobuf[] = {0x02, 0xFF, 0xFF, 0xFF,
                                               0xFF, 0xFF, 0xFF};
-      writer.AppendArrayOfBytes(invalid_protobuf);
+      writer.AppendArrayOfBytes(kInvalidProtobuf);
     } else if (method_call->GetMember() ==
                ::device_management::kInstallAttributesGet) {
       writer.AppendProtoAsArrayOfBytes(
@@ -249,202 +245,200 @@ TEST_F(InstallAttributesClientTest, InstallAttributesGet) {
   expected_install_attributes_get_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::InstallAttributesGetReply> result_reply;
+  std::optional<::device_management::InstallAttributesGetReply> result_reply;
 
   client_->InstallAttributesGet(
       ::device_management::InstallAttributesGetRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_install_attributes_get_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(result_reply.value(),
+              EqualsProto(expected_install_attributes_get_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, InstallAttributesGetInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  absl::optional<::device_management::InstallAttributesGetReply> result_reply =
+  std::optional<::device_management::InstallAttributesGetReply> result_reply =
       ::device_management::InstallAttributesGetReply();
 
   client_->InstallAttributesGet(
       ::device_management::InstallAttributesGetRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_EQ(result_reply, absl::nullopt);
+  ASSERT_EQ(result_reply, std::nullopt);
 }
 
 TEST_F(InstallAttributesClientTest, InstallAttributesFinalize) {
   expected_install_attributes_finalize_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::InstallAttributesFinalizeReply>
+  std::optional<::device_management::InstallAttributesFinalizeReply>
       result_reply;
 
   client_->InstallAttributesFinalize(
       ::device_management::InstallAttributesFinalizeRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_install_attributes_finalize_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(result_reply.value(),
+              EqualsProto(expected_install_attributes_finalize_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, InstallAttributesGetStatus) {
   expected_install_attributes_get_status_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::InstallAttributesGetStatusReply>
+  std::optional<::device_management::InstallAttributesGetStatusReply>
       result_reply;
 
   client_->InstallAttributesGetStatus(
       ::device_management::InstallAttributesGetStatusRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_install_attributes_get_status_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(result_reply.value(),
+              EqualsProto(expected_install_attributes_get_status_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, RemoveFirmwareManagementParameters) {
   expected_remove_firmware_management_parameters_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::RemoveFirmwareManagementParametersReply>
+  std::optional<::device_management::RemoveFirmwareManagementParametersReply>
       result_reply;
 
   client_->RemoveFirmwareManagementParameters(
       ::device_management::RemoveFirmwareManagementParametersRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(
-      ProtobufEquals(result_reply.value(),
-                     expected_remove_firmware_management_parameters_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(
+      result_reply.value(),
+      EqualsProto(expected_remove_firmware_management_parameters_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, SetFirmwareManagementParameters) {
   expected_set_firmware_management_parameters_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::SetFirmwareManagementParametersReply>
+  std::optional<::device_management::SetFirmwareManagementParametersReply>
       result_reply;
 
   client_->SetFirmwareManagementParameters(
       ::device_management::SetFirmwareManagementParametersRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(
-      ProtobufEquals(result_reply.value(),
-                     expected_set_firmware_management_parameters_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(result_reply.value(),
+              EqualsProto(expected_set_firmware_management_parameters_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, GetFirmwareManagementParameters) {
   expected_set_firmware_management_parameters_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::GetFirmwareManagementParametersReply>
+  std::optional<::device_management::GetFirmwareManagementParametersReply>
       result_reply;
 
   client_->GetFirmwareManagementParameters(
       ::device_management::GetFirmwareManagementParametersRequest(),
       CreateCopyCallback(&result_reply));
   base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(
-      ProtobufEquals(result_reply.value(),
-                     expected_get_firmware_management_parameters_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(result_reply.value(),
+              EqualsProto(expected_get_firmware_management_parameters_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, BlockingInstallAttributesGet) {
   expected_blocking_install_attributes_get_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::InstallAttributesGetReply> result_reply;
+  std::optional<::device_management::InstallAttributesGetReply> result_reply;
 
-  scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
+  auto runner = base::MakeRefCounted<FakeTaskRunner>();
   EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
       .WillRepeatedly(Return(runner.get()));
 
   result_reply = client_->BlockingInstallAttributesGet(
       ::device_management::InstallAttributesGetRequest());
 
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_blocking_install_attributes_get_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(result_reply.value(),
+              EqualsProto(expected_blocking_install_attributes_get_reply_));
 }
 
 TEST_F(InstallAttributesClientTest,
        BlockingInstallAttributesGetInvalidProtobuf) {
   shall_message_parsing_fail_ = true;
-  absl::optional<::device_management::InstallAttributesGetReply> result_reply =
+  std::optional<::device_management::InstallAttributesGetReply> result_reply =
       ::device_management::InstallAttributesGetReply();
 
-  scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
+  auto runner = base::MakeRefCounted<FakeTaskRunner>();
   EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
       .WillRepeatedly(Return(runner.get()));
 
   result_reply = client_->BlockingInstallAttributesGet(
       ::device_management::InstallAttributesGetRequest());
 
-  EXPECT_EQ(result_reply, absl::nullopt);
+  EXPECT_EQ(result_reply, std::nullopt);
 }
 
 TEST_F(InstallAttributesClientTest, BlockingInstallAttributesSet) {
   expected_blocking_install_attributes_set_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::InstallAttributesSetReply> result_reply;
+  std::optional<::device_management::InstallAttributesSetReply> result_reply;
 
-  scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
+  auto runner = base::MakeRefCounted<FakeTaskRunner>();
   EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
       .WillRepeatedly(Return(runner.get()));
 
   result_reply = client_->BlockingInstallAttributesSet(
       ::device_management::InstallAttributesSetRequest());
 
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(),
-                             expected_blocking_install_attributes_set_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(result_reply.value(),
+              EqualsProto(expected_blocking_install_attributes_set_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, BlockingInstallAttributesFinalize) {
   expected_blocking_install_attributes_finalize_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::InstallAttributesFinalizeReply>
+  std::optional<::device_management::InstallAttributesFinalizeReply>
       result_reply;
 
-  scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
+  auto runner = base::MakeRefCounted<FakeTaskRunner>();
   EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
       .WillRepeatedly(Return(runner.get()));
 
   result_reply = client_->BlockingInstallAttributesFinalize(
       ::device_management::InstallAttributesFinalizeRequest());
 
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(
-      ProtobufEquals(result_reply.value(),
-                     expected_blocking_install_attributes_finalize_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(
+      result_reply.value(),
+      EqualsProto(expected_blocking_install_attributes_finalize_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, BlockingInstallAttributesGetStatus) {
   expected_blocking_install_attributes_get_status_reply_.set_error(
       device_management::DeviceManagementErrorCode::
           DEVICE_MANAGEMENT_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::device_management::InstallAttributesGetStatusReply>
+  std::optional<::device_management::InstallAttributesGetStatusReply>
       result_reply;
 
-  scoped_refptr<FakeTaskRunner> runner = new FakeTaskRunner;
+  auto runner = base::MakeRefCounted<FakeTaskRunner>();
   EXPECT_CALL(*bus_.get(), GetDBusTaskRunner())
       .WillRepeatedly(Return(runner.get()));
 
   result_reply = client_->BlockingInstallAttributesGetStatus(
       ::device_management::InstallAttributesGetStatusRequest());
 
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(
-      ProtobufEquals(result_reply.value(),
-                     expected_blocking_install_attributes_get_status_reply_));
+  ASSERT_NE(result_reply, std::nullopt);
+  EXPECT_THAT(
+      result_reply.value(),
+      EqualsProto(expected_blocking_install_attributes_get_status_reply_));
 }
 
 }  // namespace ash

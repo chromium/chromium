@@ -52,8 +52,7 @@ void NetworkQualityStore::Add(
     cached_network_qualities_.erase(oldest_entry_iterator);
   }
 
-  cached_network_qualities_.insert(
-      std::make_pair(network_id, cached_network_quality));
+  cached_network_qualities_.emplace(network_id, cached_network_quality);
   DCHECK_LE(cached_network_qualities_.size(),
             static_cast<size_t>(kMaximumNetworkQualityCacheSize));
 

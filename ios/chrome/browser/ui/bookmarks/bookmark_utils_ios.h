@@ -260,12 +260,14 @@ const bookmarks::BookmarkNode* GetMostRecentlyAddedUserNodeForURL(
 // `folderTitle`:  The name of the folder. Assumed to be non-nil.
 // `chosenByUser`: whether this is the last folder in which the user moved a
 // bookmark since last time the set of model changed.
-// `storageType` whether it  is is on account storage, or local or syncable.
+// `storageType`: whether it  is is on account storage, or local or syncable.
+// `showCount`: Display the number of moved bookmarks in the snackbar.
 // `count`: the number of bookmarks.
 NSString* messageForAddingBookmarksInFolder(
     NSString* folderTitle,
     bool chosenByUser,
     bookmarks::StorageType storageType,
+    bool showCount,
     int count,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService);

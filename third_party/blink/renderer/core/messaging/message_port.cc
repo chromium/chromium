@@ -140,7 +140,8 @@ void MessagePort::postMessage(ScriptState* script_state,
   if (auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
       initially_entangled_port_ && tracker &&
       script_state->World().IsMainWorld()) {
-    scheduler::TaskAttributionInfo* task = tracker->RunningTask(script_state);
+    scheduler::TaskAttributionInfo* task =
+        tracker->RunningTask(script_state->GetIsolate());
     if (task) {
       // Since `initially_entangled_port_` is not nullptr, neither should be
       // `post_message_task_container_`.

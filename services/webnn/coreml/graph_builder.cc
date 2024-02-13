@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "services/webnn/coreml/graph_builder.h"
+
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected_macros.h"
 #include "third_party/coremltools/mlmodel/format/FeatureTypes.pb.h"
@@ -12,6 +14,40 @@ namespace webnn::coreml {
 using mojom::Operand;
 using mojom::OperandPtr;
 using mojom::Operation;
+
+namespace {
+
+std::string GetCoreMLNameFromOperand(uint64_t operand_id,
+                                     const Operand& operand) {
+  switch (operand.kind) {
+    case Operand::Kind::kInput:
+      CHECK(operand.name.has_value());
+      return GetCoreMLNameFromInput(operand.name.value());
+    case Operand::Kind::kConstant:
+      return base::NumberToString(operand_id);
+    case Operand::Kind::kOutput:
+      if (operand.name.has_value()) {
+        return GetCoreMLNameFromOutput(operand.name.value());
+      } else {
+        // Intermediate outputs don't have names so use operand_id instead.
+        return base::NumberToString(operand_id);
+      }
+  }
+}
+
+}  // namespace
+
+std::string GetCoreMLNameFromInput(const std::string& input_name) {
+  // Prefix is added to user provided names to avoid collision with intermediate
+  // operands' names
+  return base::StrCat({"input_", input_name});
+}
+
+std::string GetCoreMLNameFromOutput(const std::string& output_name) {
+  // Prefix is added to user provided names to avoid collision with intermediate
+  // operands' names
+  return base::StrCat({"output_", output_name});
+}
 
 // static
 [[nodiscard]] base::expected<std::unique_ptr<GraphBuilder>, std::string>
@@ -92,11 +128,12 @@ const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_input();
   const OperandPtr& operand = id_to_operand_map.at(input_id);
-  RETURN_IF_ERROR(PopulateFeatureDescription(*operand, feature_description));
-  CHECK(id_to_node_output_map_
+  RETURN_IF_ERROR(
+      PopulateFeatureDescription(input_id, *operand, feature_description));
+  CHECK(id_to_layer_input_info_map_
             .try_emplace(input_id,
-                         OperandInfo(operand->name.value(), operand->dimensions,
-                                     operand->data_type))
+                         OperandInfo(feature_description->name(),
+                                     operand->dimensions, operand->data_type))
             .second);
   CHECK(input_name_to_id_map_.try_emplace(operand->name.value(), input_id)
             .second);
@@ -106,12 +143,13 @@ const GraphBuilder::OperandInfo* GraphBuilder::FindInputOperandInfo(
 [[nodiscard]] base::expected<void, std::string> GraphBuilder::CreateOutputNode(
     const IdToOperandMap& id_to_operand_map,
     uint64_t output_id) {
-  const auto output_iterator = id_to_node_output_map_.find(output_id);
-  CHECK(output_iterator != id_to_node_output_map_.end());
+  const auto output_iterator = id_to_layer_input_info_map_.find(output_id);
+  CHECK(output_iterator != id_to_layer_input_info_map_.end());
   const OperandPtr& operand = id_to_operand_map.at(output_id);
   auto* mutable_description = ml_model_.mutable_description();
   auto* feature_description = mutable_description->add_output();
-  RETURN_IF_ERROR(PopulateFeatureDescription(*operand, feature_description));
+  RETURN_IF_ERROR(
+      PopulateFeatureDescription(output_id, *operand, feature_description));
   return base::ok();
 }
 
@@ -138,12 +176,13 @@ base::expected<void, std::string> GraphBuilder::CreateOperatorNodeForBinary(
 
 [[nodiscard]] const GraphBuilder::OperandInfo* GraphBuilder::GetOperandInfo(
     uint64_t operand_id) const {
-  const auto input_iterator = id_to_node_output_map_.find(operand_id);
-  CHECK(input_iterator != id_to_node_output_map_.end());
+  const auto input_iterator = id_to_layer_input_info_map_.find(operand_id);
+  CHECK(input_iterator != id_to_layer_input_info_map_.end());
   return &input_iterator->second;
 }
 
 base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
+    uint64_t operand_id,
     const webnn::mojom::Operand& operand,
     ::CoreML::Specification::FeatureDescription* feature_description) {
   auto* feature_type = feature_description->mutable_type();
@@ -174,7 +213,8 @@ base::expected<void, std::string> GraphBuilder::PopulateFeatureDescription(
   for (int dimension : operand.dimensions) {
     array_feature_type->add_shape(dimension);
   }
-  feature_description->mutable_name()->assign(operand.name.value());
+  feature_description->mutable_name()->assign(
+      GetCoreMLNameFromOperand(operand_id, operand));
   return base::ok();
 }
 
@@ -182,7 +222,7 @@ void GraphBuilder::AddInputToNeuralNetworkLayer(
     uint64_t input_id,
     CoreML::Specification::NeuralNetworkLayer* neural_network_layer) {
   const OperandInfo* lhs = GetOperandInfo(input_id);
-  neural_network_layer->add_input(lhs->name);
+  neural_network_layer->add_input(lhs->coreml_name);
   auto* tensor = neural_network_layer->add_inputtensor();
   tensor->set_rank(lhs->dimensions.size());
   for (int dimension : lhs->dimensions) {
@@ -195,12 +235,13 @@ void GraphBuilder::AddOutputToNeuralNetworkLayer(
     uint64_t output_id,
     ::CoreML::Specification::NeuralNetworkLayer* neural_network_layer) {
   const OperandPtr& operand = id_to_operand_map.at(output_id);
-  CHECK(id_to_node_output_map_
-            .try_emplace(output_id,
-                         OperandInfo(operand->name.value(), operand->dimensions,
-                                     operand->data_type))
-            .second);
-  neural_network_layer->add_output(operand->name.value());
+  auto coreml_name = GetCoreMLNameFromOperand(output_id, *operand);
+  CHECK(
+      id_to_layer_input_info_map_
+          .try_emplace(output_id, OperandInfo(coreml_name, operand->dimensions,
+                                              operand->data_type))
+          .second);
+  neural_network_layer->add_output(coreml_name);
   auto* tensor = neural_network_layer->add_outputtensor();
   tensor->set_rank(operand->dimensions.size());
   for (int dimension : operand->dimensions) {
@@ -208,10 +249,10 @@ void GraphBuilder::AddOutputToNeuralNetworkLayer(
   }
 }
 
-GraphBuilder::OperandInfo::OperandInfo(std::string name,
+GraphBuilder::OperandInfo::OperandInfo(std::string coreml_name,
                                        std::vector<uint32_t> dimensions,
                                        webnn::mojom::Operand_DataType data_type)
-    : name(std::move(name)),
+    : coreml_name(std::move(coreml_name)),
       dimensions(std::move(dimensions)),
       data_type(data_type) {}
 

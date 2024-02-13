@@ -169,9 +169,10 @@ class WebsitePreference extends ChromeImageViewPreference {
 
             if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
                     && mSite.getAddress().getIsAnySubdomainPattern()) {
-                return String.format(
-                        getContext().getString(R.string.website_settings_domain_exception_label),
-                        mSite.getAddress().getHost());
+                return getContext()
+                        .getString(
+                                R.string.website_settings_domain_exception_label,
+                                mSite.getAddress().getHost());
             }
 
             return null;
@@ -194,9 +195,8 @@ class WebsitePreference extends ChromeImageViewPreference {
 
         // TODO(crbug.com/1478113): Check if on Android there is a possibility of other exceptions
         // being scoped to an embedder.
-        return String.format(
-                getContext().getString(R.string.website_settings_embedded_on),
-                mSite.getEmbedder().getTitle());
+        return getContext()
+                .getString(R.string.website_settings_embedded_on, mSite.getEmbedder().getTitle());
     }
 
     protected void maybeSetImageView() {
@@ -269,9 +269,7 @@ class WebsitePreference extends ChromeImageViewPreference {
                             100
                                     * PageZoomUtils.convertZoomFactorToZoomLevel(
                                             mSite.getZoomFactor()));
-            usageText.setText(
-                    String.format(
-                            getContext().getString(R.string.page_zoom_level), readableZoomLevel));
+            usageText.setText(getContext().getString(R.string.page_zoom_level, readableZoomLevel));
             usageText.setTextSize(TEXT_SIZE_SP);
             usageText.setVisibility(View.VISIBLE);
             setViewClickable(false);

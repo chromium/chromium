@@ -622,7 +622,7 @@ void CalendarMonthView::FetchEvents(const base::Time& month) {
   calendar_model_->FetchEvents(month);
 }
 
-BEGIN_METADATA(CalendarDateCellView, views::View)
+BEGIN_METADATA(CalendarDateCellView)
 END_METADATA
 
 }  // namespace ash

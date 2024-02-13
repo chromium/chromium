@@ -10,6 +10,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/transient_window_observer.h"
 
 namespace gfx {
@@ -41,7 +42,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
     kFast,
   };
 
-  SplitViewDivider(LayoutDividerController* controller, int divider_position);
+  explicit SplitViewDivider(LayoutDividerController* controller);
   SplitViewDivider(const SplitViewDivider&) = delete;
   SplitViewDivider& operator=(const SplitViewDivider&) = delete;
   ~SplitViewDivider() override;
@@ -67,6 +68,15 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   void set_is_resizing_with_divider(bool is_resizing_with_divider) {
     is_resizing_with_divider_ = is_resizing_with_divider;
   }
+
+  // Returns true if the divider widget is created.
+  bool HasDividerWidget() const;
+
+  // Shows the divider widget with the origin at `divider_position`.
+  void ShowFor(int divider_position);
+
+  // Closes the divider widget.
+  void CloseDividerWidget();
 
   // Updates `divider_position_` according to the current event location on the
   // divider widget during resizing.
@@ -97,6 +107,7 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Returns true if the divider bar is adjustable.
   bool IsAdjustable() const;
 
+  // TODO(b/322890782): Hide these two APIs.
   void AddObservedWindow(aura::Window* window);
   void RemoveObservedWindow(aura::Window* window);
 

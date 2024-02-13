@@ -70,7 +70,11 @@ component("crypto") {
   ]
 
   if (is_apple) {
-    sources += [ "apple_keychain.h" ]
+    sources += [
+      "apple_keychain.h",
+      "apple_keychain_v2.h",
+      "apple_keychain_v2.mm",
+    ]
 
     if (is_mac) {
       sources += [ "apple_keychain_mac.cc" ]
@@ -215,6 +219,14 @@ static_library("test_support") {
       "scoped_test_system_nss_key_slot.cc",
       "scoped_test_system_nss_key_slot.h",
     ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "fake_apple_keychain_v2.h",
+      "fake_apple_keychain_v2.mm",
+    ]
+    frameworks = [ "Foundation.framework" ]
   }
 
   deps = [

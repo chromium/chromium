@@ -376,7 +376,7 @@ ExtensionFunction::ResponseAction HistoryDeleteRangeFunction::Run() {
   history::WebHistoryService* web_history =
       WebHistoryServiceFactory::GetForProfile(GetProfile());
   hs->DeleteLocalAndRemoteHistoryBetween(
-      web_history, start_time, end_time,
+      web_history, start_time, end_time, history::kNoAppIdFilter,
       base::BindOnce(&HistoryDeleteRangeFunction::DeleteComplete,
                      base::Unretained(this)),
       &task_tracker_);
@@ -411,7 +411,7 @@ ExtensionFunction::ResponseAction HistoryDeleteAllFunction::Run() {
   hs->DeleteLocalAndRemoteHistoryBetween(
       web_history,
       /*begin_time*/ base::Time(),
-      /*end_time*/ base::Time::Max(),
+      /*end_time*/ base::Time::Max(), history::kNoAppIdFilter,
       base::BindOnce(&HistoryDeleteAllFunction::DeleteComplete,
                      base::Unretained(this)),
       &task_tracker_);

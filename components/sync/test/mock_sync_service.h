@@ -85,6 +85,8 @@ class MockSyncService : public SyncService {
               SetInvalidationsForSessionsEnabled,
               (bool enabled),
               (override));
+  MOCK_METHOD(bool, SupportsExplicitPassphrasePlatformClient, (), (override));
+  MOCK_METHOD(void, SendExplicitPassphraseToPlatformClient, (), (override));
   MOCK_METHOD(void, AddObserver, (SyncServiceObserver * observer), (override));
   MOCK_METHOD(void,
               RemoveObserver,

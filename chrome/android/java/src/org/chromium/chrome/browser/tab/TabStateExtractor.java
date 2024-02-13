@@ -41,6 +41,7 @@ public class TabStateExtractor {
         tabState.userAgent = tab.getUserAgent();
         tabState.lastNavigationCommittedTimestampMillis =
                 tab.getLastNavigationCommittedTimestampMillis();
+        tabState.tabGroupId = tab.getTabGroupId();
         return tabState;
     }
 

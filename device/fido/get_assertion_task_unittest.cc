@@ -140,7 +140,7 @@ TEST_F(FidoGetAssertionTaskTest, TestSignSuccessWithFake) {
 TEST_F(FidoGetAssertionTaskTest, TestIncorrectGetAssertionResponse) {
   auto device = MockFidoDevice::MakeCtap();
   device->ExpectCtap2CommandAndRespondWith(
-      CtapRequestCommand::kAuthenticatorGetAssertion, absl::nullopt);
+      CtapRequestCommand::kAuthenticatorGetAssertion, std::nullopt);
 
   auto task = std::make_unique<GetAssertionTask>(
       device.get(),

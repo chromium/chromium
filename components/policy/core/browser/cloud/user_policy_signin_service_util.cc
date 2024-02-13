@@ -17,14 +17,14 @@ bool IsSignoutEvent(const signin::PrimaryAccountChangeEvent& event) {
 }
 
 bool IsTurnOffSyncEvent(const signin::PrimaryAccountChangeEvent& event) {
-  // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
+  // TODO(crbug.com/40066949): Remove kSync usage after users are migrated to
   // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
   return event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
          signin::PrimaryAccountChangeEvent::Type::kCleared;
 }
 
 bool IsAnySigninEvent(const signin::PrimaryAccountChangeEvent& event) {
-  // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
+  // TODO(crbug.com/40066949): Remove kSync usage after users are migrated to
   // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
   return event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
              signin::PrimaryAccountChangeEvent::Type::kSet ||

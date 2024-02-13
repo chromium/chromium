@@ -30,6 +30,5 @@ source_set("transitions") {
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/animations",
-    "//ios/chrome/common/ui/util",
   ]
 }

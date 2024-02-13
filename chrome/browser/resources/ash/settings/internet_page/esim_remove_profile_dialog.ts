@@ -25,7 +25,7 @@ import {Router, routes} from '../router.js';
 
 import {getTemplate} from './esim_remove_profile_dialog.html.js';
 
-interface EsimRemoveProfileDialogElement {
+export interface EsimRemoveProfileDialogElement {
   $: {
     dialog: CrDialogElement,
     cancel: CrButtonElement,
@@ -34,7 +34,7 @@ interface EsimRemoveProfileDialogElement {
 
 const EsimRemoveProfileDialogElementBase = I18nMixin(PolymerElement);
 
-class EsimRemoveProfileDialogElement extends
+export class EsimRemoveProfileDialogElement extends
     EsimRemoveProfileDialogElementBase {
   static get is() {
     return 'esim-remove-profile-dialog' as const;

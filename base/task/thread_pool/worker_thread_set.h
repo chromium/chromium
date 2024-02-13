@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 namespace internal {
@@ -61,7 +62,7 @@ class BASE_EXPORT WorkerThreadSet {
   bool IsEmpty() const { return set_.empty(); }
 
  private:
-  std::set<WorkerThreadWaitableEvent*, Compare> set_;
+  std::set<raw_ptr<WorkerThreadWaitableEvent, SetExperimental>, Compare> set_;
 };
 
 }  // namespace internal

@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
+import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -198,7 +199,7 @@ public class SignInPreference extends Preference
                 /* enabled= */ true,
                 /* alertIconVisible= */ ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
-                        && SyncSettingsUtils.hasIdentityError(mSyncService));
+                        && SyncSettingsUtils.getIdentityError(mSyncService) != SyncError.NO_ERROR);
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;

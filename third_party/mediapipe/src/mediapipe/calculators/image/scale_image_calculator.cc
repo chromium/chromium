@@ -15,6 +15,7 @@
 // This Calculator takes an ImageFrame and scales it appropriately.
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -32,7 +33,6 @@
 #include "mediapipe/framework/formats/video_stream_header.h"
 #include "mediapipe/framework/formats/yuv_image.h"
 #include "mediapipe/framework/port/image_resizer.h"
-#include "mediapipe/framework/port/integral_types.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/opencv_core_inc.h"
 #include "mediapipe/framework/port/proto_ns.h"
@@ -689,6 +689,14 @@ absl::Status ScaleImageCalculator::Process(CalculatorContext* cc) {
       }
     }
     return absl::OkStatus();
+  }
+
+  // Before rescaling the frame in image_frame_util::RescaleImageFrame, check
+  // the frame's dimension. If width * height = 0,
+  // image_frame_util::RescaleImageFrame will crash in OpenCV resize().
+  // See b/317149725.
+  if (image_frame->PixelDataSize() == 0) {
+    return absl::InvalidArgumentError("Image frame is empty before rescaling.");
   }
 
   // Rescale the image frame.

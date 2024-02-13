@@ -50,12 +50,14 @@ RadioButton* RadioButtonGroup::AddButton(RadioButton::PressedCallback callback,
 }
 
 void RadioButtonGroup::OnButtonSelected(OptionButtonBase* button) {
-  if (!button->selected())
+  if (!button->selected()) {
     return;
+  }
 
   for (ash::OptionButtonBase* b : buttons_) {
-    if (b != button)
+    if (b != button) {
       b->SetSelected(false);
+    }
   }
   button->ScrollViewToVisible();
 }
@@ -64,7 +66,7 @@ void RadioButtonGroup::OnButtonClicked(OptionButtonBase* button) {
   button->SetSelected(true);
 }
 
-BEGIN_METADATA(RadioButtonGroup, OptionButtonGroup)
+BEGIN_METADATA(RadioButtonGroup)
 END_METADATA
 
 }  // namespace ash

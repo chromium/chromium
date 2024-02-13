@@ -30,7 +30,7 @@ struct StructTraits<display::mojom::DisplaySnapshotColorInfoDataView,
       const display::DisplaySnapshot::ColorInfo& color_info) {
     return color_info.edid_gamma;
   }
-  static const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata(
+  static const std::optional<gfx::HDRStaticMetadata>& hdr_static_metadata(
       const display::DisplaySnapshot::ColorInfo& color_info) {
     return color_info.hdr_static_metadata;
   }

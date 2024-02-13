@@ -4,10 +4,10 @@
 
 import 'chrome://user-notes-side-panel.top-chrome/user_notes_list.js';
 
-import {UserNoteElement} from 'chrome://user-notes-side-panel.top-chrome/user_note.js';
-import {Note} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
+import type {UserNoteElement} from 'chrome://user-notes-side-panel.top-chrome/user_note.js';
+import type {Note} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
 import {UserNotesApiProxyImpl} from 'chrome://user-notes-side-panel.top-chrome/user_notes_api_proxy.js';
-import {UserNotesListElement} from 'chrome://user-notes-side-panel.top-chrome/user_notes_list.js';
+import type {UserNotesListElement} from 'chrome://user-notes-side-panel.top-chrome/user_notes_list.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

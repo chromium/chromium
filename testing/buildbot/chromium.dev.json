@@ -195,22 +195,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_browsertests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-13"
-          },
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
@@ -221,21 +205,6 @@
         },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "interactive_ui_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "arm64",
-            "os": "Mac-13"
-          },
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "interactive_ui_tests",
-        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
         "merge": {
@@ -305,23 +274,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "content_browsertests",
-        "swarming": {
-          "dimensions": {
-            "cores": "8|12",
-            "cpu": "x86-64",
-            "os": "Mac-13"
-          },
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "content_unittests",
         "swarming": {
           "dimensions": {
@@ -332,21 +284,6 @@
         },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "interactive_ui_tests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-13"
-          },
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "interactive_ui_tests",
-        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
       },
       {
         "merge": {
@@ -449,7 +386,8 @@
           "dimensions": {
             "os": "Windows-10-19045"
           },
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -552,7 +490,8 @@
           "dimensions": {
             "os": "Windows-11-22000"
           },
-          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"

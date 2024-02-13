@@ -64,6 +64,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -102,11 +103,13 @@ class MockPromptProxy {
   ~MockPromptProxy();
 
   bool did_succeed() const { return !extension_id_.empty(); }
-  const ExtensionId& extension_id() { return extension_id_; }
+  const extensions::ExtensionId& extension_id() { return extension_id_; }
   bool confirmation_requested() const { return confirmation_requested_; }
   const std::u16string& error() const { return error_; }
 
-  void set_extension_id(const std::string& id) { extension_id_ = id; }
+  void set_extension_id(const extensions::ExtensionId& id) {
+    extension_id_ = id;
+  }
   void set_confirmation_requested(bool requested) {
     confirmation_requested_ = requested;
   }
@@ -120,7 +123,7 @@ class MockPromptProxy {
 
   // Data reported back to us by the prompt we created.
   bool confirmation_requested_;
-  ExtensionId extension_id_;
+  extensions::ExtensionId extension_id_;
   std::u16string error_;
 
   std::unique_ptr<ScopedTestDialogAutoConfirm> auto_confirm;
@@ -197,7 +200,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
  protected:
   std::unique_ptr<WebstoreInstaller::Approval> GetApproval(
       const char* manifest_dir,
-      const std::string& id,
+      const extensions::ExtensionId& id,
       bool strict_manifest_checks) {
     std::unique_ptr<WebstoreInstaller::Approval> result;
 
@@ -214,7 +217,8 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
         strict_manifest_checks);
   }
 
-  const Extension* GetInstalledExtension(const std::string& extension_id) {
+  const Extension* GetInstalledExtension(
+      const extensions::ExtensionId& extension_id) {
     return extension_registry()->GetInstalledExtension(extension_id);
   }
 
@@ -242,7 +246,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     return base::WriteFile(full_path, content);
   }
 
-  void AddExtension(const std::string& extension_id,
+  void AddExtension(const extensions::ExtensionId& extension_id,
                     const std::string& version) {
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -298,7 +302,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
   void RunCrxInstallerFromUnpackedDirectory(
       std::unique_ptr<ExtensionInstallPrompt> prompt,
       CrxInstaller::InstallerResultCallback callback,
-      const std::string& extension_id,
+      const extensions::ExtensionId& extension_id,
       const std::string& public_key,
       const base::FilePath& crx_directory) {
     base::RunLoop run_loop;
@@ -317,7 +321,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
   }
 
   void RunUpdateExtension(std::unique_ptr<ExtensionInstallPrompt> prompt,
-                          const std::string& extension_id,
+                          const extensions::ExtensionId& extension_id,
                           const std::string& public_key,
                           const base::FilePath& unpacked_dir,
                           CrxInstaller::InstallerResultCallback callback) {
@@ -338,7 +342,7 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
   // Installs a crx from |crx_relpath| (a path relative to the extension test
   // data dir) with expected id |id|.
   void InstallWithPrompt(const char* ext_relpath,
-                         const std::string& id,
+                         const extensions::ExtensionId& id,
                          CrxInstaller::InstallerResultCallback callback,
                          MockPromptProxy* mock_install_prompt) {
     base::FilePath ext_path = test_data_dir_.AppendASCII(ext_relpath);
@@ -574,7 +578,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, HiDpiThemeTest) {
 
   ASSERT_TRUE(InstallExtension(crx_path, 1));
 
-  const std::string extension_id("gllekhaobjnhgeagipipnkpmmmpchacm");
+  const extensions::ExtensionId extension_id(
+      "gllekhaobjnhgeagipipnkpmmmpchacm");
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   const Extension* extension =
       registry->enabled_extensions().GetByID(extension_id);
@@ -587,7 +592,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, HiDpiThemeTest) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
                        InstallDelayedUntilNextUpdate) {
-  const std::string extension_id("ldnnhddmnhbkjipkidpdiheffobcpfmf");
+  const extensions::ExtensionId extension_id(
+      "ldnnhddmnhbkjipkidpdiheffobcpfmf");
   base::FilePath base_path = test_data_dir_.AppendASCII("delayed_install");
 
   ExtensionService* service = extension_service();
@@ -649,7 +655,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, Blocklist) {
       new FakeSafeBrowsingDatabaseManager(true));
   ScopedDatabaseManagerForTest scoped_blocklist_db(blocklist_db);
 
-  const std::string extension_id = "gllekhaobjnhgeagipipnkpmmmpchacm";
+  const extensions::ExtensionId extension_id =
+      "gllekhaobjnhgeagipipnkpmmmpchacm";
   blocklist_db->SetUnsafe(extension_id);
 
   base::FilePath crx_path = test_data_dir_.AppendASCII("theme_hidpi_crx")
@@ -673,7 +680,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, NonStrictManifestCheck) {
   // version of the manifest, but the downloaded .crx file is old since
   // the newly published version hasn't fully propagated to all the download
   // servers yet. So load the v2 manifest, but then install the v1 crx file.
-  std::string id = "ooklpoaelmiimcjipecogjfcejghbogp";
+  extensions::ExtensionId id = "ooklpoaelmiimcjipecogjfcejghbogp";
   std::unique_ptr<WebstoreInstaller::Approval> approval =
       GetApproval("crx_installer/v2_no_permission_change/", id, false);
 
@@ -693,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   // version of the manifest, but the downloaded .crx file is old since
   // the newly published version hasn't fully propagated to all the download
   // servers yet. So load the v2 manifest, but then install the v1 crx file.
-  const std::string id = "ooklpoaelmiimcjipecogjfcejghbogp";
+  const extensions::ExtensionId id = "ooklpoaelmiimcjipecogjfcejghbogp";
   std::unique_ptr<WebstoreInstaller::Approval> approval =
       GetApproval("crx_installer/v2_no_permission_change/", id, false);
 
@@ -828,7 +835,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
       CreateMockPromptProxyForBrowser(browser());
 
   // Update won't work as the extension doesn't exist.
-  const std::string extension_id = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+  const extensions::ExtensionId extension_id =
+      "ldnnhddmnhbkjipkidpdiheffobcpfmf";
   const std::string public_key =
       "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
       "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"
@@ -858,7 +866,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   std::unique_ptr<MockPromptProxy> mock_prompt =
       CreateMockPromptProxyForBrowser(browser());
 
-  const std::string extension_id = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+  const extensions::ExtensionId extension_id =
+      "ldnnhddmnhbkjipkidpdiheffobcpfmf";
   const std::string public_key =
       "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
       "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"
@@ -892,7 +901,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   std::unique_ptr<MockPromptProxy> mock_prompt =
       CreateMockPromptProxyForBrowser(browser());
 
-  const std::string extension_id = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
+  const extensions::ExtensionId extension_id =
+      "ldnnhddmnhbkjipkidpdiheffobcpfmf";
   const std::string public_key = "invalid public key";
 
   // Test updating an existing extension.
@@ -933,7 +943,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
   std::unique_ptr<MockPromptProxy> mock_prompt =
       CreateMockPromptProxyForBrowser(browser());
 
-  const std::string extension_id = "gllekhaobjnhgeagipipnkpmmmpchacm";
+  const extensions::ExtensionId extension_id =
+      "gllekhaobjnhgeagipipnkpmmmpchacm";
   const std::string public_key =
       "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC8c4fBSPZ6utYoZ8NiWF/"
       "DSaimBhihjwgOsskyleFGaurhi3TDClTVSGPxNkgCzrz0wACML7M4aNjpd05qupdbR2d294j"
@@ -1003,7 +1014,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
   EXPECT_TRUE(cache_dir.GetPath().IsParent(extension_path));
   EXPECT_TRUE(base::PathExists(extension_path));
 
-  std::string extension_id = extension->id();
+  extensions::ExtensionId extension_id = extension->id();
   UninstallExtension(extension_id);
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   EXPECT_FALSE(registry->enabled_extensions().GetByID(extension_id));
@@ -1051,7 +1062,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, UpdateWithFileAccess) {
 
   ExtensionService* service = extension_service();
 
-  const std::string extension_id("bdkapipdccfifhdghmblnenbbncfcpid");
+  const extensions::ExtensionId extension_id(
+      "bdkapipdccfifhdghmblnenbbncfcpid");
   {
     // Install extension.
     scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service));

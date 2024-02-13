@@ -8,10 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
-#include "content/public/browser/render_frame_metadata_provider.h"
-#include "content/public/browser/web_contents_observer.h"
-#include "ui/android/window_android_observer.h"
 
 namespace ui {
 class BackGestureEvent;
@@ -23,11 +21,11 @@ class NavigationControllerImpl;
 class RenderWidgetHost;
 class WebContentsViewAndroid;
 
-// A wrapper class that forwards the gesture event APIs to the `impl_`. It
+// A wrapper class that forwards the gesture event APIs to the `animator_`. It
 // limits the APIs explosed to the embedder. Owned by `WebContentsViewAndroid`.
 //
 // If for some reason the history navigation couldn't be animated, this class
-// won't create an `impl_`, and will start the history navigation via the
+// won't create an `animator_`, and will start the history navigation via the
 // `NavigationController`.
 // TODO(https://crbug.com/1424477): We should always animate a gesture history
 // navigation.
@@ -77,15 +75,24 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void OnRenderWidgetHostViewSwapped(RenderWidgetHost* old_widget_host,
                                      RenderWidgetHost* new_widget_host);
 
- private:
-  // The actual implementation of the animation manager that manages the history
-  // navigation animation. One instance per gesture.
-  class AnimationManagerImpl;
-
-  // `impl_` invokes this callback to erase itself, when all the animation has
-  // finished in the browser UI.
+  // `animator_` invokes this callback to erase itself, when all the animation
+  // has finished in the browser UI.
   void OnAnimationsFinished();
 
+  WebContentsViewAndroid* web_contents_view_android() const {
+    return web_contents_view_android_;
+  }
+
+  NavigationControllerImpl* navigation_controller() const {
+    return navigation_controller_;
+  }
+
+  void set_animator_factory_for_testing(
+      std::unique_ptr<BackForwardTransitionAnimator::Factory> factory) {
+    animator_factory_ = std::move(factory);
+  }
+
+ private:
   // The owning `WebContentsViewAndroid`. Guaranteed to outlive `this`.
   const raw_ptr<WebContentsViewAndroid> web_contents_view_android_;
 
@@ -106,10 +113,17 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // want to lead the user to the wrong entry.
   std::optional<int> destination_entry_index_;
 
+  // The actual implementation of the animation manager that manages the history
+  // navigation animation. One instance per gesture.
+  //
   // Only instantiated if the user gesture will trigger an animated session
   // history preview. Created when the eligible `OnGestureStarted()` arrives,
   // and destroyed when the animations finish (`OnAnimationsFinished()`).
-  std::unique_ptr<AnimationManagerImpl> impl_;
+  //
+  // `animator_` is only instantiated via `animator_factory_`. Tests can
+  // override the `animator_factory_` via `set_animator_factory_for_testing()`.
+  std::unique_ptr<BackForwardTransitionAnimator> animator_;
+  std::unique_ptr<BackForwardTransitionAnimator::Factory> animator_factory_;
 };
 
 }  // namespace content

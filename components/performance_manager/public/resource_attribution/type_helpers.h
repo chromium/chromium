@@ -13,7 +13,7 @@
 #include "base/types/optional_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace internal {
 
@@ -144,6 +144,6 @@ constexpr bool operator!=(const V& a, const T& b) {
 using internal::operator==;
 using internal::operator!=;
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_TYPE_HELPERS_H_

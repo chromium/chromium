@@ -5,11 +5,13 @@
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/family_link_user_log_record.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/url_matcher/url_util.h"
@@ -19,15 +21,41 @@ namespace supervised_user {
 
 namespace {
 
-bool AreParentalSupervisionCapabilitiesKnown(
-    const AccountCapabilities& capabilities) {
-  return capabilities.is_opted_in_to_parental_supervision() !=
-             signin::Tribool::kUnknown &&
-         capabilities.is_subject_to_parental_controls() !=
-             signin::Tribool::kUnknown;
+std::optional<FamilyLinkUserLogRecord::Segment> GetLogSegmentForHistogram(
+    const std::vector<FamilyLinkUserLogRecord>& records) {
+  std::optional<FamilyLinkUserLogRecord::Segment> merged_log_segment;
+  for (const FamilyLinkUserLogRecord& record : records) {
+    std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
+        record.GetSupervisionStatusForPrimaryAccount();
+    if (merged_log_segment.has_value() &&
+        merged_log_segment.value() != supervision_status) {
+      return FamilyLinkUserLogRecord::Segment::kMixedProfile;
+    }
+    merged_log_segment = supervision_status;
+  }
+  return merged_log_segment;
 }
 
+std::optional<WebFilterType> GetWebFilterForHistogram(
+    const std::vector<FamilyLinkUserLogRecord>& records) {
+  std::optional<WebFilterType> merged_log_segment;
+  for (const FamilyLinkUserLogRecord& record : records) {
+    std::optional<WebFilterType> web_filter =
+        record.GetWebFilterTypeForPrimaryAccount();
+    if (!web_filter.has_value()) {
+      continue;
+    }
+
+    if (merged_log_segment.has_value() &&
+        merged_log_segment.value() != web_filter) {
+      return WebFilterType::kMixed;
+    }
+    merged_log_segment = web_filter;
+  }
+  return merged_log_segment;
+}
 }  // namespace
+
 std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason) {
   switch (reason) {
     case FilteringBehaviorReason::DEFAULT:
@@ -60,60 +88,23 @@ bool AreWebFilterPrefsDefault(const PrefService& pref_service) {
              ->IsDefaultValue();
 }
 
-std::optional<LogSegment> SupervisionStatusForUser(
-    const signin::IdentityManager* identity_manager) {
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // The user is not signed in to this profile, and is therefore
-    // unsupervised.
-    return supervised_user::LogSegment::kUnsupervised;
-  }
-
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  if (!AreParentalSupervisionCapabilitiesKnown(account_info.capabilities)) {
-    // The user is signed in, but the parental supervision capabilities are
-    // not known.
-    return std::nullopt;
-  }
-
-  auto is_subject_to_parental_controls =
-      account_info.capabilities.is_subject_to_parental_controls();
-  if (is_subject_to_parental_controls == signin::Tribool::kTrue) {
-    auto is_opted_in_to_parental_supervision =
-        account_info.capabilities.is_opted_in_to_parental_supervision();
-    if (is_opted_in_to_parental_supervision == signin::Tribool::kTrue) {
-      return LogSegment::kSupervisionEnabledByUser;
-    } else {
-      // Log as a supervised user that has parental supervision enabled
-      // by a policy applied to their account, e.g. Unicorn accounts.
-      return LogSegment::kSupervisionEnabledByPolicy;
-    }
-  } else {
-    // Log as unsupervised user if the account is not subject to parental
-    // controls.
-    return LogSegment::kUnsupervised;
-  }
-}
-
-bool EmitLogSegmentHistogram(const std::vector<LogSegment>& log_segments) {
-  std::optional<LogSegment> merged_log_segment;
-  for (const LogSegment& log_segment : log_segments) {
-    if (merged_log_segment.has_value() &&
-        merged_log_segment.value() != log_segment) {
-      base::UmaHistogramEnumeration(kFamilyLinkUserLogSegmentHistogramName,
-                                    LogSegment::kMixedProfile);
-      return true;
-    }
-    merged_log_segment = log_segment;
-  }
-
-  if (merged_log_segment.has_value()) {
+bool EmitLogRecordHistograms(
+    const std::vector<FamilyLinkUserLogRecord>& records) {
+  bool did_emit_histogram = false;
+  std::optional<FamilyLinkUserLogRecord::Segment> segment =
+      GetLogSegmentForHistogram(records);
+  if (segment.has_value()) {
     base::UmaHistogramEnumeration(kFamilyLinkUserLogSegmentHistogramName,
-                                  merged_log_segment.value());
-    return true;
+                                  segment.value());
+    did_emit_histogram = true;
   }
-
-  return false;
+  std::optional<WebFilterType> web_filter = GetWebFilterForHistogram(records);
+  if (web_filter.has_value()) {
+    base::UmaHistogramEnumeration(
+        kFamilyLinkUserLogSegmentWebFilterHistogramName, web_filter.value());
+    did_emit_histogram = true;
+  }
+  return did_emit_histogram;
 }
 
 }  // namespace supervised_user

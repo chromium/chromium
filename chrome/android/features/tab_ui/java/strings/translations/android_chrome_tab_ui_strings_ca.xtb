@@ -3,10 +3,13 @@
 <translationbundle lang="ca">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
 <translation id="1155815720264022949">Vols tancar les pestanyes antigues?</translation>
+<translation id="1197088940767939838">Taronja</translation>
 <translation id="1215127405478249895">Revisa les pestanyes</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
 <translation id="1326271443836399892">Revisa la configuració actual d'ordenació.</translation>
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
+<translation id="1555130319947370107">Blau</translation>
+<translation id="161042844686301425">Cian</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Afegeix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada a les adreces d'interès}other{Afegeix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades a les adreces d'interès}}</translation>
@@ -38,6 +41,7 @@
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupa la pestanya}other{Agrupa les pestanyes}}</translation>
 <translation id="3996880007329611795">Rep una notificació</translation>
 <translation id="4133493477912226187">Sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
+<translation id="4159784952369912983">Porpra</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
 <translation id="427987768447457592">Grup de pestanyes nou</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
@@ -53,6 +57,7 @@
 <translation id="5161254044473106830">Cal indicar un títol</translation>
 <translation id="5303274951032363933">{TABS_COUNT,plural, =1{Tens <ph name="TABS_COUNT_ONE" /> pestanya que no has utilitzat recentment}other{Tens <ph name="TABS_COUNT_MANY" /> pestanyes que no has utilitzat recentment}}</translation>
 <translation id="5339733443032484186">La teva darrera pestanya</translation>
+<translation id="5400836586163650660">Gris</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5545379293264651575">Tanca sense revisar</translation>
@@ -63,7 +68,9 @@
 <translation id="575494663145460764">Vols rebre alertes de baixades de preu?</translation>
 <translation id="58326064309361797">Arrossega les pestanyes per agrupar-les</translation>
 <translation id="5846292395804797011">Tanca el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="NUMBER_OF_TABS" /> pestanyes</translation>
+<translation id="5901630391730855834">Groc</translation>
 <translation id="5972844218283131174">Desselecciona-ho tot</translation>
+<translation id="6017514345406065928">Verd</translation>
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
 <translation id="6228793724645064692">(puntuació de la botiga)</translation>
@@ -90,6 +97,7 @@
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Agrupa <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Agrupa les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ressenya}other{Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ressenyes}}</translation>
 <translation id="7885132941432959125">Mou la pestanya cap a la dreta</translation>
+<translation id="7942349550061667556">Vermell</translation>
 <translation id="7966321538264951561">Ignora els suggeriments.</translation>
 <translation id="8029301326595421733">S'ha obert a alçada completa la informació sobre aquesta botiga</translation>
 <translation id="8205266828577616993">Mou la pestanya cap amunt</translation>
@@ -104,4 +112,5 @@
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="955558140275419384">Accedeix a aquest editor per revisar i ordenar les pestanyes arxivades.</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>
+<translation id="992256792861109788">Rosa</translation>
 </translationbundle>

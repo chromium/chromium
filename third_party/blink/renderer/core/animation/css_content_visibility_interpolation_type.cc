@@ -211,7 +211,8 @@ void CSSContentVisibilityInterpolationType::ApplyStandardPropertyValue(
     StyleResolverState& state) const {
   // ContentVisibility interpolation has been deferred to application time here
   // due to its non-linear behaviour.
-  double fraction = To<InterpolableNumber>(interpolable_value).Value();
+  double fraction = To<InterpolableNumber>(interpolable_value)
+                        .Value(state.CssToLengthConversionData());
   EContentVisibility content_visibility =
       To<CSSContentVisibilityNonInterpolableValue>(non_interpolable_value)
           ->ContentVisibility(fraction);

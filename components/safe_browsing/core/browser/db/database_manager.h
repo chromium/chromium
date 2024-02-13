@@ -339,7 +339,7 @@ class SafeBrowsingDatabaseManager
     return owning_task_runner();
   }
 
-  typedef std::set<SafeBrowsingApiCheck*> ApiCheckSet;
+  typedef std::set<raw_ptr<SafeBrowsingApiCheck, SetExperimental>> ApiCheckSet;
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 

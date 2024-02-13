@@ -11,21 +11,20 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace network {
 class SimpleURLLoader;
-
-namespace mojom {
-class URLLoaderFactory;
-}  // namespace mojom
 }  // namespace network
 
 namespace content {
+class InterestGroupManagerImpl;
 
 constexpr char kDefaultBiddingAndAuctionGCPCoordinatorOrigin[] =
     "https://publickeyservice.gcp.privacysandboxservices.com";
@@ -35,15 +34,17 @@ struct BiddingAndAuctionServerKey {
   uint8_t id;       // key id corresponding to this key.
 };
 
-// BiddingAndAuctionServerKeyFetcher Manages fetching and caching of the public
+// BiddingAndAuctionServerKeyFetcher manages fetching and caching of the public
 // keys for Bidding and Auction Server endpoints from each of the designated
-// Coordinators.
+// Coordinators. Values are cached both in memory and in the database.
 class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
  public:
   using BiddingAndAuctionServerKeyFetcherCallback = base::OnceCallback<void(
       base::expected<BiddingAndAuctionServerKey, std::string>)>;
 
-  BiddingAndAuctionServerKeyFetcher();
+  // `manager` should be the InterestGroupManagerImpl that owns this
+  // BiddingAndAuctionServerKeyFetcher.
+  explicit BiddingAndAuctionServerKeyFetcher(InterestGroupManagerImpl* manager);
   ~BiddingAndAuctionServerKeyFetcher();
   // no copy
   BiddingAndAuctionServerKeyFetcher(const BiddingAndAuctionServerKeyFetcher&) =
@@ -54,14 +55,16 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
   // Fetch keys for all coordinators in kFledgeBiddingAndAuctionKeyConfig if
   // kFledgePrefetchBandAKeys and kFledgeBiddingAndAuctionServer are enabled and
   // if the keys haven't been fetched yet.
-  void MaybePrefetchKeys(network::mojom::URLLoaderFactory* loader_factory);
+  void MaybePrefetchKeys(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
 
   // GetOrFetchKey provides a key in the callback, fetching the key over the
   // network with the provided loader_factory if necessary. If the key is
   // immediately available then the callback may be called synchronously.
-  void GetOrFetchKey(network::mojom::URLLoaderFactory* loader_factory,
-                     std::optional<url::Origin> maybe_coordinator,
-                     BiddingAndAuctionServerKeyFetcherCallback callback);
+  void GetOrFetchKey(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      std::optional<url::Origin> maybe_coordinator,
+      BiddingAndAuctionServerKeyFetcherCallback callback);
 
  private:
   struct PerCoordinatorFetcherState {
@@ -90,27 +93,48 @@ class CONTENT_EXPORT BiddingAndAuctionServerKeyFetcher {
     std::unique_ptr<network::SimpleURLLoader> loader;
   };
 
-  // Fetch keys for a particular coordinator.
-  void FetchKeys(network::mojom::URLLoaderFactory* loader_factory,
+  // Fetch keys for a particular coordinator, first checking if the key is
+  // in the database.
+  void FetchKeys(scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
                  const url::Origin& coordinator,
                  PerCoordinatorFetcherState& state,
                  BiddingAndAuctionServerKeyFetcherCallback callback);
 
+  void OnFetchKeysFromDatabaseComplete(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      const url::Origin coordinator,
+      std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>> keys);
+
+  void FetchKeysFromNetwork(
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      const url::Origin& coordinator);
+
   // Called when the JSON blob containing the keys have been successfully
   // fetched over the network.
-  void OnFetchKeyComplete(url::Origin coordinator,
-                          std::unique_ptr<std::string> response);
+  void OnFetchKeysFromNetworkComplete(url::Origin coordinator,
+                                      std::unique_ptr<std::string> response);
 
   // Called when the JSON blob containing the keys has be parsed into
   // base::Values. Uses the parsed result to add keys to the cache and calls
   // queued callbacks.
   void OnParsedKeys(url::Origin coordinator,
                     data_decoder::DataDecoder::ValueOrError result);
+
+  void CacheKeysAndRunAllCallbacks(
+      const url::Origin& coordinator,
+      const std::vector<BiddingAndAuctionServerKey>& keys,
+      base::Time expiration);
+
   void FailAllCallbacks(url::Origin coordinator);
 
   bool did_prefetch_keys_ = false;
 
   base::flat_map<url::Origin, PerCoordinatorFetcherState> fetcher_state_map_;
+
+  // An unowned pointer to the InterestGroupManagerImpl that owns this
+  // BiddingAndAuctionServerKeyFetcher. Used as an intermediary to talk to the
+  // database.
+  raw_ptr<InterestGroupManagerImpl> manager_;
 
   base::WeakPtrFactory<BiddingAndAuctionServerKeyFetcher> weak_ptr_factory_{
       this};

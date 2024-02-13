@@ -61,9 +61,9 @@ namespace ash {
 // should be general enough that it can be used for anything download-related.
 // See http://b/298692153 for details.
 class ASH_EXPORT FeatureTile : public views::Button {
- public:
-  METADATA_HEADER(FeatureTile);
+  METADATA_HEADER(FeatureTile, views::Button)
 
+ public:
   // Used in the FeatureTile constructor to set the tile view type.
   enum class TileType {
     kPrimary = 0,

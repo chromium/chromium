@@ -19,6 +19,8 @@ blink_modules_sources("shared_storage") {
     "shared_storage_blink_mojom_traits.h",
     "shared_storage_operation_definition.cc",
     "shared_storage_operation_definition.h",
+    "shared_storage_window_supplement.cc",
+    "shared_storage_window_supplement.h",
     "shared_storage_worklet.cc",
     "shared_storage_worklet.h",
     "shared_storage_worklet_global_scope.cc",

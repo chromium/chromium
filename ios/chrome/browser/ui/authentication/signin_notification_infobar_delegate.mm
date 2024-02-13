@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -34,7 +34,7 @@
 bool SigninNotificationInfoBarDelegate::Create(
     infobars::InfoBarManager* infobar_manager,
     ChromeBrowserState* browser_state,
-    id<ApplicationSettingsCommands> dispatcher,
+    id<SettingsCommands> dispatcher,
     UIViewController* view_controller) {
   DCHECK(infobar_manager);
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
@@ -47,7 +47,7 @@ bool SigninNotificationInfoBarDelegate::Create(
 
 SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
     ChromeBrowserState* browser_state,
-    id<ApplicationSettingsCommands> dispatcher,
+    id<SettingsCommands> dispatcher,
     UIViewController* view_controller)
     : dispatcher_(dispatcher), base_view_controller_(view_controller) {
   DCHECK(!browser_state->IsOffTheRecord());

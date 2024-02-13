@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BookmarkNode, BookmarksItemElement, selectItem} from 'chrome://bookmarks/bookmarks.js';
+import type {BookmarkNode, BookmarksItemElement} from 'chrome://bookmarks/bookmarks.js';
+import {selectItem} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestStore} from './test_store.js';

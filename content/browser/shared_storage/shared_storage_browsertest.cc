@@ -81,6 +81,8 @@ using SharedStorageUrlSpecWithMetadata =
 
 namespace {
 
+using WorkletHosts = SharedStorageWorkletHostManager::WorkletHosts;
+
 const char kSharedStorageWorkletExpiredMessage[] =
     "The sharedStorage worklet cannot execute further operations because the "
     "previous operation did not include the option \'keepAlive: true\'.";
@@ -236,6 +238,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const GURL& script_source_url,
+      network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -246,6 +249,7 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
       : SharedStorageWorkletHost(document_service,
                                  frame_origin,
                                  script_source_url,
+                                 credentials_mode,
                                  origin_trial_features,
                                  std::move(worklet_host),
                                  std::move(callback)),
@@ -733,6 +737,7 @@ class TestSharedStorageWorkletHostManager
       SharedStorageDocumentServiceImpl& document_service,
       const url::Origin& frame_origin,
       const GURL& script_source_url,
+      network::mojom::CredentialsMode credentials_mode,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -740,16 +745,31 @@ class TestSharedStorageWorkletHostManager
       blink::mojom::SharedStorageDocumentService::CreateWorkletCallback
           callback) override {
     return std::make_unique<TestSharedStorageWorkletHost>(
-        document_service, frame_origin, script_source_url,
+        document_service, frame_origin, script_source_url, credentials_mode,
         origin_trial_features, std::move(worklet_host), std::move(callback),
         should_defer_worklet_messages_);
   }
 
   // Precondition: there's only one eligible worklet host.
   TestSharedStorageWorkletHost* GetAttachedWorkletHost() {
-    DCHECK_EQ(1u, GetAttachedWorkletHostsCount());
-    return static_cast<TestSharedStorageWorkletHost*>(
-        GetAttachedWorkletHostsForTesting().begin()->second.get());
+    std::vector<TestSharedStorageWorkletHost*> worklet_hosts =
+        GetAttachedWorkletHosts();
+
+    DCHECK_EQ(worklet_hosts.size(), 1u);
+    return worklet_hosts[0];
+  }
+
+  std::vector<TestSharedStorageWorkletHost*> GetAttachedWorkletHosts() {
+    std::vector<TestSharedStorageWorkletHost*> results;
+    for (auto& [document_service, worklet_hosts] :
+         GetAttachedWorkletHostsForTesting()) {
+      for (auto& [raw_worklet_host, worklet_host] : worklet_hosts) {
+        results.push_back(
+            static_cast<TestSharedStorageWorkletHost*>(raw_worklet_host));
+      }
+    }
+
+    return results;
   }
 
   // Precondition: there's only one eligible worklet host.
@@ -759,35 +779,36 @@ class TestSharedStorageWorkletHostManager
         GetKeepAliveWorkletHostsForTesting().begin()->second.get());
   }
 
-  // Precondition: there's only one eligible worklet host.
-  TestSharedStorageWorkletHost* GetAttachedWorkletHostForOrigin(
-      const url::Origin& origin) {
-    size_t count = 0;
-    TestSharedStorageWorkletHost* result_host = nullptr;
-    for (auto& p : GetAttachedWorkletHostsForTesting()) {
-      if (p.second->shared_storage_origin_for_testing() == origin) {
-        ++count;
-        DCHECK(!result_host);
-        result_host =
-            static_cast<TestSharedStorageWorkletHost*>(p.second.get());
-      }
-    }
+  // Precondition: `frame` is associated with a
+  // `SharedStorageDocumentServiceImpl`, and there's a single attached
+  // `SharedStorageWorkletHost` for that document service.
+  TestSharedStorageWorkletHost* GetAttachedWorkletHostForFrame(
+      RenderFrameHost* frame) {
+    std::vector<TestSharedStorageWorkletHost*> worklet_hosts =
+        GetAttachedWorkletHostsForFrame(frame);
 
-    DCHECK_EQ(count, 1u);
-    DCHECK(result_host);
-    return result_host;
+    DCHECK_EQ(worklet_hosts.size(), 1u);
+    return worklet_hosts[0];
   }
 
   // Precondition: `frame` is associated with a
-  // `SharedStorageDocumentServiceImpl` and an attached
-  // `SharedStorageWorkletHost`.
-  TestSharedStorageWorkletHost* GetAttachedWorkletHostForFrame(
+  // `SharedStorageDocumentServiceImpl`.
+  std::vector<TestSharedStorageWorkletHost*> GetAttachedWorkletHostsForFrame(
       RenderFrameHost* frame) {
     SharedStorageDocumentServiceImpl* document_service = DocumentUserData<
         SharedStorageDocumentServiceImpl>::GetForCurrentDocument(frame);
     DCHECK(document_service);
-    return static_cast<TestSharedStorageWorkletHost*>(
-        GetAttachedWorkletHostsForTesting().at(document_service).get());
+
+    WorkletHosts& worklet_hosts =
+        GetAttachedWorkletHostsForTesting().at(document_service);
+
+    std::vector<TestSharedStorageWorkletHost*> results;
+    for (auto& [raw_worklet_host, worklet_host] : worklet_hosts) {
+      results.push_back(
+          static_cast<TestSharedStorageWorkletHost*>(raw_worklet_host));
+    }
+
+    return results;
   }
 
   void ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(
@@ -796,7 +817,13 @@ class TestSharedStorageWorkletHostManager
   }
 
   size_t GetAttachedWorkletHostsCount() {
-    return GetAttachedWorkletHostsForTesting().size();
+    size_t count = 0;
+    for (const auto& [document_service, worklet_hosts] :
+         GetAttachedWorkletHostsForTesting()) {
+      count += worklet_hosts.size();
+    }
+
+    return count;
   }
 
   size_t GetKeepAliveWorkletHostsCount() {
@@ -1358,9 +1385,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )");
 
-  EXPECT_THAT(result.error,
-              testing::HasSubstr("sharedStorage.worklet.addModule() can only "
-                                 "be invoked once per browsing context"));
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr("addModule() can only be invoked once per worklet"));
 
   EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
   EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());

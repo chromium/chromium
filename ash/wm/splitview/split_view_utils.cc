@@ -4,6 +4,8 @@
 
 #include "ash/wm/splitview/split_view_utils.h"
 
+#include <vector>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -20,12 +22,14 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/containers/adapters.h"
 #include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
@@ -38,9 +42,12 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/transient_window_manager.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -200,6 +207,8 @@ const char* GetSnapActionSourceMetricComponent(
       return "SnapGroupWindowUpdate";
     case WindowSnapActionSource::kTest:
       return "Test";
+    case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
+      return "SnapByLacrosSnapButtonOrWindowLayoutMenu";
   }
 }
 
@@ -209,36 +218,73 @@ void AppendUIModeToHistogram(std::string& histogram_name) {
                             : ".ClamshellMode");
 }
 
-// Returns true if there is another window snapped to the opposite side of
-// `window` and we can't start partial overview.
+// Returns true if there is another fully visible (not occluded) window snapped
+// on the opposite side of `window` and we can't start partial overview in this
+// case.
 bool IsAnotherWindowSnappedOppositeOf(aura::Window* window) {
   const auto windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  const auto snap_type = WindowState::Get(window)->GetStateType();
   const auto opposite_snap_type = GetOppositeSnapType(window);
-  for (aura::Window* top_window : base::Reversed(windows)) {
-    if (top_window == window) {
-      // Skip `window` itself.
+
+  // Track the union bounds of the windows that are more recently used than the
+  // currently iterated window, i.e. `top_window` below to check the occlusion
+  // state of the opposite snapped window.
+  gfx::Rect union_bounds;
+  for (aura::Window* top_window : windows) {
+    const auto* top_window_state = WindowState::Get(top_window);
+    // The `top_window` should be excluded for occlusion check under the
+    // following conditions:
+    // 1. When it is the `window` itself;
+    // 2. When `top_window` is not on the same root window of the given
+    // `window`;
+    // 3. When it is the transient child of the `window`, for example the window
+    // layout menu or other bubble widget;
+    // 4. When it is not visible or minimized;
+    // 5. When it is a float or pip window.
+    const bool should_be_excluded_for_occlusion_check =
+        top_window == window ||
+        top_window->GetRootWindow() != window->GetRootWindow() ||
+        wm::GetTransientRoot(top_window) == window ||
+        !top_window->IsVisible() || top_window_state->IsMinimized() ||
+        top_window_state->IsFloated() || top_window_state->IsPip();
+
+    if (should_be_excluded_for_occlusion_check) {
       continue;
     }
-    auto* top_window_state = WindowState::Get(top_window);
-    if (top_window_state->IsFloated()) {
-      // Skip any floated windows that are on top of the snapped windows.
-      continue;
+
+    const gfx::Rect top_window_bounds = top_window->GetBoundsInScreen();
+    if (top_window_state->GetStateType() == opposite_snap_type) {
+      // Ensure that `top_window` is fully visible by checking:
+      // 1. There is no window stacked above `top_window` with bounds
+      // confined or confining `top_window`. Note that if `union_bounds` is
+      // empty, `top_window` will be the topmost window snapped on the
+      // opposite position;
+      // 2. There is no window with bounds that intersect with `top_window`.
+      // See http://b/320759574#comment3 for more details with graphs.
+      if (!top_window_bounds.Intersects(union_bounds) &&
+          !union_bounds.Intersects(top_window_bounds)) {
+        return true;
+      }
     }
-    if (!top_window_state->IsSnapped()) {
-      // Otherwise if `top_window` is not snapped, return false.
+
+    union_bounds.Union(top_window_bounds);
+  }
+
+  return false;
+}
+
+// Returns true if there is no window in partial overview (excluding the given
+// `window`).
+bool IsPartialOverviewEmptyForActiveDesk(aura::Window* window) {
+  for (auto win :
+       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+    if (win != window && wm::GetTransientRoot(win) != window &&
+        win->GetRootWindow() == window->GetRootWindow()) {
       return false;
     }
-    if (top_window_state->GetStateType() == snap_type) {
-      // Skip any windows that are snapped to the *same* side as `window`.
-      continue;
-    }
-    // Else `top_window` is snapped to the opposite side of `window`.
-    CHECK_EQ(top_window_state->GetStateType(), opposite_snap_type);
-    return true;
   }
-  return false;
+
+  return true;
 }
 
 }  // namespace
@@ -855,7 +901,8 @@ bool ShouldConsiderWindowForFasterSplitView(
     return false;
   }
 
-  if (!OverviewController::Get()->CanEnterOverview()) {
+  if (!OverviewController::Get()->CanEnterOverview() ||
+      IsPartialOverviewEmptyForActiveDesk(window)) {
     return false;
   }
 
@@ -874,6 +921,7 @@ bool ShouldConsiderWindowForFasterSplitView(
       case WindowSnapActionSource::kSnapByWindowLayoutMenu:
       case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
       case WindowSnapActionSource::kTest:
+      case ash::WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
         // We only start partial overview for the above snap sources.
         break;
       default:

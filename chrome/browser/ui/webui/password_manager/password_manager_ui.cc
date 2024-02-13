@@ -616,6 +616,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
       "searchResults", IDS_PASSWORD_MANAGER_UI_SEARCH_RESULT);
   plural_string_handler->AddLocalizedString(
       "movePasswords", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TO_ACCOUNT);
+  plural_string_handler->AddLocalizedString(
+      "deviceOnlyListItemAriaLabel",
+      IDS_PASSWORD_MANAGER_UI_PASSWORD_LIST_ITEM_ARIA_LABEL);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 }
 
@@ -628,6 +631,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kOverflowMenuElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kSharePasswordElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
+                                      kAccountStoreToggleElementId);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
                                        kAddShortcutCustomEventId);
 
@@ -685,5 +690,6 @@ void PasswordManagerUI::CreateHelpBubbleHandler(
           PasswordManagerUI::kSettingsMenuItemElementId,
           PasswordManagerUI::kAddShortcutElementId,
           PasswordManagerUI::kSharePasswordElementId,
+          PasswordManagerUI::kAccountStoreToggleElementId,
           PasswordManagerUI::kOverflowMenuElementId});
 }

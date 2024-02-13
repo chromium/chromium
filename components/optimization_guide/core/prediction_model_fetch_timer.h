@@ -90,8 +90,8 @@ class PredictionModelFetchTimer {
       PredictionModelFetchTimerState::kNone;
 
   // A reference to the PrefService for this profile. Not owned.
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_
-      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+  raw_ptr<PrefService> pref_service_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
 
   // The callback to call to trigger the model fetches.
   base::RepeatingCallback<void(void)> fetch_callback_;

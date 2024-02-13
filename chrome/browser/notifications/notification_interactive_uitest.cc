@@ -645,13 +645,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayFullscreen) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Set the page fullscreen
-  browser()->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-
-  {
-    FullscreenStateWaiter fs_state(browser(), true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       browser()->window()->GetNativeWindow()));
@@ -686,24 +680,13 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayMultiFullscreen) {
   EXPECT_NE("-1", result);
 
   // Set the notification page fullscreen
-  browser()->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-  {
-    FullscreenStateWaiter fs_state(browser(), true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   // Set the other browser fullscreen
-  other_browser->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-  {
-    FullscreenStateWaiter fs_state(other_browser, true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(other_browser);
 
-  ASSERT_TRUE(browser()->exclusive_access_manager()->context()->IsFullscreen());
-  ASSERT_TRUE(
-      other_browser->exclusive_access_manager()->context()->IsFullscreen());
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_TRUE(other_browser->window()->IsFullscreen());
 
   ui_test_utils::BrowserActivationWaiter waiter(other_browser);
   waiter.WaitForActivation();
@@ -733,13 +716,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   // Set the page fullscreen
-  browser()->exclusive_access_manager()->fullscreen_controller()->
-      ToggleBrowserFullscreenMode();
-
-  {
-    FullscreenStateWaiter fs_state(browser(), true);
-    fs_state.Wait();
-  }
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       browser()->window()->GetNativeWindow()));
@@ -832,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTestWithFakeMediaStream,
   notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   ASSERT_EQ(3u, notifications.size());
-  for (const auto* notification : notifications) {
+  for (const message_center::Notification* notification : notifications) {
     EXPECT_EQ(u"My Title", notification->title());
     EXPECT_EQ(u"My Body", notification->message());
   }

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/cert_builder.h"
 #include "net/test/embedded_test_server/http_connection.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "url/gurl.h"
@@ -426,7 +426,7 @@ class EmbeddedTestServer {
   // Will use the GetURL() variant that takes a hostname as the base URL, if
   // `hostname` is non-null.
   url::Origin GetOrigin(
-      const absl::optional<std::string>& hostname = absl::nullopt) const;
+      const std::optional<std::string>& hostname = std::nullopt) const;
 
   // Returns the address list needed to connect to the server.
   [[nodiscard]] bool GetAddressList(AddressList* address_list) const;

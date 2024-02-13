@@ -6,6 +6,7 @@
 #define NET_COOKIES_TEST_COOKIE_ACCESS_DELEGATE_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -18,7 +19,6 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -41,7 +41,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const GURL& url,
       const SiteForCookies& site_for_cookies) const override;
   bool ShouldTreatUrlAsTrustworthy(const GURL& url) const override;
-  absl::optional<
+  std::optional<
       std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
   ComputeFirstPartySetMetadataMaybeAsync(
       const SchemefulSite& site,
@@ -49,7 +49,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       base::OnceCallback<void(FirstPartySetMetadata,
                               FirstPartySetsCacheFilter::MatchInfo)> callback)
       const override;
-  absl::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
+  std::optional<base::flat_map<SchemefulSite, FirstPartySetEntry>>
   FindFirstPartySetEntries(
       const base::flat_set<SchemefulSite>& sites,
       base::OnceCallback<
@@ -84,7 +84,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
 
  private:
   // Finds a FirstPartySetEntry for the given site, if one exists.
-  absl::optional<FirstPartySetEntry> FindFirstPartySetEntry(
+  std::optional<FirstPartySetEntry> FindFirstPartySetEntry(
       const SchemefulSite& site) const;
 
   // Discard any leading dot in the domain string.
@@ -93,8 +93,8 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
   // Invokes the given `callback` asynchronously or returns the result
   // synchronously, depending on the configuration of this instance.
   template <class T>
-  absl::optional<T> RunMaybeAsync(T result,
-                                  base::OnceCallback<void(T)> callback) const;
+  std::optional<T> RunMaybeAsync(T result,
+                                 base::OnceCallback<void(T)> callback) const;
 
   std::map<std::string, CookieAccessSemantics> expectations_;
   std::map<std::string, bool> ignore_samesite_restrictions_schemes_;

@@ -55,7 +55,7 @@ void TrayToggleButton::NotifyClick(const ui::Event& event) {
   views::ToggleButton::NotifyClick(event);
 }
 
-BEGIN_METADATA(TrayToggleButton, views::ToggleButton)
+BEGIN_METADATA(TrayToggleButton)
 END_METADATA
 
 }  // namespace ash

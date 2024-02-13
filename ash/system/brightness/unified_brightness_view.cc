@@ -148,7 +148,7 @@ void UnifiedBrightnessView::VisibilityChanged(View* starting_from,
   }
 }
 
-BEGIN_METADATA(UnifiedBrightnessView, views::View)
+BEGIN_METADATA(UnifiedBrightnessView)
 END_METADATA
 
 }  // namespace ash

@@ -7,8 +7,6 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 
-#include <string_view>
-
 namespace ash::wallpaper_constants {
 
 // Blur sigma used for normal wallpaper.
@@ -26,18 +24,6 @@ constexpr char kTimeOfDayWallpaperCollectionId[] =
     "_time_of_day_chromebook_collection";
 // The ID of the default time of day wallpaper.
 constexpr uint64_t kDefaultTimeOfDayWallpaperUnitId = 18;
-
-// Keys for fields stored in SeaPen metadata json.
-// TODO(b/321275173): move those consts into another file as they are shared
-// with VC background.
-inline constexpr std::string_view kSeaPenCreationTimeKey = "creation_time";
-inline constexpr std::string_view kSeaPenFreeformQueryKey = "freeform_query";
-inline constexpr std::string_view kSeaPenTemplateIdKey = "template_id";
-inline constexpr std::string_view kSeaPenTemplateOptionsKey = "options";
-inline constexpr std::string_view kSeaPenUserVisibleQueryTextKey =
-    "user_visible_query_text";
-inline constexpr std::string_view kSeaPenUserVisibleQueryTemplateKey =
-    "user_visible_query_template";
 
 }  // namespace ash::wallpaper_constants
 

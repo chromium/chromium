@@ -15,8 +15,8 @@ SimplePostOperationWaiterTable::SimplePostOperationWaiterTable() = default;
 SimplePostOperationWaiterTable::~SimplePostOperationWaiterTable() = default;
 
 void SimplePostOperationWaiterTable::OnOperationStart(uint64_t entry_hash) {
-  auto [_, inserted] = entries_pending_operation_.insert(
-      std::make_pair(entry_hash, std::vector<base::OnceClosure>()));
+  auto [_, inserted] = entries_pending_operation_.emplace(
+      entry_hash, std::vector<base::OnceClosure>());
   CHECK(inserted);
 }
 

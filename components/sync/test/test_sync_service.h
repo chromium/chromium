@@ -72,6 +72,14 @@ class TestSyncService : public SyncService {
   void SetLocalDataDescriptions(
       const std::map<ModelType, LocalDataDescription>& local_data_descriptions);
 
+  // If the passed callback is non-null,
+  // SupportsExplicitPassphrasePlatformClient() will return true and every
+  // SendExplicitPassphraseToPlatformClient() call will invoke it.
+  // Otherwise, SupportsExplicitPassphrasePlatformClient() will return false
+  // and SendExplicitPassphraseToPlatformClient() no-ops.
+  void SetPassphrasePlatformClientCallback(
+      const base::RepeatingClosure& send_passphrase_to_platform_client_cb);
+
   void FireStateChanged();
   void FirePaymentsIntegrationEnabledChanged();
   void FireSyncCycleCompleted();
@@ -130,6 +138,8 @@ class TestSyncService : public SyncService {
       ModelType type,
       const std::string& histogram_name) const override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  bool SupportsExplicitPassphrasePlatformClient() override;
+  void SendExplicitPassphraseToPlatformClient() override;
   void GetTypesWithUnsyncedData(
       ModelTypeSet requested_types,
       base::OnceCallback<void(ModelTypeSet)> cb) const override;
@@ -168,6 +178,9 @@ class TestSyncService : public SyncService {
   ModelTypeSet unsynced_types_;
 
   std::map<ModelType, LocalDataDescription> local_data_descriptions_;
+
+  // Nullable.
+  base::RepeatingClosure send_passphrase_to_platform_client_cb_;
 };
 
 }  // namespace syncer

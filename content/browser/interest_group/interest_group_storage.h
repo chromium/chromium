@@ -180,10 +180,11 @@ class CONTENT_EXPORT InterestGroupStorage {
       const url::Origin& coordinator,
       const std::vector<BiddingAndAuctionServerKey>& keys,
       base::Time expiration);
-  // Load stored B&A server keys for a coordinator.
+  // Load stored B&A server keys for a coordinator along with the keys'
+  // expiration.
 
-  std::vector<BiddingAndAuctionServerKey> GetBiddingAndAuctionServerKeys(
-      const url::Origin& coordinator);
+  std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
+  GetBiddingAndAuctionServerKeys(const url::Origin& coordinator);
 
   base::Time GetLastMaintenanceTimeForTesting() const;
 

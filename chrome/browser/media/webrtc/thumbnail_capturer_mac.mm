@@ -420,10 +420,9 @@ void ScreenshotManagerCapturer::CaptureSource(
         return;
       }
 
-      NSArray<SCWindow*>* exclude_windows = nil;
       SCContentFilter* filter =
           [[SCContentFilter alloc] initWithDisplay:selected_display
-                                  excludingWindows:exclude_windows];
+                                  excludingWindows:@[]];
       SCScreenshotCaptureSource(filter, [selected_display frame],
                                 [selected_display displayID]);
       break;

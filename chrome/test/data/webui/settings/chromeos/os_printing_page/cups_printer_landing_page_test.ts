@@ -203,7 +203,6 @@ async function removeAllPrinters(
   await removeAllPrinters(cupsPrintersBrowserProxy, savedPrintersElement);
 }
 
-// TODO(b/298474359): Add browser test for printer status querying.
 suite('CupsSavedPrintersTests', () => {
   let page: SettingsCupsPrintersElement;
   let savedPrintersElement: SettingsCupsSavedPrintersElement;
@@ -832,6 +831,20 @@ suite('CupsSavedPrintersTests', () => {
     // Assert that the Show more button is still shown.
     assertTrue(!!savedPrintersElement.shadowRoot!.querySelector(
         '#show-more-container'));
+
+    // Verify all printers are visible after the Show more button is pressed.
+    const showMoreIcon =
+        savedPrintersElement.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#show-more-icon');
+    assertTrue(!!showMoreIcon);
+    clickButton(showMoreIcon);
+    verifyVisiblePrinters(printerEntryListTestElement, [
+      createPrinterListEntry('test5', '5', 'id5', PrinterType.SAVED),
+      createPrinterListEntry('google', '4', 'id4', PrinterType.SAVED),
+      createPrinterListEntry('test1', '1', 'id1', PrinterType.SAVED),
+      createPrinterListEntry('test2', '2', 'id2', PrinterType.SAVED),
+      createPrinterListEntry('test3', '3', 'id3', PrinterType.SAVED),
+    ]);
   });
 
   test('ShowMoreButtonIsShownAndRemovePrinters', async () => {
@@ -1039,8 +1052,7 @@ suite('CupsSavedPrintersTests', () => {
 
   test('RecordUserActionMetric', async () => {
     const fakeMetricsPrivate = new FakeMetricsPrivate();
-    chrome.metricsPrivate =
-        fakeMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+    chrome.metricsPrivate = fakeMetricsPrivate;
 
     createCupsPrinterPage([
       createCupsPrinterInfo('test1', '1', 'id1'),

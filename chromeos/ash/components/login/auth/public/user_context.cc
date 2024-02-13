@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -169,6 +171,16 @@ void UserContext::CryptohomeContext::ClearAuthorizedIntents() {
 void UserContext::CryptohomeContext::AddAuthorizedIntent(
     const AuthSessionIntent auth_intent) {
   authorized_for_.Put(auth_intent);
+}
+
+std::optional<UserContext::MountState>
+UserContext::CryptohomeContext::GetMountState() const {
+  return mount_state_;
+}
+
+void UserContext::CryptohomeContext::SetMountState(
+    UserContext::MountState mount_state) {
+  mount_state_ = mount_state;
 }
 
 void UserContext::CryptohomeContext::ClearSecrets() {
@@ -524,6 +536,14 @@ void UserContext::ClearAuthorizedIntents() {
 
 void UserContext::AddAuthorizedIntent(const AuthSessionIntent auth_intent) {
   cryptohome_.AddAuthorizedIntent(auth_intent);
+}
+
+std::optional<UserContext::MountState> UserContext::GetMountState() const {
+  return cryptohome_.GetMountState();
+}
+
+void UserContext::SetMountState(UserContext::MountState mount_state) {
+  cryptohome_.SetMountState(mount_state);
 }
 
 void UserContext::ClearSecrets() {

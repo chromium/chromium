@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/uuid.h"
 #include "components/sync/base/data_type_histogram.h"
@@ -25,6 +26,12 @@
 namespace syncer {
 
 namespace {
+
+// When enabled, all the fields for SyncEntity are populated for commit-only
+// data types (otherwise, only `specifics` and `id_string` were populated).
+BASE_FEATURE(kSyncPopulateAllFieldsForCommitOnlyTypes,
+             "SyncPopulateAllFieldsForCommitOnlyTypes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CommitResponseData BuildCommitResponseData(
     const CommitRequestData& commit_request,
@@ -60,16 +67,14 @@ CommitContributionImpl::CommitContributionImpl(
                             const FailedCommitResponseDataList&)>
         on_commit_response_callback,
     base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback,
-    PassphraseType passphrase_type,
-    bool only_commit_specifics)
+    PassphraseType passphrase_type)
     : type_(type),
       on_commit_response_callback_(std::move(on_commit_response_callback)),
       on_full_commit_failure_callback_(
           std::move(on_full_commit_failure_callback)),
       passphrase_type_(passphrase_type),
       context_(context),
-      commit_requests_(std::move(commit_requests)),
-      only_commit_specifics_(only_commit_specifics) {}
+      commit_requests_(std::move(commit_requests)) {}
 
 CommitContributionImpl::~CommitContributionImpl() = default;
 
@@ -84,20 +89,22 @@ void CommitContributionImpl::AddToCommitMessage(
   for (const std::unique_ptr<CommitRequestData>& commit_request :
        commit_requests_) {
     sync_pb::SyncEntity* sync_entity = commit_message->add_entries();
-    if (only_commit_specifics_) {
-      DCHECK(!commit_request->entity->is_deleted());
 
-      // Commit-only data types must never be encrypted.
+    // Commit-only data types must never be encrypted or deleted.
+    if (CommitOnlyTypes().Has(type_)) {
       CHECK(!commit_request->entity->specifics.has_encrypted());
+      CHECK(!commit_request->entity->is_deleted());
+    }
 
+    if (CommitOnlyTypes().Has(type_) &&
+        !base::FeatureList::IsEnabled(
+            kSyncPopulateAllFieldsForCommitOnlyTypes)) {
       // Only send specifics to server for commit-only types.
       sync_entity->mutable_specifics()->CopyFrom(
           commit_request->entity->specifics);
 
       // Populate randomly-generated ID string similar to an uncommitted version
       // of normal data types.
-      // TODO(crbug.com/1521827): consider using PopulateCommitProto() and
-      // AdjustCommitProto() for commit-only types.
       sync_entity->set_id_string(
           base::Uuid::GenerateRandomV4().AsLowercaseString());
     } else {
@@ -111,6 +118,9 @@ void CommitContributionImpl::AddToCommitMessage(
         !sync_entity->specifics().password().has_client_only_encrypted_data());
     CHECK(!sync_entity->specifics()
                .outgoing_password_sharing_invitation()
+               .has_client_only_unencrypted_data());
+    CHECK(!sync_entity->specifics()
+               .incoming_password_sharing_invitation()
                .has_client_only_unencrypted_data());
 
     // Purposefully crash since no metadata should be uploaded if a custom

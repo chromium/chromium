@@ -179,7 +179,7 @@ AttributionVerificationMediator CreateTestVerificationMediator(
       std::make_unique<AttributionVerificationMediatorMetricsRecorder>());
 }
 
-std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
+std::vector<std::string> DeserializeStructuredHeaderListOfStrings(
     std::string_view header) {
   std::optional<net::structured_headers::List> parsed_list =
       net::structured_headers::ParseList(header);
@@ -187,7 +187,7 @@ std::vector<const std::string> DeserializeStructuredHeaderListOfStrings(
     return {};
   }
 
-  std::vector<const std::string> strings;
+  std::vector<std::string> strings;
   strings.reserve(parsed_list->size());
   for (const auto& item : parsed_list.value()) {
     if (item.member_is_inner_list || item.member.size() != 1u ||

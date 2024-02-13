@@ -10,6 +10,8 @@
     <h2 aria-hidden="false">h2</h2>
   </div>
 
+<button style="display:none" aria-describedby="container">Do not remove aria-hidden nodes from tree within #container</button>
+
 <script>
 test((t) => {
     var container = accessibilityController.accessibleElementById("container");
@@ -20,23 +22,6 @@ test((t) => {
     assert_equals(h2.name, "h2");
     assert_false(h2.isIgnored);
 }, "This tests that the aria-hidden attribute works correctly with accessibility. The H1 element should be ignored and the H2 element should not be ignored, but they should both appear in the accessibility tree.");
-
-
 </script>
-
-<div id="hidden-container" style="display: none">
-  <h2 aria-hidden="false">h2</h2>
-</div>
-
-<script>
-test((t) => {
-    var hiddenContainer = accessibilityController.accessibleElementById("hidden-container");
-    assert_true(hiddenContainer.isIgnored);
-    assert_equals(hiddenContainer.childrenCount, 1);
-    var ariaVisibleH2 = hiddenContainer.childAtIndex(0);
-    assert_false(ariaVisibleH2.isIgnored);
-    assert_equals(ariaVisibleH2.name, "h2");
-}, "Elements with aria-hidden=false inside a non-rendered element should be exposed in the accessibility tree, and not ignored");
-  </script>
 </body>
 </html>

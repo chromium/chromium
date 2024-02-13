@@ -5,8 +5,9 @@
 #ifndef UI_BASE_PREDICTION_EMPTY_PREDICTOR_H_
 #define UI_BASE_PREDICTION_EMPTY_PREDICTOR_H_
 
+#include <optional>
+
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/prediction/input_predictor.h"
 
 namespace ui {
@@ -42,7 +43,7 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) EmptyPredictor
 
  private:
   // store the last_input_ point for testing
-  absl::optional<InputData> last_input_;
+  std::optional<InputData> last_input_;
 };
 
 }  // namespace ui

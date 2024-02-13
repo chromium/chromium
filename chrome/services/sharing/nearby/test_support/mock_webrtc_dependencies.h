@@ -55,6 +55,7 @@ class MockWebRtcDependencies : public network::mojom::P2PSocketManager,
        const network::P2PPortRange& port_range,
        const network::P2PHostAndIPEndPoint& remote_address,
        const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+       const absl::optional<base::UnguessableToken>& devtools_token,
        mojo::PendingRemote<network::mojom::P2PSocketClient> client,
        mojo::PendingReceiver<network::mojom::P2PSocket> receiver),
       (override));

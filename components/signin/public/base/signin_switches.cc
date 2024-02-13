@@ -86,18 +86,6 @@ BASE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables a new version of the sync confirmation UI.
-BASE_FEATURE(kTangibleSync,
-             "TangibleSync",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             // Fully rolled out on desktop: crbug.com/1430054
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-
-);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables the search engine choice feature for existing users.
 // TODO(b/316859558): Not used for shipping purposes, remove this feature.
@@ -125,6 +113,23 @@ bool IsExplicitBrowserSigninUIOnDesktopEnabled(
 BASE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn,
              "MinorModeRestrictionsForHistorySyncOptIn",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr int kMinorModeRestrictionsFetchDeadlineDefaultValueMs =
+#if BUILDFLAG(IS_ANDROID)
+    // Based on Signin.AccountCapabilities.UserVisibleLatency
+    400;
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    // Based on Signin.SyncOptIn.PreSyncConfirmationLatency
+    900;
+#elif BUILDFLAG(IS_IOS)
+    // Based on Signin.AccountCapabilities.UserVisibleLatency
+    1000;
+#endif
+
+const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs{
+    &kMinorModeRestrictionsForHistorySyncOptIn,
+    /*name=*/"MinorModeRestrictionsFetchDeadlineMs",
+    kMinorModeRestrictionsFetchDeadlineDefaultValueMs};
 #endif
 
 #if BUILDFLAG(IS_IOS)

@@ -285,11 +285,13 @@ void FedCmMetrics::RecordIsSignInUser(bool is_sign_in) {
   base::UmaHistogramBoolean("Blink.FedCm.IsSignInUser", is_sign_in);
 }
 
-void FedCmMetrics::RecordWebContentsVisibilityUponReadyToShowDialog(
-    bool is_visible) {
+void FedCmMetrics::RecordWebContentsStatusUponReadyToShowDialog(
+    bool is_visible,
+    bool is_active) {
   if (is_disabled_)
     return;
   base::UmaHistogramBoolean("Blink.FedCm.WebContentsVisible", is_visible);
+  base::UmaHistogramBoolean("Blink.FedCm.WebContentsActive", is_active);
 }
 
 void FedCmMetrics::RecordAutoReauthnMetrics(

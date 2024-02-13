@@ -4,7 +4,9 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/util/branding.gni")
 import("//chrome/browser/buildflags.gni")
+import("//chrome/version.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
@@ -270,6 +272,8 @@ source_set("web_applications") {
     "web_app_icon_generator.h",
     "web_app_icon_manager.cc",
     "web_app_icon_manager.h",
+    "web_app_icon_operations.cc",
+    "web_app_icon_operations.h",
     "web_app_id_constants.h",
     "web_app_install_finalizer.cc",
     "web_app_install_finalizer.h",
@@ -569,6 +573,42 @@ source_set("web_applications") {
     "//components/permissions:permissions",
     "//components/services/app_service",
   ]
+}
+
+if (is_mac) {
+  source_set("web_app_shortcut_copier_lib") {
+    sources = [ "os_integration/web_app_shortcut_copier_mac.mm" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/apps/app_shim:app_shim",
+      "//content/public/common:main_function_params",
+    ]
+  }
+
+  executable("web_app_shortcut_copier") {
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+    sources = [ "os_integration/web_app_shortcut_copier_main_mac.cc" ]
+
+    deps = [ "//chrome:chrome_framework+link_nested" ]
+
+    ldflags = []
+    if (is_component_build) {
+      ldflags += [
+        # The helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers
+        # so set rpath up to the base.
+        "-Wl,-rpath,@executable_path/../../../../../../..",
+      ]
+    } else {
+      ldflags += [
+        # The helper is a standalone tool rather than a bundled app so the
+        # framework's install name does not work as-is. Rewrite it so the
+        # relative path is correct given the executable's location.
+        "-Wcrl,installnametool,-change,@executable_path/../Frameworks/${chrome_product_full_name} Framework.framework/Versions/${chrome_version_full}/${chrome_product_full_name} Framework,@executable_path/../${chrome_product_full_name} Framework",
+      ]
+    }
+  }
 }
 
 # This test_support library doesn't use extensions. It must not depend on
@@ -1135,5 +1175,9 @@ source_set("interactive_ui_tests") {
       "//components/services/app_service",
       "//components/user_manager",
     ]
+  }
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/apps/app_shim" ]
   }
 }

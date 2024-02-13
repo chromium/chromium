@@ -55,8 +55,13 @@ wgpu::TextureUsage GetAllowedDawnUsages(
   DCHECK_EQ(wgpu_format, DXGIToWGPUFormat(d3d11_texture_desc.Format));
   if (wgpu_format == wgpu::TextureFormat::R8BG8Biplanar420Unorm ||
       wgpu_format == wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
-    // The bi-planar 420 formats are only supported as a texture binding.
-    return wgpu::TextureUsage::TextureBinding;
+    if (d3d11_texture_desc.BindFlags & D3D11_BIND_RENDER_TARGET &&
+        device.HasFeature(wgpu::FeatureName::MultiPlanarRenderTargets)) {
+      return wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding |
+             wgpu::TextureUsage::RenderAttachment;
+    } else {
+      return wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+    }
   }
 
   wgpu::TextureUsage wgpu_usage =

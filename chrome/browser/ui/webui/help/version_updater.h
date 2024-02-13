@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_H_
 #define CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -90,7 +91,8 @@ class VersionUpdater {
   // specialization. |web_contents| may be null, in which case any required UX
   // (e.g., UAC to elevate on Windows) may not be associated with any existing
   // browser windows.
-  static VersionUpdater* Create(content::WebContents* web_contents);
+  static std::unique_ptr<VersionUpdater> Create(
+      content::WebContents* web_contents);
 
   // Begins the update process by checking for update availability.
   // |status_callback| is called for each status update. |promote_callback|

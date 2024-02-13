@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
@@ -134,4 +135,21 @@ bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items) {
     identifiers.insert(item.identifier);
   }
   return identifiers.size() != items.count;
+}
+
+void CloseOtherWebStates(WebStateList* web_state_list,
+                         int index_to_keep,
+                         int close_flags) {
+  const int count = web_state_list->count();
+  const int pinned_count = web_state_list->pinned_tabs_count();
+  std::vector<int> indexes_to_close;
+  indexes_to_close.reserve(count - pinned_count);
+  for (int index = pinned_count; index < count; ++index) {
+    if (index == index_to_keep) {
+      continue;
+    }
+    indexes_to_close.push_back(index);
+  }
+  web_state_list->CloseWebStatesAtIndices(
+      close_flags, RemovingIndexes(std::move(indexes_to_close)));
 }

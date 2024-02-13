@@ -49,8 +49,9 @@ namespace {
 
 // A button that will transition to multi profile login UI.
 class AddUserButton : public views::Button {
+  METADATA_HEADER(AddUserButton, views::Button)
+
  public:
-  METADATA_HEADER(AddUserButton);
   explicit AddUserButton(UserChooserDetailedViewController* controller);
 
   AddUserButton(const AddUserButton&) = delete;
@@ -93,12 +94,13 @@ AddUserButton::AddUserButton(UserChooserDetailedViewController* controller)
   label->SetSubpixelRenderingEnabled(false);
 }
 
-BEGIN_METADATA(AddUserButton, views::Button)
+BEGIN_METADATA(AddUserButton)
 END_METADATA
 
 class Separator : public views::View {
+  METADATA_HEADER(Separator, views::View)
+
  public:
-  METADATA_HEADER(Separator);
   explicit Separator(bool between_user) {
     SetUseDefaultFillLayout(true);
     SetBorder(views::CreateEmptyBorder(
@@ -123,7 +125,7 @@ class Separator : public views::View {
   Separator& operator=(const Separator&) = delete;
 };
 
-BEGIN_METADATA(Separator, views::View)
+BEGIN_METADATA(Separator)
 END_METADATA
 
 views::View* CreateAddUserErrorView(const std::u16string& message) {
@@ -324,7 +326,7 @@ void UserItemButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(GetUserItemAccessibleString(user_index_));
 }
 
-BEGIN_METADATA(UserItemButton, views::Button)
+BEGIN_METADATA(UserItemButton)
 END_METADATA
 
 UserChooserView::UserChooserView(
@@ -402,7 +404,7 @@ void UserChooserView::OnMediaCaptureChanged(
   }
 }
 
-BEGIN_METADATA(UserChooserView, views::View)
+BEGIN_METADATA(UserChooserView)
 END_METADATA
 
 }  // namespace ash

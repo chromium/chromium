@@ -10,7 +10,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_features.h"
-#include "components/bookmarks/common/storage_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
@@ -42,8 +41,8 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
               browser_state),
           ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state),
           bookmarks::StorageType::kAccount)));
-  bookmark_model->Load(browser_state->GetStatePath(),
-                       bookmarks::StorageType::kAccount);
+  bookmark_model->LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
+      browser_state->GetStatePath());
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->StartObservingBookmarkModel(bookmark_model.get());
   return bookmark_model;

@@ -7,9 +7,11 @@
 
 #include <stdint.h>
 
+#include "base/unguessable_token.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/packet_socket_factory.h"
 
 namespace blink {
@@ -26,6 +28,9 @@ class P2PSocketDispatcher;
 class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
  public:
   PLATFORM_EXPORT explicit IpcPacketSocketFactory(
+      WTF::CrossThreadFunction<
+          void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
+          devtools_token_getter,
       P2PSocketDispatcher* socket_dispatcher,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       bool batch_udp_packets);
@@ -52,6 +57,9 @@ class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
       override;
 
  private:
+  WTF::CrossThreadFunction<void(
+      base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
+      devtools_token_getter_;
   const bool batch_udp_packets_;
 
   // `P2PSocketDispatcher` is owned by the main thread, and must be accessed in

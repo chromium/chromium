@@ -35,9 +35,21 @@ void MultiCaptureService::NotifyMultiCaptureStarted(const std::string& label,
   }
 }
 
+void MultiCaptureService::NotifyMultiCaptureStartedFromApp(
+    const std::string& label,
+    const std::string& app_id,
+    const std::string& app_name) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  for (const mojo::Remote<video_capture::mojom::MultiCaptureServiceClient>&
+           observer : observers_) {
+    observer->MultiCaptureStartedFromApp(label, app_id, app_name);
+  }
+}
+
 void MultiCaptureService::NotifyMultiCaptureStopped(const std::string& label) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (auto& observer : observers_) {
+  for (const mojo::Remote<video_capture::mojom::MultiCaptureServiceClient>&
+           observer : observers_) {
     observer->MultiCaptureStopped(label);
   }
 }

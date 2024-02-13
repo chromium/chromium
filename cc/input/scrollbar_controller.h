@@ -157,7 +157,8 @@ class CC_EXPORT ScrollbarController {
   ScrollbarLayerImplBase* ScrollbarLayer() const;
   void WillBeginImplFrame();
   void ResetState();
-  PointerResultType HitTest(const gfx::PointF position_in_widget) const;
+  const ScrollbarLayerImplBase* HitTest(
+      const gfx::PointF position_in_widget) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(LayerTreeHostImplTest, ThumbDragAfterJumpClick);

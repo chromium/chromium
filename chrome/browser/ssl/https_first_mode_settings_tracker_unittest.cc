@@ -892,6 +892,97 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdated) {
                                1);
 }
 
+// Checks that manually changing the HFM pref in the UI clears the HTTP
+// allowlist. A variant of this test
+// (TypicallySecureUserTest.PrefUpdatedByHeuristic_ShouldNotClearAllowlist)
+// checks that a heuristic auto-enabling HFM does NOT clear the allowlist.
+TEST_F(HttpsFirstModeSettingsTrackerTest, PrefUpdated_ShouldClearAllowlist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstModeIncognito);
+
+  // Instantiate the service so that it can track pref changes.
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+
+  // Allowlist a host for for http.
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+  content::StoragePartition* storage_partition =
+      profile()->GetDefaultStoragePartition();
+  state->AllowHttpForHost("http-allowed.com", storage_partition);
+  EXPECT_TRUE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+
+  // Change the UI setting. This should clear the http allowlist.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  EXPECT_FALSE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+}
+
+TEST_F(TypicallySecureUserTest,
+       PrefUpdatedByHeuristic_ShouldNotClearAllowlist) {
+  StatefulSSLHostStateDelegate* state =
+      StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
+  ASSERT_TRUE(state);
+  content::StoragePartition* storage_partition =
+      profile()->GetDefaultStoragePartition();
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  state->AllowHttpForHost("http-allowed.com", storage_partition);
+  EXPECT_TRUE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+
+  // From here on, do a bunch of navigations and advance the clock so that
+  // Typically Secure heuristic eventually auto-enables HFM.
+
+  base::Time now = clock()->Now();
+  clock()->SetNow(now + base::Days(3));
+  // Record a fallback event to start the Typically Secure observation.
+  RecordFallbackEventAndMaybeEnableHttpsFirstMode();
+  EXPECT_EQ(1u, hfm_service()->GetFallbackEntryCountForTesting());
+
+  // Move forward and record another event.
+  clock()->SetNow(now + base::Days(8));
+  RecordFallbackEventAndMaybeEnableHttpsFirstMode();
+  EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
+
+  // We have observed for long enough, and we don't have too many fallback
+  // events (2). However, last fallback event was too recent. Move forward
+  // again.
+  clock()->SetNow(now + base::Days(9) + base::Hours(1));
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
+  EXPECT_EQ(2u, hfm_service()->GetFallbackEntryCountForTesting());
+
+  // Last fallback event is now a day old, but we don't have enough recent
+  // navigations. Don't enable yet.
+  EXPECT_FALSE(
+      hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Finally, do lots of navigations. Should auto-enable HFM now.
+  IncrementRecentNavigationCount(100u);
+  hfm_service()->CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode();
+  EXPECT_TRUE(
+      hfm_service()->IsInterstitialEnabledByTypicallySecureUserHeuristic());
+  EXPECT_TRUE(profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled));
+
+  // Typically Secure heuristic auto-enabling HFM should not clear the
+  // allowlist.
+  EXPECT_TRUE(
+      state->IsHttpAllowedForHost("http-allowed.com", storage_partition));
+}
+
 // Tests the pref update observer callback, with the HttpsFirstModeIncognito
 // feature flag enabled (which changes the setting to be a tri-state that
 // controls two boolean preferences).

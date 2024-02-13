@@ -9,6 +9,7 @@
 
 #include <concepts>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -26,7 +27,6 @@
 #include "base/strings/string_piece.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -255,16 +255,17 @@ enum class ViewLayer {
 //
 //   For Views that expose properties which are intended to be dynamically
 //   discoverable by other subsystems, each View and its descendants must
-//   include metadata. These other subsystems, such as dev tools or a delarative
-//   layout system, can then enumerate the properties on any given instance or
-//   class. Using the enumerated information, the actual values of the
-//   properties can be read or written. This will be done by getting and setting
-//   the values using string representations. The metadata can also be used to
-//   instantiate and initialize a View (or descendant) class from a declarative
-//   "script".
+//   include metadata. These other subsystems, such as dev tools or a
+//   declarative layout system, can then enumerate the properties on any given
+//   instance or class. Using the enumerated information, the actual values of
+//   the properties can be read or written. This will be done by getting and
+//   setting the values using string representations. The metadata can also be
+//   used to instantiate and initialize a View (or descendant) class from a
+//   declarative "script".
 //
 //   For each View class in their respective header declaration, place the macro
-//   METADATA_HEADER(<classname>, <view ancestor class>) in the public section.
+//   METADATA_HEADER(<classname>, <view ancestor class>) in the initial private
+//   section.
 //
 //   In the implementing .cc file, add the following macros to the same
 //   namespace in which the class resides.
@@ -524,7 +525,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Returns the index of |view|, or nullopt if |view| is not a child of this
   // view.
-  absl::optional<size_t> GetIndexOf(const View* view) const;
+  std::optional<size_t> GetIndexOf(const View* view) const;
 
   // Size and disposition ------------------------------------------------------
   // Methods for obtaining and modifying the position and size of the view.
@@ -599,7 +600,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // Sets or unsets the size that this View will request during layout. The
   // actual size may differ. It should rarely be necessary to set this; usually
   // the right approach is controlling the parent's layout via a LayoutManager.
-  void SetPreferredSize(absl::optional<gfx::Size> size);
+  void SetPreferredSize(std::optional<gfx::Size> size);
 
   // Convenience method that sizes this view to its preferred size.
   void SizeToPreferredSize();
@@ -1659,13 +1660,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // change updates. This function will only modify properties for which a value
   // has been explicitly set.
   void SetAccessibilityProperties(
-      absl::optional<ax::mojom::Role> role = absl::nullopt,
-      absl::optional<std::u16string> name = absl::nullopt,
-      absl::optional<std::u16string> description = absl::nullopt,
-      absl::optional<std::u16string> role_description = absl::nullopt,
-      absl::optional<ax::mojom::NameFrom> name_from = absl::nullopt,
-      absl::optional<ax::mojom::DescriptionFrom> description_from =
-          absl::nullopt);
+      std::optional<ax::mojom::Role> role = std::nullopt,
+      std::optional<std::u16string> name = std::nullopt,
+      std::optional<std::u16string> description = std::nullopt,
+      std::optional<std::u16string> role_description = std::nullopt,
+      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
+      std::optional<ax::mojom::DescriptionFrom> description_from =
+          std::nullopt);
 
   // Called when the accessible name of the View changed.
   virtual void OnAccessibleNameChanged(const std::u16string& new_name) {}
@@ -2288,7 +2289,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Size and disposition ------------------------------------------------------
 
-  absl::optional<gfx::Size> preferred_size_;
+  std::optional<gfx::Size> preferred_size_;
 
   // This View's bounds in the parent coordinate system.
   gfx::Rect bounds_;
@@ -2346,7 +2347,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // The default "fill" layout manager. This is set only if |layout_manager_|
   // isn't set and SetUseDefaultFillLayout(true) is called or
   // |kUseDefaultFillLayout| is true.
-  absl::optional<DefaultFillLayout> default_fill_layout_;
+  std::optional<DefaultFillLayout> default_fill_layout_;
 
   // Whether this View's layer should be snapped to the pixel boundary.
   bool snap_layer_to_pixel_boundary_ = false;
@@ -2378,7 +2379,7 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // positioned onscreen. The default behavior should be correct in most cases,
   // but can be overridden if a particular view must always be laid out in some
   // direction regardless of the application's default UI direction.
-  absl::optional<bool> is_mirrored_;
+  std::optional<bool> is_mirrored_;
 
   // Accelerated painting ------------------------------------------------------
 

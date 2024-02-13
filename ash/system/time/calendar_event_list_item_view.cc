@@ -378,7 +378,7 @@ void CalendarEventListItemView::OnJoinMeetingButtonPressed(
       video_conference_url_);
 }
 
-BEGIN_METADATA(CalendarEventListItemView, views::View);
+BEGIN_METADATA(CalendarEventListItemView);
 END_METADATA
 
 }  // namespace ash

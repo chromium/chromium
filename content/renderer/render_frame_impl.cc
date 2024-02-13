@@ -335,6 +335,18 @@ typedef std::map<blink::WebFrame*, RenderFrameImpl*> FrameMap;
 base::LazyInstance<FrameMap>::DestructorAtExit g_frame_map =
     LAZY_INSTANCE_INITIALIZER;
 
+// Please keep in sync with "RendererBlockedURLReason" in
+// tools/metrics/histograms/metadata/navigation/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class RendererBlockedURLReason {
+  kInvalidURL = 0,
+  kTooLongURL = 1,
+  kBadAboutURL = 2,
+
+  kMaxValue = kBadAboutURL
+};
+
 int64_t ExtractPostId(const WebHistoryItem& item) {
   if (item.IsNull() || item.HttpBody().IsNull())
     return -1;
@@ -400,11 +412,52 @@ ui::PageTransition GetTransitionType(blink::WebDocumentLoader* document_loader,
                            document_loader->GetNavigationType());
 }
 
+// Ensure that the renderer does not send commit URLs to the browser process
+// that are known to be unsupported. Ideally these would be caught earlier in
+// Blink and not get this far. Histograms are reported (similar to those in
+// RenderProcessHostImpl::FilterURL) to track the cases that should be handled
+// earlier. See https://crbug.com/40066983.
+bool IsValidCommitUrl(const GURL& url) {
+  // Invalid URLs are not accepted by the browser process.
+  if (!url.is_valid()) {
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedForFilterURL",
+                                  RendererBlockedURLReason::kInvalidURL);
+    return false;
+  }
+
+  // Do not send a URL longer than Mojo will serialize.
+  if (url.possibly_invalid_spec().length() > url::kMaxURLChars) {
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedForFilterURL",
+                                  RendererBlockedURLReason::kTooLongURL);
+    return false;
+  }
+
+  // Any about: URLs must be either about:blank or about:srcdoc (optionally with
+  // fragments).
+  if (url.SchemeIs(url::kAboutScheme) &&
+      (!url.IsAboutBlank() && !url.IsAboutSrcdoc())) {
+    base::UmaHistogramEnumeration("Navigation.Renderer.BlockedForFilterURL",
+                                  RendererBlockedURLReason::kBadAboutURL);
+    return false;
+  }
+
+  return true;
+}
+
 // Gets URL that should override the default getter for this data source
 // (if any), storing it in |output|. Returns true if there is an override URL.
 bool MaybeGetOverriddenURL(WebDocumentLoader* document_loader, GURL* output) {
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(document_loader);
+  // `document_state` may be null if it was taken from the loader, e.g. when
+  // committing the result of evaluating a javascript: URL,
+  // `FrameLoader::CommitNavigation()` takes the `DocumentState`. Early
+  // returning here means the answer may be inaccurate, but this can only
+  // happen when the replaced `Document` is being detached and about to go
+  // away.
+  if (!document_state) {
+    return false;
+  }
 
   // If this document is loaded by a loadDataWithBaseURL request, then the URLs
   // saved in the DocumentLoader will be the user-supplied base URL (used as the
@@ -2302,7 +2355,7 @@ void RenderFrameImpl::DidCommitAndDrawCompositorFrame() {
   // ViewFlushedPaint regarding instances closing themselves, so we take
   // similar precautions.
   PepperPluginSet plugins = active_pepper_instances_;
-  for (auto* plugin : plugins) {
+  for (PepperPluginInstanceImpl* plugin : plugins) {
     if (base::Contains(active_pepper_instances_, plugin)) {
       plugin->ViewInitiatedPaint();
     }
@@ -4204,7 +4257,11 @@ void RenderFrameImpl::WillFreezePage() {
 }
 
 void RenderFrameImpl::DidOpenDocumentInputStream(const blink::WebURL& url) {
-  GetFrameHost()->DidOpenDocumentInputStream(url);
+  GURL filtered_url(url);
+  if (!IsValidCommitUrl(filtered_url)) {
+    filtered_url = GURL(kBlockedURL);
+  }
+  GetFrameHost()->DidOpenDocumentInputStream(filtered_url);
 }
 
 void RenderFrameImpl::DidSetPageLifecycleState() {
@@ -4681,11 +4738,12 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
       event);
 }
 
-void RenderFrameImpl::AXReadyCallback() {
-  if (!IsAccessibilityEnabled())
-    return;
+bool RenderFrameImpl::AXReadyCallback() {
+  if (!IsAccessibilityEnabled()) {
+    return false;
+  }
 
-  render_accessibility_manager_->GetRenderAccessibilityImpl()
+  return render_accessibility_manager_->GetRenderAccessibilityImpl()
       ->AXReadyCallback();
 }
 
@@ -4709,8 +4767,9 @@ void RenderFrameImpl::WasHidden() {
     observer.WasHidden();
 
 #if BUILDFLAG(ENABLE_PPAPI)
-  for (auto* plugin : active_pepper_instances_)
+  for (PepperPluginInstanceImpl* plugin : active_pepper_instances_) {
     plugin->PageVisibilityChanged(false);
+  }
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
@@ -4720,8 +4779,9 @@ void RenderFrameImpl::WasShown() {
     observer.WasShown();
 
 #if BUILDFLAG(ENABLE_PPAPI)
-  for (auto* plugin : active_pepper_instances_)
+  for (PepperPluginInstanceImpl* plugin : active_pepper_instances_) {
     plugin->PageVisibilityChanged(true);
+  }
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 }
 
@@ -4827,7 +4887,20 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // get the base url from it too.
   if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
       (params->url.IsAboutBlank() || params->url.IsAboutSrcdoc())) {
-    params->initiator_base_url = frame_document.BaseURL();
+    GURL base_url = frame_document.BaseURL();
+    // Only pass the base URL if it is valid and can be serialized by Mojo.
+    if (base_url.is_valid() &&
+        base_url.possibly_invalid_spec().length() <= url::kMaxURLChars) {
+      params->initiator_base_url = base_url;
+    }
+  }
+
+  // Don't send commit URLs to the browser that are known to be unsupported
+  // (e.g., would not pass RenderProcessHostImpl::FilterURL). This is applied
+  // after the initiator_base_url check above to avoid passing a base URL when
+  // the URL was not about:blank but was rewritten to about:blank#blocked.
+  if (!IsValidCommitUrl(params->url)) {
+    params->url = GURL(kBlockedURL);
   }
 
   // TODO(https://crbug.com/1158101): Reconsider how we calculate

@@ -120,6 +120,9 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
       # exception.
       'ash/webui/media_app_ui/',
+      # TODO(b/313562946): Migrate help_app_ui mojo pipeline to TypeScript and
+      # remove.
+      'ash/webui/help_app_ui/',
       # TODO(b/315002705): Migrate shimless_rma to TypeScript and remove
       # exception.
       'ash/webui/shimless_rma/',
@@ -190,12 +193,14 @@ def isInAshFolder(path):
       'ash/webui',
       'chrome/browser/resources/ash',
       'chrome/browser/resources/chromeos',
+      'chrome/browser/resources/nearby_internals',
       'chrome/browser/resources/nearby_share',
       'ui/file_manager',
 
       # Test folders
       'chrome/test/data/webui/chromeos',
       'chrome/test/data/webui/cr_components/chromeos',
+      'chrome/test/data/webui/nearby_share',
       'chrome/test/data/webui/settings/chromeos',
   ]
   return any(path.startswith(folder) for folder in ash_folders)

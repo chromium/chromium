@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -18,6 +17,8 @@ import static org.hamcrest.CoreMatchers.either;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
+
 import android.view.View;
 
 import androidx.annotation.CallSuper;
@@ -28,6 +29,7 @@ import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.TransitStation;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -49,23 +51,33 @@ import org.chromium.chrome.test.util.ToolbarTestUtils;
  * </ul>
  */
 public abstract class TabSwitcherStation extends TransitStation {
-    public static final Matcher<View> TOOLBAR = withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR);
-    public static final Matcher<View> TOOLBAR_NEW_TAB_BUTTON =
-            either(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR_NEW_TAB))
-                    .or(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR_NEW_TAB_VARIATION));
+    public static final ViewElement TOOLBAR =
+            sharedViewElement(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR));
+    public static final ViewElement TOOLBAR_NEW_TAB_BUTTON =
+            sharedViewElement(
+                    either(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR_NEW_TAB))
+                            .or(withId(ToolbarTestUtils.TAB_SWITCHER_TOOLBAR_NEW_TAB_VARIATION)));
 
-    public static final Matcher<View> INCOGNITO_TOGGLE_TAB_BUTTON =
-            allOf(withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
-    public static final Matcher<View> REGULAR_TOGGLE_TAB_BUTTON =
-            allOf(withContentDescription(R.string.accessibility_tab_switcher_standard_stack));
+    public static final ViewElement INCOGNITO_TOGGLE_TAB_BUTTON =
+            sharedViewElement(
+                    allOf(
+                            withContentDescription(
+                                    R.string.accessibility_tab_switcher_incognito_stack)));
+    public static final ViewElement REGULAR_TOGGLE_TAB_BUTTON =
+            sharedViewElement(
+                    allOf(
+                            withContentDescription(
+                                    R.string.accessibility_tab_switcher_standard_stack)));
 
-    public static final Matcher<View> INCOGNITO_TOGGLE_TABS = withId(R.id.incognito_toggle_tabs);
-    public static final Matcher<View> EMPTY_STATE_TEXT =
-            withText(R.string.tabswitcher_no_tabs_empty_state);
-    public static final Matcher<View> RECYCLER_VIEW =
-            allOf(
-                    withId(R.id.tab_list_recycler_view),
-                    withParent(withId(R.id.compositor_view_holder)));
+    public static final ViewElement INCOGNITO_TOGGLE_TABS =
+            sharedViewElement(withId(R.id.incognito_toggle_tabs));
+    public static final ViewElement EMPTY_STATE_TEXT =
+            sharedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
+    public static final ViewElement RECYCLER_VIEW =
+            sharedViewElement(
+                    allOf(
+                            withId(R.id.tab_list_recycler_view),
+                            withParent(withId(R.id.compositor_view_holder))));
     public static final Matcher<View> TAB_CLOSE_BUTTON =
             allOf(
                     withId(R.id.action_button),
@@ -97,8 +109,8 @@ public abstract class TabSwitcherStation extends TransitStation {
     @Override
     @CallSuper
     public void declareElements(Elements.Builder elements) {
-        elements.declareUnownedView(TOOLBAR);
-        elements.declareUnownedView(TOOLBAR_NEW_TAB_BUTTON);
+        elements.declareView(TOOLBAR);
+        elements.declareView(TOOLBAR_NEW_TAB_BUTTON);
 
         elements.declareEnterCondition(new HubIsDisabled());
         elements.declareEnterCondition(new TabSwitcherLayoutShowing());
@@ -113,7 +125,7 @@ public abstract class TabSwitcherStation extends TransitStation {
                 page,
                 (t) -> {
                     t.addCondition(new TabSwitcherLayoutNotShowing());
-                    onView(allOf(isDisplayed(), TOOLBAR_NEW_TAB_BUTTON)).perform(click());
+                    TOOLBAR_NEW_TAB_BUTTON.perform(click());
                 });
     }
 
@@ -148,7 +160,7 @@ public abstract class TabSwitcherStation extends TransitStation {
                 tabSwitcher,
                 (t) ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                                RECYCLER_VIEW, index, TAB_CLOSE_BUTTON, click()));
+                                RECYCLER_VIEW.getViewMatcher(), index, TAB_CLOSE_BUTTON, click()));
     }
 
     public BasePageStation selectTabAtIndex(int index) {
@@ -161,7 +173,7 @@ public abstract class TabSwitcherStation extends TransitStation {
                 page,
                 (t) ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
-                                RECYCLER_VIEW, index, TAB_THUMBNAIL, click()));
+                                RECYCLER_VIEW.getViewMatcher(), index, TAB_THUMBNAIL, click()));
     }
 
     private class HubIsDisabled extends UiThreadCondition {

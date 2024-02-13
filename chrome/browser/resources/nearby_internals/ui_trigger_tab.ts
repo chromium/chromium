@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './ui_trigger_list_object.js';
 import './cross_device_internals.js';
 import './shared_style.css.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
-import {NearbyShareStates, ShareTarget, ShareTargetDiscoveryChange, ShareTargetSelectOption, StatusCode, TimestampedMessage, TransferMetadataStatus} from './types.js';
+import type {NearbyShareStates, ShareTarget, ShareTargetSelectOption, StatusCode, TimestampedMessage, TransferMetadataStatus} from './types.js';
+import {ShareTargetDiscoveryChange} from './types.js';
 import {getTemplate} from './ui_trigger_tab.html.js';
 
 

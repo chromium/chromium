@@ -14,6 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -1104,7 +1105,7 @@ void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (resources_) {  // Initialize may not have been called yet.
-    for (PassthroughAbstractTextureImpl* iter : abstract_textures_) {
+    for (AbstractTexture* iter : abstract_textures_) {
       resources_->textures_pending_destruction.insert(
           iter->OnDecoderWillDestroy());
     }
@@ -1648,15 +1649,15 @@ GLES2DecoderPassthroughImpl::CreateAbstractTexture(GLenum target,
       new TexturePassthrough(service_id, target));
 
   // Unretained is safe, because of the destruction cb.
-  std::unique_ptr<PassthroughAbstractTextureImpl> abstract_texture =
-      std::make_unique<PassthroughAbstractTextureImpl>(texture, this);
+  std::unique_ptr<AbstractTexture> abstract_texture =
+      std::make_unique<AbstractTexture>(texture, this);
 
   abstract_textures_.insert(abstract_texture.get());
   return abstract_texture;
 }
 
 void GLES2DecoderPassthroughImpl::OnAbstractTextureDestroyed(
-    PassthroughAbstractTextureImpl* abstract_texture,
+    AbstractTexture* abstract_texture,
     scoped_refptr<TexturePassthrough> texture) {
   DCHECK(texture);
   abstract_textures_.erase(abstract_texture);

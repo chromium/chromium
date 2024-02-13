@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_context_core_observer.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
+#include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_offline_capability_checker.h"
@@ -1190,7 +1191,7 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
           FROM_HERE, &ServiceWorkerContextCoreObserver::OnStarted,
           version->version_id(), version->scope(),
           version->embedded_worker()->process_id(), version->script_url(),
-          version->embedded_worker()->token().value(), version->key());
+          version->worker_host()->token(), version->key());
       break;
     case blink::EmbeddedWorkerStatus::kStopping:
       observer_list_->Notify(FROM_HERE,

@@ -66,7 +66,6 @@
 <translation id="1217633719248931900">ចូលទៅកាន់​កម្មវិធី</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, កម្មវិធី​នៅលើ Play Store</translation>
 <translation id="1225748608451425081">Chromebook របស់អ្នក​ជាប់សោ ដោយសារបញ្ហាដែលស្គាល់។ អ្នកនឹងអាចចូលគណនី បន្ទាប់ពីរយៈពេល៖ <ph name="TIME_LEFT" /> ទៀត។</translation>
-<translation id="1226877728704622336">តុអសកម្ម</translation>
 <translation id="1229194443904279055">ឈប់​ជ្រើសរើស</translation>
 <translation id="1235458158152011030">បណ្តាញដែលស្គាល់</translation>
 <translation id="1239161794459865856">បានភ្ជាប់ <ph name="FEATURE_NAME" />។</translation>
@@ -101,6 +100,7 @@
 <translation id="1312604459020188865">កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">បង្ហាញ​ធ្នើជានិច្ច</translation>
 <translation id="132346741904777634">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងឆ្វេង​ផ្នែកខាងលើ។ ខុសគ្នា​ជាមួយនឹង​ផ្ទៃប្រព័ន្ធ។</translation>
+<translation id="132415371743256095">បិទ <ph name="DESK_NAME" /> និង​វិនដូ</translation>
 <translation id="1333308631814936910">បានភ្ជាប់ <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">បង្រួមនៅលើ​ទំព័រ</translation>
 <translation id="1341651618736211726">លើស​ចំណុះ</translation>
@@ -160,7 +160,6 @@
 <translation id="1586324912145647027">ចូល​ទៅកាន់​តុទី 1 នៃ 8</translation>
 <translation id="158838227375272121">គេហទំព័រ Google ថ្នាក់រៀន</translation>
 <translation id="1589090746204042747">ចូលប្រើសកម្មភាព​ទាំងអស់របស់អ្នកនៅក្នុង​រយៈពេលចូលប្រើនេះ</translation>
-<translation id="1592682369233288537">តុបន្ទាប់៖ <ph name="NEXT_DESK_NAME" />, ប្រើ Search+Space ដើម្បី​បើកដំណើរការ។</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + ព្រួញចុះក្រោម</translation>
 <translation id="1604857178818051494">ផ្អាក​មេឌៀ</translation>
 <translation id="1607312127821884567">ច្រានចោល​ការរៀបចំ​ការមើល​កម្មវិធី​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
@@ -330,9 +329,11 @@
 <translation id="2369165858548251131">"សួស្ដី" ជាភាសាចិន</translation>
 <translation id="2382875860893882175">បច្ចុប្បន្ននេះ ការបញ្ជូន​ត្រូវបាន​ផ្អាក។ អ្នកអាច​បន្តបញ្ជូន ឬ​ឈប់បញ្ជូន​បានគ្រប់ពេល។</translation>
 <translation id="2386292613071805067">ជ្រើសរើស​អ្វីគ្រប់យ៉ាង​នៅ​លើ​ទំព័រ</translation>
+<translation id="2392659840443812875">គ្មាន​ហតស្ប៉ត​ដែលអាច​ប្រើបានទេ។ សូមប្រាកដថា​ឧបករណ៍​របស់អ្នក​នៅជិត និង​បានបើក​ប៊្លូធូស។</translation>
 <translation id="2397416548179033562">បង្ហាញម៉ឺនុយ Chrome</translation>
 <translation id="240006516586367791">ការគ្រប់គ្រង​មេឌៀ</translation>
 <translation id="2402411679569069051">ដើម្បី​ដោះសោ Chromebook របស់អ្នក សូមប្រើស្នាមម្រាមដៃ​របស់អ្នក ឬដោះសោ​ទូរសព្ទរបស់អ្នក</translation>
+<translation id="240545663114741956">ចុច <ph name="ACCELERATOR" /> ពីរដង ដើម្បី​ចេញពីគណនី។</translation>
 <translation id="2405664212338326887">មិន​បាន​ភ្ជាប់ទេ</translation>
 <translation id="2408955596600435184">បញ្ចូល​កូដ PIN របស់​អ្នក</translation>
 <translation id="2412593942846481727">មាន​កំណែថ្មី</translation>
@@ -354,7 +355,9 @@
 <translation id="2478076885740497414">តំឡើងកម្មវិធី</translation>
 <translation id="2482878487686419369">ការជូនដំណឹង</translation>
 <translation id="2484513351006226581">ចុច <ph name="KEYBOARD_SHORTCUT" /> ដើម្បី​ប្តូរប្លង់​ក្តារ​ចុច។</translation>
+<translation id="2486214324139475545">ការមើល <ph name="DESK_NAME" /> សាកល្បង។ តុ​សកម្ម។</translation>
 <translation id="2487915095798731898">ចូលរួម</translation>
+<translation id="250047928202119308">ម៉ឺនុយ​កម្រងព័ត៌មាន​តុ</translation>
 <translation id="2501920221385095727">គ្រាប់ចុចស្អិត</translation>
 <translation id="2504454902900101003">ច្រានចោល​ការរៀបចំ​ការមើល​រូបថត មេឌៀ និង​ការជូនដំណឹង​ថ្មីៗ​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
 <translation id="2509468283778169019">CAPS LOCK ត្រូវបានបើក</translation>
@@ -375,7 +378,6 @@
 <translation id="2575685495496069081">ការចូល​គណនី​ច្រើន​ត្រូវបាន​បិទ</translation>
 <translation id="2579264398927991698">ការដំឡើងកំណែ​កម្មវិធីបង្កប់</translation>
 <translation id="2582112259361606227">ចាប់ផ្តើមឡើងវិញ​ដើម្បី​ដំឡើង​ជំនាន់</translation>
-<translation id="2586561057878260610">ចុច Ctrl + W ដើម្បីបញ្ចូល​គ្នា​ជាមួយ <ph name="DESK_NAME" />។ ចុច Ctrl + Shift + W ដើម្បីបិទតុ និងវិនដូ។</translation>
 <translation id="2586657967955657006">អង្គ​ចងចាំ</translation>
 <translation id="2595239820337756193">5 ពាន់ម៉ាយល៍</translation>
 <translation id="2596078834055697711">ថត​រូបថត​អេក្រង់​វិនដូ</translation>
@@ -512,7 +514,6 @@
 <translation id="3154351730702813399">អ្នកគ្រប់គ្រងឧបករណ៍នេះអាចនឹងត្រួតពិនិត្យសកម្មភាពរុករករបស់អ្នក។</translation>
 <translation id="316086887565479535">កម្មវិធីដែលមិនអាចប្រើបាននៅក្នុងទម្រង់គំរូ</translation>
 <translation id="3160929076476941240">2 ម៉</translation>
-<translation id="3161500364292033097">បិទតុ និងវិនដូ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> កំពុងបន្ទាបកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក។ ឧបករណ៍​របស់អ្នកនឹង​កំណត់​ឡើងវិញ ហើយទិន្នន័យ​ទាំងអស់​នឹងត្រូវបានលុប។</translation>
 <translation id="3170769098533255179">មិនមាន​ឧបករណ៍​ដែលបានភ្ជាប់ទេ។ Wi-Fi នឹងបន្តបិទ នៅពេល​ប្រើប្រាស់​ហតស្ប៉ត។</translation>
 <translation id="3171170659304083361">ការកំណត់​វិធីបញ្ចូល</translation>
@@ -673,6 +674,7 @@
 <translation id="3702846122927433391">ចំនួនប្រជាជននៅប្រទេសនីហ្សេរីយ៉ា</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">បាន​ភ្ជាប់​ពីមុន​</translation>
+<translation id="3712143870407382523">ជ្រើសរើស​វិនដូ​សម្រាប់​ចំហៀងនេះ</translation>
 <translation id="371370241367527062">មីក្រូហ្វូន​ខាងមុខ</translation>
 <translation id="3713734891607377840">បើកនៅពេលបញ្ចប់</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> និង <ph name="UNAVAILABLE_APPS_COUNT" /> ទៀត​មិនមាន​នៅលើ​ឧបករណ៍នេះទេ។</translation>
@@ -848,7 +850,6 @@
 <translation id="4389184120735010762">អ្នក​បានចុច​ផ្លូវកាត់ក្ដារចុច​សម្រាប់​កែវពង្រីក​ដាក់​ខាង​លើ​បំផុត។ តើអ្នក​ចង់បើក​វាដែរទេ?</translation>
 <translation id="439598569299422042">បានផ្អាក <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">មិនអាចរក្សាទុកការថតអេក្រង់បានទេ</translation>
-<translation id="4403371424034411727"><ph name="PERIPHERAL_NAME" /> ត្រូវបានភ្ជាប់ និង​អាចប្រើ​បានហើយ។ អ្នកអាច​ប្ដូរម៉ៅស៍​របស់អ្នក​តាមបំណង​នៅក្នុង​ការកំណត់។</translation>
 <translation id="4405151984121254935">មិនអាចប្រើប្រភេទឧបករណ៍ខាងក្រៅដែលបានភ្ជាប់នេះទេ</translation>
 <translation id="4406883609789734330">អក្សររត់​ក្នុងពេល​ជាក់ស្ដែង</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> បានបិទ។</translation>
@@ -874,7 +875,6 @@
 <translation id="4491109536499578614">រូបភាព</translation>
 <translation id="450584155212756404">បណ្តាញអ្នកអភិវឌ្ឍន៍</translation>
 <translation id="4513946894732546136">មតិ</translation>
-<translation id="4516212064498225455">តុ​បច្ចុប្បន្ន៖ <ph name="CURRENT_DESK_NAME" />, ប្រើ Search+Space ដើម្បីបើក​ម៉ឺនុយតុ​ទាំងអស់។</translation>
 <translation id="4518404433291145981">ដើម្បី​ដោះសោ Chromebook របស់អ្នក សូមដោះសោទូរសព្ទ​របស់អ្នកជាមុនសិន</translation>
 <translation id="4527045527269911712">ឧបករណ៍ប៊្លូធូស "<ph name="DEVICE_NAME" />" ចង់សុំការអនុញ្ញាតដើម្បីភ្ជាប់។</translation>
 <translation id="4533343294786968049">កំពុង​បង្កើន​កម្រិតថាមពលថ្ម​របស់​អ្នក។ ថ្ម​នឹង​សាក​ពេញ​​ត្រឹម​ម៉ោង <ph name="FULLY_CHARGE_TIME" />។</translation>
@@ -910,6 +910,7 @@
 <translation id="4642092649622328492">ថត​រូប​អេក្រង់​មួយ​ផ្នែក</translation>
 <translation id="4644727592819780893">តំបន់តូចពេក មិន​អាច​មើល​សាកល្បង​លើ​កាមេរ៉ា​បាន​ទេ</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ការណែនាំ​កម្មវិធី</translation>
+<translation id="4654916960643280876">ប្រអប់ធីក <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ត្រូវបានធីក។</translation>
 <translation id="4657775630156561295">ការណែនាំខាងក្រោមនឹងត្រូវដកចេញជាអចិន្ត្រៃយ៍ពីប្រវត្តិណែនាំរបស់គណនីអ្នក៖
 
 <ph name="QUERY" /></translation>
@@ -1036,6 +1037,7 @@
 <translation id="5111930673176965299">ព្រាល​នៅផ្ទៃខាងក្រោយ</translation>
 <translation id="5117590920725113268">បង្ហាញខែបន្ទាប់</translation>
 <translation id="5121628974188116412">ទៅ​កាន់​ផ្នែក​ខាងក្រោម​នៃ​ទំព័រ</translation>
+<translation id="5122517996953421795">ការមើល <ph name="DESK_NAME" /> សាកល្បង។ តុអសកម្ម។</translation>
 <translation id="5136175204352732067">បាន​ភ្ជាប់​ក្ដារចុច​ផ្សេង</translation>
 <translation id="5147567197700016471">បានដោះសោ</translation>
 <translation id="5150070631291639005">ការកំណត់​ឯកជនភាព</translation>
@@ -1050,13 +1052,11 @@
 <translation id="5197255632782567636">អ៊ីនធឺណិត</translation>
 <translation id="5198413532174090167">ថ្ងៃទី <ph name="DATE" />, ព្រឹត្តិការណ៍ <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ត្រូវបាន​រួមបញ្ចូល​ជាមួយ <ph name="IN_PLACE_APP" /> ដើម្បី​បង្កើត​ថតថ្មី។</translation>
-<translation id="5203299837691351876">តុសកម្ម</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />៖ <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{ការ​ជូនដំណឹង 1 ផ្សេងទៀត}other{ការ​ជូនដំណឹង # ផ្សេងទៀត}}</translation>
 <translation id="5207949376430453814">រំលេច​សញ្ញា​អត្ថបទ</translation>
 <translation id="5208059991603368177">បើក</translation>
 <translation id="5216991270656129561">បិទរហូតដល់ម៉ោង <ph name="TIME" /></translation>
-<translation id="5217646019792206018">តុបន្ទាប់៖ <ph name="NEXT_DESK_NAME" />, ប្រើ Search+Space ឬផ្លូវកាត់​ក្ដារចុច៖ Shift+Search+<ph name="NEXT_DESK_INDEX" /> ដើម្បី​បើកដំណើរការ។</translation>
 <translation id="5218064144558110424">សម្គាល់​ថា​មិន​បាន​បញ្ចប់</translation>
 <translation id="5222676887888702881">ចាកចេញ</translation>
 <translation id="5229343007215035173">បិទ/បើករបាំងឯកជនភាព</translation>
@@ -1069,7 +1069,6 @@
 <translation id="5258528442992323769">មិន​មាន​តុ​ដែលបានរក្សាទុក​ទេ</translation>
 <translation id="5260676007519551770">តុទី 4</translation>
 <translation id="5268819379131021772">បញ្ជី Google កិច្ចការ</translation>
-<translation id="5275923704957843041">ការមើល​តុ​សាកល្បង</translation>
 <translation id="5277869901083657836">បិទ/បើក​ឧបករណ៍​ប៊ិក</translation>
 <translation id="5278086053818066789">បិទ/បើក ChromeVox (ការអានអេក្រង់)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ស្នើឱ្យអ្នកយកចិត្តទុកដាក់។</translation>
@@ -1086,6 +1085,7 @@
 <translation id="5313326810920013265">ការកំណត់​ប៊្លូធូស</translation>
 <translation id="5314219114274263156">បានថតអេក្រង់</translation>
 <translation id="5314489738835854379">រុករក​ថយក្រោយលើគ្រប់វិនដូ</translation>
+<translation id="5315931444962548795">បើក​ប៊្លូធូស ដើម្បី​រកឃើញ​ហតស្ប៉ត​នៅជិត​ដែលអាចប្រើបាន</translation>
 <translation id="5316716239522500219">ឆ្លុះអេក្រង់ត្រួតពិនិត្យ</translation>
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5319712128756744240">ផ្គូផ្គង​ឧបករណ៍ថ្មី</translation>
@@ -1323,7 +1323,6 @@
 <translation id="6199775032047436064">ដំណើរការទំព័របច្ចុប្បន្នឡើងវិញ</translation>
 <translation id="6200515304866777730">មិនអាច​ប្រើ​បាន​ដោយ​កម្មវិធី</translation>
 <translation id="6210042900243040400">ភ្ជាប់ <ph name="NAME" /> ដែលបាន​រក្សាទុកពីមុនទៅ <ph name="EMAIL" /></translation>
-<translation id="6212097153736801627">ប្ដូរ <ph name="PERIPHERAL_NAME" /> របស់អ្នកតាមបំណង</translation>
 <translation id="6213808132343683860">ថតវីដេអូអេក្រង់ ឬរូប​អេក្រង់​មួយ​ផ្នែក</translation>
 <translation id="6220928844947387476">ឥឡូវនេះអ្នកអាចថតខ្លួនអ្នក និងអេក្រង់របស់អ្នកក្នុងពេលតែមួយបាន</translation>
 <translation id="622484624075952240">ចុះក្រោម</translation>
@@ -1419,6 +1418,7 @@
 <translation id="6613765291890844037">ទំហំផ្ទុក​កំពុងប្រើ <ph name="STORAGE_IN_USE_SIZE" /> | សរុប <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">អេក្រង់​ឯកជនភាព​ត្រូវបានបើក</translation>
 <translation id="6622679827379792051">រៀបចំ​ការមើល​កម្មវិធី​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
+<translation id="6624493541160101248">តុ​បច្ចុប្បន្ន៖ <ph name="DESK_NAME" />។ តុទី <ph name="DESK_INDEX" /> នៃ <ph name="DESK_COUNT" />។</translation>
 <translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> និងការជូនដំណឹងផ្សេងទៀត​ត្រូវបានលាក់ ដោយសារ​ការការពារ​ការមើលត្រូវបានបើក</translation>
 <translation id="6627638273713273709">ស្វែងរក+ប្ដូរ (Shift)+K</translation>
 <translation id="662830937908749204">ផ្លាស់ទីការផ្តោតទៅផ្ទាំង​បន្ទាប់</translation>
@@ -1439,6 +1439,7 @@
 <translation id="6683022854667115063">កាស</translation>
 <translation id="6686023075541098243">រៀបចំ​ការមើល​ការជូនដំណឹង​លើ​ទូរសព្ទ​របស់​អ្នក</translation>
 <translation id="6696025732084565524">ក្ដារចុច​ដែល​អាច​ផ្ដាច់ចេញបាន​របស់អ្នក​ត្រូវ​ការ​កំណែថ្មីជា​ចាំបាច់</translation>
+<translation id="6697913454192220372">បញ្ចូល​តុថ្មី</translation>
 <translation id="6700713906295497288">ប៊ូតុងម៉ឺនុយ IME</translation>
 <translation id="6707693040195709527">ការប្ដូរកំណែ​ឧបករណ៍​ទៅកំណែមុន​គឺផុតកំណត់ហើយ</translation>
 <translation id="6710213216561001401">មុន</translation>
@@ -1473,7 +1474,6 @@
 <translation id="6819327813400217281">បានតម្រៀប​កាមេរ៉ាទៅ​ជ្រុងខាងឆ្វេង​ផ្នែកខាងក្រោម</translation>
 <translation id="6820676911989879663">សម្រាក​មួយភ្លែត!</translation>
 <translation id="6827049576281411231">បិទផ្ទាំងព្រឹត្តិការណ៍</translation>
-<translation id="6831561626108366035">ចូលទៅកាន់ប៊ូតុង <ph name="DESK_NAME" /> <ph name="ACTIVE_STATE" />។</translation>
 <translation id="6836499262298959512">ឯកសារ​ដែលមានគ្រោះថ្នាក់</translation>
 <translation id="6837621009301897464">ដើម្បីថត​រូបអេក្រង់ សូមចុច</translation>
 <translation id="6852052252232534364">ចុចដើម្បីបើកដំណើរការ</translation>
@@ -1512,6 +1512,7 @@
 <translation id="698231206551913481">ឯកសារ និងទិន្នន័យមូលដ្ឋានទាំងអស់ដែលប្រើជាមួយអ្នកប្រើនេះនឹងត្រូវបានលុបជាអចិន្ត្រៃយ៍ បន្ទាប់ពីអ្នកប្រើនេះត្រូវបានលុប។</translation>
 <translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> មិនអាចប្រើ <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) បានទេ។ កម្រិត​គុណភាព​ត្រូវបាន​ប្ដូរទៅ <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz)។ សូមចុច "បញ្ជាក់" ដើម្បីរក្សា​ការផ្លាស់ប្ដូរ។ ការកំណត់​ពីមុននឹងត្រូវបានស្ដារ​ក្នុងរយៈពេល <ph name="TIMEOUT_SECONDS" />។</translation>
 <translation id="6989752354829085073">មើលការណែនាំត្រួសៗ ដើម្បីស្វែងយល់អំពីរបៀបប្រើប្រាស់ Chromebook របស់អ្នក។ រៀបចំ និងដំណើរការក្នុង 6 ជំហាន។</translation>
+<translation id="7000027735917578303">ការកំណត់​តុ និង​វិនដូ</translation>
 <translation id="7004910047186208204">ភ្ជាប់​ទៅ​ទិន្នន័យទូរសព្ទចល័ត</translation>
 <translation id="7005239792648594238">បើកកម្មវិធី ដើម្បី​ចាប់ផ្ដើម</translation>
 <translation id="7007983414944123363">មិនអាចផ្ទៀងផ្ទាត់កូដ PIN ឬពាក្យសម្ងាត់​របស់អ្នក​បានទេ។ សូមព្យាយាមម្ដងទៀត។</translation>
@@ -1569,6 +1570,7 @@
 <translation id="7262906531272962081">បង្កើត​ការ​រំលឹក</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
 <translation id="7285232777292757180">ប្រើ​ឧបករណ៍​ថត​អេក្រង់​នៅក្នុង​ការកំណត់​រហ័ស ដើម្បីថត​រូបអេក្រង់</translation>
+<translation id="7301826272005790482">ច្រានចោល​ការណែនាំ​វិនដូ</translation>
 <translation id="7302889331339392448">មុខងារអក្សររត់ក្នុងពេលជាក់ស្ដែង​ត្រូវបានបិទ។</translation>
 <translation id="7303365578352795231">កំពុង​ឆ្លើយតប​នៅលើ​ឧបករណ៍​ផ្សេង​ទៀត។</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1762,6 +1764,7 @@
 <translation id="8001755249288974029">ជ្រើសរើស​អក្សរ​ពី​ទស្សន៍ទ្រនិច​​ដល់ដើម​បន្ទាត់</translation>
 <translation id="8004512796067398576">ការបន្ថែម</translation>
 <translation id="8026334261755873520">ជម្រះទិន្នន័យរុករក</translation>
+<translation id="802782383769312836">តុ​មុន៖ <ph name="DESK_NAME" />។ តុទី <ph name="DESK_INDEX" /> នៃ <ph name="DESK_COUNT" />។</translation>
 <translation id="8029247720646289474">ការតភ្ជាប់ហតស្ប៉តមិនបានសម្រេចទេ</translation>
 <translation id="8029629653277878342">តម្រូវឱ្យបញ្ចូលកូដ PIN ឬពាក្យសម្ងាត់សម្រាប់សុវត្ថិភាពបន្ថែម</translation>
 <translation id="8030169304546394654">បានផ្ដាច់</translation>
@@ -1774,6 +1777,7 @@
 <translation id="8054466585765276473">កំពុងគណនារយៈពេលថាមពលថ្ម។</translation>
 <translation id="8079538659226626406">បង្ហាញ​អេក្រង់</translation>
 <translation id="8083540854303889870">បានរក្សាទុកសម្រាប់ពេលក្រោយ</translation>
+<translation id="8088141034189573826">ប្រើ tab សម្រាប់​ជម្រើស​ច្រើនទៀត។ ប្រើព្រួញ​ទៅស្ដាំ និង​ទៅឆ្វេង ដើម្បី​ចូលប្រើ​តុទាំងអស់។</translation>
 <translation id="8091153018031979607">ចាប់ផ្ដើម​នៅ​ម៉ោង <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8091387634532529612">ការដំឡើងកំណែ​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="8092380135549145188">ការគ្រប់គ្រង​ការរំកិល</translation>
@@ -1809,6 +1813,7 @@
 <translation id="8219451629189078428">Chromebook របស់អ្នកត្រូវបន្តបើក និងភ្ជាប់ទៅថាមពលនៅអំឡុងពេលនេះ។ ត្រូវប្រាកដថា ខ្សែសាក ឬឆ្នាំងសាកត្រូវបានដោតត្រឹមត្រូវ ទាំងនៅលើ Chromebook របស់អ្នក និង​ព្រីភ្លើង។ សូមកុំបិទ Chromebook ​របស់អ្នក។</translation>
 <translation id="8230305195727960608">មុខងារ​បញ្ច្រាស​ពណ៌</translation>
 <translation id="8236042855478648955">ដល់​ពេល​សម្រាក​ហើយ</translation>
+<translation id="8237964652943995219">តុបន្ទាប់៖ <ph name="DESK_NAME" />។ តុទី <ph name="DESK_INDEX" /> នៃ <ph name="DESK_COUNT" />។</translation>
 <translation id="8239034820133090126">បើកដំណើរការ​តុ​នៅ​ខាងស្ដាំ</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, កម្មវិធី</translation>
@@ -1873,7 +1878,6 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> របស់អ្នកអាចនឹងមិនសាកថ្មទេនៅពេលបើក។</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{ការបញ្ចូល​មីក្រូហ្វូន​ត្រូវ​បាន​គ្រប់គ្រង​ដោយ <ph name="APP_NAME" />}other{ការបញ្ចូល​មីក្រូហ្វូន​ត្រូវ​បាន​គ្រប់គ្រង​ដោយ​កម្មវិធី #}}</translation>
 <translation id="8535393432370007982">ត្រឡប់លំដាប់នៃការតម្រៀបតាមពណ៌វិញ</translation>
-<translation id="853768060447955562">តុមុន៖ <ph name="PREVIOUS_DESK_NAME" />, ប្រើ Search+Space ឬផ្លូវកាត់​ក្ដារចុច៖ Shift+Search+<ph name="PREVIOUS_DESK_INDEX" /> ដើម្បី​បើកដំណើរការ។</translation>
 <translation id="8541078764854166027">ការរក្សាឱ្យនៅក្នុងកាមេរ៉ា​</translation>
 <translation id="8542053257095774575">មិន​មាន​តុ ឬ​ទម្រង់គំរូ​ដែលបាន​រក្សាទុក​ទេ</translation>
 <translation id="8546059259582788728">ត្រឡប់ការតម្រៀបវិញដោយជោគជ័យ</translation>
@@ -1960,7 +1964,6 @@
 <translation id="888982883502837004">មានកំណែថ្មីនៃ​កម្មវិធីបង្កប់​សម្រាប់ឧបករណ៍​របស់អ្នក។ សូមចុច​ដើម្បីពិនិត្យមើល ហើយដំឡើងកំណែ។</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> នឹងលុបជាអចិន្ត្រៃយ៍</translation>
 <translation id="889790758758811533">នៅសល់​ថ្ម <ph name="PERCENTAGE" />% (ប្រហែល <ph name="TIME_LEFT" />)។ សូម​ភ្ជាប់ឧបករណ៍​របស់អ្នក​ទៅ​ថាមពល។</translation>
-<translation id="8897940060812808966"><ph name="PERIPHERAL_NAME" /> ត្រូវបានភ្ជាប់ និង​អាចប្រើ​បានហើយ។ អ្នកអាច​ប្ដូរថេប្លេត​ក្រាហ្វិក​របស់អ្នក​តាមបំណង​នៅក្នុង​ការកំណត់។</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8905919797434099235">(គ្មានចំណងជើង)</translation>
 <translation id="890616557918890486">ប្ដូរប្រភព</translation>
@@ -1972,6 +1975,7 @@
 <translation id="8936501819958976551">បាន​បិទដំណើរការ</translation>
 <translation id="8938800817013097409">ឧបករណ៍ USB-C (រន្ធស្តាំផ្នែកខាងក្រោយ)</translation>
 <translation id="8940956008527784070">ថ្មខ្សោយ (<ph name="PERCENTAGE" />%)</translation>
+<translation id="894774083269346314">ប្រអប់​ធីក <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> មិនត្រូវបាន​ធីកទេ។</translation>
 <translation id="8949925099261528566">បាន​ភ្ជាប់ ប៉ុន្តែ​គ្មាន​អ៊ីនធឺណិត​</translation>
 <translation id="8951539504029375108">មានតែ​ឧបករណ៍ Thunderbolt មានការអនុញ្ញាតប៉ុណ្ណោះ ដែលត្រូវគ្នា​ជាមួយ Chromebook របស់អ្នក</translation>
 <translation id="8964525410783593407">1 ម៉</translation>
@@ -2037,8 +2041,8 @@
 <translation id="92580429198593979">អ្នក​បាន​ចុច​ផ្លូវកាត់​ក្ដារចុច​សម្រាប់​ការបញ្ច្រាស​ពណ៌។ តើអ្នក​ចង់​បើក​វា​ដែរឬទេ?</translation>
 <translation id="925832987464884575">លាក់​ការមើល​សាកល្បង</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> តម្រូវឱ្យអ្នក​ដំឡើងកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក​ភ្លាមៗ</translation>
+<translation id="938407504481277932">តុ​បច្ចុប្បន្ន៖ <ph name="DESK_NAME" />។ <ph name="PROFILE_NAME" /> <ph name="EMAIL" />។ តុទី <ph name="DESK_INDEX" /> នៃ <ph name="DESK_COUNT" />។</translation>
 <translation id="938963181863597773">តើ​មានអ្វី​នៅលើ​ប្រតិទិន​របស់ខ្ញុំ?</translation>
-<translation id="943067377221312471">តុ​មុន៖ <ph name="PREVIOUS_DESK_NAME" />, ប្រើ Search+Space ដើម្បី​បើកដំណើរការ។</translation>
 <translation id="945383118875625837">អូសតំណ​ទៅរបារ​ចំណាំ</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="951991426597076286">បដិសេធ</translation>

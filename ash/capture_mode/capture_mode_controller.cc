@@ -471,13 +471,11 @@ CaptureModeController::CaptureModeController(
           FROM_HERE,
           kConsecutiveScreenshotThreshold,
           this,
-          &CaptureModeController::RecordAndResetConsecutiveScreenshots) {
+          &CaptureModeController::RecordAndResetConsecutiveScreenshots),
+      education_controller_(
+          std::make_unique<CaptureModeEducationController>()) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
-
-  if (features::IsCaptureModeEducationEnabled()) {
-    education_controller_ = std::make_unique<CaptureModeEducationController>();
-  }
 
   // Schedule recording of the number of screenshots taken per day.
   num_screenshots_taken_in_last_day_scheduler_.Start(
@@ -1111,9 +1109,7 @@ void CaptureModeController::StartInternal(
       },
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), IsActive()));
 
-  if (education_controller_) {
-    education_controller_->CloseAllEducationNudgesAndTutorials();
-  }
+  education_controller_->CloseAllEducationNudgesAndTutorials();
 
   if (capture_mode_session_ || pending_dlp_check_) {
     return;

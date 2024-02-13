@@ -7,8 +7,7 @@ import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
-import {FakeTask} from './tasks.js';
-import {COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, RECENT_ENTRY_SET} from './test_data.js';
+import {COMPLEX_DOCUMENTS_PROVIDER_ENTRY_SET, COMPLEX_DRIVE_ENTRY_SET, FakeTask, RECENT_ENTRY_SET} from './test_data.js';
 
 /**
  * Tests that check the context menu displays the right options (enabled and
@@ -194,59 +193,6 @@ testcase.checkRenameDisabledForReadOnlyFile = () => {
 // ['checkRenameDisabledForReadOnlyFolder'].
 testcase.checkRenameDisabledForReadOnlyFolder = () => {
   return checkContextMenu('rename', 'Read-Only Folder', false);
-};
-
-/**
- * Tests that the Share menu item is enabled if a read-write entry is selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadWriteFile' comes
-// from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadWriteFile'].
-testcase.checkShareEnabledForReadWriteFile = () => {
-  return checkContextMenu('share', 'hello.txt', true);
-};
-
-/**
- * Tests that the Share menu item is enabled if a read-only document is
- * selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadOnlyDocument'
-// comes from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadOnlyDocument'].
-testcase.checkShareEnabledForReadOnlyDocument = () => {
-  return checkContextMenu('share', 'Read-Only Doc.gdoc', true);
-};
-
-/**
- * Tests that the Share menu item is disabled if a strict read-only document is
- * selected.
- */
-// @ts-ignore: error TS4111: Property
-// 'checkShareDisabledForStrictReadOnlyDocument' comes from an index signature,
-// so it must be accessed with ['checkShareDisabledForStrictReadOnlyDocument'].
-testcase.checkShareDisabledForStrictReadOnlyDocument = () => {
-  return checkContextMenu('share', 'Read-Only (Strict) Doc.gdoc', false);
-};
-
-/**
- * Tests that the Share menu item is enabled if a read-only file is selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadOnlyFile' comes
-// from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadOnlyFile'].
-testcase.checkShareEnabledForReadOnlyFile = () => {
-  return checkContextMenu('share', 'Read-Only File.jpg', true);
-};
-
-/**
- * Tests that the Share menu item is enabled if a read-only folder is
- * selected.
- */
-// @ts-ignore: error TS4111: Property 'checkShareEnabledForReadOnlyFolder' comes
-// from an index signature, so it must be accessed with
-// ['checkShareEnabledForReadOnlyFolder'].
-testcase.checkShareEnabledForReadOnlyFolder = () => {
-  return checkContextMenu('share', 'Read-Only Folder', true);
 };
 
 /**

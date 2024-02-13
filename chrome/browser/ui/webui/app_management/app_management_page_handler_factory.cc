@@ -24,6 +24,12 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
+#else
+#include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
+#endif
+
 AppManagementPageHandlerFactory::AppManagementPageHandlerFactory(
     Profile* profile,
     std::unique_ptr<AppManagementPageHandlerBase::Delegate> delegate)
@@ -43,6 +49,11 @@ void AppManagementPageHandlerFactory::CreatePageHandler(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver) {
   DCHECK(page);
 
-  page_handler_ = std::make_unique<AppManagementPageHandlerBase>(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  page_handler_ = std::make_unique<AppManagementPageHandlerChromeOs>(
       std::move(receiver), std::move(page), profile_, *delegate_);
+#else
+  page_handler_ = std::make_unique<WebAppSettingsPageHandler>(
+      std::move(receiver), std::move(page), profile_, *delegate_);
+#endif
 }

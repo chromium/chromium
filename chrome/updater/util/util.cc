@@ -6,6 +6,8 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #if BUILDFLAG(IS_WIN)
@@ -22,6 +24,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -81,7 +84,7 @@ constexpr Charmap kQueryCharmap = {{0xffffffffL, 0xfc00987dL, 0x78000001L,
 // to +, otherwise, if spaces are in the charmap, they are converted to
 // %20. And if keep_escaped is true, %XX will be kept as it is, otherwise, if
 // '%' is in the charmap, it is converted to %25.
-std::string Escape(base::StringPiece text,
+std::string Escape(std::string_view text,
                    const Charmap& charmap,
                    bool use_plus,
                    bool keep_escaped = false) {
@@ -104,7 +107,7 @@ std::string Escape(base::StringPiece text,
   return escaped;
 }
 
-std::string EscapeQueryParamValue(base::StringPiece text, bool use_plus) {
+std::string EscapeQueryParamValue(std::string_view text, bool use_plus) {
   return Escape(text, kQueryCharmap, use_plus);
 }
 
@@ -179,6 +182,8 @@ TagParsingResult GetTagArgsForCommandLine(
     const base::CommandLine& command_line) {
   std::string tag = command_line.HasSwitch(kTagSwitch)
                         ? command_line.GetSwitchValueASCII(kTagSwitch)
+                    : command_line.HasSwitch(kInstallSwitch)
+                        ? command_line.GetSwitchValueASCII(kInstallSwitch)
                         : command_line.GetSwitchValueASCII(kHandoffSwitch);
   if (tag.empty()) {
     return {};
@@ -186,7 +191,7 @@ TagParsingResult GetTagArgsForCommandLine(
 
   tagging::TagArgs tag_args;
   const tagging::ErrorCode error = tagging::Parse(
-      tag, command_line.GetSwitchValueASCII(kAppArgsSwitch), &tag_args);
+      tag, command_line.GetSwitchValueASCII(kAppArgsSwitch), tag_args);
   VLOG_IF(1, error != tagging::ErrorCode::kSuccess)
       << "Tag parsing returned " << error << ".";
   return {tag_args, error};
@@ -313,9 +318,10 @@ std::wstring GetTaskDisplayName(UpdaterScope scope) {
 }
 
 base::CommandLine GetCommandLineLegacyCompatible() {
+  const std::wstring cmd_string = ::GetCommandLine();
   std::optional<base::CommandLine> cmd_line =
-      CommandLineForLegacyFormat(::GetCommandLine());
-  return cmd_line ? *cmd_line : *base::CommandLine::ForCurrentProcess();
+      CommandLineForLegacyFormat(cmd_string);
+  return cmd_line ? *cmd_line : base::CommandLine::FromString(cmd_string);
 }
 
 #endif  // BUILDFLAG(IS_WIN)

@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
@@ -97,7 +98,7 @@ void AffiliationTestHelper::CheckPreconditions() {
 
 void AffiliationTestHelper::SetDeviceAffiliationIDs(
     DevicePolicyCrosTestHelper* test_helper,
-    const base::span<const base::StringPiece>& device_affiliation_ids) {
+    const base::span<const std::string_view>& device_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
 
   DevicePolicyBuilder* device_policy = test_helper->device_policy();
@@ -116,7 +117,7 @@ void AffiliationTestHelper::SetDeviceAffiliationIDs(
 void AffiliationTestHelper::SetUserAffiliationIDs(
     UserPolicyBuilder* user_policy,
     const AccountId& user_account_id,
-    const base::span<const base::StringPiece>& user_affiliation_ids) {
+    const base::span<const std::string_view>& user_affiliation_ids) {
   ASSERT_NO_FATAL_FAILURE(CheckPreconditions());
 
   user_policy->policy_data().set_username(user_account_id.GetUserEmail());

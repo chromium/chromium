@@ -470,7 +470,7 @@ void TimeView::SetTimer(const base::Time& now) {
                this, &TimeView::UpdateText);
 }
 
-BEGIN_METADATA(TimeView, views::View)
+BEGIN_METADATA(TimeView)
 END_METADATA
 
 }  // namespace ash

@@ -6,6 +6,7 @@
 #define UI_VIEWS_WIDGET_WIDGET_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -112,7 +112,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
                             public ui::metadata::MetaDataProvider {
  public:
   METADATA_HEADER_BASE(Widget);
-  using Widgets = std::set<Widget*>;
+  using Widgets = std::set<raw_ptr<Widget, SetExperimental>>;
   using ShapeRects = std::vector<gfx::Rect>;
   using PaintAsActiveCallbackList = base::RepeatingClosureList;
 
@@ -289,7 +289,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // The class of window and its overall z-order level. This level is visible
     // to other applications in the system. A value other than `kNormal` will
     // create an "always on top" widget.
-    absl::optional<ui::ZOrderLevel> z_order;
+    std::optional<ui::ZOrderLevel> z_order;
 
     // The z-order sublevel that is invisible to other applications in the
     // system. Widgets of the same `z_order` are stacked in the order specified
@@ -307,7 +307,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     // A hint about the size of the shadow if the type is ShadowType::kDrop. May
     // be ignored on some platforms. No value indicates no preference.
-    absl::optional<int> shadow_elevation;
+    std::optional<int> shadow_elevation;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ui::ColorProviderKey::ElevationMode background_elevation =
@@ -315,7 +315,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 #endif
 
     // The window corner radius. May be ignored on some platforms.
-    absl::optional<int> corner_radius;
+    std::optional<int> corner_radius;
 
     // Specifies that the system default caption and icon should not be
     // rendered, and that the client area should be equivalent to the window
@@ -366,7 +366,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // If specified and the `bounds` is inside the specified display, the widget
     // will be created on this display. Otherwise, the display matching the
     // `bounds` will be used.
-    absl::optional<int64_t> display_id;
+    std::optional<int64_t> display_id;
 #endif
 
     // The initial workspace of the Widget. Default is "", which means the
@@ -436,8 +436,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     // `restore_window_id_source` is used for widgets without inherent restore
     // window ids, e.g. Chrome apps.
     int32_t restore_session_id = 0;
-    absl::optional<int32_t> restore_window_id;
-    absl::optional<std::string> restore_window_id_source;
+    std::optional<int32_t> restore_window_id;
+    std::optional<std::string> restore_window_id_source;
 #endif
 
     // Contains any properties with which the native widget should be
@@ -1166,7 +1166,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Sets an override for `color_mode` when `GetColorProvider()` is requested.
   // e.g. if set to kDark, colors will always be for the dark theme.
   void SetColorModeOverride(
-      absl::optional<ui::ColorProviderKey::ColorMode> color_mode);
+      std::optional<ui::ColorProviderKey::ColorMode> color_mode);
 
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
@@ -1353,7 +1353,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // If set, overrides this value is used instead of the one from NativeTheme
   // when constructing a ColorProvider.
-  absl::optional<ui::ColorProviderKey::ColorMode> color_mode_override_;
+  std::optional<ui::ColorProviderKey::ColorMode> color_mode_override_;
 
   // The current frame type in use by this window. Defaults to
   // FrameType::kDefault.

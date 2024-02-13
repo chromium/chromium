@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -299,6 +300,10 @@ class WebFrameWidgetImplSimTest : public SimTest {
     return static_cast<MockWebFrameWidgetImpl*>(MainFrame().FrameWidget());
   }
 
+  EventHandler& GetEventHandler() {
+    return GetDocument().GetFrame()->GetEventHandler();
+  }
+
   void SendInputEvent(const WebInputEvent& event,
                       WidgetBaseInputHandler::HandledEventCallback callback) {
     MockMainFrameWidget()->ProcessInputEventSynchronouslyForTesting(
@@ -483,6 +488,94 @@ TEST_F(WebFrameWidgetImplSimTest, SendElasticOverscrollForTouchscreen) {
       .Times(testing::AnyNumber());
 
   SendInputEvent(scroll, base::DoNothing());
+}
+
+TEST_F(WebFrameWidgetImplSimTest, TestStartStylusWritingForInputElement) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <!doctype html>
+      <body style='padding: 0px; width: 400px; height: 400px;'>
+      <input type='text' id='first' style='width: 100px; height: 100px;'>
+      </body>
+      )HTML");
+  Compositor().BeginFrame();
+  Element* first =
+      DynamicTo<Element>(GetDocument().getElementById(AtomicString("first")));
+  WebPointerEvent event(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kPen,
+                           WebPointerProperties::Button::kLeft,
+                           gfx::PointF(100, 100), gfx::PointF(100, 100)),
+      1, 1);
+  GetEventHandler().HandlePointerEvent(event, Vector<WebPointerEvent>(),
+                                       Vector<WebPointerEvent>());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+  MockMainFrameWidget()->OnStartStylusWriting(base::DoNothing());
+  EXPECT_EQ(first, GetDocument().FocusedElement());
+}
+
+TEST_F(WebFrameWidgetImplSimTest,
+       TestStartStylusWritingForContentEditableElement) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <!doctype html>
+      <body style='padding: 0px; width: 400px; height: 400px;'>
+      <div contenteditable='true' id='first' style='width: 100px; height: 100px;'></div>
+      </body>
+      )HTML");
+  Compositor().BeginFrame();
+  Element* first =
+      DynamicTo<Element>(GetDocument().getElementById(AtomicString("first")));
+  WebPointerEvent event(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kPen,
+                           WebPointerProperties::Button::kLeft,
+                           gfx::PointF(100, 100), gfx::PointF(100, 100)),
+      1, 1);
+  GetEventHandler().HandlePointerEvent(event, Vector<WebPointerEvent>(),
+                                       Vector<WebPointerEvent>());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+  MockMainFrameWidget()->OnStartStylusWriting(base::DoNothing());
+  EXPECT_EQ(first, GetDocument().FocusedElement());
+}
+
+TEST_F(WebFrameWidgetImplSimTest,
+       TestStartStylusWritingForContentEditableChildElement) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 400));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(
+      R"HTML(
+      <!doctype html>
+      <body style='padding: 0px; width: 400px; height: 400px;'>
+      <div contenteditable='true' id='first'>
+      <div id='second' style='width: 100px; height: 100px;'>Hello</div>
+      </div>
+      </body>
+      )HTML");
+  Compositor().BeginFrame();
+  Element* first =
+      DynamicTo<Element>(GetDocument().getElementById(AtomicString("first")));
+  Element* second =
+      DynamicTo<Element>(GetDocument().getElementById(AtomicString("second")));
+  WebPointerEvent event(
+      WebInputEvent::Type::kPointerDown,
+      WebPointerProperties(1, WebPointerProperties::PointerType::kPen,
+                           WebPointerProperties::Button::kLeft,
+                           gfx::PointF(100, 100), gfx::PointF(100, 100)),
+      1, 1);
+  GetEventHandler().HandlePointerEvent(event, Vector<WebPointerEvent>(),
+                                       Vector<WebPointerEvent>());
+  EXPECT_EQ(second, GetEventHandler().CurrentTouchDownElement());
+  EXPECT_EQ(nullptr, GetDocument().FocusedElement());
+  MockMainFrameWidget()->OnStartStylusWriting(base::DoNothing());
+  EXPECT_EQ(first, GetDocument().FocusedElement());
 }
 
 class NotifySwapTimesWebFrameWidgetTest : public SimTest {

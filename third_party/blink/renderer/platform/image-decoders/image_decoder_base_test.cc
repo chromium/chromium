@@ -84,9 +84,9 @@ void VerifyImage(blink::ImageDecoder& decoder,
   // Calculate MD5 sum.
   base::MD5Digest actual_digest;
   SkBitmap bitmap = frame_buffer->Bitmap();
-  base::MD5Sum(bitmap.getPixels(),
-               bitmap.width() * bitmap.height() * sizeof(uint32_t),
-               &actual_digest);
+  auto bytes = base::make_span(static_cast<const uint8_t*>(bitmap.getPixels()),
+                               bitmap.computeByteSize());
+  base::MD5Sum(bytes, &actual_digest);
 
   // Read the MD5 sum off disk.
   std::string file_bytes;

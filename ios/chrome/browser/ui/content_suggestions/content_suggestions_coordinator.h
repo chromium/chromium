@@ -49,6 +49,9 @@ class WebState;
 // recorder.
 @property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
 
+// Refreshes the contents owned by this coordinator.
+- (void)refresh;
+
 // Configure Content Suggestions if showing the Start Surface. NOTE: this should
 // only be called once for every Start configuration. Calling it multiple times
 // in sequence can lead to unpredictable outcomes.

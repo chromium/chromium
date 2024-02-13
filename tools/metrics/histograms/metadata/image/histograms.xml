@@ -578,37 +578,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ImageLoader.Client.Cache.HitMiss" enum="BooleanCacheHit"
-    expires_after="2019-01-01">
-  <owner>tapted@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    For each image load request that requested caching, records whether or not
-    it was found in the client-side cache. A hit means the request was not
-    forwarded to the ImageLoader extension.
-  </summary>
-</histogram>
-
-<histogram name="ImageLoader.Client.Cache.Usage" units="%"
-    expires_after="2019-01-01">
-  <owner>tapted@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Returns the percentage of the client-side cache that is used for loading
-    images, before they are sent to the ImageLoader extension. Expressed as a
-    percentage of ImageLoaderClient.CACHE_MEMORY_LIMIT (e.g. 20MB).
-  </summary>
-</histogram>
-
-<histogram name="ImageLoader.Client.Cached" enum="BooleanRequested"
-    expires_after="2019-01-01">
-  <owner>tapted@chromium.org</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    For each image load request records whether or not it requested caching.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

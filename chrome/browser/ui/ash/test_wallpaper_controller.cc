@@ -218,12 +218,12 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
 void TestWallpaperController::SetSeaPenWallpaper(
     const AccountId& account_id,
     const ash::SeaPenImage& sea_pen_image,
-    const std::string& query_info,
+    const ash::personalization_app::mojom::SeaPenQueryPtr& query,
     SetWallpaperCallback callback) {
   ++sea_pen_wallpaper_count_;
   wallpaper_info_ = ash::WallpaperInfo();
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
-  sea_pen_metadata_ = query_info;
+  sea_pen_query_ = query.Clone();
   std::move(callback).Run(/*success=*/true);
 }
 

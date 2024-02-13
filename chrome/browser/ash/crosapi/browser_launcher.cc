@@ -333,10 +333,6 @@ void SetUpForCrashpad(base::CommandLine& command_line) {
   // Paths are UTF-8 safe on Chrome OS.
   std::string crash_dir = LacrosCrashDumpDirectory().AsUTF8Unsafe();
   command_line.AppendSwitchASCII("breakpad-dump-location", crash_dir);
-
-  if (crash_reporter::IsCrashpadEnabled()) {
-    command_line.AppendSwitch(switches::kEnableCrashpad);
-  }
 }
 
 // Sets up switches and arguments of command line for anything shared to
@@ -488,19 +484,9 @@ void BrowserLauncher::ResumeLaunch() {
   postlogin_pipe_fd_.reset();
 }
 
-void BrowserLauncher::SetDeviceAccountComponentPolicy(
-    policy::ComponentPolicyMap component_policy) {
-  environment_provider_.SetDeviceAccountComponentPolicy(
-      std::move(component_policy));
-}
-
 void BrowserLauncher::SetLastPolicyFetchAttemptTimestamp(
     base::Time last_refresh) {
   environment_provider_.SetLastPolicyFetchAttemptTimestamp(last_refresh);
-}
-
-void BrowserLauncher::SetDeviceAccountPolicy(const std::string& policy_blob) {
-  environment_provider_.SetDeviceAccountPolicy(policy_blob);
 }
 
 bool BrowserLauncher::IsProcessValid() {

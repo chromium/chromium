@@ -5,6 +5,7 @@
 #include "ui/lottie/animation.h"
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/check.h"
@@ -28,7 +29,6 @@
 #include "cc/test/skia_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -136,7 +136,7 @@ class TestAnimationObserver : public AnimationObserver {
   bool animation_resuming() const { return animation_resuming_; }
   bool animation_stopped() const { return animation_stopped_; }
   bool animation_is_deleted() const { return animation_is_deleted_; }
-  const absl::optional<float>& last_frame_painted() const {
+  const std::optional<float>& last_frame_painted() const {
     return last_frame_painted_;
   }
 
@@ -147,7 +147,7 @@ class TestAnimationObserver : public AnimationObserver {
   bool animation_resuming_ = false;
   bool animation_is_deleted_ = false;
   bool animation_stopped_ = false;
-  absl::optional<float> last_frame_painted_;
+  std::optional<float> last_frame_painted_;
 };
 
 class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
@@ -168,8 +168,8 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
       current_frame_data_ = std::move(current_frame_data);
     }
 
-    const absl::optional<float>& last_frame_t() const { return last_frame_t_; }
-    const absl::optional<float>& last_frame_scale_factor() const {
+    const std::optional<float>& last_frame_t() const { return last_frame_t_; }
+    const std::optional<float>& last_frame_scale_factor() const {
       return last_frame_scale_factor_;
     }
 
@@ -179,8 +179,8 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
     ~ImageAssetImpl() override = default;
 
     cc::SkottieFrameData current_frame_data_;
-    absl::optional<float> last_frame_t_;
-    absl::optional<float> last_frame_scale_factor_;
+    std::optional<float> last_frame_t_;
+    std::optional<float> last_frame_scale_factor_;
   };
 
   TestSkottieFrameDataProvider() = default;
@@ -192,7 +192,7 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
   scoped_refptr<ImageAsset> LoadImageAsset(
       base::StringPiece resource_id,
       const base::FilePath& resource_path,
-      const absl::optional<gfx::Size>& size) override {
+      const std::optional<gfx::Size>& size) override {
     auto new_asset = base::MakeRefCounted<ImageAssetImpl>();
     CHECK(current_assets_.emplace(std::string(resource_id), new_asset).second);
     return new_asset;

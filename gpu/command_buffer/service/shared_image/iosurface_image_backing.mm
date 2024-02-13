@@ -86,6 +86,48 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
   return gfx::BufferFormat::RGBA_8888;
 }
 
+#if BUILDFLAG(USE_DAWN)
+wgpu::Texture CreateWGPUTexture(wgpu::SharedTextureMemory shared_texture_memory,
+                                uint32_t shared_image_usage,
+                                const gfx::Size& io_surface_size,
+                                wgpu::TextureFormat wgpu_format,
+                                std::vector<wgpu::TextureFormat> view_formats,
+                                wgpu::TextureUsage wgpu_texture_usage) {
+  const std::string debug_label =
+      "IOSurface(" + CreateLabelForSharedImageUsage(shared_image_usage) + ")";
+
+  wgpu::TextureDescriptor texture_descriptor;
+  texture_descriptor.label = debug_label.c_str();
+  texture_descriptor.format = wgpu_format;
+  texture_descriptor.usage =
+      static_cast<wgpu::TextureUsage>(wgpu_texture_usage);
+  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
+  texture_descriptor.size = {static_cast<uint32_t>(io_surface_size.width()),
+                             static_cast<uint32_t>(io_surface_size.height()),
+                             1};
+  texture_descriptor.mipLevelCount = 1;
+  texture_descriptor.sampleCount = 1;
+  texture_descriptor.viewFormatCount = view_formats.size();
+  texture_descriptor.viewFormats = view_formats.data();
+
+  // We need to have internal usages of CopySrc for copies. If texture is not
+  // for video frame import, which has bi-planar format, we also need
+  // RenderAttachment usage for clears, and TextureBinding for
+  // copyTextureForBrowser.
+  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
+  internalDesc.internalUsage =
+      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
+  if (wgpu_format != wgpu::TextureFormat::R8BG8Biplanar420Unorm &&
+      wgpu_format != wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
+    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
+  }
+
+  texture_descriptor.nextInChain = &internalDesc;
+
+  return shared_texture_memory.CreateTexture(&texture_descriptor);
+}
+#endif
+
 #if BUILDFLAG(SKIA_USE_METAL)
 
 base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
@@ -667,6 +709,22 @@ bool IOSurfaceImageBacking::OverlayRepresentation::IsInUseByWindowServer()
 }
 
 #if BUILDFLAG(USE_DAWN)
+IOSurfaceImageBacking::SharedTextureData::SharedTextureData() = default;
+
+IOSurfaceImageBacking::SharedTextureData::~SharedTextureData() {
+  for (auto element : texture_cache) {
+    auto texture = element.second;
+    texture.Destroy();
+  }
+}
+
+IOSurfaceImageBacking::SharedTextureData::SharedTextureData(
+    SharedTextureData&&) = default;
+
+IOSurfaceImageBacking::SharedTextureData&
+IOSurfaceImageBacking::SharedTextureData::operator=(SharedTextureData&&) =
+    default;
+
 ///////////////////////////////////////////////////////////////////////////////
 // DawnRepresentation
 
@@ -717,41 +775,14 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     return {};
   }
 
-  const std::string debug_label =
-      "IOSurface(" + CreateLabelForSharedImageUsage(usage()) + ")";
-
   usage_ = wgpu_texture_usage;
-
-  wgpu::TextureDescriptor texture_descriptor;
-  texture_descriptor.label = debug_label.c_str();
-  texture_descriptor.format = wgpu_format_;
-  texture_descriptor.usage =
-      static_cast<wgpu::TextureUsage>(wgpu_texture_usage);
-  texture_descriptor.dimension = wgpu::TextureDimension::e2D;
-  texture_descriptor.size = {static_cast<uint32_t>(io_surface_size_.width()),
-                             static_cast<uint32_t>(io_surface_size_.height()),
-                             1};
-  texture_descriptor.mipLevelCount = 1;
-  texture_descriptor.sampleCount = 1;
-  texture_descriptor.viewFormatCount = view_formats_.size();
-  texture_descriptor.viewFormats = view_formats_.data();
-
-  // We need to have internal usages of CopySrc for copies. If texture is not
-  // for video frame import, which has bi-planar format, we also need
-  // RenderAttachment usage for clears, and TextureBinding for
-  // copyTextureForBrowser.
-  wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  internalDesc.internalUsage =
-      wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::TextureBinding;
-  if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm &&
-      wgpu_format_ != wgpu::TextureFormat::R10X6BG10X6Biplanar420Unorm) {
-    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
-  }
-
-  texture_descriptor.nextInChain = &internalDesc;
 
   wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
   begin_access_desc.initialized = IsCleared();
+
+  // NOTE: WebGPU allows reads of uncleared textures, in which case Dawn clears
+  // the texture on its initial access. Such reads must take exclusive access.
+  begin_access_desc.concurrentRead = readonly && IsCleared();
 
   std::vector<wgpu::SharedFence> shared_fences;
   std::vector<uint64_t> signaled_values;
@@ -782,16 +813,25 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
   begin_access_desc.fences = shared_fences.data();
   begin_access_desc.signaledValues = signaled_values.data();
 
-  texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
+  texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
+  if (!texture_) {
+    texture_ =
+        CreateWGPUTexture(shared_texture_memory_, usage(), io_surface_size_,
+                          wgpu_format_, view_formats_, wgpu_texture_usage);
+    iosurface_backing->MaybeCacheWGPUTexture(device_, texture_);
+  }
+
   if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
     // NOTE: WebGPU CTS tests intentionally pass in formats that are
     // incompatible with the format of the backing IOSurface to check error
     // handling.
     LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed";
+    iosurface_backing->RemoveWGPUTextureFromCache(device_, texture_);
     texture_ = {};
 
     iosurface_backing->EndAccess(readonly);
   }
+
   return texture_.Get();
 }
 
@@ -832,9 +872,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
                                                   readonly);
   }
 
-  // All further operations on the textures are errors (they would be racy
-  // with other backings).
-  texture_.Destroy();
+  iosurface_backing->DestroyWGPUTextureIfNotCached(device_, texture_);
 
   // TODO(b/252731382): the following WaitForCommandsToBeScheduled call should
   // no longer be necessary, but for some reason it is. Removing it
@@ -877,7 +915,7 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GLenum gl_target,
     bool framebuffer_attachment_angle,
     bool is_cleared,
-    bool retain_gl_texture,
+    GrContextType gr_context_type,
     std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
                          format,
@@ -910,17 +948,22 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     return;
   }
 
-  // NOTE: Mac currently retains GLTexture and reuses it. Not sure if this is
-  // best approach as it can lead to issues with context losses.
-  if (retain_gl_texture) {
-    egl_state_for_legacy_mailbox_ = RetainGLTexture();
+  // NOTE: Mac currently retains GLTexture and reuses it. This might lead to
+  // issues with context losses, but is also beneficial to performance at
+  // least on perf benchmarks.
+  if (gr_context_type == GrContextType::kGL) {
+    // NOTE: We do not CHECK here that the current GL context is that of the
+    // SharedContextState due to not having easy access to the
+    // SharedContextState here. However, all codepaths that create SharedImage
+    // backings make the SharedContextState's context current before doing so.
+    egl_state_for_skia_gl_context_ = RetainGLTexture();
   }
 }
 
 IOSurfaceImageBacking::~IOSurfaceImageBacking() {
-  if (egl_state_for_legacy_mailbox_) {
-    egl_state_for_legacy_mailbox_->WillRelease(have_context());
-    egl_state_for_legacy_mailbox_ = nullptr;
+  if (egl_state_for_skia_gl_context_) {
+    egl_state_for_skia_gl_context_->WillRelease(have_context());
+    egl_state_for_skia_gl_context_ = nullptr;
   }
   DCHECK(egl_state_map_.empty());
 }
@@ -1166,6 +1209,75 @@ IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
                                                  io_surface_);
 }
 
+#if BUILDFLAG(USE_DAWN)
+IOSurfaceImageBacking::WGPUTextureCache*
+IOSurfaceImageBacking::GetWGPUTextureCache(wgpu::Device device) {
+  auto iter = shared_texture_data_cache_.find(device.Get());
+  if (iter == shared_texture_data_cache_.end()) {
+    return nullptr;
+  }
+  return &iter->second.texture_cache;
+}
+
+wgpu::Texture IOSurfaceImageBacking::GetCachedWGPUTexture(
+    wgpu::Device device,
+    wgpu::TextureUsage texture_usage) {
+  auto* texture_cache = GetWGPUTextureCache(device);
+  if (!texture_cache) {
+    return nullptr;
+  }
+
+  auto iter = texture_cache->find(texture_usage);
+  if (iter == texture_cache->end()) {
+    return nullptr;
+  }
+
+  return iter->second;
+}
+
+void IOSurfaceImageBacking::RemoveWGPUTextureFromCache(wgpu::Device device,
+                                                       wgpu::Texture texture) {
+  auto* texture_cache = GetWGPUTextureCache(device);
+  if (!texture_cache) {
+    return;
+  }
+
+  texture_cache->erase(texture.GetUsage());
+}
+
+void IOSurfaceImageBacking::MaybeCacheWGPUTexture(wgpu::Device device,
+                                                  wgpu::Texture texture) {
+  if (!texture) {
+    return;
+  }
+
+  auto* texture_cache = GetWGPUTextureCache(device);
+  if (!texture_cache) {
+    return;
+  }
+
+  // Determine whether `texture` needs to be cached.
+  auto texture_usage = texture.GetUsage();
+  auto iter = texture_cache->find(texture_usage);
+  if (iter == texture_cache->end()) {
+    texture_cache->emplace(texture_usage, texture);
+  } else {
+    CHECK_EQ(texture.Get(), iter->second.Get());
+  }
+}
+
+void IOSurfaceImageBacking::DestroyWGPUTextureIfNotCached(
+    wgpu::Device device,
+    wgpu::Texture texture) {
+  if (auto cached_texture = GetCachedWGPUTexture(device, texture.GetUsage())) {
+    CHECK_EQ(cached_texture.Get(), texture.Get());
+    return;
+  }
+
+  texture.Destroy();
+}
+#endif
+
 std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -1199,17 +1311,18 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     // importantly ensures that a new SharedTextureMemory instance will be
     // created if another Device occupies the same memory as a previously-used,
     // now-lost Device.
-    for (auto iter : shared_texture_memory_cache_) {
-      if (iter.second.IsDeviceLost()) {
-        shared_texture_memory_cache_.erase(iter.first);
+    for (auto& [wgpu_device, shared_texture_data] :
+         shared_texture_data_cache_) {
+      if (shared_texture_data.memory.IsDeviceLost()) {
+        shared_texture_data_cache_.erase(wgpu_device);
       }
     }
 
     CHECK(device.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface));
-    auto iter = shared_texture_memory_cache_.find(device.Get());
+    auto iter = shared_texture_data_cache_.find(device.Get());
 
     wgpu::SharedTextureMemory shared_texture_memory;
-    if (iter == shared_texture_memory_cache_.end()) {
+    if (iter == shared_texture_data_cache_.end()) {
       wgpu::SharedTextureMemoryIOSurfaceDescriptor io_surface_desc;
       io_surface_desc.ioSurface = io_surface_.get();
       wgpu::SharedTextureMemoryDescriptor desc = {};
@@ -1239,10 +1352,13 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
           dawn_context_provider->GetDevice().Get() == device.Get()) {
         // This is the Graphite device, so its SharedTextureMemory instance can
         // and should be cached.
-        shared_texture_memory_cache_[device.Get()] = shared_texture_memory;
+        SharedTextureData shared_texture_data;
+        shared_texture_data.memory = shared_texture_memory;
+        shared_texture_data_cache_.emplace(device.Get(),
+                                           std::move(shared_texture_data));
       }
     } else {
-      shared_texture_memory = iter->second;
+      shared_texture_memory = iter->second.memory;
     }
 
     return std::make_unique<DawnRepresentation>(

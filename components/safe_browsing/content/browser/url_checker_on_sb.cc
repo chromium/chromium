@@ -61,7 +61,6 @@ UrlCheckerOnSB::UrlCheckerOnSB(
     base::RepeatingCallback<content::WebContents*()> web_contents_getter,
     OnCompleteCheckCallback complete_callback,
     bool url_real_time_lookup_enabled,
-    bool can_urt_check_subresource_url,
     bool can_check_db,
     bool can_check_high_confidence_allowlist,
     std::string url_lookup_service_metric_suffix,
@@ -75,7 +74,6 @@ UrlCheckerOnSB::UrlCheckerOnSB(
       web_contents_getter_(web_contents_getter),
       complete_callback_(std::move(complete_callback)),
       url_real_time_lookup_enabled_(url_real_time_lookup_enabled),
-      can_urt_check_subresource_url_(can_urt_check_subresource_url),
       can_check_db_(can_check_db),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
       url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
@@ -84,10 +82,6 @@ UrlCheckerOnSB::UrlCheckerOnSB(
       hash_realtime_selection_(hash_realtime_selection),
       creation_time_(base::TimeTicks::Now()),
       is_async_check_(is_async_check) {
-  content::WebContents* contents = web_contents_getter_.Run();
-  if (!!contents) {
-    last_committed_url_ = contents->GetLastCommittedURL();
-  }
 }
 
 UrlCheckerOnSB::~UrlCheckerOnSB() {
@@ -116,9 +110,8 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
         params.has_user_gesture, url_checker_delegate, web_contents_getter_,
         nullptr, content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
         frame_tree_node_id_, navigation_id_, url_real_time_lookup_enabled_,
-        can_urt_check_subresource_url_, can_check_db_,
-        can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
-        last_committed_url_, content::GetUIThreadTaskRunner({}),
+        can_check_db_, can_check_high_confidence_allowlist_,
+        url_lookup_service_metric_suffix_, content::GetUIThreadTaskRunner({}),
         url_lookup_service_, hash_realtime_service_, hash_realtime_selection_,
         is_async_check_);
   }

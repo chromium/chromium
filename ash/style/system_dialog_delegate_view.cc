@@ -123,9 +123,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SystemDialogDelegateView,
 // additional view to be added at the left side. Please refer to the example in
 // the header file for the container layout.
 class SystemDialogDelegateView::ButtonContainer : public views::FlexLayoutView {
- public:
-  METADATA_HEADER(ButtonContainer);
+  METADATA_HEADER(ButtonContainer, views::FlexLayoutView)
 
+ public:
   explicit ButtonContainer(SystemDialogDelegateView* dialog_view)
       : cancel_button_(AddChildView(std::make_unique<PillButton>(
             base::BindRepeating(&SystemDialogDelegateView::Cancel,
@@ -497,7 +497,7 @@ void SystemDialogDelegateView::RunCallbackAndCloseDialog(
   }
 }
 
-BEGIN_METADATA(SystemDialogDelegateView, views::WidgetDelegateView)
+BEGIN_METADATA(SystemDialogDelegateView)
 END_METADATA
 
 }  // namespace ash

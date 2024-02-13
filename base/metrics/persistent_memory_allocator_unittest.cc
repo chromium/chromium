@@ -377,6 +377,51 @@ TEST_F(PersistentMemoryAllocatorTest, ParallelismTest) {
             t5.iterable());
 }
 
+// A simple thread that makes all objects passed iterable.
+class MakeIterableThread : public SimpleThread {
+ public:
+  MakeIterableThread(const std::string& name,
+                     PersistentMemoryAllocator* allocator,
+                     span<Reference> refs)
+      : SimpleThread(name, Options()), allocator_(allocator), refs_(refs) {}
+
+  void Run() override {
+    for (Reference ref : refs_) {
+      allocator_->MakeIterable(ref);
+    }
+  }
+
+ private:
+  raw_ptr<PersistentMemoryAllocator> allocator_;
+  span<Reference> refs_;
+};
+
+// Verifies that multiple threads making the same objects iterable doesn't cause
+// any problems.
+TEST_F(PersistentMemoryAllocatorTest, MakeIterableSameRefsTest) {
+  std::vector<Reference> refs;
+
+  // Fill up the allocator until it is full.
+  Reference ref;
+  while ((ref = allocator_->Allocate(/*size=*/1, /*type=*/0)) != 0) {
+    refs.push_back(ref);
+  }
+
+  ASSERT_TRUE(allocator_->IsFull());
+  ASSERT_FALSE(allocator_->IsCorrupt());
+
+  // Run two threads in parallel to make all objects in the allocator iterable.
+  MakeIterableThread t1("t1", allocator_.get(), refs);
+  MakeIterableThread t2("t2", allocator_.get(), refs);
+  t1.Start();
+  t2.Start();
+
+  t1.Join();
+  t2.Join();
+
+  EXPECT_EQ(CountIterables(), refs.size());
+}
+
 // A simple thread that counts objects by iterating through an allocator.
 class CounterThread : public SimpleThread {
  public:

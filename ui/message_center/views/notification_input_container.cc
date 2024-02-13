@@ -91,7 +91,7 @@ size_t NotificationInputContainer::GetTextfieldIndex() const {
 }
 
 void NotificationInputContainer::SetPlaceholderText(
-    const absl::optional<std::u16string>& placeholder) {
+    const std::optional<std::u16string>& placeholder) {
   textfield_->SetPlaceholderText(
       placeholder->empty()
           ? l10n_util::GetStringUTF16(GetDefaultPlaceholderStringId())

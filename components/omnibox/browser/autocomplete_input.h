@@ -304,6 +304,10 @@ class AutocompleteInput {
   // Zero-Suggest state does NOT mean that `text_` is empty.
   bool IsZeroSuggest() const;
 
+  // Uses the keyword entry mode to decide if the user is currently in keyword
+  // mode.
+  bool InKeywordMode() const;
+
  private:
   friend class AutocompleteProviderTest;
 

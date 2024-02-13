@@ -137,7 +137,8 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
     request->is_main_resource_load = true;
 
     return std::make_unique<ServiceWorkerFetchDispatcher>(
-        std::move(request), destination, std::string() /* client_id */, version,
+        std::move(request), destination, std::string() /* client_id */,
+        std::string() /* resulting_client_id */, version,
         base::DoNothing() /* prepare_result */, std::move(fetch_callback),
         is_offline_capability_check);
   }

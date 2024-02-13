@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
@@ -17,7 +19,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "device/base/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <string_view>
@@ -345,7 +346,7 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
   return true;
 }
 
-void RecordPairingResult(absl::optional<ConnectionFailureReason> failure_reason,
+void RecordPairingResult(std::optional<ConnectionFailureReason> failure_reason,
                          BluetoothTransport transport,
                          base::TimeDelta duration) {
   RecordPairingTransport(transport);
@@ -383,7 +384,7 @@ void RecordPairingResult(absl::optional<ConnectionFailureReason> failure_reason,
 }
 
 void RecordUserInitiatedReconnectionAttemptResult(
-    absl::optional<ConnectionFailureReason> failure_reason,
+    std::optional<ConnectionFailureReason> failure_reason,
     UserInitiatedReconnectionUISurfaces surface) {
   bool success = !failure_reason.has_value();
   std::string base_histogram_name =
@@ -489,7 +490,7 @@ void RecordUiSurfaceDisplayed(BluetoothUiSurface ui_surface) {
 }
 
 void RecordUserInitiatedReconnectionAttemptDuration(
-    absl::optional<ConnectionFailureReason> failure_reason,
+    std::optional<ConnectionFailureReason> failure_reason,
     BluetoothTransport transport,
     base::TimeDelta duration) {
   bool success = !failure_reason.has_value();

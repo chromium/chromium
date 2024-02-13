@@ -1158,6 +1158,11 @@ void CSSParserImpl::EmitInvisibleRuleIfNeeded(
     // for a top-level style rule.
     return;
   }
+  if (!parent_rule_for_nesting) {
+    // This can happen for @page, which behaves simiarly to CSS Nesting
+    // (and cares about child rules), but doesn't have a parent style rule.
+    return;
+  }
   wtf_size_t end_index = parsed_properties_.size();
   if (start_index >= end_index) {
     // No need to emit a rule with nothing in it.

@@ -52,6 +52,15 @@ public class ConditionWaiter {
             mOrigin = origin;
         }
 
+        Condition getCondition() {
+            return mCondition;
+        }
+
+        @ConditionOrigin
+        int getOrigin() {
+            return mOrigin;
+        }
+
         private void startTimer() {
             mTimeStarted = getNow();
             mTimeUnfulfilled = mTimeStarted;

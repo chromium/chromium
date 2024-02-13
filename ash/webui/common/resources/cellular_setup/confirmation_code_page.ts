@@ -66,5 +66,11 @@ export class ConfirmationCodePageElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    [ConfirmationCodePageElement.is]: ConfirmationCodePageElement;
+  }
+}
+
 customElements.define(
     ConfirmationCodePageElement.is, ConfirmationCodePageElement);

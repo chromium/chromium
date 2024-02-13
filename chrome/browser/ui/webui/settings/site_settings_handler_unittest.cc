@@ -872,12 +872,9 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     auto container = std::make_unique<LocalDataContainer>(
         mock_browsing_data_cookie_helper,
-        /*database_helper=*/nullptr, mock_browsing_data_local_storage_helper,
+        mock_browsing_data_local_storage_helper,
         /*session_storage_helper=*/nullptr,
-        /*indexed_db_helper=*/nullptr,
-        /*file_system_helper=*/nullptr,
         /*quota_helper=*/nullptr,
-        /*service_worker_helper=*/nullptr,
         /*data_shared_worker_helper=*/nullptr,
         /*cache_storage_helper=*/nullptr);
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
@@ -2438,14 +2435,6 @@ TEST_P(SiteSettingsHandlerTest, SetCategory_GetException_ResetCategory) {
 TEST_P(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
   const std::string google("https://www.google.com");
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile(), ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->AddPage(GURL(google), base::Time::Now(),
-                           history::SOURCE_BROWSED);
-  base::RunLoop origin_queried_waiter;
-  history_service->set_origin_queried_closure_for_testing(
-      origin_queried_waiter.QuitClosure());
-
   {
     base::Value::List set_notification_origin_args;
     set_notification_origin_args.Append(google);
@@ -2469,8 +2458,6 @@ TEST_P(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
     handler()->HandleSetCategoryPermissionForPattern(
         set_notification_origin_args);
   }
-
-  origin_queried_waiter.Run();
 
   auto entries = ukm_recorder.GetEntriesByName("Permission");
   EXPECT_EQ(1u, entries.size());
@@ -3122,10 +3109,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    SetUpUserManager(profile());
-#endif
-
     handler_ = std::make_unique<SiteSettingsHandler>(profile());
     handler()->set_web_ui(web_ui());
     handler()->AllowJavascript();
@@ -3170,21 +3153,18 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpUserManager(TestingProfile* profile) {
-    // On ChromeOS a user account is needed in order to check whether the user
-    // account is affiliated with the device owner for the purposes of applying
-    // enterprise policy.
-    constexpr char kTestUserGaiaId[] = "1111111111";
-    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    auto* fake_user_manager_ptr = fake_user_manager.get();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-
-    auto account_id =
-        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
-    fake_user_manager_ptr->AddUserWithAffiliation(account_id,
-                                                  /*is_affiliated=*/true);
-    fake_user_manager_ptr->LoginUser(account_id);
+  // On ChromeOS a user account is needed in order to check whether the user
+  // account is affiliated with the device owner for the purposes of applying
+  // enterprise policy.
+  void LogIn(const std::string& email) override {
+    const AccountId account_id = AccountId::FromUserEmail(email);
+    user_manager()->AddUserWithAffiliation(account_id, /*is_affiliated=*/true);
+    ash_test_helper()->test_session_controller_client()->AddUserSession(email);
+    user_manager()->UserLoggedIn(
+        account_id,
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
+        /*browser_restart=*/false,
+        /*is_child=*/false);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -3219,9 +3199,6 @@ class SiteSettingsHandlerInfobarTest : public BrowserWithTestWindowTest {
   std::unique_ptr<Browser> browser2_;
   std::unique_ptr<BrowserWindow> window3_;
   std::unique_ptr<Browser> browser3_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif
 };
 
 TEST_F(SiteSettingsHandlerInfobarTest, SettingPermissionsTriggersInfobar) {

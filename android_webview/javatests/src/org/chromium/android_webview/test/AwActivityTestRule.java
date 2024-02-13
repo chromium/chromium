@@ -226,6 +226,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
+                        AwBrowserProcess.configureChildProcessLauncherForTesting();
                         AwBrowserProcess.start();
                     });
         }

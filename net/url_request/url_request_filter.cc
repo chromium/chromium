@@ -49,8 +49,8 @@ void URLRequestFilter::AddHostnameInterceptor(
     const std::string& hostname,
     std::unique_ptr<URLRequestInterceptor> interceptor) {
   DCHECK(OnMessageLoopForInterceptorAddition());
-  DCHECK_EQ(0u, hostname_interceptor_map_.count(make_pair(scheme, hostname)));
-  hostname_interceptor_map_[make_pair(scheme, hostname)] =
+  DCHECK_EQ(0u, hostname_interceptor_map_.count(std::pair(scheme, hostname)));
+  hostname_interceptor_map_[std::pair(scheme, hostname)] =
       std::move(interceptor);
 
 #ifndef NDEBUG
@@ -58,7 +58,7 @@ void URLRequestFilter::AddHostnameInterceptor(
   for (const auto& pair : url_interceptor_map_) {
     const GURL& url = GURL(pair.first);
     HostnameInterceptorMap::const_iterator host_it =
-        hostname_interceptor_map_.find(make_pair(url.scheme(), url.host()));
+        hostname_interceptor_map_.find(std::pair(url.scheme(), url.host()));
     if (host_it != hostname_interceptor_map_.end())
       NOTREACHED();
   }
@@ -68,7 +68,7 @@ void URLRequestFilter::AddHostnameInterceptor(
 void URLRequestFilter::RemoveHostnameHandler(const std::string& scheme,
                                              const std::string& hostname) {
   DCHECK(OnMessageLoopForInterceptorRemoval());
-  int removed = hostname_interceptor_map_.erase(make_pair(scheme, hostname));
+  int removed = hostname_interceptor_map_.erase(std::pair(scheme, hostname));
   DCHECK(removed);
 }
 
@@ -82,8 +82,8 @@ bool URLRequestFilter::AddUrlInterceptor(
   url_interceptor_map_[url.spec()] = std::move(interceptor);
 
   // Check to see if this URL is masked by a hostname handler.
-  DCHECK_EQ(0u, hostname_interceptor_map_.count(make_pair(url.scheme(),
-                                                          url.host())));
+  DCHECK_EQ(
+      0u, hostname_interceptor_map_.count(std::pair(url.scheme(), url.host())));
 
   return true;
 }
@@ -114,7 +114,7 @@ std::unique_ptr<URLRequestJob> URLRequestFilter::MaybeInterceptRequest(
   const std::string scheme = request->url().scheme();
 
   {
-    auto it = hostname_interceptor_map_.find(make_pair(scheme, hostname));
+    auto it = hostname_interceptor_map_.find(std::pair(scheme, hostname));
     if (it != hostname_interceptor_map_.end())
       job = it->second->MaybeInterceptRequest(request);
   }

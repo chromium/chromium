@@ -148,8 +148,6 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       client->GetRealTimeUrlLookupService();
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
-  bool can_url_realtime_check_subresource_url =
-      url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
       base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
                                                    client->AsWeakPtr());
@@ -177,10 +175,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
       /*frame_tree_node_id=*/
       security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
       /*navigation_id=*/std::nullopt, can_perform_full_url_lookup,
-      can_url_realtime_check_subresource_url,
       /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
       /*url_lookup_service_metric_suffix=*/"",
-      /*last_committed_url=*/web_state->GetLastCommittedURL(),
       web::GetUIThreadTaskRunner({}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
       hash_real_time_service ? hash_real_time_service->GetWeakPtr() : nullptr,

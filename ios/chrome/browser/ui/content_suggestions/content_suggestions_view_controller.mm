@@ -139,9 +139,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // Module Container for the tab resumption tile.
 @property(nonatomic, strong)
     MagicStackModuleContainer* tabResumptionModuleContainer;
-// Width Anchor of the Most Visited Tiles container.
-@property(nonatomic, strong)
-    NSLayoutConstraint* mostVisitedContainerWidthAnchor;
 // List of all of the Most Visited views.
 @property(nonatomic, strong)
     NSMutableArray<ContentSuggestionsMostVisitedTileView*>* mostVisitedViews;
@@ -752,14 +749,14 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     SetUpListItemViewData* allSetData =
         [[SetUpListItemViewData alloc] initWithType:SetUpListItemType::kAllSet
                                            complete:NO];
-    allSetData.heroCellMagicStackLayout =
-        !set_up_list_utils::ShouldShowCompactedSetUpListModule();
-    SetUpListItemView* view =
-        [[SetUpListItemView alloc] initWithData:allSetData];
-    MagicStackModuleContainer* allSetModule = [[MagicStackModuleContainer alloc]
-        initWithContentView:view
-                       type:ContentSuggestionsModuleType::kSetUpListAllSet
-                   delegate:self];
+    allSetData.compactLayout = NO;
+    allSetData.heroCellMagicStackLayout = YES;
+
+    SetUpListConfig* config = [[SetUpListConfig alloc] init];
+    config.setUpListItems = @[ allSetData ];
+    MagicStackModuleContainer* allSetModule =
+        [[MagicStackModuleContainer alloc] init];
+    [allSetModule configureWithConfig:config];
     // Determine which module to swap out.
     [self removeSetUpListItemsWithNewModule:allSetModule];
     return;
@@ -794,9 +791,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     ContentSuggestionsModuleType type =
         (ContentSuggestionsModuleType)[moduleValue intValue];
 
-    if (type == ContentSuggestionsModuleType::kSafetyCheck ||
-        type == ContentSuggestionsModuleType::kSafetyCheckMultiRow ||
-        type == ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow) {
+    if (type == ContentSuggestionsModuleType::kSafetyCheck) {
       safetyCheckModuleOrderIndex = idx;
 
       *stop = YES;
@@ -807,9 +802,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                         safetyCheckModuleOrderIndex != NSNotFound);
 
   if (safetyCheckModuleOrderIndex != NSNotFound) {
-    _magicStackModuleOrder[safetyCheckModuleOrderIndex] =
-        @(int(self.safetyCheckModuleContainer.type));
-
     [self logTopModuleImpressionForType:self.safetyCheckModuleContainer.type];
 
     [self insertModuleIntoMagicStack:self.safetyCheckModuleContainer];
@@ -874,12 +866,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view {
   [self.audience didSelectSetUpListItem:view.type];
-}
-
-#pragma mark - TabResumptionViewDelegate methods
-
-- (void)tabResumptionViewTapped {
-  [self.suggestionCommandHandler openTabResumptionItem];
 }
 
 #pragma mark - ContentSuggestionsSelectionActions
@@ -985,13 +971,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
   switch (type) {
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
+    case ContentSuggestionsModuleType::kSafetyCheck:
       [self.audience didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
       break;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
       [self.audience showSetUpListShowMoreMenu];
       break;
-    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
+    case ContentSuggestionsModuleType::kParcelTracking:
       [self.audience showMagicStackParcelList];
       break;
     default:
@@ -1005,16 +991,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)enableNotifications:(ContentSuggestionsModuleType)type {
   [self.audience enableNotifications:type];
-}
-
-// Returns the module's subtitle, if any, given the Magic Stack module `type`.
-- (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type {
-  if (type == ContentSuggestionsModuleType::kSafetyCheck ||
-      type == ContentSuggestionsModuleType::kSafetyCheckMultiRow) {
-    return FormatElapsedTimeSinceLastSafetyCheck(_safetyCheckState.lastRunTime);
-  }
-
-  return @"";
 }
 
 #pragma mark - Private
@@ -1234,16 +1210,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         moduleContainer = _setUpListAllSetModule;
         break;
       }
-      case ContentSuggestionsModuleType::kSafetyCheck:
-      case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
-      case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
+      case ContentSuggestionsModuleType::kSafetyCheck: {
         if (IsSafetyCheckMagicStackEnabled()) {
           moduleContainer = self.safetyCheckModuleContainer;
         }
         break;
       }
       case ContentSuggestionsModuleType::kParcelTracking:
-      case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
         if (IsIOSParcelTrackingEnabled()) {
           for (MagicStackModuleContainer* parcelModule in
                    _parcelTrackingModuleContainers) {
@@ -1341,9 +1314,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // situations where modules can become available to show in the Magic Stack
 // after initial view construction in no predictable order.
 - (void)insertModuleIntoMagicStack:(MagicStackModuleContainer*)moduleToInsert {
-  if (!_magicStack) {
-    // If the MagicStack hasn't been instantiated yet, the module will be
-    // inserted later.
+  if (!_magicStack || !_magicStackRankReceived) {
+    // If the MagicStack hasn't been instantiated yet or ranking has not been
+    // received yet, the module will be inserted later.
     return;
   }
 

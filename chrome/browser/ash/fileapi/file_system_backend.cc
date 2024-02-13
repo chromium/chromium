@@ -198,22 +198,22 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
     // provider root, so we need to fix up |root_url| to point to an individual
     // root.
     std::string authority;
-    std::string root_document_id;
+    std::string root_id;
     base::FilePath unused_path;
-    if (!arc::ParseDocumentsProviderUrl(url, &authority, &root_document_id,
+    if (!arc::ParseDocumentsProviderUrl(url, &authority, &root_id,
                                         &unused_path)) {
       std::move(callback).Run(GURL(root_url), std::string(),
                               base::File::FILE_ERROR_SECURITY);
       return;
     }
     base::FilePath mount_path =
-        arc::GetDocumentsProviderMountPath(authority, root_document_id);
+        arc::GetDocumentsProviderMountPath(authority, root_id);
     base::FilePath relative_mount_path;
     base::FilePath(arc::kDocumentsProviderMountPointPath)
         .AppendRelativePath(mount_path, &relative_mount_path);
     root_url +=
         base::EscapePath(storage::FilePathToString(relative_mount_path)) + "/";
-    name = authority + ":" + root_document_id;
+    name = authority + ":" + root_id;
   } else {
     name = id;
   }

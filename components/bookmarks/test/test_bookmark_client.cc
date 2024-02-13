@@ -108,11 +108,19 @@ bool TestBookmarkClient::IsNodeManaged(const BookmarkNode* node) {
   return node && node->HasAncestor(unowned_managed_node_.get());
 }
 
-std::string TestBookmarkClient::EncodeBookmarkSyncMetadata() {
+std::string TestBookmarkClient::EncodeLocalOrSyncableBookmarkSyncMetadata() {
   return std::string();
 }
 
-void TestBookmarkClient::DecodeBookmarkSyncMetadata(
+std::string TestBookmarkClient::EncodeAccountBookmarkSyncMetadata() {
+  return std::string();
+}
+
+void TestBookmarkClient::DecodeLocalOrSyncableBookmarkSyncMetadata(
+    const std::string& metadata_str,
+    const base::RepeatingClosure& schedule_save_closure) {}
+
+void TestBookmarkClient::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {}
 

@@ -51,6 +51,41 @@ class BuganizerClient:
         response = self._ExecuteRequest(request)
         return response
 
+    def GetIssueComments(self, id):
+        """Makes a request to the issue tracker to get all the comments."""
+        request = self._service.issueUpdates().list(issueId=id)
+
+        try:
+            response = self._ExecuteRequest(request)
+            logging.debug('Post GetIssueComments response: %s', response)
+            comments = []
+            if not response:
+                return comments
+
+            issue_updates = response.get('issueUpdates', [])
+            for index, update in enumerate(issue_updates):
+                comment = {
+                    'index': index,
+                    'timestamp': update.get('timestamp'),
+                    'author': update.get('author', {}).get('emailAddress', ''),
+                    'comment': update.get('issueComment',
+                                          {}).get('comment', ''),
+                }
+                comments.append(comment)
+            return comments
+        except Exception as e:
+            return {'error': str(e)}
+
+    def NewComment(self, id, comment):
+        """Makes a request to the issue tracker to add a comment."""
+        new_comment_request = {'issueComment': {'comment': comment}}
+        request = self._service.issues().modify(issueId=id,
+                                                body=new_comment_request)
+        try:
+            return self._ExecuteRequest(request)
+        except Exception as e:
+            return {'error': str(e)}
+
     def _ExecuteRequest(self, request):
         """Makes a request to the issue tracker.
 

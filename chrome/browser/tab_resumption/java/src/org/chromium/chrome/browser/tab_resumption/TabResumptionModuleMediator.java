@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 
+import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -14,10 +17,26 @@ import java.util.List;
 public class TabResumptionModuleMediator {
     private static final int MAX_TILES_NUMBER = 2;
 
+    private final Context mContext;
     private final PropertyModel mModel;
+    protected final TabResumptionDataProvider mDataProvider;
+    protected final UrlImageProvider mUrlImageProvider;
+    protected final SuggestionClickCallback mSuggestionClickCallback;
 
-    public TabResumptionModuleMediator(PropertyModel model) {
+    public TabResumptionModuleMediator(
+            Context context,
+            PropertyModel model,
+            TabResumptionDataProvider dataProvider,
+            UrlImageProvider urlImageProvider,
+            SuggestionClickCallback suggestionClickCallback) {
+        mContext = context;
         mModel = model;
+        mDataProvider = dataProvider;
+        mUrlImageProvider = urlImageProvider;
+        mSuggestionClickCallback = suggestionClickCallback;
+
+        mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
+        mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallback);
     }
 
     void destroy() {}
@@ -25,6 +44,39 @@ public class TabResumptionModuleMediator {
     /** Returns the current time in ms since the epoch. */
     long getCurrentTimeMs() {
         return System.currentTimeMillis();
+    }
+
+    /**
+     * Fetches new suggestions, creates SuggestionBundle, then updates `mModel`. If no data is
+     * available then hides the module.
+     */
+    void loadModule() {
+        mDataProvider.fetchSuggestions(
+                (List<SuggestionEntry> suggestions) -> {
+                    SuggestionBundle bundle = null;
+                    if (suggestions != null) {
+                        if (suggestions.size() == 0) {
+                            // TODO(crbug.com/1515325): Record metrics here.
+                        } else {
+                            bundle = makeSuggestionBundle(suggestions);
+                        }
+                    }
+                    mModel.set(
+                            TabResumptionModuleProperties.SUGGESTION_BUNDLE,
+                            bundle); // Triggers render.
+                    mModel.set(TabResumptionModuleProperties.IS_VISIBLE, bundle != null);
+                    if (bundle != null) {
+                        // TODO(crbug.com/1515325): Record metrics here.
+                        Resources res = mContext.getResources();
+                        String title =
+                                res.getQuantityString(
+                                        R.plurals.home_modules_tab_resumption_title,
+                                        bundle.entries.size());
+                        mModel.set(TabResumptionModuleProperties.TITLE, title);
+                    } else {
+                        mModel.set(TabResumptionModuleProperties.TITLE, null);
+                    }
+                });
     }
 
     /**
@@ -53,29 +105,5 @@ public class TabResumptionModuleMediator {
         }
 
         return bundle;
-    }
-
-    /** Fetches new suggestions, creates SuggestionBundle, then updates `mModel`. */
-    public void reload() {
-        TabResumptionDataProvider dataProvider =
-                (TabResumptionDataProvider) mModel.get(TabResumptionModuleProperties.DATA_PROVIDER);
-        assert dataProvider != null;
-
-        dataProvider.fetchSuggestions(
-                (List<SuggestionEntry> suggestions) -> {
-                    SuggestionBundle bundle = null;
-                    if (suggestions != null) {
-                        if (suggestions.size() == 0) {
-                            // TODO(crbug.com/1515325): Record metrics here.
-                        } else {
-                            bundle = makeSuggestionBundle(suggestions);
-                        }
-                    }
-                    mModel.set(
-                            TabResumptionModuleProperties.SUGGESTION_BUNDLE,
-                            bundle); // Triggers render.
-                    mModel.set(TabResumptionModuleProperties.IS_VISIBLE, bundle != null);
-                    // TODO(crbug.com/1515325): Record metrics here if `bundle != null`.
-                });
     }
 }

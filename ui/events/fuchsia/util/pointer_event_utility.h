@@ -12,9 +12,8 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <vector>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 constexpr gfx::RectF kRect(0, 0, 20, 20);
@@ -58,7 +57,7 @@ class TouchEventBuilder {
   gfx::RectF view_ = kRect;
   gfx::RectF viewport_ = kRect;
   std::array<float, 9> transform_ = kIdentity;
-  absl::optional<fuchsia_ui_pointer::TouchInteractionStatus>
+  std::optional<fuchsia_ui_pointer::TouchInteractionStatus>
       touch_interaction_status_;
 
   bool include_sample_ = true;

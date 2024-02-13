@@ -215,7 +215,11 @@ public class TabDragSourceTest {
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X);
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH);
         assertTrue("startTabDragAction returned false.", res);
         verify(mDragDropDelegate)
                 .startDragAndDrop(
@@ -239,7 +243,11 @@ public class TabDragSourceTest {
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X);
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH);
         assertTrue("startTabDragAction returned false.", res);
         verify(mDragDropDelegate)
                 .startDragAndDrop(
@@ -263,7 +271,11 @@ public class TabDragSourceTest {
                 NullPointerException.class,
                 () ->
                         mSourceInstance.startTabDragAction(
-                                mTabsToolbarView, null, DRAG_START_POINT, TAB_POSITION_X));
+                                mTabsToolbarView,
+                                null,
+                                DRAG_START_POINT,
+                                TAB_POSITION_X,
+                                TAB_WIDTH));
     }
 
     @Test
@@ -274,7 +286,11 @@ public class TabDragSourceTest {
         assertFalse(
                 "Tab drag should not start",
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
     }
 
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
@@ -285,7 +301,11 @@ public class TabDragSourceTest {
         assertFalse(
                 "Should not startTabDragAction since last tab with homepage enabled.",
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
     }
 
     @Test
@@ -299,7 +319,11 @@ public class TabDragSourceTest {
         assertFalse(
                 "Tab drag should not start",
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
         assertFalse("Global state should not be set", DragDropGlobalState.hasValue());
     }
 
@@ -315,7 +339,11 @@ public class TabDragSourceTest {
         assertFalse(
                 "Tab drag should not start",
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
     }
 
     @Test
@@ -334,7 +362,11 @@ public class TabDragSourceTest {
         assertTrue(
                 "Tab drag should start",
                 spySource.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+                        mTabsToolbarView,
+                        mTabBeingDragged,
+                        DRAG_START_POINT,
+                        TAB_POSITION_X,
+                        TAB_WIDTH));
     }
 
     @Test
@@ -347,7 +379,7 @@ public class TabDragSourceTest {
         final PointF dragStartPoint = new PointF(dragStartXPosition, dragStartYPosition);
         // Call startDrag to set class variables.
         mSourceInstance.startTabDragAction(
-                mTabsToolbarView, mTabBeingDragged, dragStartPoint, TAB_POSITION_X);
+                mTabsToolbarView, mTabBeingDragged, dragStartPoint, TAB_POSITION_X, TAB_WIDTH);
 
         View.DragShadowBuilder tabDragShadowBuilder =
                 mSourceInstance.createDragShadowBuilder(
@@ -375,7 +407,7 @@ public class TabDragSourceTest {
     public void test_onProvideShadowMetrics_withTabLinkDragDropFF() {
         // Call startDrag to set class variables.
         mSourceInstance.startTabDragAction(
-                mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X);
+                mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X, TAB_WIDTH);
         TabDragShadowBuilder tabDragShadowBuilder =
                 (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
         Resources resources = ContextUtils.getApplicationContext().getResources();
@@ -446,8 +478,7 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify clear.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -484,8 +515,7 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -514,8 +544,7 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is outside strip.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -564,7 +593,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab moved to destination window at TAB_INDEX.
         verify(mDestMultiInstanceManager, times(1))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX), eq(CURR_INSTANCE_ID));
+                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX));
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip calls.
@@ -598,7 +627,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab moved to destination window at end.
         verify(mDestMultiInstanceManager, times(1))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5), eq(CURR_INSTANCE_ID));
+                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5));
 
         assertNotNull(ShadowToast.getLatestToast());
         TextView textView = (TextView) ShadowToast.getLatestToast().getView();
@@ -664,8 +693,7 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         histogramExpectation.assertExpected();
@@ -698,8 +726,7 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify clear.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -746,7 +773,7 @@ public class TabDragSourceTest {
 
         // Verify - Move to new window not invoked.
         verify(mDestMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt(), anyInt());
+                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
         histogramExpectation.assertExpected();
     }
 
@@ -773,7 +800,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab is not moved to destination window.
         verify(mDestMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt(), anyInt());
+                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
 
         assertNull(ShadowToast.getLatestToast());
         histogramExpectation.assertExpected();
@@ -786,7 +813,11 @@ public class TabDragSourceTest {
 
         // Start tab drag action.
         mSourceInstance.startTabDragAction(
-                mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY), TAB_POSITION_X);
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(POS_X, mPosY),
+                TAB_POSITION_X,
+                TAB_WIDTH);
 
         boolean res =
                 mDestInstance.onDrag(
@@ -802,7 +833,11 @@ public class TabDragSourceTest {
 
         // Start tab drag action.
         mSourceInstance.startTabDragAction(
-                mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY), TAB_POSITION_X);
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(POS_X, mPosY),
+                TAB_POSITION_X,
+                TAB_WIDTH);
 
         boolean res =
                 mDestInstance.onDrag(
@@ -833,7 +868,11 @@ public class TabDragSourceTest {
         DragEventInvoker() {
             // Start tab drag action.
             mSourceInstance.startTabDragAction(
-                    mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY), TAB_POSITION_X);
+                    mTabsToolbarView,
+                    mTabBeingDragged,
+                    new PointF(POS_X, mPosY),
+                    TAB_POSITION_X,
+                    TAB_WIDTH);
             // drag invokes DRAG_START and DRAG_ENTER on source and DRAG_START on destination.
             mSourceInstance.onDrag(
                     mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));

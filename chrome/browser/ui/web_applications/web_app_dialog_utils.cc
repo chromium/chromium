@@ -39,6 +39,7 @@
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 // TODO(crbug.com/1125897): Enable gn check once it handles conditional includes
 #include "components/metrics/structured/structured_events.h"  // nogncheck
+#include "components/metrics/structured/structured_metrics_client.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -139,9 +140,9 @@ void OnWebAppInstallShowInstallDialog(
           install_source == webapps::WebappInstallSource::MENU_BROWSER_TAB) {
         webapps::AppId app_id =
             web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
-        cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
-            .SetAppId(app_id)
-            .Record();
+        metrics::structured::StructuredMetricsClient::Record(std::move(
+            cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
+                .SetAppId(app_id)));
       }
 #endif
       if (webapps::AppBannerManager::FromWebContents(initiator_web_contents)
@@ -166,9 +167,9 @@ void OnWebAppInstallShowInstallDialog(
               metrics::structured::kAppDiscoveryLogging)) {
         webapps::AppId app_id =
             web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
-        cros_events::AppDiscovery_Browser_CreateShortcut()
-            .SetAppId(app_id)
-            .Record();
+        metrics::structured::StructuredMetricsClient::Record(std::move(
+            cros_events::AppDiscovery_Browser_CreateShortcut().SetAppId(
+                app_id)));
       }
 #endif
 

@@ -759,17 +759,18 @@ std::string EntryImpl::GetKey() const {
   if (!key_file)
     return std::string();
 
-  ++key_len;  // We store a trailing \0 on disk.
-  if (!offset && key_file->GetLength() != static_cast<size_t>(key_len))
+  // We store a trailing \0 on disk.
+  if (!offset && key_file->GetLength() != static_cast<size_t>(key_len + 1)) {
     return std::string();
+  }
 
-  // WriteInto will ensure that key_.length() == key_len - 1, and so
-  // key_.c_str()[key_len] will be '\0'. Taking advantage of this, do not
-  // attempt read up to the expected on-disk '\0' --- which would be |key_len|
-  // bytes total --- as if due to a corrupt file it isn't |key_| would get its
-  // internal nul messed up.
-  if (!key_file->Read(base::WriteInto(&key_, key_len), key_len - 1, offset))
+  // Do not attempt read up to the expected on-disk '\0' --- which would be
+  // |key_len + 1| bytes total --- as if due to a corrupt file it isn't |key_|
+  // would get its internal nul messed up.
+  key_.resize(key_len);
+  if (!key_file->Read(key_.data(), key_.size(), offset)) {
     key_.clear();
+  }
   DCHECK_LE(strlen(key_.data()), static_cast<size_t>(key_len));
   return key_;
 }

@@ -42,9 +42,9 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/import_data_table_view_controller.h"
@@ -84,8 +84,7 @@ void ConfigureHandlers(id<SettingsRootViewControlling> controller,
   controller.browserHandler = HandlerForProtocol(dispatcher, BrowserCommands);
   controller.browsingDataHandler =
       HandlerForProtocol(dispatcher, BrowsingDataCommands);
-  controller.settingsHandler =
-      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  controller.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   controller.snackbarHandler = HandlerForProtocol(dispatcher, SnackbarCommands);
 }
 
@@ -752,7 +751,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     return;
   }
   DCHECK(!self.manageSyncSettingsCoordinator);
-  // TODO(crbug.com/1462552): Remove usage of HasSyncConsent() after kSync
+  // TODO(crbug.com/40066949): Remove usage of HasSyncConsent() after kSync
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
   SyncSettingsAccountState accountState =
@@ -1087,7 +1086,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self closeSettings];
 }
 
-#pragma mark - ApplicationSettingsCommands
+#pragma mark - SettingsCommands
 
 // TODO(crbug.com/779791) : Do not pass `baseViewController` through dispatcher.
 - (void)showAccountsSettingsFromViewController:

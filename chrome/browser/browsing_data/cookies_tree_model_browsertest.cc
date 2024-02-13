@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(CookiesTreeModelBrowserTest, BatchesFinishSync) {
   // the model has received all expected batches.
   auto shared_objects = browsing_data::LocalSharedObjectsContainer(
       chrome_test_utils::GetProfile(this)->GetDefaultStoragePartition(),
-      /*ignore_empty_localstorage=*/false, {}, base::NullCallback());
+      /*ignore_empty_localstorage=*/false, base::NullCallback());
   auto local_data_container =
       LocalDataContainer::CreateFromLocalSharedObjectsContainer(shared_objects);
 

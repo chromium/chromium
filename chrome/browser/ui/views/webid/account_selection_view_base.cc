@@ -127,11 +127,11 @@ BEGIN_METADATA(AccountImageView)
 END_METADATA
 
 AccountSelectionViewBase::AccountSelectionViewBase(
-    Browser* browser,
+    content::WebContents* web_contents,
     AccountSelectionViewBase::Observer* observer,
     views::WidgetObserver* widget_observer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : browser_(browser),
+    : web_contents_(web_contents),
       widget_observer_(widget_observer),
       observer_(observer) {
   image_fetcher_ = std::make_unique<image_fetcher::ImageFetcherImpl>(

@@ -252,9 +252,9 @@ export class NotificationTester extends PolymerElement {
   // Show / hide dom elements when this.notifMetadata.notificationType changes
   notificationTypeChanged_(notificationType) {
     this.showMultiOptions =
-        (notificationType == NotificationType.NOTIFICATION_TYPE_MULTIPLE);
+        (notificationType === NotificationType.NOTIFICATION_TYPE_MULTIPLE);
     this.showProgressOptions =
-        (notificationType == NotificationType.NOTIFICATION_TYPE_PROGRESS);
+        (notificationType === NotificationType.NOTIFICATION_TYPE_PROGRESS);
     this.showTypeSpecificDesc =
         !(this.showMultiOptions || this.showProgressOptions);
   }
@@ -263,9 +263,9 @@ export class NotificationTester extends PolymerElement {
   // notifier as a string.
   notifierTypeChanged_(notifierType) {
     // notifierType is guaranteed to be 'System' or 'Web'.
-    this.isSystemNotification = notifierType == 'System';
-    this.isWebNotification = notifierType == 'Web';
-    if (notifierType == 'System') {
+    this.isSystemNotification = notifierType === 'System';
+    this.isWebNotification = notifierType === 'Web';
+    if (notifierType === 'System') {
       this.notifMetadata.notifierType = NotifierType.SYSTEM_COMPONENT;
       return;
     }

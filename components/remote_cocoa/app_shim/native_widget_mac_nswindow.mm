@@ -793,19 +793,8 @@ void OrderChildWindow(NSWindow* child_window,
     return;
   }
 
-  // Find the root window.
-  NSWindow* root = self;
-  while (root.parentWindow) {
-    root = root.parentWindow;
-  }
-
   // Only remove from groups if the browser is in immersive fullscreen.
-  NativeWidgetMacNSWindow* rootWidgetWindow =
-      base::apple::ObjCCast<NativeWidgetMacNSWindow>(root);
-  if (!rootWidgetWindow ||
-      !(rootWidgetWindow.styleMask & NSWindowStyleMaskFullScreen) ||
-      !rootWidgetWindow.bridge ||
-      !rootWidgetWindow.bridge->ImmersiveFullscreenEnabled()) {
+  if (![self immersiveFullscreen]) {
     return;
   }
 
@@ -820,7 +809,7 @@ void OrderChildWindow(NSWindow* child_window,
   // Iterate instead of recurse. There are other NSWindow types in the tree
   // besides NativeWidgetMacNSWindow that would not implement our recursion.
   NSMutableArray* nextWindows = [NSMutableArray array];
-  [nextWindows addObject:root];
+  [nextWindows addObject:[self rootWindow]];
   while (nextWindows.count) {
     NSWindow* currentWindow = nextWindows.lastObject;
     [nextWindows removeLastObject];
@@ -829,6 +818,26 @@ void OrderChildWindow(NSWindow* child_window,
       [currentWindow _removeFromGroups:child];
     }
   }
+}
+
+- (NSWindow*)rootWindow {
+  NSWindow* root = self;
+  while (root.parentWindow) {
+    root = root.parentWindow;
+  }
+  return root;
+}
+
+- (BOOL)immersiveFullscreen {
+  NativeWidgetMacNSWindow* rootWidgetWindow =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>([self rootWindow]);
+  if (rootWidgetWindow &&
+      (rootWidgetWindow.styleMask & NSWindowStyleMaskFullScreen) &&
+      rootWidgetWindow.bridge &&
+      rootWidgetWindow.bridge->ImmersiveFullscreenEnabled()) {
+    return YES;
+  }
+  return NO;
 }
 
 @end

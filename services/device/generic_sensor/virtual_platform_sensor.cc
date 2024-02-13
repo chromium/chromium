@@ -15,9 +15,13 @@ VirtualPlatformSensor::VirtualPlatformSensor(
     mojom::SensorType type,
     SensorReadingSharedBuffer* reading_buffer,
     PlatformSensorProvider* provider,
-    std::optional<SensorReading> pending_reading)
+    std::optional<SensorReading> pending_reading,
+    const mojom::VirtualSensorMetadata& metadata)
     : PlatformSensor(type, reading_buffer, provider),
-      pending_reading_(std::move(pending_reading)) {}
+      minimum_supported_frequency_(metadata.minimum_frequency),
+      maximum_supported_frequency_(metadata.maximum_frequency),
+      reporting_mode_(metadata.reporting_mode),
+      current_reading_(std::move(pending_reading)) {}
 
 VirtualPlatformSensor::~VirtualPlatformSensor() = default;
 
@@ -37,12 +41,8 @@ void VirtualPlatformSensor::AddReading(const SensorReading& reading) {
 }
 
 void VirtualPlatformSensor::DoAddReadingSync(const SensorReading& reading) {
-  if (is_active()) {
-    UpdateSharedBufferAndNotifyClients(reading);
-    pending_reading_.reset();
-  } else {
-    pending_reading_ = reading;
-  }
+  current_reading_ = reading;
+  UpdateSharedBufferAndNotifyClients(reading);
 }
 
 void VirtualPlatformSensor::SimulateSensorRemoval() {
@@ -56,8 +56,8 @@ void VirtualPlatformSensor::SimulateSensorRemoval() {
 bool VirtualPlatformSensor::StartSensor(
     const PlatformSensorConfiguration& optimal_configuration) {
   optimal_configuration_ = optimal_configuration;
-  if (pending_reading_.has_value()) {
-    AddReading(*pending_reading_);
+  if (current_reading_.has_value()) {
+    AddReading(*current_reading_);
   }
   return true;
 }

@@ -52,7 +52,8 @@ namespace net {
 
 URLRequestContext::URLRequestContext(
     base::PassKey<URLRequestContextBuilder> pass_key)
-    : url_requests_(std::make_unique<std::set<const URLRequest*>>()),
+    : url_requests_(std::make_unique<
+                    std::set<raw_ptr<const URLRequest, SetExperimental>>>()),
       bound_network_(handles::kInvalidNetworkHandle) {}
 
 URLRequestContext::~URLRequestContext() {
@@ -133,7 +134,7 @@ std::unique_ptr<URLRequest> URLRequestContext::CreateRequest(
     URLRequest::Delegate* delegate,
     NetworkTrafficAnnotationTag traffic_annotation,
     bool is_for_websockets,
-    const absl::optional<net::NetLogSource> net_log_source) const {
+    const std::optional<net::NetLogSource> net_log_source) const {
   return std::make_unique<URLRequest>(
       base::PassKey<URLRequestContext>(), url, priority, delegate, this,
       traffic_annotation, is_for_websockets, net_log_source);

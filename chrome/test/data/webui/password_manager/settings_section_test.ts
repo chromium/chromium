@@ -4,11 +4,11 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {OpenWindowProxyImpl, PasswordManagerImpl, PrefToggleButtonElement, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID, PasswordManagerImpl, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -19,6 +19,7 @@ import {createBlockedSiteEntry, createCredentialGroup, createPasswordEntry, make
 
 // clang-format off
 // <if expr="is_win or is_macosx">
+import type { PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
 import {PasskeysBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
 
 import {TestPasskeysBrowserProxy} from './test_passkeys_browser_proxy.js';
@@ -376,10 +377,8 @@ suite('SettingsSectionTest', function() {
     await flushTasks();
     await flushTasks();
 
-    const accountStorageToggle =
-        settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
-            '#accountStorageToggle');
-    assertTrue(!!accountStorageToggle);
+    const accountStorageToggle = settings.$.accountStorageToggle;
+    assertFalse(accountStorageToggle.hidden);
     assertFalse(accountStorageToggle.hasAttribute('checked'));
     accountStorageToggle.click();
 
@@ -411,9 +410,7 @@ suite('SettingsSectionTest', function() {
         await syncProxy.whenCalled('getSyncInfo');
         await flushTasks();
 
-        assertFalse(
-            !!settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
-                '#accountStorageToggle'));
+        assertTrue(settings.$.accountStorageToggle.hidden);
       });
 
   // <if expr="is_win or is_macosx">
@@ -603,4 +600,27 @@ suite('SettingsSectionTest', function() {
         const dialog = moveDialog!.shadowRoot!.querySelector('#dialog');
         assertTrue(!!dialog);
       });
+
+  test('Account storage iph', async function() {
+    loadTimeData.overrideValues({canAddShortcut: false});
+    passwordManager.data.isOptedInAccountStorage = false;
+    syncProxy.accountInfo = {
+      email: 'testemail@gmail.com',
+    };
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    const section = document.createElement('settings-section');
+    document.body.appendChild(section);
+    await flushTasks();
+
+    assertDeepEquals(
+        section.getSortedAnchorStatusesForTesting(),
+        [
+          [PASSWORD_MANAGER_ACCOUNT_STORE_TOGGLE_ELEMENT_ID, true],
+        ],
+    );
+  });
 });

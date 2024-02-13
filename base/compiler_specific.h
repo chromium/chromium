@@ -443,11 +443,12 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 // Additionally, the initial implementation in clang <= 16 overwrote the return
 // register(s) in the epilogue of a preserve_most function, so we only use
 // preserve_most in clang >= 17 (see https://reviews.llvm.org/D143425).
+// Clang only supports preserve_most on X86-64 and AArch64 for now.
 // See https://clang.llvm.org/docs/AttributeReference.html#preserve-most for
 // more details.
-#if defined(ARCH_CPU_64_BITS) &&                       \
-    !(BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) && \
-    !defined(COMPONENT_BUILD) && defined(__clang__) && \
+#if (defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_X86_64)) && \
+    !(BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)) &&       \
+    !defined(COMPONENT_BUILD) && defined(__clang__) &&       \
     __clang_major__ >= 17 && HAS_ATTRIBUTE(preserve_most)
 #define PRESERVE_MOST __attribute__((preserve_most))
 #else

@@ -5,12 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_ASH_EXTENSION_KEEPLIST_MANAGER_H_
 #define CHROME_BROWSER_EXTENSIONS_ASH_EXTENSION_KEEPLIST_MANAGER_H_
 
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
 
 class Profile;
 
@@ -44,7 +43,7 @@ class AshExtensionKeeplistManager : private ExtensionRegistryObserver {
   bool ShouldDisable(const Extension* extension) const;
 
   // Disables the extension with 'DISABLE_NOT_ASH_KEEPLISTED'.
-  void Disable(const std::string& extension_id);
+  void Disable(const ExtensionId& extension_id);
 
   // Blocks all extensions not on the keeplist by disabling them with
   // 'DISABLE_NOT_ASH_KEEPLISTED'.

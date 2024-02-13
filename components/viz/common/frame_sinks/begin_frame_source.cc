@@ -117,9 +117,9 @@ BeginFrameSource::BeginFrameArgsGenerator::GenerateBeginFrameArgs(
       EstimateTickCountsBetween(frame_time, next_expected_frame_time_,
                                 vsync_interval);
   // This is utilized by ExternalBeginFrameSourceAndroid,
-  // GpuVSyncBeginFrameSource, and DelayBasedBeginFrameSource. Which covers the
-  // main Viz use cases. BackToBackBeginFrameSource is not relevant. We also are
-  // not looking to adjust ExternalBeginFrameSourceMojo which is used in
+  // ExternalBeginFrameSourceWin, and DelayBasedBeginFrameSource. Which covers
+  // the main Viz use cases. BackToBackBeginFrameSource is not relevant. We also
+  // are not looking to adjust ExternalBeginFrameSourceMojo which is used in
   // headless.
   if (dynamic_begin_frame_deadline_offset_source_) {
     base::TimeDelta deadline_offset =

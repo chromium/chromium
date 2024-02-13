@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/content_verifier_delegate.h"
+#include "extensions/common/extension_id.h"
 
 namespace content {
 class BrowserContext;
@@ -76,11 +77,11 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   // ContentVerifierDelegate:
   VerifierSourceType GetVerifierSourceType(const Extension& extension) override;
   ContentVerifierKey GetPublicKey() override;
-  GURL GetSignatureFetchUrl(const std::string& extension_id,
+  GURL GetSignatureFetchUrl(const ExtensionId& extension_id,
                             const base::Version& version) override;
   std::set<base::FilePath> GetBrowserImagePaths(
       const extensions::Extension* extension) override;
-  void VerifyFailed(const std::string& extension_id,
+  void VerifyFailed(const ExtensionId& extension_id,
                     ContentVerifyJob::FailureReason reason) override;
   void Shutdown() override;
 
@@ -98,16 +99,16 @@ class ChromeContentVerifierDelegate : public ContentVerifierDelegate {
   // This maps an extension id to a backoff entry for slowing down
   // redownload/reinstall of corrupt policy extensions if it keeps happening
   // in a loop (eg crbug.com/661738).
-  std::map<std::string, std::unique_ptr<net::BackoffEntry>>
+  std::map<ExtensionId, std::unique_ptr<net::BackoffEntry>>
       policy_reinstall_backoff_;
 
   // For reporting metrics in BOOTSTRAP mode, when an extension would be
   // disabled if content verification was in ENFORCE mode.
-  std::set<std::string> would_be_disabled_ids_;
+  std::set<ExtensionId> would_be_disabled_ids_;
 
   // For reporting metrics about extensions without hashes, which we want to
   // reinstall in the future. See https://crbug.com/958794#c22 for details.
-  std::set<std::string> would_be_reinstalled_ids_;
+  std::set<ExtensionId> would_be_reinstalled_ids_;
 };
 
 }  // namespace extensions

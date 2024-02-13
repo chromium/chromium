@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
-#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_user_data.h"

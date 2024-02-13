@@ -311,7 +311,6 @@ if (!is_android && !is_mac) {
         # On Chrome OS builds (for both ash-chrome and lacros-chrome), put
         # a metadata.json file in root directory containing Chrome version.
         if (is_chromeos) {
-          deps += [ "//ui/gfx/linux:gbm" ]
           data_deps += [ "//build:version_metadata" ]
         }
 
@@ -892,12 +891,14 @@ if (is_win) {
     sources = [
       "$root_out_dir/app_mode_loader",
       "$root_out_dir/chrome_crashpad_handler",
+      "$root_out_dir/web_app_shortcut_copier",
     ]
 
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
     public_deps = [
       "//chrome/app_shim:app_mode_loader",
+      "//chrome/browser/web_applications:web_app_shortcut_copier",
       "//components/crash/core/app:chrome_crashpad_handler",
     ]
 
@@ -1147,7 +1148,6 @@ if (is_win) {
       ":dependencies",
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
-      "//chrome/app:notification_metrics",
       "//chrome/common:buildflags",
       "//chrome/common:version_header",
       "//chrome/common/profiler",

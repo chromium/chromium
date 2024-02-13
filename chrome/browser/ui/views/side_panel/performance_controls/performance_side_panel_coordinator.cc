@@ -96,7 +96,7 @@ PerformanceSidePanelCoordinator::CreatePerformanceWebUIView() {
   side_panel_url = net::AppendQueryParameter(
       side_panel_url, "notifications", base::JoinString(notifications, ","));
   auto wrapper =
-      std::make_unique<BubbleContentsWrapperT<PerformanceSidePanelUI>>(
+      std::make_unique<WebUIContentsWrapperT<PerformanceSidePanelUI>>(
           side_panel_url, GetBrowser().profile(), IDS_SHOW_PERFORMANCE,
           /*webui_resizes_host=*/false,
           /*esc_closes_ui=*/false);

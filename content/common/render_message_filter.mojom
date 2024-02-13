@@ -7,12 +7,24 @@ module content.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
+// Struct representing the routing information needed for a child iframe
+// created from the renderer.
+struct FrameRoutingInfo {
+  int32 routing_id;
+  blink.mojom.LocalFrameToken frame_token;
+  mojo_base.mojom.UnguessableToken devtools_frame_token;
+  blink.mojom.DocumentToken document_token;
+};
+
+// A interface to the browser process that is handled on the IO thread.
+// This interface contains synchronous calls the renderer needs to
+// block on and should be serviced quickly.
 interface RenderMessageFilter {
-  // Similar to GenerateRoutingID but also generates a `frame token`,
-  // `devtools_frame_token`, and `document_token`. A subsequent call to
+  // Generates a FrameRoutingInfo object. A subsequent call to
   // `FrameHost::CreateChildFrame` is expected after this call.
-  [Sync] GenerateFrameRoutingID() => (int32 routing_id,
-                   blink.mojom.LocalFrameToken frame_token,
-                   mojo_base.mojom.UnguessableToken devtools_frame_token,
-                   blink.mojom.DocumentToken document_token);
+  [Sync] GenerateSingleFrameRoutingInfo() => (FrameRoutingInfo info);
+
+  // Similar to `GenerateSingleFrameRoutingInfo` but returns multiple
+  // FrameRoutingInfo objects that can be later used.
+  [Sync] GenerateFrameRoutingInfos() => (array<FrameRoutingInfo> info_array);
 };

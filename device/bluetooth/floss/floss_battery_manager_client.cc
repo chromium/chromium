@@ -112,9 +112,9 @@ FlossBatteryManagerClient::~FlossBatteryManagerClient() {
 }
 
 void FlossBatteryManagerClient::GetBatteryInformation(
-    ResponseCallback<absl::optional<BatterySet>> callback,
+    ResponseCallback<std::optional<BatterySet>> callback,
     const FlossDeviceId& device) {
-  CallBatteryManagerMethod<absl::optional<BatterySet>>(
+  CallBatteryManagerMethod<std::optional<BatterySet>>(
       std::move(callback), battery_manager::kGetBatteryInformation,
       device.address);
 }

@@ -6,8 +6,7 @@
 
 #include "net/base/ip_endpoint.h"
 
-namespace ash {
-namespace smb_client {
+namespace ash::smb_client {
 
 FakeNetBiosClient::FakeNetBiosClient() = default;
 
@@ -30,5 +29,4 @@ void FakeNetBiosClient::ExecuteNameRequest(
   }
 }
 
-}  // namespace smb_client
-}  // namespace ash
+}  // namespace ash::smb_client

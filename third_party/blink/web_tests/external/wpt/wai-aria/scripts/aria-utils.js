@@ -144,6 +144,7 @@ const AriaUtils = {
       promise_test(async t => {
         const expectedLabel = el.getAttribute("data-expectedlabel");
         let computedLabel = await test_driver.get_computed_label(el);
+        assert_not_equals(computedLabel, null, `get_computed_label(el) shouldn't return null for ${el.outerHTML}`);
 
         // See:
         // - https://github.com/w3c/accname/pull/165

@@ -129,7 +129,7 @@ class InProcessContextFactory::PerCompositorData
     display_ = std::move(display);
   }
   void SetMaxVrrInterval(
-      absl::optional<base::TimeDelta> max_vrr_interval) override {
+      std::optional<base::TimeDelta> max_vrr_interval) override {
     max_vrr_interval_ = max_vrr_interval;
   }
 
@@ -138,7 +138,7 @@ class InProcessContextFactory::PerCompositorData
     display_color_spaces_ = gfx::DisplayColorSpaces();
     vsync_timebase_ = base::TimeTicks();
     vsync_interval_ = base::TimeDelta();
-    max_vrr_interval_ = absl::nullopt;
+    max_vrr_interval_ = std::nullopt;
   }
 
   void Bind(
@@ -159,7 +159,7 @@ class InProcessContextFactory::PerCompositorData
   }
   base::TimeTicks vsync_timebase() { return vsync_timebase_; }
   base::TimeDelta vsync_interval() { return vsync_interval_; }
-  absl::optional<base::TimeDelta> max_vrr_interval() {
+  std::optional<base::TimeDelta> max_vrr_interval() {
     return max_vrr_interval_;
   }
 
@@ -172,7 +172,7 @@ class InProcessContextFactory::PerCompositorData
   gfx::DisplayColorSpaces display_color_spaces_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
-  absl::optional<base::TimeDelta> max_vrr_interval_;
+  std::optional<base::TimeDelta> max_vrr_interval_;
 
   mojo::AssociatedReceiver<viz::mojom::DisplayPrivate> receiver_{this};
 };
@@ -386,11 +386,11 @@ base::TimeDelta InProcessContextFactory::GetDisplayVSyncTimeInterval(
   return iter->second->vsync_interval();
 }
 
-absl::optional<base::TimeDelta> InProcessContextFactory::GetMaxVrrInterval(
+std::optional<base::TimeDelta> InProcessContextFactory::GetMaxVrrInterval(
     Compositor* compositor) const {
   auto iter = per_compositor_data_.find(compositor);
   if (iter == per_compositor_data_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return iter->second->max_vrr_interval();
 }

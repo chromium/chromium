@@ -24,7 +24,7 @@
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -638,7 +638,7 @@ class PasswordCounterDelegateBridge
   [self.consumer showAccessorySuggestions:suggestions];
   if (suggestions.count) {
     if (provider.type == SuggestionProviderTypeAutofill) {
-      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+      default_browser::NotifyAutofillSuggestionsShown();
     }
 
     if (suggestions.firstObject.featureForIPH.length > 0) {
@@ -678,8 +678,9 @@ class PasswordCounterDelegateBridge
 // Handles the selection of a suggestion.
 - (void)handleSuggestion:(FormSuggestion*)formSuggestion {
   if (self.currentProvider.type == SuggestionProviderTypePassword) {
-    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+    default_browser::NotifyPasswordAutofillSuggestionUsed();
   }
+
   if (formSuggestion.featureForIPH.length) {
     // The IPH is only shown if the suggestion was the first one. It doesn't
     // matter if the IPH was shown for this suggestion as we don't want to
@@ -703,7 +704,6 @@ class PasswordCounterDelegateBridge
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
   [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
                      popupItemId:formSuggestion.popupItemId];
-  LogAutofillUseForDefaultBrowserPromo();
 
   if (!formSuggestion.requiresReauth) {
     [self logReauthenticationEvent:ReauthenticationEvent::kSuccess

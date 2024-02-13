@@ -20,9 +20,8 @@ std::string HashNodes(const std::string& lh, const std::string& rh) {
   hash->Update(lh.data(), lh.size());
   hash->Update(rh.data(), rh.size());
 
-  std::string result;
-  hash->Finish(base::WriteInto(&result, crypto::kSHA256Length + 1),
-               crypto::kSHA256Length);
+  std::string result(crypto::kSHA256Length, '\0');
+  hash->Finish(result.data(), result.size());
   return result;
 }
 

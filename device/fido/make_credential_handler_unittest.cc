@@ -55,7 +55,7 @@ namespace {
 
 using TestMakeCredentialRequestCallback = test::StatusAndValuesCallbackReceiver<
     MakeCredentialStatus,
-    absl::optional<AuthenticatorMakeCredentialResponse>,
+    std::optional<AuthenticatorMakeCredentialResponse>,
     const FidoAuthenticator*>;
 
 }  // namespace
@@ -83,7 +83,7 @@ class FidoMakeCredentialHandlerTest : public ::testing::Test {
     PublicKeyCredentialRpEntity rp(test_data::kRelyingPartyId);
     PublicKeyCredentialUserEntity user(
         fido_parsing_utils::Materialize(test_data::kUserId), "nia",
-        absl::nullopt);
+        std::nullopt);
     PublicKeyCredentialParams credential_params(
         std::vector<PublicKeyCredentialParams::CredentialInfo>(1));
 
@@ -434,7 +434,7 @@ ACTION_P(Reply, reply) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
+          [](base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
                  callback,
              std::vector<uint8_t> reply_bytes) {
             std::move(callback).Run(std::move(reply_bytes));

@@ -174,6 +174,8 @@ source_set("wayland") {
     "host/wayland_zaura_output.h",
     "host/wayland_zaura_output_manager.cc",
     "host/wayland_zaura_output_manager.h",
+    "host/wayland_zaura_output_manager_v2.cc",
+    "host/wayland_zaura_output_manager_v2.h",
     "host/wayland_zaura_shell.cc",
     "host/wayland_zaura_shell.h",
     "host/wayland_zaura_surface.cc",
@@ -243,6 +245,7 @@ source_set("wayland") {
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
     "//components/device_event_log",
+    "//components/exo/wayland/protocol:aura_output_management_protocol",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
@@ -375,10 +378,6 @@ source_set("wayland") {
       "//ui/gfx:memory_buffer",
       "//ui/gfx/linux:gbm",
     ]
-
-    if (is_chromeos) {
-      deps += [ "//ui/gfx/linux:gbm" ]
-    }
   }
 
   if (use_bundled_weston) {
@@ -512,6 +511,8 @@ source_set("test_support") {
     "test/test_zaura_output.h",
     "test/test_zaura_output_manager.cc",
     "test/test_zaura_output_manager.h",
+    "test/test_zaura_output_manager_v2.cc",
+    "test/test_zaura_output_manager_v2.h",
     "test/test_zaura_popup.cc",
     "test/test_zaura_popup.h",
     "test/test_zaura_shell.cc",
@@ -602,6 +603,7 @@ source_set("wayland_unittests") {
     "host/wayland_window_manager_unittests.cc",
     "host/wayland_window_unittest.cc",
     "host/wayland_zaura_output_manager_unittest.cc",
+    "host/wayland_zaura_output_manager_v2_unittest.cc",
     "host/wayland_zaura_output_unittest.cc",
     "host/wayland_zaura_shell_unittest.cc",
     "host/wayland_zcr_color_manager_unittest.cc",
@@ -623,6 +625,7 @@ source_set("wayland_unittests") {
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
+    "//components/exo/wayland/protocol:aura_output_management_protocol",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
     "//testing/gtest",
@@ -707,6 +710,7 @@ source_set("ui_test_support") {
     "//third_party/wayland-protocols:ui_controls_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
     "//ui/base:test_support",
+    "//ui/base/wayland:wayland_display_util",
     "//ui/display:test_support",
     "//ui/events",
     "//ui/events:dom_keycode_converter",

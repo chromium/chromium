@@ -11,13 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_identifier.h"
+#include "components/user_education/common/user_education_metadata.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -96,73 +96,6 @@ class FeaturePromoSpecification {
     std::optional<uint32_t> initial_delay_days_;
     std::optional<uint32_t> used_limit_;
     std::vector<AdditionalCondition> additional_conditions_;
-  };
-
-  // Provides metadata about an IPH. Metadata will be shown and used on the
-  // tester page, and also provides a information as to when an IPH was added to
-  // Chrome and by whom.
-  struct Metadata {
-    // The platform the IPH can be shown on.
-    //
-    // These are a subset of variations::Study::Platform.
-    //
-    // TODO(dfried): figure out how to unify a single list of platforms for all
-    // use cases; enums like this are scattered all over the codebase.
-    enum class Platforms {
-      kWindows = 0,
-      kMac = 1,
-      kLinux = 2,
-      kChromeOSAsh = 3,
-      kChromeOSLacros = 9,
-    };
-
-    // All desktop platforms.
-    static constexpr std::initializer_list<Platforms> kAllDesktopPlatforms{
-        Platforms::kWindows, Platforms::kMac, Platforms::kLinux,
-        Platforms::kChromeOSAsh, Platforms::kChromeOSLacros};
-
-    // Represents a callback that will be triggered when a user launches an IPH
-    // from the tester page, before the IPH is shown. This can get the browser
-    // into the proper state to demo the IPH.
-    //
-    // The `launch_context` is provided as a hint in case there are multiple
-    // windows. The function should return true on success; false if the
-    // required state cannot be set up.
-    using TesterPageLaunchCallback =
-        base::RepeatingCallback<bool(ui::ElementContext launch_context)>;
-
-    Metadata(int launch_milestone,
-             std::string owners,
-             std::string triggering_condition_description,
-             base::flat_set<const base::Feature*> required_features = {},
-             base::flat_set<Platforms> platforms = kAllDesktopPlatforms);
-    Metadata();
-    Metadata(Metadata&&) noexcept;
-    Metadata& operator=(Metadata&&) noexcept;
-    ~Metadata();
-
-    // The integer part of the launch milestone. For example, 118.
-    int launch_milestone = 0;
-
-    // The email, ldap, group name, team name, etc. of the owner(s) of the IPH.
-    // This is a display-only field on an internal page, so the format is up to
-    // the implementing team, but it is also metadata to track each IPH's
-    // lifecycle so be sure to specify it.
-    std::string owners;
-
-    // Description of when the IPH would be triggered. This is a display-only
-    // field on an internal page, so the format is up to the implementing team,
-    // but a good description will help other people understand how the IPH is
-    // implemented and when to expect it to appear.
-    std::string triggering_condition_description;
-
-    // The set of non-IPH features that must be enabled in order for the IPH to
-    // be displayed.
-    using FeatureSet = base::flat_set<const base::Feature*>;
-    FeatureSet required_features;
-
-    // The set of platforms the IPH can be displayed on.
-    base::flat_set<Platforms> platforms = kAllDesktopPlatforms;
   };
 
   // Provide different ways to specify parameters for title or body text.

@@ -1022,7 +1022,7 @@ TEST_P(WaylandDataDragControllerTest, AsyncNoopStartDrag) {
 // Regression test for https://crbug.com/1175083.
 TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerial) {
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
-  absl::optional<wl::Serial> mouse_press_serial =
+  std::optional<wl::Serial> mouse_press_serial =
       connection()->serial_tracker().GetSerial(wl::SerialType::kMousePress);
   ASSERT_TRUE(mouse_press_serial.has_value());
 
@@ -1079,7 +1079,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   ASSERT_FALSE(window_manager->GetCurrentTouchFocusedWindow());
 
   FocusAndPressLeftPointerButton(window_.get(), &delegate_);
-  absl::optional<wl::Serial> mouse_press_serial =
+  std::optional<wl::Serial> mouse_press_serial =
       connection()->serial_tracker().GetSerial(wl::SerialType::kMousePress);
   ASSERT_TRUE(mouse_press_serial.has_value());
   ASSERT_EQ(window_.get(), window_manager->GetCurrentPointerFocusedWindow());
@@ -1202,7 +1202,9 @@ TEST_P(WaylandDataDragControllerTest, DndActionsToDragOperations) {
 // Emulate an incoming DnD session, testing that data drag controller gracefully
 // handles entered window destruction happening while the data fetching is still
 // unfinished. Regression test for https://crbug.com/1400872.
-TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
+// TODO(b/324541578): Fix threading-related flakiness and re-enabled.
+TEST_P(WaylandDataDragControllerTest,
+       DISABLED_DestroyWindowWhileFetchingForeignData) {
   auto main_thread_test_task_runnner =
       task_environment_.GetMainThreadTaskRunner();
   ASSERT_TRUE(main_thread_test_task_runnner);
@@ -1248,6 +1250,53 @@ TEST_P(WaylandDataDragControllerTest, DestroyWindowWhileFetchingForeignData) {
             WaylandDataDragController::State::kStarted);
 
   SendDndLeave();
+
+  Mock::VerifyAndClearExpectations(drop_handler_.get());
+  EXPECT_FALSE(drop_handler_->dropped_data());
+  EXPECT_FALSE(data_device()->drag_delegate_);
+  EXPECT_EQ(drag_controller()->state(),
+            WaylandDataDragController::State::kIdle);
+}
+
+// Emulate an incoming DnD session and verifies that data drag controller aborts
+// data fetching, if needed, upon wl_data_device.leave.
+TEST_P(WaylandDataDragControllerTest, LeaveWindowWhileFetchingData) {
+  ASSERT_TRUE(window_);
+
+  EXPECT_CALL(*drop_handler_, OnDragEnter(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, MockDragMotion(_, _, _)).Times(1);
+  EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+
+  // None other event expected because the window gets destroyed in the middle
+  // of the test.
+  EXPECT_CALL(*drop_handler_, MockOnDragDataAvailable()).Times(0);
+  EXPECT_CALL(*drop_handler_, MockOnDragDrop()).Times(0);
+
+  // 3 mime types are offered, which gives as time to hook up partial data
+  // fetching and process wl_data_device.leave while it's still ongoing.
+  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
+    const auto data = ToClipboardData(std::string(kSampleTextForDragAndDrop));
+    auto* server_device = server->data_device_manager()->data_device();
+    auto* server_offer = server_device->CreateAndSendDataOffer();
+    server_offer->OnOffer(kMimeTypeText, data);
+    server_offer->OnOffer(kMimeTypeTextUtf8, data);
+    server_offer->OnOffer(kMimeTypeHTML, data);
+
+    const uint32_t surface_id = window_->root_surface()->get_surface_id();
+    auto* surface = server->GetObject<wl::MockSurface>(surface_id);
+    server_device->OnEnter(server->GetNextSerial(), surface->resource(),
+                           wl_fixed_from_int(0), wl_fixed_from_int(0),
+                           server_offer);
+
+    // This should trigger data fetching task cancellation at client side,
+    // assuming it is still in progress.
+    server_device->OnLeave();
+  });
+
+  // Wait for the full data transfer flow and requests/events to finish before
+  // checking all expectations.
+  WaitForDragDropTasks();
+  wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
   Mock::VerifyAndClearExpectations(drop_handler_.get());
   EXPECT_FALSE(drop_handler_->dropped_data());
@@ -1321,6 +1370,7 @@ INSTANTIATE_TEST_SUITE_P(
                                 wl::EnableAuraShellProtocol::kEnabled},
            wl::ServerConfig{
                .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
-               .use_aura_output_manager = true}));
+               .aura_output_manager_protocol =
+                   wl::AuraOutputManagerProtocol::kEnabledV2}));
 
 }  // namespace ui

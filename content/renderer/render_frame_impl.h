@@ -651,7 +651,7 @@ class CONTENT_EXPORT RenderFrameImpl
   bool AllowContentInitiatedDataUrlNavigations(
       const blink::WebURL& url) override;
   void PostAccessibilityEvent(const ui::AXEvent& event) override;
-  void AXReadyCallback() override;
+  bool AXReadyCallback() override;
   void CheckIfAudioSinkExistsAndIsAuthorized(
       const blink::WebString& sink_id,
       blink::WebSetSinkIdCompleteCallback callback) override;
@@ -1326,7 +1326,8 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Plugins -------------------------------------------------------------------
 #if BUILDFLAG(ENABLE_PPAPI)
-  typedef std::set<PepperPluginInstanceImpl*> PepperPluginSet;
+  typedef std::set<raw_ptr<PepperPluginInstanceImpl, SetExperimental>>
+      PepperPluginSet;
   PepperPluginSet active_pepper_instances_;
 
   // Whether or not the focus is on a PPAPI plugin

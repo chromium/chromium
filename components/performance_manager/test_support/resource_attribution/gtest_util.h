@@ -13,7 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager::resource_attribution {
+namespace resource_attribution {
 
 namespace internal {
 
@@ -203,6 +203,6 @@ inline void PrintTo(const WorkerContext& context, std::ostream* os) {
   *os << context.ToString();
 }
 
-}  // namespace performance_manager::resource_attribution
+}  // namespace resource_attribution
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_RESOURCE_ATTRIBUTION_GTEST_UTIL_H_

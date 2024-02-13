@@ -312,6 +312,11 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   card.image_src =
       card_art_image ? webui::GetBitmapDataUrl(card_art_image->AsBitmap())
                      : CardNetworkToIconResourceIdString(credit_card.network());
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCardBenefits) &&
+      credit_card.product_terms_url().is_valid()) {
+    card.product_terms_url = credit_card.product_terms_url().spec();
+  }
 
   // Create card metadata and add it to |card|.
   card.metadata.emplace();

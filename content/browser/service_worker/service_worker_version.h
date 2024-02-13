@@ -484,7 +484,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // The worker host hosting this version. Only valid while the version is
   // running.
   content::ServiceWorkerHost* worker_host() {
-    DCHECK(worker_host_);
+    CHECK(worker_host_);
     return worker_host_.get();
   }
 

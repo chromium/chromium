@@ -859,12 +859,18 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   tester.AddConsecutiveSharedStorageEntries(origin, u"key", u"value", 10);
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(origin));
-  EXPECT_EQ(10, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(10 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   RemoveAndWait(BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE);
 
   EXPECT_TRUE(tester.GetSharedStorageOrigins().empty());
-  EXPECT_EQ(0, tester.GetSharedStorageTotalEntries());
+  EXPECT_EQ(0, tester.GetSharedStorageTotalBytes());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
@@ -883,7 +889,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   EXPECT_THAT(
       tester.GetSharedStorageOrigins(),
       testing::UnorderedElementsAre(origin, sub_origin, another_origin));
-  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(16 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
       BrowsingDataFilterBuilder::Create(
@@ -894,7 +906,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
 
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(another_origin));
-  EXPECT_EQ(1, tester.GetSharedStorageTotalEntries());
+
+  EXPECT_EQ(1 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
@@ -913,7 +926,13 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
   EXPECT_THAT(
       tester.GetSharedStorageOrigins(),
       testing::UnorderedElementsAre(origin, sub_origin, another_origin));
-  EXPECT_EQ(16, tester.GetSharedStorageTotalEntries());
+
+  // Note that u"key" concatenated with a single digit has 4 char16_t's and
+  // hence 8 bytes. Similarly, u"value" concatenated with one digit has
+  // 6 char16_t's and hence 12 bytes. A pair of these together thus has
+  // 20 bytes.
+  const int kNumBytesPerEntry = 20;
+  EXPECT_EQ(16 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 
   // Delete all data *except* that specified by the filter.
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
@@ -925,7 +944,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverImplSharedStorageBrowserTest,
 
   EXPECT_THAT(tester.GetSharedStorageOrigins(),
               testing::UnorderedElementsAre(origin, sub_origin));
-  EXPECT_EQ(15, tester.GetSharedStorageTotalEntries());
+  EXPECT_EQ(15 * kNumBytesPerEntry, tester.GetSharedStorageTotalBytes());
 }
 
 }  // namespace content

@@ -26,6 +26,8 @@ template <>
 struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
   static gpu::mojom::GrContextType ToMojom(gpu::GrContextType input) {
     switch (input) {
+      case gpu::GrContextType::kNone:
+        return gpu::mojom::GrContextType::kNone;
       case gpu::GrContextType::kGL:
         return gpu::mojom::GrContextType::kGL;
       case gpu::GrContextType::kVulkan:
@@ -41,6 +43,9 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
   static bool FromMojom(gpu::mojom::GrContextType input,
                         gpu::GrContextType* out) {
     switch (input) {
+      case gpu::mojom::GrContextType::kNone:
+        *out = gpu::GrContextType::kNone;
+        return true;
       case gpu::mojom::GrContextType::kGL:
         *out = gpu::GrContextType::kGL;
         return true;

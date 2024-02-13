@@ -131,6 +131,7 @@ template("chrome_bundle") {
                                "is_64_bit_browser",
                                "manifest_package",
                                "target_sdk_version",
+                               "override_target_sdk"
                              ])
       is_monochrome = _is_monochrome
       is_trichrome = _is_trichrome

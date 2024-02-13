@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_mount.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -41,7 +42,7 @@
 namespace extensions {
 namespace {
 
-std::string Redact(const base::StringPiece path) {
+std::string Redact(const std::string_view path) {
   return LOG_IS_ON(INFO) ? base::StrCat({"'", path, "'"}) : "(redacted)";
 }
 

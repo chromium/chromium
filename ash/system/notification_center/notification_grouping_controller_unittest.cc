@@ -883,7 +883,7 @@ TEST_F(NotificationGroupingControllerTest,
   // Make sure there is no grouping with 4 ARC notifications.
   auto notifications = message_center->GetVisibleNotifications();
   EXPECT_EQ(notifications.size(), 4u);
-  for (auto* n : notifications) {
+  for (Notification* n : notifications) {
     EXPECT_FALSE(n->group_child() || n->group_parent());
   }
 
@@ -899,7 +899,7 @@ TEST_F(NotificationGroupingControllerTest,
       id0 + message_center_utils::GenerateGroupParentNotificationIdSuffix(
                 message_center->FindNotificationById(id0)->notifier_id());
   notifications = message_center->GetVisibleNotifications();
-  for (auto* n : notifications) {
+  for (Notification* n : notifications) {
     if (n->id() == parent_id) {
       EXPECT_TRUE(n->group_parent());
       continue;

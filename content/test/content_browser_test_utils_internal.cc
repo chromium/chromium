@@ -51,6 +51,8 @@
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "cc/slim/layer_tree.h"
+#include "content/browser/renderer_host/compositor_impl_android.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -1065,6 +1067,29 @@ void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
   NOTREACHED();
 #endif
   run_loop.Run();
+}
+
+void ForceNewCompositorFrameFromBrowser(WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowAndroid* window = web_contents->GetTopLevelNativeWindow();
+  ui::WindowAndroidCompositor* compositor = window->GetCompositor();
+  cc::slim::LayerTree* layer_tree =
+      static_cast<CompositorImpl*>(compositor)->GetLayerTreeForTesting();
+  layer_tree->SetNeedsRedrawForTesting();
+#elif BUILDFLAG(IS_MAC)
+  auto* browser_compositor = GetBrowserCompositorMacForTesting(
+      web_contents->GetRenderWidgetHostView());
+  browser_compositor->GetCompositor()->ScheduleFullRedraw();
+#elif BUILDFLAG(IS_IOS)
+  auto* browser_compositor = GetBrowserCompositorIOSForTesting(
+      web_contents->GetRenderWidgetHostView());
+  browser_compositor->GetCompositor()->ScheduleFullRedraw();
+#elif defined(USE_AURA)
+  auto* compositor = static_cast<RenderWidgetHostViewAura*>(
+                         web_contents->GetRenderWidgetHostView())
+                         ->GetCompositor();
+  compositor->ScheduleFullRedraw();
+#endif
 }
 
 namespace {

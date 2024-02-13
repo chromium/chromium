@@ -5,17 +5,14 @@
 #ifndef CHROME_UPDATER_UTIL_UTIL_H_
 #define CHROME_UPDATER_UTIL_UTIL_H_
 
+#include <cmath>
+#include <concepts>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <type_traits>
-#include <utility>
 
-#include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/functional/callback_forward.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "chrome/updater/tag.h"
@@ -23,38 +20,34 @@
 
 class GURL;
 
-// Externally-defined printers for base types.
 namespace base {
 
 class CommandLine;
+class FilePath;
 class Version;
 
+// Enables insertion of optional `base` types. Must be in the `base` namespace
+// for insertion into gTest expectations to work.
 template <class T>
-std::ostream& operator<<(std::ostream& os, const std::optional<T>& opt) {
-  if (opt.has_value()) {
-    return os << opt.value();
-  } else {
+inline std::ostream& operator<<(std::ostream& os, const std::optional<T>& opt) {
+  if (!opt.has_value()) {
     return os << "std::nullopt";
   }
+  return os << opt.value();
 }
 
 }  // namespace base
 
 namespace updater {
 
-// This template function enables logging enum value as the underlying type.
-template <typename T>
-std::ostream& operator<<(
-    typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream,
-    const T& e) {
-  return stream << base::to_underlying(e);
-}
-
-namespace tagging {
-struct TagArgs;
-}
-
 struct RegistrationRequest;
+
+// Inserts an enum value as the underlying type.
+template <typename T>
+  requires(std::is_enum_v<T>)
+inline std::ostream& operator<<(std::ostream& os, const T& e) {
+  return os << base::to_underlying(e);
+}
 
 // Returns the versioned install directory under which the program stores its
 // executables. For example, on macOS this function may return
@@ -224,6 +217,13 @@ bool MigrateLegacyUpdaters(
 
 // Delete everything other than `except` under `except.DirName()`.
 [[nodiscard]] bool DeleteExcept(const std::optional<base::FilePath>& except);
+
+// Returns the quotient of dividing two integer numbers (m/n) rounded up.
+template <typename T>
+  requires(std::integral<T>)
+[[nodiscard]] constexpr T CeilingDivide(T m, T n) {
+  return std::ceil(static_cast<double>(m) / n);
+}
 
 }  // namespace updater
 

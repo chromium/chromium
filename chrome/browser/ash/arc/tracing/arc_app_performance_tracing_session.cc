@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing.h"
+#include "chrome/browser/ash/arc/tracing/arc_graphics_jank_detector.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,7 +33,7 @@ constexpr auto kTargetFrameTime = base::Seconds(1) / kTargetFps;
 // any commit for |kIdleThresholdFrames| frames.
 constexpr uint64_t kIdleThresholdFrames = 10;
 
-double calcVSyncError(const auto& frame_delta) {
+double CalcVSyncError(const base::TimeDelta& frame_delta) {
   // Calculate the number of display frames passed between two updates.
   // Ideally we should have one frame for target FPS. In case the app drops
   // frames, the number of dropped frames would be accounted. The result is
@@ -43,6 +46,35 @@ double calcVSyncError(const auto& frame_delta) {
   const base::TimeDelta vsync_error =
       frame_delta - display_frames_passed * kTargetFrameTime;
   return (vsync_error.InMicrosecondsF() * vsync_error.InMicrosecondsF());
+}
+
+double CalcJanksPerMinute(const std::deque<int64_t>& presents,
+                          const base::TimeDelta& duration) {
+  int jank_count = 0;
+  ArcGraphicsJankDetector jank_detector(base::BindRepeating(
+      [](int* out_count, const base::Time& timestamp) { (*out_count)++; },
+      &jank_count));
+
+  // Feed minimum samples into detector to obtain sampling rate.
+  for (const auto& ts_usec : presents) {
+    jank_detector.OnSample(
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ts_usec)));
+    if (jank_detector.stage() == ArcGraphicsJankDetector::Stage::kActive) {
+      break;
+    }
+  }
+  if (jank_detector.stage() != ArcGraphicsJankDetector::Stage::kActive) {
+    LOG(ERROR) << "Jank detector was not able to determine rate";
+    return 0;
+  }
+
+  // Detected rate, now we can feed all presents to detector to find janks.
+  jank_detector.SetPeriodFixed(jank_detector.period());
+  for (const auto& ts_usec : presents) {
+    jank_detector.OnSample(
+        base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(ts_usec)));
+  }
+  return jank_count / (duration.InSecondsF() / 60.0);
 }
 
 }  // namespace
@@ -171,15 +203,18 @@ void ArcAppPerformanceTracingSession::OnCommit(exo::Surface* surface) {
     return;
   }
 
-  frames_->ListenForPresent(surface);
   frame_times_.emplace_back(ticks_now_callback_.Run());
+  frames_->ListenForPresent(surface);
 }
 
 void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   const auto& presents = frames_->presents();
+  const size_t num_presents = presents.size(),
+               num_frame_times = frame_times_.size();
 
-  if (frame_times_.size() < 2 || presents.size() < 2 ||
-      tracing_period <= base::TimeDelta() || DetectIdle()) {
+  if (num_frame_times < 2 || tracing_period <= base::TimeDelta() ||
+      DetectIdle()) {
+    LOG(ERROR) << "Failed to meet minimum requirements to analyze tracing";
     Stop(std::nullopt);
     return;
   }
@@ -187,27 +222,36 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   VLOG(1) << "Analyze tracing.";
 
   std::vector<base::TimeDelta> commit_deltas, present_deltas;
-  commit_deltas.reserve(frame_times_.size() - 1);
-  present_deltas.reserve(presents.size() - 1);
-
   PerfTraceResult result;
+  commit_deltas.reserve(num_frame_times - 1);
   double vsync_error_deviation_accumulator = 0;
   for (auto fitr = frame_times_.begin() + 1; fitr != frame_times_.end();
        fitr++) {
     const auto frame_delta = *fitr - *(fitr - 1);
     commit_deltas.push_back(frame_delta);
-    vsync_error_deviation_accumulator += calcVSyncError(frame_delta);
+    vsync_error_deviation_accumulator += CalcVSyncError(frame_delta);
   }
   result.commit_deviation =
       sqrt(vsync_error_deviation_accumulator / commit_deltas.size());
-  vsync_error_deviation_accumulator = 0;
-  for (auto fitr = presents.begin() + 1; fitr != presents.end(); fitr++) {
-    const auto frame_delta = base::Microseconds(*fitr - *(fitr - 1));
-    present_deltas.push_back(frame_delta);
-    vsync_error_deviation_accumulator += calcVSyncError(frame_delta);
+
+  // Number of presents could be zero if display-less device (e.g. Chromebox),
+  // in this case skip calculating present metrics with less than two frames.
+  result.present_deviation = result.perceived_fps = result.janks_per_minute = 0;
+  if (num_presents > 1) {
+    present_deltas.reserve(num_presents - 1);
+    vsync_error_deviation_accumulator = 0;
+    for (auto fitr = presents.begin() + 1; fitr != presents.end(); fitr++) {
+      const auto frame_delta = base::Microseconds(*fitr - *(fitr - 1));
+      present_deltas.push_back(frame_delta);
+      vsync_error_deviation_accumulator += CalcVSyncError(frame_delta);
+    }
+    result.present_deviation =
+        sqrt(vsync_error_deviation_accumulator / present_deltas.size());
+    result.perceived_fps = num_presents / tracing_period.InSecondsF();
+    if (ArcGraphicsJankDetector::IsEnoughSamplesToDetect(num_presents)) {
+      result.janks_per_minute = CalcJanksPerMinute(presents, tracing_period);
+    }
   }
-  result.present_deviation =
-      sqrt(vsync_error_deviation_accumulator / present_deltas.size());
 
   std::sort(commit_deltas.begin(), commit_deltas.end());
   // Get 10% and 90% indices.
@@ -215,9 +259,7 @@ void ArcAppPerformanceTracingSession::Analyze(base::TimeDelta tracing_period) {
   const size_t upper_position = commit_deltas.size() - 1 - lower_position;
   result.render_quality =
       commit_deltas[lower_position] / commit_deltas[upper_position];
-
   result.fps = commit_deltas.size() / tracing_period.InSecondsF();
-  result.perceived_fps = presents.size() / tracing_period.InSecondsF();
 
   Stop(result);
 }

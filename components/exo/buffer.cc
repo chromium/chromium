@@ -233,8 +233,8 @@ Buffer::Texture::Texture(
 
   shared_image_ = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
-      gpu::kNullSurfaceHandle);
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      gpu::kExoTextureLabelPrefix, gpu::kNullSurfaceHandle);
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
@@ -281,14 +281,14 @@ Buffer::Texture::Texture(
     auto si_format = GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
     shared_image_ = sii->CreateSharedImage(
         si_format, gpu_memory_buffer_->GetSize(), color_space,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
-        gpu_memory_buffer_->CloneHandle());
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+        gpu::kExoTextureLabelPrefix, gpu_memory_buffer_->CloneHandle());
 
   } else {
     shared_image_ = sii->CreateSharedImage(
         gpu_memory_buffer_, gpu_memory_buffer_manager,
         gfx::BufferPlane::DEFAULT, color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, usage, "ExoTexture");
+        kPremul_SkAlphaType, usage, gpu::kExoTextureLabelPrefix);
   }
   CHECK(shared_image_);
   DCHECK(!shared_image_->mailbox().IsZero());

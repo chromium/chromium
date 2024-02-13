@@ -26,6 +26,8 @@ inline constexpr base::FilePath::CharType kTpcdMetadataComponentFileName[] =
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// NOTE: Keep in sync with `TpcdMetadataInstallationResult` at
+// src/tools/metrics/histograms/metadata/navigation/enums.xml
 enum class TpcdMetadataInstallationResult {
   // The metadata component was successfully .
   kSuccessful = 0,
@@ -37,7 +39,9 @@ enum class TpcdMetadataInstallationResult {
   kParsingToProtoFailed = 3,
   // One or more of the specs are erroneous or missing.
   kErroneousSpec = 4,
-  kMaxValue = kErroneousSpec,
+  // The field is erroneous or missing.
+  kErroneousSource = 5,
+  kMaxValue = kErroneousSource,
 };
 
 class TpcdMetadataComponentInstallerPolicy : public ComponentInstallerPolicy {

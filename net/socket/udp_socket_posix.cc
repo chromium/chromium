@@ -570,7 +570,7 @@ int UDPSocketPosix::SetDoNotFragment() {
 #endif
 }
 
-int UDPSocketPosix::SetRecvEcn() {
+int UDPSocketPosix::SetRecvTos() {
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -754,6 +754,11 @@ void UDPSocketPosix::LogWrite(int result,
   }
 }
 
+// TODO(crbug.com/1491628): Because InternalRecvFromConnectedSocket() uses
+// recvfrom() instead of recvmsg(), it cannot report received ECN marks for
+// QUIC ACK-ECN frames. It might be time to deprecate
+// experimental_recv_optimization_enabled_ if that experiment has run its
+// course.
 int UDPSocketPosix::InternalRecvFrom(IOBuffer* buf,
                                      int buf_len,
                                      IPEndPoint* address) {
@@ -805,11 +810,17 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
       .iov_base = buf->data(),
       .iov_len = static_cast<size_t>(buf_len),
   };
+  // control_buffer needs to be big enough to accommodate the maximum
+  // conceivable number of CMSGs. Other (proprietary) Google QUIC code uses
+  // 512 Bytes, re-used here.
+  char control_buffer[512];
   struct msghdr msg = {
       .msg_name = storage.addr,
       .msg_namelen = storage.addr_len,
       .msg_iov = &iov,
       .msg_iovlen = 1,
+      .msg_control = control_buffer,
+      .msg_controllen = ABSL_ARRAYSIZE(control_buffer),
   };
   int result;
   int bytes_transferred = HANDLE_EINTR(recvmsg(socket_, &msg, 0));
@@ -829,6 +840,23 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
       result = ERR_ADDRESS_INVALID;
     } else {
       result = bytes_transferred;
+    }
+    last_tos_ = 0;
+    if (bytes_transferred > 0 && msg.msg_controllen > 0) {
+      for (struct cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg != nullptr;
+           cmsg = CMSG_NXTHDR(&msg, cmsg)) {
+#if BUILDFLAG(IS_APPLE)
+        if ((cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_RECVTOS) ||
+            (cmsg->cmsg_level == IPPROTO_IPV6 &&
+             cmsg->cmsg_type == IPV6_TCLASS)) {
+#else
+        if ((cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == IP_TOS) ||
+            (cmsg->cmsg_level == IPPROTO_IPV6 &&
+             cmsg->cmsg_type == IPV6_TCLASS)) {
+#endif  // BUILDFLAG(IS_APPLE)
+          last_tos_ = *(reinterpret_cast<uint8_t*>(CMSG_DATA(cmsg)));
+        }
+      }
     }
   }
 
@@ -1065,11 +1093,33 @@ int UDPSocketPosix::SetMulticastLoopbackMode(bool loopback) {
 }
 
 int UDPSocketPosix::SetDiffServCodePoint(DiffServCodePoint dscp) {
-  if (dscp == DSCP_NO_CHANGE) {
+  return SetTos(dscp, ECN_NO_CHANGE);
+}
+
+int UDPSocketPosix::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
+  if (dscp == DSCP_NO_CHANGE && ecn == ECN_NO_CHANGE) {
     return OK;
   }
-
-  int dscp_and_ecn = dscp << 2;
+  int dscp_and_ecn = (dscp << 2) | ecn;
+  socklen_t size = sizeof(dscp_and_ecn);
+  if (dscp == DSCP_NO_CHANGE || ecn == ECN_NO_CHANGE) {
+    int rv;
+    if (addr_family_ == AF_INET) {
+      rv = getsockopt(socket_, IPPROTO_IP, IP_TOS, &dscp_and_ecn, &size);
+    } else {
+      rv = getsockopt(socket_, IPPROTO_IPV6, IPV6_TCLASS, &dscp_and_ecn, &size);
+    }
+    if (rv < 0) {
+      return MapSystemError(errno);
+    }
+    if (dscp == DSCP_NO_CHANGE) {
+      dscp_and_ecn &= ~ECN_LAST;
+      dscp_and_ecn |= ecn;
+    } else {
+      dscp_and_ecn &= ECN_LAST;
+      dscp_and_ecn |= (dscp << 2);
+    }
+  }
   // Set the IPv4 option in all cases to support dual-stack sockets.
   int rv = setsockopt(socket_, IPPROTO_IP, IP_TOS, &dscp_and_ecn,
                       sizeof(dscp_and_ecn));
@@ -1081,7 +1131,6 @@ int UDPSocketPosix::SetDiffServCodePoint(DiffServCodePoint dscp) {
   }
   if (rv < 0)
     return MapSystemError(errno);
-
   return OK;
 }
 

@@ -102,8 +102,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // is moved to its own widget.
   LoginShelfView* GetLoginShelfView();
 
-  void set_default_last_focusable_child(bool default_last_focusable_child);
-
   // views::Widget:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -115,9 +113,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   gfx::Rect GetTargetBounds() const override;
   void UpdateLayout(bool animate) override;
   void UpdateTargetBoundsForGesture(int shelf_position) override;
-
-  // Called when shelf layout manager detects a locale change.
-  void HandleLocaleChange();
 
   // TODO(manucornet): Remove this method when all this widget's layout
   // logic is part of this class.
@@ -139,9 +134,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   void OnUserSessionAdded(const AccountId& account_id) override;
 
   SkColor GetShelfBackgroundColor() const;
-  bool GetHitTestRects(aura::Window* target,
-                       gfx::Rect* hit_test_rect_mouse,
-                       gfx::Rect* hit_test_rect_touch);
 
   // Force to show hotseat in tablet mode. When the returned closure runner is
   // called or goes out of scope, it removes the caller as an instance to force

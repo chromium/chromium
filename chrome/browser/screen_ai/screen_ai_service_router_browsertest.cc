@@ -4,10 +4,12 @@
 
 #include <optional>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +24,12 @@
 #include "ui/accessibility/ax_features.mojom-features.h"
 
 namespace {
+
+enum class LibraryAvailablity {
+  kAvailable,
+  kAvailableWithDelay,
+  kNotAvailable,
+};
 
 class ResultsWaiter {
  public:
@@ -69,7 +77,8 @@ namespace screen_ai {
 
 class ScreenAIServiceRouterTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<
+          std::tuple<LibraryAvailablity, bool, bool>> {
  public:
   ScreenAIServiceRouterTest() {
     std::vector<base::test::FeatureRef> enabled;
@@ -89,7 +98,7 @@ class ScreenAIServiceRouterTest
           ax::mojom::features::kScreenAIMainContentExtractionEnabled);
     }
 
-    if (IsLibraryAvailable()) {
+    if (IsLibraryAvailableAtStartUp() || IsLibraryAvailableLater()) {
       enabled.push_back(::features::kScreenAITestMode);
     }
 
@@ -98,9 +107,20 @@ class ScreenAIServiceRouterTest
 
   ~ScreenAIServiceRouterTest() override = default;
 
-  bool IsLibraryAvailable() {
-    return screen_ai::PlatformSupportsBrowserTests() ? std::get<0>(GetParam())
-                                                     : false;
+  bool IsLibraryAvailableAtStartUp() {
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+    return std::get<0>(GetParam()) == LibraryAvailablity::kAvailable;
+#else
+    return false;
+#endif
+  }
+
+  bool IsLibraryAvailableLater() {
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
+    return std::get<0>(GetParam()) == LibraryAvailablity::kAvailableWithDelay;
+#else
+    return false;
+#endif
   }
 
   bool IsOCREnabled() { return std::get<1>(GetParam()); }
@@ -108,8 +128,17 @@ class ScreenAIServiceRouterTest
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
-    if (IsLibraryAvailable()) {
-      ScreenAIInstallState::GetInstance()->SetComponentFolderForTesting();
+    if (IsLibraryAvailableAtStartUp()) {
+      base::FilePath library_path = screen_ai::GetLatestComponentBinaryPath();
+      CHECK(!library_path.empty());
+      CHECK(base::PathExists(library_path));
+      ScreenAIInstallState::GetInstance()->SetComponentFolder(
+          library_path.DirName());
+    } else if (IsLibraryAvailableLater()) {
+      // Assume library download has failed before, but will succeed once it's
+      // asked again.
+      ScreenAIInstallState::GetInstance()->SetState(
+          ScreenAIInstallState::State::kDownloadFailed);
     }
   }
 
@@ -118,19 +147,36 @@ class ScreenAIServiceRouterTest
     router()->GetServiceStateAsync(
         service, base::BindOnce(&ResultsWaiter::OnResultsCallback,
                                 waiter_.GetWeakPtr()));
-    TriggerDownloadFailIfNeeded();
+    SimulateDownload();
     waiter_.WaitForResult();
   }
 
-  void TriggerDownloadFailIfNeeded() {
-    if (!IsLibraryAvailable()) {
-      ScreenAIInstallState::GetInstance()->SetState(
-          ScreenAIInstallState::State::kDownloadFailed);
+  void SimulateDownload() {
+    if (IsLibraryAvailableAtStartUp()) {
+      return;
     }
+
+    if (IsLibraryAvailableLater()) {
+      if (!ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
+        base::ThreadPool::PostTaskAndReplyWithResult(
+            FROM_HERE,
+            {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+            base::BindOnce(&screen_ai::GetLatestComponentBinaryPath),
+            base::BindOnce([](const base::FilePath component_path) {
+              ScreenAIInstallState::GetInstance()->SetComponentFolder(
+                  component_path.DirName());
+            }));
+      }
+
+      return;
+    }
+
+    ScreenAIInstallState::GetInstance()->SetState(
+        ScreenAIInstallState::State::kDownloadFailed);
   }
 
   bool ExpectedInitializationResult(ScreenAIServiceRouter::Service service) {
-    if (!IsLibraryAvailable()) {
+    if (!IsLibraryAvailableAtStartUp() && !IsLibraryAvailableLater()) {
       return false;
     }
 
@@ -213,7 +259,7 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
       service2,
       base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter2.GetWeakPtr()));
 
-  TriggerDownloadFailIfNeeded();
+  SimulateDownload();
 
   waiter1.WaitForResult();
   waiter2.WaitForResult();
@@ -238,7 +284,7 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
       service,
       base::BindOnce(&ResultsWaiter::OnResultsCallback, waiter2.GetWeakPtr()));
 
-  TriggerDownloadFailIfNeeded();
+  SimulateDownload();
 
   waiter1.WaitForResult();
   waiter2.WaitForResult();
@@ -250,17 +296,23 @@ IN_PROC_BROWSER_TEST_P(ScreenAIServiceRouterTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ScreenAIServiceRouterTest,
-    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
+    ::testing::Combine(testing::Values(LibraryAvailablity::kAvailable,
+                                       LibraryAvailablity::kAvailableWithDelay,
+                                       LibraryAvailablity::kNotAvailable),
+                       testing::Bool(),
+                       testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<LibraryAvailablity, bool, bool>>&
+           info) {
       return base::StringPrintf(
           "Library_%s_OCR_%s_MCE_%s",
-          std::get<0>(info.param) ? "Available" : "Unavailable",
+          std::get<0>(info.param) == LibraryAvailablity::kAvailable
+              ? "Available"
+              : (std::get<0>(info.param) ==
+                         LibraryAvailablity::kAvailableWithDelay
+                     ? "AvailableWithDelay"
+                     : "NotAvailable"),
           std::get<1>(info.param) ? "Enabled" : "Disabled",
           std::get<2>(info.param) ? "Enabled" : "Disabled");
     });
-
-// TODO(crbug.com/1520424): Consider adding a test that sets the download state
-// to false, and then sets the test download path only when download request
-// arrives.
 
 }  // namespace screen_ai

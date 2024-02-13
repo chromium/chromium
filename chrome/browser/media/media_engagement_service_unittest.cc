@@ -528,9 +528,9 @@ TEST_P(MediaEngagementServiceTest, CleanupOriginsOnHistoryDeletion) {
 
     base::CancelableTaskTracker task_tracker;
     // Expire origin1, url1a, origin2, and url3a's most recent visit.
-    history->ExpireHistoryBetween(std::set<GURL>(), yesterday, today,
-                                  /*user_initiated*/ true, base::DoNothing(),
-                                  &task_tracker);
+    history->ExpireHistoryBetween(
+        std::set<GURL>(), history::kNoAppIdFilter, yesterday, today,
+        /*user_initiated*/ true, base::DoNothing(), &task_tracker);
     waiter.Wait();
 
     // origin1 should have a score that is not zero and is the same as the old
@@ -704,9 +704,9 @@ TEST_P(MediaEngagementServiceTest, CleanUpDatabaseWhenHistoryIsDeleted) {
     base::RunLoop run_loop;
     base::CancelableTaskTracker task_tracker;
     // Clear all history.
-    history->ExpireHistoryBetween(std::set<GURL>(), base::Time(), base::Time(),
-                                  /*user_initiated*/ true,
-                                  run_loop.QuitClosure(), &task_tracker);
+    history->ExpireHistoryBetween(
+        std::set<GURL>(), history::kNoAppIdFilter, base::Time(), base::Time(),
+        /*user_initiated*/ true, run_loop.QuitClosure(), &task_tracker);
     run_loop.Run();
 
     // origin1 should have a score that is not zero and is the same as the old

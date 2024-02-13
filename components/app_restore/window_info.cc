@@ -48,7 +48,12 @@ std::string ToPrefixedString(base::Uuid val, const std::string& prefix) {
 
 BrowserExtraInfo::BrowserExtraInfo() = default;
 
+BrowserExtraInfo::BrowserExtraInfo(BrowserExtraInfo&& other) = default;
+
 BrowserExtraInfo::BrowserExtraInfo(const BrowserExtraInfo&) = default;
+
+BrowserExtraInfo& BrowserExtraInfo::operator=(BrowserExtraInfo&& other) =
+    default;
 
 BrowserExtraInfo& BrowserExtraInfo::operator=(const BrowserExtraInfo&) =
     default;
@@ -60,25 +65,17 @@ bool BrowserExtraInfo::operator==(const BrowserExtraInfo& other) const =
 
 WindowInfo::WindowInfo() = default;
 
+WindowInfo::WindowInfo(WindowInfo&& other) = default;
+
+WindowInfo::WindowInfo(const WindowInfo&) = default;
+
+WindowInfo& WindowInfo::operator=(WindowInfo&& other) = default;
+
+WindowInfo& WindowInfo::operator=(const WindowInfo&) = default;
+
 WindowInfo::~WindowInfo() = default;
 
-WindowInfo* WindowInfo::Clone() {
-  WindowInfo* new_window_info = new WindowInfo();
-
-  new_window_info->window = window;
-  new_window_info->activation_index = activation_index;
-  new_window_info->desk_id = desk_id;
-  new_window_info->desk_guid = desk_guid;
-  new_window_info->current_bounds = current_bounds;
-  new_window_info->window_state_type = window_state_type;
-  new_window_info->pre_minimized_show_state_type =
-      pre_minimized_show_state_type;
-  new_window_info->snap_percentage = snap_percentage;
-  new_window_info->display_id = display_id;
-  new_window_info->app_title = app_title;
-  new_window_info->arc_extra_info = arc_extra_info;
-  return new_window_info;
-}
+bool WindowInfo::operator==(const WindowInfo& other) const = default;
 
 std::string WindowInfo::ToString() const {
   return ToPrefixedString(activation_index, "Activation index") +

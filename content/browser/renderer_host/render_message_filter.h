@@ -26,12 +26,18 @@ class RenderMessageFilter : public mojom::RenderMessageFilter {
   RenderMessageFilter& operator=(const RenderMessageFilter&) = delete;
 
  private:
+  mojom::FrameRoutingInfoPtr AllocateNewRoutingInfo();
+
   // mojom::RenderMessageFilter:
-  void GenerateFrameRoutingID(GenerateFrameRoutingIDCallback callback) override;
+  void GenerateSingleFrameRoutingInfo(
+      GenerateSingleFrameRoutingInfoCallback callback) override;
+  void GenerateFrameRoutingInfos(
+      GenerateFrameRoutingInfosCallback callback) override;
 
   scoped_refptr<RenderWidgetHelper> render_widget_helper_;
 
   const int render_process_id_;
+  const int cache_response_size_;
 };
 
 }  // namespace content

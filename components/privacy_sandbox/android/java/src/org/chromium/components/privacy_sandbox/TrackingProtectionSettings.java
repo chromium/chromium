@@ -174,9 +174,7 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
         String hostname = primaryPattern.equals(SITE_WILDCARD) ? secondaryPattern : primaryPattern;
         Toast.makeText(
                         getContext(),
-                        String.format(
-                                getContext().getString(R.string.website_settings_add_site_toast),
-                                hostname),
+                        getContext().getString(R.string.website_settings_add_site_toast, hostname),
                         Toast.LENGTH_SHORT)
                 .show();
 

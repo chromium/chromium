@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_components/history_clusters/horizontal_carousel.js';
 
-import {HorizontalCarouselElement} from 'chrome://resources/cr_components/history_clusters/horizontal_carousel.js';
+import type {HorizontalCarouselElement} from 'chrome://resources/cr_components/history_clusters/horizontal_carousel.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 let carouselElement : HorizontalCarouselElement;

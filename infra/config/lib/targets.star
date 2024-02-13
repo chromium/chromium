@@ -7,288 +7,7 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
-load("./nodes.star", "nodes")
-
-# A target that can be built to run a test
-#
-# Created by:
-# * functions in targets.binaries
-#
-# Parents:
-# * legacy-test (>=0)
-#   * created by targets.test.gtest_test and targets.tests.isolated_script_test
-#   * traversed when generating details in test_suites.pyl for a test in a basic
-#     suite that references a binary
-_TARGET_BINARY = nodes.create_unscoped_node_type("target-binary")
-
-# A mapping from the ninja target name to GN label and associated details.
-#
-# Created by:
-# * functions in targets.binaries
-# * targets.tests.junit_test
-#   * a mapping with type "generated_script" and the same name as the test is
-#     created
-# * targets.compile_target
-#   * a mapping is created if name != "all"
-#
-# Parents:
-# * project (1)
-#   * created for all mappings
-#   * traversed to generate entries in gn_isolate_map.pyl
-_TARGET_LABEL_MAPPING = nodes.create_unscoped_node_type("target-label-mapping")
-
-# A set of modifications to make when expanding tests in a suite
-#
-# Created by:
-# * targets.mixin
-#
-# Parents:
-# * project (1)
-#   * created for all mixins
-#   * traversed to generate entries in mixins.pyl
-# * legacy-test (>=0)
-#   * created when a test specifies a mixin in mixins
-#   * traversed to generate the mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-# * legacy-basic-suite-config (>=0)
-#   * created when the config for a test in a basic suite references a mixin
-#   * traversed to generate the mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-# * legacy-matrix-config (>=0)
-#   * created when the matrix config for a basic suite in a matrix compound
-#     suite references a mixin
-#   * traversed to generate the mixins field in test_suites.pyl for the config
-#     for a basic suite in a matrix compound suite
-# * legacy-remove-mixin (>=0)
-#   * created when a test specifies a mixin in remove_mixins
-#   * traversed to generate the remove_mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-_TARGET_MIXIN = nodes.create_unscoped_node_type("target-mixin")
-
-# A set of modifications to make when multiply expanding a test in a matrix
-# compound suite
-#
-# Created by:
-# * targets.variant
-#
-# Parents:
-# * project (1)
-#   * created for all binaries
-#   * traversed to generate entries in variants.pyl
-# * legacy-matrix-config (>=0)
-#   * created when the matrix config for a basic suite in a matrix compound
-#     suite references a variant
-#   * traversed to generate the variants field in test_suites.pyl for the config
-#     for a basic suite in a matrix compound suite
-_TARGET_VARIANT = nodes.create_unscoped_node_type("target-variant")
-
-# A test that can be included in a basic suite
-#
-# Created by:
-# * functions in targets.tests
-#
-# Children:
-# * target-binary (0 or 1)
-#   * created by targets.test.gtest_test and targets.tests.isolated_script_test
-#   * traversed when generating details in test_suites.pyl for a test in a basic
-#     suite that references a binary
-# * target-mixin (>=0)
-#   * created when a test specifies a mixin in mixins
-#   * traversed to generate the mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-#
-# Parents:
-# * legacy-basic-suite-config (>=0)
-#   * created when a basic suite references a test
-#   * traversed to generate the details for a test when generating a basic suite
-#     in test_suites.pyl
-_LEGACY_TEST = nodes.create_unscoped_node_type("legacy-test")
-
-# A basic suite, which is a set of tests with optional modifications
-#
-# Created by:
-# * targets.legacy_basic_suite
-#
-# Children:
-# * legacy-basic-suite-config (>0)
-#   * created when a basic suite references a test
-#   * traversed to generate the details for a test when generating a basic suite
-#     in test_suites.pyl
-#
-# Parents:
-# * project (1)
-#   * created for all basic suites
-#   * traversed to generate the basic_suites entries in test_suites.pyl
-# * legacy-compound-suite (>=0)
-#   * created when a compound suite includes a basic suite
-#   * traversed to generate the basic suite reference when generating a compound
-#     suite in test_suites.pyl
-# * legacy-matrix-compound-suite (>=0)
-#   * created when a matrix compound suite includes a basic suite
-#   * not traversed, created only to ensure the basic suite exists
-_LEGACY_BASIC_SUITE = nodes.create_unscoped_node_type("legacy-basic-suite")
-
-# Modifications to apply to a test included in a basic suite
-#
-# Created by:
-# * targets.legacy_basic_suite
-#
-# Children:
-# * legacy-test (1)
-#   * created when a basic suite references a test
-#   * traversed to generate the details for a test when generating a basic suite
-#     in test_suites.pyl
-# * target-mixin (>=0)
-#   * created when the config for a test in a basic suite references a mixin
-#   * traversed to generate the mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-# * legacy-remove-mixin (>=0)
-#   * created when a test specifies a mixin in remove_mixins
-#   * traversed to generate the remove_mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-#
-# Parents:
-# * legacy-basic-suite (0)
-#   * created when a basic suite references a test
-#   * traversed to generate the details for a test when generating a basic suite
-#     in test_suites.pyl
-_LEGACY_BASIC_SUITE_CONFIG = nodes.create_scoped_node_type("legacy-basic-suite-config", _LEGACY_BASIC_SUITE.kind)
-
-# A mixin to remove from a test included in a basic suite.
-#
-# Created by:
-# * targets.legacy_basic_suite
-#   * created when the config for a test specifies remove_mixins
-#
-# Children:
-# * target-mixin (1)
-#   * created when a test specifies a mixin in remove_mixins
-#   * traversed to generate the remove_mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-#
-# Parents:
-# * legacy-basic-suite-config (>=0)
-#   * created when a test specifies a mixin in remove_mixins
-#   * traversed to generate the remove_mixins field for a test when generating a
-#     basic suite in test_suites.pyl
-_LEGACY_BASIC_SUITE_REMOVE_MIXIN = nodes.create_link_node_type("legacy-remove-mixin", _LEGACY_BASIC_SUITE_CONFIG, _TARGET_MIXIN)
-
-# A compound suite, which is a set of basic suites
-#
-# Created by:
-# * targets.legacy_compound_suite
-#
-# Children:
-# * legacy-basic-suite (>0)
-#   * created when a compound suite includes a basic suite
-#   * traversed to generate the basic suite reference when generating a compound
-#     suite in test_suites.pyl
-#
-# Parents:
-# * project (1)
-#   * create for all compound suites
-#   * traversed to generate the compound_suites entries in test_suites.pyl
-_LEGACY_COMPOUND_SUITE = nodes.create_unscoped_node_type("legacy-compound-suite")
-
-# A matrix compound suite, which is a set of basic suites that can be optionally
-# expanded with multiple variants
-#
-# Created by:
-# * targets.legacy_matrix_compound_suite
-#
-# Children:
-# * legacy-basic-suite (>0)
-#   * created when a matrix compound suite includes a basic suite
-#   * not traversed, created only to ensure the basic suite exists
-# * legacy-matrix-config (>0)
-#   * created for each basic suite in the matrix compound suite
-#   * traversed to generate the details for a basic suite when generating a
-#     matrix compound suite in test_suites.pyl
-#
-# Parents:
-# * project (1)
-#   * created for all matrix compound suites
-#   * traversed to generate the matrix_compound_suites entries in
-#     test_suites.pyl
-_LEGACY_MATRIX_COMPOUND_SUITE = nodes.create_unscoped_node_type("legacy-matrix-compound-suite")
-
-# The modifications to apply to tests in a basic suite included in a matix
-# compound suite
-#
-# Created by:
-# * targets.legacy_matrix_compound_suite
-#
-# Children:
-# * target-mixin (>=0)
-#   * created when the matrix config for a basic suite in a matrix compound
-#     suite references a mixin
-#   * traversed to generate the mixins field in test_suites.pyl for the config
-#     for a basic suite in a matrix compound suite
-# * target-variant (>=0)
-#   * created when the matrix config for a basic suite in a matrix compound
-#     suite references a variant
-#   * traversed to generate the variants field in test_suites.pyl for the config
-#     for a basic suite in a matrix compound suite
-#
-# Parents:
-# * legacy-matrix-compound-suite (1)
-#   * created for each basic suite in the matrix compound suite
-#   * traversed to generate the details for a basic suite when generating a
-#     matrix compound suite in test_suites.pyl
-_LEGACY_MATRIX_CONFIG = nodes.create_scoped_node_type("legacy-matrix-config", _LEGACY_MATRIX_COMPOUND_SUITE.kind)
-
-# Compile targets, which can be specified as additional compile targets in a
-# bundle
-#
-# Created by:
-# * targets.compile_target
-# * functions in targets.binaries
-#   * a compile target with the same name as the binary will be created
-# * targets.tests.junit_test
-#   * a compile target with the same name as the test will be created
-#
-# Parents:
-# * target-bundle (>=0)
-#   * created when a bundle references a compile target in
-#     additional_compile_targets
-#   * traversed when generating targets spec files for builders that have their
-#     tests defined in starlark
-_COMPILE_TARGET = nodes.create_unscoped_node_type("compile-target")
-
-# A collection of compile targets to build and tests to run with optional
-# modifications
-#
-# Created by:
-# * targets.bundle
-#   * unnamed instances can be created inline to apply builder-specific
-#     modifications or apply modifications to subgroupings of targets
-# * functions in targets.tests
-#   * creates a bundle with the same name as the test containing only that test
-# * builders.builder
-#   * if the builder sets targets, then a bundle is created with the
-#     bucket-qualified name of the builder)
-#
-# Children:
-# * target-bundle (>=0)
-#   * created when a bundle references another bundle in targets
-#   * traversed when generating targets spec files for builders that have their
-#     tests defined in starlark
-# * compile-target (>=0)
-#   * created when a bundle references a compile target in
-#     additional_compile_targets
-#   * traversed when generating targets spec files for builders that have their
-#     tests defined in starlark
-#
-# Parents:
-# * builder-config (0 or 1)
-#   * created when a builder sets targets
-#   * traversed when generating targets spec files for builders that have their
-#     targets defined in starlark
-# * target-bundle (>=0)
-#   * created when a bundle references another bundle in targets
-#   * traversed when generating targets spec files for builders that have their
-#     targets defined in starlark
-_TARGET_BUNDLE = nodes.create_unscoped_node_type("bundle", allow_unnamed = True)
+load("./targets-internal/nodes.star", _targets_nodes = "nodes")
 
 def _binary_test_config(*, results_handler = None, merge = None, resultdb = None):
     """The details for a test provided by the test's binary.
@@ -311,7 +30,7 @@ def _binary_test_config(*, results_handler = None, merge = None, resultdb = None
     )
 
 def _create_compile_target(*, name):
-    _COMPILE_TARGET.add(name)
+    _targets_nodes.COMPILE_TARGET.add(name)
 
 def _create_label_mapping(
         *,
@@ -324,7 +43,7 @@ def _create_label_mapping(
         script = None,
         skip_usage_check = False,
         args = None):
-    mapping_key = _TARGET_LABEL_MAPPING.add(name, props = dict(
+    mapping_key = _targets_nodes.LABEL_MAPPING.add(name, props = dict(
         type = type,
         label = label,
         label_type = label_type,
@@ -360,7 +79,7 @@ def _create_binary(
         args = args,
     )
 
-    _TARGET_BINARY.add(name, props = dict(
+    _targets_nodes.BINARY.add(name, props = dict(
         test_config = test_config,
     ))
 
@@ -396,24 +115,24 @@ def _basic_suite_test_config(
     )
 
 def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
-    test_key = _LEGACY_TEST.add(name, props = dict(
+    test_key = _targets_nodes.LEGACY_TEST.add(name, props = dict(
         basic_suite_test_config = basic_suite_test_config,
     ))
     for m in args.listify(mixins):
-        graph.add_edge(test_key, _TARGET_MIXIN.key(m))
+        graph.add_edge(test_key, _targets_nodes.MIXIN.key(m))
     return test_key
 
 def _create_bundle(*, name, additional_compile_targets = [], targets = [], builder_group = None, test_spec_by_name = {}, modifications_by_name = {}):
-    key = _TARGET_BUNDLE.add(name, props = dict(
+    key = _targets_nodes.BUNDLE.add(name, props = dict(
         builder_group = builder_group,
         test_spec_by_name = test_spec_by_name,
         modifications_by_name = modifications_by_name,
     ))
 
     for t in additional_compile_targets:
-        graph.add_edge(key, _COMPILE_TARGET.key(t))
+        graph.add_edge(key, _targets_nodes.COMPILE_TARGET.key(t))
     for t in targets:
-        graph.add_edge(key, _TARGET_BUNDLE.key(t))
+        graph.add_edge(key, _targets_nodes.BUNDLE.key(t))
     return key
 
 def _create_test_target(*, name, spec_type, spec_value):
@@ -703,7 +422,7 @@ def _gtest_test(*, name, binary = None, mixins = None, args = None):
     )
 
     # Make sure that the binary actually exists
-    graph.add_edge(key, _TARGET_BINARY.key(binary or name))
+    graph.add_edge(key, _targets_nodes.BINARY.key(binary or name))
 
     _create_test_target(
         name = name,
@@ -738,7 +457,7 @@ def _isolated_script_test(*, name, binary = None, mixins = None, args = None):
     )
 
     # Make sure that the binary actually exists
-    graph.add_edge(key, _TARGET_BINARY.key(binary or name))
+    graph.add_edge(key, _targets_nodes.BINARY.key(binary or name))
 
     _create_test_target(
         name = name,
@@ -1144,7 +863,7 @@ def _mixin(*, name = None, **kwargs):
         **kwargs: The mixin values, see _mixin_values for allowed
             keywords and their meanings.
     """
-    key = _TARGET_MIXIN.add(name, props = dict(
+    key = _targets_nodes.MIXIN.add(name, props = dict(
         mixin_values = _mixin_values(**kwargs),
     ))
 
@@ -1179,7 +898,7 @@ def _variant(
     """
     if enabled == None:
         enabled = True
-    key = _TARGET_VARIANT.add(name, props = dict(
+    key = _targets_nodes.VARIANT.add(name, props = dict(
         identifier = identifier,
         enabled = enabled,
         mixins = mixins,
@@ -1223,7 +942,7 @@ def _legacy_basic_suite(*, name, tests):
             the test, which must be an instance returned from
             targets.legacy_test_config.
     """
-    key = _LEGACY_BASIC_SUITE.add(name)
+    key = _targets_nodes.LEGACY_BASIC_SUITE.add(name)
     graph.add_edge(keys.project(), key)
     for t, config in tests.items():
         if not config:
@@ -1232,15 +951,15 @@ def _legacy_basic_suite(*, name, tests):
         d = {a: getattr(config, a) for a in dir(config)}
         mixins = d.pop("mixins") or []
         remove_mixins = d.pop("remove_mixins") or []
-        config_key = _LEGACY_BASIC_SUITE_CONFIG.add(name, t, props = dict(
+        config_key = _targets_nodes.LEGACY_BASIC_SUITE_CONFIG.add(name, t, props = dict(
             config = struct(**d),
         ))
         graph.add_edge(key, config_key)
-        graph.add_edge(config_key, _LEGACY_TEST.key(t))
+        graph.add_edge(config_key, _targets_nodes.LEGACY_TEST.key(t))
         for m in mixins:
-            graph.add_edge(config_key, _TARGET_MIXIN.key(m))
+            graph.add_edge(config_key, _targets_nodes.MIXIN.key(m))
         for r in remove_mixins:
-            _LEGACY_BASIC_SUITE_REMOVE_MIXIN.link(config_key, _TARGET_MIXIN.key(r))
+            _targets_nodes.LEGACY_BASIC_SUITE_REMOVE_MIXIN.link(config_key, _targets_nodes.MIXIN.key(r))
 
 def _legacy_test_config(
         *,
@@ -1293,11 +1012,11 @@ def _legacy_compound_suite(*, name, basic_suites):
         name: The name of the matrix compound suite.
         basic_suites: A list of names of basic suites to compose.
     """
-    key = _LEGACY_COMPOUND_SUITE.add(name)
+    key = _targets_nodes.LEGACY_COMPOUND_SUITE.add(name)
     graph.add_edge(keys.project(), key)
 
     for s in basic_suites:
-        graph.add_edge(key, _LEGACY_BASIC_SUITE.key(s))
+        graph.add_edge(key, _targets_nodes.LEGACY_BASIC_SUITE.key(s))
 
     # TODO: crbug.com/1420012 - Make compound suites usable as bundles
 
@@ -1323,19 +1042,19 @@ def _legacy_matrix_compound_suite(*, name, basic_suites):
             targets.legacy_matrix_config(), which will add the tests from the
             basic suite without performing any variant expansion.
     """
-    key = _LEGACY_MATRIX_COMPOUND_SUITE.add(name)
+    key = _targets_nodes.LEGACY_MATRIX_COMPOUND_SUITE.add(name)
     graph.add_edge(keys.project(), key)
 
     for basic_suite_name, config in basic_suites.items():
         # This edge won't actually be used, but it ensures that the basic suite exists
-        graph.add_edge(key, _LEGACY_BASIC_SUITE.key(basic_suite_name))
-        matrix_config_key = _LEGACY_MATRIX_CONFIG.add(name, basic_suite_name)
+        graph.add_edge(key, _targets_nodes.LEGACY_BASIC_SUITE.key(basic_suite_name))
+        matrix_config_key = _targets_nodes.LEGACY_MATRIX_CONFIG.add(name, basic_suite_name)
         graph.add_edge(key, matrix_config_key)
         config = config or _legacy_matrix_config()
         for m in config.mixins:
-            graph.add_edge(matrix_config_key, _TARGET_MIXIN.key(m))
+            graph.add_edge(matrix_config_key, _targets_nodes.MIXIN.key(m))
         for v in config.variants:
-            graph.add_edge(matrix_config_key, _TARGET_VARIANT.key(v))
+            graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
 
     # TODO: crbug.com/1420012 - Make matrix compound suites usable as bundles
 
@@ -1429,7 +1148,7 @@ def _get_bundle_resolver():
         )
 
     def visitor(_, children):
-        return [c for c in children if c.key.kind == _TARGET_BUNDLE.kind]
+        return [c for c in children if c.key.kind == _targets_nodes.BUNDLE.kind]
 
     resolved_bundle_by_bundle_node = {}
 
@@ -1441,9 +1160,9 @@ def _get_bundle_resolver():
             # TODO: crbug.com/1420012 - Update the handling of conflicting defs
             # so that more context is provided about where the error is
             # resulting from
-            additional_compile_targets = set([t.key.id for t in graph.children(n.key, _COMPILE_TARGET.kind)])
+            additional_compile_targets = set([t.key.id for t in graph.children(n.key, _targets_nodes.COMPILE_TARGET.kind)])
             test_spec_and_source_by_name = {name: (spec, n.key) for name, spec in n.props.test_spec_by_name.items()}
-            for child in graph.children(n.key, kind = _TARGET_BUNDLE.kind):
+            for child in graph.children(n.key, kind = _targets_nodes.BUNDLE.kind):
                 child_resolved_bundle = resolved_bundle_by_bundle_node[child]
                 additional_compile_targets = additional_compile_targets | child_resolved_bundle.additional_compile_targets
                 for name, (spec, source) in child_resolved_bundle.test_spec_and_source_by_name.items():
@@ -1486,7 +1205,7 @@ def get_targets_spec_generator():
     bundle_resolver = _get_bundle_resolver()
 
     def get_targets_spec(parent_node):
-        bundle_nodes = graph.children(parent_node.key, _TARGET_BUNDLE.kind)
+        bundle_nodes = graph.children(parent_node.key, _targets_nodes.BUNDLE.kind)
         if not bundle_nodes:
             return None
         if len(bundle_nodes) > 1:
@@ -1527,7 +1246,7 @@ _PYL_HEADER_FMT = """\
 
 def _generate_gn_isolate_map_pyl(ctx):
     entries = []
-    for n in graph.children(keys.project(), _TARGET_LABEL_MAPPING.kind, graph.KEY_ORDER):
+    for n in graph.children(keys.project(), _targets_nodes.LABEL_MAPPING.kind, graph.KEY_ORDER):
         entries.append('  "{}": {{'.format(n.key.id))
         entries.append('    "label": "{}",'.format(n.props.label))
         if n.props.label_type != None:
@@ -1769,7 +1488,7 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
 def _generate_mixins_pyl(ctx):
     formatter = _formatter()
 
-    for n in graph.children(keys.project(), _TARGET_MIXIN.kind, graph.KEY_ORDER):
+    for n in graph.children(keys.project(), _targets_nodes.MIXIN.kind, graph.KEY_ORDER):
         mixin = n.props.mixin_values
         formatter.open_scope("'{}': {{".format(n.key.id))
 
@@ -1787,7 +1506,7 @@ lucicfg.generator(_generate_mixins_pyl)
 def _generate_variants_pyl(ctx):
     formatter = _formatter()
 
-    for n in graph.children(keys.project(), _TARGET_VARIANT.kind, graph.KEY_ORDER):
+    for n in graph.children(keys.project(), _targets_nodes.VARIANT.kind, graph.KEY_ORDER):
         mixin = n.props.mixin_values
         formatter.open_scope("'{}': {{".format(n.key.id))
 
@@ -1818,21 +1537,21 @@ def _generate_test_suites_pyl(ctx):
 
     formatter.open_scope("'basic_suites': {")
 
-    for suite in graph.children(keys.project(), _LEGACY_BASIC_SUITE.kind, graph.KEY_ORDER):
+    for suite in graph.children(keys.project(), _targets_nodes.LEGACY_BASIC_SUITE.kind, graph.KEY_ORDER):
         formatter.add_line("")
         formatter.open_scope("'{}': {{".format(suite.key.id))
 
-        for test_config_node in graph.children(suite.key, _LEGACY_BASIC_SUITE_CONFIG.kind, graph.KEY_ORDER):
+        for test_config_node in graph.children(suite.key, _targets_nodes.LEGACY_BASIC_SUITE_CONFIG.kind, graph.KEY_ORDER):
             test_name = test_config_node.key.id
             suite_test_config = test_config_node.props.config
 
-            test_nodes = graph.children(test_config_node.key, _LEGACY_TEST.kind)
+            test_nodes = graph.children(test_config_node.key, _targets_nodes.LEGACY_TEST.kind)
             if len(test_nodes) != 1:
                 fail("internal error: test config {} should have exactly 1 test: {}", test_config_node, test_nodes)
             test_node = test_nodes[0]
             target_test_config = test_node.props.basic_suite_test_config
 
-            binary_nodes = graph.children(test_node.key, _TARGET_BINARY.kind)
+            binary_nodes = graph.children(test_node.key, _targets_nodes.BINARY.kind)
             if len(binary_nodes) > 1:
                 fail("internal error: test {} has more than 1 binary: {}", test_node, binary_nodes)
             binary_test_config = None
@@ -1865,14 +1584,14 @@ def _generate_test_suites_pyl(ctx):
                 # The order that mixins are declared is significant,
                 # DEFINITION_ORDER preserves the order that the edges were added
                 # from the parent to the child
-                for mixin in graph.children(n.key, _TARGET_MIXIN.kind, graph.DEFINITION_ORDER):
+                for mixin in graph.children(n.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
                     mixins.append(mixin.key.id)
             if mixins:
                 test_formatter.open_scope("'mixins': [")
                 for m in mixins:
                     test_formatter.add_line("'{}',".format(m))
                 test_formatter.close_scope("],")
-            remove_mixins = [n.key.id for n in _LEGACY_BASIC_SUITE_REMOVE_MIXIN.children(test_config_node.key)]
+            remove_mixins = [n.key.id for n in _targets_nodes.LEGACY_BASIC_SUITE_REMOVE_MIXIN.children(test_config_node.key)]
             if remove_mixins:
                 test_formatter.open_scope("'remove_mixins': [")
                 for m in remove_mixins:
@@ -1912,10 +1631,10 @@ def _generate_test_suites_pyl(ctx):
 
     formatter.open_scope("'compound_suites': {")
 
-    for suite in graph.children(keys.project(), _LEGACY_COMPOUND_SUITE.kind, graph.KEY_ORDER):
+    for suite in graph.children(keys.project(), _targets_nodes.LEGACY_COMPOUND_SUITE.kind, graph.KEY_ORDER):
         formatter.add_line("")
         formatter.open_scope("'{}': [".format(suite.key.id))
-        for basic_suite in graph.children(suite.key, _LEGACY_BASIC_SUITE.kind, graph.KEY_ORDER):
+        for basic_suite in graph.children(suite.key, _targets_nodes.LEGACY_BASIC_SUITE.kind, graph.KEY_ORDER):
             formatter.add_line("'{}',".format(basic_suite.key.id))
         formatter.close_scope("],")
 
@@ -1925,15 +1644,15 @@ def _generate_test_suites_pyl(ctx):
 
     formatter.open_scope("'matrix_compound_suites': {")
 
-    for suite in graph.children(keys.project(), _LEGACY_MATRIX_COMPOUND_SUITE.kind, graph.KEY_ORDER):
+    for suite in graph.children(keys.project(), _targets_nodes.LEGACY_MATRIX_COMPOUND_SUITE.kind, graph.KEY_ORDER):
         formatter.add_line("")
         formatter.open_scope("'{}': {{".format(suite.key.id))
-        for matrix_config in graph.children(suite.key, _LEGACY_MATRIX_CONFIG.kind, graph.KEY_ORDER):
+        for matrix_config in graph.children(suite.key, _targets_nodes.LEGACY_MATRIX_CONFIG.kind, graph.KEY_ORDER):
             # The order that mixins are declared is significant,
             # DEFINITION_ORDER preserves the order that the edges were added
             # from the parent to the child
-            mixins = graph.children(matrix_config.key, _TARGET_MIXIN.kind, graph.DEFINITION_ORDER)
-            variants = graph.children(matrix_config.key, _TARGET_VARIANT.kind, graph.KEY_ORDER)
+            mixins = graph.children(matrix_config.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER)
+            variants = graph.children(matrix_config.key, _targets_nodes.VARIANT.kind, graph.KEY_ORDER)
             if not (mixins or variants):
                 formatter.add_line("'{}': {{}},".format(matrix_config.key.id))
                 continue

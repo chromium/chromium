@@ -7,6 +7,7 @@
 #include <list>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -18,6 +19,10 @@
 
 namespace gpu {
 namespace {
+
+BASE_FEATURE(kCorrectFramebufferAttachmentComputationInGLTexture,
+             "CorrectFramebufferAttachmentComputationInGLTexture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr uint32_t kWebGPUUsages =
     SHARED_IMAGE_USAGE_WEBGPU | SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
@@ -48,7 +53,8 @@ GLTextureImageBackingFactory::GLTextureImageBackingFactory(
                                   workarounds,
                                   feature_info,
                                   progress_reporter),
-      for_cpu_upload_usage_(for_cpu_upload_usage) {}
+      for_cpu_upload_usage_(for_cpu_upload_usage),
+      support_all_metal_usages_(false) {}
 
 GLTextureImageBackingFactory::~GLTextureImageBackingFactory() = default;
 
@@ -160,26 +166,30 @@ bool GLTextureImageBackingFactory::IsSupported(
 
   // This is not beneficial on iOS. The main purpose of this is a multi-gpu
   // support.
-#if BUILDFLAG(IS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
-    constexpr uint32_t kMetalInvalidUsages =
-        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
-        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-    if (usage & kMetalInvalidUsages) {
-      return false;
+  if (!support_all_metal_usages_) {
+    if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+        gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal) {
+      constexpr uint32_t kMetalInvalidUsages =
+          SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT |
+          SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+          SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+      if (usage & kMetalInvalidUsages) {
+        return false;
+      }
     }
   }
-#endif  // BUILDFLAG(IS_MAC)
 
-  // Doesn't support contexts other than GL for OOPR Canvas
+  // Using GLTextureImageBacking for raster/display is only appropriate when
+  // running on top of GL. For the case WebGL fallback (GrContextType::kNone)
+  // this usages aren't actually relevant but WebGL still adds them so ignore.
   if (gr_context_type != GrContextType::kGL &&
-      ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
-       (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER_READ) ||
-       (usage & SHARED_IMAGE_USAGE_RASTER_WRITE))) {
-    return false;
+      gr_context_type != GrContextType::kNone) {
+    constexpr uint32_t kUnsupportedUsages =
+        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+    if (usage & kUnsupportedUsages) {
+      return false;
+    }
   }
 
   // Only supports WebGPU usages on Dawn's OpenGLES backend.
@@ -192,6 +202,10 @@ bool GLTextureImageBackingFactory::IsSupported(
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);
+}
+
+void GLTextureImageBackingFactory::EnableSupportForAllMetalUsagesForTesting() {
+  support_all_metal_usages_ = true;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -208,10 +222,26 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     base::span<const uint8_t> pixel_data) {
   DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
 
-  const bool for_framebuffer_attachment =
-      (usage &
-       (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+  bool for_framebuffer_attachment = false;
+  // NOTE: We are in the process of computing writes to GL without using
+  // GLES2_FRAMEBUFFER_HINT as part of eliminating the latter. Here we make the
+  // change guarded by a killswitch.
+  // TODO(b/41491709): Remove this killswitch post safe rollout.
+  if (base::FeatureList::IsEnabled(
+          kCorrectFramebufferAttachmentComputationInGLTexture)) {
+    // GLTextureImageBackingFactory supports raster and display usage only for
+    // Ganesh-GL, meaning that raster/display write usage implies GL writes
+    // within Skia.
+    for_framebuffer_attachment = usage & (SHARED_IMAGE_USAGE_GLES2_WRITE |
+                                          SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                          SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  } else {
+    for_framebuffer_attachment =
+        (usage &
+         (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+          SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
+  }
+
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 

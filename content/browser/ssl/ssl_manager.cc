@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
@@ -96,10 +97,10 @@ class SSLManagerSet : public base::SupportsUserData::Data {
   SSLManagerSet(const SSLManagerSet&) = delete;
   SSLManagerSet& operator=(const SSLManagerSet&) = delete;
 
-  std::set<SSLManager*>& get() { return set_; }
+  std::set<raw_ptr<SSLManager, SetExperimental>>& get() { return set_; }
 
  private:
-  std::set<SSLManager*> set_;
+  std::set<raw_ptr<SSLManager, SetExperimental>> set_;
 };
 
 }  // namespace
@@ -472,7 +473,7 @@ void SSLManager::NotifySSLInternalStateChanged(BrowserContext* context) {
   SSLManagerSet* managers =
       static_cast<SSLManagerSet*>(context->GetUserData(kSSLManagerKeyName));
 
-  for (auto* manager : managers->get()) {
+  for (SSLManager* manager : managers->get()) {
     // TODO(crbug.com/1320302): Ensure proper notify_changes is passed to
     // UpdateEntry.
     manager->UpdateEntry(manager->controller()->GetLastCommittedEntry(), 0, 0,

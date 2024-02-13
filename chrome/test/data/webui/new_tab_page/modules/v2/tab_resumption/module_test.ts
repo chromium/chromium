@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Tab} from 'chrome://new-tab-page/history_types.mojom-webui.js';
-import {tabResumptionDescriptor, TabResumptionModuleElement, TabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import type {Tab} from 'chrome://new-tab-page/history_types.mojom-webui.js';
+import type {DismissModuleInstanceEvent, TabResumptionModuleElement} from 'chrome://new-tab-page/lazy_load.js';
+import {tabResumptionDescriptor, TabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/tab_resumption.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {TestMock} from 'chrome://webui-test/test_mock.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
@@ -83,11 +85,12 @@ suite('NewTabPageModulesTabResumptionModuleTest', () => {
 
       const actionMenuItems =
           [...actionMenu.querySelectorAll('button.dropdown-item')];
-      assertEquals(3, actionMenuItems.length);
-      ['disable', 'info', 'customize-module'].forEach((action, index) => {
-        assertEquals(
-            action, actionMenuItems[index]!.getAttribute('data-action'));
-      });
+      assertEquals(4, actionMenuItems.length);
+      ['dismiss', 'disable', 'info', 'customize-module'].forEach(
+          (action, index) => {
+            assertEquals(
+                action, actionMenuItems[index]!.getAttribute('data-action'));
+          });
     });
 
     test('Header info button click opens info dialog', async () => {
@@ -101,6 +104,28 @@ suite('NewTabPageModulesTabResumptionModuleTest', () => {
       headerElement!.dispatchEvent(new Event('info-button-click'));
 
       assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
+    });
+
+    test('Header dismiss button dispatches dismiss module event', async () => {
+      // Arrange.
+      const moduleElement = await initializeModule(createSampleTabs(1));
+
+      // Assert.
+      assertTrue(!!moduleElement);
+      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
+      assertTrue(!!headerElement);
+      const waitForDismissEvent =
+          eventToPromise('dismiss-module-instance', moduleElement);
+      headerElement!.dispatchEvent(new Event('dismiss-button-click'));
+
+      const dismissEvent: DismissModuleInstanceEvent =
+          await waitForDismissEvent;
+      assertEquals(`Tabs hidden`, dismissEvent.detail.message);
+
+      // Act.
+      const restoreCallback = dismissEvent.detail.restoreCallback!;
+      restoreCallback();
+      assertTrue(!!moduleElement);
     });
   });
 });

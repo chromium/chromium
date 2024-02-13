@@ -6,8 +6,8 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_VIEW_UTIL_H_
 
 #include <memory>
+#include <optional>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_export.h"
 
 namespace ui {
@@ -23,9 +23,9 @@ namespace message_center::notification_view_util {
 std::unique_ptr<ui::Event> ConvertToBoundedLocatedEvent(const ui::Event& event,
                                                         views::View* target);
 
-// Returns the corner radius applied to the large image. Returns `absl::nullopt`
+// Returns the corner radius applied to the large image. Returns `std::nullopt`
 // if rounded corners are not required.
-MESSAGE_CENTER_EXPORT absl::optional<size_t> GetLargeImageCornerRadius();
+MESSAGE_CENTER_EXPORT std::optional<size_t> GetLargeImageCornerRadius();
 
 }  // namespace message_center::notification_view_util
 

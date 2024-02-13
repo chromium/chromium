@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <variant>
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -22,6 +23,7 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
 class GURL;
+class ContentSettingsPattern;
 
 namespace base {
 class Lock;

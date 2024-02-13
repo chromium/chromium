@@ -108,18 +108,15 @@ TEST_F(RegularGridMediatorTest, UndoCloseAllItemsCommandWithNTP) {
 
   // Add three new tabs.
   auto web_state1 = CreateFakeWebStateWithURL(GURL("https://test/url1"));
-  browser_->GetWebStateList()->InsertWebState(0, std::move(web_state1),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state1), WebStateList::InsertionParams::AtIndex(0));
   // Second tab is a NTP.
   auto web_state2 = CreateFakeWebStateWithURL(GURL(kChromeUINewTabURL));
-  browser_->GetWebStateList()->InsertWebState(1, std::move(web_state2),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state2), WebStateList::InsertionParams::AtIndex(1));
   auto web_state3 = CreateFakeWebStateWithURL(GURL("https://test/url2"));
-  browser_->GetWebStateList()->InsertWebState(2, std::move(web_state3),
-                                              WebStateList::INSERT_FORCE_INDEX,
-                                              WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state3), WebStateList::InsertionParams::AtIndex(2));
   browser_->GetWebStateList()->ActivateWebStateAt(0);
 
   // Closing item does not add them to the recently closed.

@@ -33,6 +33,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -85,7 +86,8 @@ class StyleBuilderConverterBase {
   STATIC_ONLY(StyleBuilderConverterBase);
 
  public:
-  static FontSelectionValue ConvertFontStretch(const CSSValue&);
+  static FontSelectionValue ConvertFontStretch(const CSSLengthResolver&,
+                                               const CSSValue&);
   static FontSelectionValue ConvertFontStyle(const CSSValue&);
   static FontSelectionValue ConvertFontWeight(const CSSValue&,
                                               FontSelectionValue);
@@ -149,6 +151,8 @@ class StyleBuilderConverter {
   static FontSizeAdjust ConvertFontSizeAdjust(StyleResolverState&,
                                               const CSSValue&);
 
+  static std::optional<FontSelectionValue> ConvertFontStretchKeyword(
+      const CSSValue&);
   static FontSelectionValue ConvertFontStretch(StyleResolverState&,
                                                const CSSValue&);
   static FontSelectionValue ConvertFontStyle(StyleResolverState&,
@@ -309,7 +313,8 @@ class StyleBuilderConverter {
                                                         const CSSValue&);
   static OffsetPathOperation* ConvertOffsetPath(StyleResolverState&,
                                                 const CSSValue&);
-  static StyleOffsetRotation ConvertOffsetRotate(const CSSValue&);
+  static StyleOffsetRotation ConvertOffsetRotate(const CSSLengthResolver&,
+                                                 const CSSValue&);
   template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
   static Length ConvertPositionLength(StyleResolverState&, const CSSValue&);
   static Rotation ConvertRotation(const CSSValue&);
@@ -484,6 +489,15 @@ AtomicString StyleBuilderConverter::ConvertString(StyleResolverState&,
   DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), IdForNone);
   return g_null_atom;
 }
+
+// Returns the computed <color> value for `value`. Note that it's expected that
+// `value` is the result of parsing a <color> value.
+// See: https://drafts.csswg.org/css-color/#resolving-color-values
+CORE_EXPORT StyleColor
+ResolveColorValue(const CSSValue& value,
+                  const TextLinkColors& text_link_colors,
+                  mojom::blink::ColorScheme used_color_scheme,
+                  bool for_visited_link = false);
 
 }  // namespace blink
 

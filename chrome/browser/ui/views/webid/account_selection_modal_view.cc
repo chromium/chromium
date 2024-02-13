@@ -19,6 +19,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -44,17 +45,18 @@ constexpr int kDialogWidth = 500;
 constexpr int kDialogMargin = 24;
 
 AccountSelectionModalView::AccountSelectionModalView(
+    const std::u16string& top_frame_for_display,
+    const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
-    Browser* browser,
+    content::WebContents* web_contents,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AccountSelectionViewBase::Observer* observer,
     views::WidgetObserver* widget_observer)
-    : AccountSelectionViewBase(browser,
+    : AccountSelectionViewBase(web_contents,
                                observer,
                                widget_observer,
-                               std::move(url_loader_factory)),
-      rp_context_(rp_context) {
-  SetModalType(ui::MODAL_TYPE_WINDOW);
+                               std::move(url_loader_factory)) {
+  SetModalType(ui::MODAL_TYPE_CHILD);
   SetOwnedByWidget(true);
   set_margins(gfx::Insets::VH(kDialogMargin, kDialogMargin));
   set_fixed_width(kDialogWidth);
@@ -66,29 +68,95 @@ AccountSelectionModalView::AccountSelectionModalView(
   SetButtons(ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CANCEL));
+
+  title_ = GetTitle(top_frame_for_display, /*iframe_for_display=*/absl::nullopt,
+                    idp_title, rp_context);
+  SetAccessibleTitle(title_);
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() {}
 
 void AccountSelectionModalView::InitDialogWidget() {
-  if (!browser_ || !widget_observer_) {
+  if (!web_contents_) {
     return;
   }
 
-  views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
-      this->AsDialogDelegate(), browser_->window()->GetNativeWindow());
+  views::Widget* widget =
+      constrained_window::ShowWebModalDialogViews(this, web_contents_);
+  constrained_window::UpdateWebContentsModalDialogPosition(
+      GetWidget(),
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_)
+          ->delegate()
+          ->GetWebContentsModalDialogHost());
 
   if (!widget) {
     return;
   }
 
-  widget->AddObserver(widget_observer_);
+  // Add the widget observer, if available. It is null in tests.
+  if (widget_observer_) {
+    widget->AddObserver(widget_observer_);
+  }
+
   dialog_widget_ = widget->GetWeakPtr();
+}
+
+std::unique_ptr<views::View>
+AccountSelectionModalView::CreateAccountChooserHeader() {
+  // TODO(crbug.com/1518356): Add IDP icon.
+  std::unique_ptr<views::View> header = std::make_unique<views::View>();
+  header->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+
+  // Add the title.
+  title_label_ = header->AddChildView(std::make_unique<views::Label>(
+      title_, views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  SetLabelProperties(title_label_);
+
+  // Add the body.
+  views::Label* body_label =
+      header->AddChildView(std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT));
+  SetLabelProperties(body_label);
+  return header;
+}
+
+std::unique_ptr<views::View>
+AccountSelectionModalView::CreateMultipleAccountChooser(
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  views::View* const content =
+      scroll_view->SetContents(std::make_unique<views::View>());
+  content->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  size_t num_rows = 0;
+  for (const auto& idp_display_data : idp_display_data_list) {
+    for (const auto& account : idp_display_data.accounts) {
+      content->AddChildView(
+          CreateAccountRow(account, idp_display_data, /*should_hover=*/true));
+    }
+    num_rows += idp_display_data.accounts.size();
+  }
+
+  const int per_account_size = content->GetPreferredSize().height() / num_rows;
+  scroll_view->ClipHeightTo(0, static_cast<int>(per_account_size * 2.5f));
+  return scroll_view;
 }
 
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
-  // TODO(crbug.com/1518356): Implement modal multi account picker.
+  AddChildView(CreateAccountChooserHeader());
+  AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
+
+  InitDialogWidget();
+
+  // TODO(crbug.com/1518356): Connect with multi IDP API.
+  // TODO(crbug.com/1518356): Connect with add account API.
+  // TODO(crbug.com/1518356): Add permissions UI. This should include the
+  // disclosure text.
 }
 
 void AccountSelectionModalView::ShowVerifyingSheet(
@@ -121,32 +189,12 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
-  // TODO(crbug.com/1518356): Add IDP icon.
-  std::unique_ptr<views::View> header = std::make_unique<views::View>();
-  header->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
-  // Add the title.
-  std::u16string title_text =
-      GetTitle(top_frame_for_display, iframe_for_display,
-               idp_display_data.idp_etld_plus_one, rp_context_);
-  title_label_ = header->AddChildView(std::make_unique<views::Label>(
-      title_text, views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_PRIMARY));
-  SetLabelProperties(title_label_);
-
-  // Add the body.
-  views::Label* body_label =
-      header->AddChildView(std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
-          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_HINT));
-  SetLabelProperties(body_label);
-
-  AddChildView(std::move(header));
+  AddChildView(CreateAccountChooserHeader());
   AddChildView(CreateSingleAccountChooser(idp_display_data, account));
 
   InitDialogWidget();
 
+  // TODO(crbug.com/1518356): Connect with multi IDP API.
   // TODO(crbug.com/1518356): Connect with add account API.
   // TODO(crbug.com/1518356): Add permissions UI. This should include the
   // disclosure text.
@@ -170,12 +218,15 @@ void AccountSelectionModalView::ShowErrorDialog(
 }
 
 void AccountSelectionModalView::CloseDialog() {
-  if (!dialog_widget_ || !widget_observer_) {
+  if (!dialog_widget_) {
     return;
   }
 
   CancelDialog();
-  dialog_widget_->RemoveObserver(widget_observer_);
+  // Remove the widget observer, if available. It is null in tests.
+  if (widget_observer_) {
+    dialog_widget_->RemoveObserver(widget_observer_);
+  }
   dialog_widget_.reset();
 }
 

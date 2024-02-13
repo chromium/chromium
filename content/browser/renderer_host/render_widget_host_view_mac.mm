@@ -1088,6 +1088,10 @@ bool RenderWidgetHostViewMac::IsHTMLFormPopup() const {
   return !!popup_parent_host_view_;
 }
 
+uint64_t RenderWidgetHostViewMac::GetNSViewId() const {
+  return ns_view_id_;
+}
+
 bool RenderWidgetHostViewMac::GetLineBreakIndex(
     const std::vector<gfx::Rect>& bounds,
     const gfx::Range& range,

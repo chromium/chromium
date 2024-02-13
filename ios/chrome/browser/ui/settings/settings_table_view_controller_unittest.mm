@@ -145,28 +145,25 @@ class SettingsTableViewControllerTest
     // Create mock command handlers. These are just for initializing the view
     // controller; because the handlers are local to this methdd, they will not
     // exist during tests, so if the tests call any commands they will fail.
-    id mockApplicationCommandHandler =
+    id mock_application_handler =
         OCMProtocolMock(@protocol(ApplicationCommands));
-    id mockApplicationSettingsCommandHandler =
-        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
-    id mockSnackbarCommandHandler =
-        OCMProtocolMock(@protocol(SnackbarCommands));
+    id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
+    id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
-    [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
-                             forProtocol:@protocol(SnackbarCommands)];
-    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+    [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
-    [dispatcher
-        startDispatchingToTarget:mockApplicationSettingsCommandHandler
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_settings_handler
+                             forProtocol:@protocol(SettingsCommands)];
+    [dispatcher startDispatchingToTarget:mock_snackbar_handler
+                             forProtocol:@protocol(SnackbarCommands)];
 
     SettingsTableViewController* controller =
         [[SettingsTableViewController alloc] initWithBrowser:browser_.get()];
     controller.applicationHandler =
         HandlerForProtocol(dispatcher, ApplicationCommands);
     controller.settingsHandler =
-        HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+        HandlerForProtocol(dispatcher, SettingsCommands);
     controller.snackbarHandler =
         HandlerForProtocol(dispatcher, SnackbarCommands);
     return controller;

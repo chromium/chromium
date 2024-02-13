@@ -64,7 +64,8 @@ void IdentityRequestDialogController::ShowAccountsDialog(
     bool show_auto_reauthn_checkbox,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
-    DismissCallback dismiss_callback) {
+    DismissCallback dismiss_callback,
+    AccountsDisplayedCallback accounts_displayed_callback) {
   if (!is_interception_enabled_) {
     std::move(dismiss_callback).Run(DismissReason::kOther);
   }

@@ -16,7 +16,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "components/system_cpu/cpu_probe.h"
-#include "components/system_cpu/pressure_sample.h"
+#include "components/system_cpu/cpu_sample.h"
 #include "components/system_cpu/pressure_test_support.h"
 #include "components/system_cpu/procfs_stat_cpu_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,7 +71,7 @@ TEST_F(CpuProbeLinuxTest, ProductionDataNoCrash) {
 
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_GE(sample->cpu_utilization, 0.0);
   EXPECT_LE(sample->cpu_utilization, 1.0);
@@ -105,7 +105,7 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.25);
 }
@@ -124,7 +124,7 @@ cpu0 0 0 0 0 0 0 0 0 0 0
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 100 0 0 300 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.25);
 
@@ -135,7 +135,7 @@ cpu0 100 0 0 300 0 0 0 0 0 0
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 200 100 0 500 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample2 = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample2 = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample2.has_value());
   EXPECT_EQ(sample2->cpu_utilization, 0.5);
 }
@@ -173,7 +173,7 @@ procs_running 700
 procs_blocked 600
 softirq 900 901 902 903 904 905 906 907 908 909 910
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.375);
 }
@@ -197,7 +197,7 @@ cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 110 20 0 330 0 0 0 0 0 0
 cpu1 140 150 0 260 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.375);
 }
@@ -224,7 +224,7 @@ softirq 900 901 902 903 904 905 906 907 908 909 910
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 110 20 0 330 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.25);
 
@@ -239,7 +239,7 @@ cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 210 20 0 630 0 0 0 0 0 0
 cpu1 140 150 0 260 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample2 = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample2 = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample2.has_value());
   EXPECT_EQ(sample2->cpu_utilization, 0.375);
 }
@@ -263,7 +263,7 @@ cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 110 20 0 330 0 0 0 0 0 0
 cpu1 100 100 0 200 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.25);
 
@@ -278,7 +278,7 @@ cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 210 120 0 530 0 0 0 0 0 0
 cpu1 200 100 0 500 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample2 = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample2 = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample2.has_value());
   EXPECT_EQ(sample2->cpu_utilization, 0.375);
 }
@@ -304,7 +304,7 @@ cpu0 100 0 0 300 0 0 0 0 0 0
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 200 0 0 600 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.25);
 }
@@ -330,7 +330,7 @@ bad stat file
 cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 110 120 0 230 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample2 = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample2 = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample2.has_value());
   EXPECT_EQ(sample2->cpu_utilization, 0.5);
 }
@@ -351,7 +351,7 @@ cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 10 20 0 130 0 0 0 0 0 0
 cpu1 140 50 0 60 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample.has_value());
   EXPECT_EQ(sample->cpu_utilization, 0.5);
 
@@ -362,7 +362,7 @@ cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 10 20 0 230 0 0 0 0 0 0
 cpu1 140 50 0 60 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample2 = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample2 = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample2.has_value());
   EXPECT_EQ(sample2->cpu_utilization, 0.0);
 
@@ -384,7 +384,7 @@ cpu 0 0 0 0 0 0 0 0 0 0
 cpu0 110 10 0 530 0 0 0 0 0 0
 cpu1 130 40 0 50 0 0 0 0 0 0
 )"));
-  std::optional<PressureSample> sample3 = probe_->UpdateAndWaitForSample();
+  std::optional<CpuSample> sample3 = probe_->UpdateAndWaitForSample();
   ASSERT_TRUE(sample3.has_value());
   EXPECT_EQ(sample3->cpu_utilization, 0.25);
 }

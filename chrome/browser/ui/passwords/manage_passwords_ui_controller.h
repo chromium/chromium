@@ -184,7 +184,7 @@ class ManagePasswordsUIController
       password_manager::ManagePasswordsReferrer referrer) override;
   void NavigateToPasswordManagerSettingsAccountStoreToggle(
       password_manager::ManagePasswordsReferrer referrer) override;
-  void EnableSync(const AccountInfo& account) override;
+  void SignIn(const AccountInfo& account) override;
   void OnDialogHidden() override;
   void AuthenticateUserWithMessage(const std::u16string& message,
                                    AvailabilityCallback callback) override;

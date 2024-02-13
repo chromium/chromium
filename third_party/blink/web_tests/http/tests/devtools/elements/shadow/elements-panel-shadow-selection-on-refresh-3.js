@@ -16,7 +16,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   TestRunner.runTestSuite([
     function setup(next) {
-      Common.Settings.settingForTest('showUAShadowDOM').set(true);
+      Common.Settings.settingForTest('show-ua-shadow-dom').set(true);
       ElementsTestRunner.expandElementsTree(next);
     },
 

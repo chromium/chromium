@@ -38,8 +38,7 @@ class CommitContributionImpl : public CommitContribution {
                               const FailedCommitResponseDataList&)>
           on_commit_response_callback,
       base::OnceCallback<void(SyncCommitError)> on_full_commit_failure_callback,
-      PassphraseType passphrase_type,
-      bool only_commit_specifics);
+      PassphraseType passphrase_type);
 
   CommitContributionImpl(const CommitContributionImpl&) = delete;
   CommitContributionImpl& operator=(const CommitContributionImpl&) = delete;
@@ -89,10 +88,6 @@ class CommitContributionImpl : public CommitContribution {
   // The index in the commit message where this contribution's entities are
   // added.  Used to correlate per-item requests with per-item responses.
   size_t entries_start_index_;
-
-  // Don't send any metadata to server, only specifics. This is needed for
-  // commit only types to save bandwidth.
-  bool only_commit_specifics_;
 };
 
 }  // namespace syncer

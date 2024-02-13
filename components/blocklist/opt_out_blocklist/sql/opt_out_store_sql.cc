@@ -390,7 +390,6 @@ void OptOutStoreSQL::LoadBlockList(
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!db_) {
     db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
-        .exclusive_locking = true,
         // The entry size should be between 11 and 10 + x bytes, where x is the
         // the length of the host name string in bytes.
         // The total number of entries per host is bounded at 32, and the total

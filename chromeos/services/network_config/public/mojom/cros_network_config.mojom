@@ -730,6 +730,7 @@ struct ManagedCellularProperties {
   string? min;
   string? model_id;
   string? network_technology;
+  string sim_lock_type;
   PaymentPortalProperties? payment_portal;
   string? roaming_state;
   // The current user selected APN. This corresponds to APN field in ONC.

@@ -319,7 +319,13 @@ TEST_F(ThreadGroupImplImplTest, ShouldYieldFloodedUserVisible) {
   scoped_refptr<JobTaskSource> task_source =
       job_task->GetJobTaskSource(FROM_HERE, {TaskPriority::USER_VISIBLE},
                                  &mock_pooled_task_runner_delegate_);
-  task_source->NotifyConcurrencyIncrease();
+
+  auto registered_task_source = task_tracker_.RegisterTaskSource(task_source);
+  ASSERT_TRUE(registered_task_source);
+  static_cast<ThreadGroup*>(thread_group_.get())
+      ->PushTaskSourceAndWakeUpWorkers(
+          RegisteredTaskSourceAndTransaction::FromTaskSource(
+              std::move(registered_task_source)));
 
   threads_running.Wait();
 

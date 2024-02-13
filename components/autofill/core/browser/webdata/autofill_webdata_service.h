@@ -188,10 +188,17 @@ class AutofillWebDataService : public WebDataServiceBase {
       WebDataServiceConsumer* consumer);
 
   // Initiates the request for virtual card usage data. The method
-  // OnWebDataServiceRequestDone of |consumer| gets called when the request is
-  // finished, with the offer data included in the argument |result|. The
-  // consumer owns the data.
+  // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
+  // finished, with the virtual card usage data included in the argument
+  // `result`. The consumer owns the data.
   WebDataServiceBase::Handle GetVirtualCardUsageData(
+      WebDataServiceConsumer* consumer);
+
+  // Initiates the request for credit card benefits. The method
+  // OnWebDataServiceRequestDone() of `consumer` gets called when the request is
+  // finished, with the credit card benefits included in the argument `result`.
+  // The consumer owns the data.
+  WebDataServiceBase::Handle GetCreditCardBenefits(
       WebDataServiceConsumer* consumer);
 
   void ClearAllServerData();

@@ -89,6 +89,22 @@ ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
                                                SourceIdType::EXTENSION_ID);
 }
 
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForNotificationPermission(
+    base::PassKey<ChromePermissionsClient>,
+    const GURL& origin) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(origin,
+                                               SourceIdType::NOTIFICATION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
+    base::PassKey<PlatformNotificationServiceImpl>,
+    const GURL& origin) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(origin,
+                                               SourceIdType::NOTIFICATION_ID);
+}
+
 void UkmRecorder::RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url) {
   UpdateSourceURL(source_id.ToInt64(), url);
 }

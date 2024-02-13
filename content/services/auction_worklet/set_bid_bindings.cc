@@ -74,17 +74,16 @@ struct AdRender {
 };
 
 // Handles conversion of (DOMString or AdRender) IDL type.
-bool ConvertDomStringOrAdRender(
+IdlConvert::Status ConvertDomStringOrAdRender(
     AuctionV8Helper* v8_helper,
     AuctionV8Helper::TimeLimitScope& time_limit_scope,
     const std::string& error_prefix,
     v8::Local<v8::Value> value,
-    AdRender& out,
-    DictConverter& propagate_errors_to) {
+    AdRender& out) {
   if (value->IsString()) {
     bool ok = gin::ConvertFromV8(v8_helper->isolate(), value, &out.url);
     DCHECK(ok);  // Shouldn't fail since it's known to be String.
-    return true;
+    return IdlConvert::Status::MakeSuccess();
   }
 
   DictConverter convert_ad_render(v8_helper, time_limit_scope, error_prefix,
@@ -93,10 +92,9 @@ bool ConvertDomStringOrAdRender(
   if (!convert_ad_render.GetOptional("height", out.height) ||
       !convert_ad_render.GetRequired("url", out.url) ||
       !convert_ad_render.GetOptional("width", out.width)) {
-    propagate_errors_to.SetStatus(convert_ad_render.TakeStatus());
-    return false;
+    return convert_ad_render.TakeStatus();
   }
-  return true;
+  return IdlConvert::Status::MakeSuccess();
 }
 
 // Parses an AdRender, either a top-level value of render: field in bid or
@@ -240,21 +238,19 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
   auto collect_components = base::BindRepeating(
       [](scoped_refptr<AuctionV8Helper> v8_helper,
          AuctionV8Helper::TimeLimitScope& time_limit_scope,
-         DictConverter& convert_set_bid, const std::string& error_prefix,
-         GenerateBidOutput& idl, v8::Local<v8::Value> component) -> bool {
+         const std::string& error_prefix, GenerateBidOutput& idl,
+         v8::Local<v8::Value> component) -> IdlConvert::Status {
         AdRender converted_component;
-        if (ConvertDomStringOrAdRender(v8_helper.get(), time_limit_scope,
-                                       error_prefix, component,
-                                       converted_component, convert_set_bid)) {
+        IdlConvert::Status status = ConvertDomStringOrAdRender(
+            v8_helper.get(), time_limit_scope, error_prefix, component,
+            converted_component);
+        if (status.is_success()) {
           idl.ad_components->push_back(std::move(converted_component));
-          return true;
-        } else {
-          // ConvertDomStringOrAdRender already forwarded the error for us.
-          return false;
         }
+        return status;
       },
-      ref_v8_helper, std::ref(time_limit_scope), std::ref(convert_set_bid),
-      std::cref(components_prefix), std::ref(idl));
+      ref_v8_helper, std::ref(time_limit_scope), std::cref(components_prefix),
+      std::ref(idl));
 
   convert_set_bid.GetOptional("ad", idl.ad);
   convert_set_bid.GetOptionalSequence(
@@ -270,9 +266,9 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
   if (convert_set_bid.GetOptional("render", render_value) &&
       render_value.has_value()) {
     idl.render.emplace();
-    ConvertDomStringOrAdRender(v8_helper_.get(), time_limit_scope,
-                               render_prefix, *render_value, *idl.render,
-                               convert_set_bid);
+    convert_set_bid.SetStatus(
+        ConvertDomStringOrAdRender(v8_helper_.get(), time_limit_scope,
+                                   render_prefix, *render_value, *idl.render));
   }
 
   if (convert_set_bid.is_failed()) {
@@ -375,9 +371,9 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
     }
 
     // We want < rather than <= here so the semantic check is testable and not
-    // hidden by implementation details of DictConverter.
+    // hidden by implementation details of IdlConvert.
     static_assert(blink::kMaxAdAuctionAdComponentsConfigLimit <
-                  DictConverter::kSequenceLengthLimit);
+                  IdlConvert::kSequenceLengthLimit);
 
     const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
     if (idl.ad_components->size() > kMaxAdAuctionAdComponents) {

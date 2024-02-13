@@ -111,7 +111,7 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
       observed_user_windows_;
 
   // The set of windows with shelf items managed by this ShelfWindowWatcher.
-  std::set<aura::Window*> user_windows_with_items_;
+  std::set<raw_ptr<aura::Window, SetExperimental>> user_windows_with_items_;
 };
 
 }  // namespace ash

@@ -68,7 +68,7 @@ constexpr auto kControlKeys = base::MakeFixedFlatSet<ui::KeyboardCode>({
 uint32_t CalculateHash(AcceleratorKeyInputType key_type,
                        uint32_t modifier_flags) {
   static_assert(sizeof(AcceleratorKeyInputType) <= sizeof(uint16_t));
-  static_assert(static_cast<uint32_t>(ModifierFlag::kMaxValue) <=
+  static_assert(static_cast<uint32_t>(ModifierFlag::kMaxValue) <
                 (sizeof(uint16_t) * 8));
   return (modifier_flags << (sizeof(uint16_t) * 8)) +
          static_cast<uint16_t>(key_type);
@@ -179,10 +179,15 @@ void ModifierKeyComboRecorder::OnPrerewriteKeyInputEvent(
   const uint32_t modifier_flags = GenerateModifierFlagsFromKeyEvent(key_event);
   const uint32_t hash = CalculateHash(type, modifier_flags);
 
-  // Do not emit the metric if its only an alpha or digit key pressed.
+  // True if Shift is the only modifier key present on the event.
+  const bool only_shift_present =
+      modifier_flags == GetModifierFlagFromModifier(Modifier::kShift);
+
+  // Do not emit the metric if its only an alpha or digit key pressed (with or
+  // without Shift held).
   if ((type == AcceleratorKeyInputType::kAlpha ||
        type == AcceleratorKeyInputType::kDigit) &&
-      modifier_flags == 0) {
+      (modifier_flags == 0 || only_shift_present)) {
     return;
   }
 

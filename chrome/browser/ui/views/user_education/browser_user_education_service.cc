@@ -126,8 +126,6 @@ bool HasTabGroups(const BrowserView* browser_view) {
 
 }  // namespace
 
-const char kSideSearchTutorialId[] = "Side Search Tutorial";
-
 user_education::HelpBubbleDelegate* GetHelpBubbleDelegate() {
   static base::NoDestructor<BrowserHelpBubbleDelegate> delegate;
   return delegate.get();
@@ -158,8 +156,8 @@ void RegisterChromeHelpBubbleFactories(
 void MaybeRegisterChromeFeaturePromos(
     user_education::FeaturePromoRegistry& registry) {
   using user_education::FeaturePromoSpecification;
-  using Metadata = user_education::FeaturePromoSpecification::Metadata;
   using user_education::HelpBubbleArrow;
+  using user_education::Metadata;
 
   // This icon got updated, so select which is used based on whether refresh is
   // enabled. Note that the WebUI refresh state is not taken into account, so
@@ -178,14 +176,15 @@ void MaybeRegisterChromeFeaturePromos(
 
   // TODO(1432894): Use toast or snooze instead of legacy promo.
   // kIPHAutofillExternalAccountProfileSuggestionFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForLegacyPromo(
-          &feature_engagement::
-              kIPHAutofillExternalAccountProfileSuggestionFeature,
-          kAutofillSuggestionElementId,
-          IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION)
-          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(115, "vykochko@google.com", "Autofill popup appears.")));
+  registry.RegisterFeature(
+      std::move(FeaturePromoSpecification::CreateForLegacyPromo(
+                    &feature_engagement::
+                        kIPHAutofillExternalAccountProfileSuggestionFeature,
+                    kAutofillSuggestionElementId,
+                    IDS_AUTOFILL_IPH_EXTERNAL_ACCOUNT_PROFILE_SUGGESTION)
+                    .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+                    .SetMetadata(115, "vykochko@google.com",
+                                 "Triggered after autofill popup appears.")));
 
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(
@@ -197,7 +196,7 @@ void MaybeRegisterChromeFeaturePromos(
           FeaturePromoSpecification::AcceleratorInfo())
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
           .SetMetadata(118, "alexandertekle@google.com",
-                       "Autofill popup appears.")));
+                       "Triggered after autofill popup appears.")));
 
   // kIPHAutofillVirtualCardSuggestionFeature:
   registry.RegisterFeature(std::move(
@@ -206,25 +205,17 @@ void MaybeRegisterChromeFeaturePromos(
           kAutofillCreditCardSuggestionEntryElementId,
           IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_IPH_BUBBLE_LABEL)
           .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-          .SetMetadata(100, "siyua@chromium.org", "Autofill popup appears.")));
+          .SetMetadata(100, "siyua@chromium.org",
+                       "Triggered after autofill popup appears.")));
 
   // kIPHDesktopPwaInstallFeature:
   registry.RegisterFeature(
       std::move(user_education::FeaturePromoSpecification::CreateForLegacyPromo(
                     &feature_engagement::kIPHDesktopPwaInstallFeature,
                     kInstallPwaElementId, IDS_DESKTOP_PWA_INSTALL_PROMO)
-                    .SetMetadata(Metadata(
-                        89, "phillis@chromium.org",
-                        "User navigates to a page with a promotable PWA."))));
-
-  // kIPHDesktopTabGroupsNewGroupFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForTutorialPromo(
-                    feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
-                    kTabStripRegionElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO,
-                    kTabGroupTutorialId)
-                    .SetBubbleArrow(HelpBubbleArrow::kNone)
-                    .SetBubbleIcon(kLightbulbOutlineIcon)));
+                    .SetMetadata(Metadata(89, "phillis@chromium.org",
+                                          "Triggered after user navigates to a "
+                                          "page with a promotable PWA."))));
 
   // kIPHDesktopCustomizeChromeFeature:
   registry.RegisterFeature(std::move(
@@ -688,12 +679,13 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
           .SetBubbleIcon(&vector_icons::kCelebrationIcon)
           .SetMetadata(
-              90, "dfried@google.com", "Test IPH.",
+              90, "dfried@google.com",
+              "This is a test IPH, designed to verify that IPH can attach to "
+              "elements in WebUI in the main browser tab.",
               // These are not required features; they are just an example to
               // ensure that the tester page formats this data correctly.
-              FeaturePromoSpecification::Metadata::FeatureSet{
-                  &feature_engagement::kIPHWebUiHelpBubbleTestFeature,
-                  &feature_engagement::kIPHDesktopTabGroupsNewGroupFeature})));
+              Metadata::FeatureSet{
+                  &feature_engagement::kIPHWebUiHelpBubbleTestFeature})));
 
   // kIPHBatterySaverModeFeature:
   registry.RegisterFeature(std::move(
@@ -851,6 +843,13 @@ void MaybeRegisterChromeTutorials(
 
   {  // Menu item bubble test.
     TutorialDescription test_description;
+    test_description.metadata.additional_description = "Used for testing only.";
+    test_description.metadata.launch_milestone = 116;
+    test_description.metadata.owners = "Frizzle Team";
+    // These features aren't actually required; they are merely here to verify
+    // that Tutorials have their required features shown on the tester page.
+    test_description.metadata.required_features = {
+        &feature_engagement::kIPHWebUiHelpBubbleTestFeature};
     test_description.steps = {
         BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_OK)

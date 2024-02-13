@@ -299,7 +299,7 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
     // theme change notifications.
     Widget::Widgets widgets;
     GetAllOwnedWidgets(GetNativeView(), &widgets);
-    for (auto* widget : widgets) {
+    for (Widget* widget : widgets) {
       widget->ThemeChanged();
     }
   }

@@ -144,8 +144,8 @@ void CocoaScrollBarThumb::OnMouseExited(const ui::MouseEvent& event) {
 //////////////////////////////////////////////////////////////////
 // CocoaScrollBar class
 
-CocoaScrollBar::CocoaScrollBar(bool horizontal)
-    : ScrollBar(horizontal),
+CocoaScrollBar::CocoaScrollBar(ScrollBar::Orientation orientation)
+    : ScrollBar(orientation),
       hide_scrollbar_timer_(FROM_HERE,
                             base::Milliseconds(500),
                             base::BindRepeating(&CocoaScrollBar::HideScrollbar,
@@ -192,7 +192,7 @@ void CocoaScrollBar::Layout(PassKey) {
   // The length of the thumb is set by ScrollBar::Update().
   gfx::Rect thumb_bounds(GetThumb()->bounds());
   gfx::Rect track_bounds(GetTrackBounds());
-  if (IsHorizontal()) {
+  if (GetOrientation() == Orientation::kHorizontal) {
     GetThumb()->SetBounds(thumb_bounds.x(),
                           track_bounds.y(),
                           thumb_bounds.width(),
@@ -327,8 +327,10 @@ void CocoaScrollBar::ObserveScrollEvent(const ui::ScrollEvent& event) {
   // hide timer check because Update() is called asynchronously, after event
   // processing. So when |event| is the first event in a particular direction
   // the hide timer will not have started.
-  if ((IsHorizontal() ? event.x_offset() : event.y_offset()) != 0)
+  if ((GetOrientation() == Orientation::kHorizontal ? event.x_offset()
+                                                    : event.y_offset()) != 0) {
     return;
+  }
 
   // Otherwise, scrolling has started, but not in this scroller direction. If
   // already faded out, don't start another fade animation since that would
@@ -415,7 +417,7 @@ bool CocoaScrollBar::IsScrollbarFullyHidden() const {
 
 ui::NativeTheme::ExtraParams CocoaScrollBar::GetPainterParams() const {
   ui::NativeTheme::ScrollbarExtraParams scrollbar;
-  if (IsHorizontal()) {
+  if (GetOrientation() == Orientation::kHorizontal) {
     scrollbar.orientation = ui::NativeTheme::ScrollbarOrientation::kHorizontal;
   } else if (base::i18n::IsRTL()) {
     scrollbar.orientation =
@@ -479,10 +481,11 @@ bool CocoaScrollBar::IsHoverOrPressedState() const {
 
 void CocoaScrollBar::UpdateScrollbarThickness() {
   int thickness = ScrollbarThickness();
-  if (IsHorizontal())
+  if (GetOrientation() == Orientation::kHorizontal) {
     SetBounds(x(), bounds().bottom() - thickness, width(), thickness);
-  else
+  } else {
     SetBounds(bounds().right() - thickness, y(), thickness, height());
+  }
 }
 
 void CocoaScrollBar::ResetOverlayScrollbar() {

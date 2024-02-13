@@ -6,11 +6,18 @@
 
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "base/types/expected.h"
+#import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
+#import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -83,9 +90,20 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
 
   void SetUp() override {
     consumer_ = OCMProtocolMock(@protocol(PlusAddressBottomSheetConsumer));
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+    url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+        UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+    incognito_ = browser_state_.get()->IsOffTheRecord();
   }
-
+  base::test::TaskEnvironment task_environment_;
   id consumer_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<Browser> browser_;
+  raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
+  BOOL incognito_;
 };
 
 // Ensure that the consumer is notified when a plus address is successfully
@@ -102,7 +120,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ReservePlusAddress) {
       [[PlusAddressBottomSheetMediator alloc]
           initWithPlusAddressService:&service
                            activeUrl:GURL(kFacet)
-                    autofillCallback:base::DoNothing()];
+                    autofillCallback:base::DoNothing()
+                           urlLoader:url_loader_
+                           incognito:incognito_];
   mediator.consumer = consumer_;
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(kFakePlusAddress)]);
@@ -119,7 +139,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
       [[PlusAddressBottomSheetMediator alloc]
           initWithPlusAddressService:&service
                            activeUrl:GURL(kFacet)
-                    autofillCallback:base::DoNothing()];
+                    autofillCallback:base::DoNothing()
+                           urlLoader:url_loader_
+                           incognito:incognito_];
   mediator.consumer = consumer_;
   OCMExpect([consumer_ notifyError:plus_addresses::PlusAddressMetrics::
                                        PlusAddressModalCompletionStatus::
@@ -141,7 +163,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddress) {
       [[PlusAddressBottomSheetMediator alloc]
           initWithPlusAddressService:&service
                            activeUrl:GURL(kFacet)
-                    autofillCallback:base::DoNothing()];
+                    autofillCallback:base::DoNothing()
+                           urlLoader:url_loader_
+                           incognito:incognito_];
   mediator.consumer = consumer_;
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(kFakePlusAddress)]);
@@ -165,7 +189,9 @@ TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddressError) {
       [[PlusAddressBottomSheetMediator alloc]
           initWithPlusAddressService:&service
                            activeUrl:GURL(kFacet)
-                    autofillCallback:base::DoNothing()];
+                    autofillCallback:base::DoNothing()
+                           urlLoader:url_loader_
+                           incognito:incognito_];
   mediator.consumer = consumer_;
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(kFakePlusAddress)]);
@@ -177,4 +203,39 @@ TEST_F(PlusAddressBottomSheetMediatorTest, MAYBE_ConfirmPlusAddressError) {
   service.set_force_error_for_testing(/*force_error_for_testing=*/true);
   [mediator confirmPlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+TEST_F(PlusAddressBottomSheetMediatorTest, openManagementUrlOnNewTab) {
+  plus_addresses::FakePlusAddressService service;
+  PlusAddressBottomSheetMediator* mediator =
+      [[PlusAddressBottomSheetMediator alloc]
+          initWithPlusAddressService:&service
+                           activeUrl:GURL(kFacet)
+                    autofillCallback:base::DoNothing()
+                           urlLoader:url_loader_
+                           incognito:incognito_];
+  [mediator openNewTab:PlusAddressURLType::kManagement];
+
+  EXPECT_EQ(GURL(plus_addresses::kPlusAddressManagementUrl.Get()),
+            url_loader_->last_params.web_params.url);
+  // Ensure one new tab is opened.
+  EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
+}
+
+// Ensure that `openNewTab` opens errorReportUrl.
+TEST_F(PlusAddressBottomSheetMediatorTest, openErrorReportUrlOnNewTab) {
+  plus_addresses::FakePlusAddressService service;
+  PlusAddressBottomSheetMediator* mediator =
+      [[PlusAddressBottomSheetMediator alloc]
+          initWithPlusAddressService:&service
+                           activeUrl:GURL(kFacet)
+                    autofillCallback:base::DoNothing()
+                           urlLoader:url_loader_
+                           incognito:incognito_];
+  [mediator openNewTab:PlusAddressURLType::kErrorReport];
+
+  EXPECT_EQ(GURL(plus_addresses::kPlusAddressErrorReportUrl.Get()),
+            url_loader_->last_params.web_params.url);
+  // Ensure one new tab is opened.
+  EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
 }

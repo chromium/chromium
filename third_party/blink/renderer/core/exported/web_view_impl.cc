@@ -505,16 +505,12 @@ WebViewImpl* WebViewImpl::Create(
     const SessionStorageNamespaceId& session_storage_namespace_id,
     std::optional<SkColor> page_base_background_color,
     const BrowsingContextGroupInfo& browsing_context_group_info) {
-  // Take a self-reference for WebViewImpl that is released by calling Close(),
-  // then return a raw pointer to the caller.
-  auto web_view = base::AdoptRef(new WebViewImpl(
+  return new WebViewImpl(
       client, visibility, is_prerendering, is_inside_portal, fenced_frame_mode,
       compositing_enabled, widgets_never_composited, opener,
       std::move(page_handle), agent_group_scheduler,
       session_storage_namespace_id, std::move(page_base_background_color),
-      browsing_context_group_info));
-  web_view->AddRef();
-  return web_view.get();
+      browsing_context_group_info);
 }
 
 size_t WebView::GetWebViewCount() {
@@ -1166,7 +1162,7 @@ void WebViewImpl::Close() {
   for (auto& observer : observers_)
     observer.WebViewDestroyed();
 
-  Release();  // Balances a reference acquired in WebView::Create
+  delete this;
 }
 
 gfx::Size WebViewImpl::Size() {
@@ -1760,6 +1756,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       prefs.require_transient_activation_for_get_display_media);
   settings->SetRequireTransientActivationForShowFileOrDirectoryPicker(
       prefs.require_transient_activation_for_show_file_or_directory_picker);
+  settings->SetRequireTransientActivationForHtmlFullscreen(
+      prefs.require_transient_activation_for_html_fullscreen);
   settings->SetViewportEnabled(prefs.viewport_enabled);
   settings->SetViewportMetaEnabled(prefs.viewport_meta_enabled);
   settings->SetViewportStyle(prefs.viewport_style);

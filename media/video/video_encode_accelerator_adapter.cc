@@ -21,6 +21,7 @@
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -111,6 +112,11 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
             VideoEncodeAccelerator::Config::ContentType::kDisplay;
         break;
     }
+  }
+
+  if (opts.latency_mode == VideoEncoder::LatencyMode::Realtime) {
+    config.drop_frame_thresh_percentage =
+        GetDefaultVideoEncoderDropFrameThreshold();
   }
 
   size_t num_temporal_layers = 1;
@@ -915,11 +921,8 @@ void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
     }
   }
   DCHECK(erased_active_encode);
-  if (result.size > 0) {
-    // Size = 0 means that frame was dropped by the platform encoder, we don't
-    // need to call the output callback in such cases.
-    output_cb_.Run(std::move(result), std::move(desc));
-  }
+  output_cb_.Run(std::move(result), std::move(desc));
+
   if (active_encodes_.empty() && !flush_support_.value()) {
     // Manually call FlushCompleted(), since |accelerator_| won't do it for us.
     FlushCompleted(true);

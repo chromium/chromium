@@ -130,6 +130,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   bool FirstInputDetected() const { return !!first_input_timing_; }
 
+  void WillShowModalDialog();
+
   // This method creates a PerformanceEventTiming and if needed creates a
   // presentation promise to calculate the |duration| attribute when such
   // promise is resolved.
@@ -226,8 +228,19 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
 
+  // Return a valid fallback time in event timing if there's one; otherwise
+  // return nullopt.
+  absl::optional<base::TimeTicks> GetFallbackTime(
+      PerformanceEventTiming* entry,
+      base::TimeTicks event_timestamp,
+      base::TimeTicks presentation_timestamp);
+
   // The last time the page visibility was changed.
   base::TimeTicks last_visibility_change_timestamp_;
+
+  // A list of timestamps that javascript modal dialogs was showing. These are
+  // timestamps right before start showing each dialog.
+  Deque<base::TimeTicks> show_modal_dialog_timestamps_;
 
   // Controls if we register a new presentation promise upon events arrival.
   bool need_new_promise_for_event_presentation_time_ = true;

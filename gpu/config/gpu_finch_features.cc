@@ -219,13 +219,6 @@ BASE_FEATURE(kGenGpuDiskCacheKeyPrefixInGpuService,
              "GenGpuDiskCacheKeyPrefixInGpuService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Causes us to use the SharedImageManager, removing support for the old
-// mailbox system. Any consumers of the GPU process using the old mailbox
-// system will experience undefined results.
-BASE_FEATURE(kSharedImageManager,
-             "SharedImageManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls the decode acceleration of JPEG images (as opposed to camera
 // captures) in Chrome OS using the VA-API.
 // TODO(andrescj): remove or enable by default in Chrome OS once
@@ -383,11 +376,6 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              "SkiaGraphiteDawnUseD3D12",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-// Enable GrShaderCache to use with Vulkan backend.
-BASE_FEATURE(kEnableGrShaderCacheForVulkan,
-             "EnableGrShaderCacheForVulkan",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable report only mode on the GPU watchdog instead of pausing the watchdog
 // thread during GPU startup.

@@ -64,14 +64,13 @@ class _Speedometer3Story(press_story.PressStory):
     return [name for name in _SPEEDOMETER_SUITES if exp.search(name)]
 
   def RunNavigateSteps(self, action_runner):
+    DEFAULT_ITERATIONS = 10
+
     url = self.file_path_url_with_scheme if self.is_file else self.url
-    if not self._iterations:
-      self._iterations = 10
-      # A single iteration on android takes ~75 seconds, the benchmark times out
-      # when running for 10 iterations.
-      if action_runner.tab.browser.platform.GetOSName() == 'android':
-        self._iterations = 3
-    url = "%s?iterationCount=%s" % (url, self._iterations)
+
+    iterations = (self._iterations
+                  if self._iterations is not None else DEFAULT_ITERATIONS)
+    url = "%s?iterationCount=%s" % (url, iterations)
     action_runner.Navigate(
         url, script_to_evaluate_on_commit=self.script_to_evaluate_on_commit)
 

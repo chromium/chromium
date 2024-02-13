@@ -81,6 +81,18 @@
       name: "optgroup-label",
       Symbol: "kIdOptGroupLabel",
     },
+    {
+      name: "select-options",
+      Symbol: "kSelectOptions",
+    },
+    {
+      name: "select-button",
+      Symbol: "kSelectButton",
+    },
+    {
+      name: "select-datalist",
+      Symbol: "kSelectDatalist",
+    },
 
     //
     // Pseudo names for UA shadow elements.

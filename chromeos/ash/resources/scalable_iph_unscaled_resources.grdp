@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- Resources for Scalable IPH. -->
+  <include name="IDR_SCALABLE_IPH_NOTIFICATION_MINECRAFT_1x_PNG" file="../../assistant/internal/resources/scalable_iph/minecraft_1x.png" type="BINDATA" />
   <include name="IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_1_PNG" file="../../assistant/internal/resources/scalable_iph/wallpaper1.png" type="BINDATA" />
   <include name="IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_2_PNG" file="../../assistant/internal/resources/scalable_iph/wallpaper2.png" type="BINDATA" />
   <include name="IDR_SCALABLE_IPH_NOTIFICATION_WALLPAPER_3_PNG" file="../../assistant/internal/resources/scalable_iph/wallpaper3.png" type="BINDATA" />

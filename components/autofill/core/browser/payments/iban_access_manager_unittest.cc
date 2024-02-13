@@ -48,7 +48,8 @@ class IbanAccessManagerTest : public testing::Test {
                          /*history_service=*/nullptr,
                          /*sync_service=*/nullptr,
                          /*strike_database=*/nullptr,
-                         /*image_fetcher=*/nullptr);
+                         /*image_fetcher=*/nullptr,
+                         /*shared_storage_handler=*/nullptr);
     iban_access_manager_ =
         std::make_unique<IbanAccessManager>(&autofill_client_);
   }
@@ -447,6 +448,50 @@ TEST_F(IbanAccessManagerMandatoryReauthTest, FetchValue_Server_Reauth_Fail) {
   base::MockCallback<IbanAccessManager::OnIbanFetchedCallback> callback;
   EXPECT_CALL(callback, Run(std::u16string(kFullIbanValue))).Times(0);
   iban_access_manager_->FetchValue(suggestion, callback.Get());
+}
+
+// Tests that `NonInteractivePaymentMethodType` is set to `kLocalIban` on
+// local IBAN retrieval flow.
+TEST_F(IbanAccessManagerMandatoryReauthTest,
+       NonInteractivePaymentMethodType_Local) {
+  autofill_client_.GetPrefs()->SetBoolean(
+      prefs::kAutofillPaymentMethodsMandatoryReauth, false);
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
+
+  Iban local_iban = test::GetLocalIban();
+  personal_data().AddIbanForTest(std::make_unique<Iban>(local_iban));
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload =
+      Suggestion::BackendId(Suggestion::Guid(local_iban.guid()));
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  EXPECT_EQ(
+      autofill_client_.GetFormDataImporter()
+          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(),
+      NonInteractivePaymentMethodType::kLocalIban);
+}
+
+// Tests that `NonInteractivePaymentMethodType` is set to `kServerIban` on
+// server IBAN retrieval flow.
+TEST_F(IbanAccessManagerMandatoryReauthTest,
+       NonInteractivePaymentMethodType_Server) {
+  autofill_client_.GetPrefs()->SetBoolean(
+      prefs::kAutofillPaymentMethodsMandatoryReauth, false);
+  SetUpDeviceAuthenticatorResponseMock(/*success=*/true);
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(server_iban.instrument_id());
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  EXPECT_EQ(
+      autofill_client_.GetFormDataImporter()
+          ->GetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(),
+      NonInteractivePaymentMethodType::kServerIban);
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

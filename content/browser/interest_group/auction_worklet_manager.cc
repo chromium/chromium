@@ -177,7 +177,7 @@ class AuctionWorkletManager::WorkletOwner
 
   // These are handles that have been notified of having a process, and not of
   // a process failure.
-  std::set<WorkletHandle*> handles_with_process_;
+  std::set<raw_ptr<WorkletHandle, SetExperimental>> handles_with_process_;
 
   std::unique_ptr<AuctionURLLoaderFactoryProxy> url_loader_factory_proxy_;
   mojo::Remote<auction_worklet::mojom::BidderWorklet> bidder_worklet_;

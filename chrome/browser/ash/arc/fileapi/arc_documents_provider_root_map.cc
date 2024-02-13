@@ -31,16 +31,16 @@ struct DocumentsProviderSpec {
 
 // List of documents providers for media views.
 constexpr DocumentsProviderSpec kDocumentsProviderAllowlist[] = {
-    {kMediaDocumentsProviderAuthority, kImagesRootDocumentId,
+    {kMediaDocumentsProviderAuthority, kImagesRootId, kImagesRootId,
      // All roots are now writable after the introduction of this feature
      // (b/255697751).
-     kImagesRootDocumentId, /*read_only=*/false},
-    {kMediaDocumentsProviderAuthority, kVideosRootDocumentId,
-     kVideosRootDocumentId, /*read_only=*/false},
-    {kMediaDocumentsProviderAuthority, kAudioRootDocumentId,
-     kAudioRootDocumentId, /*read_only=*/false},
-    {kMediaDocumentsProviderAuthority, kDocumentsRootDocumentId,
-     kDocumentsRootDocumentId, /*read_only=*/false},
+     /*read_only=*/false},
+    {kMediaDocumentsProviderAuthority, kVideosRootId, kVideosRootId,
+     /*read_only=*/false},
+    {kMediaDocumentsProviderAuthority, kAudioRootId, kAudioRootId,
+     /*read_only=*/false},
+    {kMediaDocumentsProviderAuthority, kDocumentsRootId, kDocumentsRootId,
+     /*read_only=*/false},
 };
 
 }  // namespace
@@ -81,12 +81,13 @@ ArcDocumentsProviderRoot* ArcDocumentsProviderRootMap::ParseAndLookup(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string authority;
-  std::string root_document_id;
+  std::string root_id;
   base::FilePath tmp_path;
-  if (!ParseDocumentsProviderUrl(url, &authority, &root_document_id, &tmp_path))
+  if (!ParseDocumentsProviderUrl(url, &authority, &root_id, &tmp_path)) {
     return nullptr;
+  }
 
-  ArcDocumentsProviderRoot* root = Lookup(authority, root_document_id);
+  ArcDocumentsProviderRoot* root = Lookup(authority, root_id);
   if (!root)
     return nullptr;
 
@@ -96,10 +97,10 @@ ArcDocumentsProviderRoot* ArcDocumentsProviderRootMap::ParseAndLookup(
 
 ArcDocumentsProviderRoot* ArcDocumentsProviderRootMap::Lookup(
     const std::string& authority,
-    const std::string& root_document_id) const {
+    const std::string& root_id) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto iter = map_.find(Key(authority, root_document_id));
+  auto iter = map_.find(Key(authority, root_id));
   if (iter == map_.end())
     return nullptr;
   return iter->second.get();
@@ -113,9 +114,9 @@ void ArcDocumentsProviderRootMap::RegisterRoot(
     const std::vector<std::string>& mime_types) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  Key key(authority, root_document_id);
+  Key key(authority, root_id);
   if (map_.find(key) != map_.end()) {
-    VLOG(1) << "Trying to register (" << authority << ", " << root_document_id
+    VLOG(1) << "Trying to register (" << authority << ", " << root_id
             << ") which is already registered.";
     return;
   }
@@ -124,13 +125,12 @@ void ArcDocumentsProviderRootMap::RegisterRoot(
                         read_only, mime_types));
 }
 
-void ArcDocumentsProviderRootMap::UnregisterRoot(
-    const std::string& authority,
-    const std::string& root_document_id) {
+void ArcDocumentsProviderRootMap::UnregisterRoot(const std::string& authority,
+                                                 const std::string& root_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!map_.erase(Key(authority, root_document_id))) {
-    VLOG(1) << "Trying to unregister (" << authority << ", " << root_document_id
+  if (!map_.erase(Key(authority, root_id))) {
+    VLOG(1) << "Trying to unregister (" << authority << ", " << root_id
             << ") which is not registered.";
   }
 }

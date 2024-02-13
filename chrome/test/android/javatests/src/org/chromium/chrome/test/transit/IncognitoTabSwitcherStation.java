@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.test.transit;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-
-import static org.hamcrest.CoreMatchers.allOf;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Trip;
@@ -25,17 +21,15 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
 
-        elements.declareUnownedView(INCOGNITO_TOGGLE_TABS);
-        elements.declareUnownedView(REGULAR_TOGGLE_TAB_BUTTON);
-        elements.declareUnownedView(INCOGNITO_TOGGLE_TAB_BUTTON);
+        elements.declareView(INCOGNITO_TOGGLE_TABS);
+        elements.declareView(REGULAR_TOGGLE_TAB_BUTTON);
+        elements.declareView(INCOGNITO_TOGGLE_TAB_BUTTON);
     }
 
     public RegularTabSwitcherStation selectRegularTabList() {
         RegularTabSwitcherStation tabSwitcher =
                 new RegularTabSwitcherStation(mChromeTabbedActivityTestRule);
         return Trip.travelSync(
-                this,
-                tabSwitcher,
-                (t) -> onView(allOf(isDisplayed(), REGULAR_TOGGLE_TAB_BUTTON)).perform(click()));
+                this, tabSwitcher, (t) -> REGULAR_TOGGLE_TAB_BUTTON.perform(click()));
     }
 }

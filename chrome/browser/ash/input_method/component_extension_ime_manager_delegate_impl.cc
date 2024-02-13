@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -119,8 +119,7 @@ void DoLoadExtension(Profile* profile,
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
   DCHECK(extension_registry);
-  if (extension_registry->GetExtensionById(
-          extension_id, extensions::ExtensionRegistry::ENABLED)) {
+  if (extension_registry->enabled_extensions().GetByID(extension_id)) {
     VLOG(1) << "the IME extension(id=\"" << extension_id
             << "\") is already enabled";
     return;
@@ -224,7 +223,7 @@ bool ComponentExtensionIMEManagerDelegateImpl::IsInLoginLayoutAllowlist(
 
 std::optional<base::Value::Dict>
 ComponentExtensionIMEManagerDelegateImpl::ParseManifest(
-    const base::StringPiece& manifest_string) {
+    std::string_view manifest_string) {
   base::JSONReader::Result result =
       base::JSONReader::ReadAndReturnValueWithError(manifest_string);
   if (!result.has_value()) {
@@ -410,7 +409,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
   for (auto& extension : allowlisted_component_extensions) {
     ComponentExtensionIME component_ime;
     ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    const base::StringPiece& manifest_string =
+    std::string_view manifest_string =
         rb.GetRawDataResource(extension.manifest_resource_id);
     component_ime.manifest = std::string(manifest_string);
 

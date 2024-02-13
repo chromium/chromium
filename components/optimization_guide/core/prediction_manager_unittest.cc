@@ -356,6 +356,18 @@ class TestPredictionManager : public PredictionManager {
   OptimizationGuideLogger optimization_guide_logger_;
 };
 
+class TestPredictionModelStore : public PredictionModelStore {
+ public:
+  explicit TestPredictionModelStore(PrefService* local_state)
+      : local_state_(local_state) {}
+
+  // PredictionModelStore:
+  PrefService* GetLocalState() const override { return local_state_; }
+
+ private:
+  raw_ptr<PrefService> local_state_;
+};
+
 class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
  public:
   using StoreEntry = proto::StoreEntry;
@@ -381,9 +393,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableCheckingUserPermissionsForTesting);
 
-    prediction_model_store_ =
-        PredictionModelStore::CreatePredictionModelStoreForTesting(
-            local_state_prefs_.get(), temp_dir());
+    CreateAndInitializePredictionModelStore();
     RunUntilIdle();
   }
 
@@ -400,6 +410,12 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
             base::Unretained(this)),
         false, kTestLocale, temp_dir());
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
+  }
+
+  void CreateAndInitializePredictionModelStore() {
+    prediction_model_store_ =
+        std::make_unique<TestPredictionModelStore>(local_state_prefs_.get());
+    prediction_model_store_->Initialize(temp_dir());
   }
 
   TestPredictionManager* prediction_manager() const {
@@ -463,6 +479,10 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
+  PredictionModelStore* prediction_model_store() {
+    return prediction_model_store_.get();
+  }
+
   void SetComponentUpdatesPrefEnabled(bool enabled) {
     component_updates_enabled_ = enabled;
   }
@@ -474,18 +494,18 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   // tsan flakes caused by other tasks running while |feature_list_| is
   // destroyed.
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<PredictionModelStore> prediction_model_store_;
 
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  StoreEntryMap db_store_;
-  std::unique_ptr<TestPredictionManager> prediction_manager_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_prefs_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  StoreEntryMap db_store_;
+  std::unique_ptr<TestPredictionModelStore> prediction_model_store_;
+  std::unique_ptr<TestPredictionManager> prediction_manager_;
   bool component_updates_enabled_ = true;
 };
 
@@ -585,10 +605,6 @@ class PredictionManagerTest : public PredictionManagerTestBase {
       proto::OptimizationTarget optimization_target) const {
     return temp_dir().AppendASCII(
         proto::OptimizationTarget_Name(optimization_target));
-  }
-
-  PredictionModelStore* prediction_model_store() {
-    return prediction_model_store_.get();
   }
 
  private:

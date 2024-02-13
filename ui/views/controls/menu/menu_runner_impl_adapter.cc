@@ -36,8 +36,8 @@ void MenuRunnerImplAdapter::RunMenuAt(
     MenuAnchorPosition anchor,
     int32_t types,
     gfx::NativeView native_view_for_gestures,
-    absl::optional<gfx::RoundedCornersF> corners,
-    absl::optional<std::string> show_menu_host_duration_histogram) {
+    std::optional<gfx::RoundedCornersF> corners,
+    std::optional<std::string> show_menu_host_duration_histogram) {
   impl_->RunMenuAt(parent, button_controller, bounds, anchor, types,
                    native_view_for_gestures);
 }

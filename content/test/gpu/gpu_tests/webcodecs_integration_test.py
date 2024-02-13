@@ -6,6 +6,7 @@ import os
 import sys
 import json
 import itertools
+import platform
 from typing import Any, List, Set
 import unittest
 
@@ -47,6 +48,20 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'WebCodecs_*prefer-hardware*',
       }
     return serial_globs
+
+  def _GetSerialTests(self) -> Set[str]:
+    serial_tests = set()
+    # TODO(crbug.com/324293876): Move this check to wherever the host-side
+    # information collection ends up living.
+    # We can't rely on directly checking platform.machine() since it is
+    # possible that we're using emulated Python on arm64 devices.
+    if sys.platform == 'win32' and 'armv8' in platform.processor().lower():
+      serial_tests |= {
+          # Checking whether serialization improves stability for
+          # crbug.com/323824490.
+          'WebCodecs_FrameSizeChange_vp09.00.10.08_hw_decoder',
+      }
+    return serial_tests
 
 # pylint: disable=too-many-branches
 
@@ -247,9 +262,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     # If we don't call CustomizeBrowserArgs cls.platform is None
     cls.CustomizeBrowserArgs(args)
-    platform = cls.platform
 
-    if cls.CameraCanShowFourColors(platform.GetOSName()):
+    if cls.CameraCanShowFourColors(cls.platform.GetOSName()):
       args.append('--use-file-for-fake-video-capture=' + four_colors_img_path)
       cls.CustomizeBrowserArgs(args)
 

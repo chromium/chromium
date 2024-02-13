@@ -6,6 +6,7 @@
 #define UI_OZONE_PUBLIC_INPUT_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/public/mojom/gesture_properties_service.mojom.h"
 
 namespace base {
@@ -78,40 +78,38 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   // If `nullopt` is passed instead of a `device_id`, settings will be applied
   // to all touchpads instead of per-device.
   virtual void SetThreeFingerClick(bool enabled) = 0;
-  virtual void SetTouchpadSensitivity(absl::optional<int> device_id,
+  virtual void SetTouchpadSensitivity(std::optional<int> device_id,
                                       int value) = 0;
-  virtual void SetTouchpadScrollSensitivity(absl::optional<int> device_id,
+  virtual void SetTouchpadScrollSensitivity(std::optional<int> device_id,
                                             int value) = 0;
-  virtual void SetTapToClick(absl::optional<int> device_id, bool enabled) = 0;
-  virtual void SetTapDragging(absl::optional<int> device_id, bool enabled) = 0;
-  virtual void SetNaturalScroll(absl::optional<int> device_id,
-                                bool enabled) = 0;
-  virtual void SetTouchpadAcceleration(absl::optional<int> device_id,
+  virtual void SetTapToClick(std::optional<int> device_id, bool enabled) = 0;
+  virtual void SetTapDragging(std::optional<int> device_id, bool enabled) = 0;
+  virtual void SetNaturalScroll(std::optional<int> device_id, bool enabled) = 0;
+  virtual void SetTouchpadAcceleration(std::optional<int> device_id,
                                        bool enabled) = 0;
-  virtual void SetTouchpadScrollAcceleration(absl::optional<int> device_id,
+  virtual void SetTouchpadScrollAcceleration(std::optional<int> device_id,
                                              bool enabled) = 0;
-  virtual void SetTouchpadHapticFeedback(absl::optional<int> device_id,
+  virtual void SetTouchpadHapticFeedback(std::optional<int> device_id,
                                          bool enabled) = 0;
-  virtual void SetTouchpadHapticClickSensitivity(absl::optional<int> device_id,
+  virtual void SetTouchpadHapticClickSensitivity(std::optional<int> device_id,
                                                  int value) = 0;
 
   // Mouse settings.
   // If `nullopt` is passed instead of a `device_id`, settings will be applied
   // to all mice instead of per-device.
-  virtual void SetMouseSensitivity(absl::optional<int> device_id,
-                                   int value) = 0;
-  virtual void SetMouseScrollSensitivity(absl::optional<int> device_id,
+  virtual void SetMouseSensitivity(std::optional<int> device_id, int value) = 0;
+  virtual void SetMouseScrollSensitivity(std::optional<int> device_id,
                                          int value) = 0;
 
   // Sets the primary button for the mouse. Passing true sets the right button
   // as primary, while false (the default) sets the left as primary.
-  virtual void SetPrimaryButtonRight(absl::optional<int> device_id,
+  virtual void SetPrimaryButtonRight(std::optional<int> device_id,
                                      bool right) = 0;
-  virtual void SetMouseReverseScroll(absl::optional<int> device_id,
+  virtual void SetMouseReverseScroll(std::optional<int> device_id,
                                      bool enabled) = 0;
-  virtual void SetMouseAcceleration(absl::optional<int> device_id,
+  virtual void SetMouseAcceleration(std::optional<int> device_id,
                                     bool enabled) = 0;
-  virtual void SetMouseScrollAcceleration(absl::optional<int> device_id,
+  virtual void SetMouseScrollAcceleration(std::optional<int> device_id,
                                           bool enabled) = 0;
   virtual void SuspendMouseAcceleration() = 0;
   virtual void EndMouseAccelerationSuspension() = 0;
@@ -119,14 +117,14 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
   // Pointing stick settings.
   // If `nullopt` is passed instead of a `device_id`, settings will be applied
   // to all pointing sticks instead of per-device.
-  virtual void SetPointingStickSensitivity(absl::optional<int> device_id,
+  virtual void SetPointingStickSensitivity(std::optional<int> device_id,
                                            int value) = 0;
 
   // Sets the primary button for the pointing stick. Passing true sets the right
   // button as primary, while false (the default) sets the left as primary.
-  virtual void SetPointingStickPrimaryButtonRight(absl::optional<int> device_id,
+  virtual void SetPointingStickPrimaryButtonRight(std::optional<int> device_id,
                                                   bool right) = 0;
-  virtual void SetPointingStickAcceleration(absl::optional<int> device_id,
+  virtual void SetPointingStickAcceleration(std::optional<int> device_id,
                                             bool enabled) = 0;
 
   // Gamepad settings.

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
@@ -198,7 +199,7 @@ class UpdateScreen : public BaseScreen,
 
   // EU country list.
   inline static constexpr auto kEUCountriesSet =
-      base::MakeFixedFlatSet<base::StringPiece>(
+      base::MakeFixedFlatSet<std::string_view>(
           {"at", "be", "bg", "hr", "cy", "cz", "dk", "ee", "fi",
            "fr", "de", "gr", "hu", "ie", "it", "lv", "lt", "lu",
            "mt", "nl", "pl", "pt", "ro", "sk", "si", "es", "se"});

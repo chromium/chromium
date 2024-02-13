@@ -707,7 +707,7 @@ are declared in tools/grit/grit_rule.gni.
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS" desc="The name of the Save Video Frame As command in the content area context menu">
-            Sa&amp;ve video frame as...
+            Save video &amp;frame as...
           </message>
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOAS" desc="The name of the Save Video As command in the content area context menu">
             Sa&amp;ve video as...
@@ -716,10 +716,10 @@ are declared in tools/grit/grit_rule.gni.
             C&amp;opy video address
           </message>
           <message name="IDS_CONTENT_CONTEXT_COPYVIDEOFRAME" desc="The name of the Copy Video Frame command in the content area context menu">
-            C&amp;opy video frame
+            Cop&amp;y video frame
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME" desc="In Title Case: The name of the Lens Search command in the content area context menu">
-            Search video frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
+            &amp;Search video frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENVIDEONEWTAB" desc="The name of the Open Video in New Tab command in the content area context menu">
             &amp;Open video in new tab
@@ -985,7 +985,7 @@ are declared in tools/grit/grit_rule.gni.
           </message>
 
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS" desc="In Title Case: The name of the Save Video Frame As command in the content area context menu">
-           Sa&amp;ve Video Frame As...
+           Save Video &amp;Frame As...
           </message>
           <message name="IDS_CONTENT_CONTEXT_SAVEVIDEOAS" desc="In Title Case: The name of the Save Video As command in the content area context menu">
            Sa&amp;ve Video As...
@@ -994,10 +994,10 @@ are declared in tools/grit/grit_rule.gni.
             C&amp;opy Video Address
           </message>
           <message name="IDS_CONTENT_CONTEXT_COPYVIDEOFRAME" desc="The name of the Copy Video Frame command in the content area context menu">
-            C&amp;opy Video Frame
+            Cop&amp;y Video Frame
           </message>
           <message name="IDS_CONTENT_CONTEXT_SEARCHFORVIDEOFRAME" desc="In Title Case: The name of the Lens Search command in the content area context menu">
-            Search Video Frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
+            &amp;Search Video Frame with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_OPENVIDEONEWTAB" desc="In Title Case: The name of the Open Video in New Tab command in the content area context menu">
             &amp;Open Video in New Tab
@@ -1290,9 +1290,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="The text label of the Move Tab to Window menu item.">
             Move tab to new window
           </message>
-          <message name="IDS_TOGGLE_QUICK_COMMANDS" desc="The text label of the Toggle Quick Commands menu item">
-          Quick commands
-          </message>
           <message name="IDS_SEARCH_TABS" desc="The text label of the Search Tabs... menu item">
           Search tabs...
           </message>
@@ -1432,9 +1429,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_MOVE_TAB_TO_NEW_WINDOW" desc="In Title Case: The text label of the Move Tab to New Window menu item.">
             Move Tab to New Window
-          </message>
-          <message name="IDS_TOGGLE_QUICK_COMMANDS" desc="In Title Case:The text label of the Toggle Quick Commands menu item">
-          Quick Commands
           </message>
           <message name="IDS_SEARCH_TABS" desc="In Title Case:The text label of the Search Tabs... menu item">
           Search Tabs...
@@ -6410,6 +6404,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT" desc="Text of the message section when this site is restricted to all extensions.">
         No extensions need access to this site
       </message>
+      <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_POLICY_BLOCKED_ACCESS_TEXT" desc="Text of the message section when the site is restricted to all non-enterprise extensions.">
+        Extensions are not allowed on this site
+      </message>
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT" desc="Text of the message section when the user blocked access to this site to all extensions.">
         Extensions are not allowed on this site
       </message>
@@ -7881,6 +7878,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_CHROME_COLOR_SCHEME_MODE_SYSTEM_LABEL" desc="A color scheme mode option for browser system mode, which follows the OS color scheme mode in customize chrome side panel.">
         Device
       </message>
+      <message name="IDS_NTP_WEBSTORE_SHOPPING_CATEOGRY_LABEL" desc="The message displayed on the button that redirects users to the 'shopping' category page of the Chrome webstore.">
+        Find coupons
+      </message>
+      <message name="IDS_NTP_WEBSTORE_WRITTING_HELP_COLLECTION_LABEL" desc="The message displayed on the button that redirects users to the 'writing help' collection page of the Chrome webstore.">
+        Get writing help
+      </message>
+       <message name="IDS_NTP_WEBSTORE_PRODUCTIVITY_CATEOGRY_LABEL" desc="The message displayed on the button that redirects users to the 'productivity' category page of the Chrome webstore.">
+        Increase your productivity
+      </message>
       <message name="IDS_NTP_WEBSTORE_TOAST_MESSAGE" desc="The message displayed on the New Tab Page toast that directs users to the Chrome webstore themes.">
         You can find older colors in the Chrome Web Store
       </message>
@@ -8415,6 +8421,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SEARCH_SUGG" desc="The accessible name for the search suggestion tile in the NTP Journeys Module.">
         Search for <ph name="QUERY_CLUSTER_NAME">$1<ex>Office Chairs</ex></ph>
       </message>
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_DISMISS_BUTTON" desc="A label for the dismiss button in the dropdown.">
+        No longer interested
+      </message>
       <message name="IDS_NTP_TAB_RESUMPTION_TITLE" desc="Name of the tab resumption module in sentence case shown in various UIs.">
         Tabs from other devices
       </message>
@@ -8423,6 +8432,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
+      </message>
+      <message name="IDS_NTP_MODULES_TAB_RESUMPTION_SENTENCE" desc="Name of the tabs in the Tab Resumption module in sentence case shown in various UIs.">
+        Tabs
       </message>
 
       <!-- Extensions NTP Middle Slot Promo -->
@@ -9943,6 +9955,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_IPH_SHARE_PASSWORD_BUTTON_SCREENREADER" desc="Text announced with the in Product Help for Share Password Button in Password Manager.">
           Use Share button at the bottom of the card to share a copy of your password with someone in your family group
         </message>
+        <message name="IDS_PASSWORD_MANAGER_IPH_ACCOUNT_STORAGE_TOGGLE" desc="Body of the in Product Help for account storage toggle in Password Manager.">
+          You can turn off this setting to save your passwords only on this device
+        </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE" desc="Body of the in Product Help shown after successfully logging into a website telling user about how to create a shortcut">
           Get to your saved passwords quicker
         </message>
@@ -10786,48 +10801,30 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         You can check for tab group suggestions at any time
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI">
-        You'll get tab group suggestions that group similar tabs to help you stay organized
+        You'll get tab group suggestions that group similar tabs. Your open tabs and titles are sent to Google, and may be reviewed by humans to improve this feature.
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_LINK_FRE" desc="The body text for the first run experience of the not started state in the tab organization UI">
+        Learn more about tab group suggestions
       </message>
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SIGNED_OUT" desc="The body text for the not started state in the tab organization UI, when not signed in">
-        Sign in and turn on sync to let Chrome suggest tab groups and keep your tabs organized
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED" desc="The body text for the not started state in the tab organization UI, when signed in but unsynced">
-        Turn on sync to let Chrome suggest tab groups and keep your tabs organized
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_UNSYNCED_HISTORY" desc="The body text for the not started state in the tab organization UI, when history sync is disabled">
-        Turn on History sync in Settings to let Chrome suggest tab groups and keep your tabs organized
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BODY_SYNC_PAUSED" desc="The body text for the not started state in the tab organization UI, sync is paused">
         Sign in to let Chrome suggest tab groups and keep your tabs organized
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON" desc="The label for the button in the not started state of the tab organization UI, when synced">
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON" desc="The label for the button in the not started state of the tab organization UI, when signed in">
         Check now
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE" desc="The first run experience label for the button in the not started state of the tab organization UI, when synced">
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE" desc="The first run experience label for the button in the not started state of the tab organization UI, when signed in">
         Let's go
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED" desc="The label for the button in the not started state of the tab organization UI, when not signed in or signed in but unsynced">
-        Turn on sync
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY" desc="The label for the button in the not started state of the tab organization UI, when history sync is disabled">
-        Settings
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED" desc="The label for the button in the not started state of the tab organization UI, when sync is paused">
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SIGNED_OUT" desc="The label for the button in the not started state of the tab organization UI, when not signed in">
         Sign in
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when synced" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when signed in" is_accessibility_with_no_ui="true">
         Check now if tabs can be organized
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE_ARIA_LABEL" desc="The first run experience a11y label for the button in the not started state of the tab organization UI, when synced" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE_ARIA_LABEL" desc="The first run experience a11y label for the button in the not started state of the tab organization UI, when signed in" is_accessibility_with_no_ui="true">
         Let's go and organize your tabs
       </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when not signed in or signed in but unsynced" is_accessibility_with_no_ui="true">
-        Turn on sync to let Chrome suggest tab groups
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when history sync is disabled" is_accessibility_with_no_ui="true">
-        Open settings to let Chrome suggest tab groups
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when sync is paused" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SIGNED_OUT_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when not signed in" is_accessibility_with_no_ui="true">
         Sign in to let Chrome suggest tab groups
       </message>
       <message name="IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE" desc="The header text for the in progress state in the tab organization UI">
@@ -12493,6 +12490,12 @@ This can include information about installed software, files, your browser, and 
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_MANAGED_BY_DISCLAIMER" desc="Enterprise disclaimer for a managed account in the signin interception bubble, with the manager domain name.">
           This new profile will be managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. <ph name="BEGIN_LINK">&lt;a href="$2" target=&quot;_blank&quot;&gt;<ex>https://help.google.com/articleLink</ex></ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SEPARATE_BROWSING_TEXT" desc="Text to be displayed on the extended avatar pill while the bubble for separating accounts into different browsers is displayed.">
+          Separate Browsing?
+        </message>
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_AVATAR_BUTTON_SWITCH_PROFILE_TEXT" desc="Text to be displayed on the extended avatar pill while the bubble for switching to a profile that has the account intercepted already signed into is displayed.">
+          Switch Profile?
+        </message>
       </if>
 
       <if expr="not chromeos_ash and not is_android">
@@ -13679,22 +13682,22 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Control and reprogramming of MIDI devices blocked
       </message>
       <message name="IDS_ALLOWED_MIDI_SYSEX_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been allowed to use MIDI system exclusive messages.">
-        This site can control and reprogram your MIDI devices (SysEx).
+        This site can control and reprogram your MIDI devices
       </message>
       <message name="IDS_ALLOWED_MIDI_SYSEX_BLOCK" desc="Radio button to block access to use MIDI system exclusive messages.">
-        Always block <ph name="HOST">$1<ex>example.com</ex></ph> from controlling and reprogramming your MIDI devices.
+        Always block <ph name="HOST">$1<ex>example.com</ex></ph> from controlling and reprogramming your MIDI devices
       </message>
       <message name="IDS_ALLOWED_MIDI_SYSEX_NO_ACTION" desc="Radio button to keep allowing access to use MIDI system exclusive messages.">
-        Continue allowing this site to control and reprogram your MIDI devices.
+        Continue allowing this site to control and reprogram your MIDI devices
       </message>
       <message name="IDS_BLOCKED_MIDI_SYSEX_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been denied access to use MIDI system exclusive messages.">
-        This site has been blocked from controlling and reprogramming your MIDI devices (SysEx).
+        This site has been blocked from controlling and reprogramming your MIDI devices
       </message>
       <message name="IDS_BLOCKED_MIDI_SYSEX_UNBLOCK" desc="Radio button choice to unblock a site from using MIDI system exclusive messages.">
-        Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to control and reprogram your MIDI devices.
+        Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to control and reprogram your MIDI devices
       </message>
       <message name="IDS_BLOCKED_MIDI_SYSEX_NO_ACTION" desc="Radio button choice to continue blocking a site from using MIDI system exclusive messages.">
-        Continue blocking this site from controlling and reprogramming your MIDI devices.
+        Continue blocking this site from controlling and reprogramming your MIDI devices
       </message>
 
       <!-- Media Stream -->
@@ -14532,6 +14535,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_A11Y_ALERT_WINDOW_NEEDED" desc="Alert sent to the accessibility api when the user attempts a keyboard command that requires a window to work.">
           Command unavailable. Press control-N to open a new window.
+        </message>
+        <message name="IDS_A11Y_ALERT_FASTER_SPLITSCREEN_TOAST" desc="The text for the Faster Splitscreen toast during faster splitscreen setup.">
+        Choose a window for this side
         </message>
         <message name="IDS_A11Y_ALERT_WINDOW_OVERVIEW_MODE_ENTERED" desc="The accessible text read when the user enters window overview mode in Ash.">
           Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.
@@ -16110,18 +16116,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
              desc="Label of the text field used to enter the new window name.">
       Window name
     </message>
-    <message name="IDS_QUICK_COMMANDS_LABEL"
-             desc="Label to identify the Quick Commands feature in Task Manager">
-      Quick Commands
-    </message>
-    <message name="IDS_QUICK_COMMANDS_PLACEHOLDER"
-             desc="Placeholder text for the Quick Commands text input">
-      Enter a keyword like "tabs" or "windows" to find an action
-    </message>
-    <message name="IDS_QUICK_COMMANDS_NO_RESULTS"
-             desc="Shown when there are no results in Quick Commands">
-      No commands found
-    </message>
 
     <!-- ChromeLabs bubble -->
     <message name="IDS_CHROMELABS_RELAUNCH_BUTTON_LABEL"
@@ -16747,15 +16741,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>
     </message>
     <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is already installed.">
-      This app is already installed
+      <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> is already installed
     </message>
     <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_SUBTITLE" desc="Subtitle of an error dialog shown when the bundle trying to be installed is already installed.">
-      <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> version <ph name="APP_VERSION">$2<ex>1.0</ex></ph> is already installed on this device
-    </message>
-    <message name="IDS_IWA_INSTALLER_BUNDLE_OUTDATED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is older than the currently installed version.">
-      A newer version of this app is already installed
-    </message>
-    <message name="IDS_IWA_INSTALLER_BUNDLE_OUTDATED_SUBTITLE" desc="Subtitle of an error dialog shown when the bundle trying to be installed is older than the currently installed version.">
       <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> version <ph name="APP_VERSION">$2<ex>1.0</ex></ph> is already installed on this device
     </message>
     <message name="IDS_IWA_INSTALLER_INSTALL_SUBTITLE" desc="Subtitle of the installing screen of the IWA installer.">

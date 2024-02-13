@@ -4,10 +4,12 @@
 
 import './policy_test_table.js';
 
+import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {LevelNamesToValues, PolicyInfo, PolicyLevel, PolicyScope, PolicySource, PolicyTestBrowserProxy, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
-import {PolicyTestTableElement} from './policy_test_table.js';
+import type {PolicyInfo} from './policy_test_browser_proxy.js';
+import {LevelNamesToValues, PolicyLevel, PolicyScope, PolicySource, PolicyTestBrowserProxy, ScopeNamesToValues, SourceNamesToValues} from './policy_test_browser_proxy.js';
+import type {PolicyTestTableElement} from './policy_test_table.js';
 
 const policyTestBrowserProxy: PolicyTestBrowserProxy =
     PolicyTestBrowserProxy.getInstance();
@@ -31,6 +33,15 @@ async function initialize() {
     "profileSeparationSettings": 1,
     "profileSeparationDataMigrationSettings": 2
   }`;
+  addWebUiListener('schema-updated', onSchemaUpdated);
+  policyTestBrowserProxy.listenPoliciesUpdates();
+}
+
+// Fired from PolicyUIHandler, called when the policy schema changes e.g.
+// because an extension was installed/uninstalled.
+function onSchemaUpdated(schema: any) {
+  getRequiredElement<PolicyTestTableElement>('policy-test-table')
+      .setSchema(schema);
 }
 
 function uploadPoliciesFile() {
@@ -81,21 +92,38 @@ function applyPoliciesFromFile(jsonFile: File) {
           // object format is used.
           const policies = JSON.parse(reader.result as string);
           if (policies.constructor === Array) {
-            // Add row for each policy.
-            policies.forEach((policy: PolicyInfo) => {
-              policyTable.addRow(policy);
+            // Exported from chrome://policy/test. Add row for each policy.
+            policies.forEach((policy: Omit<PolicyInfo, 'namespace'>) => {
+              // Old exports didn't have the 'namespace' property, and only
+              // support Chrome policies. Populate it with 'chrome' by default,
+              // for backwards compat.
+              policyTable.addRow({
+                namespace: 'chrome',
+                ...policy,
+              });
             });
           } else {
-            const policiesObj = policies['policyValues']['chrome']['policies'];
+            // Exported from chrome://policy.
+            const policiesObj = {
+              chrome: policies.policyValues.chrome.policies,
+              ...Object.fromEntries(
+                  Object
+                      .entries(
+                          policies.policyValues.extensions as
+                          Record<string, any>)
+                      .map(([extensionId,
+                             {policies}]) => [extensionId, policies])),
+            };
 
-            // Add row for each policy
-            for (const [key, value] of Object.entries(policiesObj)) {
-              if (key.startsWith('_')) {
-                continue;
+            // Add row for each policy.
+            for (const [ns, schema] of Object.entries(policiesObj)) {
+              for (const [key, value] of Object.entries(schema)) {
+                if (key.startsWith('_')) {
+                  continue;
+                }
+                policyTable.addRow(
+                    convertToPolicyInfo(ns, key, value as Record<string, any>));
               }
-
-              policyTable.addRow(
-                  convertToPolicyInfo(key, value as {[key: string]: any}));
             }
           }
 
@@ -110,8 +138,10 @@ function applyPoliciesFromFile(jsonFile: File) {
   );
 }
 
-function convertToPolicyInfo(policyName: string, value: {[key: string]: any}) {
+function convertToPolicyInfo(
+    policyNamespace: string, policyName: string, value: {[key: string]: any}) {
   const policy: PolicyInfo = {
+    namespace: policyNamespace,
     name: policyName,
     source: Number(SourceNamesToValues[value['source']]) ??
         PolicySource.SOURCE_ENTERPRISE_DEFAULT_VAL,
@@ -193,3 +223,6 @@ function restartBrowser() {
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
+
+addWebUiListener('schema-updated', onSchemaUpdated);
+policyTestBrowserProxy.listenPoliciesUpdates();

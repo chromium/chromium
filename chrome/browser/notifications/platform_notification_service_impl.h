@@ -121,10 +121,10 @@ class PlatformNotificationServiceImpl
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
 
-  static void DidGetBackgroundSourceId(
+  static void RecordNotificationUkmEventWithSourceId(
       base::OnceClosure recorded_closure,
       const content::NotificationDatabaseData& data,
-      std::optional<ukm::SourceId> source_id);
+      ukm::SourceId source_id);
 
   // Creates a new Web Notification-based Notification object. Should only be
   // called when the notification is first shown. |web_app_hint_url| is used to

@@ -98,12 +98,6 @@ void CompleteFindSoon(
 void RecordRetryCount(size_t retries, size_t queue_size) {
   base::UmaHistogramCounts100("ServiceWorker.Storage.RetryCountForRecovery",
                               retries);
-
-  // We've seen traces with 14,000 ServiceWorkerStorageControl tasks
-  // (https://crbug.com/1302111), so ensure more than that can fit in the
-  // histogram buckets in case those were queued retries.
-  base::UmaHistogramCounts100000(
-      "ServiceWorker.Storage.RetryQueueSizeForRecovery", queue_size);
 }
 
 // Notifies quota manager that a disk write operation failed so that it can

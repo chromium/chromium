@@ -73,12 +73,18 @@ class InactiveTabsUtilsTest : public PlatformTest {
     return web_state;
   }
 
-  std::unique_ptr<web::FakeWebState> CreateActiveTab() {
-    return CreateTab(web::WebStateID::NewUnique(), base::Time::Now());
+  void AddActiveTab(WebStateList* web_state_list) {
+    web_state_list->InsertWebState(
+        CreateTab(web::WebStateID::NewUnique(), base::Time::Now()),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
-  std::unique_ptr<web::FakeWebState> CreateInactiveTab(base::TimeDelta delta) {
-    return CreateTab(web::WebStateID::NewUnique(), base::Time::Now() - delta);
+  void AddInactiveTab(WebStateList* web_state_list,
+                      base::TimeDelta delta,
+                      bool pinned = false) {
+    web_state_list->InsertWebState(
+        CreateTab(web::WebStateID::NewUnique(), base::Time::Now() - delta),
+        WebStateList::InsertionParams::Automatic().Activate().Pinned(pinned));
   }
 
   void CheckOrder(WebStateList* web_state_list,
@@ -114,8 +120,7 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabStaysActive) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new active tab in the active browser.
-  active_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  AddActiveTab(active_web_state_list);
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
@@ -151,9 +156,7 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabAreMovedFromActiveList) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive tab (10 days with no activity) in the active browser.
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
+  AddInactiveTab(active_web_state_list, base::Days(10));
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
@@ -188,8 +191,7 @@ TEST_F(InactiveTabsUtilsTest, ActiveTabAreMovedFromInactiveList) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new active tab in the inactive browser.
-  inactive_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  AddActiveTab(inactive_web_state_list);
 
   EXPECT_EQ(active_web_state_list->count(), 0);
   EXPECT_EQ(inactive_web_state_list->count(), 1);
@@ -224,9 +226,7 @@ TEST_F(InactiveTabsUtilsTest, InactiveTabStaysInactive) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive tab (10 days without activity) in the inactive browser.
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
+  AddInactiveTab(inactive_web_state_list, base::Days(10));
 
   EXPECT_EQ(active_web_state_list->count(), 0);
   EXPECT_EQ(inactive_web_state_list->count(), 1);
@@ -256,9 +256,7 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactive) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive tab (10 days without activity) in the inactive browser.
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
+  AddInactiveTab(inactive_web_state_list, base::Days(10));
 
   EXPECT_EQ(active_web_state_list->count(), 0);
   EXPECT_EQ(inactive_web_state_list->count(), 1);
@@ -296,40 +294,20 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedMove) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive and active tabs in the inactive browser.
-  inactive_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(30)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(2)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(16)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  AddActiveTab(inactive_web_state_list);
+  AddInactiveTab(inactive_web_state_list, base::Days(10));
+  AddInactiveTab(inactive_web_state_list, base::Days(30));
+  AddInactiveTab(inactive_web_state_list, base::Days(2));
+  AddInactiveTab(inactive_web_state_list, base::Days(16));
+  AddActiveTab(inactive_web_state_list);
 
   // Add a new inactive and active tabs in the active browser.
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(22)),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
-  active_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(9)),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
-  active_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(18)),
-                                        WebStateList::INSERT_PINNED,
-                                        WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(3)),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
+  AddInactiveTab(active_web_state_list, base::Days(22));
+  AddActiveTab(active_web_state_list);
+  AddInactiveTab(active_web_state_list, base::Days(9));
+  AddActiveTab(active_web_state_list);
+  AddInactiveTab(active_web_state_list, base::Days(18), /*pinned=*/true);
+  AddInactiveTab(active_web_state_list, base::Days(3));
 
   EXPECT_EQ(active_web_state_list->count(), 6);
   EXPECT_EQ(inactive_web_state_list->count(), 6);
@@ -399,29 +377,16 @@ TEST_F(InactiveTabsUtilsTest, ComplicatedRestore) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add a new inactive and active tabs in the inactive browser.
-  inactive_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(30)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(2)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(16)),
-                                          WebStateList::INSERT_ACTIVATE,
-                                          WebStateOpener());
-  inactive_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+  AddActiveTab(inactive_web_state_list);
+  AddInactiveTab(inactive_web_state_list, base::Days(10));
+  AddInactiveTab(inactive_web_state_list, base::Days(30));
+  AddInactiveTab(inactive_web_state_list, base::Days(2));
+  AddInactiveTab(inactive_web_state_list, base::Days(16));
+  AddActiveTab(inactive_web_state_list);
 
   // Add pinned and active tab in the active browser.
-  active_web_state_list->InsertWebState(
-      0, CreateActiveTab(), WebStateList::INSERT_ACTIVATE, WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(18)),
-                                        WebStateList::INSERT_PINNED,
-                                        WebStateOpener());
+  AddActiveTab(active_web_state_list);
+  AddInactiveTab(active_web_state_list, base::Days(18), /*pinned=*/true);
 
   EXPECT_EQ(active_web_state_list->count(), 2);
   EXPECT_EQ(inactive_web_state_list->count(), 6);
@@ -485,9 +450,9 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add the created ntp in the active browser.
-  active_web_state_list->InsertWebState(0, std::move(fake_web_state),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
+  active_web_state_list->InsertWebState(
+      std::move(fake_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   EXPECT_EQ(active_web_state_list->count(), 1);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
@@ -525,15 +490,9 @@ TEST_F(InactiveTabsUtilsTest, EnsurePreferencePriority) {
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
   // Add tabs in the active browser.
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(3)),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(10)),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
-  active_web_state_list->InsertWebState(0, CreateInactiveTab(base::Days(30)),
-                                        WebStateList::INSERT_ACTIVATE,
-                                        WebStateOpener());
+  AddInactiveTab(active_web_state_list, base::Days(3));
+  AddInactiveTab(active_web_state_list, base::Days(10));
+  AddInactiveTab(active_web_state_list, base::Days(30));
 
   EXPECT_EQ(active_web_state_list->count(), 3);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
@@ -580,13 +539,13 @@ TEST_F(InactiveTabsUtilsTest, RestoreAllInactiveTabsRemovesCrossDuplicates) {
 
   // Create and insert an active tab with known identifiers.
   browser_active_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, last_active_time),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      CreateTab(unique_identifier, last_active_time),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Create and insert an inactive tab with the same identifiers.
   browser_inactive_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, last_active_time),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      CreateTab(unique_identifier, last_active_time),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Migrate back all inactive tabs to the active browser.
   RestoreAllInactiveTabs(browser_inactive_.get(), browser_active_.get());
@@ -620,13 +579,13 @@ TEST_F(InactiveTabsUtilsTest,
 
   // Create and insert an active tab with known identifiers.
   browser_active_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, last_active_time),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      CreateTab(unique_identifier, last_active_time),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Create and insert an inactive tab with the same identifiers.
   browser_inactive_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, last_active_time),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      CreateTab(unique_identifier, last_active_time),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Migrate back all inactive tabs to the active browser.
   MoveTabsFromInactiveToActive(browser_inactive_.get(), browser_active_.get());
@@ -660,13 +619,13 @@ TEST_F(InactiveTabsUtilsTest,
 
   // Create and insert an active tab with known identifiers.
   browser_active_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, last_active_time),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      CreateTab(unique_identifier, last_active_time),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Create and insert an inactive tab with the same identifiers.
   browser_inactive_->GetWebStateList()->InsertWebState(
-      0, CreateTab(unique_identifier, last_active_time),
-      WebStateList::INSERT_ACTIVATE, WebStateOpener());
+      CreateTab(unique_identifier, last_active_time),
+      WebStateList::InsertionParams::Automatic().Activate());
 
   // Migrate back all inactive tabs to the active browser.
   MoveTabsFromActiveToInactive(browser_active_.get(), browser_inactive_.get());

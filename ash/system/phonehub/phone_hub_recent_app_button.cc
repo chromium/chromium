@@ -56,7 +56,7 @@ void PhoneHubRecentAppButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-BEGIN_METADATA(PhoneHubRecentAppButton, views::ImageButton)
+BEGIN_METADATA(PhoneHubRecentAppButton)
 END_METADATA
 
 }  // namespace ash

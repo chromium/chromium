@@ -47,7 +47,6 @@ class LayerTreeCcWrapper : public LayerTree,
   base::OnceClosure DeferBeginFrame() override;
   void UpdateTopControlsVisibleHeight(float height) override;
   void SetNeedsAnimate() override;
-  void SetNeedsRedraw() override;
   void MaybeCompositeNow() override {}
   const scoped_refptr<Layer>& root() const override;
   void SetRoot(scoped_refptr<Layer> root) override;
@@ -56,6 +55,7 @@ class LayerTreeCcWrapper : public LayerTree,
   std::unique_ptr<ScopedKeepSurfaceAlive> CreateScopedKeepSurfaceAlive(
       const viz::SurfaceId& surface_id) override;
   const SurfaceRangesAndCounts& GetSurfaceRangesForTesting() const override;
+  void SetNeedsRedrawForTesting() override;
 
   // cc::LayerTreeHostClient.
   void WillBeginMainFrame() override {}

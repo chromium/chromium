@@ -51,9 +51,6 @@
   _wasDismissed = YES;
 }
 
-- (void)skipAllScreens {
-}
-
 @end
 
 // Empty implementation of the SearchEngineChoiceCoordinatorDelegate used to

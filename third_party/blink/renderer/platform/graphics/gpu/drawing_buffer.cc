@@ -2187,8 +2187,14 @@ DrawingBuffer::ScopedStateRestorer::~ScopedStateRestorer() {
 }
 
 bool DrawingBuffer::ShouldUseChromiumImage() {
-  return RuntimeEnabledFeatures::WebGLImageChromiumEnabled() &&
-         chromium_image_usage_ == kAllowChromiumImage;
+  if (chromium_image_usage_ != kAllowChromiumImage) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::WebGLImageChromiumEnabled()) {
+    return true;
+  }
+  return low_latency_enabled() &&
+         base::FeatureList::IsEnabled(features::kLowLatencyWebGLImageChromium);
 }
 
 }  // namespace blink

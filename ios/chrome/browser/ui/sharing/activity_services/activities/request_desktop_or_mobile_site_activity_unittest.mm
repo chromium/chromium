@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -31,14 +30,13 @@ class RequestDesktopOrMobileSiteActivityTest : public PlatformTest {
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = WebNavigationBrowserAgent::FromBrowser(browser_.get());
-    WebStateOpener opener;
     auto web_state = std::make_unique<web::FakeWebState>();
     auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state->SetNavigationManager(std::move(navigation_manager));
     browser_->GetWebStateList()->InsertWebState(
-        0, std::move(web_state), WebStateList::InsertionFlags::INSERT_ACTIVATE,
-        opener);
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
   }
 
   void SetUp() override {

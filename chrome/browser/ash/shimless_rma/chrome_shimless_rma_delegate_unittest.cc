@@ -25,7 +25,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -51,33 +50,12 @@ const char kTestWrongExtId[] = "neacocmolncbbnnameegalgmoedgpfpk";
 const char kFakeIwaPath[] = "fake_iwa_path.swbn";
 }  // namespace
 
-// Test-fake implementation of QRImageGenerator; the real implementation
-// can't be used in these tests because it may require spawning a service
-// process.
-void GenerateFakeQRCode(
-    qrcode_generator::mojom::GenerateQRCodeRequestPtr request,
-    qrcode_generator::QRImageGenerator::ResponseCallback callback) {
-  qrcode_generator::mojom::GenerateQRCodeResponsePtr response =
-      qrcode_generator::mojom::GenerateQRCodeResponse::New();
-  response->error_code = qrcode_generator::mojom::QRCodeGeneratorError::NONE;
-  response->bitmap.allocN32Pixels(16, 16);
-
-  std::move(callback).Run(std::move(response));
-}
-
 class ChromeShimlessRmaDelegateTest : public testing::Test {
  public:
   ChromeShimlessRmaDelegateTest()
       : chrome_shimless_rma_delegate_(ChromeShimlessRmaDelegate(nullptr)),
         task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
   ~ChromeShimlessRmaDelegateTest() override = default;
-
-  void SetUp() override {
-    chrome_shimless_rma_delegate_.SetQRCodeServiceForTesting(
-        base::BindRepeating(&GenerateFakeQRCode));
-  }
-
-  void TearDown() override {}
 
  protected:
   ChromeShimlessRmaDelegate chrome_shimless_rma_delegate_;

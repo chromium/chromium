@@ -10,13 +10,19 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -84,6 +90,8 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   raw_ptr<PrefService> _prefService;
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   raw_ptr<signin::IdentityManager> _identityManager;
+  id<ManageStorageAlertCommands> _manageStorageAlertHandler;
+  id<ApplicationCommands> _applicationHandler;
   NSString* _imageName;
   NSData* _imageData;
   BOOL _userTappedSuccessSnackbarButton;
@@ -96,21 +104,29 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
 #pragma mark - Initialization
 
-- (instancetype)
-    initWithPhotosService:(PhotosService*)photosService
-              prefService:(PrefService*)prefService
-    accountManagerService:(ChromeAccountManagerService*)accountManagerService
-          identityManager:(signin::IdentityManager*)identityManager {
+- (instancetype)initWithPhotosService:(PhotosService*)photosService
+                          prefService:(PrefService*)prefService
+                accountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                      identityManager:(signin::IdentityManager*)identityManager
+            manageStorageAlertHandler:
+                (id<ManageStorageAlertCommands>)manageStorageAlertHandler
+                   applicationHandler:
+                       (id<ApplicationCommands>)applicationHandler {
   self = [super init];
   if (self) {
+    CHECK(photosService);
+    CHECK(prefService);
+    CHECK(accountManagerService);
+    CHECK(identityManager);
+    CHECK(manageStorageAlertHandler);
+    CHECK(applicationHandler);
     _photosService = photosService;
     _prefService = prefService;
     _accountManagerService = accountManagerService;
     _identityManager = identityManager;
-    CHECK(_photosService);
-    CHECK(_prefService);
-    CHECK(_accountManagerService);
-    CHECK(_identityManager);
+    _manageStorageAlertHandler = manageStorageAlertHandler;
+    _applicationHandler = applicationHandler;
   }
   return self;
 }
@@ -222,6 +238,18 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   _imageName = nil;
   _imageData = nil;
   _identity = nil;
+}
+
+- (void)showManageStorageForIdentity:(id<SystemIdentity>)identity {
+  base::RecordAction(
+      base::UserMetricsAction("MobileSaveToPhotosManageStorage"));
+  // The uploading identity's user email is used to switch to the uploading
+  // account before loading the "Manage Storage" web page.
+  GURL manageStorageURL = GenerateManageDriveStorageUrl(
+      base::SysNSStringToUTF8(identity.userEmail));
+  OpenNewTabCommand* newTabCommand =
+      [OpenNewTabCommand commandWithURLFromChrome:manageStorageURL];
+  [_applicationHandler openURLInNewTab:newTabCommand];
 }
 
 #pragma mark - Private
@@ -348,6 +376,14 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
                                   result.failure_type);
     __weak __typeof(self) weakSelf = self;
     [self.delegate stopValidationSpinnerForAccountPicker];
+    // If the user is out of storage, offer to manage their storage.
+    if (result.failure_type ==
+        PhotosServiceUploadFailureType::kUploadPhoto2NotEnoughStorage) {
+      [_manageStorageAlertHandler
+          showManageStorageAlertForIdentity:failureIdentity];
+      return;
+    }
+    // Otherwise let the user "Try Again" with the same account.
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
       [weakSelf retryUploadImageWithIdentity:failureIdentity];
     }];

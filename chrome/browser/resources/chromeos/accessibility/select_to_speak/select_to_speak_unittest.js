@@ -7,14 +7,7 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 /**
  * Test fixture for select_to_speak.js.
  */
-SelectToSpeakUnitTest = class extends SelectToSpeakE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule(
-        'getGSuiteAppRoot', '/select_to_speak/select_to_speak.js');
-  }
-};
+SelectToSpeakUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F('SelectToSpeakUnitTest', 'getGSuiteAppRoot', function() {
   const root = {url: 'https://docs.google.com/presentation/p/cats_r_awesome'};

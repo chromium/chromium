@@ -1171,8 +1171,7 @@ ReadAnythingAppModel::GetNextNodes() {
       // If the position is now at the start of a paragraph and we already have
       // nodes to return, return the current list of nodes so that we don't
       // cross paragraph boundaries with text.
-      if (ax_position_->AtStartOfParagraph() &&
-          current_granularity.node_ids.size() > 0) {
+      if (ShouldSplitAtParagraph(ax_position_, current_granularity)) {
         return current_granularity;
       }
 
@@ -1186,6 +1185,30 @@ ReadAnythingAppModel::GetNextNodes() {
       // Get the index of the next sentence if we're looking at the combined
       // previous and current node text.
       int combined_sentence_index = GetNextSentence(combined_text);
+
+      bool is_opening_punctuation = false;
+      // The code that checks for accessible text boundaries sometimes
+      // incorrectly includes opening punctuation (i.e. '(', '<', etc.) as part
+      // of the prior sentence.
+      // e.g. "This is a sentence.[2]" will return a sentence boundary for
+      // "This is a sentence.[", splitting the opening and closing punctuation.
+      // When opening punctuation is split like this in Read Aloud, text will
+      // be read out for the punctuation e.g. "opening square bracket," which
+      // we want to avoid.
+      // Therefore, this is a workaround that prevents adding text from the
+      // next node to the current segment if that text is a single character
+      // and also opening punctuation. The opening punctuation will then be
+      // read out as part of the next segment. If the opening punctuation is
+      // followed by text and closing punctuation, the punctuation will not be
+      // read out directly- just the text content.
+      // TODO(crbug.com/1474951): See if it's possible to fix the code
+      // in FindAccessibleTextBoundary instead so that this workaround isn't
+      // needed.
+      if (combined_sentence_index == (int)current_text.length() + 1) {
+        char c = combined_text[combined_sentence_index - 1];
+        is_opening_punctuation = IsOpeningPunctuation(c);
+      }
+
       // If the combined_sentence_index is the same as the current_text length,
       // the new node should not be considered part of the current sentence.
       // If these values differ, add the current node's text to the list of
@@ -1203,7 +1226,8 @@ ReadAnythingAppModel::GetNextNodes() {
       //    The current text length is 6, and the next sentence index of
       //    "Hello. Goodbye." is still 6, so the current node's text shouldn't
       //    be added to the current sentence.
-      if ((int)current_text.length() < combined_sentence_index) {
+      if (((int)current_text.length() < combined_sentence_index) &&
+          !is_opening_punctuation) {
         anchor_node = GetNodeFromCurrentPosition();
         // Calculate the new sentence index.
         int index_in_new_node = combined_sentence_index - current_text.length();
@@ -1301,11 +1325,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     return new_position;
   }
 
-  bool is_leaf = new_position->GetAnchor()->IsChildOfLeaf();
-  // If the node is a leaf, use the parent node instead.
-  ui::AXNode* anchor_node =
-      is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
-              : new_position->GetAnchor();
+  ui::AXNode* anchor_node = GetAnchorNode(new_position);
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   bool is_text_node = IsTextForReadAnything(anchor_node->id());
@@ -1331,10 +1351,7 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     new_position =
         new_position->CreateNextSentenceStartPosition(movement_options);
 
-    is_leaf = anchor_node->IsChildOfLeaf();
-    if (is_leaf) {
-      anchor_node = anchor_node->GetLowestPlatformAncestor();
-    }
+    anchor_node = GetAnchorNode(new_position);
     was_previously_spoken =
         NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
     is_text_node = IsTextForReadAnything(anchor_node->id());
@@ -1401,6 +1418,38 @@ void ReadAnythingAppModel::ResetReadAloudState() {
 
 bool ReadAnythingAppModel::IsTextForReadAnything(
     ui::AXNodeID ax_node_id) const {
-  // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
-  return (GetHtmlTag(ax_node_id).length() == 0);
+  // ListMarkers will have an HTML tag of "::marker," so they won't be
+  // considered text when checking for the length of the html tag. However, in
+  // order to read out loud ordered bullets, nodes that have the kListMarker
+  // role should be included.
+  // Note: This technically will include unordered list markers like bullets,
+  // but these won't be spoken because they will be filtered by the TTS engine.
+  ui::AXNode* node = GetAXNode(ax_node_id);
+  bool is_list_marker = node->GetRole() == ax::mojom::Role::kListMarker;
+
+  // TODO(crbug.com/1474951): Can this be updated to IsText() instead of
+  // checking the length of the html tag?
+  return (GetHtmlTag(ax_node_id).length() == 0) || is_list_marker;
+}
+
+bool ReadAnythingAppModel::IsOpeningPunctuation(char c) {
+  return (c == '(' || c == '{' || c == '[' || c == '<');
+}
+
+// We should split the current utterance at a paragraph boundary if the
+// AXPosition is at the start of a paragraph and we already have nodes in
+// our current granularity segment.
+bool ReadAnythingAppModel::ShouldSplitAtParagraph(
+    ui::AXNodePosition::AXPositionInstance& position,
+    ReadAloudCurrentGranularity& current_granularity) {
+  return position->AtStartOfParagraph() &&
+         (current_granularity.node_ids.size() > 0);
+}
+
+ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
+    ui::AXNodePosition::AXPositionInstance& position) {
+  bool is_leaf = position->GetAnchor()->IsChildOfLeaf();
+  // If the node is a leaf, use the parent node instead.
+  return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
+                 : position->GetAnchor();
 }

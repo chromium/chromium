@@ -387,8 +387,10 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
       return StepUIType::WINDOW;
 
-    case AuthenticatorRequestDialogModel::Step::kGPMCreate:
+    case AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey:
     case AuthenticatorRequestDialogModel::Step::kTrustThisComputer:
+    case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
+    case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
       return StepUIType::BUBBLE;
 
     default:
@@ -1243,6 +1245,11 @@ void AuthenticatorRequestDialogModel::OnAttestationPermissionResponse(
     return;
   }
   std::move(attestation_callback_).Run(attestation_permission_granted);
+}
+
+void AuthenticatorRequestDialogModel::OnGPMOnboardingAccepted() {
+  DCHECK_EQ(current_step(), Step::kGPMOnboarding);
+  SetCurrentStep(Step::kGPMCreatePin);
 }
 
 void AuthenticatorRequestDialogModel::OnTrustThisComputer() {

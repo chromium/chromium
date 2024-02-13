@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -35,11 +35,11 @@ namespace views {
 
 namespace {
 
-using absl::optional;
 using gfx::Insets;
 using gfx::Point;
 using gfx::Rect;
 using gfx::Size;
+using std::optional;
 
 class MockView : public View {
   METADATA_HEADER(MockView, View)
@@ -366,9 +366,9 @@ TEST_F(FlexLayoutTest, Layout_VisibilitySetBeforeInstall) {
   // away, we need to create our own for this test.
   std::unique_ptr<views::View> host = std::make_unique<views::View>();
   View* child1 =
-      AddChild(host.get(), Size(10, 10), absl::optional<Size>(), false);
+      AddChild(host.get(), Size(10, 10), std::optional<Size>(), false);
   View* child2 =
-      AddChild(host.get(), Size(10, 10), absl::optional<Size>(), true);
+      AddChild(host.get(), Size(10, 10), std::optional<Size>(), true);
   host->SetLayoutManager(std::make_unique<FlexLayout>());
 
   test::RunScheduledLayout(host.get());
@@ -386,8 +386,8 @@ TEST_F(FlexLayoutTest, Layout_VisibilitySetBeforeInstall) {
 TEST_F(FlexLayoutTest, Layout_VisibilitySetAfterInstall) {
   // Unlike the last test, we'll use the built-in host and layout manager since
   // they're already set up.
-  View* child1 = AddChild(Size(10, 10), absl::optional<Size>(), false);
-  View* child2 = AddChild(Size(10, 10), absl::optional<Size>(), true);
+  View* child1 = AddChild(Size(10, 10), std::optional<Size>(), false);
+  View* child2 = AddChild(Size(10, 10), std::optional<Size>(), true);
 
   test::RunScheduledLayout(host_.get());
   EXPECT_FALSE(child1->GetVisible());
@@ -496,7 +496,7 @@ TEST_F(FlexLayoutTest, Layout_Exlcude) {
   View* child2 = AddChild(kChild2Size);
   const View* child3 = AddChild(kChild3Size);
 
-  layout_->SetChildViewIgnoredByLayout(child2, true);
+  child2->SetProperty(kViewIgnoredByLayoutKey, true);
   child2->SetBounds(3, 3, 3, 3);
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(Rect(3, 3, 3, 3), child2->bounds());
@@ -504,7 +504,7 @@ TEST_F(FlexLayoutTest, Layout_Exlcude) {
   EXPECT_EQ(Rect(18, 5, 17, 13), child3->bounds());
   EXPECT_EQ(Size(44, 25), host_->GetPreferredSize());
 
-  layout_->SetChildViewIgnoredByLayout(child2, false);
+  child2->SetProperty(kViewIgnoredByLayoutKey, false);
   test::RunScheduledLayout(host_.get());
   std::vector<Rect> expected = {Rect(6, 5, 12, 10), Rect(18, 5, 13, 11),
                                 Rect(31, 5, 17, 13)};
@@ -3517,10 +3517,9 @@ class NestedFlexLayoutTest : public FlexLayoutTest {
     }
   }
 
-  View* AddGrandchild(
-      size_t child_index,
-      const gfx::Size& preferred,
-      const absl::optional<gfx::Size>& minimum = absl::nullopt) {
+  View* AddGrandchild(size_t child_index,
+                      const gfx::Size& preferred,
+                      const std::optional<gfx::Size>& minimum = std::nullopt) {
     return AddChild(children_[child_index - 1], preferred, minimum);
   }
 

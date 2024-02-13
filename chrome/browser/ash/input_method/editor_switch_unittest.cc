@@ -32,8 +32,8 @@ namespace {
 using ::testing::ElementsAreArray;
 using ::testing::TestWithParam;
 
-const char kAllowedTestCountry[] = "allowed_country";
-const char kDeniedTestCountry[] = "denied_country";
+const char kAllowedTestCountry[] = "au";
+const char kDeniedTestCountry[] = "br";
 
 const char kAllowedTestUrl[] = "https://allowed.testurl.com/allowed/path";
 

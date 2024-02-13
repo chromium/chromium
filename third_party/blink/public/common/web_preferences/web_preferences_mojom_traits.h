@@ -704,6 +704,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.require_transient_activation_for_show_file_or_directory_picker;
   }
 
+  static bool require_transient_activation_for_html_fullscreen(
+      const blink::web_pref::WebPreferences& r) {
+    return r.require_transient_activation_for_html_fullscreen;
+  }
+
   static blink::mojom::PreferredColorScheme preferred_color_scheme(
       const blink::web_pref::WebPreferences& r) {
     return r.preferred_color_scheme;

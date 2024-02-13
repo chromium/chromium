@@ -101,6 +101,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   RasterMode GetRasterMode() const;
   void ResetLayer();
   void ClearLayerTexture();
+  void SetNeedsPushProperties();
   cc::TextureLayer* GetOrCreateCcLayerIfNeeded();
   cc::TextureLayer* CcLayer() { return cc_layer_.get(); }
   void DoPaintInvalidation(const gfx::Rect& dirty_rect);

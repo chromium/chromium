@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
-
 #include <memory>
 #include <string>
 #include <vector>
@@ -37,10 +35,11 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #else
-#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
 #include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -78,10 +77,14 @@ class AppManagementPageHandlerTestBase
 
     mojo::PendingReceiver<app_management::mojom::Page> page;
     mojo::Remote<app_management::mojom::PageHandler> handler;
-    handler_ = std::make_unique<AppManagementPageHandlerBase>(
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    handler_ = std::make_unique<AppManagementPageHandlerChromeOs>(
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
-#if !BUILDFLAG(IS_CHROMEOS)
+#else
+    handler_ = std::make_unique<WebAppSettingsPageHandler>(
+        handler.BindNewPipeAndPassReceiver(),
+        page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
     auto features_and_params = apps::test::GetFeaturesToEnableLinkCapturingUX(
         /*override_captures_by_default=*/GetParam());
     features_and_params.push_back(

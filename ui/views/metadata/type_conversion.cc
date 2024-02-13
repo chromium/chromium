@@ -19,11 +19,11 @@ std::u16string ui::metadata::TypeConverter<GURL>::ToString(
   return base::ASCIIToUTF16(source_value.possibly_invalid_spec());
 }
 
-absl::optional<GURL> ui::metadata::TypeConverter<GURL>::FromString(
+std::optional<GURL> ui::metadata::TypeConverter<GURL>::FromString(
     const std::u16string& source_value) {
   const GURL url =
       url_formatter::FixupURL(base::UTF16ToUTF8(source_value), std::string());
-  return url.is_valid() ? absl::make_optional(url) : absl::nullopt;
+  return url.is_valid() ? std::make_optional(url) : std::nullopt;
 }
 
 ui::metadata::ValidStrings

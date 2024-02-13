@@ -46,9 +46,7 @@ TestBrowsingDataModelDelegate::GetDataOwner(
   return std::nullopt;
 }
 
-std::optional<bool>
-TestBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
-    const BrowsingDataModel::DataKey& data_key,
+std::optional<bool> TestBrowsingDataModelDelegate::IsStorageTypeCookieLike(
     BrowsingDataModel::StorageType storage_type) const {
   switch (
       static_cast<TestBrowsingDataModelDelegate::StorageType>(storage_type)) {
@@ -59,6 +57,13 @@ TestBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
     default:
       return std::nullopt;
   }
+}
+
+std::optional<bool>
+TestBrowsingDataModelDelegate::IsBlockedByThirdPartyCookieBlocking(
+    const BrowsingDataModel::DataKey& data_key,
+    BrowsingDataModel::StorageType storage_type) const {
+  return IsStorageTypeCookieLike(storage_type);
 }
 
 bool TestBrowsingDataModelDelegate::IsCookieDeletionDisabled(const GURL& url) {

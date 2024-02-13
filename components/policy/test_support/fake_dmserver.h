@@ -147,6 +147,10 @@ class FakeDMServer : public policy::EmbeddedPolicyTestServer {
   bool SetExternalPolicyPayload(const std::string* policy_type,
                                 const std::string* entity_id,
                                 const std::string* serialized_raw_policy);
+
+  // Parses regular and external policy from the JSON dict.
+  bool ParsePolicies(const base::Value::Dict* dict);
+
   // Reads and sets the values in the policy blob file, it will return true if
   // the policy blob file doesn't exist yet or all the values are read
   // correctly, and false otherwise.

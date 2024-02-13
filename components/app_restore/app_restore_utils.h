@@ -42,6 +42,7 @@ bool HasWindowInfo(int32_t restore_window_id);
 // This is called from `GetWindowInfo()` when window is
 // created, or from the ArcReadHandler when a task is ready for a full
 // restore window that has already been created.
+// TODO(sammiequon): Change the two arguments to references.
 COMPONENT_EXPORT(APP_RESTORE)
 void ApplyProperties(WindowInfo* window_info,
                      ui::PropertyHandler* property_handler);

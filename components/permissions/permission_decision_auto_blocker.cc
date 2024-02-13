@@ -48,6 +48,13 @@ constexpr base::TimeDelta kFederatedIdentityApiEmbargoDurationDismiss[] = {
 constexpr base::TimeDelta kFederatedIdentityAutoReauthnEmbargoDuration =
     base::Minutes(10);
 
+// The duration that an origin will stay under embargo for the
+// SUB_APP_INSTALLATION_PROMPTS permission when the embargo is applied
+// for the first time. After another dismissal, the default kDefaultEmbargoDays
+// is applied.
+constexpr base::TimeDelta kSubAppInstallationPromptsFirstTimeEmbargoDuration =
+    base::Minutes(10);
+
 // The number of times that users may explicitly dismiss a permission prompt
 // from an origin before it is automatically blocked.
 int g_dismissals_before_block = kDefaultDismissalsBeforeBlock;
@@ -75,24 +82,22 @@ int g_dismissal_embargo_days = kDefaultEmbargoDays;
 int g_ignore_embargo_days = kDefaultEmbargoDays;
 
 std::string GetStringForContentType(ContentSettingsType content_type) {
-  if (content_type == ContentSettingsType::FEDERATED_IDENTITY_API)
-    return "FederatedIdentityApi";
-
-  if (content_type ==
-      ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION) {
-    return "FederatedIdentityAutoReauthn";
+  switch (content_type) {
+    case ContentSettingsType::FEDERATED_IDENTITY_API:
+      return "FederatedIdentityApi";
+    case ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION:
+      return "FederatedIdentityAutoReauthn";
+    case ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION:
+      return "FileSystemAccessRestorePermission";
+    case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
+      return "AutoPictureInPicture";
+    case ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS:
+      return "SubAppInstallationPrompts";
+    // If you add a new Content Setting here, also add it to
+    // IsEnabledForContentSetting.
+    default:
+      return PermissionUtil::GetPermissionString(content_type);
   }
-
-  if (content_type ==
-      ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION) {
-    return "FileSystemAccessRestorePermission";
-  }
-
-  if (content_type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
-    return "AutoPictureInPicture";
-  }
-
-  return PermissionUtil::GetPermissionString(content_type);
 }
 
 base::Value::Dict GetOriginAutoBlockerData(HostContentSettingsMap* settings,
@@ -171,6 +176,13 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
     return kFederatedIdentityAutoReauthnEmbargoDuration;
   }
 
+  if (permission == ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS) {
+    // If this is the first time this embargo is applied, be more forgiving.
+    if (dismiss_count == g_dismissals_before_block) {
+      return kSubAppInstallationPromptsFirstTimeEmbargoDuration;
+    }
+  }
+
   return base::Days(g_dismissal_embargo_days);
 }
 
@@ -247,7 +259,10 @@ bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION ||
          content_setting ==
              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION ||
-         content_setting == ContentSettingsType::AUTO_PICTURE_IN_PICTURE;
+         content_setting == ContentSettingsType::AUTO_PICTURE_IN_PICTURE ||
+         content_setting == ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS;
+  // If you add a new content setting here, also add it to
+  // GetStringForContentType.
 }
 
 // static

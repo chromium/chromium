@@ -11,6 +11,7 @@
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -116,7 +117,7 @@ void PositionView(UIView* view, CGPoint point) {
     snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
 
     UIButton* closeTapTargetButton =
-        [UIButton buttonWithType:UIButtonTypeCustom];
+        [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
     closeTapTargetButton.translatesAutoresizingMaskIntoConstraints = NO;
     [closeTapTargetButton addTarget:self
                              action:@selector(closeButtonTapped:)

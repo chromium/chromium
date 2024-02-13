@@ -7,8 +7,10 @@
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1020274983236703756">Exklusiva <ph name="PRODUCT_NAME" />-tillgångar är nu tillgängliga</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="1026212596705997935">Kortkommandot används för <ph name="CONFLICT_ACCEL_NAME" />. Tryck på ett nytt kortkommando. Tryck på det befintliga kortkommandot igen om du vill ersätta det.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> trådar, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Det finns en ny funktion. Tryck på uppåtpilen om du vill läsa mer.</translation>
+<translation id="1049663189809099096">pastellgul</translation>
 <translation id="1059913517121127803">Det gick inte att börja söka</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> av <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
@@ -21,7 +23,6 @@
 <translation id="1119447706177454957">Internt fel</translation>
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
-<translation id="1134416403025830762">multiplicerar</translation>
 <translation id="1145018782460575098">Fönstret Uppdatera firmware för externa enheter är öppet. <ph name="NUM_UPDATES" /> uppdateringar är tillgängliga.</translation>
 <translation id="1145516343487477149">Hitta hjälpartiklar och svar på vanliga frågor om Chromebook</translation>
 <translation id="1154390310959620237">Du kan bara anpassa fem kortkommandon. Du måste radera ett kortkommando innan du kan lägga till ett nytt.</translation>
@@ -65,6 +66,7 @@
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="1418991483994088776">orkidé</translation>
 <translation id="142228117786570094">Jag har ett nyckelpar</translation>
 <translation id="1423591390236870726"><ph name="KEY_NAME" /> har inte tryckts ned</translation>
 <translation id="1435763214710588005">Dataanvändningen återställs automatiskt den angivna dagen i månaden</translation>
@@ -85,11 +87,11 @@
 <translation id="1515129336378114413">webbläsarens startsida</translation>
 <translation id="1526389707933164996">Animation för skärmsläckaren</translation>
 <translation id="152892567002884378">Höj volymen</translation>
+<translation id="1531886272553347340">smörblomma</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styrplatta</translation>
 <translation id="1561927818299383735">bakgrundsbelysningsfärg</translation>
 <translation id="1565038567006703504">Det gick inte att uppdatera <ph name="DEVICE_NAME" /></translation>
-<translation id="1566493343215789965">dividerar</translation>
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Använd som bakgrund</translation>
 <translation id="1578784163189013834">Välj bakgrund för skärmsläckare</translation>
@@ -124,6 +126,7 @@
 <translation id="1745577949879301685">Det gick inte att läsa in bilder. Kontrollera nätverksanslutningen eller testa att läsa in bilderna igen.</translation>
 <translation id="1751249301761991853">Personligt</translation>
 <translation id="1753496554272155572">Stäng förhandsgranskning av bakgrund</translation>
+<translation id="1754578112426924640">Redigeringsknapp för <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="1755556344721611131">Appen Diagnostik</translation>
 <translation id="175763766237925754">Bra (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
@@ -161,6 +164,7 @@
 <translation id="1977994649430373166">Profilbild på Google</translation>
 <translation id="1979103255016296513">Tiden för att ändra lösenordet har gått ut</translation>
 <translation id="1999615961760456652">Infångstportal</translation>
+<translation id="2004572381882349402">Airbrush</translation>
 <translation id="200669432486043882">Ersätt fil</translation>
 <translation id="2006864819935886708">Anslutning</translation>
 <translation id="2008685064673031089">Primtalssökning</translation>
@@ -195,6 +199,7 @@
 <translation id="222447520299472966">Minst ett album i konstgalleriet måste vara markerat</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Skapa fler</translation>
 <translation id="2236746079896696523">Aktivera och inaktivera tangentbordets bakgrundsbelysning</translation>
 <translation id="2240366984605217732">Tangenten som byter tangentbordslayout</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
@@ -218,6 +223,7 @@
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
 <translation id="2407209115954268704">Status för SIM-lås</translation>
 <translation id="241419523391571119">Öppna locket igen för att testa</translation>
+<translation id="2414660853550118611">Om bakgrunden</translation>
 <translation id="2414886740292270097">Mörk</translation>
 <translation id="2418150275289244458">Öppna i inställningarna</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
@@ -235,6 +241,7 @@
 <translation id="2521835766824839541">föregående spår</translation>
 <translation id="2526590354069164005">Skrivbord</translation>
 <translation id="253029298928638905">Startar om …</translation>
+<translation id="2531772459602846206">hortensia</translation>
 <translation id="2533048460510040082">Föreslaget hjälpinnehåll</translation>
 <translation id="2536159006530886390">Det gick inte att ansluta till internet.</translation>
 <translation id="2570743873672969996">Kör test av <ph name="TEST_NAME" /> …</translation>
@@ -269,7 +276,6 @@
 <translation id="2878387241690264070"><ph name="RATE" /> urladdat på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2880569433548999039">Skärmsläckare med moln</translation>
 <translation id="2926057806159140518">Ange användarnamn och lösenord eller läs av QR-koden</translation>
-<translation id="2938573842839598578">För att få ett ungefärlig resultat <ph name="OPERATOR_TEXT" /> du värdet för <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="2940811910881150316">Det gick inte att testa enheten. Öppna locket igen för att testa.</translation>
 <translation id="2941112035454246133">Låg</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
@@ -360,6 +366,7 @@
 <translation id="361575905210396100">Tack för din feedback</translation>
 <translation id="3632579075709132555">Tangenten som aktiverar och inaktiverar sekretesskärmen</translation>
 <translation id="3651050199673793219">Välj en temperaturenhet</translation>
+<translation id="3654530588944650786">En strålande <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /> i blom</translation>
 <translation id="3668449597372804501">Bakgrund med moln</translation>
 <translation id="3689839747745352263">Test – <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Läser in...</translation>
@@ -400,6 +407,7 @@
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3969602104473960991">Lösenordet för ChromeOS har uppdaterats</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
+<translation id="3981099166243641873">ljusgrön</translation>
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> har nu uppdaterats</translation>
 <translation id="3998976413398910035">Hantera skrivare</translation>
@@ -411,6 +419,7 @@
 <translation id="404928562651467259">VARNING</translation>
 <translation id="4054683689023980771">Laddar ned bild …</translation>
 <translation id="4060260348856573701">Nytt APN</translation>
+<translation id="4063039537646912479">ljusblå</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Spara testinformation</translation>
 <translation id="409469431304488632">Experiment</translation>
@@ -460,7 +469,6 @@
 <translation id="4394049700291259645">Inaktivera</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> startas om</translation>
 <translation id="4395835743215824109">anpassa tangentbord</translation>
-<translation id="4403262788869804671">Ett kortkommando utan <ph name="META_KEY" />tangenten kan hamna i konflikt med ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med <ph name="KEY" />tangenten.</translation>
 <translation id="4415951057168511744">Aktuell avatar</translation>
 <translation id="4417830657741848074">Administratören har ställt in vissa appar på att starta automatiskt. Vissa av dessa appar får inte stängas.</translation>
 <translation id="4422041425070339732">nedåtpil</translation>
@@ -604,6 +612,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Välj ett nytt nu</translation>
 <translation id="5333530671332546086">Okänd portalstatus</translation>
+<translation id="5335373365677455232">rosa</translation>
 <translation id="5346687412805619883">Lokalt nätverk</translation>
 <translation id="5358174242040570474">Något gick fel. Testa att välja en bakgrund igen eller öppna appen på nytt.</translation>
 <translation id="5372659122375744710">wifi-nätverket är inte säkert</translation>
@@ -611,6 +620,7 @@
 <translation id="5378184552853359930">IP-typ</translation>
 <translation id="5389159777326897627">Bakgrund och stil</translation>
 <translation id="5389224261615877010">Regnbåge</translation>
+<translation id="5396811372860835203">kalla</translation>
 <translation id="5400907029458559844">Enheter ansluter.</translation>
 <translation id="5401938042319910061">Kör alla rutiner</translation>
 <translation id="5423849171846380976">Aktiverat</translation>
@@ -625,6 +635,7 @@
 <translation id="5502931783115429516">Android körs inte</translation>
 <translation id="551689408806449779">Enheten har kopplats från. Försök att återansluta för att testa</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5543701552415191873">låst</translation>
 <translation id="554517032089923082">GTC</translation>
 <translation id="5559898619118303662">Byt automatiskt till mörkt tema vid solnedgången</translation>
 <translation id="5578477003638479617">UMTS</translation>
@@ -632,7 +643,9 @@
 <translation id="5583640892426849032">Backsteg</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> har testats</translation>
 <translation id="5620281292257375798">Endast internt</translation>
+<translation id="5631759159893697722">abstract</translation>
 <translation id="5649768706273821470">Lyssna</translation>
+<translation id="5654356773042347102">liljekonvalj</translation>
 <translation id="5655283760733841251">Tangenten som ökar ljusstyrkan på tangentbordet</translation>
 <translation id="5655296450510165335">Enhetsregistrering</translation>
 <translation id="5655776422854483175">Inga utskriftsjobb</translation>
@@ -645,6 +658,7 @@
 <translation id="5701381305118179107">Centrera</translation>
 <translation id="5703716265115423771">sänk volymen</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
+<translation id="572854785834323605">Redigeringsknapp för <ph name="SHORTCUT_DESCRIPTION" />.</translation>
 <translation id="5733298426544876109">Uppdatera <ph name="DEVICE_NAME" /></translation>
 <translation id="574392208103952083">Medelstark</translation>
 <translation id="5757187557809630523">nästa spår</translation>
@@ -675,12 +689,13 @@
 <translation id="5916084858004523819">Aldrig</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Filen har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Filerna har genomsökts och sparats i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5928411637936685857">Raderingsknapp för <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5931523347251946569">Filen hittades inte</translation>
-<translation id="593880865674747800">Skapa fler i samma stil</translation>
 <translation id="5939518447894949180">Återställ</translation>
 <translation id="594552776027197022">Generera slumpmässigt nyckelpar</translation>
 <translation id="5946538341867151940">Du är inte ansluten än. Om din mobiloperatör rekommenderar en anpassad APN anger du APN-uppgifterna genom att välja + Ny APN</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="5975130252842127517">korallfärgad</translation>
 <translation id="5984145644188835034">Standardbakgrund</translation>
 <translation id="6017514345406065928">Grön</translation>
 <translation id="6019566113895157499">Kortkommandon</translation>
@@ -705,12 +720,14 @@
 <translation id="6117895505466548728"><ph name="TITLE" /> och <ph name="NUMBER" /> album till</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Tjänst för inmatningsmetod för ChromeOS</translation>
+<translation id="6127426868813166163">vit</translation>
 <translation id="6136285399872347291">backsteg</translation>
 <translation id="6137767437444130246">Användarcertifikat</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6184793017104303157">B4</translation>
+<translation id="6188737759358894319">Skapades den <ph name="DATE" /></translation>
 <translation id="6189418609903030344">Batterikapaciteten avtar genom användning</translation>
 <translation id="6191293864534840972">Namnserveradresserna har fel format</translation>
 <translation id="6196607555925437199">Återskapa</translation>
@@ -734,6 +751,7 @@
 <translation id="6321407676395378991">Slå på skärmsläckare</translation>
 <translation id="6324916366299863871">Redigera genväg</translation>
 <translation id="6325525973963619867">Misslyckades</translation>
+<translation id="6327262166342360252">Den här bakgrunden skapades med AI utifrån följande text: ”<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatiskt mörkt tema</translation>
 <translation id="6340526405444716530">Anpassning</translation>
 <translation id="6348738456043757611">Användarnamn och lösenord</translation>
@@ -756,6 +774,7 @@
 <translation id="6462978824459367242">Knappen Lägg till APN har aktiverats</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Vill du skanna om sidan?}=1{Vill du skanna om sidan {PAGE_NUMBER}?}other{Vill du skanna om sidan {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Engångslösenord</translation>
+<translation id="64778964625672495">mörkröd</translation>
 <translation id="6480327114083866287">Hanteras av <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631">Exklusiv skärmsläckare för <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">Har stoppats – papperstrassel</translation>
@@ -802,10 +821,13 @@
 <translation id="6766275201586212568">Misslyckade DNS-matchningar</translation>
 <translation id="6768237774506518020">Hög felfrekvens för DNS-matchningar</translation>
 <translation id="6791471867139427246">färg på tangentbordets belysning</translation>
+<translation id="6796229976413584781">Genvägen har raderats</translation>
 <translation id="6798678288485555829">Textnavigering</translation>
 <translation id="680983167891198932">Nyckel</translation>
 <translation id="6816797338148849397">Det finns information om det som är markerat. Tryck på uppåtpilen för att komma åt den.</translation>
 <translation id="6853312040151791195">Urladdningshastighet</translation>
+<translation id="6866732840889595464">prästkrage</translation>
+<translation id="6871256179359663621">ljuslila</translation>
 <translation id="6889786074662672253">Koppla inte från den externa enheten och stäng inte av datorn medan enheten startas om. Du kan minimera fönstret. Detta kan ta en stund och den externa enheten kanske inte fungerar under tiden.</translation>
 <translation id="6900701049656042631">Det här albumet innehåller inga foton. Du kan lägga till foton via <ph name="LINK" /></translation>
 <translation id="6905724422583748843">Tillbaka till <ph name="PAGE_NAME" /></translation>
@@ -819,6 +841,7 @@
 <translation id="6965978654500191972">Enhet</translation>
 <translation id="6977381486153291903">Revision av firmware</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
+<translation id="6988803763488977828">sippa</translation>
 <translation id="7005833343836210400">Enheten är offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
 <translation id="7040230719604914234">Operatör</translation>
@@ -856,6 +879,7 @@
 <translation id="7212547870105584639">Hantera APN-inställningar för nätverket. APN upprättar en anslutning mellan ett mobilnätverk och internet. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmware-uppdateringar för externa enheter</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
+<translation id="7233782086689993269">Genvägen har återställts</translation>
 <translation id="725133483556299729">Välj e-postadress</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7271932918253517778">Kortkommandon med tangenterna på översta raden måste innehålla <ph name="META_KEY" />tangenten.</translation>
@@ -871,6 +895,7 @@
 <translation id="7311368985037279727">tangentbordsfärg</translation>
 <translation id="7317831949569936035">Registrering i skolan</translation>
 <translation id="7319430975418800333">A3</translation>
+<translation id="7328475450575141167">papegojblomma</translation>
 <translation id="7331297744262591636">Du måste ha fyllt 18 år och godkänna att användningen av AI-bakgrunder omfattas av <ph name="GOOGLE_TERMS_OF_SERVICE_LINK" />Googles användarvillkor<ph name="END_LINK_GOOGLE_TERMS_OF_SERVICE" /> och de <ph name="BEGIN_LINK_GEN_AI_TERMS_OF_SERVICE" />ytterligare användarvillkoren för generativ AI<ph name="END_LINK_GEN_AI_TERMS_OF_SERVICE" />.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -917,7 +942,9 @@
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
 <translation id="7656388927906093505">Enheten är en mus.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7663672983483557630"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />, <ph name="ROW_STATUS" />.</translation>
 <translation id="7665800271478495366">Byt avatar</translation>
+<translation id="7673177760638264939">trädgårdsros</translation>
 <translation id="7683228889864052081">nyans på tangentbordet</translation>
 <translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
 <translation id="7701040980221191251">Inga</translation>
@@ -926,6 +953,7 @@
 <translation id="7718231387947923843">tangentbordsljus</translation>
 <translation id="7730077286107534951">Vissa konto- och systemuppgifter kan skickas till Google. Vi använder uppgifterna till att åtgärda tekniska problem och förbättra våra tjänster i enlighet med vår <ph name="BEGIN_LINK2" />integritetspolicy<ph name="END_LINK2" /> och våra <ph name="BEGIN_LINK3" />användarvillkor<ph name="END_LINK3" />. Besök sidan för <ph name="BEGIN_LINK1" />juridisk hjälp<ph name="END_LINK1" /> om du vill begära innehållsändringar.</translation>
 <translation id="773153675489693198">Antal cykler</translation>
+<translation id="7746357909584236306">redigerbar</translation>
 <translation id="7747039790905080783">I förväg delad nyckel</translation>
 <translation id="7752963721013053477">Morgon till kväll – exklusivt</translation>
 <translation id="7762130827864645708">Lösenordet har bytts. Använd det nya lösenordet i fortsättningen.</translation>
@@ -944,6 +972,7 @@
 <translation id="7841134249932030522">Aktivera mörkt läge</translation>
 <translation id="7846634333498149051">Tangentbord</translation>
 <translation id="7850847810298646851">Bakgrunder som drivs av Googles AI</translation>
+<translation id="785170686607360576">tulpan</translation>
 <translation id="7856267634822906833">Bluetooth-pekskärm</translation>
 <translation id="7869143217755017858">Inaktivera mörkt läge</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -1061,7 +1090,6 @@
 <translation id="87646919272181953">Album i Google Foto</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
 <translation id="877985182522063539">A4</translation>
-<translation id="8789196995628578448">Kortkommandot används för <ph name="CONFLICT_ACCEL_NAME" />. Tryck på ett nytt kortkommando. Tryck på det här kortkommandot igen om du vill ersätta det.</translation>
 <translation id="879568662008399081">Nätverket kan ha en infångstportal</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverantörens namn</translation>
@@ -1113,6 +1141,7 @@
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-upplösningen har hög fördröjning</translation>
 <translation id="9065203028668620118">Redigera</translation>
+<translation id="9068296451330120661">akvarell</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Använd den här videon</translation>

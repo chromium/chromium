@@ -421,7 +421,8 @@ interface IDBDatabase {
 
 interface IDBFactory {
   // Gets high level info about databases that exist in the frame's origin.
-  GetDatabaseInfo() => (array<IDBNameAndVersion> names_and_versions, IDBError? error);
+  // When successful, `error->error_code` will be `kNoError`.
+  GetDatabaseInfo() => (array<IDBNameAndVersion> names_and_versions, IDBError error);
 
   // Opens a database |name| in the frame's origin at version |version|.
   // |version_change_transaction_receiver| will have version change

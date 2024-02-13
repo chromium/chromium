@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_diagnostics.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -40,9 +41,9 @@ std::string CapitalizedBoardName() {
   const std::string uppercase = base::SysInfo::HardwareModelName();
 
   CHECK_GE(uppercase.size(), 1u);
-  base::StringPiece uppercase_first_char(uppercase.c_str(), 1);
-  base::StringPiece uppercase_remaining(uppercase.c_str() + 1,
-                                        uppercase.length() - 1);
+  std::string_view uppercase_first_char(uppercase.c_str(), 1);
+  std::string_view uppercase_remaining(uppercase.c_str() + 1,
+                                       uppercase.length() - 1);
 
   return base::StrCat(
       {uppercase_first_char, base::ToLowerASCII(uppercase_remaining)});

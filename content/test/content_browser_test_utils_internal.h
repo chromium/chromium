@@ -626,7 +626,7 @@ class InactiveRenderFrameHostDeletionObserver : public WebContentsObserver {
   void CheckCondition();
 
   std::unique_ptr<base::RunLoop> loop_;
-  std::set<RenderFrameHost*> inactive_rfhs_;
+  std::set<raw_ptr<RenderFrameHost, SetExperimental>> inactive_rfhs_;
 };
 
 class TestNavigationObserverInternal : public TestNavigationObserver {
@@ -727,6 +727,11 @@ void WaitForCopyableViewInWebContents(WebContents* web_contents);
 // Blocks the current execution until the frame submitted via the browser's
 // compositor is presented on the screen.
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
+
+// Forces the browser to submit a compositor frame, even if nothing has changed
+// in the viewport. Use `WaitForBrowserCompositorFramePresented()` to wait for
+// the frame's presentation.
+void ForceNewCompositorFrameFromBrowser(WebContents* web_contents);
 
 // Sets up a /redirect-on-second-navigation?url endpoint on the provided
 // `server`, which will return a 200 OK response for the first request, and

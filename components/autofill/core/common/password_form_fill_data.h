@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -39,11 +40,12 @@ struct PasswordAndMetadata {
 struct PasswordSuggestionRequest {
   PasswordSuggestionRequest(FieldRendererId element_id,
                             const FormData& form_data,
+                            AutofillSuggestionTriggerSource trigger_source,
                             uint64_t username_field_index,
                             uint64_t password_field_index,
                             base::i18n::TextDirection text_direction,
                             const std::u16string& typed_username,
-                            int options,
+                            bool show_webauthn_credentials,
                             const gfx::RectF& bounds);
 
   PasswordSuggestionRequest();
@@ -57,6 +59,8 @@ struct PasswordSuggestionRequest {
   FieldRendererId element_id;
   // A web form extracted from the DOM that contains the triggering field.
   FormData form_data;
+  // Describes the way suggestion generation was triggered.
+  AutofillSuggestionTriggerSource trigger_source;
   // The index of the username field in the `form_data.fields`. If the password
   // form doesn't contain the username field, this value will be equal to
   // `form_data.fields.size()`.
@@ -70,9 +74,8 @@ struct PasswordSuggestionRequest {
   // The value of the username field. This will be empty if the suggestion
   // generation is triggered on a password field.
   std::u16string typed_username;
-  // Options for password suggestion generation, see
-  // `ShowPasswordSuggestionsOptions` for more details.
-  int options;
+  // Specifies whether the field is suitable to show webauthn credentials.
+  bool show_webauthn_credentials;
   // Location at which to display the popup.
   gfx::RectF bounds;
 };

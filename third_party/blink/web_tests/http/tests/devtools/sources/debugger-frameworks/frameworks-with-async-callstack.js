@@ -44,7 +44,7 @@ import * as Common from 'devtools/core/common/common.js';
   var frameworkRegexString = '/framework\\.js$';
   var maxAsyncCallStackDepth = 8;
 
-  Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+  Common.Settings.settingForTest('skip-stack-frames-pattern').set(frameworkRegexString);
 
   SourcesTestRunner.setQuiet(true);
   SourcesTestRunner.startDebuggerTest(step1);

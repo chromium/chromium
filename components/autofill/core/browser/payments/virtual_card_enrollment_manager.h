@@ -148,11 +148,6 @@ class VirtualCardEnrollmentManager {
       // enrollment dialog in the Settings page on Android.
       VirtualCardEnrollmentFieldsLoadedCallback = base::DoNothing());
 
-  // Updates |avatar_animation_complete| to true if the user is beginning the
-  // upstream enrollment flow. This is a prerequisite to showing the enrollment
-  // bubble.
-  void OnCardSavedAnimationComplete();
-
   // Uses `payments_network_interface_` to send the enroll request. `state_`'s
   // `vcn_context_token_`, which should be set when we receive the
   // GetDetailsForEnrollResponse, is used in the
@@ -204,6 +199,10 @@ class VirtualCardEnrollmentManager {
       VirtualCardEnrollmentRequestType type,
       AutofillClient::PaymentsRpcResult result);
 
+  // Called after virtual card enrollment is completed. Will show enroll result
+  // to users.
+  void OnVirtualCardEnrollCompleted(bool is_vcn_enrolled);
+
   // Resets the state of this VirtualCardEnrollmentManager.
   virtual void Reset();
 
@@ -224,10 +223,6 @@ class VirtualCardEnrollmentManager {
   // Used to get a pointer to the strike database for virtual card enrollment.
   VirtualCardEnrollmentStrikeDatabase* GetVirtualCardEnrollmentStrikeDatabase()
       const;
-
-  // Whether the card saved avatar animation has been completed on upstream
-  // enrollment flow.
-  bool avatar_animation_complete_ = false;
 
   // Whether we've received GetDetailsForEnrollResponseDetails.
   bool enroll_response_details_received_ = false;
