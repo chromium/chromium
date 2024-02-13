@@ -65,12 +65,33 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
   if (redirect_reader_ && redirect_reader_.DoesCurrentURLToServeMatch(
                               tentative_resource_request.url)) {
-    OnGotPrefetchToServe(
-        frame_tree_node_id_, tentative_resource_request,
-        base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
-                       weak_factory_.GetWeakPtr()),
-        std::move(redirect_reader_));
-    return;
+    if (redirect_reader_.HaveDefaultContextCookiesChanged()) {
+      // Cookies have changed for the next redirect hop's URL since the fetch,
+      // so we cannot use this prefetch anymore.
+      PrefetchContainer* prefetch_container =
+          redirect_reader_.GetPrefetchContainer();
+      CHECK(prefetch_container);
+      // Note: This method can only be called once per PrefetchContainer (we
+      // have a CHECK in the method). This is guaranteed to be the first time
+      // we call this method for |prefetch_container|, as the other callsite
+      // (in PrefetchService::ReturnPrefetchToServe) would have prevented the
+      // prefetch from being used to serve the navigation (making this
+      // unreachable as |redirect_reader_| would never have been set to
+      // |prefetch_container|). This will also never be called for
+      // |prefetch_container| again as we don't use it to serve any subsequent
+      // redirect hops for this navigation (we unset |redirect_reader_| below),
+      // and |PrefetchService::FindPrefetchContainerToServe| ignores any
+      // prefetches with the status kPrefetchNotUsedCookiesChanged (which is
+      // set in |PrefetchContainer::OnCookiesChanged|).
+      prefetch_container->OnCookiesChanged();
+    } else {
+      OnGotPrefetchToServe(
+          frame_tree_node_id_, tentative_resource_request,
+          base::BindOnce(&PrefetchURLLoaderInterceptor::OnGetPrefetchComplete,
+                         weak_factory_.GetWeakPtr()),
+          std::move(redirect_reader_));
+      return;
+    }
   }
 
   if (redirect_reader_) {

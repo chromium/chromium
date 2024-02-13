@@ -225,9 +225,12 @@ void OnGotPrefetchToServe(
       break;
   }
 
-  // We should not reach here if the cookies have changed; this should have
-  // already been checked in PrefetchService::ReturnPrefetchToServe and this
-  // method should have been called with an empty reader.
+  // We should not reach here if the cookies have changed. This should already
+  // have been checked in one of the call sites:
+  // 1) PrefetchService::ReturnPrefetchToServe (in which case |reader| should be
+  //    empty)
+  // 2) PrefetchURLLoaderInterceptor::MaybeCreateLoader (before serving the next
+  //    next redirect hop)
   CHECK(!reader.HaveDefaultContextCookiesChanged());
 
   // TODO(crbug.com/1462206): Should we check for existence of an
