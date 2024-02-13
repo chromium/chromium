@@ -20,7 +20,8 @@ class DeviceKeyboardModifierRemappingTest : public DeviceSettingsBaseTest {
 
   // Query to pierce through Shadow DOM to find the Settings search box.
   const DeepQuery kSearchboxQuery{
-      "os-settings-ui", "os-toolbar", "#searchBox", "#search", "#searchInput",
+      "os-settings-ui", "settings-toolbar", "#searchBox",
+      "#search",        "#searchInput",
   };
 
   // Query to pierce through Shadow DOM to find the Keyboard header.

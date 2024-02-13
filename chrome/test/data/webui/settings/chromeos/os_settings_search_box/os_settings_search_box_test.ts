@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {CrToolbarSearchFieldElement, IronDropdownElement, IronListElement, OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, OsSettingsSearchBoxElement, OsToolbarElement, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
+import {CrToolbarSearchFieldElement, IronDropdownElement, IronListElement, OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, OsSettingsSearchBoxElement, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting, ToolbarElement} from 'chrome://os-settings/os_settings.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -22,7 +22,7 @@ import {TestOsSettingsSearchBoxBrowserProxy} from './test_os_settings_search_box
 suite('<os-settings-search-box>', () => {
   const DEFAULT_RELEVANCE_SCORE: number = 0.5;
   const DEFAULT_PAGE_HIERARCHY: String16[] = [];
-  let toolbar: OsToolbarElement;
+  let toolbar: ToolbarElement;
   let searchBox: OsSettingsSearchBoxElement;
   let field: CrToolbarSearchFieldElement;
   let dropDown: IronDropdownElement;
@@ -113,7 +113,7 @@ suite('<os-settings-search-box>', () => {
     userActionRecorder = new FakeUserActionRecorder();
     setUserActionRecorderForTesting(userActionRecorder);
 
-    toolbar = document.createElement('os-toolbar');
+    toolbar = document.createElement('settings-toolbar');
     assertTrue(!!toolbar);
     document.body.appendChild(toolbar);
     flush();

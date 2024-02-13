@@ -249,7 +249,6 @@ export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_s
 export {OsSettingsSearchBoxBrowserProxy, OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
 export {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_settings_ui/os_settings_hats_browser_proxy.js';
 export {OsSettingsUiElement} from './os_settings_ui/os_settings_ui.js';
-export {OsToolbarElement} from './os_toolbar/os_toolbar.js';
 export {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_page/parental_controls_browser_proxy.js';
 export {SettingsParentalControlsPageElement} from './parental_controls_page/parental_controls_page.js';
 export {ParentalControlsSettingsCardElement} from './parental_controls_page/parental_controls_settings_card.js';
@@ -263,6 +262,7 @@ export {MultitaskingSettingsCardElement} from './system_preferences_page/multita
 export {StartupSettingsCardElement} from './system_preferences_page/startup_settings_card.js';
 export {StorageAndPowerSettingsCardElement} from './system_preferences_page/storage_and_power_settings_card.js';
 export {SettingsSystemPreferencesPageElement} from './system_preferences_page/system_preferences_page.js';
+export {SettingsToolbarElement as ToolbarElement} from './toolbar/toolbar.js';
 
 window.addEventListener('load', () => {
   // Listen for changes to Jelly dynamic colors.

@@ -17,11 +17,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {castExists} from '../assert_extras.js';
 
-import {getTemplate} from './os_toolbar.html.js';
+import {getTemplate} from './toolbar.html.js';
 
-export class OsToolbarElement extends PolymerElement {
+export class SettingsToolbarElement extends PolymerElement {
   static get is() {
-    return 'os-toolbar';
+    return 'settings-toolbar';
   }
 
   static get template() {
@@ -80,15 +80,16 @@ export class OsToolbarElement extends PolymerElement {
 
   private onMenuClick_(): void {
     const event =
-        new CustomEvent('os-toolbar-menu-tap', {bubbles: true, composed: true});
+      new CustomEvent('settings-toolbar-menu-tap',
+                      {bubbles: true, composed: true});
     this.dispatchEvent(event);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'os-toolbar': OsToolbarElement;
+    'settings-toolbar': SettingsToolbarElement;
   }
 }
 
-customElements.define(OsToolbarElement.is, OsToolbarElement);
+customElements.define(SettingsToolbarElement.is, SettingsToolbarElement);

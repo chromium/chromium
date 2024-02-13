@@ -211,13 +211,13 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromAboutChromeOsPage) {
 IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromSetingsSearch) {
   // Query to pierce through Shadow DOM to find the search input element.
   const DeepQuery kSearchInputElementQuery = {
-      "os-settings-ui",          "os-toolbar",   "os-settings-search-box",
+      "os-settings-ui",          "settings-toolbar", "os-settings-search-box",
       "cr-toolbar-search-field", "#searchInput",
   };
   // Query to pierce through Shadow DOM to find the selected search result row.
   const DeepQuery kSelectedSearchResultRowQuery = {
       "os-settings-ui",
-      "os-toolbar",
+      "settings-toolbar",
       "os-settings-search-box",
       "os-search-result-row[selected]",
   };

@@ -77,7 +77,7 @@ suite('<os-settings-ui> HaTS', () => {
     }
 
     function retrieveSearchBox(): void {
-      const toolbar = ui.shadowRoot!.querySelector('os-toolbar');
+      const toolbar = ui.shadowRoot!.querySelector('settings-toolbar');
       assert(toolbar);
       searchBox = toolbar.shadowRoot!.querySelector('os-settings-search-box');
       assert(searchBox);

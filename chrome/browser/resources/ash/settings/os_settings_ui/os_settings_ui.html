@@ -15,7 +15,7 @@
     --cr-toolbar-padding-top: 8px;
   }
 
-  os-toolbar {
+  settings-toolbar {
     /* TODO(hsuregan): update for dark mode when needed. */
     min-height: 56px;
     /* Needs to be higher than #cr-container-show-top's z-index so that the
@@ -123,13 +123,13 @@
     query-matches="{{isNarrow}}">
 </iron-media-query>
 <template is="dom-if" if="[[showToolbar_]]">
-  <os-toolbar on-os-toolbar-menu-tap="onMenuButtonClick_"
+  <settings-toolbar on-settings-toolbar-menu-tap="onMenuButtonClick_"
       spinner-active="[[toolbarSpinnerActive_]]"
       role="banner"
       narrow="[[isNarrow]]"
       narrow-threshold="980"
       show-menu="[[isNarrow]]">
-  </os-toolbar>
+  </settings-toolbar>
 </template>
 <template is="dom-if" if="[[showNavMenu_]]">
   <cr-drawer id="drawer" on-close="onMenuClose_" heading="$i18n{settings}"

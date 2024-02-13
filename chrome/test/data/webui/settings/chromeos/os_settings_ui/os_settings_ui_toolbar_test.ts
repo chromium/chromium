@@ -71,7 +71,7 @@ suite('<os-settings-ui> toolbar', () => {
     ui = await createElement();
     flush();
 
-    const toolbar = ui.shadowRoot!.querySelector('os-toolbar');
+    const toolbar = ui.shadowRoot!.querySelector('settings-toolbar');
     assertTrue(!!toolbar, 'Toolbar should exist');
 
     ui.isNarrow = true;
@@ -90,7 +90,7 @@ suite('<os-settings-ui> toolbar', () => {
 
     test('Toolbar is hidden in kiosk mode', async () => {
       ui = await createElement();
-      const toolbar = ui.shadowRoot!.querySelector('os-toolbar');
+      const toolbar = ui.shadowRoot!.querySelector('settings-toolbar');
       assertNull(toolbar);
     });
   });

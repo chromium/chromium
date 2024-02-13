@@ -333,7 +333,7 @@ build_webui("build") {
     "os_settings_search_box/os_search_result_row.ts",
     "os_settings_search_box/os_settings_search_box.ts",
     "os_settings_ui/os_settings_ui.ts",
-    "os_toolbar/os_toolbar.ts",
+    "toolbar/toolbar.ts",
     "parental_controls_page/parental_controls_page.ts",
     "parental_controls_page/parental_controls_settings_card.ts",
     "personalization_page/personalization_page.ts",
@@ -523,6 +523,7 @@ build_webui("build") {
   ts_deps = [
     "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cellular_setup:build_ts",
+    "//ash/webui/common/resources/cr_elements:build_ts",
     "//chrome/browser/resources/nearby_share/shared:build_ts",
     "//chrome/browser/resources/settings_shared:build_ts",
     "//third_party/cros-components:cros_components_ts",
@@ -530,7 +531,6 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/settings_prefs:build_ts",
-    "//ash/webui/common/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
