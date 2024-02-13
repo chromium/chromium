@@ -4192,6 +4192,27 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "linux_lacros_chrome_gtests",
+    tests = {
+        "browser_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 33,
+            ),
+        ),
+        "lacros_chrome_browsertests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+        "interactive_ui_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 6,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "linux_lacros_chrome_interactive_ui_tests_version_skew",
     tests = {
         "interactive_ui_tests": targets.legacy_test_config(

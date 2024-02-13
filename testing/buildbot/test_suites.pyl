@@ -4559,6 +4559,24 @@
       },
     },
 
+    'linux_lacros_chrome_gtests': {
+      'browser_tests': {
+        'swarming': {
+          'shards': 33,
+        },
+      },
+      'interactive_ui_tests': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
+      'lacros_chrome_browsertests': {
+        'swarming': {
+          'shards': 6,
+        },
+      },
+    },
+
     'linux_lacros_chrome_interactive_ui_tests_version_skew': {
       'interactive_ui_tests': {
         'args': [

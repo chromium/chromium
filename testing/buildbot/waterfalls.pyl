@@ -259,6 +259,20 @@
           'gtest_tests': 'linux_chromeos_browser_tests_require_lacros',
         },
       },
+      'linux-lacros-chrome': {
+        'mixins': [
+          'chrome-swarming-pool',
+          'linux-jammy',
+        ],
+        'swarming': {
+          'dimensions': {
+            'ssd': '0',
+          },
+        },
+        'test_suites': {
+          'gtest_tests': 'linux_lacros_chrome_gtests',
+        },
+      },
       'mac-chrome': {
         'additional_compile_targets': [
           'chrome',
