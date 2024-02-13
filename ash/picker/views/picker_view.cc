@@ -315,7 +315,7 @@ void PickerView::AddSearchFieldView() {
   // `search_field_view_`.
   search_field_view_ = AddChildView(std::make_unique<PickerSearchFieldView>(
       base::BindRepeating(&PickerView::StartSearch, base::Unretained(this)),
-      &session_metrics_));
+      &session_metrics_, kSearchFieldDebouncingDelay));
 }
 
 void PickerView::AddContentsView(PickerLayoutType layout_type) {

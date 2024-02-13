@@ -9,6 +9,8 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "base/functional/bind.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -31,8 +33,10 @@ constexpr auto kSearchFieldVerticalPadding = gfx::Insets::VH(6, 0);
 
 PickerSearchFieldView::PickerSearchFieldView(
     SearchCallback search_callback,
-    PickerSessionMetrics* session_metrics)
-    : search_callback_(std::move(search_callback)),
+    PickerSessionMetrics* session_metrics,
+    base::TimeDelta delay)
+    : search_debouncer_(delay),
+      search_callback_(std::move(search_callback)),
       session_metrics_(session_metrics) {
   views::Builder<PickerSearchFieldView>(this)
       .SetUseDefaultFillLayout(true)
@@ -71,7 +75,8 @@ void PickerSearchFieldView::ContentsChanged(
     const std::u16string& new_contents) {
   session_metrics_->MarkContentsChanged();
 
-  search_callback_.Run(new_contents);
+  search_debouncer_.RequestSearch(
+      base::BindOnce(search_callback_, new_contents));
 }
 
 void PickerSearchFieldView::OnWillChangeFocus(View* focused_before,
