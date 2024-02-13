@@ -710,6 +710,9 @@ def make_properties_array(cg_context):
 
     T = TextNode
 
+    if not cg_context.dictionary.own_members:
+        return ListNode({})
+
     properties = ListNode([
         T("\"{}\",".format(member.identifier))
         for member in cg_context.dictionary.own_members
@@ -863,8 +866,9 @@ def make_template_key_function(cg_context):
                               class_name=cg_context.class_name,
                               const=True)
 
-    func_def.body.append(
-        T("return static_cast<const void*>(kOwnPropertyNames);"))
+    func_def.body.extend(
+        [T("static const void *s_key = &s_key;"),
+         T("return s_key;")])
 
     return func_def.make_decl(override=True), func_def
 
