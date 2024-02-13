@@ -107,7 +107,7 @@ WebApkSyncBridge::WebApkSyncBridge(
           database_factory,
           std::move(on_initialized),
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-              syncer::WEB_APPS,
+              syncer::WEB_APKS,
               base::BindRepeating(&syncer::ReportUnrecoverableError,
                                   chrome::GetChannel())),
           std::make_unique<base::DefaultClock>(),
