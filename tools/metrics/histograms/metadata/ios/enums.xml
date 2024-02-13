@@ -947,7 +947,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="PushNotificationPermissionProvisionalStatus">
   <int value="0" label="Accepted"/>
-  <int value="1" label="Notifications previously authorized"/>
+  <int value="1" label="Notifications previously authorized or ineligible"/>
   <int value="2" label="Error"/>
 </enum>
 

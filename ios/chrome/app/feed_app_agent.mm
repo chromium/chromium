@@ -12,7 +12,10 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/chrome/browser/push_notification/model/provisional_push_notification_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -52,21 +55,37 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     // case, a new value would never be saved again once we save NO, since the
     // NO codepath would not execute saving a new value.
     SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart();
-  } else if (appState.initStage == InitStageNormalUI &&
-             IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
-    // Starting the DiscoverFeedService is required before users are able to
-    // interact with any tab because following a web channel (part of the
-    // Following Feed feature which depends on the DiscoverFeedService) is
-    // available on any tab, and not just the NTP where the Following Feed
-    // lives. This line is intended to crash if DiscoverFeedService is not able
-    // to be instantiated here.
-    AuthenticationService* authService =
-        AuthenticationServiceFactory::GetForBrowserState(
+  } else if (appState.initStage == InitStageNormalUI) {
+    if (IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
+      // Starting the DiscoverFeedService is required before users are able to
+      // interact with any tab because following a web channel (part of the
+      // Following Feed feature which depends on the DiscoverFeedService) is
+      // available on any tab, and not just the NTP where the Following Feed
+      // lives. This line is intended to crash if DiscoverFeedService is not
+      // able to be instantiated here.
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForBrowserState(
+              self.appState.mainBrowserState);
+      if (authService &&
+          authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+        DiscoverFeedServiceFactory::GetForBrowserState(
             self.appState.mainBrowserState);
-    if (authService &&
-        authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-      DiscoverFeedServiceFactory::GetForBrowserState(
-          self.appState.mainBrowserState);
+      }
+    }
+    if ((!IsFirstRunRecent(base::Days(30)) &&
+         IsContentPushNotificationsProvisionalEnabled()) ||
+        IsContentPushNotificationsProvisionalBypass()) {
+      // This method does not show a UI prompt to the user. Provisional
+      // notifications are authorized without any user input if the user hasn't
+      // previously disabled notifications.
+      AuthenticationService* authService =
+          AuthenticationServiceFactory::GetForBrowserState(
+              self.appState.mainBrowserState);
+      std::vector<PushNotificationClientId> clientIds = {
+          PushNotificationClientId::kContent};
+      [ProvisionalPushNotificationUtil
+          enrollUserToProvisionalNotificationsForClientIds:clientIds
+                                           withAuthService:authService];
     }
   }
   [super appState:appState didTransitionFromInitStage:previousInitStage];

@@ -35,9 +35,9 @@ enum class PermissionPromptAction {
   kMaxValue = ERROR
 };
 
-enum class ProvisionalPermissionPromptAction {
-  ACCEPTED,
-  OTHERACTIVE,
+enum class ProvisionalPermissionAction {
+  ENABLED,
+  INELIGIBLE,
   ERROR,
   kMaxValue = ERROR
 };
@@ -209,9 +209,8 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
           settings.authorizationStatus == UNAuthorizationStatusProvisional,
           nil);
     }
-    base::UmaHistogramEnumeration(
-        kProvisionalEnabledPermissionsHistogram,
-        ProvisionalPermissionPromptAction::OTHERACTIVE);
+    base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
+                                  ProvisionalPermissionAction::INELIGIBLE);
     return;
   }
   UNAuthorizationOptions options =
@@ -258,10 +257,10 @@ const char kNotificationAutorizationStatusChangedToDenied[] =
   if (granted) {
     [PushNotificationUtil registerDeviceWithAPNS];
     base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
-                                  ProvisionalPermissionPromptAction::ACCEPTED);
-  } else {
+                                  ProvisionalPermissionAction::ENABLED);
+  } else if (!granted || error) {
     base::UmaHistogramEnumeration(kProvisionalEnabledPermissionsHistogram,
-                                  ProvisionalPermissionPromptAction::ERROR);
+                                  ProvisionalPermissionAction::ERROR);
   }
 
   if (completion) {

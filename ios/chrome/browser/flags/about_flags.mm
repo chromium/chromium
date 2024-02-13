@@ -257,6 +257,11 @@ const FeatureEntry::FeatureParam kContentPushNotificationsEnabledSetupLists[] =
     {{kContentPushNotificationsExperimentType, "2"}};
 const FeatureEntry::FeatureParam kContentPushNotificationsEnabledProvisional[] =
     {{kContentPushNotificationsExperimentType, "3"}};
+// TODO(b/322348322): Remove provisional notifications bypass conditions testing
+// flag param.
+const FeatureEntry::FeatureParam
+    kContentPushNotificationsEnabledProvisionalBypass[] = {
+        {kContentPushNotificationsExperimentType, "4"}};
 
 const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
     {"Promo", kContentPushNotificationsEnabledPromo,
@@ -264,7 +269,10 @@ const FeatureEntry::FeatureVariation kContentPushNotificationsVariations[] = {
     {"Set up list", kContentPushNotificationsEnabledSetupLists,
      std::size(kContentPushNotificationsEnabledSetupLists), nullptr},
     {"Provisional Notification", kContentPushNotificationsEnabledProvisional,
-     std::size(kContentPushNotificationsEnabledProvisional), nullptr}};
+     std::size(kContentPushNotificationsEnabledProvisional), nullptr},
+    {"Provisional Ignore Conditions",
+     kContentPushNotificationsEnabledProvisionalBypass,
+     std::size(kContentPushNotificationsEnabledProvisionalBypass), nullptr}};
 
 const FeatureEntry::FeatureParam kFeedHeaderSettingDisabledStickyHeader[] = {
     {kDisableStickyHeaderForFollowingFeed, "true"}};

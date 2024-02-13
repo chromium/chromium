@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, NotificationsExperimentType) {
   NotificationsExperimentTypePromoEnabled = 1,
   NotificationsExperimentTypeSetUpListsEnabled = 2,
   NotificationsExperimentTypeProvisional = 3,
+  NotificationsExperimentTypeProvisionalBypass = 4,
 };
 
 typedef NS_ENUM(NSInteger, NotificationsPromoButtonType) {

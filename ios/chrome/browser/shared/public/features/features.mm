@@ -593,7 +593,16 @@ bool IsContentPushNotificationsSetUpListEnabled() {
 
 bool IsContentPushNotificationsProvisionalEnabled() {
   return (ContentNotificationsExperimentTypeEnabled() ==
-          NotificationsExperimentTypeProvisional);
+              NotificationsExperimentTypeProvisional ||
+          ContentNotificationsExperimentTypeEnabled() ==
+              NotificationsExperimentTypeProvisionalBypass);
+}
+
+// TODO(b/322348322): Remove provisional notifications bypass conditions testing
+// flag param.
+bool IsContentPushNotificationsProvisionalBypass() {
+  return (ContentNotificationsExperimentTypeEnabled() ==
+          NotificationsExperimentTypeProvisionalBypass);
 }
 
 bool IsIOSLargeFakeboxEnabled() {

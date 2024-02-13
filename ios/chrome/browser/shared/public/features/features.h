@@ -471,6 +471,11 @@ bool IsContentPushNotificationsSetUpListEnabled();
 // YES when the Content Provisional Push Notifications are enabled.
 bool IsContentPushNotificationsProvisionalEnabled();
 
+// TODO(b/322348322): Remove provisional notifications bypass conditions testing
+// flag param. YES when the Content Provisional Push Notifications are enabled
+// and the time based conditions should be ignored.
+bool IsContentPushNotificationsProvisionalBypass();
+
 // Returns true when the IOSLargeFakebox feature is enabled.
 bool IsIOSLargeFakeboxEnabled();
 
