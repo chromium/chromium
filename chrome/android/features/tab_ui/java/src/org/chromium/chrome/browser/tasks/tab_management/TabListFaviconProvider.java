@@ -17,6 +17,7 @@ import android.graphics.drawable.LayerDrawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
@@ -235,11 +236,17 @@ public class TabListFaviconProvider {
     }
 
     private static TabFavicon sRoundedGlobeFavicon;
-    private static TabFavicon sRoundedChromeFavicon;
+
+    /** This icon may fail to load. See crbug.com/324996488. */
+    private static @Nullable TabFavicon sRoundedChromeFavicon;
+
     private static TabFavicon sRoundedComposedDefaultFavicon;
 
     private static TabFavicon sRoundedGlobeFaviconIncognito;
-    private static TabFavicon sRoundedChromeFaviconIncognito;
+
+    /** This icon may fail to load. See crbug.com/324996488. */
+    private static @Nullable TabFavicon sRoundedChromeFaviconIncognito;
+
     private static TabFavicon sRoundedComposedDefaultFaviconIncognito;
 
     private static TabFavicon sRoundedGlobeFaviconForStrip;
@@ -311,13 +318,15 @@ public class TabListFaviconProvider {
         if (sRoundedChromeFavicon == null) {
             Bitmap chromeBitmap =
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
-            sRoundedChromeFavicon =
-                    createChromeOwnedResourceTabFavicon(
-                            chromeBitmap,
-                            mDefaultIconColor,
-                            mSelectedIconColor,
-                            false,
-                            StaticTabFaviconType.ROUNDED_CHROME);
+            if (chromeBitmap != null) {
+                sRoundedChromeFavicon =
+                        createChromeOwnedResourceTabFavicon(
+                                chromeBitmap,
+                                mDefaultIconColor,
+                                mSelectedIconColor,
+                                false,
+                                StaticTabFaviconType.ROUNDED_CHROME);
+            }
         }
         if (sRoundedComposedDefaultFavicon == null) {
             Bitmap composedBitmap =
@@ -348,13 +357,15 @@ public class TabListFaviconProvider {
         if (sRoundedChromeFaviconIncognito == null) {
             Bitmap chromeBitmap =
                     BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
-            sRoundedChromeFaviconIncognito =
-                    createChromeOwnedResourceTabFavicon(
-                            chromeBitmap,
-                            mIncognitoIconColor,
-                            mIncognitoSelectedIconColor,
-                            false,
-                            StaticTabFaviconType.ROUNDED_CHROME_INCOGNITO);
+            if (chromeBitmap != null) {
+                sRoundedChromeFaviconIncognito =
+                        createChromeOwnedResourceTabFavicon(
+                                chromeBitmap,
+                                mIncognitoIconColor,
+                                mIncognitoSelectedIconColor,
+                                false,
+                                StaticTabFaviconType.ROUNDED_CHROME_INCOGNITO);
+            }
         }
         if (sRoundedComposedDefaultFaviconIncognito == null) {
             Bitmap composedBitmap =
@@ -643,6 +654,12 @@ public class TabListFaviconProvider {
     private TabFavicon getRoundedChromeFavicon(boolean isIncognito) {
         if (mIsTabStrip) {
             return sRoundedChromeFaviconForStrip;
+        }
+        // Fallback if the bitmap decoding failed.
+        if (isIncognito
+                ? (sRoundedChromeFaviconIncognito == null)
+                : (sRoundedChromeFavicon == null)) {
+            return getRoundedGlobeFavicon(isIncognito);
         }
         return isIncognito
                 ? sRoundedChromeFaviconIncognito
