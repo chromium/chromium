@@ -457,6 +457,7 @@
       "Download.IOSDownloadFileUIGoogleDrive",
       DownloadFileUIGoogleDrive::GoogleDriveInstalledAfterDisplay,
       DownloadFileUIGoogleDrive::Count);
+  _mediator.UpdateConsumer();
 }
 
 // Presents StoreKit dialog for Google Drive application.

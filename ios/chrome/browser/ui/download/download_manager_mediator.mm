@@ -134,9 +134,6 @@ bool DownloadManagerMediator::IsSaveToDriveAvailable() const {
 void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
 
-  if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
-    [consumer_ setInstallDriveButtonVisible:YES animated:YES];
-  }
 
   if (base::FeatureList::IsEnabled(kIOSSaveToDrive)) {
     [consumer_ setMultipleDestinationsAvailable:IsSaveToDriveAvailable()];
@@ -149,6 +146,11 @@ void DownloadManagerMediator::UpdateConsumer() {
     id<SystemIdentity> identity =
         upload_task_ ? upload_task_->GetIdentity() : nil;
     [consumer_ setSaveToDriveUserEmail:identity.userEmail];
+    [consumer_ setInstallDriveButtonVisible:!IsGoogleDriveAppInstalled()
+                                   animated:NO];
+  } else if (state == kDownloadManagerStateSucceeded &&
+             !IsGoogleDriveAppInstalled()) {
+    [consumer_ setInstallDriveButtonVisible:YES animated:YES];
   }
 
   [consumer_ setState:state];
