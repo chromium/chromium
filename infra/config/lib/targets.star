@@ -7,7 +7,13 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
+load("./targets-internal/common.star", _targets_common = "common")
 load("./targets-internal/nodes.star", _targets_nodes = "nodes")
+load("./targets-internal/test-types/gpu_telemetry_test.star", "gpu_telemetry_test")
+load("./targets-internal/test-types/gtest_test.star", "gtest_test")
+load("./targets-internal/test-types/isolated_script_test.star", "isolated_script_test")
+load("./targets-internal/test-types/junit_test.star", "junit_test")
+load("./targets-internal/test-types/script_test.star", "script_test")
 
 def _binary_test_config(*, results_handler = None, merge = None, resultdb = None):
     """The details for a test provided by the test's binary.
@@ -29,32 +35,6 @@ def _binary_test_config(*, results_handler = None, merge = None, resultdb = None
         resultdb = resultdb,
     )
 
-def _create_compile_target(*, name):
-    _targets_nodes.COMPILE_TARGET.add(name)
-
-def _create_label_mapping(
-        *,
-        name,
-        type,
-        label,
-        label_type = None,
-        executable = None,
-        executable_suffix = None,
-        script = None,
-        skip_usage_check = False,
-        args = None):
-    mapping_key = _targets_nodes.LABEL_MAPPING.add(name, props = dict(
-        type = type,
-        label = label,
-        label_type = label_type,
-        executable = executable,
-        executable_suffix = executable_suffix,
-        script = script,
-        skip_usage_check = skip_usage_check,
-        args = args,
-    ))
-    graph.add_edge(keys.project(), mapping_key)
-
 def _create_binary(
         *,
         name,
@@ -67,7 +47,7 @@ def _create_binary(
         skip_usage_check = False,
         args = None,
         test_config = None):
-    _create_label_mapping(
+    _targets_common.create_label_mapping(
         name = name,
         type = type,
         label = label,
@@ -83,82 +63,8 @@ def _create_binary(
         test_config = test_config,
     ))
 
-    _create_compile_target(
+    _targets_common.create_compile_target(
         name = name,
-    )
-
-def _basic_suite_test_config(
-        *,
-        script = None,
-        binary = None,
-        telemetry_test_name = None,
-        args = None):
-    """The details for the test included when included in a basic suite.
-
-    When generating test_suites.pyl, these values will be written out
-    for a test in any basic suite that includes it.
-
-    Args:
-        script: The name of the file within the //testing/scripts
-            directory to run as the test. Only applicable to script tests.
-        binary: The name of the binary to run as the test. Only
-            applicable to gtests, isolated script tests and junit tests.
-        telemetry_test_name: The telemetry test to run. Only applicable
-            to telemetry test types.
-        args: Arguments to be passed to the test binary.
-    """
-    return struct(
-        script = script,
-        binary = binary,
-        telemetry_test_name = telemetry_test_name,
-        args = args,
-    )
-
-def _create_legacy_test(*, name, basic_suite_test_config, mixins = None):
-    test_key = _targets_nodes.LEGACY_TEST.add(name, props = dict(
-        basic_suite_test_config = basic_suite_test_config,
-    ))
-    for m in args.listify(mixins):
-        graph.add_edge(test_key, _targets_nodes.MIXIN.key(m))
-    return test_key
-
-def _create_bundle(*, name, additional_compile_targets = [], targets = [], builder_group = None, test_spec_by_name = {}, modifications_by_name = {}):
-    key = _targets_nodes.BUNDLE.add(name, props = dict(
-        builder_group = builder_group,
-        test_spec_by_name = test_spec_by_name,
-        modifications_by_name = modifications_by_name,
-    ))
-
-    for t in additional_compile_targets:
-        graph.add_edge(key, _targets_nodes.COMPILE_TARGET.key(t))
-    for t in targets:
-        graph.add_edge(key, _targets_nodes.BUNDLE.key(t))
-    return key
-
-def _create_test_target(*, name, spec_type, spec_value):
-    return _create_bundle(
-        name = name,
-        test_spec_by_name = {
-            name: struct(
-                spec_type = spec_type,
-                spec_value = spec_value,
-            ),
-        },
-    )
-
-def _spec_type(*, finalize):
-    return struct(
-        finalize = finalize,
-    )
-
-# TODO: crbug.com/1420012 - Update the handling of unimplemented test types so
-# that more context is provided about where the error is resulting from
-def _unimplemented_target_type(type_name):
-    def unimplemented():
-        fail("support for {} targets is not yet implemented".format(type_name))
-
-    return _spec_type(
-        finalize = (lambda name, spec: unimplemented()),
     )
 
 def _compile_target(*, name, label = None, skip_usage_check = False):
@@ -180,14 +86,14 @@ def _compile_target(*, name, label = None, skip_usage_check = False):
     if name != "all":
         if label == None:
             fail("label must be set in compile_target {}".format(name))
-        _create_label_mapping(
+        _targets_common.create_label_mapping(
             name = name,
             type = "additional_compile_target",
             label = label,
             skip_usage_check = skip_usage_check,
         )
 
-    _create_compile_target(
+    _targets_common.create_compile_target(
         name = name,
     )
 
@@ -357,185 +263,6 @@ def _windowed_test_launcher(
         executable_suffix = executable_suffix,
         skip_usage_check = skip_usage_check,
         args = args,
-    )
-
-# TODO(gbeaty) The args that are specified for webgl2?_conformance(.*)_tests
-# in the basic suites are pretty formulaic, it would probably make sense to lift
-# many of those values into this function
-def _gpu_telemetry_test(
-        *,
-        name,
-        telemetry_test_name = None,
-        args = None,
-        mixins = None):
-    """Define a GPU telemetry test.
-
-    A GPU telemetry test can be included in a basic suite to run the
-    test for any builder that includes that basic suite.
-
-    Args:
-        name: The name that can be used to refer to the test in other
-            starlark declarations. The step name of the test will be
-            based on this name (additional components may be added by
-            the recipe or when generating a test with a variant).
-        telemetry_test_name: The name of the telemetry benchmark to run.
-        mixins: Mixins to apply when expanding the test.
-    """
-    _create_legacy_test(
-        name = name,
-        basic_suite_test_config = _basic_suite_test_config(
-            telemetry_test_name = telemetry_test_name,
-            args = args,
-        ),
-        mixins = mixins,
-    )
-    _create_test_target(
-        name = name,
-        spec_type = _unimplemented_target_type("gpu_telemetry_test"),
-        spec_value = None,
-    )
-
-def _gtest_test(*, name, binary = None, mixins = None, args = None):
-    """Define a gtest-based test.
-
-    A gtest test can be included in a basic suite to run the test for
-    any builder that includes that basic suite.
-
-    Args:
-        name: The name that can be used to refer to the test in other
-            starlark declarations. The step name of the test will be
-            based on this name (additional components may be added by
-            the recipe or when generating a test with a variant).
-        binary: The test binary to use. There must be a defined binary
-            with the given name. If none is provided, then an binary
-            with the same name as the test must be defined.
-        mixins: Mixins to apply when expanding the test.
-        args: Arguments to be passed to the test binary.
-    """
-    key = _create_legacy_test(
-        name = name,
-        basic_suite_test_config = _basic_suite_test_config(
-            binary = binary,
-            args = args,
-        ),
-        mixins = mixins,
-    )
-
-    # Make sure that the binary actually exists
-    graph.add_edge(key, _targets_nodes.BINARY.key(binary or name))
-
-    _create_test_target(
-        name = name,
-        spec_type = _unimplemented_target_type("gtest_test"),
-        spec_value = None,
-    )
-
-def _isolated_script_test(*, name, binary = None, mixins = None, args = None):
-    """Define an isolated script test.
-
-    An isolated script test can be included in a basic suite to run the
-    test for any builder that includes that basic suite.
-
-    Args:
-        name: The name that can be used to refer to the test in other
-            starlark declarations. The step name of the test will be
-            based on this name (additional components may be added by
-            the recipe or when generating a test with a variant).
-        binary: The test binary to use. There must be a defined binary
-            with the given name. If none is provided, then an binary
-            with the same name as the test must be defined.
-        mixins: Mixins to apply when expanding the test.
-        args: Arguments to be passed to the test binary.
-    """
-    key = _create_legacy_test(
-        name = name,
-        basic_suite_test_config = _basic_suite_test_config(
-            binary = binary,
-            args = args,
-        ),
-        mixins = mixins,
-    )
-
-    # Make sure that the binary actually exists
-    graph.add_edge(key, _targets_nodes.BINARY.key(binary or name))
-
-    _create_test_target(
-        name = name,
-        spec_type = _unimplemented_target_type("isolated_script_test"),
-        spec_value = None,
-    )
-
-def _junit_test(*, name, label, skip_usage_check = False):
-    """Define a junit test.
-
-    A junit test is a test using the JUnit test framework. A junit test
-    can be included in a basic suite to run the test for any builder
-    that includes that basic suite.
-
-    Args:
-        name: The name that can be used to refer to the test in other
-            starlark declarations. The step name of the test will be
-            based on this name (additional components may be added by
-            the recipe or when generating a test with a variant).
-        label: The GN label for the ninja target.
-        skip_usage_check: Disables checking that the target is actually
-            referenced in a targets spec for some builder.
-    """
-
-    # We don't need to reuse the test binary for multiple junit tests, so just
-    # define the isolate entry as part of the test declaration
-    _create_compile_target(
-        name = name,
-    )
-    _create_label_mapping(
-        name = name,
-        type = "generated_script",
-        label = label,
-        skip_usage_check = skip_usage_check,
-    )
-    _create_legacy_test(
-        name = name,
-        basic_suite_test_config = _basic_suite_test_config(),
-    )
-
-    _create_test_target(
-        name = name,
-        spec_type = _unimplemented_target_type("junit_test"),
-        spec_value = None,
-    )
-
-_script_test_target_type = _spec_type(
-    finalize = (lambda name, spec: ("scripts", name, spec)),
-)
-
-def _script_test(*, name, script):
-    """Define a script test.
-
-    A script test is a test that runs a python script wihin the
-    //testing/scripts directory.
-
-    Args:
-        name: The name that can be used to refer to the test in other
-            starlark declarations. The step name of the test will be
-            based on this name (additional components may be added by
-            the recipe or when generating a test with a variant).
-        script: The name of the file within the //testing/scripts
-            directory to run as the test.
-    """
-    _create_legacy_test(
-        name = name,
-        basic_suite_test_config = _basic_suite_test_config(
-            script = script,
-        ),
-    )
-
-    _create_test_target(
-        name = name,
-        spec_type = _script_test_target_type,
-        spec_value = dict(
-            name = name,
-            script = script,
-        ),
     )
 
 def _cipd_package(
@@ -917,7 +644,7 @@ def _bundle(*, name = None, additional_compile_targets = None, targets = None):
         targets: A list of targets, bundles or legacy basic suites to
             include in the bundle.
     """
-    return graph.keyset(_create_bundle(
+    return graph.keyset(_targets_common.create_bundle(
         name = name,
         additional_compile_targets = args.listify(additional_compile_targets),
         targets = args.listify(targets),
@@ -1089,11 +816,11 @@ targets = struct(
 
     # Functions for declaring tests
     tests = struct(
-        gpu_telemetry_test = _gpu_telemetry_test,
-        gtest_test = _gtest_test,
-        isolated_script_test = _isolated_script_test,
-        junit_test = _junit_test,
-        script_test = _script_test,
+        gpu_telemetry_test = gpu_telemetry_test,
+        gtest_test = gtest_test,
+        isolated_script_test = isolated_script_test,
+        junit_test = junit_test,
+        script_test = script_test,
     ),
 
     # Functions for declaring compile targets
@@ -1133,7 +860,7 @@ def register_targets(*, parent_key, name, targets):
         separately-declared bundle, an unnamed targets.bundle instance or a list
         of such elements.
     """
-    targets_key = _create_bundle(
+    targets_key = _targets_common.create_bundle(
         name = name,
         targets = args.listify(targets),
     )
