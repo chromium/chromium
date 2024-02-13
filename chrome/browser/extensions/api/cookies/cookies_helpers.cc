@@ -248,22 +248,29 @@ bool CookieMatchesPartitionKeyCollection(
   return cookie_partition_key_collection.Contains(*cookie.PartitionKey());
 }
 
-bool CookieMatchesPartitionKeyInDetails(
+bool CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
     const std::optional<extensions::api::cookies::CookiePartitionKey>&
-        partition_key,
-    const net::CanonicalCookie& cookie) {
-  if (!partition_key) {
-    return !cookie.IsPartitioned();
+        api_partition_key,
+    const absl::optional<net::CookiePartitionKey>& net_partition_key) {
+  if (!api_partition_key.has_value()) {
+    return !net_partition_key.has_value();
   }
 
-  if (cookie.IsPartitioned() && !cookie.PartitionKey()->IsSerializeable()) {
+  if (!net_partition_key.has_value()) {
     return false;
   }
 
-  std::string serialized_partition_key;
-  return net::CookiePartitionKey::Serialize(cookie.PartitionKey(),
-                                            serialized_partition_key) &&
-         serialized_partition_key == partition_key->top_level_site.value();
+  // If both keys are present, they both must be serializable for a match.
+  if (!net_partition_key->IsSerializeable() ||
+      !api_partition_key->top_level_site.has_value()) {
+    return false;
+  }
+
+  std::string serialized_net_partition_key;
+  return net::CookiePartitionKey::Serialize(net_partition_key,
+                                            serialized_net_partition_key) &&
+         serialized_net_partition_key ==
+             api_partition_key->top_level_site.value();
 }
 
 net::CookiePartitionKeyCollection

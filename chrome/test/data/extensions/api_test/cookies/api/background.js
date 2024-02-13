@@ -501,6 +501,23 @@ chrome.test.runTests([
                                   chrome.test.assertEq(5, cookies.length);
                                 }));
 
+          // Confirm that passing an undefined top level site, returns
+          // cookies with and without partition keys.
+          chrome.cookies.getAll(
+              {partitionKey: {topLevelSite: undefined}},
+              pass(function(cookies) {
+                chrome.test.assertEq(5, cookies.length);
+              }));
+
+          // Confirm that passing an empty string for top level site,
+          // returns unpartitioned cookies.
+          chrome.cookies.getAll(
+              {partitionKey: {topLevelSite: ''}}, pass(function(cookies) {
+                chrome.test.assertEq(1, cookies.length);
+                chrome.test.assertEq(TEST_BASIC_COOKIE.name, cookies[0].name);
+                chrome.test.assertEq(null, cookies[0].partitionKey);
+              }));
+
           // Confirm that passing an empty object will only get
           // cookies with no partition key.
           chrome.cookies.getAll(

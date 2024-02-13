@@ -115,18 +115,19 @@ CookiePartitionKeyCollectionFromApiPartitionKey(
     const std::optional<extensions::api::cookies::CookiePartitionKey>&
         partition_key);
 
-// returns true if cookie_partition_key_collection::ContainsAll
-// calls CookieMatchesPartitionKeyInDetails if the collection is not empty
+// Returns true for unpartitioned cookies if the collection is empty.
+// Otherwise returns true if the collection contains the cookie's partition key.
 bool CookieMatchesPartitionKeyCollection(
     const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
     const net::CanonicalCookie& cookie);
 
-// Returns true if the top_level_site values match or the optional does not
-// contain a value.
-bool CookieMatchesPartitionKeyInDetails(
+// Returns true if the top_level_site values match or both optionals do not
+// contain a value. For match to occur both partition keys must be serializable
+// if they are present.
+bool CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
     const std::optional<extensions::api::cookies::CookiePartitionKey>&
-        partition_key,
-    const net::CanonicalCookie& cookie);
+        api_partition_key,
+    const absl::optional<net::CookiePartitionKey>& net_partition_key);
 
 // A class representing the cookie filter parameters passed into
 // cookies.getAll().

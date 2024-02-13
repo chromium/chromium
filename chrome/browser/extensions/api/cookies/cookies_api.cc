@@ -279,9 +279,10 @@ void CookiesGetFunction::GetCookieListCallback(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   for (const net::CookieWithAccessResult& cookie_with_access_result :
        cookie_list) {
-    if (!cookies_helpers::CookieMatchesPartitionKeyInDetails(
-            parsed_args_->details.partition_key,
-            cookie_with_access_result.cookie)) {
+    if (!cookies_helpers::
+            CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+                parsed_args_->details.partition_key,
+                cookie_with_access_result.cookie.PartitionKey())) {
       continue;
     }
 
@@ -560,9 +561,10 @@ void CookiesSetFunction::GetCookieListCallback(
     // CookieMonster returns them in canonical order (longest path, then
     // earliest creation time).
 
-    if (!extensions::cookies_helpers::CookieMatchesPartitionKeyInDetails(
-            parsed_args_->details.partition_key,
-            cookie_with_access_result.cookie)) {
+    if (!extensions::cookies_helpers::
+            CanonicalCookiePartitionKeyMatchesApiCookiePartitionKey(
+                parsed_args_->details.partition_key,
+                cookie_with_access_result.cookie.PartitionKey())) {
       continue;
     }
 
