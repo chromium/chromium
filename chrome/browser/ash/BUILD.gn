@@ -2604,6 +2604,8 @@ source_set("ash") {
     "policy/invalidation/affiliated_invalidation_service_provider.h",
     "policy/invalidation/affiliated_invalidation_service_provider_impl.cc",
     "policy/invalidation/affiliated_invalidation_service_provider_impl.h",
+    "policy/local_user_files/policy_utils.cc",
+    "policy/local_user_files/policy_utils.h",
     "policy/login/login_profile_policy_provider.cc",
     "policy/login/login_profile_policy_provider.h",
     "policy/login/wildcard_login_checker.cc",

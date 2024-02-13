@@ -4683,6 +4683,7 @@ if (!is_android) {
         "../browser/ash/policy/handlers/restore_on_startup_browsertest.cc",
         "../browser/ash/policy/handlers/site_isolation_flag_handling_browsertest.cc",
         "../browser/ash/policy/handlers/variations_service_policy_browsertest.cc",
+        "../browser/ash/policy/local_user_files/policy_utils_browsertest.cc",
         "../browser/ash/policy/login/blocking_login_browsertest.cc",
         "../browser/ash/policy/login/device_login_screen_policy_browsertest.cc",
         "../browser/ash/policy/login/force_maximize_on_first_run_browsertest.cc",
