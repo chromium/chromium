@@ -1,9 +1,10 @@
 Name: XZ Utils
 URL: http://tukaani.org/xz/
 Source URL: http://git.tukaani.org/xz.git
-Version: 5.0.5 (git tag v5.0.5, a1bfda3214ed4a39a28fe609364be133c9f0f200,
-         2013-06-30 19:55:49 +0300)
-License: Public domain/license grant, LGPL 2.1, GPL 2, GPL 3
+Version: 5.0.5
+Revision: a1bfda3214ed4a39a28fe609364be133c9f0f200
+Date: 2013-06-30 19:55:49 +0300
+License: Public domain
 License File: LICENSE
 Shipped: yes
 
@@ -14,7 +15,7 @@ diff updaters, not Chrome itself. Still, we have set Shipped to yes to ensure
 the license is included in chrome://credits.
 
 Local Modifications:
- - None.
+None.
 
 The upstream source is present in the xz directory. Other entries in this
 directory are present for build integration:
