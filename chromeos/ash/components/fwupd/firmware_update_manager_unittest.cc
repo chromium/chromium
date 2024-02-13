@@ -1086,13 +1086,13 @@ TEST_F(FirmwareUpdateManagerTest, UpdateCountMetric) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.FirmwareUpdateUi.OnStartup.CriticalUpdateCount", 0, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.OnStartup.UpdateCount", 1, 1);
+      "ChromeOS.FirmwareUpdateUi.OnStartup.NonCriticalUpdateCount", 1, 1);
 
   RequestDevices();
   histogram_tester.ExpectBucketCount(
       "ChromeOS.FirmwareUpdateUi.OnRefresh.CriticalUpdateCount", 0, 1);
   histogram_tester.ExpectBucketCount(
-      "ChromeOS.FirmwareUpdateUi.OnRefresh.UpdateCount", 1, 1);
+      "ChromeOS.FirmwareUpdateUi.OnRefresh.NonCriticalUpdateCount", 1, 1);
 }
 
 TEST_F(FirmwareUpdateManagerTest, InternalDeviceFiltered) {

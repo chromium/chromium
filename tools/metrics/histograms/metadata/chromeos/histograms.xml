@@ -1329,6 +1329,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
   <token key="Severity">
     <variant name="Critical"/>
+    <variant name="NonCritical"/>
   </token>
 </histogram>
 
