@@ -2027,8 +2027,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
       form.fields.size() == form_structure->field_count()
           ? form_filler_->GetFieldFillingSkipReasons(
-                form, *form_structure, trigger_field,
-                trigger_autofill_field->section,
+                form, *form_structure, *trigger_autofill_field,
                 last_address_fields_to_fill_for_section
                     ? GetTargetServerFieldsForTypeAndLastTargetedFields(
                           *last_address_fields_to_fill_for_section,

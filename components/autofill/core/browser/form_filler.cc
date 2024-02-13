@@ -178,8 +178,7 @@ base::flat_map<FieldGlobalId, FieldFillingSkipReason>
 FormFiller::GetFieldFillingSkipReasons(
     const FormData& form,
     const FormStructure& form_structure,
-    const FormFieldData& trigger_field,
-    const Section& filling_section,
+    const AutofillField& trigger_field,
     const FieldTypeSet& field_types_to_fill,
     base::optional_ref<const DenseSet<FieldTypeGroup>>
         type_groups_originally_filled,
@@ -203,22 +202,21 @@ FormFiller::GetFieldFillingSkipReasons(
     // Log events when the fields on the form are filled by autofill suggestion.
     const AutofillField* autofill_field = form_structure.field(i);
     const FieldGlobalId field_id = autofill_field->global_id();
-    const bool is_triggering_field =
-        FormFieldData::DeepEqual(*autofill_field, trigger_field);
+    const bool is_trigger_field = field_id == trigger_field.global_id();
 
-    if (autofill_field->section != filling_section) {
+    if (autofill_field->section != trigger_field.section) {
       skip_reasons[field_id] = FieldFillingSkipReason::kNotInFilledSection;
       continue;
     }
 
-    if (autofill_field->only_fill_when_focused() && !is_triggering_field) {
+    if (autofill_field->only_fill_when_focused() && !is_trigger_field) {
       skip_reasons[field_id] = FieldFillingSkipReason::kNotFocused;
       continue;
     }
 
     // Address fields with unrecognized autocomplete attribute are only filled
     // when triggered through manual fallbacks.
-    if (!is_triggering_field && skip_unrecognized_autocomplete_fields &&
+    if (!is_trigger_field && skip_unrecognized_autocomplete_fields &&
         autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
       skip_reasons[field_id] =
           FieldFillingSkipReason::kUnrecognizedAutocompleteAttribute;
@@ -243,16 +241,18 @@ FormFiller::GetFieldFillingSkipReasons(
     // is empty and its initial value (= cached value) was empty as well. A
     // similar check is done in ForEachMatchingFormFieldCommon(), which
     // frequently has false negatives.
+    // TODO(b/40227496): 'autofill_field->value' should be the initial value of
+    // the field. `form.fields[i].value` should be the current value.
     if ((form.fields[i].properties_mask & kUserTyped) &&
         (!form.fields[i].value.empty() || !autofill_field->value.empty()) &&
-        !is_triggering_field) {
+        !is_trigger_field) {
       skip_reasons[field_id] = FieldFillingSkipReason::kUserFilledFields;
       continue;
     }
 
     // Don't fill previously autofilled fields except the initiating field or
     // when it's a refill.
-    if (form.fields[i].is_autofilled && !is_triggering_field && !is_refill) {
+    if (form.fields[i].is_autofilled && !is_trigger_field && !is_refill) {
       skip_reasons[field_id] =
           FieldFillingSkipReason::kAutofilledFieldsNotRefill;
       continue;
@@ -300,7 +300,7 @@ FormFiller::GetFieldFillingSkipReasons(
     // separates address fields from credit card fields. However, autofill
     // respects the HTML `autocomplete` attribute when it is used to specify a
     // section, and so in some rare cases it might happen that a credit card
-    // field is included in an address field or vice versa.
+    // field is included in an address section or vice versa.
     // Note that autofilling using manual fallback does not use this logic flow,
     // otherwise this wouldn't be true.
     if ((filling_product == FillingProduct::kAddress &&
@@ -321,8 +321,7 @@ FormFiller::GetFieldFillingSkipReasons(
     // Don't fill meaningfully pre-filled fields but overwrite placeholders.
     // TODO(b/40227496): 'autofill_field->value' should be the initial value of
     // the field.
-    if (!is_triggering_field &&
-        !autofill_field->IsSelectOrSelectListElement() &&
+    if (!is_trigger_field && !autofill_field->IsSelectOrSelectListElement() &&
         !autofill_field->value.empty() &&
         (IsNotAPlaceholder(autofill_field) ||
          IsMeaningfullyPreFilled(autofill_field))) {
@@ -544,7 +543,7 @@ void FormFiller::FillOrPreviewForm(
 
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
       GetFieldFillingSkipReasons(
-          result_form, *form_structure, field, autofill_trigger_field->section,
+          result_form, *form_structure, *autofill_trigger_field,
           trigger_details.field_types_to_fill,
           filling_context ? &filling_context->type_groups_originally_filled
                           : nullptr,

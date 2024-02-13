@@ -110,8 +110,7 @@ class FormFiller {
   base::flat_map<FieldGlobalId, FieldFillingSkipReason>
   GetFieldFillingSkipReasons(const FormData& form,
                              const FormStructure& form_structure,
-                             const FormFieldData& trigger_field,
-                             const Section& filling_section,
+                             const AutofillField& trigger_field,
                              const FieldTypeSet& field_types_to_fill,
                              base::optional_ref<const DenseSet<FieldTypeGroup>>
                                  type_groups_originally_filled,
