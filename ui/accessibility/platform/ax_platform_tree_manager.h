@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_TREE_MANAGER_H_
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
@@ -21,12 +22,10 @@ class AXPlatformNodeDelegate;
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
     : public AXTreeManager {
  public:
-  AXPlatformTreeManager() = default;
-  explicit AXPlatformTreeManager(std::unique_ptr<AXTree> tree)
-      : AXTreeManager(std::move(tree)) {}
+  explicit AXPlatformTreeManager(std::unique_ptr<AXTree> tree);
   AXPlatformTreeManager(const AXPlatformTreeManager&) = delete;
   AXPlatformTreeManager& operator=(const AXPlatformTreeManager&) = delete;
-  ~AXPlatformTreeManager() override = default;
+  ~AXPlatformTreeManager() override;
 
   // Returns an AXPlatformNode with the specified and |node_id|.
   virtual AXPlatformNode* GetPlatformNodeFromTree(
@@ -40,6 +39,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManager
   virtual AXPlatformNodeDelegate* RootDelegate() const = 0;
 
   bool IsPlatformTreeManager() const override;
+
+  base::WeakPtr<AXPlatformTreeManager> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<AXPlatformTreeManager> weak_ptr_factory_{this};
 };
 
 }  // namespace ui
