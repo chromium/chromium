@@ -10,25 +10,6 @@
 
 namespace data_controls {
 
-namespace {
-
-template <typename ActionSourceOrDestination>
-ActionSourceOrDestination ExtractPasteActionContext(
-    const content::ClipboardEndpoint& endpoint) {
-  ActionSourceOrDestination action;
-  if (endpoint.data_transfer_endpoint() &&
-      endpoint.data_transfer_endpoint()->IsUrlType()) {
-    action.url = *endpoint.data_transfer_endpoint()->GetURL();
-  }
-  if (endpoint.browser_context()) {
-    action.incognito = Profile::FromBrowserContext(endpoint.browser_context())
-                           ->IsIncognitoProfile();
-  }
-  return action;
-}
-
-}  // namespace
-
 // ---------------------------
 // RulesService implementation
 // ---------------------------
@@ -84,6 +65,22 @@ ActionSource RulesService::GetAsActionSource(
 ActionDestination RulesService::GetAsActionDestination(
     const content::ClipboardEndpoint& endpoint) const {
   return ExtractPasteActionContext<ActionDestination>(endpoint);
+}
+
+template <typename ActionSourceOrDestination>
+ActionSourceOrDestination RulesService::ExtractPasteActionContext(
+    const content::ClipboardEndpoint& endpoint) const {
+  ActionSourceOrDestination action;
+  if (endpoint.data_transfer_endpoint() &&
+      endpoint.data_transfer_endpoint()->IsUrlType()) {
+    action.url = *endpoint.data_transfer_endpoint()->GetURL();
+  }
+  if (endpoint.browser_context()) {
+    action.incognito = Profile::FromBrowserContext(endpoint.browser_context())
+                           ->IsIncognitoProfile();
+    action.other_profile = endpoint.browser_context() != profile_;
+  }
+  return action;
 }
 
 // ----------------------------------

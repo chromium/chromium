@@ -54,6 +54,9 @@ class RulesService : public KeyedService {
       const content::ClipboardEndpoint& endpoint) const;
   ActionDestination GetAsActionDestination(
       const content::ClipboardEndpoint& endpoint) const;
+  template <typename ActionSourceOrDestination>
+  ActionSourceOrDestination ExtractPasteActionContext(
+      const content::ClipboardEndpoint& endpoint) const;
 
   // `profile_` and `rules_manager_` are initialized with the browser_context
   // passed in the constructor.
