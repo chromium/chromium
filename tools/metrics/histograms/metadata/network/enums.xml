@@ -1297,6 +1297,11 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="TTLS+MSCHAPv2"/>
 </enum>
 
+<enum name="PasspointTermsAndConditions">
+  <int value="0" label="Association to a Passpoint network"/>
+  <int value="1" label="Passpoint network provided a Terms and Conditions URL"/>
+</enum>
+
 <enum name="PlatformCellularConnectResult">
   <summary>
     The return status as a result of a call to connect to a cellular device at
@@ -2168,6 +2173,14 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Enabled"/>
   <int value="1" label="LowEnd"/>
   <int value="2" label="MemoryPressure"/>
+</enum>
+
+<enum name="TermsAndConditionsAggregateResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="No portal detected, no terms and conditions URL"/>
+  <int value="2" label="No portal detected, terms and conditions URL provided"/>
+  <int value="3" label="Portal detected, no terms and conditions URL"/>
+  <int value="4" label="Portal detected, terms and conditions URL provided"/>
 </enum>
 
 <enum name="UnmanagedApnMigrationType">
