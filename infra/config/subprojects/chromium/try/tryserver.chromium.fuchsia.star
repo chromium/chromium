@@ -200,7 +200,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
         "chromium.compilator_can_outlive_parent": 100,
         # crbug.com/940930
-        "chromium.enable_cleandead": 50,
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     siso_enabled = True,

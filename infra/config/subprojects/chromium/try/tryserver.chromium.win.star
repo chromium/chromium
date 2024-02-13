@@ -115,7 +115,7 @@ try_.builder(
     os = os.WINDOWS_ANY,
     experiments = {
         # crbug/940930
-        "chromium.enable_cleandead": 50,
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -148,7 +148,7 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 5,
         "chromium.compilator_can_outlive_parent": 100,
         # crbug/940930
-        "chromium.enable_cleandead": 50,
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools

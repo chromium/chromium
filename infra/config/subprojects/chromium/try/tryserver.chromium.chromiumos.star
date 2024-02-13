@@ -238,7 +238,7 @@ try_.builder(
     builderless = not settings.is_main,
     experiments = {
         # crbug/940930
-        "chromium.enable_cleandead": 50,
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -389,7 +389,7 @@ try_.builder(
     builderless = not settings.is_main,
     experiments = {
         # crbug/940930
-        "chromium.enable_cleandead": 50,
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -451,7 +451,7 @@ try_.builder(
     builderless = not settings.is_main,
     experiments = {
         # crbug/940930
-        "chromium.enable_cleandead": 50,
+        "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
