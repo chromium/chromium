@@ -1898,7 +1898,8 @@ TEST_F(AutocompleteControllerTest,
   excluded_provider_types = {
       AutocompleteProvider::TYPE_OPEN_TAB,
       AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER,
-      AutocompleteProvider::TYPE_DOCUMENT};
+      AutocompleteProvider::TYPE_DOCUMENT,
+      AutocompleteProvider::TYPE_ON_DEVICE_HEAD};
   for (auto& provider : controller_.providers()) {
     EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
               excluded_provider_types.contains(provider->type()))
@@ -1910,7 +1911,8 @@ TEST_F(AutocompleteControllerTest,
   controller_.input_.UpdateText(u"drive.google.com", 0, {});
   excluded_provider_types = {
       AutocompleteProvider::TYPE_OPEN_TAB,
-      AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER};
+      AutocompleteProvider::TYPE_HISTORY_CLUSTER_PROVIDER,
+      AutocompleteProvider::TYPE_ON_DEVICE_HEAD};
   for (auto& provider : controller_.providers()) {
     EXPECT_NE(controller_.ShouldRunProvider(provider.get()),
               excluded_provider_types.contains(provider->type()))

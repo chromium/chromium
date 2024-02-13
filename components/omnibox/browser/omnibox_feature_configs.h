@@ -149,6 +149,8 @@ struct LimitKeywordModeSuggestions : Config<LimitKeywordModeSuggestions> {
   bool limit_history_cluster_suggestions;
   // If enabled, limits default search engine suggestions in keyword mode.
   bool limit_dse_suggestions;
+  // If enabled, limits on device head uggestions in keyword mode.
+  bool limit_on_device_head_suggestions;
 };
 
 // If enabled, the shortcut provider is more aggressive in scoring.

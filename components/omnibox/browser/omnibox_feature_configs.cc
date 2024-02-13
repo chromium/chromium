@@ -80,6 +80,10 @@ LimitKeywordModeSuggestions::LimitKeywordModeSuggestions() {
       base::FeatureParam<bool>(&kLimitKeywordModeSuggestions,
                                "LimitDSESuggestions", true)
           .Get();
+  limit_on_device_head_suggestions =
+      base::FeatureParam<bool>(&kLimitKeywordModeSuggestions,
+                               "LimitOnDeviceHeadSuggestions", true)
+          .Get();
 }
 
 // static

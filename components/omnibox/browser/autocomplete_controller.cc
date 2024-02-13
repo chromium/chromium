@@ -1747,6 +1747,11 @@ bool AutocompleteController::ShouldRunProvider(
                                   "https://drive.google.com",
                                   base::CompareCase::INSENSITIVE_ASCII);
 
+        // Don't run on device head provider.
+        case AutocompleteProvider::TYPE_ON_DEVICE_HEAD:
+          return !(omnibox_feature_configs::LimitKeywordModeSuggestions::Get()
+                       .limit_on_device_head_suggestions);
+
         // Otherwise, all other providers should still run.
         default:
           return true;
