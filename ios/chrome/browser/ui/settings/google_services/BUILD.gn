@@ -131,7 +131,6 @@ source_set("parcel_tracking") {
 
 source_set("constants") {
   sources = [
-    "accounts_table_view_controller_constants.h",
     "google_services_settings_constants.h",
     "google_services_settings_constants.mm",
     "manage_sync_settings_constants.h",
