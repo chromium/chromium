@@ -4,8 +4,6 @@
 
 package org.chromium.net.telemetry;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import android.os.Build;
 import android.util.Log;
 
@@ -14,9 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.impl.CronetLogger;
 
-import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,19 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiresApi(Build.VERSION_CODES.R)
 public class CronetLoggerImpl extends CronetLogger {
     private static final String TAG = CronetLoggerImpl.class.getSimpleName();
-
-    private static final MessageDigest MD5_MESSAGE_DIGEST;
-
-    static {
-        MessageDigest messageDigest;
-        try {
-            messageDigest = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            Log.d(TAG, "Error while instantiating messageDigest", e);
-            messageDigest = null;
-        }
-        MD5_MESSAGE_DIGEST = messageDigest;
-    }
 
     private final AtomicInteger mSamplesRateLimited = new AtomicInteger();
     private final RateLimiter mRateLimiter;
@@ -196,7 +178,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     SizeBuckets.calcResponseBodySizeBucket(
                             trafficInfo.getResponseBodySizeInBytes()),
                     trafficInfo.getResponseStatusCode(),
-                    hashNegotiatedProtocol(trafficInfo.getNegotiatedProtocol()),
+                    Hash.hash(trafficInfo.getNegotiatedProtocol()),
                     (int) trafficInfo.getHeadersLatency().toMillis(),
                     (int) trafficInfo.getTotalLatency().toMillis(),
                     trafficInfo.wasConnectionMigrationAttempted(),
@@ -263,14 +245,5 @@ public class CronetLoggerImpl extends CronetLogger {
             default:
                 throw new IllegalArgumentException("Expected httpCacheMode to range from 0 to 3");
         }
-    }
-
-    private static long hashNegotiatedProtocol(String protocol) {
-        if (MD5_MESSAGE_DIGEST == null || protocol == null || protocol.isEmpty()) {
-            return 0L;
-        }
-
-        byte[] md = MD5_MESSAGE_DIGEST.digest(protocol.getBytes(UTF_8));
-        return ByteBuffer.wrap(md).getLong();
     }
 }
