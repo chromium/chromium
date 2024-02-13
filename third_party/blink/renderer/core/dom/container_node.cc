@@ -328,8 +328,7 @@ void ContainerNode::InsertNodeVector(
     const NodeVector& targets,
     Node* next,
     const Functor& mutator,
-    NodeVector* post_insertion_notification_targets) {
-  DCHECK(post_insertion_notification_targets);
+    NodeVector& post_insertion_notification_targets) {
   probe::WillInsertDOMNode(this);
   {
     EventDispatchForbiddenScope assert_no_event_dispatch;
@@ -343,7 +342,7 @@ void ContainerNode::InsertNodeVector(
       if (GetDocument().MayContainShadowRoots())
         child.CheckSlotChangeAfterInserted();
       probe::DidInsertDOMNode(&child);
-      NotifyNodeInsertedInternal(child, *post_insertion_notification_targets);
+      NotifyNodeInsertedInternal(child, post_insertion_notification_targets);
     }
   }
 }
@@ -433,7 +432,7 @@ Node* ContainerNode::InsertBefore(Node* new_child,
     SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
     ChildListMutationScope mutation(*this);
     InsertNodeVector(targets, ref_child, AdoptAndInsertBefore(),
-                     &post_insertion_notification_targets);
+                     post_insertion_notification_targets);
   }
   DidInsertNodeVector(targets, ref_child, post_insertion_notification_targets);
   return new_child;
@@ -619,10 +618,10 @@ Node* ContainerNode::ReplaceChild(Node* new_child,
     // observers flag set.
     if (next) {
       InsertNodeVector(targets, next, AdoptAndInsertBefore(),
-                       &post_insertion_notification_targets);
+                       post_insertion_notification_targets);
     } else {
       InsertNodeVector(targets, nullptr, AdoptAndAppendChild(),
-                       &post_insertion_notification_targets);
+                       post_insertion_notification_targets);
     }
   }
   DidInsertNodeVector(targets, next, post_insertion_notification_targets);
@@ -934,7 +933,7 @@ Node* ContainerNode::AppendChild(Node* new_child,
     SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(GetDocument());
     ChildListMutationScope mutation(*this);
     InsertNodeVector(targets, nullptr, AdoptAndAppendChild(),
-                     &post_insertion_notification_targets);
+                     post_insertion_notification_targets);
   }
   DidInsertNodeVector(targets, nullptr, post_insertion_notification_targets);
   return new_child;
