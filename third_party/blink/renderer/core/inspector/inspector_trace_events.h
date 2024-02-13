@@ -321,7 +321,8 @@ void Data(perfetto::TracedValue context,
           LocalFrame*,
           const ResourceRequest&,
           ResourceType resource_type,
-          RenderBlockingBehavior);
+          RenderBlockingBehavior,
+          const ResourceLoaderOptions&);
 }
 
 namespace inspector_change_render_blocking_behavior_event {

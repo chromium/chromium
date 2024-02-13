@@ -127,7 +127,7 @@ void InspectorTraceEvents::WillSendRequest(
     const KURL& fetch_context_url,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
-    const ResourceLoaderOptions&,
+    const ResourceLoaderOptions& resource_loader_options,
     ResourceType resource_type,
     RenderBlockingBehavior render_blocking_behavior,
     base::TimeTicks timestamp) {
@@ -137,7 +137,8 @@ void InspectorTraceEvents::WillSendRequest(
       timestamp, "data", [&](perfetto::TracedValue ctx) {
         inspector_send_request_event::Data(
             std::move(ctx), execution_context, loader, request.InspectorId(),
-            frame, request, resource_type, render_blocking_behavior);
+            frame, request, resource_type, render_blocking_behavior,
+            resource_loader_options);
       });
 }
 
@@ -851,12 +852,15 @@ void inspector_send_request_event::Data(
     LocalFrame* frame,
     const ResourceRequest& request,
     ResourceType resource_type,
-    RenderBlockingBehavior render_blocking_behavior) {
+    RenderBlockingBehavior render_blocking_behavior,
+    const ResourceLoaderOptions& resource_loader_options) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("requestId", IdentifiersFactory::RequestId(loader, identifier));
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("url", request.Url().GetString());
   dict.Add("requestMethod", request.HttpMethod());
+  dict.Add("isLinkPreload",
+           resource_loader_options.initiator_info.is_link_preload);
   String resource_type_string = InspectorPageAgent::ResourceTypeJson(
       InspectorPageAgent::ToResourceType(resource_type));
   dict.Add("resourceType", resource_type_string);

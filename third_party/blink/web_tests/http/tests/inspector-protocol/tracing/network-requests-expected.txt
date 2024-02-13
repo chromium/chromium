@@ -150,6 +150,7 @@ Object: {
 	args: {
 		data: {
 			frame: string
+			isLinkPreload: false
 			priority: string
 			renderBlocking: string
 			requestId: string
@@ -253,6 +254,7 @@ Object: {
 	args: {
 		data: {
 			frame: string
+			isLinkPreload: false
 			priority: string
 			requestId: string
 			requestMethod: string
@@ -372,6 +374,7 @@ Object: {
 	args: {
 		data: {
 			frame: string
+			isLinkPreload: true
 			priority: string
 			renderBlocking: string
 			requestId: string
