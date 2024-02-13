@@ -236,6 +236,11 @@ async function waitForIceGatheringState(pc, wantedStates) {
   }
 }
 
+async function waitForTrackUnmuted(track) {
+  if (track.muted === false) return true;
+  return waitUntilEvent(track, 'unmute');
+}
+
 // Resolves when RTP packets have been received.
 async function listenForSSRCs(t, receiver) {
   while (true) {

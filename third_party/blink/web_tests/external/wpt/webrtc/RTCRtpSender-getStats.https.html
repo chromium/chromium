@@ -22,8 +22,8 @@
     exchangeIceCandidates(caller, callee);
     await exchangeOfferAnswer(caller, callee);
     const [ receiver ] = callee.getReceivers();
-    // Wait for RTP
-    await new Promise(r => receiver.track.onunmute = r);
+    await listenToConnected(callee);
+    await waitForTrackUnmuted(receiver.track);
     const statsReport = await sender.getStats();
     assert_true(!![...statsReport.values()].find(({type}) => type === 'outbound-rtp'));
   }, 'sender.getStats() via addTransceiver should return stats report containing outbound-rtp stats');
@@ -41,8 +41,8 @@
     exchangeIceCandidates(caller, callee);
     await exchangeOfferAnswer(caller, callee);
     const [ receiver ] = callee.getReceivers();
-    // Wait for RTP
-    await new Promise(r => receiver.track.onunmute = r);
+    await listenToConnected(callee);
+    await waitForTrackUnmuted(receiver.track);
     const statsReport = await sender.getStats();
     assert_true(!![...statsReport.values()].find(({type}) => type === 'outbound-rtp'));
   }, 'sender.getStats() via addTrack should return stats report containing outbound-rtp stats');
@@ -60,8 +60,8 @@
     exchangeIceCandidates(caller, callee);
     await exchangeOfferAnswer(caller, callee);
     const [ receiver ] = callee.getReceivers();
-    // Wait for RTP
-    await new Promise(r => receiver.track.onunmute = r);
+    await listenToConnected(callee);
+    await waitForTrackUnmuted(receiver.track);
 
     const [sender] = caller.getSenders();
     const [transceiver] = caller.getTransceivers();
@@ -85,8 +85,8 @@
     exchangeIceCandidates(caller, callee);
     await exchangeOfferAnswer(caller, callee);
     const [ receiver ] = callee.getReceivers();
-    // Wait for RTP
-    await new Promise(r => receiver.track.onunmute = r);
+    await listenToConnected(callee);
+    await waitForTrackUnmuted(receiver.track);
     const [sender] = caller.getSenders();
     const statsReportFirst = await sender.getStats();
     caller.close();
@@ -108,8 +108,8 @@
     exchangeIceCandidates(caller, callee);
     await exchangeOfferAnswer(caller, callee);
     const [ receiver ] = callee.getReceivers();
-    // Wait for RTP
-    await new Promise(r => receiver.track.onunmute = r);
+    await listenToConnected(callee);
+    await waitForTrackUnmuted(receiver.track);
     const statsReport = await sender.getStats();
     assert_true(!![...statsReport.values()].find(({type}) => type === 'candidate-pair'));
     assert_true(!![...statsReport.values()].find(({type}) => type === 'local-candidate'));
