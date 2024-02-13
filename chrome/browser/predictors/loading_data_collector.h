@@ -169,7 +169,7 @@ class LoadingDataCollector {
       const std::string& mime_type);
 
   // Cleanup inflight_navigations_ and call a cleanup for stats_collector_.
-  void CleanupAbandonedNavigations(NavigationId navigation_id);
+  void CleanupAbandonedNavigations();
 
   const raw_ptr<ResourcePrefetchPredictor, DanglingUntriaged> predictor_;
   const raw_ptr<LoadingStatsCollector> stats_collector_;

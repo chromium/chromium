@@ -22,6 +22,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::ElementsAre;
+using testing::Eq;
+using testing::Key;
 using testing::StrictMock;
 
 namespace predictors {
@@ -37,7 +40,9 @@ NavigationId GetNextId() {
 
 class LoadingDataCollectorTest : public testing::Test {
  public:
-  LoadingDataCollectorTest() : profile_(std::make_unique<TestingProfile>()) {
+  LoadingDataCollectorTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        profile_(std::make_unique<TestingProfile>()) {
     LoadingPredictorConfig config;
     PopulateTestConfig(&config);
     mock_predictor_ =
@@ -348,6 +353,11 @@ TEST_F(LoadingDataCollectorTest, RecordFailedNavigation) {
 }
 
 TEST_F(LoadingDataCollectorTest, ManyNavigations) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kLoadingPredictorTableConfig,
+      {{"max_navigation_lifetime_seconds", "60"}});
+
   auto navigation_id1 = GetNextId();
   auto navigation_id2 = GetNextId();
   auto navigation_id3 = GetNextId();
@@ -358,37 +368,30 @@ TEST_F(LoadingDataCollectorTest, ManyNavigations) {
   collector_->RecordStartNavigation(navigation_id1, ukm::SourceId(), url1,
                                     base::TimeTicks::Now());
   EXPECT_EQ(1U, collector_->inflight_navigations_.size());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
   collector_->RecordStartNavigation(navigation_id2, ukm::SourceId(), url2,
                                     base::TimeTicks::Now());
+
   EXPECT_EQ(2U, collector_->inflight_navigations_.size());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
   collector_->RecordStartNavigation(navigation_id3, ukm::SourceId(), url3,
                                     base::TimeTicks::Now());
   EXPECT_EQ(3U, collector_->inflight_navigations_.size());
 
-  // Insert another with same navigation id. It should replace.
-  GURL url4("http://www.nike.com");
-  collector_->RecordStartNavigation(navigation_id1, ukm::SourceId(), url4,
+  task_environment_.FastForwardBy(base::Seconds(51));
+  EXPECT_THAT(collector_->inflight_navigations_,
+              ElementsAre(Key(navigation_id1), Key(navigation_id2),
+                          Key(navigation_id3)));
+
+  GURL url4("http://www.google.com");
+  auto navigation_id4 = GetNextId();
+  // Adding this should cause the first two navigations to be cleared.
+  collector_->RecordStartNavigation(navigation_id4, ukm::SourceId(), url4,
                                     base::TimeTicks::Now());
-  EXPECT_EQ(3U, collector_->inflight_navigations_.size());
-
-  GURL url5("http://www.google.com");
-  // Change this creation time so that it will go away on the next insert.
-  collector_->RecordStartNavigation(navigation_id2, ukm::SourceId(), url5,
-                                    base::TimeTicks::Now() - base::Days(1));
-  EXPECT_EQ(3U, collector_->inflight_navigations_.size());
-
-  auto navigation_id6 = GetNextId();
-  GURL url6("http://www.shoes.com");
-  collector_->RecordStartNavigation(navigation_id6, ukm::SourceId(), url6,
-                                    base::TimeTicks::Now());
-  EXPECT_EQ(3U, collector_->inflight_navigations_.size());
-
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id1) !=
-              collector_->inflight_navigations_.end());
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id3) !=
-              collector_->inflight_navigations_.end());
-  EXPECT_TRUE(collector_->inflight_navigations_.find(navigation_id6) !=
-              collector_->inflight_navigations_.end());
+  EXPECT_THAT(collector_->inflight_navigations_,
+              ElementsAre(Key(navigation_id3), Key(navigation_id4)));
 }
 
 TEST_F(LoadingDataCollectorTest, RecordResourceLoadComplete) {

@@ -171,7 +171,7 @@ void LoadingDataCollector::RecordStartNavigation(
     ukm::SourceId ukm_source_id,
     const GURL& main_frame_url,
     base::TimeTicks creation_time) {
-  CleanupAbandonedNavigations(navigation_id);
+  CleanupAbandonedNavigations();
 
   // New empty navigation entry.
   inflight_navigations_.emplace(
@@ -313,8 +313,7 @@ bool LoadingDataCollector::IsHandledResourceType(
          actual_destination == network::mojom::RequestDestination::kFont;
 }
 
-void LoadingDataCollector::CleanupAbandonedNavigations(
-    NavigationId navigation_id) {
+void LoadingDataCollector::CleanupAbandonedNavigations() {
   if (stats_collector_)
     stats_collector_->CleanupAbandonedStats();
 
@@ -324,9 +323,8 @@ void LoadingDataCollector::CleanupAbandonedNavigations(
   base::TimeTicks time_now = base::TimeTicks::Now();
   for (auto it = inflight_navigations_.begin();
        it != inflight_navigations_.end();) {
-    if ((it->first == navigation_id) ||
-        (time_now - it->second->navigation_started > max_navigation_age)) {
-      inflight_navigations_.erase(it++);
+    if (time_now - it->second->navigation_started > max_navigation_age) {
+      it = inflight_navigations_.erase(it);
     } else {
       ++it;
     }
