@@ -31,7 +31,6 @@ js_files = [
   "file_manager/restore_prefs.js",
   "file_manager/search.js",
   "file_manager/tab_index.js",
-  "file_manager/tasks.js",
   "file_manager/test_data.js",
   "file_manager/transfer.js",
 
@@ -126,7 +125,7 @@ ts_files = [
 
   # "file_manager/tab_index.ts",
 
-  # "file_manager/tasks.ts",
+  "file_manager/tasks.ts",
 
   # "file_manager/test_data.ts",
 
