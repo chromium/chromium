@@ -1595,6 +1595,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"disable-lens-camera", flag_descriptions::kDisableLensCameraName,
      flag_descriptions::kDisableLensCameraDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDisableLensCamera)},
+    {"minor-mode-restrictions-for-history-sync-opt-in",
+     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInName,
+     flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
