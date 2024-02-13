@@ -72,6 +72,7 @@ source_set("promos_manager") {
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/default_promo",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]
   deps = [

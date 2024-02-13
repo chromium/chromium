@@ -44,9 +44,9 @@
 
 #pragma mark - Private
 
-// Registers the post restore default browser promo if the user is eligible. To
-// be eligible, they must be in the first session after an iOS restore and have
-// previously set Chrome as their default browser.
+// Registers the post restore default browser promo if the user is eligible.
+// Otherwise, deregisters. To be eligible, they must be in the first session
+// after an iOS restore and have previously set Chrome as their default browser.
 - (void)updatePostRestorePromoRegistration {
   if (!_postRestorePromoSeenInCurrentSession &&
       IsPostRestoreDefaultBrowserEligibleUser()) {
@@ -70,6 +70,40 @@
   } else {
     self.promosManager->DeregisterPromo(
         promos_manager::Promo::PostDefaultAbandonment);
+  }
+}
+
+// Register All Tabs Default Browser promo if eligible and otherwise,
+// deregister.
+- (void)updateAllTabsPromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser() && self.isSignedIn) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::AllTabsDefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::AllTabsDefaultBrowser);
+  }
+}
+
+// Register Made for iOS Default Browser promo and otherwise, deregister.
+- (void)updateMadeForIOSPromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::MadeForIOSDefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::MadeForIOSDefaultBrowser);
+  }
+}
+
+// Register Stay Safe Default Browser promo and otherwise, deregister.
+- (void)updateStaySafePromoRegistration {
+  if (!IsChromeLikelyDefaultBrowser()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::StaySafeDefaultBrowser);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::StaySafeDefaultBrowser);
   }
 }
 
@@ -124,6 +158,9 @@
 
   [self updatePostRestorePromoRegistration];
   [self updatePostDefaultAbandonmentPromoRegistration];
+  [self updateAllTabsPromoRegistration];
+  [self updateMadeForIOSPromoRegistration];
+  [self updateStaySafePromoRegistration];
 
   if (ShouldRegisterPromoWithPromoManager(self.signedIn,
                                           /*is_omnibox_copy_paste=*/false)) {

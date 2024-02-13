@@ -39,12 +39,15 @@
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
+#import "ios/chrome/browser/ui/default_promo/all_tabs_default_browser_promo_view_provider.h"
+#import "ios/chrome/browser/ui/default_promo/made_for_ios_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/ui/default_promo/post_default_abandonment/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_default_abandonment/post_default_abandonment_promo_provider.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 #import "ios/chrome/browser/ui/default_promo/post_restore/post_restore_default_browser_promo_provider.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_display_handler.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_remind_me_later_promo_display_handler.h"
+#import "ios/chrome/browser/ui/default_promo/stay_safe_default_browser_promo_view_provider.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/promo/omnibox_position_choice_display_handler.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
@@ -505,12 +508,12 @@
   if ([self.provider
           respondsToSelector:@selector(standardPromoDismissAction)]) {
     [self.provider standardPromoDismissAction];
-    [self dismissViewControllers];
   } else if ([self.banneredProvider
                  respondsToSelector:@selector(standardPromoDismissAction)]) {
     [self.banneredProvider standardPromoDismissAction];
-    [self dismissViewControllers];
   }
+
+  [self dismissViewControllers];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -591,7 +594,12 @@
 }
 
 - (void)registerStandardPromoViewProviderPromos {
-  // TODO(crbug.com/1360880): Create first StandardPromoViewProvider promo.
+  _viewProviderPromos[promos_manager::Promo::AllTabsDefaultBrowser] =
+      [[AllTabsDefaultBrowserPromoViewProvider alloc] init];
+  _viewProviderPromos[promos_manager::Promo::MadeForIOSDefaultBrowser] =
+      [[MadeForIOSDefaultBrowserPromoViewProvider alloc] init];
+  _viewProviderPromos[promos_manager::Promo::StaySafeDefaultBrowser] =
+      [[StaySafeDefaultBrowserPromoViewProvider alloc] init];
 }
 
 - (void)registerBanneredPromoViewProviderPromos {
