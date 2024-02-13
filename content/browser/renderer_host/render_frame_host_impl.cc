@@ -187,6 +187,7 @@
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/secure_payment_confirmation_utils.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/sms_fetcher.h"
@@ -11732,10 +11733,10 @@ void RenderFrameHostImpl::CreatePaymentManager(
 
 void RenderFrameHostImpl::CreatePaymentCredential(
     mojo::PendingReceiver<payments::mojom::PaymentCredential> receiver) {
-  // TODO(crbug.com/1512605): Move the 'is SPC allowed' check from
-  // payments::CreatePaymentCredential to here.
-  GetContentClient()->browser()->CreatePaymentCredential(this,
-                                                         std::move(receiver));
+  if (IsFrameAllowedToUseSecurePaymentConfirmation(this)) {
+    GetContentClient()->browser()->CreatePaymentCredential(this,
+                                                           std::move(receiver));
+  }
 }
 
 void RenderFrameHostImpl::CreateWebUsbService(
