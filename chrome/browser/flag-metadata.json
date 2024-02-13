@@ -4691,14 +4691,6 @@
     "expiry_milestone": 119
   },
   {
-    "name": "heuristic-memory-saver-mode",
-    "owners": [
-      "anthonyvd@chromium.org",
-      "agale@chromium.org"
-    ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "hide-incognito-media-metadata",
     "owners": [
       "fsenra@google.com",
