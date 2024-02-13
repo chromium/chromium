@@ -3549,6 +3549,21 @@
           'gtest_tests': 'linux_lacros_gtests',
         },
       },
+      'linux-lacros-rel-dangling-ptr-fyi': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-jammy',
+          'x86-64',
+        ],
+        'additional_compile_targets': [
+          'chrome',
+          'chrome_sandbox',
+          'symupload'
+        ],
+        'test_suites': {
+          'gtest_tests': 'linux_lacros_gtests',
+        },
+      },
       'linux-lacros-tester-fyi-rel': {
         'additional_compile_targets': [
           'chrome',

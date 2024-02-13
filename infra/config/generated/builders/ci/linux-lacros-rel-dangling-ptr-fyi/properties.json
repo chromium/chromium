@@ -1,0 +1,69 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/ci/linux-lacros-rel-dangling-ptr-fyi/gn-args.json"
+      ],
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "linux-lacros-rel-dangling-ptr-fyi",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.fyi",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_arch": "intel",
+                "target_bits": 64,
+                "target_platform": "chromeos"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "chromeos"
+                ],
+                "config": "chromium_no_telemetry_dependencies"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "linux-lacros-rel-dangling-ptr-fyi",
+          "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "linux-lacros-rel-dangling-ptr-fyi",
+          "group": "tryserver.chromium.chromiumos"
+        }
+      ]
+    }
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "jobs": 500,
+    "metrics_project": "chromium-reclient-metrics",
+    "scandeps_server": true
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.fyi",
+  "recipe": "chromium"
+}

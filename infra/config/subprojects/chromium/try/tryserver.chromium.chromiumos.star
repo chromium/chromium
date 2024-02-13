@@ -664,3 +664,17 @@ try_.builder(
         ],
     ),
 )
+
+try_.builder(
+    name = "linux-lacros-rel-dangling-ptr-fyi",
+    description_html = "Dangling ptr check for lacros.",
+    mirrors = [
+        "ci/linux-lacros-rel-dangling-ptr-fyi",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/linux-lacros-rel-dangling-ptr-fyi",
+        ],
+    ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
+)
