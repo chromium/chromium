@@ -144,7 +144,8 @@ public final class AuthenticatorImpl implements Authenticator {
 
         mMakeCredentialCallback = callback;
         mIsOperationPending = true;
-        if (!GmsCoreUtils.isWebauthnSupported()) {
+        if (!GmsCoreUtils.isWebauthnSupported()
+                || (!isChrome() && !GmsCoreUtils.isResultReceiverSupported())) {
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -184,7 +185,8 @@ public final class AuthenticatorImpl implements Authenticator {
         mGetAssertionCallback = callback;
         mIsOperationPending = true;
 
-        if (!GmsCoreUtils.isWebauthnSupported()) {
+        if (!GmsCoreUtils.isWebauthnSupported()
+                || (!isChrome() && !GmsCoreUtils.isResultReceiverSupported())) {
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -259,8 +261,7 @@ public final class AuthenticatorImpl implements Authenticator {
             final IsConditionalMediationAvailable_Response callback) {
         if (!GmsCoreUtils.isWebauthnSupported()
                 || Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-                || WebauthnModeProvider.getInstance().getWebauthnMode()
-                        != WebauthnModeProvider.WebauthnMode.CHROME) {
+                || !isChrome()) {
             callback.call(false);
             return;
         }
@@ -350,6 +351,11 @@ public final class AuthenticatorImpl implements Authenticator {
     @Override
     public void onConnectionError(MojoException e) {
         close();
+    }
+
+    static boolean isChrome() {
+        return WebauthnModeProvider.getInstance().getWebauthnMode()
+                == WebauthnModeProvider.WebauthnMode.CHROME;
     }
 
     /** Implements {@link IntentSender} using a {@link WindowAndroid}. */

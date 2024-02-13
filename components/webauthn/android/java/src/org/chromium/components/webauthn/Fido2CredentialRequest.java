@@ -4,13 +4,19 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.components.webauthn.AuthenticatorImpl.isChrome;
+
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcel;
+import android.os.ResultReceiver;
 import android.util.Pair;
 
 import androidx.annotation.Nullable;
@@ -269,6 +275,7 @@ public class Fido2CredentialRequest
                             options,
                             Uri.parse(convertOriginToString(origin)),
                             maybeClientDataHash,
+                            getMaybeResultReceiver(),
                             this::onGotPendingIntent,
                             this::onBinderCallException);
         } catch (NoSuchAlgorithmException e) {
@@ -891,6 +898,7 @@ public class Fido2CredentialRequest
                         options,
                         Uri.parse(callerOriginString),
                         clientDataHash,
+                        getMaybeResultReceiver(),
                         this::onGotPendingIntent,
                         this::onBinderCallException);
     }
@@ -915,7 +923,12 @@ public class Fido2CredentialRequest
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
         Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                options, Uri.parse(callerOriginString), clientDataHash, /* tunnelId= */ null, args);
+                options,
+                Uri.parse(callerOriginString),
+                clientDataHash,
+                /* tunnelId= */ null,
+                /* resultReceiver= */ null,
+                args);
         Task<PendingIntent> task =
                 call.run(
                         Fido2ApiCall.METHOD_BROWSER_HYBRID_SIGN,
@@ -939,6 +952,43 @@ public class Fido2CredentialRequest
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
         }
+    }
+
+    @Nullable
+    private ResultReceiver getMaybeResultReceiver() {
+        // The FIDO API traditionally returned a PendingIntent, which the calling app was expected
+        // to invoke and then receive the result from the Activity it launched.
+        //
+        // However in a WebView context this is problematic because the WebView does not control the
+        // app's activity to get the result. Thus support for using a ResultReceiver was added to
+        // the API. Since we don't want to immediately increase the minimum GMS Core version needed
+        // to run Chromium on Android, this code supports both methods.
+        //
+        // In time, once the GMS Core update has propagated sufficiently, we could consider removing
+        // support for anything except the ResultReceiver.
+        if (isChrome()) return null;
+        return new ResultReceiver(new Handler(Looper.getMainLooper())) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                onResultReceiverResult(resultData);
+            }
+        };
+    }
+
+    private void onResultReceiverResult(Bundle resultData) {
+        int errorCode = AuthenticatorStatus.UNKNOWN_ERROR;
+        Object response = null;
+        byte[] responseBytes = resultData.getByteArray(Fido2Api.CREDENTIAL_EXTRA);
+        if (responseBytes != null) {
+            try {
+                response = Fido2Api.parseResponse(responseBytes, mAttestationAcceptable);
+            } catch (IllegalArgumentException e) {
+                Log.e(TAG, "Failed to parse FIDO2 API response from ResultReceiver", e);
+                response = null;
+            }
+        }
+
+        handleFido2Response(errorCode, response);
     }
 
     // Handles the result.
@@ -975,6 +1025,10 @@ public class Fido2CredentialRequest
                 break;
         }
 
+        handleFido2Response(errorCode, response);
+    }
+
+    private void handleFido2Response(int errorCode, Object response) {
         if (mConditionalUiState != ConditionalUiState.NONE) {
             if (response == null || response instanceof Pair) {
                 if (response != null) {
@@ -1138,11 +1192,6 @@ public class Fido2CredentialRequest
         }
         messageDigest.update(mClientDataJson);
         return messageDigest.digest();
-    }
-
-    private boolean isChrome() {
-        return WebauthnModeProvider.getInstance().getWebauthnMode()
-                == WebauthnModeProvider.WebauthnMode.CHROME;
     }
 
     @Override
