@@ -48,13 +48,13 @@ void ContentAutofillSharedStorageHandler::OnServerCardDataRefreshed(
     const std::vector<std::unique_ptr<CreditCard>>& server_card_data) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillSharedStorageServerCardData)) {
+    // Ensure the data is cleared, in case the feature was previously enabled.
+    ClearAutofillSharedStorageData();
     return;
   }
 
   if (server_card_data.empty()) {
-    shared_storage_manager_->Delete(
-        url::Origin::Create(payments::GetBaseSecureUrl()),
-        kAutofillServerCardDataSharedStorageKey, base::DoNothing());
+    ClearAutofillSharedStorageData();
   } else {
     shared_storage_manager_->Set(
         url::Origin::Create(payments::GetBaseSecureUrl()),
@@ -65,6 +65,12 @@ void ContentAutofillSharedStorageHandler::OnServerCardDataRefreshed(
                        weak_factory_.GetWeakPtr()),
         storage::SharedStorageDatabase::SetBehavior::kDefault);
   }
+}
+
+void ContentAutofillSharedStorageHandler::ClearAutofillSharedStorageData() {
+  shared_storage_manager_->Delete(
+      url::Origin::Create(payments::GetBaseSecureUrl()),
+      kAutofillServerCardDataSharedStorageKey, base::DoNothing());
 }
 
 void ContentAutofillSharedStorageHandler::

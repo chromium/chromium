@@ -31,6 +31,8 @@ class ContentAutofillSharedStorageHandler
                                      server_card_data) override;
 
  private:
+  void ClearAutofillSharedStorageData();
+
   // Callback for shared storage results.
   void OnSharedStorageSetAutofillDataComplete(
       storage::SharedStorageManager::OperationResult result);
