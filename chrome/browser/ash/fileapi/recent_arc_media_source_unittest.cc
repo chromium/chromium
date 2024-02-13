@@ -50,15 +50,15 @@ base::FilePath GetPathForRoot(const std::string& root,
 }
 
 base::FilePath GetDocumentPath(const std::string& name) {
-  return GetPathForRoot(arc::kDocumentsRootDocumentId, name);
+  return GetPathForRoot(arc::kDocumentsRootId, name);
 }
 
 base::FilePath GetImagePath(const std::string& name) {
-  return GetPathForRoot(arc::kImagesRootDocumentId, name);
+  return GetPathForRoot(arc::kImagesRootId, name);
 }
 
 base::FilePath GetVideoPath(const std::string& name) {
-  return GetPathForRoot(arc::kVideosRootDocumentId, name);
+  return GetPathForRoot(arc::kVideosRootId, name);
 }
 
 base::Time ModifiedTime(int64_t millis) {
@@ -116,37 +116,36 @@ class RecentArcMediaSourceTest : public testing::Test {
 
  protected:
   void AddDocumentsToFakeFileSystemInstance() {
-    auto images_root_doc = MakeDocument(
-        arc::kImagesRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
-        base::Time::FromMillisecondsSinceUnixEpoch(1));
-    auto cat_doc = MakeDocument("cat", arc::kImagesRootDocumentId, "cat.png",
+    auto images_root_doc =
+        MakeDocument(arc::kImagesRootId, "", "", arc::kAndroidDirectoryMimeType,
+                     base::Time::FromMillisecondsSinceUnixEpoch(1));
+    auto cat_doc = MakeDocument("cat", arc::kImagesRootId, "cat.png",
                                 "image/png", ModifiedTime(2));
-    auto dog_doc = MakeDocument("dog", arc::kImagesRootDocumentId, "dog.jpg",
+    auto dog_doc = MakeDocument("dog", arc::kImagesRootId, "dog.jpg",
                                 "image/jpeg", ModifiedTime(3));
-    auto fox_doc = MakeDocument("fox", arc::kImagesRootDocumentId, "fox.gif",
+    auto fox_doc = MakeDocument("fox", arc::kImagesRootId, "fox.gif",
                                 "image/gif", ModifiedTime(4));
-    auto elk_doc = MakeDocument("elk", arc::kImagesRootDocumentId, "elk.tiff",
+    auto elk_doc = MakeDocument("elk", arc::kImagesRootId, "elk.tiff",
                                 "image/tiff", ModifiedTime(5));
     auto audio_root_doc =
-        MakeDocument(arc::kAudioRootDocumentId, "", "",
-                     arc::kAndroidDirectoryMimeType, ModifiedTime(1));
-    auto god_doc = MakeDocument("god", arc::kAudioRootDocumentId, "god.mp3",
+        MakeDocument(arc::kAudioRootId, "", "", arc::kAndroidDirectoryMimeType,
+                     ModifiedTime(1));
+    auto god_doc = MakeDocument("god", arc::kAudioRootId, "god.mp3",
                                 "audio/mp3", ModifiedTime(6));
     auto videos_root_doc =
-        MakeDocument(arc::kVideosRootDocumentId, "", "",
-                     arc::kAndroidDirectoryMimeType, ModifiedTime(1));
-    auto hot_doc = MakeDocument("hot", arc::kVideosRootDocumentId, "hot.mp4",
+        MakeDocument(arc::kVideosRootId, "", "", arc::kAndroidDirectoryMimeType,
+                     ModifiedTime(1));
+    auto hot_doc = MakeDocument("hot", arc::kVideosRootId, "hot.mp4",
                                 "video/mp4", ModifiedTime(7));
-    auto ink_doc = MakeDocument("ink", arc::kVideosRootDocumentId, "ink.webm",
+    auto ink_doc = MakeDocument("ink", arc::kVideosRootId, "ink.webm",
                                 "video/webm", ModifiedTime(8));
     auto documents_root_doc =
-        MakeDocument(arc::kDocumentsRootDocumentId, "", "",
+        MakeDocument(arc::kDocumentsRootId, "", "",
                      arc::kAndroidDirectoryMimeType, ModifiedTime(1));
-    auto word_doc =
-        MakeDocument("word", arc::kDocumentsRootDocumentId, "word.doc",
-                     "application/msword", ModifiedTime(9));
-    auto text_doc = MakeDocument("text", arc::kDocumentsRootDocumentId,
-                                 "text.txt", "text/plain", ModifiedTime(10));
+    auto word_doc = MakeDocument("word", arc::kDocumentsRootId, "word.doc",
+                                 "application/msword", ModifiedTime(9));
+    auto text_doc = MakeDocument("text", arc::kDocumentsRootId, "text.txt",
+                                 "text/plain", ModifiedTime(10));
 
     fake_file_system_.AddDocument(images_root_doc);
     fake_file_system_.AddDocument(cat_doc);
@@ -161,24 +160,19 @@ class RecentArcMediaSourceTest : public testing::Test {
     fake_file_system_.AddDocument(word_doc);
     fake_file_system_.AddDocument(text_doc);
 
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId,
-                                        images_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId, cat_doc);
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId, dog_doc);
-    fake_file_system_.AddRecentDocument(arc::kImagesRootDocumentId, elk_doc);
-    fake_file_system_.AddRecentDocument(arc::kAudioRootDocumentId,
-                                        audio_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kAudioRootDocumentId, god_doc);
-    fake_file_system_.AddRecentDocument(arc::kVideosRootDocumentId,
-                                        videos_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kVideosRootDocumentId, hot_doc);
-    fake_file_system_.AddRecentDocument(arc::kVideosRootDocumentId, ink_doc);
-    fake_file_system_.AddRecentDocument(arc::kDocumentsRootDocumentId,
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, images_root_doc);
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, cat_doc);
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, dog_doc);
+    fake_file_system_.AddRecentDocument(arc::kImagesRootId, elk_doc);
+    fake_file_system_.AddRecentDocument(arc::kAudioRootId, audio_root_doc);
+    fake_file_system_.AddRecentDocument(arc::kAudioRootId, god_doc);
+    fake_file_system_.AddRecentDocument(arc::kVideosRootId, videos_root_doc);
+    fake_file_system_.AddRecentDocument(arc::kVideosRootId, hot_doc);
+    fake_file_system_.AddRecentDocument(arc::kVideosRootId, ink_doc);
+    fake_file_system_.AddRecentDocument(arc::kDocumentsRootId,
                                         documents_root_doc);
-    fake_file_system_.AddRecentDocument(arc::kDocumentsRootDocumentId,
-                                        word_doc);
-    fake_file_system_.AddRecentDocument(arc::kDocumentsRootDocumentId,
-                                        text_doc);
+    fake_file_system_.AddRecentDocument(arc::kDocumentsRootId, word_doc);
+    fake_file_system_.AddRecentDocument(arc::kDocumentsRootId, text_doc);
   }
 
   void EnableFakeFileSystemInstance() {
@@ -361,7 +355,7 @@ TEST_F(RecentArcMediaSourceTest, LaggyDocuments) {
   // word.doc is no longer found.
   std::vector<RecentFile> files = GetRecentFiles(
       "d", RecentSource::FileType::kAll,
-      std::make_pair(arc::kDocumentsRootDocumentId, base::Milliseconds(500)));
+      std::make_pair(arc::kDocumentsRootId, base::Milliseconds(500)));
 
   ASSERT_EQ(1u, files.size());
   EXPECT_THAT(files[0], IsRecentFile(GetImagePath("dog.jpg"), ModifiedTime(3)));
@@ -381,8 +375,7 @@ TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
   for (int32_t call_id = 0; call_id < reps; ++call_id) {
     base::TimeDelta stop_delta = base::Milliseconds(250 + 100 * call_id);
     base::TimeDelta lag_delta = base::Milliseconds(500 + 100 * call_id);
-    EXPECT_TRUE(
-        source_->SetLagForTesting(arc::kDocumentsRootDocumentId, lag_delta));
+    EXPECT_TRUE(source_->SetLagForTesting(arc::kDocumentsRootId, lag_delta));
     timers[call_id].Start(
         FROM_HERE, stop_delta,
         base::BindOnce(
@@ -409,7 +402,7 @@ TEST_F(RecentArcMediaSourceTest, OverlappingLaggySearches) {
 
   // Last call; wait for the results; these results are not interrupted and take
   // longer than any of the request requested above.
-  EXPECT_TRUE(source_->SetLagForTesting(arc::kDocumentsRootDocumentId,
+  EXPECT_TRUE(source_->SetLagForTesting(arc::kDocumentsRootId,
                                         base::Milliseconds(500 + 100 * reps)));
   base::RunLoop run_loop;
   std::vector<RecentFile> final_result;

@@ -632,9 +632,9 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
             this));
   } else if (volume->type() == file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER) {
     std::string authority;
-    std::string root_document_id;
+    std::string root_id;
     if (!arc::ParseDocumentsProviderPath(volume->mount_path(), &authority,
-                                         &root_document_id)) {
+                                         &root_id)) {
       return RespondNow(Error("File path was invalid"));
     }
 
@@ -644,7 +644,7 @@ FileManagerPrivateGetSizeStatsFunction::Run() {
     if (!root_map) {
       return RespondNow(Error("File not found"));
     }
-    auto* root = root_map->Lookup(authority, root_document_id);
+    auto* root = root_map->Lookup(authority, root_id);
     if (!root) {
       return RespondNow(Error("File not found"));
     }

@@ -51,16 +51,14 @@ const char kAndroidMyFilesDirPrefix[] =
 // Android's MediaDocumentsProvider.queryRecentDocuments() doesn't support
 // audio files, http://b/175155820
 const char* kMediaDocumentsProviderRootIds[] = {
-    arc::kImagesRootDocumentId,
-    arc::kVideosRootDocumentId,
-    arc::kDocumentsRootDocumentId,
+    arc::kImagesRootId,
+    arc::kVideosRootId,
+    arc::kDocumentsRootId,
 };
 
 base::FilePath GetRelativeMountPath(const std::string& root_id) {
   base::FilePath mount_path =
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
-                                         // In MediaDocumentsProvider, |root_id|
-                                         // and |root_document_id| are the same.
                                          root_id);
   base::FilePath relative_mount_path;
   base::FilePath(arc::kDocumentsProviderMountPointPath)
@@ -340,7 +338,6 @@ void RecentArcMediaSource::MediaRoot::ScanDirectory(
     return;
   }
 
-  // In MediaDocumentsProvider, |root_id| and |root_document_id| are the same.
   auto* root =
       root_map->Lookup(arc::kMediaDocumentsProviderAuthority, root_id_);
   if (!root) {
@@ -442,11 +439,11 @@ bool RecentArcMediaSource::MediaRoot::MatchesFileType(
     case FileType::kAll:
       return true;
     case FileType::kImage:
-      return root_id_ == arc::kImagesRootDocumentId;
+      return root_id_ == arc::kImagesRootId;
     case FileType::kVideo:
-      return root_id_ == arc::kVideosRootDocumentId;
+      return root_id_ == arc::kVideosRootId;
     case FileType::kDocument:
-      return root_id_ == arc::kDocumentsRootDocumentId;
+      return root_id_ == arc::kDocumentsRootId;
     default:
       return false;
   }

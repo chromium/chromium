@@ -114,12 +114,12 @@ bool FindExternalMountPoint(const std::string& mount_point_name) {
 }
 
 std::string FuseBoxSubdirADP(const std::string& authority,
-                             const std::string& document_id) {
+                             const std::string& root_id) {
   // Hash the authority and document ID
   // - because the ID can be quite long (400+ bytes) and
   // - to avoid sharing the ID in the file system.
   std::string hash = crypto::SHA256HashString(
-      arc::GetDocumentsProviderMountPathSuffix(authority, document_id)
+      arc::GetDocumentsProviderMountPathSuffix(authority, root_id)
           .AsUTF8Unsafe());
   std::string b64;
   base::Base64UrlEncode(hash, base::Base64UrlEncodePolicy::OMIT_PADDING, &b64);
@@ -1025,19 +1025,19 @@ void VolumeManager::OnArcPlayStoreEnabledChanged(bool enabled) {
 
   // Need to mount all roots declared in in arc_media_view_util.cc.
   if (enabled) {
-    DoMountEvent(Volume::CreateForMediaView(arc::kImagesRootDocumentId));
-    DoMountEvent(Volume::CreateForMediaView(arc::kVideosRootDocumentId));
-    DoMountEvent(Volume::CreateForMediaView(arc::kAudioRootDocumentId));
-    DoMountEvent(Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
+    DoMountEvent(Volume::CreateForMediaView(arc::kImagesRootId));
+    DoMountEvent(Volume::CreateForMediaView(arc::kVideosRootId));
+    DoMountEvent(Volume::CreateForMediaView(arc::kAudioRootId));
+    DoMountEvent(Volume::CreateForMediaView(arc::kDocumentsRootId));
     if (!arc::IsArcVmEnabled()) {
       DoMountEvent(Volume::CreateForAndroidFiles(
           base::FilePath(util::kAndroidFilesPath)));
     }
   } else {
-    DoUnmountEvent(*Volume::CreateForMediaView(arc::kImagesRootDocumentId));
-    DoUnmountEvent(*Volume::CreateForMediaView(arc::kVideosRootDocumentId));
-    DoUnmountEvent(*Volume::CreateForMediaView(arc::kAudioRootDocumentId));
-    DoUnmountEvent(*Volume::CreateForMediaView(arc::kDocumentsRootDocumentId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kImagesRootId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kVideosRootId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kAudioRootId));
+    DoUnmountEvent(*Volume::CreateForMediaView(arc::kDocumentsRootId));
     if (!arc::IsArcVmEnabled()) {
       DoUnmountEvent(*Volume::CreateForAndroidFiles(
           base::FilePath(util::kAndroidFilesPath)));
@@ -1261,7 +1261,7 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   arc::ArcDocumentsProviderRootMap::GetForArcBrowserContext()->RegisterRoot(
       authority, document_id, root_id, read_only, mime_types);
   DoMountEvent(Volume::CreateForDocumentsProvider(
-      authority, root_id, document_id, title, summary, icon_url, read_only,
+      authority, root_id, title, summary, icon_url, read_only,
       /*optional_fusebox_subdir=*/std::string()));
 
   // Get the FuseBoxDaemon instance.
@@ -1274,18 +1274,17 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   auto adp_file_system_url = mount_points->CreateExternalFileSystemURL(
       blink::StorageKey::CreateFirstParty(util::GetFilesAppOrigin()),
       arc::kDocumentsProviderMountPointName,
-      arc::GetDocumentsProviderMountPathSuffix(authority, document_id));
+      arc::GetDocumentsProviderMountPathSuffix(authority, root_id));
   const std::string url = adp_file_system_url.ToGURL().spec();
   DCHECK(adp_file_system_url.is_valid());
 
   // Attach the ADP storage device to the fusebox daemon.
-  std::string subdir = FuseBoxSubdirADP(authority, document_id);
+  std::string subdir = FuseBoxSubdirADP(authority, root_id);
   fusebox_daemon_->AttachStorage(subdir, url, read_only);
 
   // Create a Volume for the fusebox ADP storage device.
-  std::unique_ptr<Volume> fusebox_volume =
-      Volume::CreateForDocumentsProvider(authority, root_id, document_id, title,
-                                         summary, icon_url, read_only, subdir);
+  std::unique_ptr<Volume> fusebox_volume = Volume::CreateForDocumentsProvider(
+      authority, root_id, title, summary, icon_url, read_only, subdir);
 
   // Register the fusebox ADP storage device with chrome::storage.
   const std::string fusebox_fsid =
@@ -1302,15 +1301,13 @@ void VolumeManager::OnDocumentsProviderRootAdded(
   DoMountEvent(std::move(fusebox_volume));
 }
 
-void VolumeManager::OnDocumentsProviderRootRemoved(
-    const std::string& authority,
-    const std::string& root_id,
-    const std::string& document_id) {
+void VolumeManager::OnDocumentsProviderRootRemoved(const std::string& authority,
+                                                   const std::string& root_id) {
   DoUnmountEvent(*Volume::CreateForDocumentsProvider(
-      authority, root_id, std::string(), std::string(), std::string(), GURL(),
-      false, /*optional_fusebox_subdir=*/std::string()));
+      authority, root_id, std::string(), std::string(), GURL(), false,
+      /*optional_fusebox_subdir=*/std::string()));
   arc::ArcDocumentsProviderRootMap::GetForArcBrowserContext()->UnregisterRoot(
-      authority, document_id);
+      authority, root_id);
 
   // Unmount the fusebox ADP storage device in files app.
   std::string volume_id = arc::GetDocumentsProviderVolumeId(authority, root_id);
@@ -1321,7 +1318,7 @@ void VolumeManager::OnDocumentsProviderRootRemoved(
   }
 
   // Remove the fusebox ADP storage device from chrome::storage.
-  std::string subdir = FuseBoxSubdirADP(authority, document_id);
+  std::string subdir = FuseBoxSubdirADP(authority, root_id);
   auto* mount_points = storage::ExternalMountPoints::GetSystemInstance();
   const std::string fusebox_fsid =
       base::StrCat({util::kFuseBoxMountNamePrefix, subdir});

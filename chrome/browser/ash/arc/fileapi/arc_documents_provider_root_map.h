@@ -64,7 +64,7 @@ class ArcDocumentsProviderRootMap : public KeyedService {
 
   // Looks up a root by an authority and a root document ID.
   ArcDocumentsProviderRoot* Lookup(const std::string& authority,
-                                   const std::string& root_document_id) const;
+                                   const std::string& root_id) const;
 
   // Register a DocumentsProvider's Root to make the corresponding
   // ArcDocumentsProviderRoot instance available.
@@ -75,8 +75,7 @@ class ArcDocumentsProviderRootMap : public KeyedService {
                     const std::vector<std::string>& mime_types);
 
   // Unregister a DocumentsProvider's Root.
-  void UnregisterRoot(const std::string& authority,
-                      const std::string& root_document_id);
+  void UnregisterRoot(const std::string& authority, const std::string& root_id);
 
   // KeyedService overrides:
   void Shutdown() override;
@@ -89,7 +88,7 @@ class ArcDocumentsProviderRootMap : public KeyedService {
   // the BrowserContextKeyedServiceFactory dependency graph.
   const raw_ptr<ArcFileSystemOperationRunner> runner_;
 
-  // Key is (authority, root_document_id).
+  // Key is (authority, root_id).
   using Key = std::pair<std::string, std::string>;
   std::map<Key, std::unique_ptr<ArcDocumentsProviderRoot>> map_;
 };

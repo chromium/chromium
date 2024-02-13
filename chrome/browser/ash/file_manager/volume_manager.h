@@ -250,8 +250,7 @@ class VolumeManager : public KeyedService,
       bool read_only,
       const std::vector<std::string>& mime_types) override;
   void OnDocumentsProviderRootRemoved(const std::string& authority,
-                                      const std::string& root_id,
-                                      const std::string& document_id) override;
+                                      const std::string& root_id) override;
 
   // ui::ClipboardObserver:
   void OnClipboardDataChanged() override;

@@ -63,10 +63,8 @@ class DocumentsProviderRootManager : public arc::ArcFileSystemBridge::Observer {
     // Called when an existing root is not available anymore. When an existing
     // root is modified, both RootRemoved() and RootAdded() will be called in
     // this order.
-    virtual void OnDocumentsProviderRootRemoved(
-        const std::string& authority,
-        const std::string& root_id,
-        const std::string& document_id) = 0;
+    virtual void OnDocumentsProviderRootRemoved(const std::string& authority,
+                                                const std::string& root_id) = 0;
   };
   DocumentsProviderRootManager(Profile* profile,
                                arc::ArcFileSystemOperationRunner* runner);

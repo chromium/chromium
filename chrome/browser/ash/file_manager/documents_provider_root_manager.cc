@@ -263,8 +263,7 @@ void DocumentsProviderRootManager::NotifyRootAdded(const RootInfo& info) {
 
 void DocumentsProviderRootManager::NotifyRootRemoved(const RootInfo& info) {
   for (auto& observer : observer_list_) {
-    observer.OnDocumentsProviderRootRemoved(info.authority, info.root_id,
-                                            info.document_id);
+    observer.OnDocumentsProviderRootRemoved(info.authority, info.root_id);
   }
 }
 

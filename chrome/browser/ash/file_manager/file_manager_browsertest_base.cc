@@ -3333,16 +3333,16 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
     media_view_images_ = std::make_unique<MediaViewTestVolume>(
         arc_file_system_instance_.get(),
-        "com.android.providers.media.documents", arc::kImagesRootDocumentId);
+        "com.android.providers.media.documents", arc::kImagesRootId);
     media_view_videos_ = std::make_unique<MediaViewTestVolume>(
         arc_file_system_instance_.get(),
-        "com.android.providers.media.documents", arc::kVideosRootDocumentId);
+        "com.android.providers.media.documents", arc::kVideosRootId);
     media_view_audio_ = std::make_unique<MediaViewTestVolume>(
         arc_file_system_instance_.get(),
-        "com.android.providers.media.documents", arc::kAudioRootDocumentId);
+        "com.android.providers.media.documents", arc::kAudioRootId);
     media_view_documents_ = std::make_unique<MediaViewTestVolume>(
         arc_file_system_instance_.get(),
-        "com.android.providers.media.documents", arc::kDocumentsRootDocumentId);
+        "com.android.providers.media.documents", arc::kDocumentsRootId);
 
     ASSERT_TRUE(media_view_images_->Mount(profile()));
     ASSERT_TRUE(media_view_videos_->Mount(profile()));

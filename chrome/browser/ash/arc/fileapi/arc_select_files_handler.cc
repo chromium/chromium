@@ -104,15 +104,14 @@ base::FilePath GetInitialFilePath(const mojom::SelectFilesRequestPtr& request) {
   if (!document_path)
     return base::FilePath(kRecentAllFakePath);
 
-  if (document_path->path.empty()) {
-    LOG(ERROR) << "path should at least contain root Document ID.";
+  if (!document_path->root_id.has_value()) {
+    LOG(ERROR) << "root ID is missing; falling back to opening Recent";
     return base::FilePath(kRecentAllFakePath);
   }
 
-  const std::string& root_document_id = document_path->path[0];
   // TODO(niwa): Convert non-root document IDs to the relative path and append.
   return arc::GetDocumentsProviderMountPath(document_path->authority,
-                                            root_document_id);
+                                            document_path->root_id.value());
 }
 
 void BuildFileTypeInfo(const mojom::SelectFilesRequestPtr& request,

@@ -88,12 +88,11 @@ class Volume {
                                               bool read_only,
                                               bool use_fusebox = false);
 
-  static std::unique_ptr<Volume> CreateForMediaView(
-      const std::string& root_document_id);
+  static std::unique_ptr<Volume> CreateForMediaView(const std::string& root_id);
 
   static std::unique_ptr<Volume> CreateMediaViewForTesting(
       base::FilePath mount_path,
-      const std::string& root_document_id);
+      const std::string& root_id);
 
   static std::unique_ptr<Volume> CreateForSshfsCrostini(
       base::FilePath crostini_path,
@@ -111,7 +110,6 @@ class Volume {
   static std::unique_ptr<Volume> CreateForDocumentsProvider(
       const std::string& authority,
       const std::string& root_id,
-      const std::string& document_id,
       const std::string& title,
       const std::string& summary,
       const GURL& icon_url,
