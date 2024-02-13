@@ -334,6 +334,12 @@ void DataTransferDlpController::DropIfAllowed(
     base::OnceClosure drop_cb) {
   DCHECK(drag_data);
 
+  base::optional_ref<const ui::DataTransferEndpoint> source =
+      drag_data->GetSource()
+          ? base::optional_ref<const ui::DataTransferEndpoint>(
+                drag_data->GetSource())
+          : std::nullopt;
+
   if (drag_data->HasFile() && !IsFilesApp(data_dst)) {
     auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
     if (files_controller) {
@@ -351,7 +357,7 @@ void DataTransferDlpController::DropIfAllowed(
       return;
     }
   }
-  ContinueDropIfAllowed(*drag_data->GetSource(), data_dst, std::move(drop_cb));
+  ContinueDropIfAllowed(source, data_dst, std::move(drop_cb));
 }
 
 DataTransferDlpController::DataTransferDlpController(
