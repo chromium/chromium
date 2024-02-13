@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -83,24 +84,32 @@ constexpr base::TimeDelta kZeroStateAnimationTranslateUpDuration =
 // These classes exist to solely to provide a class name to UI devtools. They
 // don't follow the style guide so they can be shorter.
 class ContentContainer : public views::View {
- public:
-  const char* GetClassName() const override { return "ContentContainer"; }
+  METADATA_HEADER(ContentContainer, views::View)
 };
+
+BEGIN_METADATA(ContentContainer)
+END_METADATA
 
 class MainContentContainer : public views::View {
- public:
-  const char* GetClassName() const override { return "MainContentContainer"; }
+  METADATA_HEADER(MainContentContainer, views::View)
 };
+
+BEGIN_METADATA(MainContentContainer)
+END_METADATA
 
 class DividerContainer : public views::View {
- public:
-  const char* GetClassName() const override { return "DividerContainer"; }
+  METADATA_HEADER(DividerContainer, views::View)
 };
 
+BEGIN_METADATA(DividerContainer)
+END_METADATA
+
 class FooterContainer : public views::View {
- public:
-  const char* GetClassName() const override { return "FooterContainer"; }
+  METADATA_HEADER(FooterContainer, views::View)
 };
+
+BEGIN_METADATA(FooterContainer)
+END_METADATA
 
 // A view is considered shown when it is visible and not in the process of
 // fading out.

@@ -70,10 +70,6 @@ PowerButtonMenuItemView::PowerButtonMenuItemView(
 
 PowerButtonMenuItemView::~PowerButtonMenuItemView() = default;
 
-const char* PowerButtonMenuItemView::GetClassName() const {
-  return "PowerButtonMenuItemView";
-}
-
 void PowerButtonMenuItemView::Layout(PassKey) {
   const gfx::Rect rect(GetContentsBounds());
 

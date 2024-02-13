@@ -45,9 +45,6 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
   PowerButtonMenuItemView& operator=(const PowerButtonMenuItemView&) = delete;
   ~PowerButtonMenuItemView() override;
 
-  // views::View:
-  const char* GetClassName() const override;
-
  private:
   // views::View:
   void Layout(PassKey) override;

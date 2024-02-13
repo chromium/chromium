@@ -50,8 +50,6 @@ class CompactTitleMessageView : public views::View {
   CompactTitleMessageView& operator=(const CompactTitleMessageView&) = delete;
   ~CompactTitleMessageView() override;
 
-  const char* GetClassName() const override;
-
   gfx::Size CalculatePreferredSize() const override;
   void Layout(PassKey) override;
 

@@ -21,6 +21,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -139,10 +140,6 @@ void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {
 
 ContinueBrowsingChip::~ContinueBrowsingChip() = default;
 
-const char* ContinueBrowsingChip::GetClassName() const {
-  return "ContinueBrowsingChip";
-}
-
 void ContinueBrowsingChip::ButtonPressed() {
   PA_LOG(INFO) << "Opening browser tab: " << url_;
   phone_hub_metrics::LogTabContinuationChipClicked(index_);
@@ -167,5 +164,8 @@ void ContinueBrowsingChip::ButtonPressed() {
       ->phone_hub_tray()
       ->CloseBubble();
 }
+
+BEGIN_METADATA(ContinueBrowsingChip)
+END_METADATA
 
 }  // namespace ash
