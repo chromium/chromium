@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextChromeos
 
 COMPONENT_EXPORT(PRINTING)
 ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
-                                  const gfx::Rect& printable_area_um);
+                                  gfx::Rect printable_area_um);
 
 }  // namespace printing
 

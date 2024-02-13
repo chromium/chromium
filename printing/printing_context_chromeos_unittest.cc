@@ -211,6 +211,19 @@ TEST_F(PrintingContextTest, SettingsToIPPOptions_MediaCol) {
   TestMediaColValue(gfx::Size(29700, 42000), 100, 200, 300, 400);
 }
 
+TEST_F(PrintingContextTest, SettingsToIPPOptionsMediaColLandscape) {
+  settings_.set_requested_media(
+      {gfx::Size(148000, 200000), "om_200030x148170um_200x148mm"});
+  // Use margins (LBRT) of 500, 700, 200, and 1000.
+  printable_area_ =
+      gfx::Rect(500, 700, 148000 - (500 + 200), 200000 - (700 + 1000));
+  // The requested media and printable area is in portrait mode (height larger
+  // than width).  Since the vendor ID has a width larger than the height, the
+  // expected media should get swapped.  When swapped, the margins (LBRT) should
+  // be 1000, 500, 700, and 200.
+  TestMediaColValue(gfx::Size(20000, 14800), 50, 100, 70, 20);
+}
+
 TEST_F(PrintingContextTest, SettingsToIPPOptions_Copies) {
   settings_.set_copies(3);
   TestIntegerOptionValue(kIppCopies, 3);
