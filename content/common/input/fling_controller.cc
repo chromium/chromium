@@ -37,7 +37,7 @@ const char* kFlingTraceName = "FlingController::HandlingGestureFling";
 bool ShouldUseMobileFlingCurve() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return true;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   CHECK(display::Screen::GetScreen());
   return display::Screen::GetScreen()->InTabletMode();
 #else
