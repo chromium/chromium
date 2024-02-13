@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {getHistogramCount, RootPath, sendTestMessage} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -11,10 +10,10 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 /**
  * Returns provider name of the given testing provider manifest viz., the
  * the value of the name field in the |manifest| file.
- * @param {string} manifest Testing provider manifest file name.
- * @return {string} Testing provider name.
+ * @param manifest Testing provider manifest file name.
+ * @return Testing provider name.
  */
-function getProviderNameForTest(manifest) {
+function getProviderNameForTest(manifest: string): string {
   if (manifest === 'manifest.json') {
     return 'Files Testing Provider test extension';
   }
@@ -33,10 +32,10 @@ function getProviderNameForTest(manifest) {
 
 /**
  * Initializes the provider extension.
- * @param {string} manifest The manifest name of testing provider extension
- *     to launch for the test case.
+ * @param manifest The manifest name of testing provider extension to launch for
+ *     the test case.
  */
-async function setUpProvider(manifest) {
+async function setUpProvider(manifest: string) {
   await sendTestMessage({name: 'launchProviderExtension', manifest: manifest});
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
   return appId;
@@ -45,8 +44,7 @@ async function setUpProvider(manifest) {
 /**
  * Clicks on the "Services" menu button.
  */
-// @ts-ignore: error TS7006: Parameter 'appId' implicitly has an 'any' type.
-async function showProvidersMenu(appId) {
+async function showProvidersMenu(appId: string) {
   const providersMenuItem = '#gear-menu-providers:not([hidden])';
 
   // Open the gear menu by clicking the gear button.
@@ -68,9 +66,7 @@ async function showProvidersMenu(appId) {
 /**
  * Confirms that a provided volume is mounted.
  */
-// @ts-ignore: error TS7006: Parameter 'ejectExpected' implicitly has an 'any'
-// type.
-async function confirmVolume(appId, ejectExpected) {
+async function confirmVolume(appId: string, ejectExpected: boolean) {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.selectItemByType('provided');
 
@@ -86,12 +82,11 @@ async function confirmVolume(appId, ejectExpected) {
  * Tests that a provided extension with |manifest| is mountable via the menu
  * button.
  *
- * @param {boolean} multipleMounts Whether multiple mounts are supported by
- *     the providing extension.
- * @param {string} manifest Name of the manifest file for the providing
+ * @param multipleMounts Whether multiple mounts are supported by the providing
  *     extension.
+ * @param manifest Name of the manifest file for the providing extension.
  */
-async function requestMountInternal(multipleMounts, manifest) {
+async function requestMountInternal(multipleMounts: boolean, manifest: string) {
   const providerName = getProviderNameForTest(manifest);
   const appId = await setUpProvider(manifest);
   await showProvidersMenu(appId);
@@ -139,10 +134,9 @@ async function requestMountInternal(multipleMounts, manifest) {
  * Tests that a provided extension with |manifest| is not available in the
  * providers menu, but it's mounted automatically.
  *
- * @param {string} manifest Name of the manifest file for the providing
- *     extension.
+ * @param manifest Name of the manifest file for the providing extension.
  */
-async function requestMountNotInMenuInternal(manifest) {
+async function requestMountNotInMenuInternal(manifest: string) {
   const appId = await setUpProvider(manifest);
   await confirmVolume(appId, true /* ejectExpected */);
 
@@ -190,48 +184,38 @@ async function requestMountNotInMenuInternal(manifest) {
 /**
  * Tests mounting a single mount point in the button menu.
  */
-// @ts-ignore: error TS4111: Property 'requestMount' comes from an index
-// signature, so it must be accessed with ['requestMount'].
-testcase.requestMount = () => {
+export async function requestMount() {
   const multipleMounts = false;
   return requestMountInternal(multipleMounts, 'manifest.json');
-};
+}
 
 /**
  * Tests mounting multiple mount points in the button menu.
  */
-// @ts-ignore: error TS4111: Property 'requestMountMultipleMounts' comes from an
-// index signature, so it must be accessed with ['requestMountMultipleMounts'].
-testcase.requestMountMultipleMounts = () => {
+export async function requestMountMultipleMounts() {
   const multipleMounts = true;
   return requestMountInternal(multipleMounts, 'manifest_multiple_mounts.json');
-};
+}
 
 /**
  * Tests mounting a device not present in the button menu.
  */
-// @ts-ignore: error TS4111: Property 'requestMountSourceDevice' comes from an
-// index signature, so it must be accessed with ['requestMountSourceDevice'].
-testcase.requestMountSourceDevice = () => {
+export async function requestMountSourceDevice() {
   return requestMountNotInMenuInternal('manifest_source_device.json');
-};
+}
 
 /**
  * Tests mounting a file not present in the button menu.
  */
-// @ts-ignore: error TS4111: Property 'requestMountSourceFile' comes from an
-// index signature, so it must be accessed with ['requestMountSourceFile'].
-testcase.requestMountSourceFile = () => {
+export async function requestMountSourceFile() {
   return requestMountNotInMenuInternal('manifest_source_file.json');
-};
+}
 
 /**
  * Tests that pressing the eject button on a FSP adds a message to screen
  * reader.
  */
-// @ts-ignore: error TS4111: Property 'providerEject' comes from an index
-// signature, so it must be accessed with ['providerEject'].
-testcase.providerEject = async () => {
+export async function providerEject() {
   const manifest = 'manifest_source_file.json';
   const appId = await setUpProvider(manifest);
 
@@ -255,16 +239,13 @@ testcase.providerEject = async () => {
   // JS errors due to volume related actions performed while volume is
   // ejected.
   return IGNORE_APP_ERRORS;
-};
+}
 
 /**
  * Tests mounting a file system provider emits only a single UMA when running
  * from either the SWA or Chrome app.
  */
-// @ts-ignore: error TS4111: Property
-// 'deduplicatedUmaMetricForFileSystemProviders' comes from an index signature,
-// so it must be accessed with ['deduplicatedUmaMetricForFileSystemProviders'].
-testcase.deduplicatedUmaMetricForFileSystemProviders = async () => {
+export async function deduplicatedUmaMetricForFileSystemProviders() {
   const umaMetricName = 'FileBrowser.FileSystemProviderMounted';
   const testProviderMetricEnumValue = 0;  // UNKNOWN = 0.
 
@@ -290,4 +271,4 @@ testcase.deduplicatedUmaMetricForFileSystemProviders = async () => {
       await getHistogramCount(umaMetricName, testProviderMetricEnumValue);
   chrome.test.assertEq(
       1, mountedVolumeCount, 'Unexpected value in UMA metric for mounted FSPs');
-};
+}
