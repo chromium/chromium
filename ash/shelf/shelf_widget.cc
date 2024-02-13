@@ -106,18 +106,28 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
 
   // Sets the shelf background color.
   void SetBackgroundColor(SkColor color) {
+    if (color == background_color_) {
+      return;
+    }
+
     background_color_ = color;
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
   void SetBorderType(views::HighlightBorder::Type type) {
+    if (type == highlight_border_type_) {
+      return;
+    }
+
     highlight_border_type_ = type;
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
   // Sets the rounded corners used by the shelf.
   void SetRoundedCornerRadius(float radius) {
+    const bool needs_paint = corner_radius_ != radius;
     corner_radius_ = radius;
+
     layer()->SetRoundedCornerRadius({
         shelf_->SelectValueForShelfAlignment(radius, 0.0f, radius),
         shelf_->SelectValueForShelfAlignment(radius, radius, 0.0f),
@@ -125,7 +135,9 @@ class ShelfBackgroundLayerDelegate : public ui::LayerOwner,
         shelf_->SelectValueForShelfAlignment(0.0f, 0.0f, radius),
     });
 
-    layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    if (needs_paint) {
+      layer()->SchedulePaint(gfx::Rect(layer()->size()));
+    }
   }
 
   SkColor background_color() const { return background_color_; }

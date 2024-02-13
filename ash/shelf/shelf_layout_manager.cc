@@ -2756,7 +2756,12 @@ void ShelfLayoutManager::UpdateDrag(const ui::LocatedEvent& event_in_screen,
     last_drag_velocity_ =
         event_in_screen.AsGestureEvent()->details().velocity_y();
   }
-  LayoutShelf();
+
+  // Prevent unnecessary layout and paint work when handling window drag from
+  // shelf.
+  if (!IsWindowDragInProgress()) {
+    LayoutShelf();
+  }
 
   // Request a new hotseat presentation time record if the hotseat bounds
   // changed while the hotseat is in drag. If hotseat bounds remained the
