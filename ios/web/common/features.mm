@@ -106,5 +106,9 @@ bool IsWebInspectorSupportEnabled() {
   return false;
 }
 
+BASE_FEATURE(kDisableRaccoon,
+             "DisableRaccoon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace web

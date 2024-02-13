@@ -93,6 +93,9 @@ bool IsLoadSimulatedRequestAPIEnabled();
 // When true, an option to enable Web Inspector should be present in Settings.
 bool IsWebInspectorSupportEnabled();
 
+// Feature flag to disable the raccoon.
+BASE_DECLARE_FEATURE(kDisableRaccoon);
+
 }  // namespace features
 }  // namespace web
 
