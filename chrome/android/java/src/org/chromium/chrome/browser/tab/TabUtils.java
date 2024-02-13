@@ -299,7 +299,8 @@ public class TabUtils {
     public static void setBitmapAndUpdateImageMatrix(
             ImageView view, Bitmap bitmap, Size destinationSize) {
         if (BuildInfo.getInstance().isAutomotive) {
-            bitmap.setDensity(DisplayUtil.getUiDensityForAutomotive(bitmap.getDensity()));
+            bitmap.setDensity(
+                    DisplayUtil.getUiDensityForAutomotive(view.getContext(), bitmap.getDensity()));
         }
         view.setImageBitmap(bitmap);
         int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();

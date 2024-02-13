@@ -111,4 +111,7 @@ found in the LICENSE file.
     <dimen name="list_menu_item_text_size">14sp</dimen>
     <dimen name="list_menu_elevation">@dimen/default_elevation_2</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
+
+    <!-- Automotive -->
+    <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
 </resources>

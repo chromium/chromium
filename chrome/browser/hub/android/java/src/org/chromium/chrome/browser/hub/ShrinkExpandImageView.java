@@ -96,7 +96,8 @@ public class ShrinkExpandImageView extends ImageView implements RunOnNextLayout 
     @Override
     public void setImageBitmap(Bitmap bitmap) {
         if (BuildInfo.getInstance().isAutomotive && bitmap != null) {
-            bitmap.setDensity(DisplayUtil.getUiDensityForAutomotive(bitmap.getDensity()));
+            bitmap.setDensity(
+                    DisplayUtil.getUiDensityForAutomotive(getContext(), bitmap.getDensity()));
         }
         super.setImageBitmap(bitmap);
     }
