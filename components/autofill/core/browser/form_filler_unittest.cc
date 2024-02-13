@@ -1903,6 +1903,27 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
   EXPECT_THAT(form_structure->field(1), AutofilledWithProfile(profile));
 }
 
+// Regression test that a field with an unrelated type doesn't cause a crash
+// (crbug.com/324811625).
+TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAutofillSkipPreFilledFields,
+                                 features::kAutofillOverwritePlaceholdersOnly},
+                                {});
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL,
+                   .value = u"pre-filled",
+                   .autocomplete_attribute = "section-billing name"},
+                  {.role = CREDIT_CARD_NUMBER,
+                   .value = u"pre-filled",
+                   .autocomplete_attribute = "section-billing cc-number"}}});
+  FormsSeen({form});
+
+  AutofillProfile profile = test::GetFullProfile();
+  FillAutofillFormData(form, form.fields.front(), &profile);
+  // Expect that this test doesn't cause a crash.
+}
+
 // The following Refill Tests ensure that Autofill can handle the situation
 // where it fills a credit card form with an expiration date like 04/2999
 // and the website tries to reformat the input with whitespaces around the

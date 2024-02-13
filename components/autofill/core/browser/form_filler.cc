@@ -296,18 +296,6 @@ FormFiller::GetFieldFillingSkipReasons(
       continue;
     }
 
-    // Don't fill meaningfully pre-filled fields but overwrite placeholders.
-    // TODO(b/40227496): 'autofill_field->value' should be the initial value of
-    // the field.
-    if (!is_triggering_field &&
-        !autofill_field->IsSelectOrSelectListElement() &&
-        !autofill_field->value.empty() &&
-        (IsNotAPlaceholder(autofill_field) ||
-         IsMeaningfullyPreFilled(autofill_field))) {
-      skip_reasons[field_id] = FieldFillingSkipReason::kValuePrefilled;
-      continue;
-    }
-
     // Usually, this should not happen because Autofill sectioning logic
     // separates address fields from credit card fields. However, autofill
     // respects the HTML `autocomplete` attribute when it is used to specify a
@@ -320,6 +308,25 @@ FormFiller::GetFieldFillingSkipReasons(
         (filling_product == FillingProduct::kCreditCard &&
          autofill_field->Type().group() != FieldTypeGroup::kCreditCard)) {
       skip_reasons[field_id] = FieldFillingSkipReason::kFieldTypeUnrelated;
+      continue;
+    }
+
+    // Add new skip reasons above this comment.
+    // Skip reason `kValuePrefilled` needs to be checked last. For metrics
+    // purposes, `GetFieldFillingDataFor(Profile|CreditCard)()` is queried for
+    // fields that were skipped because of `kValuePrefilled`. Since the function
+    // assumes that the field's type is profile/card-related, it's important
+    // that this check happens after the `kFieldTypeUnrelated` check.
+
+    // Don't fill meaningfully pre-filled fields but overwrite placeholders.
+    // TODO(b/40227496): 'autofill_field->value' should be the initial value of
+    // the field.
+    if (!is_triggering_field &&
+        !autofill_field->IsSelectOrSelectListElement() &&
+        !autofill_field->value.empty() &&
+        (IsNotAPlaceholder(autofill_field) ||
+         IsMeaningfullyPreFilled(autofill_field))) {
+      skip_reasons[field_id] = FieldFillingSkipReason::kValuePrefilled;
       continue;
     }
     CHECK_EQ(skip_reasons[field_id], FieldFillingSkipReason::kNotSkipped,
