@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_modal_view.h"
 
 #include <iostream>
+#include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -20,12 +21,14 @@
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -43,6 +46,8 @@ constexpr int kVerticalPadding = 8;
 constexpr int kDialogWidth = 500;
 // The margins of the modal dialog.
 constexpr int kDialogMargin = 24;
+// The size of brand icons of the modal dialog.
+constexpr int kModalIconSize = 50;
 
 AccountSelectionModalView::AccountSelectionModalView(
     const std::u16string& top_frame_for_display,
@@ -102,11 +107,29 @@ void AccountSelectionModalView::InitDialogWidget() {
 }
 
 std::unique_ptr<views::View>
-AccountSelectionModalView::CreateAccountChooserHeader() {
-  // TODO(crbug.com/1518356): Add IDP icon.
+AccountSelectionModalView::CreateAccountChooserHeader(
+    const content::IdentityProviderMetadata& idp_metadata) {
   std::unique_ptr<views::View> header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+
+  // Add IDP icon, if available. Otherwise, fallback to the default globe icon.
+  std::unique_ptr<BrandIconImageView> image_view =
+      std::make_unique<BrandIconImageView>(
+          base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kModalIconSize);
+  image_view->SetImageSize(gfx::Size(kModalIconSize, kModalIconSize));
+  image_view->SetProperty(views::kMarginsKey,
+                          gfx::Insets().set_bottom(kVerticalPadding));
+  if (idp_metadata.brand_icon_url.is_valid()) {
+    ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
+  } else {
+    image_view->SetImage(
+        gfx::CreateVectorIcon(kGlobeIcon, kModalIconSize, gfx::kGoogleGrey700));
+    image_view->SetVisible(true);
+  }
+  header->AddChildView(std::move(image_view));
 
   // Add the title.
   title_label_ = header->AddChildView(std::make_unique<views::Label>(
@@ -148,7 +171,8 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
 
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
-  AddChildView(CreateAccountChooserHeader());
+  AddChildView(
+      CreateAccountChooserHeader(idp_display_data_list[0].idp_metadata));
   AddChildView(CreateMultipleAccountChooser(idp_display_data_list));
 
   InitDialogWidget();
@@ -189,7 +213,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
-  AddChildView(CreateAccountChooserHeader());
+  AddChildView(CreateAccountChooserHeader(idp_display_data.idp_metadata));
   AddChildView(CreateSingleAccountChooser(idp_display_data, account));
 
   InitDialogWidget();

@@ -17,6 +17,10 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/widget/widget_observer.h"
 
+// safe_zone_diameter/icon_size as defined in
+// https://www.w3.org/TR/appmanifest/#icon-masks
+constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("fedcm_account_profile_image_fetcher",
                                         R"(
@@ -73,6 +77,45 @@ void CircleCroppedImageSkiaSource::Draw(gfx::Canvas* canvas) {
   canvas->ClipPath(circular_mask, true);
   canvas->DrawImageInt(avatar_, x, y);
 }
+
+BrandIconImageView::BrandIconImageView(
+    base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_idp_image,
+    int image_size)
+    : add_idp_image_(std::move(add_idp_image)), image_size_(image_size) {}
+
+BrandIconImageView::~BrandIconImageView() = default;
+
+void BrandIconImageView::FetchImage(
+    const GURL& icon_url,
+    image_fetcher::ImageFetcher& image_fetcher) {
+  image_fetcher::ImageFetcherParams params(kTrafficAnnotation,
+                                           kImageFetcherUmaClient);
+  image_fetcher.FetchImage(
+      icon_url,
+      base::BindOnce(&BrandIconImageView::OnImageFetched,
+                     weak_ptr_factory_.GetWeakPtr(), icon_url),
+      std::move(params));
+}
+
+void BrandIconImageView::OnImageFetched(
+    const GURL& image_url,
+    const gfx::Image& image,
+    const image_fetcher::RequestMetadata& metadata) {
+  if (image.Width() != image.Height() ||
+      image.Width() < AccountSelectionViewBase::GetBrandIconMinimumSize()) {
+    return;
+  }
+  gfx::ImageSkia idp_image =
+      gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
+          image.AsImageSkia(), image.Width() * kMaskableWebIconSafeZoneRatio,
+          image_size_);
+  SetImage(ui::ImageModel::FromImageSkia(idp_image));
+  CHECK(add_idp_image_);
+  std::move(add_idp_image_).Run(image_url, idp_image);
+}
+
+BEGIN_METADATA(BrandIconImageView)
+END_METADATA
 
 class AccountImageView : public views::ImageView {
   METADATA_HEADER(AccountImageView, views::ImageView)
@@ -255,11 +298,42 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
   return row;
 }
 
+void AccountSelectionViewBase::AddIdpImage(const GURL& image_url,
+                                           const gfx::ImageSkia& image) {
+  idp_images_[image_url] = image;
+}
+
+void AccountSelectionViewBase::ConfigureIdpBrandImageView(
+    BrandIconImageView* image_view,
+    const content::IdentityProviderMetadata& idp_metadata) {
+  // Show placeholder brand icon prior to brand icon being fetched so that
+  // header text wrapping does not change when brand icon is fetched.
+  bool has_idp_icon = idp_metadata.brand_icon_url.is_valid();
+  image_view->SetVisible(has_idp_icon);
+  if (!has_idp_icon) {
+    return;
+  }
+
+  auto it = idp_images_.find(idp_metadata.brand_icon_url);
+  if (it != idp_images_.end()) {
+    image_view->SetImage(ui::ImageModel::FromImageSkia(it->second));
+    return;
+  }
+
+  image_view->FetchImage(idp_metadata.brand_icon_url, *image_fetcher_);
+}
+
 base::WeakPtr<views::Widget> AccountSelectionViewBase::GetDialogWidget() {
   return dialog_widget_;
 }
 
+// static
 net::NetworkTrafficAnnotationTag
 AccountSelectionViewBase::GetTrafficAnnotation() {
   return kTrafficAnnotation;
+}
+
+// static
+int AccountSelectionViewBase::GetBrandIconMinimumSize() {
+  return 20 / kMaskableWebIconSafeZoneRatio;
 }

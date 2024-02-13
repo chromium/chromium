@@ -121,60 +121,6 @@ class ContinueButton : public views::MdTextButton {
 BEGIN_METADATA(ContinueButton)
 END_METADATA
 
-// Wrapper around ImageViews for IDP icons. Used to ensure that the fetch
-// callback is not run when the ImageView has been deleted.
-class IdpImageView : public views::ImageView {
-  METADATA_HEADER(IdpImageView, views::ImageView)
-
- public:
-  explicit IdpImageView(AccountSelectionBubbleView* bubble_view)
-      : bubble_view_(bubble_view) {}
-
-  IdpImageView(const IdpImageView&) = delete;
-  IdpImageView& operator=(const IdpImageView&) = delete;
-  ~IdpImageView() override = default;
-
-  // Fetch image and set it on IdpImageView.
-  void FetchImage(const GURL& icon_url,
-                  image_fetcher::ImageFetcher& image_fetcher) {
-    image_fetcher::ImageFetcherParams params(
-        AccountSelectionViewBase::GetTrafficAnnotation(),
-        kImageFetcherUmaClient);
-    image_fetcher.FetchImage(
-        icon_url,
-        base::BindOnce(&IdpImageView::OnImageFetched,
-                       weak_ptr_factory_.GetWeakPtr(), icon_url),
-        std::move(params));
-  }
-
- private:
-  void OnImageFetched(const GURL& image_url,
-                      const gfx::Image& image,
-                      const image_fetcher::RequestMetadata& metadata) {
-    if (image.Width() != image.Height() ||
-        image.Width() < AccountSelectionView::GetBrandIconMinimumSize()) {
-      return;
-    }
-    gfx::ImageSkia idp_image =
-        gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
-            image.AsImageSkia(),
-            image.Width() *
-                FedCmAccountSelectionView::kMaskableWebIconSafeZoneRatio,
-            kDesiredIdpIconSize);
-    SetImage(ui::ImageModel::FromImageSkia(idp_image));
-    bubble_view_->AddIdpImage(image_url, idp_image);
-  }
-
-  // The AccountSelectionBubbleView outlives IdpImageView so it is safe to store
-  // a raw pointer to it.
-  raw_ptr<AccountSelectionBubbleView> bubble_view_;
-
-  base::WeakPtrFactory<IdpImageView> weak_ptr_factory_{this};
-};
-
-BEGIN_METADATA(IdpImageView)
-END_METADATA
-
 void SendAccessibilityEvent(views::Widget* widget,
                             std::u16string announcement) {
   if (!widget)
@@ -593,11 +539,6 @@ void AccountSelectionBubbleView::CloseDialog() {
   dialog_widget_.reset();
 }
 
-void AccountSelectionBubbleView::AddIdpImage(const GURL& image_url,
-                                             gfx::ImageSkia image) {
-  idp_images_[image_url] = image;
-}
-
 std::string AccountSelectionBubbleView::GetDialogTitle() const {
   // We cannot just return title_ because it is not always set
   // (e.g. by ShowFailureDialog).
@@ -654,7 +595,10 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 
   // Add the space for the icon.
   if (has_idp_icon) {
-    auto image_view = std::make_unique<IdpImageView>(this);
+    auto image_view = std::make_unique<BrandIconImageView>(
+        base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kDesiredIdpIconSize);
     image_view->SetImageSize(
         gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
     image_view->SetProperty(views::kMarginsKey,
@@ -880,11 +824,15 @@ AccountSelectionBubbleView::CreateIdpHeaderRowForMultiIdp(
       ->SetInteriorMargin(
           gfx::Insets::TLBR(0, kLeftRightPadding, 0, kLeftRightPadding));
 
-  auto image_view = std::make_unique<IdpImageView>(this);
+  auto image_view = std::make_unique<BrandIconImageView>(
+      base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kDesiredIdpIconSize);
   image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_right(kLeftRightPadding));
-  IdpImageView* idp_icon_view = header->AddChildView(std::move(image_view));
+  BrandIconImageView* idp_icon_view =
+      header->AddChildView(std::move(image_view));
   ConfigureIdpBrandImageView(idp_icon_view, idp_metadata);
 
   header->AddChildView(std::make_unique<views::Label>(
@@ -896,7 +844,10 @@ AccountSelectionBubbleView::CreateIdpHeaderRowForMultiIdp(
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  auto image_view = std::make_unique<IdpImageView>(this);
+  auto image_view = std::make_unique<BrandIconImageView>(
+      base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kDesiredIdpIconSize);
   image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
   image_view->SetProperty(views::kMarginsKey,
                           gfx::Insets().set_right(kLeftRightPadding));
@@ -952,25 +903,6 @@ void AccountSelectionBubbleView::UpdateHeader(
     }
     subtitle_label_->SetText(subpage_subtitle);
   }
-}
-
-void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
-    IdpImageView* image_view,
-    const content::IdentityProviderMetadata& idp_metadata) {
-  // Show placeholder brand icon prior to brand icon being fetched so that
-  // header text wrapping does not change when brand icon is fetched.
-  bool has_idp_icon = idp_metadata.brand_icon_url.is_valid();
-  image_view->SetVisible(has_idp_icon);
-  if (!has_idp_icon)
-    return;
-
-  auto it = idp_images_.find(idp_metadata.brand_icon_url);
-  if (it != idp_images_.end()) {
-    image_view->SetImage(ui::ImageModel::FromImageSkia(it->second));
-    return;
-  }
-
-  image_view->FetchImage(idp_metadata.brand_icon_url, *image_fetcher_);
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {

@@ -256,7 +256,8 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     std::vector<std::string> expected_class_names = {"ImageButton", "Label",
                                                      "ImageButton"};
     if (expect_idp_brand_icon_in_header) {
-      expected_class_names.insert(expected_class_names.begin(), "IdpImageView");
+      expected_class_names.insert(expected_class_names.begin(),
+                                  "BrandIconImageView");
     }
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
@@ -516,7 +517,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                    const std::u16string& expected_idp) {
     // Order: Brand icon, title.
     EXPECT_THAT(GetChildClassNames(idp_account),
-                testing::ElementsAre("IdpImageView", "Label"));
+                testing::ElementsAre("BrandIconImageView", "Label"));
 
     views::Label* title_view =
         static_cast<views::Label*>(idp_account->children()[1]);

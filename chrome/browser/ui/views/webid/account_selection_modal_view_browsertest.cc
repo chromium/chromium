@@ -27,8 +27,8 @@ constexpr char kEmailBase[] = "email";
 constexpr char kNameBase[] = "name";
 constexpr char kGivenNameBase[] = "given_name";
 
-const char kTermsOfServiceUrl[] = "htpps://terms-of-service.com";
-const char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
+constexpr char kTermsOfServiceUrl[] = "https://terms-of-service.com";
+constexpr char kPrivacyPolicyUrl[] = "https://privacy-policy.com";
 
 content::IdentityRequestAccount CreateTestIdentityRequestAccount(
     const std::string& account_suffix,
@@ -169,22 +169,23 @@ class AccountSelectionModalViewTest : public DialogBrowserTest {
     EXPECT_FALSE(dialog()->GetOkButton());
     EXPECT_TRUE(dialog()->GetCancelButton());
 
-    // Order: Title, body
-    std::vector<std::string> expected_class_names = {"Label", "Label"};
+    // Order: Brand icon, title, body
+    std::vector<std::string> expected_class_names = {"BrandIconImageView",
+                                                     "Label", "Label"};
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
 
     std::vector<raw_ptr<views::View, VectorExperimental>> header_children =
         header->children();
-    ASSERT_EQ(header_children.size(), 2u);
+    ASSERT_EQ(header_children.size(), expected_class_names.size());
 
     // Check title text.
-    views::Label* title_view = static_cast<views::Label*>(header_children[0]);
+    views::Label* title_view = static_cast<views::Label*>(header_children[1]);
     ASSERT_TRUE(title_view);
     EXPECT_EQ(title_view->GetText(), expected_title);
 
     // Check body text.
-    views::Label* body_view = static_cast<views::Label*>(header_children[1]);
+    views::Label* body_view = static_cast<views::Label*>(header_children[2]);
     ASSERT_TRUE(body_view);
     EXPECT_EQ(body_view->GetText(), kBodySignIn);
   }

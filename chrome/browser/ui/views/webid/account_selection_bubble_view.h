@@ -22,14 +22,9 @@ using TokenError = content::IdentityCredentialTokenError;
 namespace views {
 class Checkbox;
 class ImageButton;
-class ImageView;
 class Label;
 class MdTextButton;
 }  // namespace views
-
-namespace {
-class IdpImageView;
-}  // namespace
 
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
 // account chooser for the user, and it changes the content of that dialog as
@@ -85,9 +80,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
 
-  // Populates `idp_images` when an IDP image has been fetched.
-  void AddIdpImage(const GURL& image_url, gfx::ImageSkia idp_image);
-
  private:
   gfx::Rect GetBubbleBounds() override;
 
@@ -132,12 +124,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
                     const std::u16string subpage_subtitle,
                     bool show_back_button);
 
-  // Sets the brand views::ImageView visibility and image. Initiates the
-  // download of the brand icon if necessary.
-  void ConfigureIdpBrandImageView(
-      IdpImageView* image_view,
-      const content::IdentityProviderMetadata& idp_metadata);
-
   // Removes all children except for `header_view_`.
   void RemoveNonHeaderChildViews();
 
@@ -159,11 +145,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // The relying party context to show in the title.
   blink::mojom::RpContext rp_context_;
 
-  // The images for the IDP icons. Stored so that they can be reused upon
-  // pressing the back button after choosing an account on the multi IDP
-  // chooser.
-  base::flat_map<GURL, gfx::ImageSkia> idp_images_;
-
   // Whether the dialog has been populated via either ShowMultiAccountPicker()
   // or ShowVerifyingSheet().
   bool has_sheet_{false};
@@ -172,7 +153,7 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   raw_ptr<views::View> header_view_ = nullptr;
 
   // View containing the header IDP icon, if one needs to be used.
-  raw_ptr<IdpImageView> header_icon_view_ = nullptr;
+  raw_ptr<BrandIconImageView> header_icon_view_ = nullptr;
 
   // View containing the back button.
   raw_ptr<views::ImageButton> back_button_ = nullptr;

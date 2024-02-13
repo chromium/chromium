@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "content/public/browser/identity_request_account.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -74,7 +75,8 @@ class AccountSelectionModalView : public views::DialogDelegateView,
  private:
   // Returns a View for header of an account chooser. It contains text to prompt
   // the user to sign in to an RP with an account from an IDP.
-  std::unique_ptr<views::View> CreateAccountChooserHeader();
+  std::unique_ptr<views::View> CreateAccountChooserHeader(
+      const content::IdentityProviderMetadata& idp_metadata);
 
   // Returns a View for single account chooser. It contains clickable account
   // information, and a button for the user to close the modal dialog. The size

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/webid/identity_provider_display_data.h"
+#include "chrome/browser/ui/webid/account_selection_view.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -121,6 +122,33 @@ class CircleCroppedImageSkiaSource : public gfx::CanvasImageSource {
   gfx::ImageSkia avatar_;
 };
 
+class BrandIconImageView : public views::ImageView {
+  METADATA_HEADER(BrandIconImageView, views::ImageView)
+
+ public:
+  BrandIconImageView(
+      base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)>
+          add_idp_image,
+      int image_size);
+  BrandIconImageView(const BrandIconImageView&) = delete;
+  BrandIconImageView& operator=(const BrandIconImageView&) = delete;
+  ~BrandIconImageView() override;
+
+  // Fetch image and set it on BrandIconImageView.
+  void FetchImage(const GURL& icon_url,
+                  image_fetcher::ImageFetcher& image_fetcher);
+
+ private:
+  void OnImageFetched(const GURL& image_url,
+                      const gfx::Image& image,
+                      const image_fetcher::RequestMetadata& metadata);
+
+  base::OnceCallback<void(const GURL&, const gfx::ImageSkia&)> add_idp_image_;
+  int image_size_;
+
+  base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
+};
+
 // Base class for interacting with FedCM account selection dialog.
 class AccountSelectionViewBase {
  public:
@@ -228,7 +256,14 @@ class AccountSelectionViewBase {
   // method is virtual for testing purposes.
   virtual base::WeakPtr<views::Widget> GetDialogWidget();
 
+  // Populates `idp_images` when an IDP image has been fetched.
+  void AddIdpImage(const GURL& image_url, const gfx::ImageSkia& idp_image);
+
+  // Returns the network traffic annotation tag for FedCM.
   static net::NetworkTrafficAnnotationTag GetTrafficAnnotation();
+
+  // Computes the minimum size of the brand icon.
+  static int GetBrandIconMinimumSize();
 
  protected:
   int SelectSingleIdpTitleResourceId(blink::mojom::RpContext rp_context);
@@ -254,11 +289,22 @@ class AccountSelectionViewBase {
       const IdentityProviderDisplayData& idp_display_data,
       bool should_hover);
 
+  // Sets the brand views::ImageView visibility and image. Initiates the
+  // download of the brand icon if necessary.
+  void ConfigureIdpBrandImageView(
+      BrandIconImageView* image_view,
+      const content::IdentityProviderMetadata& idp_metadata);
+
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
   // Web contents which the dialog is rendered on.
   raw_ptr<content::WebContents> web_contents_;
+
+  // The images for the IDP icons. Stored so that they can be reused upon
+  // pressing the back button after choosing an account on the multi IDP
+  // chooser.
+  base::flat_map<GURL, gfx::ImageSkia> idp_images_;
 
   // Widget to control the dialog i.e. hide, show, add observer etc.
   base::WeakPtr<views::Widget> dialog_widget_;
