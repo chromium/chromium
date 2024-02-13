@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "components/metrics/structured/key_data_provider.h"
 #include "components/metrics/structured/key_data_provider_prefs.h"
+#include "components/metrics/structured/lib/key_data_provider.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
 
 class PrefRegistrySimple;

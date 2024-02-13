@@ -6,7 +6,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/current_thread.h"
-#include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/lib/histogram_util.h"
 
 namespace metrics::structured {
 

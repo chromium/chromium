@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/lib/key_data.h"
 
 #include <memory>
 #include <utility>
@@ -15,8 +15,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "components/metrics/structured/histogram_util.h"
-#include "components/metrics/structured/key_util.h"
+#include "components/metrics/structured/lib/histogram_util.h"
+#include "components/metrics/structured/lib/key_util.h"
 #include "crypto/hmac.h"
 #include "crypto/sha2.h"
 
@@ -157,7 +157,6 @@ const std::optional<std::string_view> KeyData::GetKeyBytes(
   // Return the key unless it's the wrong size, in which case return nullopt.
   const std::string_view key_string = key->key();
   if (key_string.size() != kKeySize) {
-    LogInternalError(StructuredMetricsError::kWrongKeyLength);
     return std::nullopt;
   }
   return key_string;

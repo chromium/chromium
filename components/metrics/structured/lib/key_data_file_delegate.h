@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_KEY_DATA_FILE_DELEGATE_H_
-#define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_FILE_DELEGATE_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_FILE_DELEGATE_H_
+#define COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_FILE_DELEGATE_H_
 
 #include <memory>
 #include <optional>
@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/lib/key_data.h"
 #include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
 
@@ -74,4 +74,4 @@ class KeyDataFileDelegate : public KeyData::StorageDelegate {
 
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_KEY_DATA_FILE_DELEGATE_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_FILE_DELEGATE_H_

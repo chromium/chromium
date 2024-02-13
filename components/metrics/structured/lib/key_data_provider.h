@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
-#define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_PROVIDER_H_
+#define COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_PROVIDER_H_
 
 #include <optional>
 
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/lib/key_data.h"
 
 namespace base {
 class FilePath;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/key_data_file_delegate.h"
+#include "components/metrics/structured/lib/key_data_file_delegate.h"
 
 #include <utility>
 
@@ -13,8 +13,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/metrics/structured/histogram_util.h"
-#include "components/metrics/structured/key_util.h"
+#include "components/metrics/structured/lib/histogram_util.h"
+#include "components/metrics/structured/lib/key_util.h"
 #include "components/metrics/structured/lib/persistent_proto.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
 

@@ -8630,6 +8630,7 @@ test("unit_tests") {
       "//components/metrics/structured:structured_events",
       "//components/metrics/structured:structured_metrics_features",
       "//components/metrics/structured:test_support",
+      "//components/metrics/structured/lib",
       "//components/omnibox/browser:vector_icons",
       "//components/services/app_service",
       "//components/session_manager/core",
@@ -10165,6 +10166,7 @@ test("unit_tests") {
       "//components/metrics/structured:structured_events",
       "//components/metrics/structured:structured_metrics_validator",
       "//components/metrics/structured:test_support",
+      "//components/metrics/structured/lib",
     ]
   }
 

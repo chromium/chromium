@@ -9,6 +9,16 @@ import("//third_party/protobuf/proto_library.gni")
 # See README.md for more details.
 source_set("lib") {
   sources = [
+    "histogram_util.cc",
+    "histogram_util.h",
+    "key_data.cc",
+    "key_data.h",
+    "key_data_file_delegate.cc",
+    "key_data_file_delegate.h",
+    "key_data_provider.cc",
+    "key_data_provider.h",
+    "key_util.cc",
+    "key_util.h",
     "persistent_proto.h",
     "persistent_proto_internal.cc",
     "persistent_proto_internal.h",
@@ -18,6 +28,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//crypto",
     "//third_party/protobuf:protobuf_lite",
   ]
 }
@@ -31,7 +42,10 @@ proto_library("proto") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "persistent_proto_unittest.cc" ]
+  sources = [
+    "key_data_file_delegate_unittest.cc",
+    "persistent_proto_unittest.cc",
+  ]
   deps = [
     ":lib",
     ":proto",

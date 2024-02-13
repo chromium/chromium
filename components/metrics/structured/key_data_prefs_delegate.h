@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/metrics/structured/key_data.h"
+#include "components/metrics/structured/lib/key_data.h"
 #include "components/prefs/pref_service.h"
 
 namespace metrics::structured {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/key_data_file_delegate.h"
+#include "components/metrics/structured/lib/key_data_file_delegate.h"
 
 #include <memory>
 #include <string>
@@ -19,10 +19,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/lib/histogram_util.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
-#include "components/metrics/structured/recorder.h"
-#include "components/prefs/persistent_pref_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics::structured {

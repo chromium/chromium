@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_KEY_UTIL_H_
-#define COMPONENTS_METRICS_STRUCTURED_KEY_UTIL_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_LIB_KEY_UTIL_H_
+#define COMPONENTS_METRICS_STRUCTURED_LIB_KEY_UTIL_H_
 
 #include <optional>
 #include <string>
@@ -29,4 +29,4 @@ std::optional<KeyProto> CreateKeyProtoFromValue(const base::Value::Dict& value);
 }  // namespace util
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_KEY_UTIL_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_KEY_UTIL_H_

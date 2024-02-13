@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_STRUCTURED_KEY_DATA_H_
-#define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_H_
+#ifndef COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_H_
+#define COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_H_
 
 #include <memory>
 #include <optional>
@@ -156,4 +156,4 @@ class KeyData {
 
 }  // namespace metrics::structured
 
-#endif  // COMPONENTS_METRICS_STRUCTURED_KEY_DATA_H_
+#endif  // COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_H_

@@ -8,8 +8,8 @@
 #include <optional>
 #include <string_view>
 
-#include "components/metrics/structured/key_data.h"
-#include "components/metrics/structured/key_data_provider.h"
+#include "components/metrics/structured/lib/key_data.h"
+#include "components/metrics/structured/lib/key_data_provider.h"
 #include "components/prefs/pref_service.h"
 
 namespace metrics::structured {
