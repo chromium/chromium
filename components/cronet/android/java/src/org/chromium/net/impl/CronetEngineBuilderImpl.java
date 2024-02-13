@@ -131,6 +131,8 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     @VisibleForTesting
     static int sApiLevel = VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel();
 
+    protected final CronetLogger mLogger;
+
     // Private fields are simply storage of configuration for the resulting CronetEngine.
     // See setters below for verbose descriptions.
     private final Context mApplicationContext;
@@ -157,9 +159,9 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     public CronetEngineBuilderImpl(Context context) {
         var startUptimeMillis = SystemClock.uptimeMillis();
         boolean successful = false;
+        mApplicationContext = context.getApplicationContext();
+        mLogger = CronetLoggerFactory.createLogger(mApplicationContext, getCronetSource());
         try {
-            mApplicationContext = context.getApplicationContext();
-
             enableQuic(true);
             enableHttp2(true);
             enableBrotli(false);
@@ -183,7 +185,6 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         // can detect this case.
         if (sApiLevel >= 30) return;
 
-        var logger = CronetLoggerFactory.createLogger(mApplicationContext, getCronetSource());
         var logInfo = new CronetLogger.CronetEngineBuilderInitializedInfo();
         logInfo.creationSuccessful = false;
         try {
@@ -194,12 +195,12 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
             logInfo.apiVersion =
                     new CronetLogger.CronetVersion(
                             VersionSafeCallbacks.ApiVersion.getCronetVersion());
-            // TODO(b/313418339): populate cronetInitializationRef
+            logInfo.cronetInitializationRef = getLogCronetInitializationRef();
             logInfo.creationSuccessful = successful;
         } finally {
             logInfo.engineBuilderCreatedLatencyMillis =
                     (int) (SystemClock.uptimeMillis() - startUptimeMillis);
-            logger.logCronetEngineBuilderInitializedInfo(logInfo);
+            mLogger.logCronetEngineBuilderInitializedInfo(logInfo);
         }
     }
 
@@ -536,6 +537,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
                 /* httpCacheMode= */ publicBuilderHttpCacheMode(),
                 /* experimentalOptions= */ experimentalOptions(),
                 /* networkQualityEstimatorEnabled= */ networkQualityEstimatorEnabled(),
-                /* threadPriority= */ threadPriority(THREAD_PRIORITY_BACKGROUND));
+                /* threadPriority= */ threadPriority(THREAD_PRIORITY_BACKGROUND),
+                /* cronetInitializationRef= */ getLogCronetInitializationRef());
     }
 }

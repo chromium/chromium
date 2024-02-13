@@ -468,4 +468,9 @@ final class ExperimentalOptionsTranslatingCronetEngineBuilder extends ICronetEng
         mDelegate.setThreadPriority(priority);
         return this;
     }
+
+    @Override
+    protected long getLogCronetInitializationRef() {
+        return mDelegate.getLogCronetInitializationRef();
+    }
 }

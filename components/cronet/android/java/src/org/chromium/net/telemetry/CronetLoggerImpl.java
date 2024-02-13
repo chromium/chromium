@@ -157,7 +157,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     experimentalOptions.getStaleDnsPersistDelayMillisOption(),
                     experimentalOptions.getStaleDnsUseStaleOnNameNotResolvedOption().getValue(),
                     experimentalOptions.getDisableIpv6OnWifiOption().getValue(),
-                    /* cronet_initialization_ref= */ -1);
+                    builder.getCronetInitializationRef());
         } catch (Exception e) { // catching all exceptions since we don't want to crash the client
             Log.d(
                     TAG,

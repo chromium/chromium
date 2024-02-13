@@ -332,6 +332,7 @@ public abstract class org.chromium.net.ICronetEngineBuilder {
   protected java.util.Set<java.lang.Integer> getSupportedConfigOptions();
   public org.chromium.net.ICronetEngineBuilder enableNetworkQualityEstimator(boolean);
   public org.chromium.net.ICronetEngineBuilder setThreadPriority(int);
+  protected long getLogCronetInitializationRef();
 }
 public final class org.chromium.net.InlineExecutionProhibitedException extends java.util.concurrent.RejectedExecutionException {
   public org.chromium.net.InlineExecutionProhibitedException();
@@ -633,4 +634,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.JsonCronetCallback forJsonBody(org.chromium.net.apihelpers.RedirectHandler, org.chromium.net.apihelpers.CronetRequestCompletionListener<org.json.JSONObject>);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: 73bce49b7e758c401460fcb503a7345b
+Stamp: cfd272ad8510d246ce07e5f12c4caa92

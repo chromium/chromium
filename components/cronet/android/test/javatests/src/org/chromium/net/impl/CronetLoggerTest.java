@@ -194,14 +194,16 @@ public final class CronetLoggerTest {
         try {
             CronetEngineBuilderImpl.sApiLevel = 29;
             assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
-            mTestRule
-                    .getTestFramework()
-                    .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
+            var builder =
+                    mTestRule
+                            .getTestFramework()
+                            .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
             // The test framework bypasses the logic in CronetEngine.Builder, so we know this is
             // coming from the impl.
             assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(1);
             var info = mTestLogger.getLastCronetEngineBuilderInitializedInfo();
             assertThat(info).isNotNull();
+            assertThat(info.cronetInitializationRef).isNotEqualTo(0);
             assertThat(info.author)
                     .isEqualTo(CronetLogger.CronetEngineBuilderInitializedInfo.Author.IMPL);
             assertThat(info.engineBuilderCreatedLatencyMillis).isAtLeast(0);
@@ -210,6 +212,13 @@ public final class CronetLoggerTest {
             assertThat(info.apiVersion.getMajorVersion()).isGreaterThan(0);
             assertThat(info.implVersion.getMajorVersion()).isGreaterThan(0);
             assertThat(info.uid).isGreaterThan(0);
+
+            builder.build();
+            final CronetEngineBuilderInfo builderInfo =
+                    mTestLogger.getLastCronetEngineBuilderInfo();
+            assertThat(builderInfo).isNotNull();
+            assertThat(builderInfo.getCronetInitializationRef())
+                    .isEqualTo(info.cronetInitializationRef);
         } finally {
             CronetEngineBuilderImpl.sApiLevel = originalApiLevel;
         }
@@ -225,10 +234,11 @@ public final class CronetLoggerTest {
         // TODO(https://crbug.com/1521393): this is ugly. Ideally the test framework should be
         // refactored to stop violating the Single Responsibility Principle (e.g. Context management
         // and implementation selection should be separated)
-        new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        var builder = new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
         assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(1);
         var info = mTestLogger.getLastCronetEngineBuilderInitializedInfo();
         assertThat(info).isNotNull();
+        assertThat(info.cronetInitializationRef).isNotEqualTo(0);
         assertThat(info.author)
                 .isEqualTo(CronetLogger.CronetEngineBuilderInitializedInfo.Author.API);
         assertThat(info.engineBuilderCreatedLatencyMillis).isAtLeast(0);
@@ -237,6 +247,12 @@ public final class CronetLoggerTest {
         assertThat(info.apiVersion.getMajorVersion()).isGreaterThan(0);
         assertThat(info.implVersion.getMajorVersion()).isGreaterThan(0);
         assertThat(info.uid).isGreaterThan(0);
+
+        builder.build();
+        final CronetEngineBuilderInfo builderInfo = mTestLogger.getLastCronetEngineBuilderInfo();
+        assertThat(builderInfo).isNotNull();
+        assertThat(builderInfo.getCronetInitializationRef())
+                .isEqualTo(info.cronetInitializationRef);
     }
 
     @Test

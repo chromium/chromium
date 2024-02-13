@@ -81,6 +81,7 @@ public abstract class CronetLogger {
         private final String mExperimentalOptions;
         private final boolean mNetworkQualityEstimatorEnabled;
         private final int mThreadPriority;
+        private final long mCronetInitializationRef;
 
         public CronetEngineBuilderInfo(
                 boolean publicKeyPinningBypassForLocalTrustAnchorsEnabled,
@@ -92,7 +93,8 @@ public abstract class CronetLogger {
                 int httpCacheMode,
                 String experimentalOptions,
                 boolean networkQualityEstimatorEnabled,
-                int threadPriority) {
+                int threadPriority,
+                long cronetInitializationRef) {
             mPublicKeyPinningBypassForLocalTrustAnchorsEnabled =
                     publicKeyPinningBypassForLocalTrustAnchorsEnabled;
             mUserAgent = userAgent;
@@ -104,6 +106,7 @@ public abstract class CronetLogger {
             mExperimentalOptions = experimentalOptions;
             mNetworkQualityEstimatorEnabled = networkQualityEstimatorEnabled;
             mThreadPriority = threadPriority;
+            mCronetInitializationRef = cronetInitializationRef;
         }
 
         /** @return Whether public key pinning bypass for local trust anchors is enabled */
@@ -157,6 +160,10 @@ public abstract class CronetLogger {
         /** @return The thread priority of Cronet's internal thread */
         public int getThreadPriority() {
             return mThreadPriority;
+        }
+
+        public long getCronetInitializationRef() {
+            return mCronetInitializationRef;
         }
     }
 

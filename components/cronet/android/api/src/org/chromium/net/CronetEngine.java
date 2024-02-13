@@ -511,12 +511,12 @@ public abstract class CronetEngine {
                                     "Using '%s' provider for creating CronetEngine.Builder.",
                                     providerInfo.provider));
                 }
-                // TODO(b/313418339): populate cronetInitializationRef
                 var builderDelegate = providerInfo.provider.createBuilder().mBuilderDelegate;
                 var implCronetVersion = getImplCronetVersion(builderDelegate);
                 if (implCronetVersion != null) {
                     logInfo.implVersion = new CronetLogger.CronetVersion(implCronetVersion);
                 }
+                logInfo.cronetInitializationRef = builderDelegate.getLogCronetInitializationRef();
                 logInfo.creationSuccessful = true;
                 return builderDelegate;
             } finally {
