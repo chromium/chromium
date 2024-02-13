@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,9 +34,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/input/native_web_keyboard_event.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -114,13 +117,30 @@ void RecordMetricsChromeSigninInterceptStarted() {
   signin_metrics::LogSignInOffered(access_point);
 }
 
+std::string_view GetChromeSigninReactionString(
+    SigninInterceptionResult result) {
+  switch (result) {
+    case SigninInterceptionResult::kAccepted:
+      return "Accepted";
+    case SigninInterceptionResult::kDeclined:
+      return "Declined";
+    case SigninInterceptionResult::kDismissed:
+      return "Dismissed";
+    case SigninInterceptionResult::kAcceptedWithExistingProfile:
+    case SigninInterceptionResult::kIgnored:
+    case SigninInterceptionResult::kNotDisplayed:
+      NOTREACHED_NORETURN() << "These results should not be recorded or not "
+                               "expected for the Chrome Signin Bubble.";
+  }
+}
+
 void RecordChromeSigninInterceptResult(base::TimeTicks start_time,
-                                       bool accepted) {
+                                       SigninInterceptionResult result) {
   CHECK_NE(start_time, base::TimeTicks());
   constexpr std::string_view kBaseResponseTimeHistogram =
       "Signin.Intercept.ChromeSignin.ResponseTime";
 
-  std::string_view reaction = accepted ? "Accepted" : "Declined";
+  std::string_view reaction = GetChromeSigninReactionString(result);
   std::string reaction_time_histogram_name =
       base::StrCat({kBaseResponseTimeHistogram, reaction});
 
@@ -128,7 +148,7 @@ void RecordChromeSigninInterceptResult(base::TimeTicks start_time,
                                 base::TimeTicks::Now() - start_time);
 
   // Only record user action on successful signin inputs.
-  if (accepted) {
+  if (result == SigninInterceptionResult::kAccepted) {
     RecordSigninUserActionForAccessPoint(
         signin_metrics::AccessPoint::
             ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
@@ -137,7 +157,7 @@ void RecordChromeSigninInterceptResult(base::TimeTicks start_time,
 
 // `WebSigninInterceptor::SigninInterceptionType::kChromeSignin` is
 // protected by `switches::ExplicitBrowserSigninPhase::kExperimental`.
-bool ShouldInterceptAffectAvatarButton(
+bool ShouldUseExplicitBrowserSigninDesignUpdates(
     WebSigninInterceptor::SigninInterceptionType interception_type) {
   return switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
              switches::ExplicitBrowserSigninPhase::kFull) ||
@@ -280,7 +300,8 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  if (ShouldInterceptAffectAvatarButton(bubble_parameters.interception_type)) {
+  if (ShouldUseExplicitBrowserSigninDesignUpdates(
+          bubble_parameters.interception_type)) {
     // Adapt the identity pill, show the appropriate intercept text and disable
     // the button as long as the buble is opened.
     AvatarToolbarButton* button = GetAvatarToolbarButton(*browser);
@@ -317,23 +338,27 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
   switch (user_choice) {
     case SigninInterceptionUserChoice::kAccept:
       result = SigninInterceptionResult::kAccepted;
-      accepted_ = true;
       break;
     case SigninInterceptionUserChoice::kDecline:
       result = SigninInterceptionResult::kDeclined;
-      accepted_ = false;
       break;
   }
+  OnInterceptionResult(result);
+}
+
+void DiceWebSigninInterceptionBubbleView::OnInterceptionResult(
+    SigninInterceptionResult result) {
+  accepted_ = result == SigninInterceptionResult::kAccepted;
 
   if (bubble_parameters_.interception_type ==
       WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
-    RecordChromeSigninInterceptResult(chrome_signin_bubble_shown_time_,
-                                      accepted_);
+    RecordChromeSigninInterceptResult(chrome_signin_bubble_shown_time_, result);
   }
 
   RecordInterceptionResult(bubble_parameters_, profile_, result);
 
-  if (ShouldInterceptAffectAvatarButton(bubble_parameters_.interception_type)) {
+  if (ShouldUseExplicitBrowserSigninDesignUpdates(
+          bubble_parameters_.interception_type)) {
     AvatarToolbarButton* button = GetAvatarToolbarButton(*browser_);
     button->SetButtonActionDisabled(false);
     hide_avatar_text_callback_.RunAndReset();
@@ -351,6 +376,19 @@ void DiceWebSigninInterceptionBubbleView::OnWebUIUserChoice(
 content::WebContents*
 DiceWebSigninInterceptionBubbleView::GetBubbleWebContentsForTesting() {
   return web_view_->GetWebContents();
+}
+
+bool DiceWebSigninInterceptionBubbleView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  if (event.dom_key == ui::DomKey::ESCAPE &&
+      ShouldUseExplicitBrowserSigninDesignUpdates(
+          bubble_parameters_.interception_type)) {
+    OnInterceptionResult(SigninInterceptionResult::kDismissed);
+    return true;
+  }
+
+  return false;
 }
 
 // DiceWebSigninInterceptorDelegate --------------------------------------------

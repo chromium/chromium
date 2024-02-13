@@ -1001,6 +1001,7 @@ prefs when the profile is loaded.  -->
   <token key="Result">
     <variant name="Accepted" summary="accepted"/>
     <variant name="Declined" summary="declined"/>
+    <variant name="Dismissed" summary="dismissed"/>
   </token>
 </histogram>
 

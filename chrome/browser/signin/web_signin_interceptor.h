@@ -102,6 +102,8 @@ enum class SigninInterceptionUserChoice { kAccept, kDecline };
 enum class SigninInterceptionResult {
   kAccepted = 0,
   kDeclined = 1,
+  // The user did not interact with the intercept. This will be recoreded if the
+  // browser was closed without any interaction for example.
   kIgnored = 2,
 
   // Used when the bubble was not shown because it's not implemented.
@@ -111,7 +113,11 @@ enum class SigninInterceptionResult {
 
   kAcceptedWithExistingProfile = 5,
 
-  kMaxValue = kAcceptedWithExistingProfile,
+  // The user dismissed the intercept without an explicit Accept or Decline
+  // event, for example by pressing the Escape key.
+  kDismissed = 6,
+
+  kMaxValue = kDismissed,
 };
 
 // The ScopedWebSigninInterceptionBubbleHandle closes the signin intercept

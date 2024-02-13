@@ -512,6 +512,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Not displayed"/>
   <int value="4" label="Deprecated(10/23): Accepted with Guest"/>
   <int value="5" label="Accepted with existing profile"/>
+  <int value="6" label="Dismissed by user without explicit user response"/>
 </enum>
 
 <enum name="SigninInvalidGaiaCredentialsReason">

@@ -36,6 +36,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -44,6 +45,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -179,6 +182,24 @@ AvatarToolbarButton* GetAvatarButton(Browser* browser) {
       browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
   DCHECK(avatar_button);
   return avatar_button;
+}
+
+// Unable to use `content::SimulateKeyPress()` helper function since it sets
+// `event.skip_if_unhandled` to true which stops the propagation of the event to
+// the delegate web view.
+void SimulateEscapeKeyPress(content::WebContents* web_content) {
+  // Create the escape key press event.
+  content::NativeWebKeyboardEvent event(
+      blink::WebKeyboardEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers, base::TimeTicks::Now());
+  event.dom_key = ui::DomKey::ESCAPE;
+  event.dom_code = static_cast<int>(ui::DomCode::ESCAPE);
+
+  // Send the event to the Web Contents.
+  web_content->GetPrimaryMainFrame()
+      ->GetRenderViewHost()
+      ->GetWidget()
+      ->ForwardKeyboardEvent(event);
 }
 
 }  // namespace
@@ -367,9 +388,9 @@ class DiceWebSigninInterceptionBubbleBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle_;
 };
 
-// Tests that the callback is called once when the bubble is closed.
+// Tests that the callback is called once when the bubble is ignored.
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
-                       BubbleClosed) {
+                       BubbleIgnored) {
   base::HistogramTester histogram_tester;
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
       new DiceWebSigninInterceptionBubbleView(
@@ -391,8 +412,68 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kIgnored, 1);
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
                                       SigninInterceptionResult::kIgnored, 1);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+  // Make sure no other histograms are recorded.
+  base::HistogramTester::CountsMap expected_histogram_total_count = {
+      {"Signin.InterceptResult.MultiUser", 1},
+      {"Signin.InterceptResult.MultiUser.NoSync", 1},
+  };
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
+      testing::ContainerEq(expected_histogram_total_count));
+}
+
+class DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest
+    : public DiceWebSigninInterceptionBubbleBrowserTest {
+ private:
+  // Activates some new UI behaviors around dismissing the bubles.
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
+// Tests that the callback is called once when the bubble is dismissed.
+IN_PROC_BROWSER_TEST_F(
+    DiceWebSigninInterceptionBubbleWithExplicitBrowserSigninBrowserTest,
+    BubbleDismissed) {
+  base::HistogramTester histogram_tester;
+  // Creating the bubble through the static function.
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      DiceWebSigninInterceptionBubbleView::CreateBubble(
+          browser(), GetAvatarButton(), GetTestBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      static_cast<DiceWebSigninInterceptionBubbleView::ScopedHandle*>(
+          handle.get())
+          ->GetBubbleViewForTesting();
+
+  content::WaitForLoadStop(bubble->GetBubbleWebContentsForTesting());
+
+  views::Widget* widget = bubble->GetWidget();
+  widget->Show();
+  EXPECT_FALSE(callback_result_.has_value());
+
+  views::test::WidgetDestroyedWaiter waiter(widget);
+  SimulateEscapeKeyPress(bubble->GetBubbleWebContentsForTesting());
+  waiter.Wait();
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
+
+  // Check that histograms are recorded.
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser",
+                                      SigninInterceptionResult::kDismissed, 1);
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
+                                      SigninInterceptionResult::kDismissed, 1);
+  // Make sure no other histograms are recorded.
+  base::HistogramTester::CountsMap expected_histogram_total_count = {
+      {"Signin.InterceptResult.MultiUser", 1},
+      {"Signin.InterceptResult.MultiUser.NoSync", 1},
+  };
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
+      testing::ContainerEq(expected_histogram_total_count));
 }
 
 // Tests that the callback is called once when the bubble is declined.
@@ -422,8 +503,14 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kDeclined, 1);
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
                                       SigninInterceptionResult::kDeclined, 1);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+  // Make sure no other histograms are recorded.
+  base::HistogramTester::CountsMap expected_histogram_total_count = {
+      {"Signin.InterceptResult.MultiUser", 1},
+      {"Signin.InterceptResult.MultiUser.NoSync", 1},
+  };
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
+      testing::ContainerEq(expected_histogram_total_count));
 }
 
 // Tests that the callback is called once when the bubble is accepted. The
@@ -465,8 +552,14 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kAccepted, 1);
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
                                       SigninInterceptionResult::kAccepted, 1);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+  // Make sure no other histograms are recorded.
+  base::HistogramTester::CountsMap expected_histogram_total_count = {
+      {"Signin.InterceptResult.MultiUser", 1},
+      {"Signin.InterceptResult.MultiUser.NoSync", 1},
+  };
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
+      testing::ContainerEq(expected_histogram_total_count));
 }
 
 IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
@@ -524,8 +617,14 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
                                       SigninInterceptionResult::kIgnored, 1);
   histogram_tester.ExpectUniqueSample("Signin.InterceptResult.MultiUser.NoSync",
                                       SigninInterceptionResult::kIgnored, 1);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Enterprise", 0);
-  histogram_tester.ExpectTotalCount("Signin.InterceptResult.Switch", 0);
+  // Make sure no other histograms are recorded.
+  base::HistogramTester::CountsMap expected_histogram_total_count = {
+      {"Signin.InterceptResult.MultiUser", 1},
+      {"Signin.InterceptResult.MultiUser.NoSync", 1},
+  };
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Signin.InterceptResult."),
+      testing::ContainerEq(expected_histogram_total_count));
 }
 
 // Tests that clicking the Learn More link in the bubble opens the page in a new
@@ -620,10 +719,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
       1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 0);
+  base::HistogramTester::CountsMap expected_time_histogram_total_count = {
+      {"Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 1},
+  };
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.Intercept.ChromeSignin.ResponseTime"),
+              testing::ContainerEq(expected_time_histogram_total_count));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Signin_Impression_FromChromeSigninInterceptBubble"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -674,10 +775,66 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
       1);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.ChromeSignin.ResponseTimeAccepted", 0);
-  histogram_tester.ExpectTotalCount(
-      "Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 1);
+  base::HistogramTester::CountsMap expected_time_histogram_total_count = {
+      {"Signin.Intercept.ChromeSignin.ResponseTimeDeclined", 1},
+  };
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.Intercept.ChromeSignin.ResponseTime"),
+              testing::ContainerEq(expected_time_histogram_total_count));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "Signin_Impression_FromChromeSigninInterceptBubble"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "Signin_Signin_FromChromeSigninInterceptBubble"));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptionBubbleBrowserTest,
+                       ChromeSigninDismissed) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+
+  ASSERT_TRUE(GetAvatarButton()->GetEnabled());
+  // Creating the bubble through the static function.
+  std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> handle =
+      DiceWebSigninInterceptionBubbleView::CreateBubble(
+          browser(), GetAvatarButton(), GetTestChromeSigninBubbleParameters(),
+          base::BindOnce(&DiceWebSigninInterceptionBubbleBrowserTest::
+                             OnInterceptionComplete,
+                         base::Unretained(this)));
+  // `bubble` is owned by the view hierarchy.
+  DiceWebSigninInterceptionBubbleView* bubble =
+      static_cast<DiceWebSigninInterceptionBubbleView::ScopedHandle*>(
+          handle.get())
+          ->GetBubbleViewForTesting();
+
+  views::Widget* widget = bubble->GetWidget();
+  // Equivalent to `kInterceptionBubbleBaseHeight` default.
+  bubble->SetHeightAndShowWidget(/*height=*/500);
+  EXPECT_FALSE(callback_result_.has_value());
+  EXPECT_TRUE(GetAvatarButton()->IsButtonActionDisabled());
+
+  views::test::WidgetDestroyedWaiter closing_observer(widget);
+  EXPECT_FALSE(bubble->GetAccepted());
+  // Simulate dismissing the bubble by pressing the Escape key.
+  SimulateEscapeKeyPress(bubble->GetBubbleWebContentsForTesting());
+  // Widget will close now.
+  closing_observer.Wait();
+  ASSERT_TRUE(callback_result_.has_value());
+  EXPECT_EQ(callback_result_, SigninInterceptionResult::kDismissed);
+  EXPECT_FALSE(bubble->GetAccepted());
+  EXPECT_FALSE(GetAvatarButton()->IsButtonActionDisabled());
+
+  histogram_tester.ExpectUniqueSample("Signin.InterceptResult.ChromeSignin",
+                                      SigninInterceptionResult::kDismissed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE,
+      1);
+  base::HistogramTester::CountsMap expected_time_histogram_total_count = {
+      {"Signin.Intercept.ChromeSignin.ResponseTimeDismissed", 1},
+  };
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Signin.Intercept.ChromeSignin.ResponseTime"),
+              testing::ContainerEq(expected_time_histogram_total_count));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Signin_Impression_FromChromeSigninInterceptBubble"));
   EXPECT_EQ(0, user_action_tester.GetActionCount(
