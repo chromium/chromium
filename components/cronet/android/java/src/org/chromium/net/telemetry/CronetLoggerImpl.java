@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.impl.CronetLogger;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -68,10 +69,10 @@ public class CronetLoggerImpl extends CronetLogger {
                 info.cronetInitializationRef,
                 info.engineCreationLatencyMillis,
                 info.engineAsyncLatencyMillis,
-                /* http_flags_latency_millis= */ -1,
-                /* http_flags_successful= */ OptionalBoolean.UNSET.getValue(),
-                /* http_flags_names= */ null,
-                /* http_flags_values= */ null);
+                info.httpFlagsLatencyMillis,
+                OptionalBoolean.fromBoolean(info.httpFlagsSuccessful).getValue(),
+                longListToLongArray(info.httpFlagsNames),
+                longListToLongArray(info.httpFlagsValues));
     }
 
     @Override
@@ -245,5 +246,15 @@ public class CronetLoggerImpl extends CronetLogger {
             default:
                 throw new IllegalArgumentException("Expected httpCacheMode to range from 0 to 3");
         }
+    }
+
+    // Shamelessly copy-pasted from //base/android/java/src/org/chromium/base/CollectionUtil.java
+    // to avoid adding a large dependency on //base.
+    private static long[] longListToLongArray(List<Long> list) {
+        long[] array = new long[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            array[i] = list.get(i);
+        }
+        return array;
     }
 }

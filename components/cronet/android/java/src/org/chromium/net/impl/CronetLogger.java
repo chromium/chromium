@@ -5,6 +5,7 @@
 package org.chromium.net.impl;
 
 import java.time.Duration;
+import java.util.List;
 
 /** Base class for implementing a CronetLogger. */
 public abstract class CronetLogger {
@@ -75,7 +76,10 @@ public abstract class CronetLogger {
         public long cronetInitializationRef;
         public int engineCreationLatencyMillis = -1;
         public int engineAsyncLatencyMillis = -1;
-        // TODO(b/313418339): add the HTTP flags fields
+        public int httpFlagsLatencyMillis = -1;
+        public Boolean httpFlagsSuccessful;
+        public List<Long> httpFlagsNames;
+        public List<Long> httpFlagsValues;
     }
 
     /** Aggregates the information about a CronetEngine configuration. */

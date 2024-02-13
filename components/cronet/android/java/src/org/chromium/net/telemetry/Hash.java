@@ -14,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * Implements the hash encoding algorithm that is used in some Cronet telemetry fields for shoving
- * string data into a 64-bit integer.
+ * string or byte array data into a 64-bit integer.
  *
  * <p>The algorithm is defined as:
  *
@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
  *
  * <p>Exception: the encoding of an empty string is zero.
  */
-final class Hash {
+public final class Hash {
     private static final String TAG = CronetLoggerImpl.class.getSimpleName();
 
     private static MessageDigest getMd5MessageDigest() {
@@ -42,6 +42,17 @@ final class Hash {
     private static final MessageDigest MD5_MESSAGE_DIGEST = getMd5MessageDigest();
 
     /**
+     * Turns a byte array into its hashed representation for use in some Cronet telemetry fields.
+     *
+     * @return The hash of the byte array, or 0 if the string could not be hashed.
+     */
+    public static long hash(byte[] bytes) {
+        return (MD5_MESSAGE_DIGEST == null || bytes == null || bytes.length == 0)
+                ? 0
+                : ByteBuffer.wrap(MD5_MESSAGE_DIGEST.digest(bytes)).getLong();
+    }
+
+    /**
      * Turns a string into its hashed representation for use in some Cronet telemetry fields.
      *
      * @return The hash of the string, or 0 if the string could not be hashed.
@@ -49,6 +60,6 @@ final class Hash {
     public static long hash(String string) {
         return (MD5_MESSAGE_DIGEST == null || string == null || string.isEmpty())
                 ? 0
-                : ByteBuffer.wrap(MD5_MESSAGE_DIGEST.digest(string.getBytes(UTF_8))).getLong();
+                : hash(string.getBytes(UTF_8));
     }
 }

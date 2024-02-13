@@ -203,7 +203,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             mStartUptimeMillis = startUptimeMillis;
         }
 
-        public void setEngineCreationLatencyMillis() {
+        public void onUserThreadDone() {
             int elapsedTime = getElapsedTime();
             synchronized (mCronetInitializedInfo) {
                 assert mCronetInitializedInfo.engineCreationLatencyMillis < 0;
@@ -212,7 +212,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             }
         }
 
-        public void setEngineAsyncLatencyMillis() {
+        public void onInitThreadDone(CronetLibraryLoader.CronetInitializedInfo libraryLoaderInfo) {
+            mCronetInitializedInfo.httpFlagsLatencyMillis =
+                    libraryLoaderInfo.httpFlagsLatencyMillis;
+            mCronetInitializedInfo.httpFlagsSuccessful = libraryLoaderInfo.httpFlagsSuccessful;
+            mCronetInitializedInfo.httpFlagsNames = libraryLoaderInfo.httpFlagsNames;
+            mCronetInitializedInfo.httpFlagsValues = libraryLoaderInfo.httpFlagsValues;
+
             int elapsedTime = getElapsedTime();
             synchronized (mCronetInitializedInfo) {
                 assert mCronetInitializedInfo.engineAsyncLatencyMillis < 0;
@@ -323,13 +329,14 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                             // artificially inflate this latency. This is probably fine since this
                             // is unlikely to happen and even if it did happen, it would likely have
                             // a negligible impact on the metrics.
-                            cronetInitializedInfoLogger.setEngineAsyncLatencyMillis();
+                            cronetInitializedInfoLogger.onInitThreadDone(
+                                    CronetLibraryLoader.getCronetInitializedInfo());
                         }
                     }
                 });
 
         if (cronetInitializedInfoLogger != null) {
-            cronetInitializedInfoLogger.setEngineCreationLatencyMillis();
+            cronetInitializedInfoLogger.onUserThreadDone();
         }
     }
 
