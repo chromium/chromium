@@ -135,9 +135,6 @@
             android:label="@string/title_activity_thread_test"
             android:exported="true">
         </activity>
-        <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
-            android:exported="true"/>
-
         <activity
             android:name="org.chromium.webview_shell.PageCyclerTestActivity"
             android:label="@string/title_activity_page_cycler"

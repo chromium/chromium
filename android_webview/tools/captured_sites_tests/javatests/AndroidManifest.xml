@@ -16,8 +16,6 @@
          needed when building test cases. -->
     <application>
         <uses-library android:name="android.test.runner" />
-        <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
-            android:exported="true"/>
         <provider
             xmlns:tools="http://schemas.android.com/tools"
             android:name="androidx.startup.InitializationProvider"
