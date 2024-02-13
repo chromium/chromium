@@ -10,10 +10,20 @@ source_set("model") {
     "contextual_panel_tab_helper.mm",
   ]
   deps = [
+    ":public",
     "//base",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]
+}
+
+source_set("public") {
+  sources = [
+    "contextual_panel_item_configuration.h",
+    "contextual_panel_model.h",
+  ]
+
+  deps = [ "//base" ]
 }
