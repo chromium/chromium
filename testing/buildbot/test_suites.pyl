@@ -8082,6 +8082,7 @@
         'variants': [
           'AMD_RADEON_RX_5500_XT',
           'INTEL_UHD_630',
+          'NVIDIA_GEFORCE_GTX_1660',
         ],
       },
       'optimization_guide_nogpu_gtests': {
