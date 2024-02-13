@@ -739,7 +739,7 @@ BASE_FEATURE(kPrivateNetworkAccessForWorkersWarningOnly,
 //  - `kPrivateNetworkAccessRespectPreflightResults`
 BASE_FEATURE(kPrivateNetworkAccessForNavigations,
              "PrivateNetworkAccessForNavigations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Requires that CORS preflight requests succeed before sending private network
 // requests. This flag implies `kPrivateNetworkAccessSendPreflights`.

@@ -62,19 +62,20 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "pna-navigations-enabled",
-    "platforms": ["Linux", "Mac", "win"],
+    "prefix": "pna-navigations-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForNavigations",
+    "args": ["--disable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "pna-navigations-warning",
+    "prefix": "pna-navigations-enabled",
     "platforms": ["Linux", "Mac", "win"],
     "bases": ["external/wpt/fetch/private-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly",
+    "args": ["--enable-features=PrivateNetworkAccessForNavigations",
+             "--disable-features=PrivateNetworkAccessForNavigationsWarningOnly",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "owners": ["phao@google.com", "lyf@google.com"],
     "expires": "Jul 1, 2024"

@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] public to local, grandparent navigates: failure.
-  timeout adding grandchild
-[FAIL] public to local, grandparent navigates: success.
-  timeout adding grandchild
+  assert_equals: expected "timeout" but got "loaded"
 Harness: the test ran to completion.
 
