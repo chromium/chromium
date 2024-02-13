@@ -374,6 +374,14 @@ double CSSPrimitiveValue::ComputeNumber(
              : To<CSSNumericLiteralValue>(this)->ComputeNumber();
 }
 
+double CSSPrimitiveValue::ComputePercentage(
+    const CSSLengthResolver& length_resolver) const {
+  DCHECK(IsPercentage());
+  return IsCalculated() ? To<CSSMathFunctionValue>(this)->ComputePercentage(
+                              length_resolver)
+                        : To<CSSNumericLiteralValue>(this)->ComputePercentage();
+}
+
 double CSSPrimitiveValue::ComputeLengthDouble(
     const CSSLengthResolver& length_resolver) const {
   if (IsCalculated()) {

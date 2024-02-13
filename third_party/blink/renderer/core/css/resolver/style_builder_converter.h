@@ -86,7 +86,8 @@ class StyleBuilderConverterBase {
   STATIC_ONLY(StyleBuilderConverterBase);
 
  public:
-  static FontSelectionValue ConvertFontStretch(const CSSValue&);
+  static FontSelectionValue ConvertFontStretch(const CSSLengthResolver&,
+                                               const CSSValue&);
   static FontSelectionValue ConvertFontStyle(const CSSValue&);
   static FontSelectionValue ConvertFontWeight(const CSSValue&,
                                               FontSelectionValue);
@@ -150,6 +151,8 @@ class StyleBuilderConverter {
   static FontSizeAdjust ConvertFontSizeAdjust(StyleResolverState&,
                                               const CSSValue&);
 
+  static std::optional<FontSelectionValue> ConvertFontStretchKeyword(
+      const CSSValue&);
   static FontSelectionValue ConvertFontStretch(StyleResolverState&,
                                                const CSSValue&);
   static FontSelectionValue ConvertFontStyle(StyleResolverState&,

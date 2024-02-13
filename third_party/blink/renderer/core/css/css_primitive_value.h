@@ -392,6 +392,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   int ComputeInteger(const CSSLengthResolver&) const;
   double ComputeNumber(const CSSLengthResolver&) const;
+  double ComputePercentage(const CSSLengthResolver&) const;
 
   static const char* UnitTypeToString(UnitType);
   static UnitType StringToUnitType(StringView string) {

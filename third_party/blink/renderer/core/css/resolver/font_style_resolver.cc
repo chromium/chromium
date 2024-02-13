@@ -53,6 +53,7 @@ FontDescription FontStyleResolver::ComputeFont(
   // CSSPropertyID::kFontStretch
   if (property_set.HasProperty(CSSPropertyID::kFontStretch)) {
     builder.SetStretch(StyleBuilderConverterBase::ConvertFontStretch(
+        conversion_data,
         *property_set.GetPropertyCSSValue(CSSPropertyID::kFontStretch)));
   }
 

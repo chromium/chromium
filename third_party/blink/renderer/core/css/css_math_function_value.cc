@@ -114,6 +114,16 @@ double CSSMathFunctionValue::ComputeNumber(
   return std::isnan(value) ? 0.0 : value;
 }
 
+double CSSMathFunctionValue::ComputePercentage(
+    const CSSLengthResolver& length_resolver) const {
+  // |CSSToLengthConversionData| only resolves relative length units, but not
+  // percentages.
+  DCHECK_EQ(kCalcPercent, expression_->Category());
+  double value =
+      ClampToPermittedRange(expression_->ComputeNumber(length_resolver));
+  return std::isnan(value) ? 0.0 : value;
+}
+
 double CSSMathFunctionValue::ComputeDotsPerPixel() const {
   DCHECK_EQ(kCalcResolution, expression_->Category());
   return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());

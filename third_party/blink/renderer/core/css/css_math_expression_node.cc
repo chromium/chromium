@@ -795,6 +795,7 @@ double CSSMathExpressionNumericLiteral::ComputeDouble(
   switch (category_) {
     case kCalcLength:
       return value_->ComputeLengthPx(length_resolver);
+    case kCalcPercent:
     case kCalcNumber:
       return value_->DoubleValue();
     case kCalcAngle:
@@ -806,7 +807,6 @@ double CSSMathExpressionNumericLiteral::ComputeDouble(
     case kCalcFrequency:
       return value_->ComputeInCanonicalUnit();
     case kCalcPercentLength:
-    case kCalcPercent:
     case kCalcOther:
     case kCalcIdent:
       NOTREACHED();
