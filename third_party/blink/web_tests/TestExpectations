@@ -719,9 +719,6 @@ crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-sta
 
 crbug.com/1271275 external/wpt/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ Failure ]
 
-# Minor pixel differences
-crbug.com/1056492 external/wpt/svg/painting/reftests/marker-path-001.svg [ Failure ]
-
 crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.html [ Failure ]
 
 crbug.com/1196414 compositing/composited-replaced-subpixel-location.html [ Failure ]
