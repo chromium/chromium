@@ -916,6 +916,8 @@ void EnclaveManager::ResetActionState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   store_keys_args_for_joining_.reset();
+  user_verifying_key_.reset();
+  user_verifying_key_provider_.reset();
   hardware_key_.reset();
   new_security_domain_secrets_.clear();
   join_request_.reset();
@@ -1037,7 +1039,7 @@ void EnclaveManager::StartEnclaveRegistration() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = State::kGeneratingKeys;
 
-  auto uv_provider = crypto::GetUserVerifyingKeyProvider();
+  user_verifying_key_provider_ = crypto::GetUserVerifyingKeyProvider();
   std::optional<crypto::UserVerifyingKeyLabel> key_label;
   // TODO(enclave): Reusing the label makes sense on Windows because it will
   // overwrite the existing key with a new one. This might be different on
@@ -1049,14 +1051,14 @@ void EnclaveManager::StartEnclaveRegistration() {
   if (!key_label) {
     key_label = CreateUserVerifyingKeyLabel();
   }
-  if (!uv_provider || !key_label) {
-    // Null `uv_provider` means the current platform does not support user-
-    // verifying keys.
+  if (!user_verifying_key_provider_ || !key_label) {
+    // Null `user_verifying_key_provider_` means the current platform does not
+    // support user-verifying keys.
     // nullopt for |key_label| means Chrome does not support them on this OS.
     GenerateHardwareKey(nullptr);
     return;
   }
-  uv_provider->GenerateUserVerifyingSigningKey(
+  user_verifying_key_provider_->GenerateUserVerifyingSigningKey(
       *key_label, kSigningAlgorithms,
       base::BindOnce(&EnclaveManager::GenerateHardwareKey,
                      weak_ptr_factory_.GetWeakPtr()));

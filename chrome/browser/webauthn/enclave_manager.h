@@ -31,6 +31,7 @@ class Value;
 
 namespace crypto {
 class UnexportableSigningKey;
+class UserVerifyingKeyProvider;
 class UserVerifyingSigningKey;
 }  // namespace crypto
 
@@ -244,6 +245,8 @@ class EnclaveManager : public KeyedService {
   // reset.
   std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
   std::unique_ptr<crypto::UserVerifyingSigningKey> user_verifying_key_;
+  std::unique_ptr<crypto::UserVerifyingKeyProvider>
+      user_verifying_key_provider_;
   std::unique_ptr<crypto::UnexportableSigningKey> hardware_key_;
   base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets_;
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request> join_request_;
