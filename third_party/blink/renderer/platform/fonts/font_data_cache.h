@@ -33,13 +33,9 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 
 namespace blink {
-
-enum ShouldRetain { kRetain, kDoNotRetain };
-enum PurgeSeverity { kPurgeIfNeeded, kForcePurge };
 
 struct FontDataCacheKeyHashTraits : GenericHashTraits<const FontPlatformData*> {
   STATIC_ONLY(FontDataCacheKeyHashTraits);
@@ -55,36 +51,24 @@ struct FontDataCacheKeyHashTraits : GenericHashTraits<const FontPlatformData*> {
 };
 
 class FontDataCache final {
-  USING_FAST_MALLOC(FontDataCache);
+  DISALLOW_NEW();
 
  public:
-  static std::unique_ptr<FontDataCache> Create();
-
   FontDataCache() = default;
   FontDataCache(const FontDataCache&) = delete;
   FontDataCache& operator=(const FontDataCache&) = delete;
 
-  scoped_refptr<SimpleFontData> Get(const FontPlatformData*,
-                                    ShouldRetain = kRetain,
-                                    bool subpixel_ascent_descent = false);
-  bool Contains(const FontPlatformData*) const;
-  void Release(const SimpleFontData*);
+  void Trace(Visitor* visitor) const { visitor->Trace(cache_); }
 
-  // Purges items in FontDataCache according to provided severity.
-  // Returns true if any removal of cache items actually occurred.
-  bool Purge(PurgeSeverity);
+  const SimpleFontData* Get(const FontPlatformData*,
+                            bool subpixel_ascent_descent = false);
+  void Clear() { cache_.clear(); }
 
  private:
-  bool PurgeLeastRecentlyUsed(int count);
-
-  typedef HashMap<const FontPlatformData*,
-                  std::pair<scoped_refptr<SimpleFontData>, unsigned>,
-                  FontDataCacheKeyHashTraits>
-      Cache;
-
-  Cache cache_;
-  LinkedHashSet<scoped_refptr<SimpleFontData>> inactive_font_data_;
-  bool is_purging_ = false;
+  HeapHashMap<Member<const FontPlatformData>,
+              WeakMember<const SimpleFontData>,
+              FontDataCacheKeyHashTraits>
+      cache_;
 };
 
 }  // namespace blink

@@ -127,7 +127,7 @@ Vector<double> CachingWordShaper::IndividualCharacterAdvances(
                                             total_width);
 }
 
-Vector<ShapeResult::RunFontData> CachingWordShaper::GetRunFontData(
+HeapVector<ShapeResult::RunFontData> CachingWordShaper::GetRunFontData(
     const TextRun& run) const {
   ShapeResultBuffer buffer;
   ShapeResultsForRun(GetShapeCache(), &font_, run, &buffer);

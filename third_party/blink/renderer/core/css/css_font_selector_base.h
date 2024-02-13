@@ -46,23 +46,23 @@ class CORE_EXPORT CSSFontSelectorBase : public FontSelector {
   void ReportFontLookupByUniqueOrFamilyName(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) override;
+      const SimpleFontData* resulting_font_data) override;
 
   void ReportFontLookupByUniqueNameOnly(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data,
+      const SimpleFontData* resulting_font_data,
       bool is_loading_fallback = false) override;
 
   void ReportFontLookupByFallbackCharacter(
       UChar32 fallback_character,
       FontFallbackPriority fallback_priority,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) override;
+      const SimpleFontData* resulting_font_data) override;
 
   void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) override;
+      const SimpleFontData* resulting_font_data) override;
 
   void ReportFontFamilyLookupByGenericFamily(
       const AtomicString& generic_font_family_name,

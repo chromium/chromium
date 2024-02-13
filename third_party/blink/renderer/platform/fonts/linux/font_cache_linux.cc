@@ -62,7 +62,7 @@ bool FontCache::GetFontForCharacter(UChar32 c,
   }
 }
 
-scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
+const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 c,
     const SimpleFontData*,
@@ -77,11 +77,9 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     AtomicString family_name = GetFamilyNameForCharacter(
         font_manager_.get(), c, font_description, nullptr, fallback_priority);
     if (family_name.empty())
-      return GetLastResortFallbackFont(font_description, kDoNotRetain);
-    return FontDataFromFontPlatformData(
-        GetFontPlatformData(font_description,
-                            FontFaceCreationParams(family_name)),
-        kDoNotRetain);
+      return GetLastResortFallbackFont(font_description);
+    return FontDataFromFontPlatformData(GetFontPlatformData(
+        font_description, FontFaceCreationParams(family_name)));
   }
 
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
@@ -96,7 +94,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (fallback_priority != FontFallbackPriority::kEmojiEmoji &&
       (font_description.Style() == kItalicSlopeValue ||
        font_description.Weight() >= kBoldThreshold)) {
-    scoped_refptr<SimpleFontData> font_data =
+    const SimpleFontData* font_data =
         FallbackOnStandardFontStyle(font_description, c);
     if (font_data)
       return font_data;
@@ -139,16 +137,16 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     description.SetStyle(kNormalSlopeValue);
   }
 
-  FontPlatformData* substitute_platform_data =
+  const FontPlatformData* substitute_platform_data =
       GetFontPlatformData(description, creation_params);
   if (!substitute_platform_data)
     return nullptr;
 
-  std::unique_ptr<FontPlatformData> platform_data(
-      new FontPlatformData(*substitute_platform_data));
+  FontPlatformData* platform_data =
+      MakeGarbageCollected<FontPlatformData>(*substitute_platform_data);
   platform_data->SetSyntheticBold(should_set_synthetic_bold);
   platform_data->SetSyntheticItalic(should_set_synthetic_italic);
-  return FontDataFromFontPlatformData(platform_data.get(), kDoNotRetain);
+  return FontDataFromFontPlatformData(platform_data);
 }
 
 }  // namespace blink

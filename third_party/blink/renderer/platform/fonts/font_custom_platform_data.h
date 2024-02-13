@@ -68,7 +68,7 @@ class PLATFORM_EXPORT FontCustomPlatformData
   // adjusted_specified_size should come from AdjustedSpecifiedSize() of
   // FontDescription. The latter is needed for correctly applying
   // font-optical-sizing: auto; independent of zoom level.
-  FontPlatformData GetFontPlatformData(
+  const FontPlatformData* GetFontPlatformData(
       float size,
       float adjusted_specified_size,
       bool bold,

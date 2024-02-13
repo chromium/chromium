@@ -75,35 +75,35 @@ void CSSFontSelectorBase::ReportFailedLocalFontMatch(
 void CSSFontSelectorBase::ReportFontLookupByUniqueOrFamilyName(
     const AtomicString& name,
     const FontDescription& font_description,
-    scoped_refptr<SimpleFontData> resulting_font_data) {
+    const SimpleFontData* resulting_font_data) {
   GetFontMatchingMetrics()->ReportFontLookupByUniqueOrFamilyName(
-      name, font_description, resulting_font_data.get());
+      name, font_description, resulting_font_data);
 }
 
 void CSSFontSelectorBase::ReportFontLookupByUniqueNameOnly(
     const AtomicString& name,
     const FontDescription& font_description,
-    scoped_refptr<SimpleFontData> resulting_font_data,
+    const SimpleFontData* resulting_font_data,
     bool is_loading_fallback) {
   GetFontMatchingMetrics()->ReportFontLookupByUniqueNameOnly(
-      name, font_description, resulting_font_data.get(), is_loading_fallback);
+      name, font_description, resulting_font_data, is_loading_fallback);
 }
 
 void CSSFontSelectorBase::ReportFontLookupByFallbackCharacter(
     UChar32 fallback_character,
     FontFallbackPriority fallback_priority,
     const FontDescription& font_description,
-    scoped_refptr<SimpleFontData> resulting_font_data) {
+    const SimpleFontData* resulting_font_data) {
   GetFontMatchingMetrics()->ReportFontLookupByFallbackCharacter(
       fallback_character, fallback_priority, font_description,
-      resulting_font_data.get());
+      resulting_font_data);
 }
 
 void CSSFontSelectorBase::ReportLastResortFallbackFontLookup(
     const FontDescription& font_description,
-    scoped_refptr<SimpleFontData> resulting_font_data) {
+    const SimpleFontData* resulting_font_data) {
   GetFontMatchingMetrics()->ReportLastResortFallbackFontLookup(
-      font_description, resulting_font_data.get());
+      font_description, resulting_font_data);
 }
 
 void CSSFontSelectorBase::ReportNotDefGlyph() const {

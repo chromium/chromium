@@ -127,7 +127,7 @@ sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
   return nullptr;
 }
 
-scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
+const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 c,
     const SimpleFontData*,
@@ -158,7 +158,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji &&
       base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
     auto skia_fallback_is_noto_color_emoji = [&]() {
-      FontPlatformData* skia_fallback_result = GetFontPlatformData(
+      const FontPlatformData* skia_fallback_result = GetFontPlatformData(
           font_description, FontFaceCreationParams(family_name));
 
       // Determining the PostScript name is required as Skia on Android gives
@@ -175,15 +175,14 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     };
 
     if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
-      FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
+      const FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
       if (emoji_gms_core_font) {
         SkTypeface* probe_coverage_typeface = emoji_gms_core_font->Typeface();
         if (probe_coverage_typeface &&
             probe_coverage_typeface->unicharToGlyph(c)) {
-          return FontDataFromFontPlatformData(emoji_gms_core_font,
-                                              kDoNotRetain);
+          return FontDataFromFontPlatformData(emoji_gms_core_font);
         }
       }
     }
@@ -193,12 +192,10 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // font was not found or an OEM emoji font was not to be overridden.
 
   if (family_name.empty())
-    return GetLastResortFallbackFont(font_description, kDoNotRetain);
+    return GetLastResortFallbackFont(font_description);
 
-  return FontDataFromFontPlatformData(
-      GetFontPlatformData(font_description,
-                          FontFaceCreationParams(family_name)),
-      kDoNotRetain);
+  return FontDataFromFontPlatformData(GetFontPlatformData(
+      font_description, FontFaceCreationParams(family_name)));
 }
 
 // static

@@ -85,8 +85,8 @@ void FontFaceCache::CapabilitiesSet::AddFontFace(FontFace* font_face,
   const auto result =
       map_.insert(font_face->GetFontSelectionCapabilities(), nullptr);
   if (result.is_new_entry) {
-    result.stored_value->value =
-        CSSSegmentedFontFace::Create(font_face->GetFontSelectionCapabilities());
+    result.stored_value->value = MakeGarbageCollected<CSSSegmentedFontFace>(
+        font_face->GetFontSelectionCapabilities());
   }
 
   result.stored_value->value->AddFontFace(font_face, css_connected);

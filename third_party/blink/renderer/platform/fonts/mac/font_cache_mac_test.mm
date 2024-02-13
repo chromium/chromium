@@ -47,7 +47,7 @@ class FontCacheMacTest : public testing::TestWithParam<FontSelectionValue> {
       FontDescription font_description =
           CreateFontDescriptionWithFontSynthesisNone(weight, kNormalSlopeValue,
                                                      kNormalWidthValue);
-      std::unique_ptr<FontPlatformData> font_platform_data =
+      const FontPlatformData* font_platform_data =
           font_cache.CreateFontPlatformData(
               font_description,
               FontFaceCreationParams(font_family_names::kSystemUi), size);

@@ -614,7 +614,6 @@ component("platform") {
     "fonts/font_cache_memory_dump_provider.h",
     "fonts/font_custom_platform_data.cc",
     "fonts/font_custom_platform_data.h",
-    "fonts/font_data.cc",
     "fonts/font_data.h",
     "fonts/font_data_cache.cc",
     "fonts/font_data_cache.h",

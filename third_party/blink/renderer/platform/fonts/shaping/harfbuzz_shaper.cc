@@ -784,7 +784,7 @@ void HarfBuzzShaper::ShapeSegment(
     fallback_chars_hint.ReserveInitialCapacity(range_data->end -
                                                range_data->start);
   }
-  scoped_refptr<FontDataForRangeSet> current_font_data_for_range_set;
+  FontDataForRangeSet* current_font_data_for_range_set = nullptr;
   while (!range_data->reshape_queue.empty()) {
     ReshapeQueueItem current_queue_item = range_data->reshape_queue.TakeFirst();
 
@@ -847,7 +847,7 @@ void HarfBuzzShaper::ShapeSegment(
     if (needs_caps_handling) {
       case_map_intend = caps_support.NeedsCaseChange(small_caps_behavior);
       if (caps_support.NeedsSyntheticFont(small_caps_behavior))
-        adjusted_font = font_data->SmallCapsFontData(font_description).get();
+        adjusted_font = font_data->SmallCapsFontData(font_description);
     }
 
     CaseMappingHarfBuzzBufferFiller(

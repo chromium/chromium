@@ -52,23 +52,22 @@ bool LocalFontFaceSource::IsLocalFontAvailable(
   return font_available;
 }
 
-scoped_refptr<SimpleFontData>
-LocalFontFaceSource::CreateLoadingFallbackFontData(
+const SimpleFontData* LocalFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
   FontCachePurgePreventer font_cache_purge_preventer;
-  scoped_refptr<SimpleFontData> temporary_font =
-      FontCache::Get().GetLastResortFallbackFont(font_description,
-                                                 kDoNotRetain);
+  const SimpleFontData* temporary_font =
+      FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
     NOTREACHED();
     return nullptr;
   }
-  scoped_refptr<CSSCustomFontData> css_font_data =
-      CSSCustomFontData::Create(this, CSSCustomFontData::kVisibleFallback);
-  return SimpleFontData::Create(temporary_font->PlatformData(), css_font_data);
+  CSSCustomFontData* css_font_data = MakeGarbageCollected<CSSCustomFontData>(
+      this, CSSCustomFontData::kVisibleFallback);
+  return MakeGarbageCollected<SimpleFontData>(&temporary_font->PlatformData(),
+                                              css_font_data);
 }
 
-scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
+const SimpleFontData* LocalFontFaceSource::CreateFontData(
     const FontDescription& font_description,
     const FontSelectionCapabilities&) {
   if (!IsValid()) {
@@ -85,9 +84,9 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
   }
 
   if (IsValid() && IsLoading()) {
-    scoped_refptr<SimpleFontData> fallback_font_data =
+    const SimpleFontData* fallback_font_data =
         CreateLoadingFallbackFontData(font_description);
-    ReportFontLookup(font_description, fallback_font_data.get(),
+    ReportFontLookup(font_description, fallback_font_data,
                      true /* is_loading_fallback */);
     return fallback_font_data;
   }
@@ -111,10 +110,10 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
 #endif
   // TODO(https://crbug.com/1302264): Enable passing down of font-palette
   // information here (font_description.GetFontPalette()).
-  scoped_refptr<SimpleFontData> font_data = FontCache::Get().GetFontData(
+  const SimpleFontData* font_data = FontCache::Get().GetFontData(
       unstyled_description, font_name_, AlternateFontName::kLocalUniqueFace);
-  histograms_.Record(font_data.get());
-  ReportFontLookup(unstyled_description, font_data.get());
+  histograms_.Record(font_data);
+  ReportFontLookup(unstyled_description, font_data);
   return font_data;
 }
 
@@ -133,7 +132,7 @@ void LocalFontFaceSource::BeginLoadIfNeeded() {
 }
 
 void LocalFontFaceSource::NotifyFontUniqueNameLookupReady() {
-  PruneTable();
+  ClearTable();
 
   if (face_->FontLoaded(this)) {
     font_selector_->FontFaceInvalidated(
@@ -169,7 +168,7 @@ void LocalFontFaceSource::Trace(Visitor* visitor) const {
 
 void LocalFontFaceSource::ReportFontLookup(
     const FontDescription& font_description,
-    SimpleFontData* font_data,
+    const SimpleFontData* font_data,
     bool is_loading_fallback) {
   font_selector_->ReportFontLookupByUniqueNameOnly(
       font_name_, font_description, font_data, is_loading_fallback);

@@ -743,7 +743,7 @@ TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
       u"\u3000");  // IDEOGRAPHIC SPACE
   HarfBuzzShaper shaper(string);
   const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);
-  Vector<ShapeResult::RunFontData> run_font_data;
+  HeapVector<ShapeResult::RunFontData> run_font_data;
   result->GetRunFontData(&run_font_data);
   EXPECT_EQ(run_font_data.size(), 1u);
 }

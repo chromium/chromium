@@ -113,7 +113,7 @@ static bool CanLoadInProcess(ScopedCFTypeRef<CTFontRef> ct_font) {
          kCFCompareEqualTo;
 }
 
-std::unique_ptr<FontPlatformData> FontPlatformDataFromCTFont(
+const FontPlatformData* FontPlatformDataFromCTFont(
     ScopedCFTypeRef<CTFontRef> ct_font,
     float size,
     float specified_size,
@@ -136,7 +136,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromCTFont(
                                          &synthetic_italic, &text_rendering,
                                          resolved_font_features,
                                          &orientation]() {
-    return std::make_unique<FontPlatformData>(
+    return MakeGarbageCollected<FontPlatformData>(
         std::move(typeface), std::string(), size, synthetic_bold,
         synthetic_italic, text_rendering, resolved_font_features, orientation);
   };

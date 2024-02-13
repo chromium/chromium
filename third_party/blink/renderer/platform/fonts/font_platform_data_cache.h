@@ -31,13 +31,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PLATFORM_DATA_CACHE_H_
 
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 enum class AlternateFontName;
 class FontCache;
-class FontDataCache;
 class FontDescription;
 class FontFaceCreationParams;
 class FontPlatformData;
@@ -45,30 +45,23 @@ class FontPlatformData;
 // `FontPlatformDataCache` is the shared cache mapping from `FontDescription`
 // to `FontPlatformData`.
 class FontPlatformDataCache final {
+  DISALLOW_NEW();
+
  public:
-  static std::unique_ptr<FontPlatformDataCache> Create();
-
   FontPlatformDataCache();
-  ~FontPlatformDataCache();
 
-  FontPlatformDataCache(const FontPlatformDataCache&) = delete;
-  FontPlatformDataCache(FontPlatformDataCache&&) = delete;
+  void Trace(Visitor* visitor) const { visitor->Trace(map_); }
 
-  FontPlatformDataCache operator=(const FontPlatformDataCache&) = delete;
-  FontPlatformDataCache operator=(FontPlatformDataCache&&) = delete;
-
-  FontPlatformData* GetOrCreateFontPlatformData(
+  const FontPlatformData* GetOrCreateFontPlatformData(
       FontCache* font_cache,
       const FontDescription& font_description,
       const FontFaceCreationParams& creation_params,
       AlternateFontName alternate_font_name);
 
-  size_t ByteSize() const;
-  void Clear();
-  void Purge(const FontDataCache& font_data_cache);
+  void Clear() { map_.clear(); }
 
  private:
-  HashMap<FontCacheKey, std::unique_ptr<FontPlatformData>> map_;
+  HeapHashMap<FontCacheKey, WeakMember<const FontPlatformData>> map_;
 
   // A maximum float value to which we limit incoming font sizes. This is the
   // smallest float so that multiplying it by

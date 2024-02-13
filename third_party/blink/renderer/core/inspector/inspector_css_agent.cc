@@ -124,6 +124,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -201,10 +202,10 @@ HeapVector<Member<CSSStyleRule>> FilterDuplicateRules(
 }
 
 void CollectPlatformFontsFromRunFontDataList(
-    const Vector<ShapeResult::RunFontData>& run_font_data_list,
+    const HeapVector<ShapeResult::RunFontData>& run_font_data_list,
     HashMap<std::pair<int, String>, std::pair<int, String>>* font_stats) {
   for (const auto& run_font_data : run_font_data_list) {
-    const auto* simple_font_data = run_font_data.font_data_;
+    const auto* simple_font_data = run_font_data.font_data_.Get();
     String family_name = simple_font_data->PlatformData().FontFamilyName();
     if (family_name.IsNull())
       family_name = "";
@@ -1697,7 +1698,8 @@ void InspectorCSSAgent::CollectPlatformFontsForLayoutObject(
     if (!shape_result) {
       continue;
     }
-    Vector<ShapeResult::RunFontData> run_font_data_list;
+    HeapVector<ShapeResult::RunFontData> run_font_data_list;
+    ClearCollectionScope clear_scope(&run_font_data_list);
     shape_result->GetRunFontData(&run_font_data_list);
     CollectPlatformFontsFromRunFontDataList(run_font_data_list, font_stats);
   }

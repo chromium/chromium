@@ -43,23 +43,26 @@ class TestFontSelector : public FontSelector {
   }
   ~TestFontSelector() override = default;
 
-  scoped_refptr<FontData> GetFontData(const FontDescription& font_description,
-                                      const FontFamily&) override {
+  FontData* GetFontData(const FontDescription& font_description,
+                        const FontFamily&) override {
     FontSelectionCapabilities normal_capabilities(
         {kNormalWidthValue, kNormalWidthValue},
         {kNormalSlopeValue, kNormalSlopeValue},
         {kNormalWeightValue, kNormalWeightValue});
-    FontPlatformData platform_data = custom_platform_data_->GetFontPlatformData(
-        font_description.EffectiveFontSize(),
-        font_description.AdjustedSpecifiedSize(),
-        font_description.IsSyntheticBold() &&
-            font_description.SyntheticBoldAllowed(),
-        font_description.IsSyntheticItalic() &&
-            font_description.SyntheticItalicAllowed(),
-        font_description.GetFontSelectionRequest(), normal_capabilities,
-        font_description.FontOpticalSizing(), font_description.TextRendering(),
-        {}, font_description.Orientation());
-    return SimpleFontData::Create(platform_data, CustomFontData::Create());
+    const FontPlatformData* platform_data =
+        custom_platform_data_->GetFontPlatformData(
+            font_description.EffectiveFontSize(),
+            font_description.AdjustedSpecifiedSize(),
+            font_description.IsSyntheticBold() &&
+                font_description.SyntheticBoldAllowed(),
+            font_description.IsSyntheticItalic() &&
+                font_description.SyntheticItalicAllowed(),
+            font_description.GetFontSelectionRequest(), normal_capabilities,
+            font_description.FontOpticalSizing(),
+            font_description.TextRendering(), {},
+            font_description.Orientation());
+    return MakeGarbageCollected<SimpleFontData>(
+        platform_data, MakeGarbageCollected<CustomFontData>());
   }
 
   void WillUseFontData(const FontDescription&,
@@ -80,20 +83,20 @@ class TestFontSelector : public FontSelector {
   void ReportFontLookupByUniqueOrFamilyName(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) override {}
+      const SimpleFontData* resulting_font_data) override {}
   void ReportFontLookupByUniqueNameOnly(
       const AtomicString& name,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data,
+      const SimpleFontData* resulting_font_data,
       bool is_loading_fallback = false) override {}
   void ReportFontLookupByFallbackCharacter(
       UChar32 hint,
       FontFallbackPriority fallback_priority,
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) override {}
+      const SimpleFontData* resulting_font_data) override {}
   void ReportLastResortFallbackFontLookup(
       const FontDescription& font_description,
-      scoped_refptr<SimpleFontData> resulting_font_data) override {}
+      const SimpleFontData* resulting_font_data) override {}
   void ReportNotDefGlyph() const override {}
   void ReportEmojiSegmentGlyphCoverage(unsigned, unsigned) override {}
   ExecutionContext* GetExecutionContext() const override { return nullptr; }

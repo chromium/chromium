@@ -164,7 +164,7 @@ bool TraitsMismatch(CTFontSymbolicTraits desired_traits,
   return (desired_traits & TraitsMask) != (found_traits & TraitsMask);
 }
 
-std::unique_ptr<FontPlatformData> GetAlternateFontPlatformData(
+const FontPlatformData* GetAlternateFontPlatformData(
     const FontDescription& font_description,
     UChar32 character,
     const FontPlatformData& platform_data) {
@@ -293,22 +293,22 @@ static inline bool IsAppKitFontWeightBold(NSInteger app_kit_font_weight) {
   return app_kit_font_weight >= 7;
 }
 
-scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
+const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 character,
     const SimpleFontData* font_data_to_substitute,
     FontFallbackPriority fallback_priority) {
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji) {
-    scoped_refptr<SimpleFontData> emoji_font =
-        GetFontData(font_description, AtomicString(kColorEmojiFontMac));
-    if (emoji_font)
+    if (const SimpleFontData* emoji_font =
+            GetFontData(font_description, AtomicString(kColorEmojiFontMac))) {
       return emoji_font;
+    }
   }
 
   const FontPlatformData& platform_data =
       font_data_to_substitute->PlatformData();
 
-  std::unique_ptr<FontPlatformData> alternate_font;
+  const FontPlatformData* alternate_font = nullptr;
   if (RuntimeEnabledFeatures::FontMatchingCTMigrationEnabled()) {
     alternate_font = GetAlternateFontPlatformData(font_description, character,
                                                   platform_data);
@@ -421,18 +421,17 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (!alternate_font)
     return nullptr;
 
-  return FontDataFromFontPlatformData(alternate_font.get(), kDoNotRetain);
+  return FontDataFromFontPlatformData(alternate_font);
 }
 
-scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
-    const FontDescription& font_description,
-    ShouldRetain should_retain) {
+const SimpleFontData* FontCache::GetLastResortFallbackFont(
+    const FontDescription& font_description) {
   // FIXME: Would be even better to somehow get the user's default font here.
   // For now we'll pick the default that the user would get without changing
   // any prefs.
-  scoped_refptr<SimpleFontData> simple_font_data =
+  const SimpleFontData* simple_font_data =
       GetFontData(font_description, font_family_names::kTimes,
-                  AlternateFontName::kAllowAlternate, should_retain);
+                  AlternateFontName::kAllowAlternate);
   if (simple_font_data)
     return simple_font_data;
 
@@ -441,10 +440,10 @@ scoped_refptr<SimpleFontData> FontCache::GetLastResortFallbackFont(
   // that's guaranteed to be there, according to Nathan Taylor. This is good
   // enough to avoid a crash at least.
   return GetFontData(font_description, font_family_names::kLucidaGrande,
-                     AlternateFontName::kAllowAlternate, should_retain);
+                     AlternateFontName::kAllowAlternate);
 }
 
-std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
+const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     float size,
@@ -525,7 +524,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   // font loading failing.  Out-of-process loading occurs for registered fonts
   // stored in non-system locations.  When loading fails, we do not want to use
   // the returned FontPlatformData since it will not have a valid SkTypeface.
-  std::unique_ptr<FontPlatformData> platform_data = FontPlatformDataFromCTFont(
+  const FontPlatformData* platform_data = FontPlatformDataFromCTFont(
       matched_font, size, font_description.SpecifiedSize(), synthetic_bold,
       synthetic_italic, font_description.TextRendering(),
       ResolvedFontFeatures(), font_description.Orientation(),

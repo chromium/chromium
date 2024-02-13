@@ -28,14 +28,14 @@ namespace {
 
 // Creating minimal test SimpleFontData objects,
 // the font won't have any glyphs, but that's okay.
-static scoped_refptr<SimpleFontData> CreateTestSimpleFontData(
-    bool force_rotation = false) {
-  FontPlatformData platform_data(
-      skia::DefaultTypeface(), std::string(), 10, false, false,
-      TextRenderingMode::kAutoTextRendering, {},
-      force_rotation ? FontOrientation::kVerticalUpright
-                     : FontOrientation::kHorizontal);
-  return SimpleFontData::Create(platform_data, nullptr);
+static SimpleFontData* CreateTestSimpleFontData(bool force_rotation = false) {
+  return MakeGarbageCollected<SimpleFontData>(
+      MakeGarbageCollected<FontPlatformData>(
+          skia::DefaultTypeface(), std::string(), 10, false, false,
+          TextRenderingMode::kAutoTextRendering, ResolvedFontFeatures{},
+          force_rotation ? FontOrientation::kVerticalUpright
+                         : FontOrientation::kHorizontal),
+      nullptr);
 }
 
 class ShapeResultBloberizerTest : public FontTestBase {
@@ -147,17 +147,17 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
   ShapeResultBloberizer bloberizer(font.GetFontDescription(),
                                    ShapeResultBloberizer::Type::kNormal);
 
-  scoped_refptr<SimpleFontData> font1 = CreateTestSimpleFontData();
-  scoped_refptr<SimpleFontData> font2 = CreateTestSimpleFontData();
+  SimpleFontData* font1 = CreateTestSimpleFontData();
+  SimpleFontData* font2 = CreateTestSimpleFontData();
 
   // 2 pending glyphs
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1.get(),
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1,
                                      CanvasRotationInVertical::kRegular, 10, 0);
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1.get(),
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1,
                                      CanvasRotationInVertical::kRegular, 15, 1);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font1.get());
+            font1);
   EXPECT_FALSE(
       ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
   {
@@ -179,11 +179,11 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsOffsets) {
   EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
 
   // one more glyph, different font => pending run flush
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2.get(),
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2,
                                      CanvasRotationInVertical::kRegular, 12, 0);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font2.get());
+            font2);
   EXPECT_FALSE(
       ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
   {
@@ -211,19 +211,19 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   ShapeResultBloberizer bloberizer(font.GetFontDescription(),
                                    ShapeResultBloberizer::Type::kNormal);
 
-  scoped_refptr<SimpleFontData> font1 = CreateTestSimpleFontData();
-  scoped_refptr<SimpleFontData> font2 = CreateTestSimpleFontData();
+  SimpleFontData* font1 = CreateTestSimpleFontData();
+  SimpleFontData* font2 = CreateTestSimpleFontData();
 
   // 2 pending glyphs
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1.get(),
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 42, font1,
                                      CanvasRotationInVertical::kRegular,
                                      gfx::Vector2dF(10, 0), 0);
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1.get(),
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 43, font1,
                                      CanvasRotationInVertical::kRegular,
                                      gfx::Vector2dF(15, 0), 1);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font1.get());
+            font1);
   EXPECT_TRUE(
       ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
   {
@@ -247,12 +247,12 @@ TEST_F(ShapeResultBloberizerTest, StoresGlyphsVerticalOffsets) {
   EXPECT_EQ(ShapeResultBloberizerTestInfo::CommittedBlobCount(bloberizer), 0ul);
 
   // one more glyph, different font => pending run flush
-  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2.get(),
+  ShapeResultBloberizerTestInfo::Add(bloberizer, 44, font2,
                                      CanvasRotationInVertical::kRegular,
                                      gfx::Vector2dF(12, 2), 2);
 
   EXPECT_EQ(ShapeResultBloberizerTestInfo::PendingRunFontData(bloberizer),
-            font2.get());
+            font2);
   EXPECT_TRUE(
       ShapeResultBloberizerTestInfo::HasPendingRunVerticalOffsets(bloberizer));
   {
@@ -281,7 +281,7 @@ TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
   ShapeResultBloberizer bloberizer(font.GetFontDescription(),
                                    ShapeResultBloberizer::Type::kNormal);
 
-  scoped_refptr<SimpleFontData> test_font = CreateTestSimpleFontData();
+  SimpleFontData* test_font = CreateTestSimpleFontData();
 
   struct {
     CanvasRotationInVertical canvas_rotation;
@@ -310,7 +310,7 @@ TEST_F(ShapeResultBloberizerTest, MixedBlobRotation) {
   };
 
   for (const auto& op : append_ops) {
-    ShapeResultBloberizerTestInfo::Add(bloberizer, 42, test_font.get(),
+    ShapeResultBloberizerTestInfo::Add(bloberizer, 42, test_font,
                                        op.canvas_rotation, gfx::Vector2dF(), 0);
     EXPECT_EQ(
         op.expected_pending_glyphs,

@@ -158,6 +158,10 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
 
 FontPlatformData::~FontPlatformData() = default;
 
+void FontPlatformData::Trace(Visitor* visitor) const {
+  visitor->Trace(harfbuzz_face_);
+}
+
 #if BUILDFLAG(IS_MAC)
 CTFontRef FontPlatformData::CtFont() const {
   return SkTypeface_GetCTFontRef(typeface_.get());
@@ -209,11 +213,10 @@ SkTypeface* FontPlatformData::Typeface() const {
 
 HarfBuzzFace* FontPlatformData::GetHarfBuzzFace() const {
   if (!harfbuzz_face_) {
-    harfbuzz_face_ =
-        HarfBuzzFace::Create(const_cast<FontPlatformData*>(this), UniqueID());
+    harfbuzz_face_ = MakeGarbageCollected<HarfBuzzFace>(this, UniqueID());
   }
 
-  return harfbuzz_face_.get();
+  return harfbuzz_face_.Get();
 }
 
 bool FontPlatformData::HasSpaceInLigaturesOrKerning(
@@ -243,7 +246,7 @@ unsigned FontPlatformData::GetHash() const {
 }
 
 #if !BUILDFLAG(IS_MAC)
-bool FontPlatformData::FontContainsCharacter(UChar32 character) {
+bool FontPlatformData::FontContainsCharacter(UChar32 character) const {
   return CreateSkFont().unicharToGlyph(character);
 }
 #endif

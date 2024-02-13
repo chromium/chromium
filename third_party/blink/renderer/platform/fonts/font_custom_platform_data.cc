@@ -103,7 +103,7 @@ FontCustomPlatformData::~FontCustomPlatformData() {
   }
 }
 
-FontPlatformData FontCustomPlatformData::GetFontPlatformData(
+const FontPlatformData* FontCustomPlatformData::GetFontPlatformData(
     float size,
     float adjusted_specified_size,
     bool bold,
@@ -276,10 +276,11 @@ FontPlatformData FontCustomPlatformData::GetFontPlatformData(
       return_typeface = palette_typeface;
     }
   }
-  return FontPlatformData(std::move(return_typeface), std::string(), size,
-                          synthetic_bold && !base_typeface_->isBold(),
-                          synthetic_italic && !base_typeface_->isItalic(),
-                          text_rendering, resolved_font_features, orientation);
+  return MakeGarbageCollected<FontPlatformData>(
+      std::move(return_typeface), std::string(), size,
+      synthetic_bold && !base_typeface_->isBold(),
+      synthetic_italic && !base_typeface_->isItalic(), text_rendering,
+      resolved_font_features, orientation);
 }
 
 Vector<VariationAxis> FontCustomPlatformData::GetVariationAxes() const {

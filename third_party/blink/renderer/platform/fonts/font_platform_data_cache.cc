@@ -38,20 +38,13 @@
 
 namespace blink {
 
-// static
-std::unique_ptr<FontPlatformDataCache> FontPlatformDataCache::Create() {
-  return std::make_unique<FontPlatformDataCache>();
-}
-
 FontPlatformDataCache::FontPlatformDataCache()
     : font_size_limit_(std::nextafter(
           (static_cast<float>(std::numeric_limits<unsigned>::max()) - 2.f) /
               static_cast<float>(blink::FontCacheKey::PrecisionMultiplier()),
           0.f)) {}
 
-FontPlatformDataCache::~FontPlatformDataCache() = default;
-
-FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
+const FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
     FontCache* font_cache,
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
@@ -67,15 +60,13 @@ FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
 
   auto it = map_.find(key);
   if (it != map_.end()) {
-    return it->value.get();
+    return it->value.Get();
   }
 
-  if (std::unique_ptr<FontPlatformData> result =
-          font_cache->CreateFontPlatformData(font_description, creation_params,
-                                             size, alternate_font_name)) {
-    FontPlatformData* result_ptr = result.get();
-    map_.insert(key, std::move(result));
-    return result_ptr;
+  if (const FontPlatformData* result = font_cache->CreateFontPlatformData(
+          font_description, creation_params, size, alternate_font_name)) {
+    map_.insert(key, result);
+    return result;
   }
 
   if (alternate_font_name != AlternateFontName::kAllowAlternate ||
@@ -91,35 +82,16 @@ FontPlatformData* FontPlatformDataCache::GetOrCreateFontPlatformData(
     return nullptr;
 
   FontFaceCreationParams create_by_alternate_family(alternate_name);
-  if (FontPlatformData* result = GetOrCreateFontPlatformData(
+  if (const FontPlatformData* result = GetOrCreateFontPlatformData(
           font_cache, font_description, create_by_alternate_family,
           AlternateFontName::kNoAlternate)) {
     // Cache the platform_data under the old name.
     // "accessibility/font-changed.html" reaches here.
-    map_.insert(key, std::make_unique<FontPlatformData>(*result));
+    map_.insert(key, result);
     return result;
   }
 
   return nullptr;
-}
-
-size_t FontPlatformDataCache::ByteSize() const {
-  return map_.size() * sizeof(std::unique_ptr<FontPlatformData>);
-}
-
-void FontPlatformDataCache::Clear() {
-  map_.clear();
-}
-
-void FontPlatformDataCache::Purge(const FontDataCache& font_data_cache) {
-  Vector<FontCacheKey> keys_to_remove;
-  keys_to_remove.ReserveInitialCapacity(map_.size());
-  for (auto& entry : map_) {
-    if (entry.value && !font_data_cache.Contains(entry.value.get())) {
-      keys_to_remove.push_back(entry.key);
-    }
-  }
-  map_.RemoveAll(keys_to_remove);
 }
 
 }  // namespace blink

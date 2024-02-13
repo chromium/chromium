@@ -49,7 +49,6 @@ class PLATFORM_EXPORT FontFallbackList
 
   FontFallbackList(const FontFallbackList&) = delete;
   FontFallbackList& operator=(const FontFallbackList&) = delete;
-  ~FontFallbackList();
 
   void Trace(Visitor*) const;
 
@@ -117,7 +116,7 @@ class PLATFORM_EXPORT FontFallbackList
   bool HasCustomFont() const { return has_custom_font_; }
 
  private:
-  scoped_refptr<FontData> GetFontData(const FontDescription&);
+  const FontData* GetFontData(const FontDescription&);
 
   const SimpleFontData* DeterminePrimarySimpleFontData(const FontDescription&);
   const SimpleFontData* DeterminePrimarySimpleFontDataCore(
@@ -125,8 +124,8 @@ class PLATFORM_EXPORT FontFallbackList
 
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
-  Vector<scoped_refptr<FontData>, 1> font_list_;
-  const SimpleFontData* cached_primary_simple_font_data_ = nullptr;
+  HeapVector<Member<const FontData>, 1> font_list_;
+  Member<const SimpleFontData> cached_primary_simple_font_data_ = nullptr;
   const Member<FontSelector> font_selector_;
   int family_index_ = 0;
   const uint16_t generation_;

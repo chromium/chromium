@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_ITERATOR_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_for_range_set.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -43,7 +42,7 @@ class FontFallbackIterator {
   // Some system fallback APIs (Windows, Android) require a character, or a
   // portion of the string to be passed.  On Mac and Linux, we get a list of
   // fonts without passing in characters.
-  scoped_refptr<FontDataForRangeSet> Next(const Vector<UChar32>& hint_list);
+  FontDataForRangeSet* Next(const Vector<UChar32>& hint_list);
 
  private:
   bool RangeSetContributesForHint(const Vector<UChar32>& hint_list,
@@ -51,12 +50,11 @@ class FontFallbackIterator {
   bool AlreadyLoadingRangeForHintChar(UChar32 hint_char);
   void WillUseRange(const AtomicString& family, const FontDataForRangeSet&);
 
-  scoped_refptr<FontDataForRangeSet> UniqueOrNext(
-      scoped_refptr<FontDataForRangeSet> candidate,
-      const Vector<UChar32>& hint_list);
+  FontDataForRangeSet* UniqueOrNext(FontDataForRangeSet* candidate,
+                                    const Vector<UChar32>& hint_list);
 
-  scoped_refptr<SimpleFontData> FallbackPriorityFont(UChar32 hint);
-  scoped_refptr<SimpleFontData> UniqueSystemFontForHintList(
+  const SimpleFontData* FallbackPriorityFont(UChar32 hint);
+  const SimpleFontData* UniqueSystemFontForHintList(
       const Vector<UChar32>& hint_list);
 
   const FontDescription& font_description_;
@@ -84,8 +82,8 @@ class FontFallbackIterator {
   // candidate to be used for rendering the .notdef glyph, and set HasNext() to
   // false.
   HashSet<uint32_t> unique_font_data_for_range_sets_returned_;
-  scoped_refptr<FontDataForRangeSet> first_candidate_;
-  Vector<scoped_refptr<FontDataForRangeSet>> tracked_loading_range_sets_;
+  FontDataForRangeSet* first_candidate_ = nullptr;
+  HeapVector<Member<FontDataForRangeSet>> tracked_loading_range_sets_;
   FontFallbackPriority font_fallback_priority_;
 };
 

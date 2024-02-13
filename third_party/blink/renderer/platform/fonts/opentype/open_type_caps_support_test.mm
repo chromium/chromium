@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -23,10 +24,11 @@ class OpenTypeCapsSupportTest : public FontTestBase {};
 void ensureHasNativeSmallCaps(const String& font_family_name) {
   sk_sp<SkTypeface> test_typeface = skia::MakeTypefaceFromName(
       font_family_name.Utf8().c_str(), SkFontStyle());
-  FontPlatformData font_platform_data(
+  FontPlatformData* font_platform_data = MakeGarbageCollected<FontPlatformData>(
       test_typeface, font_family_name.Utf8(),
       /* text_size */ 16, /* synthetic_bold */ false,
-      /* synthetic_italic */ false, TextRenderingMode::kAutoTextRendering, {});
+      /* synthetic_italic */ false, TextRenderingMode::kAutoTextRendering,
+      ResolvedFontFeatures{});
   // System font names are magical. The family name of the system font in the
   // test below yields ".AppleSystemUIFont", which seems to be a generic role
   // name, because when it's actually instantiated with SkTypeface it ends up as
@@ -34,11 +36,11 @@ void ensureHasNativeSmallCaps(const String& font_family_name) {
   // instantiate a magical system font, at least ensure that the resulting font
   // is magical as well.
   if (font_family_name[0] == '.')
-    ASSERT_TRUE(font_platform_data.FontFamilyName()[0] == '.');
+    ASSERT_TRUE(font_platform_data->FontFamilyName()[0] == '.');
   else
-    ASSERT_EQ(font_platform_data.FontFamilyName(), font_family_name);
+    ASSERT_EQ(font_platform_data->FontFamilyName(), font_family_name);
 
-  OpenTypeCapsSupport caps_support(font_platform_data.GetHarfBuzzFace(),
+  OpenTypeCapsSupport caps_support(font_platform_data->GetHarfBuzzFace(),
                                    FontDescription::FontVariantCaps::kSmallCaps,
                                    FontDescription::kAutoFontSynthesisSmallCaps,
                                    HB_SCRIPT_LATIN);

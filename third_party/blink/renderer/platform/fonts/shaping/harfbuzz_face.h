@@ -34,8 +34,9 @@
 #include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 #include <hb.h>
@@ -49,18 +50,14 @@ struct HarfBuzzFontData;
 
 // |HarfBuzzFace| is a thread specific data associated to |FontPlatformData|,
 // hold by |HarfBuzzFontCache|.
-class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
-  USING_FAST_MALLOC(HarfBuzzFace);
-
+class HarfBuzzFace final : public GarbageCollected<HarfBuzzFace> {
  public:
-  static scoped_refptr<HarfBuzzFace> Create(FontPlatformData* platform_data,
-                                            uint64_t unique_id) {
-    return base::AdoptRef(new HarfBuzzFace(platform_data, unique_id));
-  }
-
+  HarfBuzzFace(const FontPlatformData* platform_data, uint64_t);
   HarfBuzzFace(const HarfBuzzFace&) = delete;
   HarfBuzzFace& operator=(const HarfBuzzFace&) = delete;
   ~HarfBuzzFace();
+
+  void Trace(Visitor*) const;
 
   enum VerticalLayoutCallbacks { kPrepareForVerticalLayout, kNoVerticalLayout };
 
@@ -90,11 +87,10 @@ class HarfBuzzFace final : public RefCounted<HarfBuzzFace> {
   static void Init();
 
  private:
-  HarfBuzzFace(FontPlatformData* platform_data, uint64_t);
 
   void PrepareHarfBuzzFontData();
 
-  FontPlatformData* const platform_data_;
+  Member<const FontPlatformData> platform_data_;
   const uint64_t unique_id_;
   // TODO(crbug.com/1489080): When briefly given MiraclePtr protection,
   // these members were both found dangling.

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
 
@@ -32,11 +33,10 @@ std::tuple<LayoutUnit, LayoutUnit> AdjustTextOverUnderOffsetsForEmHeight(
       primary_font_data->GetFontMetrics().FixedAscent(font_baseline);
   const LayoutUnit primary_descent = line_height - primary_ascent;
 
-  DCHECK(IsMainThread());
-  DEFINE_STATIC_LOCAL(Vector<ShapeResult::RunFontData>, run_fonts, ());
-  DCHECK_EQ(run_fonts.size(), 0u);
   // We don't use ShapeResultView::FallbackFonts() because we can't know if the
   // primary font is actually used with FallbackFonts().
+  HeapVector<ShapeResult::RunFontData> run_fonts;
+  ClearCollectionScope clear_scope(&run_fonts);
   shape_view.GetRunFontData(&run_fonts);
   const LayoutUnit kNoDiff = LayoutUnit::Max();
   LayoutUnit over_diff = kNoDiff;
@@ -60,7 +60,6 @@ std::tuple<LayoutUnit, LayoutUnit> AdjustTextOverUnderOffsetsForEmHeight(
     over_diff = std::min(over_diff, current_over_diff);
     under_diff = std::min(under_diff, current_under_diff);
   }
-  run_fonts.resize(0);
   if (over_diff == kNoDiff)
     over_diff = LayoutUnit();
   if (under_diff == kNoDiff)

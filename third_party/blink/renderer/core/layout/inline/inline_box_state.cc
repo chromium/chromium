@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
 
@@ -169,7 +170,8 @@ void InlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
 
 void InlineBoxState::AccumulateUsedFonts(const ShapeResultView* shape_result) {
   const auto baseline_type = style->GetFontBaseline();
-  HashSet<const SimpleFontData*> fallback_fonts;
+  HeapHashSet<Member<const SimpleFontData>> fallback_fonts;
+  ClearCollectionScope clear_scope(&fallback_fonts);
   shape_result->FallbackFonts(&fallback_fonts);
   for (const SimpleFontData* const fallback_font : fallback_fonts) {
     FontHeight fallback_metrics =

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -83,8 +84,6 @@ class FontFaceList : public GarbageCollected<FontFaceList> {
 class CSSSegmentedFontFace final
     : public GarbageCollected<CSSSegmentedFontFace> {
  public:
-  static CSSSegmentedFontFace* Create(FontSelectionCapabilities);
-
   explicit CSSSegmentedFontFace(FontSelectionCapabilities);
   ~CSSSegmentedFontFace();
 
@@ -100,7 +99,7 @@ class CSSSegmentedFontFace final
   void RemoveFontFace(FontFace*);
   bool IsEmpty() const { return font_faces_->IsEmpty(); }
 
-  scoped_refptr<FontData> GetFontData(const FontDescription&);
+  const FontData* GetFontData(const FontDescription&);
 
   bool CheckFont(UChar32) const;
   void Match(const String&, HeapVector<Member<FontFace>>*) const;
@@ -113,12 +112,11 @@ class CSSSegmentedFontFace final
   void Trace(Visitor*) const;
 
  private:
-  void PruneTable();
   bool IsValid() const;
 
   FontSelectionCapabilities font_selection_capabilities_;
 
-  base::HashingLRUCache<FontCacheKey, scoped_refptr<SegmentedFontData>>
+  HeapHashMap<FontCacheKey, WeakMember<const SegmentedFontData>>
       font_data_table_;
 
   // All non-CSS-connected FontFaces are stored after the CSS-connected ones.

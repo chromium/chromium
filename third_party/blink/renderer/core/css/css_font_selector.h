@@ -49,8 +49,8 @@ class CORE_EXPORT CSSFontSelector : public CSSFontSelectorBase {
 
   unsigned Version() const override { return font_face_cache_->Version(); }
 
-  scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                      const FontFamily&) override;
+  const FontData* GetFontData(const FontDescription&,
+                              const FontFamily&) override;
 
   void FontFaceInvalidated(FontInvalidationReason) override;
 

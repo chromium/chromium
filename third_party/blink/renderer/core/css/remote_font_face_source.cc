@@ -240,8 +240,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   }
 
   ClearResource();
-
-  PruneTable();
+  ClearTable();
 
   if (GetDocument()) {
     if (!GetDocument()->RenderingHasBegun()) {
@@ -306,7 +305,7 @@ bool RemoteFontFaceSource::UpdatePeriod() {
   // Invalidate the font if its fallback visibility has changed.
   if (IsLoading() && period_ != new_period &&
       (period_ == kBlockPeriod || new_period == kBlockPeriod)) {
-    PruneTable();
+    ClearTable();
     if (face_->FallbackVisibilityChanged(this)) {
       font_selector_->FontFaceInvalidated(
           FontInvalidationReason::kGeneralInvalidation);
@@ -350,7 +349,7 @@ bool RemoteFontFaceSource::IsLowPriorityLoadingAllowedForRemoteFont() const {
   return is_intervention_triggered_;
 }
 
-scoped_refptr<SimpleFontData> RemoteFontFaceSource::CreateFontData(
+const SimpleFontData* RemoteFontFaceSource::CreateFontData(
     const FontDescription& font_description,
     const FontSelectionCapabilities& font_selection_capabilities) {
   if (period_ == kFailurePeriod || !IsValid()) {
@@ -363,7 +362,7 @@ scoped_refptr<SimpleFontData> RemoteFontFaceSource::CreateFontData(
 
   histograms_.RecordFallbackTime();
 
-  return SimpleFontData::Create(
+  return MakeGarbageCollected<SimpleFontData>(
       custom_font_data_->GetFontPlatformData(
           font_description.EffectiveFontSize(),
           font_description.AdjustedSpecifiedSize(),
@@ -380,25 +379,24 @@ scoped_refptr<SimpleFontData> RemoteFontFaceSource::CreateFontData(
               : ResolvedFontFeatures(),
           font_description.Orientation(), font_description.VariationSettings(),
           font_description.GetFontPalette()),
-      CustomFontData::Create());
+      MakeGarbageCollected<CustomFontData>());
 }
 
-scoped_refptr<SimpleFontData>
-RemoteFontFaceSource::CreateLoadingFallbackFontData(
+const SimpleFontData* RemoteFontFaceSource::CreateLoadingFallbackFontData(
     const FontDescription& font_description) {
   // This temporary font is not retained and should not be returned.
   FontCachePurgePreventer font_cache_purge_preventer;
-  scoped_refptr<SimpleFontData> temporary_font =
-      FontCache::Get().GetLastResortFallbackFont(font_description,
-                                                 kDoNotRetain);
+  const SimpleFontData* temporary_font =
+      FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
     NOTREACHED();
     return nullptr;
   }
-  scoped_refptr<CSSCustomFontData> css_font_data = CSSCustomFontData::Create(
+  CSSCustomFontData* css_font_data = MakeGarbageCollected<CSSCustomFontData>(
       this, period_ == kBlockPeriod ? CSSCustomFontData::kInvisibleFallback
                                     : CSSCustomFontData::kVisibleFallback);
-  return SimpleFontData::Create(temporary_font->PlatformData(), css_font_data);
+  return MakeGarbageCollected<SimpleFontData>(&temporary_font->PlatformData(),
+                                              css_font_data);
 }
 
 void RemoteFontFaceSource::BeginLoadIfNeeded() {

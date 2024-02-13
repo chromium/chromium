@@ -167,8 +167,7 @@ void FontCache::SetStatusFontMetrics(const AtomicString& family_name,
 // to run in parallel with the API based OOP font fallback calls to compare the
 // results and track them in UMA for a while until we decide to remove this
 // completely.
-scoped_refptr<SimpleFontData>
-FontCache::GetFallbackFamilyNameFromHardcodedChoices(
+const SimpleFontData* FontCache::GetFallbackFamilyNameFromHardcodedChoices(
     const FontDescription& font_description,
     UChar32 codepoint,
     FontFallbackPriority fallback_priority) {
@@ -180,10 +179,10 @@ FontCache::GetFallbackFamilyNameFromHardcodedChoices(
   if (legacy_fallback_family) {
     FontFaceCreationParams create_by_family =
         FontFaceCreationParams(AtomicString(legacy_fallback_family));
-    FontPlatformData* data =
+    const FontPlatformData* data =
         GetFontPlatformData(font_description, create_by_family);
     if (data && data->FontContainsCharacter(codepoint)) {
-      return FontDataFromFontPlatformData(data, kDoNotRetain);
+      return FontDataFromFontPlatformData(data);
     }
   }
 
@@ -231,15 +230,15 @@ FontCache::GetFallbackFamilyNameFromHardcodedChoices(
   for (int i = 0; i < num_fonts; ++i) {
     FontFaceCreationParams create_by_family =
         FontFaceCreationParams(AtomicString(pan_uni_fonts[i]));
-    FontPlatformData* data =
+    const FontPlatformData* data =
         GetFontPlatformData(font_description, create_by_family);
     if (data && data->FontContainsCharacter(codepoint))
-      return FontDataFromFontPlatformData(data, kDoNotRetain);
+      return FontDataFromFontPlatformData(data);
   }
   return nullptr;
 }
 
-scoped_refptr<SimpleFontData> FontCache::GetDWriteFallbackFamily(
+const SimpleFontData* FontCache::GetDWriteFallbackFamily(
     const FontDescription& font_description,
     UChar32 codepoint,
     FontFallbackPriority fallback_priority) {
@@ -265,17 +264,17 @@ scoped_refptr<SimpleFontData> FontCache::GetDWriteFallbackFamily(
   fallback_updated_font_description.UpdateFromSkiaFontStyle(
       typeface->fontStyle());
   const FontFaceCreationParams create_by_family(ToAtomicString(skia_family));
-  FontPlatformData* data =
+  const FontPlatformData* data =
       GetFontPlatformData(fallback_updated_font_description, create_by_family);
   if (!data || !data->FontContainsCharacter(codepoint)) {
     return nullptr;
   }
-  return FontDataFromFontPlatformData(data, kDoNotRetain);
+  return FontDataFromFontPlatformData(data);
 }
 
 // Given the desired base font, this will create a SimpleFontData for a specific
 // font that can be used to render the given range of characters.
-scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
+const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 character,
     const SimpleFontData* original_font_data,
@@ -286,13 +285,13 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   if (fallback_priority != FontFallbackPriority::kEmojiEmoji &&
       (font_description.Style() == kItalicSlopeValue ||
        font_description.Weight() >= kBoldWeightValue)) {
-    scoped_refptr<SimpleFontData> font_data =
+    const SimpleFontData* font_data =
         FallbackOnStandardFontStyle(font_description, character);
     if (font_data)
       return font_data;
   }
 
-  scoped_refptr<SimpleFontData> hardcoded_list_fallback_font =
+  const SimpleFontData* hardcoded_list_fallback_font =
       GetFallbackFamilyNameFromHardcodedChoices(font_description, character,
                                                 fallback_priority);
 
@@ -416,7 +415,7 @@ static bool TypefacesHasStretchSuffix(const AtomicString& family,
   return false;
 }
 
-std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
+const FontPlatformData* FontCache::CreateFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     float font_size,
@@ -504,7 +503,7 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
        !typeface->isItalic()) ||
       font_description.IsSyntheticItalic();
 
-  std::unique_ptr<FontPlatformData> result = std::make_unique<FontPlatformData>(
+  FontPlatformData* result = MakeGarbageCollected<FontPlatformData>(
       typeface, name.data(), font_size,
       synthetic_bold_requested && font_description.SyntheticBoldAllowed(),
       synthetic_italic_requested && font_description.SyntheticItalicAllowed(),

@@ -28,7 +28,9 @@ ShapeResultView::RunInfoPart::RunInfoPart(const ShapeResult::RunInfo* run,
       start_index_(start_index),
       offset_(offset),
       num_characters_(num_characters),
-      width_(width) {}
+      width_(width) {
+  static_assert(std::is_trivially_destructible<RunInfoPart>::value, "");
+}
 
 void ShapeResultView::RunInfoPart::Trace(Visitor* visitor) const {
   visitor->Trace(run_);
@@ -72,7 +74,10 @@ unsigned ShapeResultView::CharacterIndexOffsetForGlyphData(
 // |InitData| provides values of const member variables of |ShapeResultView|
 // for constructor.
 struct ShapeResultView::InitData {
-  scoped_refptr<const SimpleFontData> primary_font;
+  STACK_ALLOCATED();
+
+ public:
+  const SimpleFontData* primary_font = nullptr;
   unsigned start_index = 0;
   unsigned char_index_offset = 0;
   TextDirection direction = TextDirection::kLtr;
@@ -183,7 +188,7 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
   new_result->runs_.ReserveInitialCapacity(parts_.size());
   for (const auto& part : RunsOrParts()) {
     auto* new_run = MakeGarbageCollected<ShapeResult::RunInfo>(
-        part.run_->font_data_.get(), part.run_->direction_,
+        part.run_->font_data_.Get(), part.run_->direction_,
         part.run_->canvas_rotation_, part.run_->script_, part.start_index_,
         part.NumGlyphs(), part.num_characters_);
     new_run->glyph_data_.CopyFromRange(part.range_);
@@ -359,21 +364,21 @@ unsigned ShapeResultView::PreviousSafeToBreakOffset(unsigned index) const {
 }
 
 void ShapeResultView::GetRunFontData(
-    Vector<ShapeResult::RunFontData>* font_data) const {
+    HeapVector<ShapeResult::RunFontData>* font_data) const {
   for (const auto& part : RunsOrParts()) {
     font_data->push_back(ShapeResult::RunFontData(
-        {part.run_->font_data_.get(),
+        {part.run_->font_data_.Get(),
          static_cast<wtf_size_t>(part.end() - part.begin())}));
   }
 }
 
 void ShapeResultView::FallbackFonts(
-    HashSet<const SimpleFontData*>* fallback) const {
+    HeapHashSet<Member<const SimpleFontData>>* fallback) const {
   DCHECK(fallback);
   DCHECK(primary_font_);
   for (const auto& part : RunsOrParts()) {
     if (part.run_->font_data_ && part.run_->font_data_ != primary_font_) {
-      fallback->insert(part.run_->font_data_.get());
+      fallback->insert(part.run_->font_data_.Get());
     }
   }
 }
@@ -387,7 +392,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
   const auto& run = part.run_;
   auto total_advance = initial_advance;
   bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run->direction_);
-  const SimpleFontData* font_data = run->font_data_.get();
+  const SimpleFontData* font_data = run->font_data_.Get();
   const unsigned character_index_offset_for_glyph_data =
       CharacterIndexOffsetForGlyphData(part);
   for (const auto& glyph_data : part) {
@@ -430,7 +435,7 @@ float ShapeResultView::ForEachGlyphImpl(float initial_advance,
   auto total_advance = initial_advance;
   const auto& run = part.run_;
   bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run->direction_);
-  const SimpleFontData* font_data = run->font_data_.get();
+  const SimpleFontData* font_data = run->font_data_.Get();
   const unsigned character_index_offset_for_glyph_data =
       CharacterIndexOffsetForGlyphData(part);
   if (run->IsLtr()) {  // Left-to-right

@@ -16,19 +16,20 @@ namespace blink {
 
 class DummyFontFaceSource : public CSSFontFaceSource {
  public:
-  scoped_refptr<SimpleFontData> CreateFontData(
+  const SimpleFontData* CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) override {
-    return SimpleFontData::Create(
-        FontPlatformData(skia::DefaultTypeface(), /* name */ std::string(),
-                         /* text_size */ 0, /* synthetic_bold */ false,
-                         /* synthetic_italic */ false,
-                         TextRenderingMode::kAutoTextRendering, {}));
+    return MakeGarbageCollected<SimpleFontData>(
+        MakeGarbageCollected<FontPlatformData>(
+            skia::DefaultTypeface(), /* name */ std::string(),
+            /* text_size */ 0, /* synthetic_bold */ false,
+            /* synthetic_italic */ false, TextRenderingMode::kAutoTextRendering,
+            ResolvedFontFeatures{}));
   }
 
   DummyFontFaceSource() = default;
 
-  scoped_refptr<SimpleFontData> GetFontDataForSize(float size) {
+  const SimpleFontData* GetFontDataForSize(float size) {
     FontDescription font_description;
     font_description.SetComputedSize(size);
     FontSelectionCapabilities normal_capabilities(

@@ -38,41 +38,15 @@
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
-// See comment below in CSSSegmentedFontFace::GetFontData - the cache from
-// CSSSegmentedFontFace (which represents a group of @font-face declarations
-// with identical FontSelectionCapabilities but differing by unicode-range) to
-// FontData/SegmentedFontData, (i.e. the actual font blobs that can be used for
-// shaping and painting retrieved from a CSSFontFaceSource) is usually small
-// (less than a dozen, up to tens) for non-animation-cases, but grows fast to
-// thousands when animating variable font parameters. Set a limit until we start
-// dropping cache entries in animation scenarios.
-static constexpr size_t kFontDataTableMaxSize = 250;
-
 namespace blink {
-
-// static
-CSSSegmentedFontFace* CSSSegmentedFontFace::Create(
-    FontSelectionCapabilities capabilities) {
-  return MakeGarbageCollected<CSSSegmentedFontFace>(capabilities);
-}
 
 CSSSegmentedFontFace::CSSSegmentedFontFace(
     FontSelectionCapabilities font_selection_capabilities)
     : font_selection_capabilities_(font_selection_capabilities),
-      font_data_table_(kFontDataTableMaxSize),
       font_faces_(MakeGarbageCollected<FontFaceList>()),
       approximate_character_count_(0) {}
 
 CSSSegmentedFontFace::~CSSSegmentedFontFace() = default;
-
-void CSSSegmentedFontFace::PruneTable() {
-  // Make sure the glyph page tree prunes out all uses of this custom font.
-  if (!font_data_table_.size()) {
-    return;
-  }
-
-  font_data_table_.Clear();
-}
 
 bool CSSSegmentedFontFace::IsValid() const {
   // Valid if at least one font face is valid.
@@ -83,12 +57,12 @@ bool CSSSegmentedFontFace::IsValid() const {
 }
 
 void CSSSegmentedFontFace::FontFaceInvalidated() {
-  PruneTable();
+  font_data_table_.clear();
 }
 
 void CSSSegmentedFontFace::AddFontFace(FontFace* font_face,
                                        bool css_connected) {
-  PruneTable();
+  font_data_table_.clear();
   font_face->CssFontFace()->AddSegmentedFontFace(this);
   font_faces_->Insert(font_face, css_connected);
 }
@@ -98,11 +72,11 @@ void CSSSegmentedFontFace::RemoveFontFace(FontFace* font_face) {
     return;
   }
 
-  PruneTable();
+  font_data_table_.clear();
   font_face->CssFontFace()->RemoveSegmentedFontFace(this);
 }
 
-scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
+const FontData* CSSSegmentedFontFace::GetFontData(
     const FontDescription& font_description) {
   if (!IsValid()) {
     return nullptr;
@@ -124,16 +98,16 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
   // usually only a small number of FontData/SegmentedFontData instances created
   // per CSSSegmentedFontFace. Whereas in variable font animations, this number
   // grows rapidly.
-  auto it = font_data_table_.Get(key);
+  auto it = font_data_table_.find(key);
   if (it != font_data_table_.end()) {
-    scoped_refptr<SegmentedFontData> cached_font_data = it->second;
+    const SegmentedFontData* cached_font_data = it->value.Get();
     if (cached_font_data && cached_font_data->NumFaces()) {
       return cached_font_data;
     }
   }
 
-  scoped_refptr<SegmentedFontData> created_font_data =
-      SegmentedFontData::Create();
+  SegmentedFontData* created_font_data =
+      MakeGarbageCollected<SegmentedFontData>();
 
   FontDescription requested_font_description(font_description);
   const FontSelectionRequest& font_selection_request =
@@ -152,26 +126,16 @@ scoped_refptr<FontData> CSSSegmentedFontFace::GetFontData(
     if (!font_face->CssFontFace()->IsValid()) {
       return;
     }
-    if (scoped_refptr<SimpleFontData> face_font_data =
+    if (const SimpleFontData* face_font_data =
             font_face->CssFontFace()->GetFontData(requested_font_description)) {
       DCHECK(!face_font_data->IsSegmented());
-      if (face_font_data->IsCustomFont()) {
-        created_font_data->AppendFace(base::AdoptRef(new FontDataForRangeSet(
-            std::move(face_font_data), font_face->CssFontFace()->Ranges())));
-      } else {
-        created_font_data->AppendFace(
-            base::AdoptRef(new FontDataForRangeSetFromCache(
-                std::move(face_font_data),
-                font_face->CssFontFace()->Ranges())));
-      }
+      created_font_data->AppendFace(MakeGarbageCollected<FontDataForRangeSet>(
+          std::move(face_font_data), font_face->CssFontFace()->Ranges()));
     }
   });
 
   if (created_font_data->NumFaces()) {
-    scoped_refptr<SegmentedFontData> put_to_cache(created_font_data);
-    font_data_table_.Put(std::move(key), std::move(put_to_cache));
-    // No release, we have a reference to an object in the cache which should
-    // retain the ref count it has.
+    font_data_table_.insert(std::move(key), created_font_data);
     return created_font_data;
   }
 
@@ -222,6 +186,7 @@ void CSSSegmentedFontFace::Match(const String& text,
 }
 
 void CSSSegmentedFontFace::Trace(Visitor* visitor) const {
+  visitor->Trace(font_data_table_);
   visitor->Trace(font_faces_);
 }
 

@@ -87,10 +87,7 @@ FontCache& FontCache::Get() {
   return FontGlobalContext::GetFontCache();
 }
 
-FontCache::FontCache()
-    : font_manager_(sk_ref_sp(static_font_manager_)),
-      font_platform_data_cache_(FontPlatformDataCache::Create()),
-      font_data_cache_(FontDataCache::Create()) {
+FontCache::FontCache() : font_manager_(sk_ref_sp(static_font_manager_)) {
 #if BUILDFLAG(IS_WIN)
   if (!font_manager_ || should_use_test_font_mgr) {
     // This code path is only for unit tests. This SkFontMgr does not work in
@@ -116,12 +113,14 @@ FontCache::~FontCache() = default;
 
 void FontCache::Trace(Visitor* visitor) const {
   visitor->Trace(font_cache_clients_);
-  visitor->Trace(font_fallback_map_);
+  visitor->Trace(font_platform_data_cache_);
   visitor->Trace(fallback_list_shaper_cache_);
+  visitor->Trace(font_data_cache_);
+  visitor->Trace(font_fallback_map_);
 }
 
 #if !BUILDFLAG(IS_MAC)
-FontPlatformData* FontCache::SystemFontPlatformData(
+const FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
   const AtomicString& family = FontCache::SystemFontFamily();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || \
@@ -136,7 +135,7 @@ FontPlatformData* FontCache::SystemFontPlatformData(
 }
 #endif
 
-FontPlatformData* FontCache::GetFontPlatformData(
+const FontPlatformData* FontCache::GetFontPlatformData(
     const FontDescription& font_description,
     const FontFaceCreationParams& creation_params,
     AlternateFontName alternate_font_name) {
@@ -154,7 +153,7 @@ FontPlatformData* FontCache::GetFontPlatformData(
   }
 #endif
 
-  return font_platform_data_cache_->GetOrCreateFontPlatformData(
+  return font_platform_data_cache_.GetOrCreateFontPlatformData(
       this, font_description, creation_params, alternate_font_name);
 }
 
@@ -176,34 +175,26 @@ void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
   Get().InvalidateShapeCache();
 }
 
-scoped_refptr<SimpleFontData> FontCache::GetFontData(
+const SimpleFontData* FontCache::GetFontData(
     const FontDescription& font_description,
     const AtomicString& family,
-    AlternateFontName altername_font_name,
-    ShouldRetain should_retain) {
-  if (FontPlatformData* platform_data = GetFontPlatformData(
+    AlternateFontName altername_font_name) {
+  if (const FontPlatformData* platform_data = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(
               AdjustFamilyNameToAvoidUnsupportedFonts(family)),
           altername_font_name)) {
     return FontDataFromFontPlatformData(
-        platform_data, should_retain, font_description.SubpixelAscentDescent());
+        platform_data, font_description.SubpixelAscentDescent());
   }
 
   return nullptr;
 }
 
-scoped_refptr<SimpleFontData> FontCache::FontDataFromFontPlatformData(
+const SimpleFontData* FontCache::FontDataFromFontPlatformData(
     const FontPlatformData* platform_data,
-    ShouldRetain should_retain,
     bool subpixel_ascent_descent) {
-#if DCHECK_IS_ON()
-  if (should_retain == kDoNotRetain)
-    DCHECK(purge_prevent_count_);
-#endif
-
-  return font_data_cache_->Get(platform_data, should_retain,
-                               subpixel_ascent_descent);
+  return font_data_cache_.Get(platform_data, subpixel_ascent_descent);
 }
 
 bool FontCache::IsPlatformFamilyMatchAvailable(
@@ -232,15 +223,7 @@ String FontCache::FirstAvailableOrFirst(const String& families) {
       gfx::FontList::FirstAvailableOrFirst(families.Utf8().c_str()));
 }
 
-SimpleFontData* FontCache::GetNonRetainedLastResortFallbackFont(
-    const FontDescription& font_description) {
-  auto font = GetLastResortFallbackFont(font_description, kDoNotRetain);
-  if (font)
-    font->AddRef();
-  return font.get();
-}
-
-scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
+const SimpleFontData* FontCache::FallbackFontForCharacter(
     const FontDescription& description,
     UChar32 lookup_char,
     const SimpleFontData* font_data_to_substitute,
@@ -257,19 +240,10 @@ scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
       Character::IsNonCharacter(lookup_char))
     return nullptr;
   base::ElapsedTimer timer;
-  scoped_refptr<SimpleFontData> result = PlatformFallbackFontForCharacter(
+  const SimpleFontData* result = PlatformFallbackFontForCharacter(
       description, lookup_char, font_data_to_substitute, fallback_priority);
   FontPerformance::AddSystemFallbackFontTime(timer.Elapsed());
   return result;
-}
-
-void FontCache::ReleaseFontData(const SimpleFontData* font_data) {
-  font_data_cache_->Release(font_data);
-}
-
-void FontCache::PurgePlatformFontDataCache() {
-  TRACE_EVENT0("fonts,ui", "FontCache::PurgePlatformFontDataCache");
-  font_platform_data_cache_->Purge(*font_data_cache_);
 }
 
 void FontCache::PurgeFallbackListShaperCache() {
@@ -283,17 +257,13 @@ void FontCache::InvalidateShapeCache() {
   PurgeFallbackListShaperCache();
 }
 
-void FontCache::Purge(PurgeSeverity purge_severity) {
+void FontCache::Purge() {
   // Ideally we should never be forcing the purge while the
   // FontCachePurgePreventer is in scope, but we call purge() at any timing
   // via MemoryPressureListenerRegistry.
   if (purge_prevent_count_)
     return;
 
-  if (!font_data_cache_->Purge(purge_severity))
-    return;
-
-  PurgePlatformFontDataCache();
   PurgeFallbackListShaperCache();
 }
 
@@ -309,14 +279,15 @@ uint16_t FontCache::Generation() {
 
 void FontCache::Invalidate() {
   TRACE_EVENT0("fonts,ui", "FontCache::Invalidate");
-  font_platform_data_cache_->Clear();
+  font_platform_data_cache_.Clear();
+  font_data_cache_.Clear();
   generation_++;
 
   for (const auto& client : font_cache_clients_) {
     client->FontCacheInvalidated();
   }
 
-  Purge(kForcePurge);
+  Purge();
 }
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
@@ -347,16 +318,6 @@ void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
   base::debug::Alias(&num_families);
 
   CHECK(false);
-}
-
-void FontCache::DumpFontPlatformDataCache(
-    base::trace_event::ProcessMemoryDump* memory_dump) {
-  DCHECK(IsMainThread());
-  base::trace_event::MemoryAllocatorDump* dump =
-      memory_dump->CreateAllocatorDump("font_caches/font_platform_data_cache");
-  dump->AddScalar("size", "bytes", font_platform_data_cache_->ByteSize());
-  memory_dump->AddSuballocation(dump->guid(),
-                                WTF::Partitions::kAllocatedObjectPoolName);
 }
 
 void FontCache::DumpShapeResultCache(

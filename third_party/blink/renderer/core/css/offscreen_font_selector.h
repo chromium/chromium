@@ -26,8 +26,8 @@ class CORE_EXPORT OffscreenFontSelector : public CSSFontSelectorBase {
 
   unsigned Version() const override { return 1; }
 
-  scoped_refptr<FontData> GetFontData(const FontDescription&,
-                                      const FontFamily&) override;
+  const FontData* GetFontData(const FontDescription&,
+                              const FontFamily&) override;
 
   void RegisterForInvalidationCallbacks(FontSelectorClient*) override;
   void UnregisterForInvalidationCallbacks(FontSelectorClient*) override;

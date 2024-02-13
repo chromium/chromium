@@ -78,10 +78,9 @@ struct SameSizeAsRunInfo {
 ASSERT_SIZE(ShapeResult::RunInfo, SameSizeAsRunInfo);
 
 struct SameSizeAsShapeResult {
-  float width;
-  UntracedMember<void*> member;
   Vector<int> vectors[2];
-  void* pointer;
+  UntracedMember<void*> members[2];
+  float width;
   unsigned integers[2];
   unsigned bitfields : 32;
 };
@@ -394,7 +393,7 @@ void ShapeResult::RunInfo::CharacterIndexForXPosition(
   }
 }
 
-ShapeResult::ShapeResult(scoped_refptr<const SimpleFontData> font_data,
+ShapeResult::ShapeResult(const SimpleFontData* font_data,
                          unsigned start_index,
                          unsigned num_characters,
                          TextDirection direction)
@@ -434,6 +433,7 @@ void ShapeResult::Trace(Visitor* visitor) const {
   visitor->Trace(deprecated_ink_bounds_);
   visitor->Trace(runs_);
   visitor->Trace(character_position_);
+  visitor->Trace(primary_font_);
 }
 
 size_t ShapeResult::ByteSize() const {
@@ -734,10 +734,10 @@ bool ShapeResult::HasFallbackFonts() const {
   return false;
 }
 
-void ShapeResult::GetRunFontData(Vector<RunFontData>* font_data) const {
+void ShapeResult::GetRunFontData(HeapVector<RunFontData>* font_data) const {
   for (const auto& run : runs_) {
     font_data->push_back(
-        RunFontData({run->font_data_.get(), run->glyph_data_.size()}));
+        RunFontData({run->font_data_.Get(), run->glyph_data_.size()}));
   }
 }
 
@@ -752,7 +752,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
   for (const auto& glyph_data : run.glyph_data_) {
     glyph_callback(context, run.start_index_ + glyph_data.character_index,
                    glyph_data.glyph, *glyph_offsets, total_advance,
-                   is_horizontal, run.canvas_rotation_, run.font_data_.get());
+                   is_horizontal, run.canvas_rotation_, run.font_data_.Get());
     total_advance += glyph_data.advance;
     ++glyph_offsets;
   }
@@ -787,7 +787,7 @@ float ShapeResult::ForEachGlyphImpl(float initial_advance,
   auto total_advance = initial_advance;
   unsigned run_start = run.start_index_ + index_offset;
   bool is_horizontal = HB_DIRECTION_IS_HORIZONTAL(run.direction_);
-  const SimpleFontData* font_data = run.font_data_.get();
+  const SimpleFontData* font_data = run.font_data_.Get();
 
   if (run.IsLtr()) {  // Left-to-right
     for (const auto& glyph_data : run.glyph_data_) {
@@ -1679,7 +1679,7 @@ unsigned ShapeResult::CopyRangeInternal(unsigned run_index,
 ShapeResult* ShapeResult::SubRange(unsigned start_offset,
                                    unsigned end_offset) const {
   ShapeResult* sub_range =
-      MakeGarbageCollected<ShapeResult>(primary_font_.get(), 0, 0, Direction());
+      MakeGarbageCollected<ShapeResult>(primary_font_.Get(), 0, 0, Direction());
   CopyRange(start_offset, end_offset, sub_range);
   return sub_range;
 }

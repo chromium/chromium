@@ -66,11 +66,10 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   void Trace(Visitor*) const override;
 
  protected:
-  scoped_refptr<SimpleFontData> CreateFontData(
+  const SimpleFontData* CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) override;
-  scoped_refptr<SimpleFontData> CreateLoadingFallbackFontData(
-      const FontDescription&);
+  const SimpleFontData* CreateLoadingFallbackFontData(const FontDescription&);
 
  private:
   // Periods of the Font Display Timeline.

@@ -249,8 +249,8 @@ int ShapeResultBuffer::OffsetForPosition(
   return total_offset;
 }
 
-Vector<ShapeResult::RunFontData> ShapeResultBuffer::GetRunFontData() const {
-  Vector<ShapeResult::RunFontData> font_data;
+HeapVector<ShapeResult::RunFontData> ShapeResultBuffer::GetRunFontData() const {
+  HeapVector<ShapeResult::RunFontData> font_data;
   for (const auto& result : results_)
     result->GetRunFontData(&font_data);
   return font_data;
@@ -264,10 +264,9 @@ GlyphData ShapeResultBuffer::EmphasisMarkGlyphData(
       if (run->glyph_data_.IsEmpty())
         continue;
 
-      return GlyphData(
-          run->glyph_data_[0].glyph,
-          run->font_data_->EmphasisMarkFontData(font_description).get(),
-          run->CanvasRotation());
+      return GlyphData(run->glyph_data_[0].glyph,
+                       run->font_data_->EmphasisMarkFontData(font_description),
+                       run->CanvasRotation());
     }
   }
 

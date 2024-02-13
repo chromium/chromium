@@ -62,7 +62,8 @@
 
 namespace blink {
 
-HarfBuzzFace::HarfBuzzFace(FontPlatformData* platform_data, uint64_t unique_id)
+HarfBuzzFace::HarfBuzzFace(const FontPlatformData* platform_data,
+                           uint64_t unique_id)
     : platform_data_(platform_data), unique_id_(unique_id) {
   HbFontCacheEntry* const cache_entry =
       FontGlobalContext::GetHarfBuzzFontCache().RefOrNew(unique_id_,
@@ -73,6 +74,10 @@ HarfBuzzFace::HarfBuzzFace(FontPlatformData* platform_data, uint64_t unique_id)
 
 HarfBuzzFace::~HarfBuzzFace() {
   FontGlobalContext::GetHarfBuzzFontCache().Remove(unique_id_);
+}
+
+void HarfBuzzFace::Trace(Visitor* visitor) const {
+  visitor->Trace(platform_data_);
 }
 
 static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
@@ -421,7 +426,8 @@ static hb_blob_t* HarfBuzzSkiaGetTable(hb_face_t* face,
 }
 
 // TODO(yosin): We should move |CreateFace()| to "harfbuzz_font_cache.cc".
-static hb::unique_ptr<hb_face_t> CreateFace(FontPlatformData* platform_data) {
+static hb::unique_ptr<hb_face_t> CreateFace(
+    const FontPlatformData* platform_data) {
   hb::unique_ptr<hb_face_t> face;
 
   sk_sp<SkTypeface> typeface = sk_ref_sp(platform_data->Typeface());
@@ -469,8 +475,9 @@ static scoped_refptr<HbFontCacheEntry> CreateHbFontCacheEntry(
   return cache_entry;
 }
 
-HbFontCacheEntry* HarfBuzzFontCache::RefOrNew(uint64_t unique_id,
-                                              FontPlatformData* platform_data) {
+HbFontCacheEntry* HarfBuzzFontCache::RefOrNew(
+    uint64_t unique_id,
+    const FontPlatformData* platform_data) {
   const auto& result = font_map_.insert(unique_id, nullptr);
   if (result.is_new_entry) {
     hb::unique_ptr<hb_face_t> face = CreateFace(platform_data);

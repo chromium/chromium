@@ -76,7 +76,7 @@ class CORE_EXPORT CSSFontFace final : public GarbageCollected<CSSFontFace> {
   bool FontLoaded(CSSFontFaceSource*);
   bool FallbackVisibilityChanged(RemoteFontFaceSource*);
 
-  scoped_refptr<SimpleFontData> GetFontData(const FontDescription&);
+  const SimpleFontData* GetFontData(const FontDescription&);
 
   FontFace::LoadStatusType LoadStatus() const {
     return font_face_->LoadStatus();

@@ -49,7 +49,7 @@ class HarfBuzzFontCache final {
   ~HarfBuzzFontCache();
 
   HbFontCacheEntry* RefOrNew(uint64_t unique_id,
-                             FontPlatformData* platform_data);
+                             const FontPlatformData* platform_data);
   void Remove(uint64_t unique_id);
 
  private:
