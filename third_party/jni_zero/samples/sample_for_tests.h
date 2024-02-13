@@ -8,7 +8,7 @@
 #include <jni.h>
 #include <map>
 #include <string>
-#include "third_party/jni_zero/jni_zero.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 namespace jni_zero {
 namespace samples {
