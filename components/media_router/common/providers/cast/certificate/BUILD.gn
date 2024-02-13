@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/openscreen/src/build/config/cast.gni")
+import(
+    "//third_party/openscreen/src/cast/common/public/developer_certificate.gni")
 
 config("developer_certificate_config") {
   defines = []
