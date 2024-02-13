@@ -1325,21 +1325,12 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
     return new_position;
   }
 
-  ui::AXNode* anchor_node = GetAnchorNode(new_position);
-  bool was_previously_spoken =
-      NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
-  bool is_text_node = IsTextForReadAnything(anchor_node->id());
-  const std::set<ui::AXNodeID>* node_ids = selection_node_ids().empty()
-                                               ? &display_node_ids()
-                                               : &selection_node_ids();
-  bool contains_node = base::Contains(*node_ids, anchor_node->id());
-
-  while (was_previously_spoken || !is_text_node || !contains_node) {
+  while (!IsValidAXPosition(new_position, current_granularity)) {
     ui::AXNodePosition::AXPositionInstance possible_new_position =
         new_position->CreateNextSentenceStartPosition(movement_options);
-    anchor_node = possible_new_position->GetAnchor();
-    if (!anchor_node) {
-      if (was_previously_spoken) {
+    if (!possible_new_position->GetAnchor()) {
+      if (NodeBeenOrWillBeSpoken(current_granularity,
+                                 new_position->GetAnchor()->id())) {
         // If the previous position we were looking at was previously spoken,
         // go ahead and return the null position to avoid duplicate nodes
         // being added.
@@ -1350,12 +1341,6 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
 
     new_position =
         new_position->CreateNextSentenceStartPosition(movement_options);
-
-    anchor_node = GetAnchorNode(new_position);
-    was_previously_spoken =
-        NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
-    is_text_node = IsTextForReadAnything(anchor_node->id());
-    contains_node = base::Contains(*node_ids, anchor_node->id());
   }
 
   return new_position;
@@ -1452,4 +1437,19 @@ ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
   // If the node is a leaf, use the parent node instead.
   return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
                  : position->GetAnchor();
+}
+
+bool ReadAnythingAppModel::IsValidAXPosition(
+    ui::AXNodePosition::AXPositionInstance& position,
+    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity) {
+  ui::AXNode* anchor_node = GetAnchorNode(position);
+  bool was_previously_spoken =
+      NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
+  bool is_text_node = IsTextForReadAnything(anchor_node->id());
+  const std::set<ui::AXNodeID>* node_ids = selection_node_ids().empty()
+                                               ? &display_node_ids()
+                                               : &selection_node_ids();
+  bool contains_node = base::Contains(*node_ids, anchor_node->id());
+
+  return !was_previously_spoken && is_text_node && contains_node;
 }

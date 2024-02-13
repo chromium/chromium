@@ -363,6 +363,10 @@ class ReadAnythingAppModel {
 
   bool IsOpeningPunctuation(char c);
 
+  bool IsValidAXPosition(
+      ui::AXNodePosition::AXPositionInstance& positin,
+      ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity);
+
   // State.
   // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
   std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>> tree_managers_;
