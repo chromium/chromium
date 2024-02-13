@@ -341,6 +341,12 @@ void DataTransferDlpController::DropIfAllowed(
     base::OnceClosure drop_cb) {
   DCHECK(drag_data);
 
+  base::optional_ref<const ui::DataTransferEndpoint> source =
+      drag_data->GetSource()
+          ? base::optional_ref<const ui::DataTransferEndpoint>(
+                drag_data->GetSource())
+          : std::nullopt;
+
   if (drag_data->HasFile() && !IsFilesApp(data_dst)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     auto* files_controller = static_cast<policy::DlpFilesControllerAsh*>(
@@ -352,14 +358,14 @@ void DataTransferDlpController::DropIfAllowed(
           GetFilePathsFromFileInfos(dropped_files), data_dst.as_ptr(),
           base::BindOnce(&DataTransferDlpController::ContinueDropIfAllowed,
                          weak_ptr_factory_.GetWeakPtr(),
-                         *drag_data->GetSource(), data_dst,
+                         source, data_dst,
                          std::move(drop_cb)));
       return;
     }
 #endif
     // TODO(b/269610458): Check dropped files in Lacros.
   }
-  ContinueDropIfAllowed(*drag_data->GetSource(), data_dst, std::move(drop_cb),
+  ContinueDropIfAllowed(source, data_dst, std::move(drop_cb),
                         /*is_allowed=*/true);
 }
 
