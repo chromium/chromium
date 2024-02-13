@@ -55,9 +55,9 @@ class PageloadForegroundDurationTabHelper
   // Scoped observer that facilitates observing the WebState.
   base::ScopedObservation<web::WebState, WebStateObserver> scoped_observation_{
       this};
-  // Holds references to background NSNotification callback observer.
-  id foreground_notification_observer_;
   // Holds references to foreground NSNotification callback observer.
+  id foreground_notification_observer_;
+  // Holds references to background NSNotification callback observer.
   id background_notification_observer_;
 
   base::WeakPtrFactory<PageloadForegroundDurationTabHelper> weak_ptr_factory_{

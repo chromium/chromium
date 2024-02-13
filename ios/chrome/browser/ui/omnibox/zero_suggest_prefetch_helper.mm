@@ -39,6 +39,8 @@ using web::WebStateObserverBridge;
     _webStateListObserverBridge.reset();
     _webStateList = nullptr;
   }
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -57,6 +59,18 @@ using web::WebStateObserverBridge;
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserverBridge.get());
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(updateForAppWillForeground)
+               name:UIApplicationWillEnterForegroundNotification
+             object:nil];
+
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(updateForAppDidBackground)
+               name:UIApplicationDidEnterBackgroundNotification
+             object:nil];
 
     [self startPrefetchIfNecessary];
   }
@@ -91,6 +105,22 @@ using web::WebStateObserverBridge;
   }
 
   self.controller->StartZeroSuggestPrefetch();
+}
+
+/// Indicates to this tab helper that the app has entered a foreground state.
+- (void)updateForAppWillForeground {
+  self.controller->autocomplete_controller()
+      ->autocomplete_provider_client()
+      ->set_in_background_state(false);
+
+  [self startPrefetchIfNecessary];
+}
+
+/// Indicates to this tab helper that the app has entered a background state.
+- (void)updateForAppDidBackground {
+  self.controller->autocomplete_controller()
+      ->autocomplete_provider_client()
+      ->set_in_background_state(true);
 }
 
 @end

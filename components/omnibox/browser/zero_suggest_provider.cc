@@ -400,6 +400,13 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
     NOTREACHED_NORETURN();
   }
 
+  // If the app is currently in the background state, do not initiate ZPS
+  // prefetch requests. This helps to conserve CPU cycles on iOS while
+  // in the background state.
+  if (client()->in_background_state()) {
+    return;
+  }
+
   if (*prefetch_loader) {
     LogOmniboxZeroSuggestRequest(RemoteRequestEvent::kRequestInvalidated,
                                  result_type,
@@ -615,11 +622,16 @@ void ZeroSuggestProvider::OnPrefetchURLLoadComplete(
                                  result_type,
                                  /*is_prefetch=*/true);
 
-    SearchSuggestionParser::Results unused_results;
-    StoreRemoteResponse(SearchSuggestionParser::ExtractJsonData(
-                            source, std::move(response_body)),
-                        client(), input, result_type,
-                        /*is_prefetch=*/true, &unused_results);
+    // If the app is currently in the background state, do not parse and store
+    // ZPS prefetch responses. This helps to conserve CPU cycles on iOS while in
+    // the background state.
+    if (!client()->in_background_state()) {
+      SearchSuggestionParser::Results unused_results;
+      StoreRemoteResponse(SearchSuggestionParser::ExtractJsonData(
+                              source, std::move(response_body)),
+                          client(), input, result_type,
+                          /*is_prefetch=*/true, &unused_results);
+    }
   }
 
   prefetch_loader->reset();

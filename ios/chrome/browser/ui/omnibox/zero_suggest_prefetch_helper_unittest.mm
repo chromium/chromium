@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/omnibox/zero_suggest_prefetch_helper.h"
 
 #import "base/test/task_environment.h"
+#import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
@@ -32,6 +34,19 @@ namespace {
 
 const char kTestURL[] = "http://chromium.org";
 const char kTestSRPURL[] = "https://www.google.com/search?q=omnibox";
+
+// A mock class for the AutocompleteController.
+class MockAutocompleteController : public AutocompleteController {
+ public:
+  MockAutocompleteController()
+      : AutocompleteController(
+            std::make_unique<FakeAutocompleteProviderClient>(),
+            0) {}
+  MockAutocompleteController(const MockAutocompleteController&) = delete;
+  MockAutocompleteController& operator=(const MockAutocompleteController&) =
+      delete;
+  ~MockAutocompleteController() override = default;
+};
 
 class TestOmniboxController : public OmniboxController {
  public:
@@ -65,6 +80,8 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
 
     controller_ = std::make_unique<TestOmniboxController>(
         /*view=*/nullptr, std::move(omnibox_client));
+    controller_->SetAutocompleteControllerForTesting(
+        std::make_unique<MockAutocompleteController>());
   }
 
   void CreateHelper() {
@@ -151,6 +168,52 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestPrefetchOnTabSwitch) {
   web_state_list_->ActivateWebStateAt(0);
   EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
   controller_.get()->start_prefetch_call_count_ = 0;
+}
+
+// Test that the appropriate behavior (set `is_background_state` variable, start
+// prefetch, etc.) is triggered when the app is foregrounded/backgrounded.
+TEST_F(ZeroSuggestPrefetchHelperTest,
+       TestReactToForegroundingAndBackgrounding) {
+  CreateHelper();
+  web::FakeNavigationContext context;
+
+  // Initialize the WebState machinery for proper verification of ZPS prefetch
+  // request counts.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  FakeWebState* web_state_ptr = web_state.get();
+  web_state_ptr->SetCurrentURL(GURL(kTestURL));
+  web_state_list_->InsertWebState(std::move(web_state));
+  web_state_list_->ActivateWebStateAt(0);
+
+  controller_.get()->start_prefetch_call_count_ = 0;
+
+  // Initially the app starts off in the foreground state.
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
+  EXPECT_FALSE(controller_->autocomplete_controller()
+                   ->autocomplete_provider_client()
+                   ->in_background_state());
+
+  // Receiving a "backgrounded" notification will cause the app to move to the
+  // background state.
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil];
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
+  EXPECT_TRUE(controller_.get()
+                  ->autocomplete_controller()
+                  ->autocomplete_provider_client()
+                  ->in_background_state());
+
+  // Receiving a "foregrounded" notification will cause the app to move to the
+  // foreground state (triggering a ZPS prefetch request as a side-effect).
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil];
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
+  EXPECT_FALSE(controller_.get()
+                   ->autocomplete_controller()
+                   ->autocomplete_provider_client()
+                   ->in_background_state());
 }
 
 }  // namespace

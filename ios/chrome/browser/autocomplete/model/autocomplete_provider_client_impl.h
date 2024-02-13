@@ -94,6 +94,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       const std::u16string& term) override;
   void PrefetchImage(const GURL& url) override;
   const TabMatcher& GetTabMatcher() const override;
+  bool in_background_state() const override;
+  void set_in_background_state(bool in_background_state) override;
 
   // OmniboxAction::Client implementation.
   void OpenSharingHub() override {}
@@ -111,6 +113,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       omnibox_triggered_feature_service_;
   TabMatcherImpl tab_matcher_;
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
+  // Whether or not the app is currently in the background state.
+  bool in_background_state_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_

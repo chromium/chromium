@@ -313,3 +313,12 @@ void AutocompleteProviderClientImpl::PrefetchImage(const GURL& url) {}
 const TabMatcher& AutocompleteProviderClientImpl::GetTabMatcher() const {
   return tab_matcher_;
 }
+
+bool AutocompleteProviderClientImpl::in_background_state() const {
+  return in_background_state_;
+}
+
+void AutocompleteProviderClientImpl::set_in_background_state(
+    bool in_background_state) {
+  in_background_state_ = in_background_state;
+}

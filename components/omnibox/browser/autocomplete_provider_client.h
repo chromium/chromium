@@ -196,6 +196,11 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // Returns true if the sharing hub command is enabled.
   virtual bool IsSharingHubAvailable() const;
 
+  // Returns whether the app is currently in the background state (Mobile only).
+  virtual bool in_background_state() const;
+
+  virtual void set_in_background_state(bool in_background_state) {}
+
   // Gets a weak pointer to the client. Used when providers need to use the
   // client when the client may no longer be around.
   virtual base::WeakPtr<AutocompleteProviderClient> GetWeakPtr();

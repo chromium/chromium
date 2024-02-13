@@ -125,6 +125,12 @@ class MockAutocompleteProviderClient
     return provider_state_service_.get();
   }
 
+  bool in_background_state() const override { return in_background_state_; }
+
+  void set_in_background_state(bool in_background_state) override {
+    in_background_state_ = in_background_state;
+  }
+
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());
   MOCK_CONST_METHOD0(GetEmbedderRepresentationOfAboutScheme, std::string());
   MOCK_METHOD0(GetBuiltinURLs, std::vector<std::u16string>());
@@ -176,6 +182,7 @@ class MockAutocompleteProviderClient
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 
+  bool in_background_state_ = false;
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<DocumentSuggestionsService> document_suggestions_service_;
   std::unique_ptr<RemoteSuggestionsService> remote_suggestions_service_;
