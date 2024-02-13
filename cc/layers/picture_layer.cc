@@ -155,27 +155,8 @@ bool PictureLayer::Update() {
 
 bool PictureLayer::CanUseRecordedBoundsForTiling() const {
   // For now the feature is for blink (using layer list mode) only.
-  if (!IsUsingLayerLists()) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(features::kUseRecordedBoundsForTiling)) {
-    return false;
-  }
-
-  // For a mask layer, we must include the empty areas in tilings because they
-  // mask off the drawings of the masked layer.
-  if (is_backdrop_filter_mask_) {
-    return false;
-  }
-  if (const EffectNode* node =
-          layer_tree_host()->property_trees()->effect_tree().Node(
-              effect_tree_index())) {
-    if (node->blend_mode == SkBlendMode::kDstIn) {
-      return false;
-    }
-  }
-
-  return true;
+  return IsUsingLayerLists() &&
+         base::FeatureList::IsEnabled(features::kUseRecordedBoundsForTiling);
 }
 
 sk_sp<const SkPicture> PictureLayer::GetPicture() const {

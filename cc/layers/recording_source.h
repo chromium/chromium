@@ -46,6 +46,7 @@ class CC_EXPORT RecordingSource {
 
   scoped_refptr<RasterSource> CreateRasterSource() const;
 
+  const gfx::Rect& recorded_bounds() const { return recorded_bounds_; }
   bool is_solid_color() const { return is_solid_color_; }
 
   const std::optional<DirectlyCompositedImageInfo>&

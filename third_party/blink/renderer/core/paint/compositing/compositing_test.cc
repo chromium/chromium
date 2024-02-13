@@ -3233,4 +3233,38 @@ TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffsetAndOrientation) {
                 ->default_raster_scale);
 }
 
+TEST_P(CompositingSimTest, ScrollingContentsLayerRecordedBounds) {
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      div div { width: 2000px; height: 2000px; margin-top: 2000px; }
+    </style>
+    <div id="scroller" style="overflow: scroll; will-change: scroll-position;
+                              width: 200px; height: 200px">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>4</div>
+    </div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* layer = static_cast<const cc::PictureLayer*>(
+      ScrollingContentsCcLayerByScrollElementId(RootCcLayer(),
+                                                GetElementById("scroller")
+                                                    ->GetLayoutBox()
+                                                    ->GetScrollableArea()
+                                                    ->GetScrollElementId()));
+  ASSERT_TRUE(layer);
+  if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
+    EXPECT_EQ(gfx::Size(2000, 16000), layer->bounds());
+    EXPECT_EQ(gfx::Rect(0, 0, 2000, 16000),
+              layer->GetRecordingSourceForTesting()->recorded_bounds());
+  } else {
+    EXPECT_EQ(gfx::Size(2000, 2000), layer->bounds());
+    EXPECT_EQ(gfx::Rect(0, 0, 2000, 2000),
+              layer->GetRecordingSourceForTesting()->recorded_bounds());
+  }
+}
+
 }  // namespace blink
