@@ -3256,7 +3256,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
 
   WizardController::default_controller()->AdvanceToScreen(
       GaiaInfoScreenView::kScreenId);
-  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
 
   test::OobeJS().ClickOnPath(
