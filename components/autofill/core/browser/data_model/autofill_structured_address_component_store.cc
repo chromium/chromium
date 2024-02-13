@@ -20,6 +20,15 @@ AddressComponentsStore::AddressComponentsStore(AddressComponentsStore&& other) {
   WipeRawPtrsForDestruction();
   components_ = std::move(other.components_);
 }
+
+AddressComponent* AddressComponentsStore::GetNodeForType(
+    FieldType field_type) const {
+  if (auto it = components_.find(field_type); it != components_.end()) {
+    return it->second.get();
+  }
+  return nullptr;
+}
+
 AddressComponentsStore& AddressComponentsStore::operator=(
     AddressComponentsStore&& other) {
   WipeRawPtrsForDestruction();
