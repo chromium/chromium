@@ -1030,6 +1030,11 @@ config("compiler") {
   if (!use_thin_lto || !toolchain_supports_rust_thin_lto) {
     # Don't include bitcode if it won't be used.
     rustflags += [ "-Cembed-bitcode=no" ]
+
+    # Disable "automatic" ThinLTO between codegen units. The weak symbol
+    # resolution across units can have surprising effects on linking, see
+    # crbug.com/324126269 and github.com/rust-lang/rust/issues/120842.
+    rustflags += [ "-Clto=no" ]
   }
   if (is_official_build) {
     rustflags += [ "-Ccodegen-units=1" ]
