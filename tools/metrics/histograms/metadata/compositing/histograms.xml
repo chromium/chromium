@@ -426,6 +426,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.FramesWith{Catcher}"
+    enum="Boolean" expires_after="2024-08-30">
+  <owner>zoraiznaeem@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records zero or once per frame, wether a frame has a {Catcher}.
+  </summary>
+  <token key="Catcher">
+    <variant name="MaskCandidates" summary="mask candidates."/>
+    <variant name="MaskCandidatesRequireOverlays"
+        summary="a mask candidate that should be promoted to overlay."/>
+  </token>
+</histogram>
+
+<histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.NumOverlays{Counted}"
     units="overlay candidates" expires_after="2024-06-30">
   <owner>khaslett@chromium.org</owner>
@@ -465,6 +480,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged zero or one times per frame, whether we're using the
     AttemptingMultipleOverlays codepath this frame or why we arent.
+  </summary>
+</histogram>
+
+<histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldPromoteCandidatesWithMasks"
+    enum="PromotingMaskCandidates" expires_after="2024-08-30">
+  <owner>zoraiznaeem@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Logged for each mask candidate whether it was promoted or why it was not
+    promoted.
   </summary>
 </histogram>
 

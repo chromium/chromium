@@ -113,6 +113,13 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="PromotingMaskCandidates">
+  <int value="0" label="Yes"/>
+  <int value="1" label="No, mask candidate does not need overlays"/>
+  <int value="2" label="No, multiple overlays is disabled"/>
+  <int value="3" label="No, mask candidate rejected by DRM"/>
+</enum>
+
 <enum name="ToggleFrameRateCase">
   <int value="0" label="No video"/>
   <int value="1" label="Frame rate toggling supported by the platfrom"/>
