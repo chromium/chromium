@@ -714,6 +714,11 @@ chromium-metrics-reviews@google.com.
     reverted to the initial state: signed out in the profile but keeping the
     account on the web only.
   </int>
+  <int value="31" label="IdleTimeout policy triggered signout">
+    The enterprise policy IdleTimeout was set, and the IdleTimeoutActions list
+    value included `sign_out`. When the user has been idle for the time
+    specified in the policy value, they will be signed out.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
