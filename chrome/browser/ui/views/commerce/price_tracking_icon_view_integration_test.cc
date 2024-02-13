@@ -128,14 +128,14 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
       EXPECT_EQ(icon_view->GetIconLabelForTesting(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
       EXPECT_STREQ(icon_view->GetVectorIcon().name,
-                   omnibox::kPriceTrackingEnabledFilledIcon.name);
+                   omnibox::kPriceTrackingEnabledRefreshIcon.name);
       EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
     } else {
       EXPECT_EQ(icon_view->GetIconLabelForTesting(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
       EXPECT_STREQ(icon_view->GetVectorIcon().name,
-                   omnibox::kPriceTrackingDisabledIcon.name);
+                   omnibox::kPriceTrackingDisabledRefreshIcon.name);
       EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
                 l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
     }

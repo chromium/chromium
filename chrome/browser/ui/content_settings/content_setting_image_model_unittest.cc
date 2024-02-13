@@ -661,7 +661,8 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       net::SchemefulSite(GURL("https://example.com")), CONTENT_SETTING_ALLOW);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  EXPECT_EQ(content_setting_image_model->icon(),
+            &vector_icons::kStorageAccessIcon);
 
   // Add a blocked permission.
   content_settings->OnTwoSitePermissionChanged(
@@ -669,8 +670,8 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       net::SchemefulSite(GURL("https://foo.com")), CONTENT_SETTING_BLOCK);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->get_icon_badge(),
-            &vector_icons::kBlockedBadgeIcon);
+  EXPECT_EQ(content_setting_image_model->icon(),
+            &vector_icons::kStorageAccessOffIcon);
 
   // Change permission to be allowed. E.g. through PageInfo.
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -679,7 +680,8 @@ TEST_F(ContentSettingImageModelTest, StorageAccess) {
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
-  EXPECT_EQ(content_setting_image_model->get_icon_badge(), &gfx::kNoneIcon);
+  EXPECT_EQ(content_setting_image_model->icon(),
+            &vector_icons::kStorageAccessIcon);
 
   // Reset permissions.
   map->SetContentSettingDefaultScope(

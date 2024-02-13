@@ -141,36 +141,15 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
   }
 };
 
-class ExtensionsMenuModelTest : public AppMenuModelTest,
-                                public testing::WithParamInterface<bool> {
+class ExtensionsMenuModelTest : public AppMenuModelTest {
  public:
-  ExtensionsMenuModelTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features = {features::kExtensionsMenuInAppMenu};
-      disabled_features = {features::kChromeRefresh2023};
-    } else {
-      enabled_features = {};
-      disabled_features = {features::kExtensionsMenuInAppMenu,
-                           features::kChromeRefresh2023};
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
+  ExtensionsMenuModelTest() = default;
 
   ExtensionsMenuModelTest(const ExtensionsMenuModelTest&) = delete;
   ExtensionsMenuModelTest& operator=(const ExtensionsMenuModelTest&) = delete;
 
   ~ExtensionsMenuModelTest() override = default;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionsMenuModelTest,
-    /* features::kNewExtensionsTopLevelMenu enabled */ testing::Bool());
 
 class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
@@ -344,23 +323,19 @@ TEST_F(AppMenuModelTest, GlobalError) {
 
 // Tests that extensions sub menu (when enabled) generates the correct elements
 // or does not generate its elements when disabled.
-TEST_P(ExtensionsMenuModelTest, ExtensionsMenu) {
+TEST_F(ExtensionsMenuModelTest, ExtensionsMenu) {
   AppMenuModel model(this, browser());
   model.Init();
 
-  if (GetParam()) {  // Menu enabled
-    ASSERT_TRUE(model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU));
-    ui::MenuModel* extensions_submenu = model.GetSubmenuModelAt(
-        model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value());
-    ASSERT_NE(extensions_submenu, nullptr);
-    ASSERT_EQ(2ul, extensions_submenu->GetItemCount());
-    EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
-              extensions_submenu->GetCommandIdAt(0));
-    EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
-              extensions_submenu->GetCommandIdAt(1));
-  } else {
-    EXPECT_FALSE(model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU));
-  }
+  ASSERT_TRUE(model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU));
+  ui::MenuModel* extensions_submenu = model.GetSubmenuModelAt(
+      model.GetIndexOfCommandId(IDC_EXTENSIONS_SUBMENU).value());
+  ASSERT_NE(extensions_submenu, nullptr);
+  ASSERT_EQ(2ul, extensions_submenu->GetItemCount());
+  EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_MANAGE_EXTENSIONS,
+            extensions_submenu->GetCommandIdAt(0));
+  EXPECT_EQ(IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE,
+            extensions_submenu->GetCommandIdAt(1));
 }
 
 TEST_F(AppMenuModelTest, PerformanceItem) {

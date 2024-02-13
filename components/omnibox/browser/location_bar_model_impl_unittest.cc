@@ -196,7 +196,7 @@ TEST_F(LocationBarModelImplTest, GetVectorIcon) {
   delegate()->SetSecurityLevel(security_state::SecurityLevel::WARNING);
 
   gfx::ImageSkia expected_icon =
-      gfx::CreateVectorIcon(vector_icons::kNotSecureWarningIcon,
+      gfx::CreateVectorIcon(vector_icons::kNotSecureWarningChromeRefreshIcon,
                             gfx::kFaviconSize, gfx::kPlaceholderColor);
 
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
