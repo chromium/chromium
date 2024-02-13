@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_SET_BID_BINDINGS_H_
 
 #include <optional>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -47,19 +48,30 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
-  bool has_bid() const { return !bid_.is_null(); }
+  // TODO(https://crbug.com/323856489): These are temporary until bidder_worklet
+  // supports multibid.
+  bool has_bid() const { return bids_.size() == 1u; }
   mojom::BidderWorkletBidPtr TakeBid();
+
+  std::vector<mojom::BidderWorkletBidPtr> TakeBids();
 
   mojom::RejectReason reject_reason() const { return reject_reason_; }
 
-  // Attempts to set the pending bid value, overwriting any previously set
-  // bid. Returns whether any errors were raise. Note that a valid value that
-  // results in no bid is not considered an error.
-  IdlConvert::Status SetBidImpl(v8::Local<v8::Value> generate_bid_result,
+  // Overwrites the set bids with however many are in `bid_value`, and returns
+  // if any errors occurred.
+  IdlConvert::Status SetBidImpl(v8::Local<v8::Value> bid_value,
                                 std::string error_prefix);
 
  private:
   static void SetBid(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // Attempts to parse a single bid. Returns whether any errors were raised.
+  // Note that a valid value that results in no bid is not considered an error.
+  // In case of an error, may also set `reject_reason_`.
+  std::pair<IdlConvert::Status, mojom::BidderWorkletBidPtr> ParseBid(
+      AuctionV8Helper::TimeLimitScope& time_limit_scope,
+      v8::Local<v8::Value> generate_bid_result,
+      std::string error_prefix);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 
@@ -77,7 +89,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   base::RepeatingCallback<bool(const std::string&)> is_ad_excluded_;
   base::RepeatingCallback<bool(const std::string&)> is_component_ad_excluded_;
 
-  mojom::BidderWorkletBidPtr bid_;
+  std::vector<mojom::BidderWorkletBidPtr> bids_;
 };
 
 }  // namespace auction_worklet

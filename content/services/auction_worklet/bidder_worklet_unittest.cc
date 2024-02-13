@@ -984,6 +984,16 @@ class BidderWorkletCustomAdComponentLimitTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class BidderWorkletMultiBidTest : public BidderWorkletTest {
+ public:
+  BidderWorkletMultiBidTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kFledgeMultiBid);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Test the case the BidderWorklet pipe is closed before invoking the
 // GenerateBidCallback. The invocation of the GenerateBidCallback is not
 // observed, since the callback is on the pipe that was just closed. There
@@ -2552,6 +2562,65 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+}
+
+TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
+  // For now, returning multiple bids isn't available by default.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 1,
+          render:"https://response.test/"}])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+}
+
+TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
+  // As for now, bidder worklet only understands multi-bid with one bid,
+  // with more than one treated as no bid.
+  //
+  // TODO(https://crbug.com/323856489): Test more stuff here once possible.
+  auto expected_bid = mojom::BidderWorkletBid::New(
+      "\"ad\"", 2, /*bid_currency=*/std::nullopt,
+      /*ad_cost=*/std::nullopt,
+      blink::AdDescriptor(GURL("https://response.test/")),
+      /*ad_component_descriptors=*/std::nullopt,
+      /*modeling_signals=*/std::nullopt, base::TimeDelta());
+
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 2,
+          render:"https://response.test/"}])",
+      expected_bid->Clone());
+
+  // Documenting weird transitional behavior as of now.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 2,
+          render:"https://response.test/"},
+          {ad: "ad2", bid: 3,
+          render:"https://response.test/"},
+         ])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+
+  // Catches errors in individual entries.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 10}])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/
+      {"generateBid() bids sequence entry: 'render' is required when making a "
+       "bid."});
+
+  // A non-bid is still ignored.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad",
+          render:"https://response.test/"}])",
+      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+
+  // A non-bid among real bids in an array is also ignored.
+  RunGenerateBidWithReturnValueExpectingResult(
+      R"([{ad: "ad", bid: 2,
+          render:"https://response.test/"},
+          {ad: "ad2",
+          render:"https://response.test/"},
+         ])",
+      expected_bid->Clone());
 }
 
 // Make sure Date() is not available when running generateBid().
