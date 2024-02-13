@@ -388,7 +388,7 @@ static const CodecInfo* const kAudioMP4Codecs[] = {&kMPEG4FLACCodecInfo,
 
 static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
                                     MediaLog* media_log) {
-  std::set<int> audio_object_types;
+  base::flat_set<int> audio_object_types;
   bool has_sbr = false;
   bool has_dv = false;
 

@@ -73,18 +73,19 @@ class ExternalMemoryAdapter : public DecoderBuffer::ExternalMemory {
 
 }  // namespace
 
-MP4StreamParser::MP4StreamParser(const std::set<int>& audio_object_types,
-                                 bool has_sbr,
-                                 bool has_flac,
-                                 bool has_iamf,
-                                 bool has_dv)
+MP4StreamParser::MP4StreamParser(
+    std::optional<base::flat_set<int>> strict_audio_object_types,
+    bool has_sbr,
+    bool has_flac,
+    bool has_iamf,
+    bool has_dv)
     : state_(kWaitingForInit),
       moof_head_(0),
       mdat_tail_(0),
       highest_end_offset_(0),
       has_audio_(false),
       has_video_(false),
-      audio_object_types_(audio_object_types),
+      strict_audio_object_types_(strict_audio_object_types),
       has_sbr_(has_sbr),
       has_flac_(has_flac),
       has_iamf_(has_iamf),
@@ -541,12 +542,14 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
         DVLOG(1) << "audio_type 0x" << std::hex << static_cast<int>(audio_type);
-        if (audio_object_types_.find(audio_type) == audio_object_types_.end()) {
-          MEDIA_LOG(ERROR, media_log_)
-              << "audio object type 0x" << std::hex
-              << static_cast<int>(audio_type)
-              << " does not match what is specified in the mimetype.";
-          return false;
+        if (strict_audio_object_types_.has_value()) {
+          if (!strict_audio_object_types_->contains(audio_type)) {
+            MEDIA_LOG(ERROR, media_log_)
+                << "audio object type 0x" << std::hex
+                << static_cast<int>(audio_type)
+                << " does not match what is specified in the mimetype.";
+            return false;
+          }
         }
 
         // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
