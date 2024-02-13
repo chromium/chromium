@@ -38,9 +38,6 @@ class EmbeddedA11yManagerLacros
  public:
   // Gets the current instance of EmbeddedA11yManagerLacros. There should be one
   // of these across all Lacros profiles.
-  // TODO(b:271633121): Use this instance from a EmbeddedA11yHelperPrivate API
-  // to send a Select to Speak context menu click from extension back through
-  // crosapi to Ash.
   static EmbeddedA11yManagerLacros* GetInstance();
 
   EmbeddedA11yManagerLacros(EmbeddedA11yManagerLacros&) = delete;
