@@ -533,7 +533,7 @@ async function runInFrame(test, child_window, script, param) {
 // iframe or closes the window.
 async function createFrame(test, origin, is_iframe = true, permissions = null) {
   const frameUuid = generateUuid(test);
-  const frameUrl =
+  const frameURL =
       `${origin}${RESOURCE_PATH}subordinate-frame.sub.html?uuid=${frameUuid}`;
   let promise = new Promise(function(resolve, reject) {
     function WaitForMessage(event) {
@@ -552,7 +552,7 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
     let iframe = document.createElement('iframe');
     if (permissions)
       iframe.allow = permissions;
-    iframe.src = frameUrl;
+    iframe.src = frameURL;
     document.body.appendChild(iframe);
 
     test.add_cleanup(async () => {
@@ -564,7 +564,7 @@ async function createFrame(test, origin, is_iframe = true, permissions = null) {
     return iframe.contentWindow;
   }
 
-  let child_window = window.open(frameUrl);
+  let child_window = window.open(frameURL);
   test.add_cleanup(async () => {
     await runInFrame(test, child_window, "await test_instance.do_cleanup();");
     child_window.close();

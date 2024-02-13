@@ -27,7 +27,7 @@ promise_test(async test => {
       reportWin:
         `sendReportTo('${createBidderReportURL(uuid)}');`
     },
-    // expectedReportUrls
+    // expectedReportURLs
     [createBidderReportURL(uuid)]
   );
 }, 'Check recency in generateBid() is below a certain threshold and rounded ' +
