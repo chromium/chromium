@@ -323,8 +323,19 @@ CookieControlsController::GetConfidenceLevel(
 }
 
 bool CookieControlsController::HasOriginSandboxedTopLevelDocument() const {
-  return GetWebContents()->GetPrimaryMainFrame()->IsSandboxed(
-      network::mojom::WebSandboxFlags::kOrigin);
+  content::RenderFrameHost* rfh = GetWebContents()->GetPrimaryMainFrame();
+
+  // If the WebContents has not committed any document yet, we can't
+  // tell if is sandboxed or not.
+  if (rfh->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPendingCommit) {
+    // In that case, we fall back on assuming it is not sandboxed.
+    // Since this is only for determining whether to render the User Bypass
+    // icon this fallback is acceptable.
+    return false;
+  }
+
+  return rfh->IsSandboxed(network::mojom::WebSandboxFlags::kOrigin);
 }
 
 void CookieControlsController::OnCookieBlockingEnabledForSite(
