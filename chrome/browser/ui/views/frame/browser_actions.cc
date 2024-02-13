@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
@@ -104,6 +105,7 @@ BrowserActions* BrowserActions::FromBrowser(Browser* browser) {
 void BrowserActions::InitializeBrowserActions() {
   const bool rename_journeys =
       base::FeatureList::IsEnabled(history_clusters::kRenameJourneys);
+  Profile* profile = browser_->profile();
 
   actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder()
@@ -140,7 +142,7 @@ void BrowserActions::InitializeBrowserActions() {
                               &(browser_.get()), false))
           .Build());
 
-  if (HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
+  if (HistoryClustersSidePanelCoordinator::IsSupported(profile)) {
     root_action_item_->AddChild(
         SidePanelAction(
             SidePanelEntryId::kHistoryClusters,
@@ -189,7 +191,7 @@ void BrowserActions::InitializeBrowserActions() {
 
   if (companion::IsCompanionFeatureEnabled()) {
     if (SearchCompanionSidePanelCoordinator::IsSupported(
-            browser_->profile(),
+            profile,
             /*include_runtime_checks=*/false)) {
       actions::ActionItem* companion_action_item = root_action_item_->AddChild(
           SidePanelAction(
@@ -207,7 +209,7 @@ void BrowserActions::InitializeBrowserActions() {
 
       companion_action_item->SetVisible(
           SearchCompanionSidePanelCoordinator::IsSupported(
-              browser_->profile(),
+              profile,
               /*include_runtime_checks=*/true));
     }
   }
@@ -240,5 +242,25 @@ void BrowserActions::InitializeBrowserActions() {
                            },
                            base::Unretained(&(browser_.get()))),
                        kActionPrint, IDS_PRINT, IDS_PRINT, kPrintMenuIcon)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(base::BindRepeating(
+                           [](Browser* browser, actions::ActionItem* item,
+                              actions::ActionInvocationContext context) {
+                             if (browser->profile()->IsIncognitoProfile()) {
+                               chrome::ShowIncognitoClearBrowsingDataDialog(
+                                   browser->GetBrowserForOpeningWebUi());
+                             } else {
+                               chrome::ShowClearBrowsingDataDialog(
+                                   browser->GetBrowserForOpeningWebUi());
+                             }
+                           },
+                           base::Unretained(&(browser_.get()))),
+                       kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
+                       IDS_CLEAR_BROWSING_DATA, kTrashCanRefreshIcon)
+          .SetEnabled(
+              profile->IsIncognitoProfile() ||
+              (!profile->IsGuestSession() && !profile->IsSystemProfile()))
           .Build());
 }
