@@ -10732,6 +10732,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kComposeDescription,
      kOsWin | kOsLinux | kOsMac | kOsCrOS,
      FEATURE_VALUE_TYPE(compose::features::kEnableCompose)},
+
+    {"compose-text-selection", flag_descriptions::kComposeTextSelectionName,
+     flag_descriptions::kComposeTextSelectionDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(compose::features::kComposeTextSelection)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

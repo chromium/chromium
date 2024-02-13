@@ -4597,6 +4597,9 @@ extern const char kEnableAudioFocusEnforcementDescription[];
 extern const char kComposeId[];
 extern const char kComposeName[];
 extern const char kComposeDescription[];
+
+extern const char kComposeTextSelectionName[];
+extern const char kComposeTextSelectionDescription[];
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

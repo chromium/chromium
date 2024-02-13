@@ -7946,6 +7946,10 @@ const char kEnableAudioFocusEnforcementDescription[] =
 const char kComposeId[] = "CCO";
 const char kComposeName[] = "CCO Edits";
 const char kComposeDescription[] = "Enables CCO editing feature";
+
+const char kComposeTextSelectionName[] = "Compose Selection";
+const char kComposeTextSelectionDescription[] =
+    "Enables feature for different heuristics for selecting text for Compose";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

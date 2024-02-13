@@ -16905,6 +16905,7 @@ from previous Chrome versions.
   <int value="-1719629293" label="ReadAnything:disabled"/>
   <int value="-1718808435" label="WebAssemblyGarbageCollection:disabled"/>
   <int value="-1718644168" label="SharingHubLinkToggle:disabled"/>
+  <int value="-1718414372" label="ComposeTextSelection:enabled"/>
   <int value="-1718074215" label="HomepageSettingsUIConversion:enabled"/>
   <int value="-1716654100" label="tab-capture-downscale-quality"/>
   <int value="-1716140224" label="EnableEmbeddedAssistantUI:disabled"/>
@@ -18871,6 +18872,7 @@ from previous Chrome versions.
   <int value="-822237807" label="UnifiedSidePanel:enabled"/>
   <int value="-822103041" label="SeamlessRefreshRateSwitching:disabled"/>
   <int value="-821635312" label="EyeDropper:enabled"/>
+  <int value="-821236443" label="ComposeTextSelection:disabled"/>
   <int value="-820676825" label="MessagesPreinstall:enabled"/>
   <int value="-820041355" label="enable-transition-compositing"/>
   <int value="-819810429"

@@ -47,6 +47,9 @@ BASE_DECLARE_FEATURE(kComposeUiParams);
 // Enables animation of text output. Applies only to on-device evaluation.
 BASE_DECLARE_FEATURE(kComposeTextOutputAnimation);
 
+// Constrols parameters around text selection and insert/replacement heuristics.
+BASE_DECLARE_FEATURE(kComposeTextSelection);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_
