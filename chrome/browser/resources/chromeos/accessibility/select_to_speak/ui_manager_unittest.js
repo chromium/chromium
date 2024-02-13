@@ -95,12 +95,6 @@ SelectToSpeakUiManagerUnitTest = class extends SelectToSpeakE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      importModule('ParagraphUtils', '/common/paragraph_utils.js'),
-      importModule('UiManager', '/select_to_speak/ui_manager.js'),
-      importModule('PrefsManager', '/select_to_speak/prefs_manager.js'),
-    ]);
-
     this.mockPrefsManager = new MockPrefsManager();
     this.mockListener = new MockUiListener();
     this.uiManager = new UiManager(this.mockPrefsManager, this.mockListener);

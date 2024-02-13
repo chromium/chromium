@@ -8,6 +8,7 @@
 
 import {AutomationPredicate} from './automation_predicate.js';
 import {constants} from './constants.js';
+import {TestImportManager} from './testing/test_import_manager.js';
 import {AutomationTreeWalker, AutomationTreeWalkerRestriction} from './tree_walker.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
@@ -540,3 +541,5 @@ function createWalker(
 
   return new AutomationTreeWalker(cur, dir, restrictions);
 }
+
+TestImportManager.exportForTesting(AutomationUtil);

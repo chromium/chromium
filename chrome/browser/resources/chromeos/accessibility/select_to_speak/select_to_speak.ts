@@ -9,6 +9,7 @@ import {FlagName, Flags} from '/common/flags.js';
 import {NodeNavigationUtils} from '/common/node_navigation_utils.js';
 import {NodeUtils} from '/common/node_utils.js';
 import {ParagraphUtils} from '/common/paragraph_utils.js';
+import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {WordUtils} from '/common/word_utils.js';
 
 import {InputHandler} from './input_handler.js';
@@ -1741,3 +1742,5 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     callback();
   }
 }
+
+TestImportManager.exportForTesting(getGSuiteAppRoot);

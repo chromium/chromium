@@ -20,14 +20,6 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
   async setUpDeferred() {
     await super.setUpDeferred();
 
-    await Promise.all([
-      importModule('selectToSpeak', '/select_to_speak/select_to_speak_main.js'),
-      importModule(
-          'SelectToSpeakConstants',
-          '/select_to_speak/select_to_speak_constants.js'),
-      importModule('PrefsManager', '/select_to_speak/prefs_manager.js'),
-    ]);
-
     await new Promise(resolve => {
       chrome.settingsPrivate.setPref(
           PrefsManager.ENHANCED_VOICES_DIALOG_SHOWN_KEY, true,
