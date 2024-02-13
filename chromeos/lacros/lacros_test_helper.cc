@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/startup/browser_init_params.h"
+#include "chromeos/startup/browser_params_proxy.h"
 
 namespace chromeos {
 namespace {
@@ -28,19 +28,9 @@ base::Version GetAshVersion() {
 }
 }  // namespace
 
-ScopedDisableCrosapiForTesting::ScopedDisableCrosapiForTesting()
-    : disable_crosapi_resetter_(
-          &BrowserInitParams::is_crosapi_disabled_for_testing_,
-          true) {
-  // Ensure that no instance exist, to prevent interference.
-  CHECK(!LacrosService::Get());
+ScopedLacrosServiceTestHelper::ScopedLacrosServiceTestHelper() {
+  CHECK(BrowserParamsProxy::IsCrosapiDisabledForTesting());
 }
-
-// TODO(crbug.com/1196314): Ensure that no instance exist on destruction, too.
-// Currently, browser_tests' shutdown is an exception.
-ScopedDisableCrosapiForTesting::~ScopedDisableCrosapiForTesting() = default;
-
-ScopedLacrosServiceTestHelper::ScopedLacrosServiceTestHelper() = default;
 
 ScopedLacrosServiceTestHelper::~ScopedLacrosServiceTestHelper() = default;
 

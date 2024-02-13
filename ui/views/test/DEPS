@@ -4,6 +4,7 @@ include_rules = [
 
 specific_include_rules = {
   "views_test_base\.cc": [
+    "+chromeos/startup",
     "+mojo/core/embedder",
     "+ui/gl",
   ],

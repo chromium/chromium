@@ -787,6 +787,7 @@ static_library("test_support") {
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+      "//chromeos/startup",
       "//chromeos/startup:constants",
     ]
   }

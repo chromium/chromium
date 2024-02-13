@@ -67,7 +67,6 @@ TEST(DeviceTypeTest, GetDeviceTypeAsh) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST(DeviceTypeTest, GetDeviceTypeLacros) {
   base::test::TaskEnvironment task_environment;
-  chromeos::ScopedDisableCrosapiForTesting disable_crosapi;
   {
     auto params = crosapi::mojom::BrowserInitParams::New();
     params->device_type =

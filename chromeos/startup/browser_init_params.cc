@@ -7,6 +7,8 @@
 #include <optional>
 #include <string>
 
+#include "base/check_is_test.h"
+#include "base/command_line.h"
 #include "chromeos/startup/startup.h"
 
 namespace chromeos {
@@ -32,17 +34,49 @@ crosapi::mojom::BrowserInitParamsPtr ReadStartupBrowserInitParams() {
 
 }  // namespace
 
+std::optional<bool> BrowserInitParams::is_crosapi_enabled_;
+
+bool BrowserInitParams::IsCrosapiDisabledForTesting() {
+  return !IsCrosapiEnabled();
+}
+
+bool BrowserInitParams::IsCrosapiEnabled() {
+  if (is_crosapi_enabled_.has_value()) {
+    return *is_crosapi_enabled_;
+  }
+
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  const bool enabled =
+      command_line->HasSwitch("crosapi-mojo-platform-channel-handle") ||
+      command_line->HasSwitch("lacros-mojo-socket-for-testing");
+  if (!enabled) {
+    CHECK_IS_TEST();
+  }
+  is_crosapi_enabled_ = enabled;
+  return enabled;
+}
+
+void BrowserInitParams::DisableCrosapiForTesting() {
+  CHECK_IS_TEST();
+  // TODO(crbug.com/324508902): Strengthen this CHECK condition to
+  // `!is_crosapi_enabled_.has_value()` when the bug is fixed.
+  CHECK(!is_crosapi_enabled_.value_or(false))
+      << "You are calling DisableCrosapiForTesting too late.";
+  is_crosapi_enabled_ = false;
+}
+
 BrowserInitParams::BrowserInitParams()
-    : init_params_(is_crosapi_disabled_for_testing_
-                       ? crosapi::mojom::BrowserInitParams::New()
-                       : ReadStartupBrowserInitParams()) {
-  if (!init_params_) {
-    LOG(WARNING) << "BrowserInitParams is not set. "
-                 << "This message should not appear except for testing. "
-                 << "For testing, consider setting "
-                 << "BrowserInitParams::is_crosapi_disabled_for_testing_ "
-                 << "to true if crosapi is not required.";
-    init_params_ = crosapi::mojom::BrowserInitParams::New();
+    : init_params_(IsCrosapiEnabled()
+                       ? ReadStartupBrowserInitParams()
+                       : crosapi::mojom::BrowserInitParams::New()) {
+  if (IsCrosapiEnabled()) {
+    CHECK(init_params_) << "crosapi is enabled but BrowserInitParams could not "
+                           "be read. You are probably trying to get or set "
+                           "the BrowserInitParams too early.";
+    CHECK(init_params_->ash_chrome_version);
+  } else {
+    CHECK(init_params_);
   }
 }
 
@@ -59,6 +93,15 @@ const crosapi::mojom::BrowserInitParams* BrowserInitParams::Get() {
 // static
 void BrowserInitParams::SetInitParamsForTests(
     crosapi::mojom::BrowserInitParamsPtr init_params) {
+  CHECK_IS_TEST();
+  if (IsCrosapiEnabled()) {
+    CHECK(init_params);
+    CHECK(init_params->ash_chrome_version)
+        << "crosapi is enabled but the given BrowserInitParams is missing "
+           "essential data. Make sure to use "
+           "BrowserInitParams::GetForTests()->Clone() and customize that "
+           "instead of starting with an empty one";
+  }
   GetInstance()->init_params_ = std::move(init_params);
 }
 
@@ -74,8 +117,5 @@ BrowserInitParams* BrowserInitParams::GetInstance() {
   static base::NoDestructor<BrowserInitParams> browser_init_params;
   return browser_init_params.get();
 }
-
-// static
-bool BrowserInitParams::is_crosapi_disabled_for_testing_ = false;
 
 }  // namespace chromeos
