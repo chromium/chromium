@@ -143,7 +143,7 @@ TEST_P(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_single_upcoming_event",
-      /*revision_number=*/6, Widget()));
+      /*revision_number=*/7, Widget()));
 }
 
 TEST_P(CalendarUpNextViewPixelTest,
@@ -167,7 +167,7 @@ TEST_P(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events",
-      /*revision_number=*/6, Widget()));
+      /*revision_number=*/7, Widget()));
 }
 
 TEST_P(
@@ -195,7 +195,7 @@ TEST_P(
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events_press_scroll_right_button",
-      /*revision_number=*/5, Widget()));
+      /*revision_number=*/6, Widget()));
 }
 
 TEST_P(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
@@ -217,7 +217,7 @@ TEST_P(CalendarUpNextViewPixelTest, ShouldShowJoinMeetingButton) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_join_button",
-      /*revision_number=*/5, Widget()));
+      /*revision_number=*/6, Widget()));
 }
 
 }  // namespace ash
