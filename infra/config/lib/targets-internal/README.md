@@ -102,7 +102,7 @@ Children
 * [targets|binary](#targets_binary) (0 or 1)
   * created by `targets.test.gtest_test` and `targets.tests.isolated_script_test`
   * traversed when generating details in test_suites.pyl for a test in a basic suite that references a binary
-* [targets|mixin](#targets_mixin) (>=0)
+* [targets|mixin](#Node-type-information-targets_mixin) (>=0)
   * created when a test specifies a mixin in `mixins`
   * traversed to generate the `mixins` field for a test when generating a basic suite in test_suites.pyl
 
@@ -134,11 +134,11 @@ Parents
 * [project](#project) (1)
   * created for all basic suites
   * traversed to generate the `basic_suites` entries in test_suites.pyl
-* [targets|legacy-compound-suite](#targets_legacy_compound_suite) (>=0)
+* [targets|legacy-compound-suite](#Node-type-information-targets_legacy_compound_suite) (>=0)
   * created when a compound suite includes a basic suite
   * traversed to generate the basic suite reference when generating a compound
     suite in test_suites.pyl
-* [targets|legacy-matrix-compound-suite](#targets_legacy_matrix_compound_suite) (>=0)
+* [targets|legacy-matrix-compound-suite](#Node-type-information-targets_legacy_matrix_compound_suite) (>=0)
   * created when a matrix compound suite includes a basic suite
   * not traversed, created only to ensure the basic suite exists
 
@@ -157,7 +157,7 @@ Children
 * [targets|legacy-test](#targets_legacy_test) (1)
   * created when a basic suite references a test
   * traversed to generate the details for a test when generating a basic suite in test_suites.pyl
-* [targets|mixin](#targets_mixin) (>=0)
+* [targets|mixin](#Node-type-information-targets_mixin) (>=0)
   * created when the config for a test in a basic suite references a mixin
   * traversed to generate the `mixins` field for a test when generating a basic suite in test_suites.pyl
 * [targets|legacy-remove-mixin](#targets_legacy_remove_mixin) (>=0)
@@ -166,7 +166,7 @@ Children
 
 Parents
 
-* [targets|legacy-basic-suite](#targets_legacy_basic_suite) (0)
+* [targets|legacy-basic-suite](#Node-type-information-targets_legacy_basic_suite) (0)
   * created when a basic suite references a test
   * traversed to generate the details for a test when generating a basic suite in test_suites.pyl
 
@@ -183,7 +183,7 @@ Created by
 
 Children
 
-* [targets|mixin](#targets_mixin) (1)
+* [targets|mixin](#Node-type-information-targets_mixin) (1)
   * created when a test specifies a mixin in `remove_mixins`
   * traversed to generate the `remove_mixins` field for a test when generating a basic suite in test_suites.pyl
 
@@ -205,7 +205,7 @@ Created by
 
 Children
 
-* [targets|legacy-basic-suite](#targets_legacy_basic_suite) (>0)
+* [targets|legacy-basic-suite](#Node-type-information-targets_legacy_basic_suite) (>0)
   * created when a compound suite includes a basic suite
   * traversed to generate the basic suite reference when generating a compound suite in test_suites.pyl
 
@@ -227,7 +227,7 @@ Created by
 
 Children
 
-* [targets|legacy-basic-suite](#targets_legacy_basic_suite) (>0)
+* [targets|legacy-basic-suite](#Node-type-information-targets_legacy_basic_suite) (>0)
   * created when a matrix compound suite includes a basic suite
   * not traversed, created only to ensure the basic suite exists
 * [targets|legacy-matrix-config](#targets_legacy_matrix_config) (>0)
@@ -252,16 +252,16 @@ Created by
 
 Children
 
-* [targets|mixin](#targets_mixin) (>=0)
+* [targets|mixin](#Node-type-information-targets_mixin) (>=0)
   * created when the matrix config for a basic suite in a matrix compound suite references a mixin
   * traversed to generate the `mixins` field in test_suites.pyl for the config for a basic suite in a matrix compound suite
-* [targets|variant](#targets_variant) (>=0)
+* [targets|variant](#Node-type-information-targets_variant) (>=0)
   * created when the matrix config for a basic suite in a matrix compound suite references a variant
   * traversed to generate the `variants` field in test_suites.pyl for the config for a basic suite in a matrix compound suite
 
 Parents
 
-* [targets|legacy-matrix-compound-suite](#targets_legacy_matrix_compound_suite) (1)
+* [targets|legacy-matrix-compound-suite](#Node-type-information-targets_legacy_matrix_compound_suite) (1)
   * created for each basic suite in the matrix compound suite
   * traversed to generate the details for a basic suite when generating a
     matrix compound suite in test_suites.pyl
@@ -282,7 +282,7 @@ Created by
 
 Parents
 
-* [targets|bundle](#targets_bundle) (>=0)
+* [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references a compile target in `additional_compile_targets`
   * traversed when generating targets spec files for builders that have their tests defined in starlark
 
@@ -303,10 +303,10 @@ Created by
 
 Children
 
-* [targets|bundle](#targets_bundle) (>=0)
+* [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references another bundle in `targets`
   * traversed when generating targets spec files for builders that have their tests defined in starlark
-* [targets|compile-target](#targets_compile_target) (>=0)
+* [targets|compile-target](#Node-type-information-targets_compile_target) (>=0)
   * created when a bundle references a compile target in `additional_compile_targets`
   * traversed when generating targets spec files for builders that have their tests defined in starlark
 
@@ -315,7 +315,7 @@ Parents
 * [builder-config](#builder_config) (0 or 1)
   * created when a builder sets `targets`
   * traversed when generating targets spec files for builders that have their targets defined in starlark
-* [targets|bundle](#targets_bundle) (>=0)
+* [targets|bundle](#Node-type-information-targets_bundle) (>=0)
   * created when a bundle references another bundle in targets
   * traversed when generating targets spec files for builders that have their
     targets defined in starlark
