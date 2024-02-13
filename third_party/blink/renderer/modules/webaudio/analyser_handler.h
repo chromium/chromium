@@ -70,6 +70,7 @@ class AnalyserHandler final : public AudioBasicInspectorHandler {
     // called even if all the inputs are silent.
     return false;
   }
+  void PullInputs(uint32_t frames_to_process) override;
 
   RealtimeAnalyser analyser_;
 };
