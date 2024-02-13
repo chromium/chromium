@@ -172,8 +172,7 @@ void HandleSearchResults(PickerViewDelegate::SearchResultsCallback callback,
 
 }  // namespace
 
-PickerController::PickerController()
-    : should_paint_(MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kDev) {
+PickerController::PickerController() {
   asset_fetcher_ = std::make_unique<PickerAssetFetcherImpl>(base::BindRepeating(
       &PickerController::DownloadGifToString, weak_ptr_factory_.GetWeakPtr()));
   if (auto* manager = ash::input_method::InputMethodManager::Get()) {
@@ -261,10 +260,6 @@ void PickerController::InsertResultOnNextFocus(
   // This cancels the previous request if there was one.
   insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
       input_method, ResultToInsertMediaData(result), kInsertMediaTimeout);
-}
-
-bool PickerController::ShouldPaint() {
-  return should_paint_;
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {

@@ -45,10 +45,6 @@ class ASH_EXPORT PickerViewDelegate {
   // the result is dropped silently.
   virtual void InsertResultOnNextFocus(const PickerSearchResult& result) = 0;
 
-  // Whether the view should paint. Certain test scenarios do not need
-  // painting, so it is better to skip painting.
-  virtual bool ShouldPaint() = 0;
-
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 };
 

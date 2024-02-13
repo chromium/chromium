@@ -230,12 +230,6 @@ bool PickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return true;
 }
 
-void PickerView::PaintChildren(const views::PaintInfo& paint_info) {
-  if (delegate_->ShouldPaint()) {
-    views::View::PaintChildren(paint_info);
-  }
-}
-
 std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
     views::Widget* widget) {
   auto frame =

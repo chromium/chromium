@@ -96,8 +96,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     last_inserted_result_ = result;
   }
 
-  bool ShouldPaint() override { return true; }
-
   PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
 
   std::optional<PickerSearchResult> last_inserted_result() const {

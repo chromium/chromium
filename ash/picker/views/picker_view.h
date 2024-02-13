@@ -69,7 +69,6 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
 
   // views::WidgetDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  void PaintChildren(const views::PaintInfo& paint_info) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
   void AddedToWidget() override;

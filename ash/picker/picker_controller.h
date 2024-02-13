@@ -68,7 +68,6 @@ class ASH_EXPORT PickerController
                    std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override;
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
-  bool ShouldPaint() override;
   PickerAssetFetcher* GetAssetFetcher() override;
 
   // ash::input_method::ImeKeyboard::Observer:
@@ -87,7 +86,6 @@ class ASH_EXPORT PickerController
 
   raw_ptr<PickerClient> client_ = nullptr;
   views::UniqueWidgetPtr widget_;
-  bool should_paint_ = false;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
 
