@@ -783,7 +783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.BatteryDischargeRateWhileHibernated" units="mW"
-    expires_after="2024-06-08">
+    expires_after="2024-08-11">
   <owner>puthik@chromium.org</owner>
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1402,7 +1402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.HibernateAttemptsBeforeSuccess" units="units"
-    expires_after="2024-06-08">
+    expires_after="2024-08-11">
   <owner>puthik@chromium.org</owner>
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1699,7 +1699,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerButtonPressInTabletMode"
-    enum="PowerButtonPressType" expires_after="2024-05-01">
+    enum="PowerButtonPressType" expires_after="2024-08-11">
   <owner>minch@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>

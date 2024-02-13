@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AImageReaderGLOwner.AcquireImageResult"
-    enum="MediaStatus" expires_after="2024-05-19">
+    enum="MediaStatus" expires_after="2024-08-11">
   <owner>vikassoni@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -3037,7 +3037,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.EME.MediaLicenseDatabase.WriteFile.FullDiskDataSizeBytes"
-    units="bytes" expires_after="2024-04-11">
+    units="bytes" expires_after="2024-08-11">
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
@@ -5652,7 +5652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Device.SupportedPixelFormat"
-    enum="VideoPixelFormatUnion" expires_after="2024-06-08">
+    enum="VideoPixelFormatUnion" expires_after="2024-08-11">
   <owner>eshr@google.com</owner>
   <owner>handellm@google.com</owner>
   <owner>atadres@chromium.org</owner>
