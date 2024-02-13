@@ -946,10 +946,14 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
     case AV_PIX_FMT_YUV444P12LE:
       return PIXEL_FORMAT_YUV444P12;
 
+    // When compiled without decoders, FFmpeg won't know the pixel format.
+    case AV_PIX_FMT_NONE:
+      return PIXEL_FORMAT_UNKNOWN;
+
     default:
-      NOTREACHED();
+      NOTREACHED() << "Unsupported pixel format: " << pixel_format;
+      return PIXEL_FORMAT_UNKNOWN;
   }
-  return PIXEL_FORMAT_UNKNOWN;
 }
 
 std::string AVErrorToString(int errnum) {
