@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/tab_search/tab_search_sign_in_handler.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
 
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -10,19 +10,19 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 
-TabSearchSignInHandler::TabSearchSignInHandler(Profile* profile)
+TabSearchSyncHandler::TabSearchSyncHandler(Profile* profile)
     : profile_(profile) {}
 
-TabSearchSignInHandler::~TabSearchSignInHandler() = default;
+TabSearchSyncHandler::~TabSearchSyncHandler() = default;
 
-void TabSearchSignInHandler::RegisterMessages() {
+void TabSearchSyncHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "GetSignInState",
-      base::BindRepeating(&TabSearchSignInHandler::HandleGetSignInState,
+      base::BindRepeating(&TabSearchSyncHandler::HandleGetSignInState,
                           base::Unretained(this)));
 }
 
-void TabSearchSignInHandler::OnJavascriptAllowed() {
+void TabSearchSyncHandler::OnJavascriptAllowed() {
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
   if (identity_manager && !identity_manager_observation_.IsObserving()) {
@@ -30,11 +30,11 @@ void TabSearchSignInHandler::OnJavascriptAllowed() {
   }
 }
 
-void TabSearchSignInHandler::OnJavascriptDisallowed() {
+void TabSearchSyncHandler::OnJavascriptDisallowed() {
   identity_manager_observation_.Reset();
 }
 
-bool TabSearchSignInHandler::GetSignInState() const {
+bool TabSearchSyncHandler::GetSignInState() const {
   const signin::IdentityManager* const identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
   const auto stored_account = identity_manager->FindExtendedAccountInfo(
@@ -42,7 +42,7 @@ bool TabSearchSignInHandler::GetSignInState() const {
   return stored_account.IsValid();
 }
 
-void TabSearchSignInHandler::HandleGetSignInState(const base::Value::List& args) {
+void TabSearchSyncHandler::HandleGetSignInState(const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
@@ -50,12 +50,12 @@ void TabSearchSignInHandler::HandleGetSignInState(const base::Value::List& args)
   ResolveJavascriptCallback(callback_id, GetSignInState());
 }
 
-void TabSearchSignInHandler::OnExtendedAccountInfoUpdated(
+void TabSearchSyncHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   FireWebUIListener("account-info-changed", GetSignInState());
 }
 
-void TabSearchSignInHandler::OnExtendedAccountInfoRemoved(
+void TabSearchSyncHandler::OnExtendedAccountInfoRemoved(
     const AccountInfo& info) {
   FireWebUIListener("account-info-changed", GetSignInState());
 }
