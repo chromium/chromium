@@ -70,6 +70,7 @@ class CPPClass {
   CPPClass();
 
   CPPClass(const CPPClass&) = delete;
+  CPPClass(CPPClass&&) = default;
   CPPClass& operator=(const CPPClass&) = delete;
 
   ~CPPClass();

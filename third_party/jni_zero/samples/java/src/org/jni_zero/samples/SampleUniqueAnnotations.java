@@ -13,8 +13,8 @@ class SampleUniqueAnnotations {
     @Generated("Test")
     interface Natives {
         @NativeClassQualifiedName("FooAndroid::BarDelegate")
+        void foo(long nativePtr, @JniType("std::string") String arg);
 
-        void foo(long nativePtr);
         int bar(int x, int y);
     }
 

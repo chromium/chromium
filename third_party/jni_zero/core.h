@@ -93,6 +93,52 @@ LazyGetClass(JNIEnv* env,
              const char* class_name,
              std::atomic<jclass>* atomic_class_id);
 
+// Primary templates for non-Array conversion fuctions. Embedding application
+// can specialize these functions for their own custom types in order to use
+// custom types in @JniType.
+template <typename O>
+O ConvertType(JNIEnv*, const JavaRef<jobject>&);
+template <typename O>
+O ConvertType(JNIEnv*, const JavaRef<jstring>&);
+
+// Primary template for Array conversion.
+// This is in a struct so that we are able to write a default implementation for
+// vector of any type as long as there is a conversion function from jobject to
+// that type. Partial specialized template functions are not allowed, but
+// functions inside a struct are.
+template <typename O>
+struct ConvertArray {
+  static O Convert(JNIEnv*, const JavaRef<jobjectArray>&);
+};
+
+template <template <typename, typename...> typename IterableType, typename O>
+struct ConvertArray<IterableType<O>> {
+  static IterableType<O> Convert(JNIEnv*, const JavaRef<jobjectArray>&);
+};
+
+template <typename O>
+struct ConvertArray<std::vector<O>> {
+  template <typename JArrayElementType = jobject>
+  static std::vector<O> Convert(JNIEnv* env,
+                                const JavaRef<jobjectArray>& j_array) {
+    if (!j_array) {
+      return {};
+    }
+    jsize jlength = env->GetArrayLength(j_array.obj());
+    size_t length = static_cast<size_t>(jlength);
+    std::vector<O> ret;
+    ret.reserve(length);
+    for (jsize i = 0; i < jlength; ++i) {
+      O element = ConvertType<O>(
+          env, jni_zero::ScopedJavaLocalRef<JArrayElementType>::Adopt(
+                   env, static_cast<JArrayElementType>(
+                            env->GetObjectArrayElement(j_array.obj(), i))));
+      ret.push_back(std::move(element));
+    }
+    return ret;
+  }
+};
+
 // This class is a wrapper for JNIEnv Get(Static)MethodID.
 class JNI_ZERO_COMPONENT_BUILD_EXPORT MethodID {
  public:

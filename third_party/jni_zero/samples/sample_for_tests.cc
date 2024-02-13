@@ -20,6 +20,16 @@ using jni_zero::JavaParamRef;
 using jni_zero::ScopedJavaLocalRef;
 
 namespace jni_zero {
+
+// Convert from java object to CPPClass object. Implementation left as an
+// excersize to the reader XD.
+template <>
+samples::CPPClass ConvertType<samples::CPPClass>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_obj) {
+  return {};
+}
+
 namespace samples {
 
 jdouble CPPClass::InnerClass::MethodOtherP0(
@@ -186,12 +196,12 @@ static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     const JavaParamRef<jobjectArray>& classes,
     const JavaParamRef<jthrowable>& throwable,
     const JavaParamRef<jobjectArray>& throwables,
-    const JavaParamRef<jstring>& string,
-    const JavaParamRef<jobjectArray>& strings,
+    std::string&& string,
+    std::vector<std::string>&& strings,
     const JavaParamRef<jobject>& tStruct,
     const JavaParamRef<jobjectArray>& structs,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobjectArray>& objects) {}
+    jni_zero::samples::CPPClass&& obj,
+    std::vector<jni_zero::samples::CPPClass>&& objects) {}
 
 static ScopedJavaLocalRef<jthrowable>
 JNI_SampleForAnnotationProcessor_ReturnThrowable(JNIEnv* env) {

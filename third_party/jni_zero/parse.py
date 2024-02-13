@@ -96,8 +96,10 @@ def _remove_comments(contents):
   return _COMMENT_REMOVER_REGEX.sub(replacer, contents)
 
 
+# Remove everything between and including <> except at the end of a string, e.g.
+# @JniType("std::vector<int>")
 # This will also break lines with comparison operators, but we don't care.
-_GENERICS_REGEX = re.compile(r'<[^<>\n]*>')
+_GENERICS_REGEX = re.compile(r'<[^<>\n]*>(?!")')
 
 
 def _remove_generics(value):

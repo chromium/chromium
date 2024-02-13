@@ -4,6 +4,7 @@
 
 package org.jni_zero.samples;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 /**
@@ -35,9 +36,17 @@ class SampleForAnnotationProcessor {
                 short[] shorts, char zchar, char[] chars, byte zbyte, byte[] bytes, double zdouble,
                 double[] doubles, float zfloat, float[] floats, boolean zbool, boolean[] bools);
 
-        void testSpecialTypes(Class clazz, Class[] classes, Throwable throwable,
-                Throwable[] throwables, String string, String[] strings, TestStruct tStruct,
-                TestStruct[] structs, Object obj, Object[] objects);
+        void testSpecialTypes(
+                Class clazz,
+                Class[] classes,
+                Throwable throwable,
+                Throwable[] throwables,
+                @JniType("std::string") String string,
+                @JniType("std::vector<std::string>") String[] strings,
+                TestStruct tStruct,
+                TestStruct[] structs,
+                @JniType("jni_zero::samples::CPPClass") Object obj,
+                @JniType("std::vector<jni_zero::samples::CPPClass>") Object[] objects);
 
         Throwable returnThrowable();
         Throwable[] returnThrowables();

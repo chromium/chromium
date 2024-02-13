@@ -158,10 +158,13 @@ class JavaType:
     return lhs < rhs
 
   def is_primitive(self):
-    return self.primitive_name is not None and self.array_dimensions == 0
+    return self.primitive_name is not None and not self.is_array_type()
 
   def is_void(self):
     return self.primitive_name == 'void'
+
+  def is_array_type(self):
+    return self.array_dimensions > 0
 
   def to_descriptor(self):
     """Converts a Java type into a JNI signature type."""
@@ -205,6 +208,11 @@ class JavaType:
 
     # All other types should just be passed as Objects or Object arrays.
     return dataclasses.replace(self, java_class=_OBJECT_CLASS)
+
+  def converted_type(self):
+    """Returns a C datatype listed in the JniType annotation for this type."""
+    return self.annotations.get('JniType', None)
+
 
 
 @dataclasses.dataclass(frozen=True)

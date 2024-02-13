@@ -35,6 +35,14 @@ inline jclass org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(JNIEnv* en
 #endif
 
 
+namespace jni_zero {
+
+// Forward declare used conversion functions to avoid a compiler warning that
+// triggers if a conversion specialization exists within the including .cc file.
+
+}  // namespace jni_zero
+
+
 // Step 2: Constants (optional).
 
 
