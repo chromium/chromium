@@ -117,6 +117,8 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
+#include "ui/aura/window_tree_host_platform.h"
+#include "ui/platform_window/extensions/wayland_extension.h"
 #define DESKTOP_BROWSER_FRAME_AURA DesktopBrowserFrameLacros
 #elif BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
@@ -4061,6 +4063,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabbedSystemApp,
   EXPECT_EQ("1", IDString(app_browser1->tab_strip_model()));
 }
 
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 // Subclass of DetachToBrowserTabDragControllerTest that
 // creates multiple displays.
 class DetachToBrowserInSeparateDisplayTabDragControllerTest
@@ -4079,10 +4084,18 @@ class DetachToBrowserInSeparateDisplayTabDragControllerTest
     // 1280x800 is the default resolution for the main display in tests.
     // We stick to it, as opposed to a smaller one, to avoid the browser
     // window being shrunk and maximized when calling UpdateDisplay.
+    const std::string display_specs = "1280x800,1280x800";
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    ui_controls::UpdateDisplaySync(display_specs);
+#else
     display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("1280x800,1280x800");
+        .UpdateDisplay(display_specs);
+#endif
   }
 };
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -4157,7 +4170,24 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   EXPECT_FALSE(new_browser->window()->IsMaximized());
 }
 
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+
 namespace {
+
+void SetBoundsSync(BrowserWindow* window, const gfx::Rect& bounds) {
+  window->SetBounds(bounds);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Wait for a Wayland roundtrip to ensure all side effects have been
+  // processed.
+  auto* host = static_cast<aura::WindowTreeHostPlatform*>(
+      window->GetNativeWindow()->GetHost());
+  auto* wayland_extension = ui::GetWaylandExtension(*host->platform_window());
+  wayland_extension->RoundTripQueue();
+#endif
+}
 
 // Invoked from the nested run loop.
 void DragTabToWindowInSeparateDisplayStep2(
@@ -4194,7 +4224,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   // Move the second browser to the second display.
   display::Screen* screen = display::Screen::GetScreen();
   Display second_display = ui_test_utils::GetSecondaryDisplay(screen);
-  browser2->window()->SetBounds(second_display.work_area());
+  SetBoundsSync(browser2->window(), second_display.work_area());
   EXPECT_EQ(
       second_display.id(),
       screen->GetDisplayNearestWindow(browser2->window()->GetNativeWindow())
@@ -4223,6 +4253,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserInSeparateDisplayTabDragControllerTest,
   EXPECT_FALSE(browser()->window()->IsMaximized());
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Crashes on ChromeOS. crbug.com/1003288
 IN_PROC_BROWSER_TEST_P(
@@ -4967,8 +5001,7 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values("mouse")));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/1488094): Enable Multi Display Test on lacros
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserInSeparateDisplayTabDragControllerTest,
@@ -4976,6 +5009,9 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         ::testing::Values("mouse")));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1488094): Enable Multi Display Test on lacros
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DifferentDeviceScaleFactorDisplayTabDragControllerTest,
@@ -5003,7 +5039,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Bool(),
         /*kTearOffWebAppTabOpensWebAppWindow=*/::testing::Values(false),
         ::testing::Values("mouse", "touch")));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(
