@@ -974,7 +974,7 @@ chromium-metrics-reviews@google.com.
   <owner>clank-app-team@google.com</owner>
   <summary>
     Records the primary display (screen) size in tens of inches with 0.2 inches
-    (2 units) granularity, during deferred startup. The display size is not
+    (2 units) granularity, during deferred startup. The re-enabled size is not
     affected by Android N multi-window mode.
   </summary>
 </histogram>
@@ -1028,27 +1028,35 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Audio"
-    enum="AndroidDownloadOpenSource" expires_after="2023-07-09">
+    enum="AndroidDownloadOpenSource" expires_after="2024-05-31">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
-  <summary>Records how users open audio download files on Android.</summary>
+  <summary>
+    Records how users open audio download files on Android. This histogram was
+    previously expired on 2023-07-09, and was re-enabled on 2024-02-12.
+  </summary>
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Other"
-    enum="AndroidDownloadOpenSource" expires_after="2023-06-25">
+    enum="AndroidDownloadOpenSource" expires_after="2024-05-31">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
     Records the entry point for users opening downloaded files on Android, that
-    are not audio nor video.
+    are not audio nor video. Records how users open audio download files on
+    Android. This histogram was previously expired on 2023-06-25, and was
+    re-enabled on 2024-02-12.
   </summary>
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Video"
-    enum="AndroidDownloadOpenSource" expires_after="2023-06-25">
+    enum="AndroidDownloadOpenSource" expires_after="2024-05-31">
   <owner>shaktisahu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
-  <summary>Records how users open video download files on Android.</summary>
+  <summary>
+    Records how users open video download files on Android. This histogram was
+    previously expired on 2023-06-25, and was re-enabled on 2024-02-12.
+  </summary>
 </histogram>
 
 <histogram name="Android.DownloadManager.ServiceStopped.DownloadForeground"
@@ -1089,11 +1097,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DownloadPage.OpenSource"
-    enum="AndroidDownloadOpenSource" expires_after="2023-04-23">
+    enum="AndroidDownloadOpenSource" expires_after="2024-05-31">
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
-    Records the entry point for users opening the download page on Android.
+    Records the entry point for users opening the download page on Android. This
+    histogram was previously expired on 2023-04-23, and was re-enabled on
+    2024-02-12.
   </summary>
 </histogram>
 
