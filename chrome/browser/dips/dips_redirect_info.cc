@@ -16,7 +16,11 @@ DIPSRedirectChainInfo::DIPSRedirectChainInfo(const GURL& initial_url,
       length(length),
       is_partial_chain(is_partial_chain) {}
 
+DIPSRedirectChainInfo::DIPSRedirectChainInfo(const DIPSRedirectChainInfo&) =
+    default;
+
 DIPSRedirectChainInfo::~DIPSRedirectChainInfo() = default;
+
 DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                                    DIPSRedirectType redirect_type,
                                    SiteDataAccessType access_type,
@@ -53,5 +57,7 @@ DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
       has_sticky_activation(has_sticky_activation),
       web_authn_assertion_request_succeeded(
           web_authn_assertion_request_succeeded) {}
+
+DIPSRedirectInfo::DIPSRedirectInfo(const DIPSRedirectInfo&) = default;
 
 DIPSRedirectInfo::~DIPSRedirectInfo() = default;

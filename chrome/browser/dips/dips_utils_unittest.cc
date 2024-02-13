@@ -116,3 +116,33 @@ TEST(BucketizeBounceDelayTest, BucketizeBounceDelay) {
   EXPECT_EQ(10, BucketizeBounceDelay(base::Milliseconds(10001)));
   EXPECT_EQ(10, BucketizeBounceDelay(base::Days(1)));
 }
+
+TEST(UpdateTimestampTest, AlwaysReplaceNullOpt) {
+  const base::Time new_value = base::Time::FromTimeT(42);
+  std::optional<base::Time> time;
+
+  ASSERT_EQ(time, std::nullopt);
+  EXPECT_TRUE(UpdateTimestamp(time, new_value));
+  EXPECT_THAT(time, testing::Optional(new_value));
+}
+
+TEST(UpdateTimestampTest, DontReplaceBeforeIntervalPasses) {
+  const base::Time old_value = base::Time::FromTimeT(42);
+  const base::Time new_value =
+      old_value + kDIPSTimestampUpdateInterval - base::Milliseconds(1);
+  std::optional<base::Time> time = old_value;
+
+  ASSERT_THAT(time, testing::Optional(old_value));
+  EXPECT_FALSE(UpdateTimestamp(time, new_value));
+  EXPECT_THAT(time, testing::Optional(old_value));
+}
+
+TEST(UpdateTimestampTest, ReplaceAfterIntervalPasses) {
+  const base::Time old_value = base::Time::FromTimeT(42);
+  const base::Time new_value = old_value + kDIPSTimestampUpdateInterval;
+  std::optional<base::Time> time = old_value;
+
+  ASSERT_THAT(time, testing::Optional(old_value));
+  EXPECT_TRUE(UpdateTimestamp(time, new_value));
+  EXPECT_THAT(time, testing::Optional(new_value));
+}

@@ -195,8 +195,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   content::WaitForHitTestData(iframe);
 
   // Click on the b.test iframe.
-  base::Time frame_interaction_time =
-      time + DIPSBounceDetector::kTimestampUpdateInterval;
+  base::Time frame_interaction_time = time + kDIPSTimestampUpdateInterval;
   SetDIPSTime(frame_interaction_time);
   UserActivationObserver observer_b(web_contents, iframe);
 
@@ -249,8 +248,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EXPECT_EQ(state_1->user_interaction_times->first,
             state_1->user_interaction_times->second);
 
-  SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
-              base::Seconds(10));
+  SetDIPSTime(time + kDIPSTimestampUpdateInterval + base::Seconds(10));
   UserActivationObserver observer_2(web_contents, frame);
   SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
   observer_2.Wait();
@@ -264,10 +262,9 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   EXPECT_NE(state_2->user_interaction_times->second,
             state_2->user_interaction_times->first);
   EXPECT_EQ(std::make_optional(time), state_2->user_interaction_times->first);
-  EXPECT_EQ(
-      std::make_optional(time + DIPSBounceDetector::kTimestampUpdateInterval +
-                         base::Seconds(10)),
-      state_2->user_interaction_times->second);
+  EXPECT_EQ(std::make_optional(time + kDIPSTimestampUpdateInterval +
+                               base::Seconds(10)),
+            state_2->user_interaction_times->second);
 }
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
@@ -913,7 +910,6 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
       FILE_PATH_LITERAL("OtherProfile"));
   Browser* new_browser = chrome::OpenEmptyWindow(
       &profiles::testing::CreateProfileSync(profile_manager, profile_path));
-  chrome::NewTab(new_browser);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(new_browser, GURL("http://c.test")));
 
   // Trigger the DIPS timer which would delete tracker data.

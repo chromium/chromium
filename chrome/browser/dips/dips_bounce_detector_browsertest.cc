@@ -451,6 +451,7 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   void SetUpDIPSWebContentsObserver() {
     web_contents_observer_ =
         DIPSWebContentsObserver::FromWebContents(GetActiveWebContents());
+    CHECK(web_contents_observer_);
   }
 
   content::WebContents* GetActiveWebContents() {
@@ -458,7 +459,7 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   }
 
   void StartAppendingRedirectsTo(std::vector<std::string>* redirects) {
-    web_contents_observer_->SetRedirectChainHandlerForTesting(
+    GetRedirectChainHelper()->SetRedirectChainHandlerForTesting(
         base::BindRepeating(&AppendRedirects, redirects));
   }
 
@@ -498,6 +499,10 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
     return ChildFrameAt(GetIFrame(), 0);
   }
 
+  RedirectChainDetector* GetRedirectChainHelper() {
+    return RedirectChainDetector::FromWebContents(GetActiveWebContents());
+  }
+
   void NavigateNestedIFrameTo(content::RenderFrameHost* parent_frame,
                               const std::string& iframe_id,
                               const GURL& url) {
@@ -518,6 +523,26 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
                                 "SameSite=None;Secure;Path=/;Partitioned';",
                                 content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
+  }
+
+  void SimulateMouseClick() {
+    WebContents* web_contents = GetActiveWebContents();
+    content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+    UserActivationObserver observer(web_contents,
+                                    web_contents->GetPrimaryMainFrame());
+    content::SimulateMouseClick(web_contents, 0,
+                                blink::WebMouseEvent::Button::kLeft);
+    observer.Wait();
+  }
+
+  void SimulateCookieWrite() {
+    WebContents* web_contents = GetActiveWebContents();
+    content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
+    URLCookieAccessObserver cookie_observer(
+        web_contents, frame->GetLastCommittedURL(), CookieOperation::kChange);
+    ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    cookie_observer.Wait();
   }
 
   const base::FilePath kChromeTestDataDir =
@@ -1222,11 +1247,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   GURL url = embedded_test_server()->GetURL("d.test", "/title1.html");
 
   ASSERT_TRUE(content::NavigateToURL(web_contents, url));
-  UserActivationObserver observer(web_contents,
-                                  web_contents->GetPrimaryMainFrame());
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  observer.Wait();
+  SimulateMouseClick();
 
   // Verify interaction was recorded for d.test, before proceeding.
   std::optional<StateValue> state =
@@ -1504,8 +1525,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
             embedded_test_server()->GetURL("c.test", "/title1.html"));
 
   std::vector<std::string> redirects;
-  DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(new_tab);
+  RedirectChainDetector* tab_web_contents_observer =
+      RedirectChainDetector::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
@@ -1537,8 +1558,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_EQ(new_tab_url, new_tab->GetLastCommittedURL());
 
   std::vector<std::string> redirects;
-  DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(new_tab);
+  RedirectChainDetector* tab_web_contents_observer =
+      RedirectChainDetector::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
@@ -1574,8 +1595,8 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
             embedded_test_server()->GetURL("c.test", "/title1.html"));
 
   std::vector<std::string> redirects;
-  DIPSWebContentsObserver* tab_web_contents_observer =
-      DIPSWebContentsObserver::FromWebContents(new_tab);
+  RedirectChainDetector* tab_web_contents_observer =
+      RedirectChainDetector::FromWebContents(new_tab);
   tab_web_contents_observer->SetRedirectChainHandlerForTesting(
       base::BindRepeating(&AppendRedirects, &redirects));
 
@@ -1750,11 +1771,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   // Start on `tracker_url_with_interaction` and record a current interaction.
   ASSERT_TRUE(
       content::NavigateToURL(web_contents, tracker_url_with_interaction));
-  UserActivationObserver observer(web_contents,
-                                  web_contents->GetPrimaryMainFrame());
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  observer.Wait();
+  SimulateMouseClick();
 
   // Redirect to one of the target URLs, to set DoesFirstPartyPrecedeThirdParty.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
@@ -1936,11 +1953,7 @@ IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
   // Navigate to `aba_current_interaction_url` and record a current interaction.
   ASSERT_TRUE(
       content::NavigateToURL(web_contents, aba_current_interaction_url));
-  UserActivationObserver aba_current_interaction_url_observer(
-      web_contents, web_contents->GetPrimaryMainFrame());
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  aba_current_interaction_url_observer.Wait();
+  SimulateMouseClick();
 
   // Redirect through `first_party_url`, `aba_current_interaction_url`, and
   // `no_interaction_url` before committing and ending on `first_party_url`.
@@ -1986,21 +1999,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // Record a past interaction on `aba_past_interaction_url`.
   ASSERT_TRUE(content::NavigateToURL(web_contents, aba_past_interaction_url));
-  UserActivationObserver aba_past_interaction_url_observer(
-      web_contents, web_contents->GetPrimaryMainFrame());
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  aba_past_interaction_url_observer.Wait();
+  SimulateMouseClick();
 
   // Start redirect chain on `no_aba_current_interaction_url` and record a
   // current interaction.
   ASSERT_TRUE(
       content::NavigateToURL(web_contents, no_aba_current_interaction_url));
-  UserActivationObserver no_aba_current_interaction_url_observer(
-      web_contents, web_contents->GetPrimaryMainFrame());
-  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
-  SimulateMouseClick(web_contents, 0, blink::WebMouseEvent::Button::kLeft);
-  no_aba_current_interaction_url_observer.Wait();
+  SimulateMouseClick();
 
   // Redirect through `no_aba_current_interaction_url`, `first_party_url`, and
   // `aba_past_interaction_url` before committing and ending on
@@ -2418,6 +2423,7 @@ class DIPSWebAuthnBrowserTest : public CertVerifierBrowserTest {
 
     web_contents_observer_ =
         DIPSWebContentsObserver::FromWebContents(GetActiveWebContents());
+    CHECK(web_contents_observer_);
   }
 
   void TearDownOnMainThread() override {
@@ -2437,6 +2443,10 @@ class DIPSWebAuthnBrowserTest : public CertVerifierBrowserTest {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
+  RedirectChainDetector* GetRedirectChainHelper() {
+    return RedirectChainDetector::FromWebContents(GetActiveWebContents());
+  }
+
   // Perform a browser-based navigation to terminate the current redirect chain.
   // (NOTE: tests using WCOCallbackLogger must call this *after* checking the
   // log, since this navigation will be logged.)
@@ -2447,7 +2457,7 @@ class DIPSWebAuthnBrowserTest : public CertVerifierBrowserTest {
   }
 
   void StartAppendingRedirectsTo(std::vector<std::string>* redirects) {
-    web_contents_observer_->SetRedirectChainHandlerForTesting(
+    GetRedirectChainHelper()->SetRedirectChainHandlerForTesting(
         base::BindRepeating(&AppendRedirects, redirects));
   }
 
@@ -2773,6 +2783,139 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       ->GetDefaultStoragePartition()
       ->GetDedicatedWorkerService()
       ->RemoveObserver(logger);
+}
+
+class DIPSThrottlingBrowserTest : public DIPSBounceDetectorBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
+    DIPSWebContentsObserver::FromWebContents(GetActiveWebContents())
+        ->SetClockForTesting(&test_clock_);
+  }
+
+  base::SimpleTestClock test_clock_;
+};
+
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
+                       InteractionRecording_Throttled) {
+  WebContents* web_contents = GetActiveWebContents();
+  const base::Time start_time = test_clock_.Now();
+
+  // Record user activation on a.test.
+  const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  SimulateMouseClick();
+  // Verify the interaction was recorded in the DIPS DB.
+  std::optional<StateValue> state =
+      GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->user_interaction_times,
+              testing::Optional(testing::Pair(start_time, start_time)));
+
+  // Click again, just before kDIPSTimestampUpdateInterval elapses.
+  test_clock_.Advance(kDIPSTimestampUpdateInterval - base::Seconds(1));
+  SimulateMouseClick();
+  // Verify the second interaction was NOT recorded, due to throttling.
+  state = GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->user_interaction_times,
+              testing::Optional(testing::Pair(start_time, start_time)));
+
+  // Click a third time, after kDIPSTimestampUpdateInterval has passed since the
+  // first click.
+  test_clock_.Advance(base::Seconds(1));
+  SimulateMouseClick();
+  // Verify the third interaction WAS recorded.
+  state = GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->user_interaction_times,
+              testing::Optional(testing::Pair(
+                  start_time, start_time + kDIPSTimestampUpdateInterval)));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
+                       InteractionRecording_NotThrottled_AfterRefresh) {
+  WebContents* web_contents = GetActiveWebContents();
+  const base::Time start_time = test_clock_.Now();
+
+  // Record user activation on a.test.
+  const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  SimulateMouseClick();
+  // Verify the interaction was recorded in the DIPS DB.
+  std::optional<StateValue> state =
+      GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->user_interaction_times,
+              testing::Optional(testing::Pair(start_time, start_time)));
+
+  // Navigate to a new page and click, only a second after the previous click.
+  test_clock_.Advance(base::Seconds(1));
+  const GURL url2 = embedded_test_server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url2));
+  SimulateMouseClick();
+  // Verify the second interaction was also recorded (not throttled).
+  state = GetDIPSState(GetDipsService(web_contents), url2);
+  ASSERT_THAT(state->user_interaction_times,
+              testing::Optional(testing::Pair(start_time + base::Seconds(1),
+                                              start_time + base::Seconds(1))));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest, StorageRecording_Throttled) {
+  WebContents* web_contents = GetActiveWebContents();
+  const base::Time start_time = test_clock_.Now();
+
+  // Record client-side storage access on a.test.
+  const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  SimulateCookieWrite();
+  // Verify the write was recorded in the DIPS DB.
+  std::optional<StateValue> state =
+      GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->site_storage_times,
+              testing::Optional(testing::Pair(start_time, start_time)));
+
+  // Write a cookie again, just before kDIPSTimestampUpdateInterval elapses.
+  test_clock_.Advance(kDIPSTimestampUpdateInterval - base::Seconds(1));
+  SimulateCookieWrite();
+  // Verify the second write was NOT recorded, due to throttling.
+  state = GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->site_storage_times,
+              testing::Optional(testing::Pair(start_time, start_time)));
+
+  // Write a third time, after kDIPSTimestampUpdateInterval has passed since the
+  // first write.
+  test_clock_.Advance(base::Seconds(1));
+  SimulateCookieWrite();
+  // Verify the third write WAS recorded.
+  state = GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->site_storage_times,
+              testing::Optional(testing::Pair(
+                  start_time, start_time + kDIPSTimestampUpdateInterval)));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSThrottlingBrowserTest,
+                       StorageRecording_NotThrottled_AfterRefresh) {
+  WebContents* web_contents = GetActiveWebContents();
+  const base::Time start_time = test_clock_.Now();
+
+  // Record client-side storage access on a.test.
+  const GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  SimulateCookieWrite();
+  // Verify the write was recorded in the DIPS DB.
+  std::optional<StateValue> state =
+      GetDIPSState(GetDipsService(web_contents), url);
+  ASSERT_THAT(state->site_storage_times,
+              testing::Optional(testing::Pair(start_time, start_time)));
+
+  // Navigate to a new page and write cookies again, only a second after the
+  // previous write.
+  test_clock_.Advance(base::Seconds(1));
+  const GURL url2 = embedded_test_server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url2));
+  SimulateCookieWrite();
+  // Verify the second write was also recorded (not throttled).
+  state = GetDIPSState(GetDipsService(web_contents), url2);
+  ASSERT_THAT(state->site_storage_times,
+              testing::Optional(testing::Pair(start_time + base::Seconds(1),
+                                              start_time + base::Seconds(1))));
 }
 
 class AllSitesFollowingFirstPartyTest : public DIPSBounceDetectorBrowserTest {

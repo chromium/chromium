@@ -21,6 +21,7 @@ struct DIPSRedirectChainInfo {
                         const GURL& final_url,
                         size_t length,
                         bool is_partial_chain);
+  DIPSRedirectChainInfo(const DIPSRedirectChainInfo&);
   ~DIPSRedirectChainInfo();
 
   const GURL initial_url;
@@ -59,6 +60,7 @@ struct DIPSRedirectInfo {
                    base::TimeDelta client_bounce_delay,
                    bool has_sticky_activation,
                    bool web_authn_assertion_request_succeeded);
+  DIPSRedirectInfo(const DIPSRedirectInfo&);
   ~DIPSRedirectInfo();
 
   // These properties are required for all redirects:

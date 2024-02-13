@@ -182,3 +182,15 @@ bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url) {
 
   return found;
 }
+
+const base::TimeDelta kDIPSTimestampUpdateInterval = base::Minutes(1);
+
+bool UpdateTimestamp(std::optional<base::Time>& last_time, base::Time now) {
+  if (!last_time.has_value() ||
+      (now - last_time.value()) >= kDIPSTimestampUpdateInterval) {
+    last_time = now;
+    return true;
+  }
+
+  return false;
+}

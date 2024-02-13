@@ -229,6 +229,14 @@ inline std::optional<GURL> GetFirstPartyURL(content::RenderFrameHost* rfh) {
              : std::nullopt;
 }
 
+// The amount of time since a page last received user interaction before a
+// subsequent user interaction event may be recorded to DIPS Storage for the
+// same page.
+extern const base::TimeDelta kDIPSTimestampUpdateInterval;
+
+[[nodiscard]] bool UpdateTimestamp(std::optional<base::Time>& last_time,
+                                   base::Time now);
+
 enum class DIPSRecordedEvent {
   kStorage,
   kInteraction,
