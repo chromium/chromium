@@ -1084,6 +1084,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/settings/AccountManagementFragment.java",
   "java/src/org/chromium/chrome/browser/sync/settings/ClearDataProgressDialog.java",
   "java/src/org/chromium/chrome/browser/sync/settings/GoogleServicesSettings.java",
+  "java/src/org/chromium/chrome/browser/sync/settings/IdentityErrorCardPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SignInPreference.java",
   "java/src/org/chromium/chrome/browser/sync/settings/SyncErrorCardPreference.java",
