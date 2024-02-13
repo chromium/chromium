@@ -22,7 +22,7 @@ import * as filesTooltipTests from './file_manager/files_tooltip.js';
 // import * as folderShortcutsTests from './file_manager/folder_shortcuts.js';
 import * as formatDialogTests from './file_manager/format_dialog.js';
 // import * as gearMenuTests from './file_manager/gear_menu.js';
-// import * as gridViewTests from './file_manager/grid_view.js';
+import * as gridViewTests from './file_manager/grid_view.js';
 import * as guestOsTests from './file_manager/guest_os.js';
 // import * as holdingSpaceTests from './file_manager/holding_space.js';
 // import * as installLinuxPackageDialogTests from './file_manager/install_linux_package_dialog.js';
@@ -80,7 +80,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...folderShortcutsTests,
   ...formatDialogTests,
   // ...gearMenuTests,
-  // ...gridViewTests,
+  ...gridViewTests,
   ...guestOsTests,
   // ...holdingSpaceTests,
   // ...installLinuxPackageDialogTests,

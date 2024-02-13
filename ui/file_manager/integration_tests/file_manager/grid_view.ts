@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {fileListKeyboardSelectionA11yImpl, fileListMouseSelectionA11yImpl} from './file_list.js';
@@ -13,16 +13,16 @@ import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 /**
  * Shows the grid view and checks the label texts of entries.
  *
- * @param {string} rootPath Root path to be used as a default current directory
- *     during initialization. Can be null, for no default path.
- * @param {Array<TestEntryInfo>} expectedSet Set of entries that are expected
- *     to appear in the grid view.
- * @return {Promise<void>} Promise to be fulfilled or rejected depending on the
- *     test result.
+ * @param rootPath Root path to be used as a default current directory during
+ *     initialization. Can be null, for no default path.
+ * @param expectedSet Set of entries that are expected to appear in the grid
+ *     view.
+ * @return Promise to be fulfilled or rejected depending on the test result.
  */
-async function showGridView(rootPath, expectedSet) {
+async function showGridView(
+    rootPath: string, expectedSet: TestEntryInfo[]): Promise<string> {
   const caller = getCaller();
-  const expectedLabels =
+  const expectedLabels: string[] =
       expectedSet.map((entryInfo) => entryInfo.nameText).sort();
 
   // Open Files app on |rootPath|.
@@ -35,133 +35,97 @@ async function showGridView(rootPath, expectedSet) {
 
   // Compare the grid labels of the entries.
   await repeatUntil(async () => {
-    const labels = await remoteCall.callRemoteTestUtil(
+    const labels: ElementObject[] = await remoteCall.callRemoteTestUtil(
         'queryAllElements', appId,
         ['grid:not([hidden]) .thumbnail-item .entry-name']);
-    // @ts-ignore: error TS7006: Parameter 'label' implicitly has an 'any' type.
-    const actualLabels = labels.map((label) => label.text).sort();
+    const actualLabels = labels.map<string>((label) => label.text!).sort();
 
-    // @ts-ignore: error TS2339: Property 'checkDeepEq' does not exist on type
-    // 'typeof test'.
-    if (chrome.test.checkDeepEq(expectedLabels, actualLabels)) {
+    if (chrome.test.checkDeepEq<string[]>(expectedLabels, actualLabels)) {
       return true;
     }
     return pending(
         caller, 'Failed to compare the grid lables, expected: %j, actual %j.',
         expectedLabels, actualLabels);
   });
-  // @ts-ignore: error TS2322: Type 'string' is not assignable to type 'void'.
   return appId;
 }
 
 /**
  * Tests to show grid view on a local directory.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewDownloads' comes from an
-// index signature, so it must be accessed with ['showGridViewDownloads'].
-testcase.showGridViewDownloads = () => {
+export async function showGridViewDownloads() {
   return showGridView(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
-};
+}
 
 /**
  * Tests to show grid view on a drive directory.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewDrive' comes from an index
-// signature, so it must be accessed with ['showGridViewDrive'].
-testcase.showGridViewDrive = () => {
+export async function showGridViewDrive() {
   return showGridView(RootPath.DRIVE, BASIC_DRIVE_ENTRY_SET);
-};
+}
 
 /**
  * Tests to view-button switches to thumbnail (grid) view and clicking again
  * switches back to detail (file list) view.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewButtonSwitches' comes from an
-// index signature, so it must be accessed with ['showGridViewButtonSwitches'].
-testcase.showGridViewButtonSwitches = async () => {
+export async function showGridViewButtonSwitches() {
   const appId = await showGridView(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
 
   // Check that a11y message for switching to grid view.
   let a11yMessages =
-      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-      // parameter of type 'string | null'.
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
   chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
   chrome.test.assertEq(
       'File list has changed to thumbnail view.', a11yMessages[0]);
 
   // Click view-button again to switch to detail view.
-  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-  // parameter of type 'string'.
   await remoteCall.waitAndClickElement(appId, '#view-button');
 
   // Wait for detail-view to be visible and grid to be hidden.
-  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-  // parameter of type 'string'.
   await remoteCall.waitForElement(appId, '#detail-table:not([hidden])');
-  // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-  // parameter of type 'string'.
   await remoteCall.waitForElement(appId, 'grid[hidden]');
 
   // Check that a11y message for switching to list view.
   a11yMessages =
-      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-      // parameter of type 'string | null'.
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
   chrome.test.assertEq(2, a11yMessages.length, 'Missing a11y message');
   chrome.test.assertEq('File list has changed to list view.', a11yMessages[1]);
-};
+}
 
 /**
  * Tests that selecting/de-selecting files with keyboard produces a11y messages.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewKeyboardSelectionA11y' comes
-// from an index signature, so it must be accessed with
-// ['showGridViewKeyboardSelectionA11y'].
-testcase.showGridViewKeyboardSelectionA11y = async () => {
+export async function showGridViewKeyboardSelectionA11y() {
   const isGridView = true;
   return fileListKeyboardSelectionA11yImpl(isGridView);
-};
+}
 
 /**
  * Tests that selecting/de-selecting files with mouse produces a11y messages.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewMouseSelectionA11y' comes
-// from an index signature, so it must be accessed with
-// ['showGridViewMouseSelectionA11y'].
-testcase.showGridViewMouseSelectionA11y = async () => {
+export async function showGridViewMouseSelectionA11y() {
   const isGridView = true;
   return fileListMouseSelectionA11yImpl(isGridView);
-};
+}
 
 /**
  * Tests that Grid View shows "Folders" and "Files" titles before folders and
  * files respectively.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewTitles' comes from an index
-// signature, so it must be accessed with ['showGridViewTitles'].
-testcase.showGridViewTitles = async () => {
+export async function showGridViewTitles() {
   const appId = await showGridView(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
 
-  const titles = await remoteCall.callRemoteTestUtil(
-      // @ts-ignore: error TS2345: Argument of type 'void' is not assignable to
-      // parameter of type 'string | null'.
+  const titles: ElementObject[] = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['.thumbnail-grid .grid-title']);
   chrome.test.assertEq(2, titles.length, 'Grid view should show 2 titles');
-  // @ts-ignore: error TS7006: Parameter 'title' implicitly has an 'any' type.
-  const titleTexts = titles.map((title) => title.text).sort();
-  // @ts-ignore: error TS2339: Property 'checkDeepEq' does not exist on type
-  // 'typeof test'.
-  chrome.test.checkDeepEq(['Files', 'Folders'], titleTexts);
-};
+  const titleTexts = titles.map<string>((title) => title.text!).sort();
+  chrome.test.checkDeepEq<string[]>(['Files', 'Folders'], titleTexts);
+}
 
 /**
  * Tests that Grid View shows DocumentsProvider thumbnails.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewDocumentsProvider' comes from
-// an index signature, so it must be accessed with
-// ['showGridViewDocumentsProvider'].
-testcase.showGridViewDocumentsProvider = async () => {
+export async function showGridViewDocumentsProvider() {
   const caller = getCaller();
 
   // Add files to the DocumentsProvider volume.
@@ -200,8 +164,7 @@ testcase.showGridViewDocumentsProvider = async () => {
       const item = await remoteCall.waitForElement(
           appId, `#file-list [file-name="${fname}"]`);
       const thumbnailLoaded =
-          // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-          item.attributes['class'].split(/\s+/).includes('thumbnail-loaded');
+          item.attributes!['class']?.split(/\s+/).includes('thumbnail-loaded');
       if (thumbnailLoaded !== hasThumbnail) {
         return pending(
             caller, 'Unexpected thumbnail state for %j: %j', fname,
@@ -210,17 +173,13 @@ testcase.showGridViewDocumentsProvider = async () => {
     }
     return true;
   });
-};
+}
 
 /**
  * Tests that an encrypted file will have a corresponding icon.
  */
-// @ts-ignore: error TS4111: Property 'showGridViewEncryptedFile' comes from an
-// index signature, so it must be accessed with ['showGridViewEncryptedFile'].
-testcase.showGridViewEncryptedFile = async () => {
+export async function showGridViewEncryptedFile() {
   const appId =
-      // @ts-ignore: error TS4111: Property 'testCSEFile' comes from an index
-      // signature, so it must be accessed with ['testCSEFile'].
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
 
   // Click the grid view button.
@@ -230,8 +189,7 @@ testcase.showGridViewEncryptedFile = async () => {
   const icon = await remoteCall.waitForElementStyles(
       appId, '.thumbnail-grid .no-thumbnail', ['-webkit-mask-image']);
   chrome.test.assertTrue(
-      // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      icon.styles['-webkit-mask-image'].includes('encrypted.svg'),
+      icon.styles!['-webkit-mask-image']?.includes('encrypted.svg') ?? false,
       'Icon does not seem to be the encrypted one');
 
   // Move mouse out of the view change button, so we won't have its hover text.
@@ -246,4 +204,4 @@ testcase.showGridViewEncryptedFile = async () => {
   const label = await remoteCall.waitForElement(
       appId, ['files-tooltip[visible=true]', '#label']);
   chrome.test.assertEq('Encrypted file', label.text);
-};
+}
