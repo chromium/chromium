@@ -444,28 +444,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Accessibility.AriaLabelledBy.HadMultipleIds.TotalIds"
-    units="count" expires_after="2024-06-30">
-  <owner>mschillaci@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Whenever the OnIntListAttributeChanged method detects a change in
-    kLabelledbyIds, and that node has multiple ids, tracks the total number of
-    ids in that list.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.AriaLabelledBy.HasMultipleIds" enum="Boolean"
-    expires_after="2024-06-30">
-  <owner>mschillaci@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Tracks whether or not a node has multiple ids for the aria-labelledby
-    property whenever the OnIntListAttributeChanged method detects a change in
-    kLabelledbyIds.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"
     expires_after="2024-07-14">
   <owner>jdiggs@chromium.org</owner>
