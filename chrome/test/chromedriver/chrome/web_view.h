@@ -276,6 +276,15 @@ class WebView {
   virtual Status GetBackendNodeIdByElement(const std::string& frame,
                                            const base::Value& element,
                                            int* backend_node_id) = 0;
+
+  virtual bool IsDetached() const = 0;
+
+  virtual Status CallFunctionWithTimeout(
+      const std::string& frame,
+      const std::string& function,
+      const base::Value::List& args,
+      const base::TimeDelta& timeout,
+      std::unique_ptr<base::Value>* result) = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_WEB_VIEW_H_

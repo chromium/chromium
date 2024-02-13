@@ -278,3 +278,16 @@ Status StubWebView::GetBackendNodeIdByElement(const std::string& frame,
                                               int* node_id) {
   return Status(kOk);
 }
+
+bool StubWebView::IsDetached() const {
+  return false;
+}
+
+Status StubWebView::CallFunctionWithTimeout(
+    const std::string& frame,
+    const std::string& function,
+    const base::Value::List& args,
+    const base::TimeDelta& timeout,
+    std::unique_ptr<base::Value>* result) {
+  return Status{kOk};
+}
