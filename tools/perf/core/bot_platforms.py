@@ -617,8 +617,7 @@ MAC_HIGH_END_LAPTOP = PerfPlatform(
     'mac-laptop_high_end-perf',
     'MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55',
     _MAC_HIGH_END_BENCHMARK_CONFIGS,
-    # crbug/1522221. Reduce it from 26 to 20 until missing bots are recovered.
-    20,
+    23,
     'mac',
     executables=_MAC_HIGH_END_EXECUTABLE_CONFIGS)
 MAC_HIGH_END_LAPTOP_PGO = PerfPlatform(
@@ -633,7 +632,7 @@ MAC_LOW_END_LAPTOP = PerfPlatform(
     'mac-laptop_low_end-perf',
     'MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics',
     _MAC_LOW_END_BENCHMARK_CONFIGS,
-    20,
+    23,
     'mac',
     executables=_MAC_LOW_END_EXECUTABLE_CONFIGS)
 MAC_LOW_END_LAPTOP_PGO = PerfPlatform(
