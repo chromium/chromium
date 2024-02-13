@@ -96,7 +96,7 @@ suite('<customize-button-select>', () => {
 
     assertEquals(getSelectedValue(), 'key combination');
     assertTrue(select.get('remappedToKeyCombination_'));
-    assertEquals(select.get('label_'), 'Key combination');
+    assertEquals(select.get('label_'), 'Create key combination');
     assertDeepEquals(select.get('inputKeys_'), ['ctrl', '+', 'z']);
 
     // Switch to another button remapping.
@@ -108,7 +108,7 @@ suite('<customize-button-select>', () => {
 
     assertEquals(getSelectedValue(), 'key combination');
     assertTrue(select.get('remappedToKeyCombination_'));
-    assertEquals(select.get('label_'), 'Key combination');
+    assertEquals(select.get('label_'), 'Create key combination');
     assertDeepEquals(select.get('inputKeys_'), ['ctrl', '+', 'v']);
   });
 

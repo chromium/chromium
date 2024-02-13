@@ -2849,7 +2849,7 @@ Press an assigned switch or key to remove assignment.
 
   <!-- Graphics tablet page (OS settings)-->
   <message name="IDS_SETTINGS_GRAPHICS_TABLET_TITLE" desc="Title of Graphics tablet settings page">
-    Graphics tablet
+    Pen tablet
   </message>
   <message name="IDS_SETTINGS_GRAPHICS_TABLET_CUSTOMIZE_TABLET_BUTTONS_LABEL" desc="Label of customize tablet buttons link row in graphics tablet page.">
     Customize tablet buttons
@@ -2872,7 +2872,7 @@ Press an assigned switch or key to remove assignment.
     Add or locate buttons on your pen
   </message>
   <message name="IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL" desc="Label of key combination option in the button remapping action dropdown menu.">
-    Key combination
+    Create key combination
   </message>
   <message name="IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL" desc="Label of no remapping option in the button remapping action dropdown menu.">
     Default
@@ -2896,7 +2896,7 @@ Press an assigned switch or key to remove assignment.
     New button name
   </message>
   <message name="IDS_SETTINGS_KEY_COMBINATION_DIALOG_TITLE" desc="Title of the key combination dialog that pops up after clicking key combination choice in the button remapping action dropdown menu.">
-    Enter key combination
+    Create key combination
   </message>
   <message name="IDS_SETTINGS_CUSTOMIZE_BUTTONS_SUBPAGE_DESCRIPTION" desc="In customize buttons subpage, the description label above customize buttons to describe the actions the user should perform.">
     Press a button that's not the left or right mouse button on your <ph name="DEVICE_NAME">$1<ex>MX Anywhere 2S</ex></ph>.
