@@ -29,7 +29,7 @@
       ]
     },
     {
-      "name": "Scrolling background of LayoutView #document",
+      "name": "LayoutNGBlockFlow HTML",
       "bounds": [285, 216],
       "invalidations": [
         [0, 0, 285, 216]

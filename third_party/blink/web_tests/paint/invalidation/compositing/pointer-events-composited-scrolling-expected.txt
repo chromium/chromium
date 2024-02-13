@@ -20,7 +20,10 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='target'",
-      "bounds": [100, 210],
+      "position": [0, 80],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
       "transform": 2
     }
   ],

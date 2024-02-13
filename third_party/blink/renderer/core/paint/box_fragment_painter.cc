@@ -476,21 +476,14 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     // We need to call PaintObject twice: one for painting background in the
     // border box space, and the other for painting background in the scrolling
     // contents space.
-    const LayoutBox& box = To<LayoutBox>(*box_fragment_.GetLayoutObject());
-    auto paint_location = box.GetBackgroundPaintLocation();
+    auto paint_location = To<LayoutBox>(*box_fragment_.GetLayoutObject())
+                              .GetBackgroundPaintLocation();
     if (!(paint_location & kBackgroundPaintInBorderBoxSpace))
       info.SetSkipsBackground(true);
     PaintObject(info, paint_offset);
     info.SetSkipsBackground(false);
 
-    if ((RuntimeEnabledFeatures::HitTestOpaquenessEnabled() &&
-         // We need to record hit test data for the scrolling contents.
-         box.ScrollsOverflow()) ||
-        (paint_location & kBackgroundPaintInContentsSpace)) {
-      if (!(paint_location & kBackgroundPaintInContentsSpace)) {
-        DCHECK(RuntimeEnabledFeatures::HitTestOpaquenessEnabled());
-        info.SetSkipsBackground(true);
-      }
+    if (paint_location & kBackgroundPaintInContentsSpace) {
       // If possible, paint overflow controls before scrolling background to
       // make it easier to merge scrolling background and scrolling contents
       // into the same layer. The function checks if it's appropriate to paint
@@ -500,9 +493,7 @@ void BoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
       info.SetIsPaintingBackgroundInContentsSpace(true);
       PaintObject(info, paint_offset);
       info.SetIsPaintingBackgroundInContentsSpace(false);
-      info.SetSkipsBackground(false);
     }
-
     if (ShouldPaintDescendantBlockBackgrounds(original_phase))
       info.phase = PaintPhase::kDescendantBlockBackgroundsOnly;
   }
@@ -1072,12 +1063,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackground(
   }
 
   Element* element = DynamicTo<Element>(layout_object.GetNode());
-  if (element && element->GetRegionCaptureCropId() &&
-      // TODO(wangxianzhu): This is to avoid the side-effect of
-      // HitTestOpaqueness on region capture data. Verify if the side-effect
-      // really matters.
-      !(paint_info.IsPaintingBackgroundInContentsSpace() &&
-        paint_info.ShouldSkipBackground())) {
+  if (element && element->GetRegionCaptureCropId()) {
     paint_info.context.GetPaintController().RecordRegionCaptureData(
         *background_client, *(element->GetRegionCaptureCropId()),
         ToPixelSnappedRect(paint_rect));

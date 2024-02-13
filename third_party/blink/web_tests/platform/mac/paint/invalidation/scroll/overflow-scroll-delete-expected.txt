@@ -21,9 +21,10 @@
     },
     {
       "name": "LayoutNGBlockFlow (children-inline) DIV id='t'",
-      "bounds": [65, 198],
+      "position": [0, 162],
+      "bounds": [44, 36],
       "invalidations": [
-        [0, 162, 44, 36]
+        [0, 0, 44, 36]
       ],
       "transform": 2
     }

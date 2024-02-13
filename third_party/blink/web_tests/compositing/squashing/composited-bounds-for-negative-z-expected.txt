@@ -33,7 +33,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutNGBlockFlow DIV",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV",
       "bounds": [285, 1000],
       "contentsOpaque": true,
       "backgroundColor": "#ADD8E6",
