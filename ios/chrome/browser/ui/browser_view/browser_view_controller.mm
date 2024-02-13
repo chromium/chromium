@@ -1301,7 +1301,7 @@ enum HeaderBehaviour {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (base::FeatureList::IsEnabled(kModernTabStrip)) {
       _fakeStatusBarView.backgroundColor =
-          [UIColor colorNamed:kTabStripBackgroundColor];
+          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
       // Force the UserInterfaceStyle update in incognito.
       _fakeStatusBarView.overrideUserInterfaceStyle =
           _isOffTheRecord ? UIUserInterfaceStyleDark

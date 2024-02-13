@@ -66,10 +66,7 @@ class TabStripDecorationView: UIView {
   // Returns a new separator view.
   func createSeparatorView() -> UIView {
     let separatorView = UIView()
-    if let backgroundColor = UIColor(named: kTextSecondaryColor) {
-      separatorView.backgroundColor = backgroundColor.withAlphaComponent(
-        TabStripConstants.StaticSeparator.backgroundColorAlpha)
-    }
+    separatorView.backgroundColor = UIColor(named: kTextQuaternaryColor)
     separatorView.translatesAutoresizingMaskIntoConstraints = false
     separatorView.layer.cornerRadius = TabStripConstants.StaticSeparator.separatorCornerRadius
     return separatorView
@@ -78,7 +75,7 @@ class TabStripDecorationView: UIView {
   // Returns a new solid background view.
   func createSolidBackgroundView() -> UIView {
     let solidBackgroundView = UIView()
-    solidBackgroundView.backgroundColor = UIColor(named: kTabStripBackgroundColor)
+    solidBackgroundView.backgroundColor = UIColor(named: kGroupedPrimaryBackgroundColor)
     solidBackgroundView.translatesAutoresizingMaskIntoConstraints = false
     return solidBackgroundView
   }

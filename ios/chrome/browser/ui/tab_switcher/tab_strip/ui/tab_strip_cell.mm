@@ -35,7 +35,6 @@ const CGFloat kSeparatorCornerRadius = 1;
 const CGFloat kSeparatorHeight = 18;
 const CGFloat kSeparatorHorizontalInset = 2;
 const CGFloat kSeparatorGradientWidth = 4;
-const CGFloat kSeparatorBackgroundAlpha = 0.3;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 10;
@@ -120,7 +119,7 @@ UIImage* DefaultFavicon() {
 
     // Needed for the drop animation.
     self.layer.cornerRadius = kCornerSize;
-    self.backgroundColor = [UIColor colorNamed:kTabStripBackgroundColor];
+    self.backgroundColor = [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
     _faviconView = [self createFaviconView];
     [contentView addSubview:_faviconView];
@@ -423,11 +422,11 @@ UIImage* DefaultFavicon() {
     // will not be applied correctly.
     backgroundColor = [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   } else if (_hovered) {
-    backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
+    backgroundColor = [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
   } else {
     backgroundColor =
         self.isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-                        : [UIColor colorNamed:kTabStripBackgroundColor];
+                        : [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   }
 
   // Needed to correctly update the `_titleGradientView` colors in incognito.
@@ -719,9 +718,9 @@ UIImage* DefaultFavicon() {
 // Returns a new gradient view.
 - (GradientView*)createGradientView {
   GradientView* gradientView = [[GradientView alloc]
-      initWithStartColor:[[UIColor colorNamed:kTabStripBackgroundColor]
+      initWithStartColor:[[UIColor colorNamed:kGroupedPrimaryBackgroundColor]
                              colorWithAlphaComponent:0]
-                endColor:[UIColor colorNamed:kTabStripBackgroundColor]
+                endColor:[UIColor colorNamed:kGroupedPrimaryBackgroundColor]
               startPoint:CGPointMake(0.0f, 0.5f)
                 endPoint:CGPointMake(1.0f, 0.5f)];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -765,15 +764,16 @@ UIImage* DefaultFavicon() {
 // Returns a new separator view.
 - (UIView*)createSeparatorView {
   UIView* separatorView = [[UIView alloc] init];
-  separatorView.backgroundColor = [UIColor colorNamed:kTabStripBackgroundColor];
+  separatorView.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;
   separatorView.layer.cornerRadius = kSeparatorCornerRadius;
+  separatorView.layer.masksToBounds = YES;
 
   UIView* backgroundView = [[UIView alloc] init];
   backgroundView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  backgroundView.backgroundColor = [[UIColor colorNamed:kTextSecondaryColor]
-      colorWithAlphaComponent:kSeparatorBackgroundAlpha];
+  backgroundView.backgroundColor = [UIColor colorNamed:kTextQuaternaryColor];
   [separatorView addSubview:backgroundView];
   return separatorView;
 }
@@ -782,7 +782,7 @@ UIImage* DefaultFavicon() {
 - (UIView*)createSelectedBorderBackgroundView {
   UIView* backgroundView = [[UIView alloc] init];
   backgroundView.backgroundColor =
-      [UIColor colorNamed:kTabStripBackgroundColor];
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.hidden = YES;
   return backgroundView;
