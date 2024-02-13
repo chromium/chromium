@@ -32,7 +32,7 @@ BASE_FEATURE(kPrefetchUsesHTTPCache,
 
 BASE_FEATURE(kPrefetchClientHints,
              "PrefetchClientHints",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<PrefetchClientHintsCrossSiteBehavior>::Option
     kPrefetchClientHintsCrossSiteBehaviorOptions[] = {
