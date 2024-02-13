@@ -96,8 +96,7 @@ HTMLSelectElement::HTMLSelectElement(Document& document)
   // Make sure SelectType is created after initializing |uses_menu_list_|.
   select_type_ = SelectType::Create(*this);
   SetHasCustomStyleCallbacks();
-  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
-      SlotAssignmentMode::kManual);
+  EnsureUserAgentShadowRoot();
 }
 
 HTMLSelectElement::~HTMLSelectElement() = default;
@@ -1246,6 +1245,7 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
 }
 
 void HTMLSelectElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
+  root.SetSlotAssignmentMode(SlotAssignmentMode::kManual);
   UpdateUserAgentShadowTree(root);
   select_type_->UpdateTextStyleAndContent();
 }
