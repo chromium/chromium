@@ -75,8 +75,6 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   self.transitionController.origin = self.origin;
   self.identityChooserViewController.transitioningDelegate =
       self.transitionController;
-  self.identityChooserViewController.modalPresentationStyle =
-      UIModalPresentationCustom;
 
   // Creates the mediator.
   self.identityChooserMediator = [[IdentityChooserMediator alloc]
