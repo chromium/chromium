@@ -299,6 +299,36 @@ would want to dismiss. [Example](https://crbug.com/854455#c11).
 Note that a user navigating to a download will cause a file to be
 [downloaded](https://crbug.com/1114592).
 
+<a name="TOC-security-properties-not-inherited-using-contextual-menu-"></a>
+### Sandbox/CSP/etc... security properties are not inherited when navigating using the middle-click/contextual-menu - is this a security bug?
+
+The security properties of the document providing the URL are not used/inherited
+when the user deliberately opens a link in a popup using one of:
+
+- Ctrl + left-click (Open link in new tab)
+- Shift + left-click (Open link in new window)
+- Middle-click (Open a link in a new tab)
+- Right-click > "Open link in ..."
+
+These methods of following a link have more or less the same implications as the
+user copying the link's URL and pasting it into a newly-opened window. We treat
+them as user-initiated top-level navigations, and as such will not apply or
+inherit policy restrictions into the new context
+
+Example of security related properties:
+
+- Content-Security-Policy
+- Cross-Origin-Embedder-Policy
+- Cross-Origin-Opener-Policy
+- Origin
+- Referrer
+- Sandbox
+- etc...
+
+These browser's actions/shortcuts are specific to Chrome. They are different
+from the behavior specified by the web-platform, such as using executing
+`window.open()` or opening a link with the `target=_blank` attribute.
+
 ## Areas outside Chrome's Threat Model
 
 <a name="TOC-Are-privacy-issues-considered-security-bugs-"></a>
