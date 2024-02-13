@@ -106,6 +106,11 @@ bool RestrictionBlocksRemapping(
       return false;
     case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
       return remapping.button->is_vkey();
+    case mojom::CustomizationRestriction::kAllowTabEventRewrites:
+      if (remapping.button->is_customizable_button()) {
+        return false;
+      }
+      return remapping.button->get_vkey() != ui::VKEY_TAB;
   }
 }
 

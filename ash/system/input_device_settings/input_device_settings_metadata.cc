@@ -54,6 +54,10 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
           {{0x046d, 0xb037},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech MX Master 2S (Bluetooth)
+          {{0x046d, 0xb019},
+           {mojom::CustomizationRestriction::kAllowTabEventRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
       });
   return *mouse_metadata_list;
 }

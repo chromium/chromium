@@ -407,4 +407,6 @@ enum CustomizationRestriction {
   // Allow horizontal scroll wheel as well as normal mouse buttons. Identical to
   // kDisableKeyEventRewrites but permits horizontal scroll wheel buttons.
   kAllowHorizontalScrollWheelRewrites = 5,
+  // Allow tab events in addition to normal mouse events to be rewritten.
+  kAllowTabEventRewrites = 6,
 };

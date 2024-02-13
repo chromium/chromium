@@ -164,6 +164,7 @@ bool AreScrollWheelEventRewritesAllowed(
     case mojom::CustomizationRestriction::kAllowAlphabetKeyEventRewrites:
     case mojom::CustomizationRestriction::
         kAllowAlphabetOrNumberKeyEventRewrites:
+    case mojom::CustomizationRestriction::kAllowTabEventRewrites:
       return false;
     case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
     case mojom::CustomizationRestriction::kAllowCustomizations:
@@ -769,6 +770,8 @@ bool PeripheralCustomizationEventRewriter::IsButtonCustomizable(
         kAllowAlphabetOrNumberKeyEventRewrites:
       return IsAlphaKeyboardCode(key_event.key_code()) ||
              IsNumberKeyboardCode(key_event.key_code());
+    case mojom::CustomizationRestriction::kAllowTabEventRewrites:
+      return key_event.key_code() == ui::VKEY_TAB;
     case mojom::CustomizationRestriction::kDisallowCustomizations:
     case mojom::CustomizationRestriction::kDisableKeyEventRewrites:
     case mojom::CustomizationRestriction::kAllowHorizontalScrollWheelRewrites:
