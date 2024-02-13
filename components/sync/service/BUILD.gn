@@ -99,6 +99,7 @@ static_library("service") {
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//components/strings:components_strings_grit",
     "//components/sync/invalidations",
     "//components/version_info",
     "//components/version_info:generate_version_info",

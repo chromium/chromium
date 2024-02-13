@@ -16,7 +16,8 @@ class PolicyMap;
 
 namespace syncer {
 
-// ConfigurationPolicyHandler for the SyncDisabled policy.
+// ConfigurationPolicyHandler for the SyncDisabled policy, which also handles
+// the SyncTypesListDisabled policy.
 class SyncPolicyHandler : public policy::TypeCheckingPolicyHandler {
  public:
   SyncPolicyHandler();
@@ -27,6 +28,8 @@ class SyncPolicyHandler : public policy::TypeCheckingPolicyHandler {
   ~SyncPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
+  bool CheckPolicySettings(const policy::PolicyMap& policies,
+                           policy::PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 };
