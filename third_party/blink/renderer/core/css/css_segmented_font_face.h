@@ -26,8 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SEGMENTED_FONT_FACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SEGMENTED_FONT_FACE_H_
 
+#include "base/containers/adapters.h"
 #include "base/containers/lru_cache.h"
-#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
@@ -62,22 +63,15 @@ class FontFaceList : public GarbageCollected<FontFaceList> {
   // Iterate over CSS-connected FontFaces first, and then non-CSS-connected
   // ones.
   // Modifying the collection is not allowed during iteration.
-  bool ForEachUntilTrue(
-      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
-  bool ForEachUntilFalse(
-      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
-  void ForEach(
-      const base::RepeatingCallback<void(Member<FontFace>)>& callback) const;
+  bool ForEachUntilTrue(base::FunctionRef<bool(const Member<FontFace>&)>) const;
+  void ForEach(base::FunctionRef<void(const Member<FontFace>&)>) const;
 
   // Iterate (in reverse order) over non-CSS-connected FontFaces first, and
   // then CSS-connected ones.
   // Modifying the collection is not allowed during iteration.
-  bool ForEachReverseUntilTrue(
-      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
-  bool ForEachReverseUntilFalse(
-      const base::RepeatingCallback<bool(Member<FontFace>)>& callback) const;
-  void ForEachReverse(
-      const base::RepeatingCallback<void(Member<FontFace>)>& callback) const;
+  void ForEachReverseUntilTrue(
+      base::FunctionRef<bool(const Member<FontFace>&)>) const;
+  void ForEachReverse(base::FunctionRef<void(const Member<FontFace>&)>) const;
 
   void Trace(Visitor* visitor) const;
 
