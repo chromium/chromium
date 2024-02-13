@@ -8,6 +8,7 @@ import java.time.Duration;
 
 /** Base class for implementing a CronetLogger. */
 public abstract class CronetLogger {
+    // TODO(b/313418339): align the naming with the atom definition.
     public static enum CronetSource {
         // Safe default, don't use explicitly.
         CRONET_SOURCE_UNSPECIFIED,
@@ -23,6 +24,9 @@ public abstract class CronetLogger {
 
     /** Generates a new unique ID suitable for use as reference for cross-linking log events. */
     public abstract long generateId();
+
+    public abstract void logCronetEngineBuilderInitializedInfo(
+            CronetEngineBuilderInitializedInfo info);
 
     /**
      * Logs a cronetEngine creation action with the details of the creation.
@@ -46,6 +50,24 @@ public abstract class CronetLogger {
      * @param trafficInfo the associated traffic information. See {@link CronetTrafficInfo}
      */
     public abstract void logCronetTrafficInfo(long cronetEngineId, CronetTrafficInfo trafficInfo);
+
+    // TODO(https://crbug.com/1521339): consider using AutoValue for this.
+    public static final class CronetEngineBuilderInitializedInfo {
+        public long cronetInitializationRef;
+
+        public static enum Author {
+            API,
+            IMPL
+        }
+
+        public Author author;
+        public int engineBuilderCreatedLatencyMillis = -1;
+        public CronetSource source = CronetSource.CRONET_SOURCE_UNSPECIFIED;
+        public Boolean creationSuccessful;
+        public CronetVersion apiVersion;
+        public CronetVersion implVersion;
+        public int uid;
+    }
 
     /** Aggregates the information about a CronetEngine configuration. */
     public static class CronetEngineBuilderInfo {

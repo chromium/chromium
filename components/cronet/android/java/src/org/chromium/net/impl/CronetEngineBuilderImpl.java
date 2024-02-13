@@ -7,6 +7,8 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_LOWEST;
 
 import android.content.Context;
+import android.os.Process;
+import android.os.SystemClock;
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
@@ -14,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -125,6 +128,9 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     private static final int INVALID_THREAD_PRIORITY = THREAD_PRIORITY_LOWEST + 1;
 
+    @VisibleForTesting
+    static int sApiLevel = VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel();
+
     // Private fields are simply storage of configuration for the resulting CronetEngine.
     // See setters below for verbose descriptions.
     private final Context mApplicationContext;
@@ -149,13 +155,63 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
      * @param context Android {@link Context} for engine to use.
      */
     public CronetEngineBuilderImpl(Context context) {
-        mApplicationContext = context.getApplicationContext();
-        enableQuic(true);
-        enableHttp2(true);
-        enableBrotli(false);
-        enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISABLED, 0);
-        enableNetworkQualityEstimator(false);
-        enablePublicKeyPinningBypassForLocalTrustAnchors(true);
+        var startUptimeMillis = SystemClock.uptimeMillis();
+        boolean successful = false;
+        try {
+            mApplicationContext = context.getApplicationContext();
+
+            enableQuic(true);
+            enableHttp2(true);
+            enableBrotli(false);
+            enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISABLED, 0);
+            enableNetworkQualityEstimator(false);
+            enablePublicKeyPinningBypassForLocalTrustAnchors(true);
+
+            successful = true;
+        } finally {
+            maybeLogCronetEngineBuilderInitializedInfo(startUptimeMillis, successful);
+        }
+    }
+
+    private void maybeLogCronetEngineBuilderInitializedInfo(
+            long startUptimeMillis, boolean successful) {
+        // Normally, the API code is responsible for logging this. However this only happens if the
+        // app is bundling an API jar that is recent enough to include the logging code. If it does
+        // not, we are on the hook for doing the logging here in impl code.
+        //
+        // The addition of logging code to the API was accompanied by an API level bump so that we
+        // can detect this case.
+        if (sApiLevel >= 30) return;
+
+        var logger = CronetLoggerFactory.createLogger(mApplicationContext, getCronetSource());
+        var logInfo = new CronetLogger.CronetEngineBuilderInitializedInfo();
+        logInfo.creationSuccessful = false;
+        try {
+            logInfo.author = CronetLogger.CronetEngineBuilderInitializedInfo.Author.IMPL;
+            logInfo.uid = Process.myUid();
+            logInfo.implVersion = new CronetLogger.CronetVersion(ImplVersion.getCronetVersion());
+            logInfo.source = getCronetSource();
+            logInfo.apiVersion =
+                    new CronetLogger.CronetVersion(
+                            VersionSafeCallbacks.ApiVersion.getCronetVersion());
+            // TODO(b/313418339): populate cronetInitializationRef
+            logInfo.creationSuccessful = successful;
+        } finally {
+            logInfo.engineBuilderCreatedLatencyMillis =
+                    (int) (SystemClock.uptimeMillis() - startUptimeMillis);
+            logger.logCronetEngineBuilderInitializedInfo(logInfo);
+        }
+    }
+
+    static CronetSource getCronetSource() {
+        ClassLoader implClassLoader = CronetEngineBuilderImpl.class.getClassLoader();
+        if (implClassLoader.toString().startsWith("java.lang.BootClassLoader")) {
+            return CronetSource.CRONET_SOURCE_PLATFORM;
+        }
+        ClassLoader apiClassLoader = CronetEngine.class.getClassLoader();
+        return apiClassLoader.equals(implClassLoader)
+                ? CronetSource.CRONET_SOURCE_STATICALLY_LINKED
+                : CronetSource.CRONET_SOURCE_PLAY_SERVICES;
     }
 
     @Override

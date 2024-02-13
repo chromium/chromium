@@ -19,7 +19,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.net.BidirectionalStream;
-import org.chromium.net.CronetEngine;
 import org.chromium.net.EffectiveConnectionType;
 import org.chromium.net.ExperimentalBidirectionalStream;
 import org.chromium.net.NetworkQualityRttListener;
@@ -28,7 +27,6 @@ import org.chromium.net.RequestContextConfigOptions;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RttThroughputValues;
 import org.chromium.net.UrlRequest;
-import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 import org.chromium.net.urlconnection.CronetHttpURLConnection;
 import org.chromium.net.urlconnection.CronetURLStreamHandlerFactory;
@@ -211,11 +209,16 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 throw new NullPointerException("Context Adapter creation failed.");
             }
         }
-        mLogger = CronetLoggerFactory.createLogger(builder.getContext(), getCronetSource());
+        mLogger =
+                CronetLoggerFactory.createLogger(
+                        builder.getContext(), CronetEngineBuilderImpl.getCronetSource());
         mLogId = mLogger.generateId();
         try {
             mLogger.logCronetEngineCreation(
-                    getLogId(), builder.toLoggerInfo(), buildCronetVersion(), getCronetSource());
+                    getLogId(),
+                    builder.toLoggerInfo(),
+                    buildCronetVersion(),
+                    CronetEngineBuilderImpl.getCronetSource());
         } catch (RuntimeException e) {
             // Handle any issue gracefully, we should never crash due failures while logging.
             Log.i(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);
@@ -237,17 +240,6 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                         }
                     }
                 });
-    }
-
-    static CronetSource getCronetSource() {
-        ClassLoader implClassLoader = CronetUrlRequest.class.getClassLoader();
-        if (implClassLoader.toString().startsWith("java.lang.BootClassLoader")) {
-            return CronetSource.CRONET_SOURCE_PLATFORM;
-        }
-        ClassLoader apiClassLoader = CronetEngine.class.getClassLoader();
-        return apiClassLoader.equals(implClassLoader)
-                ? CronetSource.CRONET_SOURCE_STATICALLY_LINKED
-                : CronetSource.CRONET_SOURCE_PLAY_SERVICES;
     }
 
     @VisibleForTesting

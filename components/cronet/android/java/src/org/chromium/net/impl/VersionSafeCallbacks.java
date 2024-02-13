@@ -284,4 +284,19 @@ public class VersionSafeCallbacks {
             mWrappedLoader.loadLibrary(libName);
         }
     }
+
+    /** Wrap a {@link org.chromium.net.ApiVersion} in a version safe manner. */
+    public static final class ApiVersion {
+        public static int getMaximumAvailableApiLevel() {
+            // No version check as we never shipped an API-only package that did no contain this
+            // method.
+            return org.chromium.net.ApiVersion.getMaximumAvailableApiLevel();
+        }
+
+        public static String getCronetVersion() {
+            // No version check as we never shipped an API-only package that did no contain this
+            // method.
+            return org.chromium.net.ApiVersion.getCronetVersion();
+        }
+    }
 }

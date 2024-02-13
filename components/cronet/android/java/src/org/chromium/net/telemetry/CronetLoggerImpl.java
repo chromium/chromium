@@ -60,6 +60,26 @@ public class CronetLoggerImpl extends CronetLogger {
     }
 
     @Override
+    public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {
+        CronetStatsLog.write(
+                CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED,
+                info.cronetInitializationRef,
+                convertToProtoCronetEngineBuilderInitializedAuthor(info.author),
+                info.engineBuilderCreatedLatencyMillis,
+                convertToProtoCronetSource(info.source),
+                OptionalBoolean.fromBoolean(info.creationSuccessful).getValue(),
+                info.apiVersion.getMajorVersion(),
+                info.apiVersion.getMinorVersion(),
+                info.apiVersion.getBuildVersion(),
+                info.apiVersion.getPatchVersion(),
+                info.implVersion.getMajorVersion(),
+                info.implVersion.getMinorVersion(),
+                info.implVersion.getBuildVersion(),
+                info.implVersion.getPatchVersion(),
+                info.uid);
+    }
+
+    @Override
     public void logCronetEngineCreation(
             long cronetEngineId,
             CronetEngineBuilderInfo builder,
@@ -187,6 +207,17 @@ public class CronetLoggerImpl extends CronetLogger {
                             "Failed to log cronet traffic sample for CronetEngine %s: %s",
                             cronetEngineId, e.getMessage()));
         }
+    }
+
+    private static int convertToProtoCronetEngineBuilderInitializedAuthor(
+            CronetEngineBuilderInitializedInfo.Author author) {
+        switch (author) {
+            case API:
+                return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_API;
+            case IMPL:
+                return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_IMPL;
+        }
+        return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED;
     }
 
     private static int convertToProtoCronetSource(CronetSource source) {

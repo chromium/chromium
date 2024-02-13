@@ -176,6 +176,71 @@ public final class CronetLoggerTest {
 
     @Test
     @SmallTest
+    public void testCronetEngineBuilderInitializedNotLoggedFromImpl() {
+        // The test framework bypasses the logic in CronetEngine.Builder, and the logic in
+        // CronetEngineBuilderImpl should not log anything since it should see the API code is up to
+        // date.
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+        mTestRule
+                .getTestFramework()
+                .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetEngineBuilderInitializedLoggedFromImplIfApiIsTooOld() {
+        var originalApiLevel = CronetEngineBuilderImpl.sApiLevel;
+        try {
+            CronetEngineBuilderImpl.sApiLevel = 29;
+            assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+            mTestRule
+                    .getTestFramework()
+                    .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
+            // The test framework bypasses the logic in CronetEngine.Builder, so we know this is
+            // coming from the impl.
+            assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(1);
+            var info = mTestLogger.getLastCronetEngineBuilderInitializedInfo();
+            assertThat(info).isNotNull();
+            assertThat(info.author)
+                    .isEqualTo(CronetLogger.CronetEngineBuilderInitializedInfo.Author.IMPL);
+            assertThat(info.engineBuilderCreatedLatencyMillis).isAtLeast(0);
+            assertThat(info.source).isNotEqualTo(CronetSource.CRONET_SOURCE_UNSPECIFIED);
+            assertThat(info.creationSuccessful).isTrue();
+            assertThat(info.apiVersion.getMajorVersion()).isGreaterThan(0);
+            assertThat(info.implVersion.getMajorVersion()).isGreaterThan(0);
+            assertThat(info.uid).isGreaterThan(0);
+        } finally {
+            CronetEngineBuilderImpl.sApiLevel = originalApiLevel;
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetEngineBuilderInitializedLoggedFromApi() {
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
+        // The test framework bypasses the logic in CronetEngine.Builder, so we have to call it
+        // directly. We want to use the test framework context though for things like intercepting
+        // manifest reads.
+        // TODO(https://crbug.com/1521393): this is ugly. Ideally the test framework should be
+        // refactored to stop violating the Single Responsibility Principle (e.g. Context management
+        // and implementation selection should be separated)
+        new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
+        assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(1);
+        var info = mTestLogger.getLastCronetEngineBuilderInitializedInfo();
+        assertThat(info).isNotNull();
+        assertThat(info.author)
+                .isEqualTo(CronetLogger.CronetEngineBuilderInitializedInfo.Author.API);
+        assertThat(info.engineBuilderCreatedLatencyMillis).isAtLeast(0);
+        assertThat(info.source).isNotEqualTo(CronetSource.CRONET_SOURCE_UNSPECIFIED);
+        assertThat(info.creationSuccessful).isTrue();
+        assertThat(info.apiVersion.getMajorVersion()).isGreaterThan(0);
+        assertThat(info.implVersion.getMajorVersion()).isGreaterThan(0);
+        assertThat(info.uid).isGreaterThan(0);
+    }
+
+    @Test
+    @SmallTest
     public void testEngineCreation() throws JSONException {
         JSONObject staleDns =
                 new JSONObject()
@@ -471,10 +536,14 @@ public final class CronetLoggerTest {
     /** Records the last engine creation (and traffic info) call it has received. */
     public static final class TestLogger extends CronetLogger {
         private AtomicInteger mNextId = new AtomicInteger();
+        private final AtomicInteger mCallsToLogCronetEngineBuilderInitializedInfo =
+                new AtomicInteger();
         private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
         private AtomicLong mCronetEngineId = new AtomicLong();
         private AtomicLong mCronetRequestId = new AtomicLong();
+        private final AtomicReference<CronetEngineBuilderInitializedInfo>
+                mCronetEngineBuilderInitializedInfo = new AtomicReference<>();
         private AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
         private AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
         private AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
@@ -484,6 +553,12 @@ public final class CronetLoggerTest {
         @Override
         public long generateId() {
             return mNextId.incrementAndGet();
+        }
+
+        @Override
+        public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {
+            mCallsToLogCronetEngineBuilderInitializedInfo.incrementAndGet();
+            mCronetEngineBuilderInitializedInfo.set(info);
         }
 
         @Override
@@ -507,6 +582,10 @@ public final class CronetLoggerTest {
             mBlock.open();
         }
 
+        public int callsToLogCronetEngineBuilderInitializedInfo() {
+            return mCallsToLogCronetEngineBuilderInitializedInfo.get();
+        }
+
         public int callsToLogCronetTrafficInfo() {
             return mCallsToLogCronetTrafficInfo.get();
         }
@@ -526,6 +605,10 @@ public final class CronetLoggerTest {
 
         public long getLastCronetRequestId() {
             return mCronetRequestId.get();
+        }
+
+        public CronetEngineBuilderInitializedInfo getLastCronetEngineBuilderInitializedInfo() {
+            return mCronetEngineBuilderInitializedInfo.get();
         }
 
         public CronetTrafficInfo getLastCronetTrafficInfo() {

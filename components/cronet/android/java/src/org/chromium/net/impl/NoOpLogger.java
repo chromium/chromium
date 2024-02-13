@@ -12,6 +12,9 @@ public final class NoOpLogger extends CronetLogger {
     }
 
     @Override
+    public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {}
+
+    @Override
     public void logCronetEngineCreation(
             long cronetEngineId,
             CronetEngineBuilderInfo engineBuilderInfo,

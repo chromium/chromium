@@ -13,6 +13,11 @@ package org.chromium.net;
  * separately and the app can end up running impl code that was not built from
  * the same version as the API code.
  *
+ * <p>CAUTION: this class is part of Cronet API code, but is called directly
+ * from impl code - be very careful when changing the API/ABI of this class, and
+ * keep in mind the caller code is not necessarily built from the same version
+ * as this code.
+ *
  * @see org.chromium.net.impl.ImplVersion
  * {@hide as it's only used internally}
  */
