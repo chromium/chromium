@@ -99,13 +99,6 @@ class TestFileSystemBackend::QuotaUtil : public FileSystemQuotaUtil,
     return std::vector<blink::StorageKey>();
   }
 
-  int64_t GetStorageKeyUsageOnFileTaskRunner(
-      FileSystemContext* context,
-      const blink::StorageKey& storage_key,
-      FileSystemType type) override {
-    return usage_;
-  }
-
   int64_t GetBucketUsageOnFileTaskRunner(FileSystemContext* context,
                                          const BucketLocator& bucket_locator,
                                          FileSystemType type) override {

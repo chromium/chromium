@@ -300,7 +300,7 @@ class ObfuscatedFileUtilTest : public testing::Test,
 
     is_non_default_bucket()
         ? sandbox_file_system_.SetUp(file_system_context_, custom_bucket_)
-        : sandbox_file_system_.SetUp(file_system_context_, storage_key_);
+        : sandbox_file_system_.SetUp(file_system_context_, default_bucket_);
 
     change_observers_ = MockFileChangeObserver::CreateList(&change_observer_);
 

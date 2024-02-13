@@ -54,12 +54,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaUtil {
   virtual std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) = 0;
 
-  // Returns the amount of data used for the `storage_key` for usage tracking.
-  virtual int64_t GetStorageKeyUsageOnFileTaskRunner(
-      FileSystemContext* file_system_context,
-      const blink::StorageKey& storage_key,
-      FileSystemType type) = 0;
-
   // Returns the amount of data used for the `bucket_locator` for usage
   // tracking.
   virtual int64_t GetBucketUsageOnFileTaskRunner(

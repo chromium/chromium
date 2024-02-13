@@ -363,50 +363,20 @@ SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
   return storage_keys;
 }
 
-int64_t SandboxFileSystemBackendDelegate::GetStorageKeyUsageOnFileTaskRunner(
-    FileSystemContext* file_system_context,
-    const blink::StorageKey& storage_key,
-    FileSystemType type) {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  return GetUsageOnFileTaskRunner(file_system_context, storage_key,
-                                  /*bucket_locator=*/std::nullopt, type);
-}
-
 int64_t SandboxFileSystemBackendDelegate::GetBucketUsageOnFileTaskRunner(
     FileSystemContext* file_system_context,
     const BucketLocator& bucket_locator,
     FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  return GetUsageOnFileTaskRunner(
-      file_system_context, bucket_locator.storage_key, bucket_locator, type);
-}
 
-int64_t SandboxFileSystemBackendDelegate::GetUsageOnFileTaskRunner(
-    FileSystemContext* file_system_context,
-    const blink::StorageKey& storage_key,
-    const std::optional<BucketLocator>& bucket_locator,
-    FileSystemType type) {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(!bucket_locator.has_value() ||
-         (bucket_locator.has_value() &&
-          bucket_locator->storage_key == storage_key));
-  // Don't use usage cache and return recalculated usage for sticky invalidated
-  // origins.
-  if (base::Contains(sticky_dirty_origins_,
-                     std::make_pair(storage_key.origin(), type)))
-    return RecalculateUsage(file_system_context, storage_key, bucket_locator,
-                            type);
-
-  base::FilePath path;
-  if (bucket_locator.has_value()) {
-    path =
-        GetBaseDirectoryForBucketAndType(bucket_locator.value(), type, false);
-  } else {
-    path = GetBaseDirectoryForStorageKeyAndType(storage_key, type, false);
-    if (path.empty()) {
-      return 0;
-    }
+  if (base::Contains(
+          sticky_dirty_origins_,
+          std::make_pair(bucket_locator.storage_key.origin(), type))) {
+    return RecalculateBucketUsage(file_system_context, bucket_locator, type);
   }
+
+  base::FilePath path =
+      GetBaseDirectoryForBucketAndType(bucket_locator, type, false);
   if (!obfuscated_file_util()->delegate()->DirectoryExists(path)) {
     return 0;
   }
@@ -417,7 +387,8 @@ int64_t SandboxFileSystemBackendDelegate::GetUsageOnFileTaskRunner(
   uint32_t dirty_status = 0;
   bool dirty_status_available =
       usage_cache()->GetDirty(usage_file_path, &dirty_status);
-  bool visited = !visited_origins_.insert(storage_key.origin()).second;
+  bool visited =
+      !visited_origins_.insert(bucket_locator.storage_key.origin()).second;
   if (is_valid && (dirty_status == 0 || (dirty_status_available && visited))) {
     // The usage cache is clean (dirty == 0) or the origin is already
     // initialized and running.  Read the cache file to get the usage.
@@ -429,7 +400,7 @@ int64_t SandboxFileSystemBackendDelegate::GetUsageOnFileTaskRunner(
   usage_cache()->Delete(usage_file_path);
 
   int64_t usage =
-      RecalculateUsage(file_system_context, storage_key, bucket_locator, type);
+      RecalculateBucketUsage(file_system_context, bucket_locator, type);
 
   // This clears the dirty flag too.
   usage_cache()->UpdateUsage(usage_file_path, usage);
@@ -620,16 +591,14 @@ SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
   return base_path.Append(FileSystemUsageCache::kUsageFileName);
 }
 
-int64_t SandboxFileSystemBackendDelegate::RecalculateUsage(
+int64_t SandboxFileSystemBackendDelegate::RecalculateBucketUsage(
     FileSystemContext* context,
-    const blink::StorageKey& storage_key,
-    const std::optional<BucketLocator>& bucket_locator,
+    const BucketLocator& bucket_locator,
     FileSystemType type) {
   FileSystemOperationContext operation_context(context);
-  FileSystemURL url =
-      context->CreateCrackedFileSystemURL(storage_key, type, base::FilePath());
-  if (bucket_locator.has_value())
-    url.SetBucket(bucket_locator.value());
+  FileSystemURL url = context->CreateCrackedFileSystemURL(
+      bucket_locator.storage_key, type, base::FilePath());
+  url.SetBucket(bucket_locator);
   std::unique_ptr<FileSystemFileUtil::AbstractFileEnumerator> enumerator(
       obfuscated_file_util()->CreateFileEnumerator(&operation_context, url,
                                                    true));

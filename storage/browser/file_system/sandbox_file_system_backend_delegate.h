@@ -165,10 +165,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
                                              FileSystemType type) override;
   std::vector<blink::StorageKey> GetStorageKeysForTypeOnFileTaskRunner(
       FileSystemType type) override;
-  int64_t GetStorageKeyUsageOnFileTaskRunner(
-      FileSystemContext* context,
-      const blink::StorageKey& storage_key,
-      FileSystemType type) override;
   int64_t GetBucketUsageOnFileTaskRunner(FileSystemContext* context,
                                          const BucketLocator& bucket_locator,
                                          FileSystemType type) override;
@@ -267,21 +263,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
       const BucketLocator& bucket_locator,
       FileSystemType type);
 
-  // Helper function to obtain usage for a StorageKey value and optionally a
-  // BucketLocator value. `storage_key` and `bucket_locator->storage_key` should
-  // be equivalent.
-  int64_t GetUsageOnFileTaskRunner(
-      FileSystemContext* context,
-      const blink::StorageKey& storage_key,
-      const std::optional<BucketLocator>& bucket_locator,
-      FileSystemType type);
-
-  // If no bucket value is provided, usage will be recalculated for the default
-  // bucket for the provided StorageKey value.
-  int64_t RecalculateUsage(FileSystemContext* context,
-                           const blink::StorageKey& storage_key,
-                           const std::optional<BucketLocator>& bucket_locator,
-                           FileSystemType type);
+  int64_t RecalculateBucketUsage(FileSystemContext* context,
+                                 const BucketLocator& bucket_locator,
+                                 FileSystemType type);
 
   ObfuscatedFileUtil* obfuscated_file_util();
 

@@ -155,10 +155,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
       const FileSystemOptions& options,
       base::PassKey<FileSystemContext>);
 
-  // Called by CookiesTreeModel, to be removed in crbug.com/1304449.
-  void DeleteDataForStorageKeyOnFileTaskRunner(
-      const blink::StorageKey& storage_key);
-
   // Creates a new QuotaReservation for the given `storage_key` and `type`.
   // Returns nullptr if `type` does not support quota or reservation fails.
   // This should be run on `default_file_task_runner_` and the returned value
@@ -402,8 +398,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
   void OnGetBucketForDeleteFileSystem(FileSystemType type,
                                       StatusCallback callback,
                                       QuotaErrorOr<BucketInfo> result);
-  void OnGetBucketForStorageKeyDeletion(std::vector<FileSystemType> type,
-                                        QuotaErrorOr<BucketInfo> result);
   // OnGetOrCreateBucket is the callback for calling
   // QuotaManagerProxy::GetOrCreateDefault.
   void OnGetOrCreateBucket(const blink::StorageKey& storage_key,

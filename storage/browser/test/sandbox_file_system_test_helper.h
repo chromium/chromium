@@ -57,8 +57,6 @@ class SandboxFileSystemTestHelper {
   // [deep down inside ObfuscatedFileUtil].
   void SetUp(scoped_refptr<FileSystemContext> file_system_context);
   void SetUp(scoped_refptr<FileSystemContext> file_system_context,
-             const blink::StorageKey& storage_key);
-  void SetUp(scoped_refptr<FileSystemContext> file_system_context,
              const BucketLocator& bucket_locator);
   void SetUp(const base::FilePath& base_dir,
              scoped_refptr<QuotaManagerProxy> quota_manager_proxy);
@@ -94,7 +92,9 @@ class SandboxFileSystemTestHelper {
     return file_system_context_.get();
   }
 
-  const blink::StorageKey& storage_key() const { return storage_key_; }
+  const blink::StorageKey& storage_key() const {
+    return bucket_locator_.storage_key;
+  }
 
   FileSystemType type() const { return type_; }
   blink::mojom::StorageType storage_type() const {
@@ -109,9 +109,8 @@ class SandboxFileSystemTestHelper {
   void SetUpFileSystem();
 
   scoped_refptr<FileSystemContext> file_system_context_;
-  std::optional<BucketLocator> bucket_locator_;
+  BucketLocator bucket_locator_;
 
-  blink::StorageKey storage_key_;
   const FileSystemType type_;
   raw_ptr<FileSystemFileUtil, DanglingUntriaged> file_util_;
 };
