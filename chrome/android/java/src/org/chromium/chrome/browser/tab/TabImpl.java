@@ -1235,6 +1235,8 @@ class TabImpl implements Tab {
         WebContents webContents = getWebContents();
         assert webContents != null;
         if (webContents == null) return false;
+        // If the given url is null, there's no work to do.
+        if (url == null) return false;
 
         // We might be in the middle of loading a native page, in that case we should bail to avoid
         // recreating another instance.
