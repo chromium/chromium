@@ -177,6 +177,12 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
   OnDeferredStartup();
   content::RunAllTasksUntilIdle();
 
+  if (!tab_android()->GetUserData(FooPersistedTabDataAndroid::UserDataKey())) {
+    tab_android()->SetUserData(
+        FooPersistedTabDataAndroid::UserDataKey(),
+        std::make_unique<FooPersistedTabDataAndroid>(tab_android()));
+  }
+
   FooPersistedTabDataAndroid* foo_persisted_tab_data_android =
       static_cast<FooPersistedTabDataAndroid*>(tab_android()->GetUserData(
           FooPersistedTabDataAndroid::UserDataKey()));
