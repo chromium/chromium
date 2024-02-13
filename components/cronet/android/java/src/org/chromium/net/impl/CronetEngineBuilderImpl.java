@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_LOWEST;
 
 import android.content.Context;
@@ -466,5 +467,19 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
      */
     Context getContext() {
         return mApplicationContext;
+    }
+
+    CronetLogger.CronetEngineBuilderInfo toLoggerInfo() {
+        return new CronetLogger.CronetEngineBuilderInfo(
+                /* publicKeyPinningBypassForLocalTrustAnchorsEnabled= */ publicKeyPinningBypassForLocalTrustAnchorsEnabled(),
+                /* userAgent= */ getUserAgent(),
+                /* storagePath= */ storagePath(),
+                /* quicEnabled= */ quicEnabled(),
+                /* http2Enabled= */ http2Enabled(),
+                /* brotiEnabled= */ brotliEnabled(),
+                /* httpCacheMode= */ publicBuilderHttpCacheMode(),
+                /* experimentalOptions= */ experimentalOptions(),
+                /* networkQualityEstimatorEnabled= */ networkQualityEstimatorEnabled(),
+                /* threadPriority= */ threadPriority(THREAD_PRIORITY_BACKGROUND));
     }
 }

@@ -28,7 +28,6 @@ import org.chromium.net.RequestContextConfigOptions;
 import org.chromium.net.RequestFinishedInfo;
 import org.chromium.net.RttThroughputValues;
 import org.chromium.net.UrlRequest;
-import org.chromium.net.impl.CronetLogger.CronetEngineBuilderInfo;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 import org.chromium.net.impl.CronetLogger.CronetVersion;
 import org.chromium.net.urlconnection.CronetHttpURLConnection;
@@ -216,10 +215,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         mLogId = mLogger.generateId();
         try {
             mLogger.logCronetEngineCreation(
-                    getLogId(),
-                    new CronetEngineBuilderInfo(builder),
-                    buildCronetVersion(),
-                    getCronetSource());
+                    getLogId(), builder.toLoggerInfo(), buildCronetVersion(), getCronetSource());
         } catch (RuntimeException e) {
             // Handle any issue gracefully, we should never crash due failures while logging.
             Log.i(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);

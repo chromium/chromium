@@ -4,8 +4,6 @@
 
 package org.chromium.net.impl;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-
 import java.time.Duration;
 
 /** Base class for implementing a CronetLogger. */
@@ -62,18 +60,28 @@ public abstract class CronetLogger {
         private final boolean mNetworkQualityEstimatorEnabled;
         private final int mThreadPriority;
 
-        public CronetEngineBuilderInfo(CronetEngineBuilderImpl builder) {
+        public CronetEngineBuilderInfo(
+                boolean publicKeyPinningBypassForLocalTrustAnchorsEnabled,
+                String userAgent,
+                String storagePath,
+                boolean quicEnabled,
+                boolean http2Enabled,
+                boolean brotiEnabled,
+                int httpCacheMode,
+                String experimentalOptions,
+                boolean networkQualityEstimatorEnabled,
+                int threadPriority) {
             mPublicKeyPinningBypassForLocalTrustAnchorsEnabled =
-                    builder.publicKeyPinningBypassForLocalTrustAnchorsEnabled();
-            mUserAgent = builder.getUserAgent();
-            mStoragePath = builder.storagePath();
-            mQuicEnabled = builder.quicEnabled();
-            mHttp2Enabled = builder.http2Enabled();
-            mBrotiEnabled = builder.brotliEnabled();
-            mHttpCacheMode = builder.publicBuilderHttpCacheMode();
-            mExperimentalOptions = builder.experimentalOptions();
-            mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
-            mThreadPriority = builder.threadPriority(THREAD_PRIORITY_BACKGROUND);
+                    publicKeyPinningBypassForLocalTrustAnchorsEnabled;
+            mUserAgent = userAgent;
+            mStoragePath = storagePath;
+            mQuicEnabled = quicEnabled;
+            mHttp2Enabled = http2Enabled;
+            mBrotiEnabled = brotiEnabled;
+            mHttpCacheMode = httpCacheMode;
+            mExperimentalOptions = experimentalOptions;
+            mNetworkQualityEstimatorEnabled = networkQualityEstimatorEnabled;
+            mThreadPriority = threadPriority;
         }
 
         /** @return Whether public key pinning bypass for local trust anchors is enabled */

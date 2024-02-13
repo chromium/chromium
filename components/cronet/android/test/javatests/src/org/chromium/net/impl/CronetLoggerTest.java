@@ -89,7 +89,7 @@ public final class CronetLoggerTest {
     @SmallTest
     public void testCronetEngineInfoCreation() {
         CronetEngineBuilderImpl builder = new NativeCronetEngineBuilderImpl(mContext);
-        CronetEngineBuilderInfo builderInfo = new CronetEngineBuilderInfo(builder);
+        CronetEngineBuilderInfo builderInfo = builder.toLoggerInfo();
         assertThat(builderInfo.isPublicKeyPinningBypassForLocalTrustAnchorsEnabled())
                 .isEqualTo(builder.publicKeyPinningBypassForLocalTrustAnchorsEnabled());
         assertThat(builderInfo.getUserAgent()).isEqualTo(builder.getUserAgent());
