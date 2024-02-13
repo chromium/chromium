@@ -11213,6 +11213,18 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4842" label="UserFeatureNuxtThirdPartiesYouTubeEmbed"/>
   <int value="4843" label="UserFeatureNuxtThirdPartiesGoogleMaps"/>
   <int value="4844" label="SelectParserDroppedTag"/>
+  <int value="4845" label="InputTypeRangeHorizontalLtr"/>
+  <int value="4846" label="InputTypeRangeHorizontalRtl"/>
+  <int value="4847" label="InputTypeRangeVerticalLtr"/>
+  <int value="4848" label="InputTypeRangeVerticalRtl"/>
+  <int value="4849" label="MeterElementHorizontalLtr"/>
+  <int value="4850" label="MeterElementHorizontalRtl"/>
+  <int value="4851" label="MeterElementVerticalLtr"/>
+  <int value="4852" label="MeterElementVerticalRtl"/>
+  <int value="4853" label="ProgressElementHorizontalLtr"/>
+  <int value="4854" label="ProgressElementHorizontalRtl"/>
+  <int value="4855" label="ProgressElementVerticalLtr"/>
+  <int value="4856" label="ProgressElementVerticalRtl"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

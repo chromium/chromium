@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:dizhangg@chromium.org">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<script>
+window.inputTypeRangeHorizontalLtrId = 4845;
+window.inputTypeRangeHorizontalRtlId = 4846;
+window.inputTypeRangeVerticalLtrId = 4847;
+window.inputTypeRangeVerticalRtlId = 4848;
+</script>
+
+<input type="range">
+<input type="range" style="direction: rtl">
+<input type="range" style="writing-mode: vertical-lr">
+<input type="range" style="direction: rtl; writing-mode: vertical-lr">
+
+<script>
+async function waitForRender() {
+  return new Promise(resolve => requestAnimationFrame(resolve));
+}
+function assertCount(counterId) {
+  assert_true(internals.isUseCounted(document, counterId), `web feature ${counterId} counted`);
+  internals.clearUseCounter(document, counterId);
+}
+promise_test(async () => {
+  await waitForRender();
+  await waitForRender();
+
+  assertCount(inputTypeRangeHorizontalLtrId);
+  assertCount(inputTypeRangeHorizontalRtlId);
+  assertCount(inputTypeRangeVerticalLtrId);
+  assertCount(inputTypeRangeVerticalRtlId);
+}, 'Usecounters for input type range are counting per writing-mode and direction');
+</script>

@@ -426,6 +426,7 @@ class CORE_EXPORT HTMLInputElement
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) final;
 
+  void DidRecalcStyle(const StyleRecalcChange) override;
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const final;
   void CollectStyleForPresentationAttribute(const QualifiedName&,

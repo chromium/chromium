@@ -809,6 +809,11 @@ void HTMLInputElement::CollectStyleForPresentationAttribute(
   }
 }
 
+void HTMLInputElement::DidRecalcStyle(const StyleRecalcChange change) {
+  HTMLElement::DidRecalcStyle(change);
+  input_type_->DidRecalcStyle(change);
+}
+
 void HTMLInputElement::ParseAttribute(
     const AttributeModificationParams& params) {
   DCHECK(input_type_);

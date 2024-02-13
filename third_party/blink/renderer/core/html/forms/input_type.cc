@@ -794,6 +794,8 @@ bool InputType::MayTriggerVirtualKeyboard() const {
 
 void InputType::CountUsage() {}
 
+void InputType::DidRecalcStyle(const StyleRecalcChange) {}
+
 bool InputType::ShouldRespectAlignAttribute() {
   return false;
 }

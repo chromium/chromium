@@ -4206,6 +4206,18 @@ enum WebFeature {
   kUserFeatureNuxtThirdPartiesYouTubeEmbed = 4842,
   kUserFeatureNuxtThirdPartiesGoogleMaps = 4843,
   kSelectParserDroppedTag = 4844,
+  kInputTypeRangeHorizontalLtr = 4845,
+  kInputTypeRangeHorizontalRtl = 4846,
+  kInputTypeRangeVerticalLtr = 4847,
+  kInputTypeRangeVerticalRtl = 4848,
+  kMeterElementHorizontalLtr = 4849,
+  kMeterElementHorizontalRtl = 4850,
+  kMeterElementVerticalLtr = 4851,
+  kMeterElementVerticalRtl = 4852,
+  kProgressElementHorizontalLtr = 4853,
+  kProgressElementHorizontalRtl = 4854,
+  kProgressElementVerticalLtr = 4855,
+  kProgressElementVerticalRtl = 4856,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

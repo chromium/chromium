@@ -270,6 +270,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
 
   virtual bool LayoutObjectIsNeeded();
   virtual void CountUsage();
+  virtual void DidRecalcStyle(const StyleRecalcChange);
   virtual void SanitizeValueInResponseToMinOrMaxAttributeChange();
   virtual bool ShouldRespectAlignAttribute();
   virtual FileList* Files();

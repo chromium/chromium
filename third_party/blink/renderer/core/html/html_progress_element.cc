@@ -20,6 +20,7 @@
 
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
 
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
@@ -38,6 +39,7 @@ const double HTMLProgressElement::kInvalidPosition = -2;
 HTMLProgressElement::HTMLProgressElement(Document& document)
     : HTMLElement(html_names::kProgressTag, document), value_(nullptr) {
   UseCounter::Count(document, WebFeature::kProgressElement);
+  SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot();
 }
 
@@ -57,6 +59,28 @@ LayoutObject* HTMLProgressElement::CreateLayoutObject(
 
 LayoutProgress* HTMLProgressElement::GetLayoutProgress() const {
   return DynamicTo<LayoutProgress>(GetLayoutObject());
+}
+
+void HTMLProgressElement::DidRecalcStyle(const StyleRecalcChange change) {
+  HTMLElement::DidRecalcStyle(change);
+  const ComputedStyle* style = GetComputedStyle();
+  if (RuntimeEnabledFeatures::
+          FormControlsVerticalWritingModeDirectionSupportEnabled() &&
+      style) {
+    bool is_horizontal = style->IsHorizontalWritingMode();
+    bool is_ltr = style->IsLeftToRightDirection();
+    if (is_horizontal && is_ltr) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kProgressElementHorizontalLtr);
+    } else if (is_horizontal && !is_ltr) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kProgressElementHorizontalRtl);
+    } else if (is_ltr) {
+      UseCounter::Count(GetDocument(), WebFeature::kProgressElementVerticalLtr);
+    } else {
+      UseCounter::Count(GetDocument(), WebFeature::kProgressElementVerticalRtl);
+    }
+  }
 }
 
 void HTMLProgressElement::ParseAttribute(
