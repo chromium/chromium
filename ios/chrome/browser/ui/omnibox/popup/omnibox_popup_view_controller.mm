@@ -284,9 +284,19 @@ BOOL ShouldDismissKeyboardOnScroll() {
         UIScrollViewContentInsetAdjustmentNever;
   }
 
-  [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
-                                                  0, 0, kBottomPadding, 0)];
-  self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
+  if (IsIpadPopoutOmniboxEnabled()) {
+    self.tableView.tableFooterView =
+        [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, FLT_MIN)];
+    [self.tableView
+        setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                        kTopPadding, 0, kBottomPadding, 0)];
+    self.tableView.contentInset =
+        UIEdgeInsetsMake(kTopPadding, 0, kBottomPadding, 0);
+  } else {
+    [self.tableView setDirectionalLayoutMargins:NSDirectionalEdgeInsetsMake(
+                                                    0, 0, kBottomPadding, 0)];
+    self.tableView.contentInset = UIEdgeInsetsMake(kTopPadding, 0, 0, 0);
+  }
 
   self.tableView.sectionHeaderHeight = 0.1;
   self.tableView.estimatedRowHeight = 0;
