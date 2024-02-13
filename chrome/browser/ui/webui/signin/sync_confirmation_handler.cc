@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -69,6 +70,11 @@ base::TimeDelta GetMinorModeRestrictionsDeadline() {
 #else
   return ::switches::kMinorModeRestrictionsFetchDeadline.Get();
 #endif
+}
+
+inline bool ScreenModeIsPending(const AccountInfo& primary_account_info) {
+  return GetScreenMode(primary_account_info.capabilities) ==
+         SyncConfirmationScreenMode::kPending;
 }
 
 }  // namespace
@@ -240,6 +246,28 @@ void SyncConfirmationHandler::OnScreenModeChanged(
   DCHECK(!screen_mode_notified_) << "Must be called only once";
   screen_mode_notified_ = true;
   screen_mode_deadline_.Stop();
+
+  // Note on timing: this function is executed exactly once
+  // because it sets `screen_mode_notified_` to `true`. This means that the
+  // latencies are recorded only once, but either immediately from
+  // `HandleInitializedWithSize`, or subsequently as a result of OnDeadline or
+  // OnExtendedAccountInfoUpdated. For the latter case, the timer was started in
+  // `HandleInitializedWithSize` when the capability was requested but not
+  // available.
+
+  if (user_visible_latency_.has_value()) {
+    // Timer was started so it means it is a subsequent attempt.
+    base::TimeDelta elapsed = user_visible_latency_->Elapsed();
+    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                            elapsed);
+    base::UmaHistogramTimes("Signin.AccountCapabilities.FetchLatency", elapsed);
+  } else {
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              true);
+    base::UmaHistogramTimes("Signin.AccountCapabilities.UserVisibleLatency",
+                            base::Seconds(0));
+  }
+
   FireWebUIListener("screen-mode-changed", static_cast<int>(mode));
 }
 
@@ -279,14 +307,16 @@ void SyncConfirmationHandler::DispatchAccountInfoUpdate(
     return;
   }
 
-  if (UseMinorModeRestrictions()) {
-    if (SyncConfirmationScreenMode mode = GetScreenMode(info.capabilities);
-        mode != SyncConfirmationScreenMode::kPending) {
-      OnScreenModeChanged(mode);
-    }
-  } else {
+  if (!UseMinorModeRestrictions()) {
     OnScreenModeChanged(SyncConfirmationScreenMode::kUnrestricted);
+    return;
   }
+
+  if (ScreenModeIsPending(info)) {
+    return;
+  }
+
+  OnScreenModeChanged(GetScreenMode(info.capabilities));
 }
 
 void SyncConfirmationHandler::OnExtendedAccountInfoUpdated(
@@ -333,6 +363,17 @@ void SyncConfirmationHandler::HandleInitializedWithSize(
   }
 
   DispatchAccountInfoUpdate(primary_account_info);
+
+  if (UseMinorModeRestrictions() && ScreenModeIsPending(primary_account_info) &&
+      !user_visible_latency_.has_value()) {
+    CHECK(!screen_mode_notified_);
+    // `user_visible_latency_` timer is only ticking when the capabilities
+    // were not immediately available, but is only started at the very first
+    // attempt to access them.
+    user_visible_latency_.emplace();
+    base::UmaHistogramBoolean("Signin.AccountCapabilities.ImmediatelyAvailable",
+                              false);
+  }
 
   if (!avatar_notified_ ||
       (!screen_mode_notified_ && UseMinorModeRestrictions())) {

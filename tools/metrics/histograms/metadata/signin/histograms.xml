@@ -36,9 +36,7 @@ chromium-metrics-reviews@google.com.
     of similar view.
 
     Recorded when an extended account info is updated and the account info has
-    Capabilities.
-
-    Recorded for Android and iOS.
+    Capabilities during displaying of the sync consent screen.
   </summary>
 </histogram>
 
@@ -86,10 +84,9 @@ chromium-metrics-reviews@google.com.
     are tracking the time and the type of fetch (synchronous or asynchronous)
     from the user's perspective.
 
-    Recorded when the following conditions hold: an Activity is resumed, and the
-    user is signed in and not syncing.
-
-    Recorded for Android and iOS.
+    Recorded when the following conditions hold: a sync consent screen is
+    displayed, the user is signed in and not syncing, and the primary account
+    info has Capabilities.
   </summary>
 </histogram>
 
@@ -113,12 +110,10 @@ chromium-metrics-reviews@google.com.
     for whom the UI was blocked until the Capabilities were ready.
 
     Recorded in two situations. 1. When an extended account info is updated and
-    the account info has Capabilities. 2. When the following conditions hold: an
-    Activity is resumed, the user is signed in and not syncing, and the primary
-    account info has Capabilities.
-
-    Recorded for Android and iOS. Signin.SyncOptIn.PreSyncConfirmationLatency is
-    the desktop counterpart.
+    the account info has Capabilities while the sync consent screen is
+    displayed. 2. When the following conditions hold: a sync consent screen is
+    displayed, the user is signed in and not syncing, and the primary account
+    info has Capabilities.
   </summary>
 </histogram>
 

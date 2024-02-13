@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safety_checks.h"
 #include "base/notreached.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -155,6 +157,10 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // Flipped when the UI is first notified, prevents multiple updates.
   bool avatar_notified_ = false;
   bool screen_mode_notified_ = false;
+
+  // Tracks time that passes between the UI is fully initialized, but the
+  // confirm / not now buttons are not ready yet.
+  std::optional<base::ElapsedTimer> user_visible_latency_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_
