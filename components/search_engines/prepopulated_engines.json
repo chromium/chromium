@@ -23,13 +23,13 @@
     // When adding new engines, increment this number and use it as the new
     // max ID. This is used by UMA stats and must be updated to include the full
     // range or else not all engines will be counted in stats.
-    "kMaxPrepopulatedEngineID": 111,
+    "kMaxPrepopulatedEngineID": 112,
 
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 145
+    "kCurrentDataVersion": 146
   },
 
   // The following engines are included in country lists and are added to the
@@ -119,6 +119,7 @@
       "favicon_url": "https://cdn.ecosia.org/assets/images/ico/favicon.ico",
       "search_url": "https://www.ecosia.org/search?q={searchTerms}&addon=opensearch",
       "suggest_url": "https://ac.ecosia.org/autocomplete?q={searchTerms}&type=list",
+      "image_url": "https://www.ecosia.org/images?q={searchTerms}&addon=opensearch",
       "new_tab_url": "https://www.ecosia.org/newtab/",
       "type": "SEARCH_ENGINE_ECOSIA",
       "id": 101
@@ -167,7 +168,7 @@
       "keyword": "lilo.org",
       "favicon_url": "https://www.lilo.org/wp-content/themes/jarvis_wp/ajans/assets/favicon.ico",
       "search_url": "https://search.lilo.org/?q={searchTerms}",
-      "suggest_url": "https://search.lilo.org/api/?service=suggestions&action=suggest&q={searchTerms}&f=chr",
+      "suggest_url": "https://search.lilo.org/api/?service=suggestions&action=suggest&q={searchTerms}&f=chr&l={language}",
       "id": 111
     },
 
@@ -215,11 +216,11 @@
     },
 
     "panda": {
-      "name": "Panda Search",
+      "name": "WWF Panda Search",
       "keyword": "panda-search.org",
       "favicon_url": "https://panda-search.org/favicon.ico",
       "search_url": "https://panda-search.org/search/?q={searchTerms}",
-      "suggest_url": "https://suggest.panda-search.org/suggest?rtag=pandaomn&rsrc=po&q={searchTerms}&fmt=cr",
+      "suggest_url": "https://suggest.panda-search.org/suggest?q={searchTerms}",
       "type": "SEARCH_ENGINE_PANDASEARCH",
       "id": 104
     },
@@ -482,6 +483,16 @@
       "id": 2
     },
 
+    "yahoo_it": {
+      "name": "Yahoo! Italia",
+      "keyword": "it.yahoo.com",
+      "favicon_url": "https://it.search.yahoo.com/favicon.ico",
+      "search_url": "https://it.search.yahoo.com/search{google:pathWildcard}?ei={inputEncoding}&fr=crmas&p={searchTerms}",
+      "suggest_url": "https://it.search.yahoo.com/sugg/chrome?output=fxjson&appid=crmas&command={searchTerms}",
+      "type": "SEARCH_ENGINE_YAHOO",
+      "id": 2
+    },
+
     "yahoo_jp": {
       "name": "Yahoo! JAPAN",
       "keyword": "yahoo.co.jp",
@@ -719,6 +730,16 @@
       "suggest_url": "https://api.yep.com/ac/?query={searchTerms}&os=true",
       "type": "SEARCH_ENGINE_YEP",
       "id": 106
+    },
+
+    "you": {
+      "name": "You.com",
+      "keyword": "you.com",
+      "favicon_url": "https://api.you.com/favicon.ico",
+      "search_url": "https://you.com/search?tbm=youchat&q={searchTerms}",
+      "suggest_url": "https://you.com/api/ac?domain=default&q={searchTerms}",
+      "type": "SEARCH_ENGINE_YOU",
+      "id": 112
     },
 
     // UMA-only engines ////////////////////////////////////////////////////////
