@@ -577,13 +577,15 @@ TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
   EXPECT_THAT(
       events_[0],
       data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          kSrcPattern, DlpRulesManager::Restriction::kScreenshot, kRuleName,
-          kRuleId, DlpRulesManager::Level::kReport)));
+          web_contents1->GetLastCommittedURL().spec(),
+          DlpRulesManager::Restriction::kScreenshot, kRuleName, kRuleId,
+          DlpRulesManager::Level::kReport)));
 
   // WebContents 2 becomes confidential. Expect report event from WebContents 2.
+  helper_.ChangeConfidentiality(web_contents1.get(), kEmptyRestrictionSet);
   helper_.ChangeConfidentiality(web_contents2.get(), kScreenshotReported);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
-            kScreenshotReported);
+            kEmptyRestrictionSet);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents2.get()),
             kScreenshotReported);
   EXPECT_EQ(GetManager()->GetOnScreenPresentRestrictions(),
@@ -592,11 +594,11 @@ TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
   EXPECT_THAT(
       events_[1],
       data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
-          kSrcPattern, DlpRulesManager::Restriction::kScreenshot, kRuleName,
-          kRuleId, DlpRulesManager::Level::kReport)));
+          web_contents2->GetLastCommittedURL().spec(),
+          DlpRulesManager::Restriction::kScreenshot, kRuleName, kRuleId,
+          DlpRulesManager::Level::kReport)));
 
   // Remove confidentiality for both web contents.
-  helper_.ChangeConfidentiality(web_contents1.get(), kEmptyRestrictionSet);
   helper_.ChangeConfidentiality(web_contents2.get(), kEmptyRestrictionSet);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents1.get()),
             kEmptyRestrictionSet);
