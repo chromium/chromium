@@ -29,7 +29,6 @@ js_files = [
   "file_manager/guest_os.js",
   "file_manager/holding_space.js",
   "file_manager/install_linux_package_dialog.js",
-  "file_manager/metadata.js",
   "file_manager/metrics.js",
   "file_manager/recents.js",
   "file_manager/restore_prefs.js",
@@ -103,8 +102,7 @@ ts_files = [
 
   "file_manager/keyboard_operations.ts",
   "file_manager/manage_dialog.ts",
-
-  # "file_manager/metadata.ts",
+  "file_manager/metadata.ts",
 
   # "file_manager/metrics.ts",
 

@@ -10,6 +10,7 @@ declare namespace chrome {
     export function assertEq<T>(expected: T, actual: T, message?: string): void;
     export function assertFalse(value: boolean, message?: string): void;
     export function assertTrue(value: boolean, message?: string): asserts value;
+    export function checkDeepEq<T>(value: T, actual: T): boolean;
     export function fail(message?: string): never;
     export function runTests(tests: Array<() => void>): void;
     export function runWithUserGesture(callback: () => void): void;
