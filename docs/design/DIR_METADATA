@@ -1,11 +1,6 @@
-# Metadata information for this directory.
-#
-# For more information on DIR_METADATA files, see:
-#   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/README.md
-#
-# For the schema of this file, see Metadata message:
-#   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
-
-monorail {
+monorail: {
   component: "Internals>Core"
+}
+buganizer_public: {
+  component_id: 1456128
 }

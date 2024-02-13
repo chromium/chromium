@@ -3,4 +3,6 @@ monorail: {
 }
 team_email: "clank-build-core@chromium.org"
 os: ANDROID
-
+buganizer_public: {
+  component_id: 1456387
+}

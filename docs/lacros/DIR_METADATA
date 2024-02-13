@@ -1,6 +1,9 @@
-team_email: "lacros-team@google.com"
-os: LACROS
-monorail {
+monorail: {
   project: "chromium"
   component: "OS>LaCrOs"
+}
+team_email: "lacros-team@google.com"
+os: LACROS
+buganizer_public: {
+  component_id: 1456869
 }
