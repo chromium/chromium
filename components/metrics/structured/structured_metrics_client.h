@@ -40,11 +40,6 @@ class StructuredMetricsClient {
   // Records |event| using singleton from Get().
   static void Record(Event&& event);
 
-  // Forwards to |delegate_|. If no delegate has been set, then no-op.
-  //
-  // TODO(b/322037443): Move this to private once all calls have been migrated.
-  void RecordEvent(Event&& event);
-
   // Sets the delegate for the client's recording logic. Should be called before
   // anything else. |this| does not take ownership of |delegate| and assumes
   // that the caller will properly manage the lifetime of delegate and call
@@ -54,6 +49,9 @@ class StructuredMetricsClient {
 
  private:
   friend class base::NoDestructor<StructuredMetricsClient>;
+
+  // Forwards to |delegate_|. If no delegate has been set, then no-op.
+  void RecordEvent(Event&& event);
 
   StructuredMetricsClient();
   ~StructuredMetricsClient();
