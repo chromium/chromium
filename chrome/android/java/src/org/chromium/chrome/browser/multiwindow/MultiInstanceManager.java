@@ -497,7 +497,7 @@ public class MultiInstanceManager
         // Not implemented
     }
 
-    public void moveTabToWindow(Activity activity, Tab tab, int atIndex, int fromWindowInstanceId) {
+    public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
         // Not implemented
     }
 
@@ -596,5 +596,14 @@ public class MultiInstanceManager
      */
     public int getCurrentInstanceId() {
         return MultiWindowUtils.INVALID_INSTANCE_ID;
+    }
+
+    /**
+     * Close a Chrome window instance only if it contains no open tabs including incognito ones.
+     *
+     * @param instanceId Instance id of the Chrome window that needs to be closed.
+     */
+    public void closeChromeWindowIfEmpty(int instanceId) {
+        // Not implemented.
     }
 }

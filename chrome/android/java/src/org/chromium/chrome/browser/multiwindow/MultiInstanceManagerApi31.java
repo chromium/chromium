@@ -12,8 +12,6 @@ import android.content.Intent;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
@@ -76,7 +74,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
 
     private static final String EMPTY_DATA = "";
-    private static final long DEFAULT_WINDOW_CLOSING_DELAY_FOR_DRAG_DROP_IN_MILLIS = 50;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     protected final int mMaxInstances;
@@ -146,30 +143,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 mModalDialogManagerSupplier.get(),
                 new LargeIconBridge(getProfile()),
                 (instanceInfo) -> {
-                    moveTabAction(instanceInfo, tab, TabList.INVALID_TAB_INDEX, mInstanceId, false);
+                    moveTabAction(instanceInfo, tab, TabList.INVALID_TAB_INDEX);
+
+                    // Close the source instance window, if needed.
+                    closeChromeWindowIfEmpty(mInstanceId);
                 },
                 getInstanceInfo());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void moveTabAction(
-            InstanceInfo info,
-            Tab tab,
-            int tabAtIndex,
-            int fromWindowInstanceId,
-            boolean delayInWindowClosing) {
+    void moveTabAction(InstanceInfo info, Tab tab, int tabAtIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         if (targetActivity != null) {
             reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab, tabAtIndex);
-
-            // Close the source instance window, if needed.
-            if (canCloseEmptyChromeWindow(fromWindowInstanceId)) {
-                closeEmptyChromeWindowAsynchronously(
-                        fromWindowInstanceId,
-                        delayInWindowClosing
-                                ? DEFAULT_WINDOW_CLOSING_DELAY_FOR_DRAG_DROP_IN_MILLIS
-                                : 0);
-            }
         } else {
             moveAndReparentTabToNewWindow(
                     tab,
@@ -953,16 +939,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
      * @param activity Activity of the Chrome Window in which the tab is to be moved.
      * @param tab Tab that is to be moved to the current instance.
      * @param atIndex Tab position index in the destination window instance.
-     * @param fromWindowInstanceId InNstance Id of the Chrome window it is being moved from.
      */
     @Override
-    public void moveTabToWindow(Activity activity, Tab tab, int atIndex, int fromWindowInstanceId) {
+    public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
         if (!TabUiFeatureUtilities.isTabDragEnabled()) return;
 
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
-            moveTabAction(info, tab, atIndex, fromWindowInstanceId, true);
+            moveTabAction(info, tab, atIndex);
         } else {
             Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }
@@ -995,32 +980,35 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         return null;
     }
 
-    private boolean canCloseEmptyChromeWindow(int windowInstanceId) {
+    /**
+     * Determine if a Chrome instance can be closed based on the environment.
+     *
+     * @param instanceId Instance Id of the Chrome window that needs to be closed.
+     */
+    private boolean canCloseChromeWindow(int instanceId) {
         // Close the source instance window after reparenting if permitted by the feature flag and
         // the source instance is known.
-        if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()
-                && windowInstanceId != INVALID_INSTANCE_ID) {
-            TabModelSelector selector =
-                    TabWindowManagerSingleton.getInstance()
-                            .getTabModelSelectorById(windowInstanceId);
-            // Lastly determine if the drag source Chrome instance window has any tabs including
-            // incognito ones left so as to close if it is empty.
-            return selector.getTotalTabCount() == 0;
-        }
-        return false;
+        return TabUiFeatureUtilities.isTabDragAsWindowEnabled()
+                && instanceId != INVALID_INSTANCE_ID;
     }
 
-    private void closeEmptyChromeWindowAsynchronously(
-            final int instanceId, long delayInMilliseconds) {
-        new Handler(Looper.getMainLooper())
-                // Posting the message to process at the end of the current event queue.
-                // Delay is needed for closing the instance during drag and drop as the
-                // DragEvent.ACTION_DRAG_ENDED requires processing in the source instance.
-                .postDelayed(
-                        () -> {
-                            Log.i(TAG, "Closing empty Chrome instance as no tabs exist.");
-                            closeInstance(instanceId, INVALID_TASK_ID);
-                        },
-                        delayInMilliseconds);
+    /**
+     * Close a Chrome window instance only if it contains no open tabs including incognito ones.
+     *
+     * @param instanceId Instance id of the Chrome window that needs to be closed.
+     */
+    @Override
+    public void closeChromeWindowIfEmpty(int instanceId) {
+        if (canCloseChromeWindow(instanceId)) {
+            TabModelSelector selector =
+                    TabWindowManagerSingleton.getInstance().getTabModelSelectorById(instanceId);
+            // Determine if the drag source Chrome instance window has any tabs including incognito
+            // ones
+            // left so as to close if it is empty.
+            if (selector.getTotalTabCount() == 0) {
+                Log.i(TAG, "Closing empty Chrome instance as no tabs exist.");
+                closeInstance(instanceId, INVALID_TASK_ID);
+            }
+        }
     }
 }

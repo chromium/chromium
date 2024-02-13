@@ -382,19 +382,15 @@ public class TabDragSource implements View.OnDragListener {
                     DragDropTabResult.IGNORED_DIFF_MODEL_NOT_SUPPORTED);
             return false;
         }
-        int sourceInstanceId =
-                DragDropGlobalState.getState(sDragTrackerToken).getDragSourceInstance();
         if (!tabDraggedBelongToCurrentModel) {
             mMultiInstanceManager.moveTabToWindow(
                     getActivity(),
                     tabBeingDragged,
-                    mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount(),
-                    sourceInstanceId);
+                    mTabModelSelector.getModel(tabBeingDragged.isIncognito()).getCount());
             showDroppedDifferentModelToast(mWindowAndroid.getContext().get());
         } else {
             int tabIndex = helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp);
-            mMultiInstanceManager.moveTabToWindow(
-                    getActivity(), tabBeingDragged, tabIndex, sourceInstanceId);
+            mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabIndex);
             helper.mergeToGroupForTabDropIfNeeded(groupRootId, tabBeingDragged.getId(), tabIndex);
         }
         DragDropMetricUtils.recordTabDragDropType(DragDropType.TAB_STRIP_TO_TAB_STRIP);
@@ -436,6 +432,10 @@ public class TabDragSource implements View.OnDragListener {
             mMultiInstanceManager.moveTabToNewWindow(tabBeingDragged);
         }
 
+        // Get the drag source Chrome instance id before it is cleared as it may be closed.
+        int sourceInstanceId =
+                DragDropGlobalState.getState(sDragTrackerToken).getDragSourceInstance();
+
         // TODO (crbug.com/1497784): Remove this method.
         mStripLayoutHelperSupplier.get().clearTabDragState();
         if (mShadowView != null) {
@@ -449,6 +449,9 @@ public class TabDragSource implements View.OnDragListener {
         if (dropHandled) {
             DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.SUCCESS);
         }
+
+        // Close the source instance window if it has no tabs.
+        mMultiInstanceManager.closeChromeWindowIfEmpty(sourceInstanceId);
         return true;
     }
 

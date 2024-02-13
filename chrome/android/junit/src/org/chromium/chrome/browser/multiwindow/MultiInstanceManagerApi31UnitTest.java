@@ -1131,15 +1131,13 @@ public class MultiInstanceManagerApi31UnitTest {
 
         Mockito.doNothing()
                 .when(mMultiInstanceManager)
-                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex), anyInt(), eq(true));
+                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
 
         // Action
-        mMultiInstanceManager.moveTabToWindow(
-                mTabbedActivityTask63, mTab1, tabAtIndex, INSTANCE_ID_1);
+        mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1, tabAtIndex);
 
         // Verify moveTabAction and getCurrentInstanceInfo are each called once.
-        verify(mMultiInstanceManager, times(1))
-                .moveTabAction(any(), eq(mTab1), eq(tabAtIndex), anyInt(), eq(true));
+        verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
@@ -1154,15 +1152,13 @@ public class MultiInstanceManagerApi31UnitTest {
                                 INSTANCE_ID_1, TASK_ID_62, List.of(mTab1, mTab2, mTab3)));
         Mockito.doNothing()
                 .when(multiInstanceManager)
-                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex), anyInt(), eq(false));
+                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
 
         // Action
-        multiInstanceManager.moveTabToWindow(
-                mTabbedActivityTask62, mTab2, tabAtIndex, INSTANCE_ID_1);
+        multiInstanceManager.moveTabToWindow(mTabbedActivityTask62, mTab2, tabAtIndex);
 
         // Verify moveTabAction is not called.
-        verify(multiInstanceManager, times(0))
-                .moveTabAction(any(), eq(mTab2), eq(tabAtIndex), anyInt(), eq(false));
+        verify(multiInstanceManager, times(0)).moveTabAction(any(), eq(mTab2), eq(tabAtIndex));
     }
 
     @Test
@@ -1177,7 +1173,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0, INSTANCE_ID_1, true);
+        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
@@ -1223,7 +1219,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         0,
                         false);
 
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0, INSTANCE_ID_1, true);
+        mMultiInstanceManager.moveTabAction(info, mTab1, /* atIndex= */ 0);
 
         // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
         // method is validated in integration test here
@@ -1234,5 +1230,44 @@ public class MultiInstanceManagerApi31UnitTest {
                         eq(mTab1), eq(NON_EXISTANT_INSTANCE_ID), eq(false), eq(true), eq(false));
         verify(mMultiInstanceManager, times(0))
                 .reparentTabToRunningActivity(any(), eq(mTab1), eq(0));
+    }
+
+    @Test
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = 31)
+    public void testTabMove_CloseChromeWindowIfEmpty_closed() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        MultiWindowTestUtils.enableMultiInstance();
+        // Create an empty instance before asking it to close. The flag that provides permission to
+        // close is enabled.
+        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Action
+        mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
+
+        // Verify moveTabAction and getCurrentInstanceInfo are each called once.
+        verify(mMultiInstanceManager, times(1))
+                .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
+    }
+
+    @Test
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    @Config(sdk = 31)
+    public void testTabMove_CloseChromeWindowIfEmpty_notClosed() {
+        mMultiInstanceManager.mTestBuildInstancesList = true;
+        MultiWindowTestUtils.enableMultiInstance();
+        // Create an empty instance before asking it to close. The flag that provides permission to
+        // close is disabled.
+        assertEquals(INSTANCE_ID_1, allocInstanceIndex(INSTANCE_ID_1, mTabbedActivityTask62, true));
+        assertEquals(1, mMultiInstanceManager.getInstanceInfo().size());
+
+        // Action
+        mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1);
+
+        // Verify moveTabAction and getCurrentInstanceInfo are each called once.
+        verify(mMultiInstanceManager, times(0)).closeInstance(anyInt(), anyInt());
     }
 }

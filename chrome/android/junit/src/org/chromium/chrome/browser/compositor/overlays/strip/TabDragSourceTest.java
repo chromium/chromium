@@ -478,8 +478,7 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify clear.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -516,8 +515,7 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -546,8 +544,7 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is outside strip.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -596,7 +593,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab moved to destination window at TAB_INDEX.
         verify(mDestMultiInstanceManager, times(1))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX), eq(CURR_INSTANCE_ID));
+                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX));
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip calls.
@@ -630,7 +627,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab moved to destination window at end.
         verify(mDestMultiInstanceManager, times(1))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5), eq(CURR_INSTANCE_ID));
+                .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5));
 
         assertNotNull(ShadowToast.getLatestToast());
         TextView textView = (TextView) ShadowToast.getLatestToast().getView();
@@ -696,8 +693,7 @@ public class TabDragSourceTest {
                 .clearForTabDrop(anyLong(), anyBoolean(), anyBoolean());
         // Verify tab is not moved since drop is on source toolbar.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         histogramExpectation.assertExpected();
@@ -730,8 +726,7 @@ public class TabDragSourceTest {
         verify(mSourceStripLayoutHelper, times(1)).onUpOrCancel(anyLong());
         // Verify tab is not moved.
         verify(mSourceMultiInstanceManager, times(0)).moveTabToNewWindow(mTabBeingDragged);
-        verify(mSourceMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), any(), anyInt(), anyInt());
+        verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
         // Verify clear.
         verify(mSourceStripLayoutHelper, times(1)).clearTabDragState();
         // Verify destination strip not invoked.
@@ -778,7 +773,7 @@ public class TabDragSourceTest {
 
         // Verify - Move to new window not invoked.
         verify(mDestMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt(), anyInt());
+                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
         histogramExpectation.assertExpected();
     }
 
@@ -805,7 +800,7 @@ public class TabDragSourceTest {
 
         // Verify - Tab is not moved to destination window.
         verify(mDestMultiInstanceManager, times(0))
-                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt(), anyInt());
+                .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
 
         assertNull(ShadowToast.getLatestToast());
         histogramExpectation.assertExpected();
