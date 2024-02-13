@@ -690,10 +690,6 @@ enum class LcppResourceLoadPriority {
 BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
     kLCPCriticalPathPredictorImageLoadPriority;
 
-// The ResourceLoadPriority for scripts that are expected to be LCP influencers.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPCriticalPathPredictorInfluencerScriptLoadPriority;
-
 // Enables LCPP ElementLocator performance improvements
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements;
@@ -706,6 +702,14 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // the LCP element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPScriptObserver);
 
+// The ResourceLoadPriority for scripts that are expected to be LCP influencers.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
+    kLCPScriptObserverScriptLoadPriority;
+
+// The ResourceLoadPriority for images that are expected to LCP elements.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppResourceLoadPriority>
+    kLCPScriptObserverImageLoadPriority;
+
 // The maximum URL count for LCPP.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPScriptObserverMaxUrlCountPerOrigin;
@@ -713,6 +717,10 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // The maximum URL length allowed for LCPP.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPScriptObserverMaxUrlLength;
+
+// Enable ResourceLoadPriority changes for all HTMLImageElement loaded images.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLCPScriptObserverAdjustImageLoadPriority;
 
 // If enabled, LCP image origin is predicted and preconnected automatically.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPPAutoPreconnectLcpOrigin);

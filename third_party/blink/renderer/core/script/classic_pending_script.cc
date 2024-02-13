@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
@@ -275,8 +276,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
   static const bool exclude_lcp_influencers =
       features::kLowPriorityAsyncScriptExecutionExcludeLcpInfluencersParam
           .Get();
-  if (exclude_lcp_influencers &&
-      base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+  if (exclude_lcp_influencers && LcppScriptObserverEnabled()) {
     if (LCPCriticalPathPredictor* lcpp = top_document.GetFrame()->GetLCPP()) {
       if (lcpp->IsLcpInfluencerScript(GetResource()->Url())) {
         return false;

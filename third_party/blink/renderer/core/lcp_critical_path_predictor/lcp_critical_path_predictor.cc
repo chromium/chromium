@@ -30,7 +30,7 @@ LCPCriticalPathPredictor::LCPCriticalPathPredictor(LocalFrame& frame)
       host_(frame.DomWindow()),
       task_runner_(frame.GetTaskRunner(TaskType::kInternalLoading)) {
   CHECK(LcppEnabled());
-  if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+  if (blink::LcppScriptObserverEnabled()) {
     lcp_script_observer_ = MakeGarbageCollected<LCPScriptObserver>(frame_);
   }
 }
@@ -210,7 +210,7 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kLCPScriptObserver)) {
+  if (blink::LcppScriptObserverEnabled()) {
     if (const HTMLImageElement* image_element =
             DynamicTo<HTMLImageElement>(lcp_element)) {
       auto& creators = image_element->creator_scripts();

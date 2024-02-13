@@ -1228,11 +1228,6 @@ const base::FeatureParam<LcppResourceLoadPriority>
         &kLCPCriticalPathPredictor, "lcpp_image_load_priority",
         LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
 
-const base::FeatureParam<LcppResourceLoadPriority>
-    kLCPCriticalPathPredictorInfluencerScriptLoadPriority{
-        &kLCPCriticalPathPredictor, "lcpp_script_load_priority",
-        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
-
 const base::FeatureParam<bool>
     kLCPCriticalPathPredictorEnableElementLocatorPerformanceImprovements{
         &kLCPCriticalPathPredictor, "lcpp_enable_perf_improvements", true};
@@ -1246,11 +1241,25 @@ BASE_FEATURE(kLCPScriptObserver,
              "LCPScriptObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<LcppResourceLoadPriority>
+    kLCPScriptObserverScriptLoadPriority{
+        &kLCPScriptObserver, "lcpscriptobserver_script_load_priority",
+        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
+
+const base::FeatureParam<LcppResourceLoadPriority>
+    kLCPScriptObserverImageLoadPriority{
+        &kLCPScriptObserver, "lcpscriptobserver_image_load_priority",
+        LcppResourceLoadPriority::kVeryHigh, &lcpp_resource_load_priorities};
+
 const base::FeatureParam<int> kLCPScriptObserverMaxUrlLength{
-    &kLCPScriptObserver, "lcpp_max_url_length", 1024};
+    &kLCPScriptObserver, "lcpscriptobserver_script_max_url_length", 1024};
 
 const base::FeatureParam<int> kLCPScriptObserverMaxUrlCountPerOrigin{
-    &kLCPScriptObserver, "lcpp_max_url_count_per_origin", 5};
+    &kLCPScriptObserver, "lcpscriptobserver_script_max_url_count_per_origin",
+    5};
+
+const base::FeatureParam<bool> kLCPScriptObserverAdjustImageLoadPriority{
+    &kLCPScriptObserver, "lcpscriptobserver_adjust_image_load_priority", false};
 
 BASE_FEATURE(kLCPPAutoPreconnectLcpOrigin,
              "LCPPAutoPreconnectLcpOrigin",
