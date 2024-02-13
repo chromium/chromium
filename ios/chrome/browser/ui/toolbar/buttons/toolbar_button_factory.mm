@@ -239,6 +239,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
   button.toolbarConfiguration = self.toolbarConfiguration;
   button.exclusiveTouch = YES;
   button.pointerInteractionEnabled = YES;
+  button.layer.cornerRadius = width / 2;
+  button.clipsToBounds = YES;
   button.pointerStyleProvider =
       ^UIPointerStyle*(UIButton* uiButton, UIPointerEffect* proposedEffect,
                        UIPointerShape* proposedShape) {
