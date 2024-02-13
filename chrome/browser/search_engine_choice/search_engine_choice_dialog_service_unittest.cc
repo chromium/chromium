@@ -197,6 +197,16 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Unknown) {
+  TemplateURLData template_url_data;
+  template_url_data.prepopulate_id =
+      TemplateURLPrepopulateData::kMaxPrepopulatedEngineID + 1;
+  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+  template_url_service->SetUserSelectedDefaultSearchProvider(
+      template_url_service->Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(search_engine_choice_dialog_service);
