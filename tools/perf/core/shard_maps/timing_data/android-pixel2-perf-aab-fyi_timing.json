@@ -10,9 +10,5 @@
     {
         "duration": "38.0",
         "name": "startup.mobile/intent:warm:bbc"
-    },
-    {
-        "duration": "8.0",
-        "name": "startup.mobile/maps_pwa:with_http_cache"
     }
 ]

@@ -38,8 +38,8 @@ from devil.android.sdk import intent # pylint: disable=import-error
 # 2.1. Build Monochrome:
 #    shell> autoninja -C out/AndroidReleaseOfficial monochrome_apk
 #
-# 2.2. Build the (pseudo) Maps PWA launcher (it will be auto-installed later):
-#    shell> autoninja -C out/AndroidReleaseOfficial/ maps_go_webapk
+# 2.2. Build the (pseudo) PWA launcher (it will be auto-installed later):
+#    shell> autoninja -C out/AndroidReleaseOfficial/ webapk
 #
 # 3. Invoke Telemetry:
 #    shell> CHROMIUM_OUTPUT_DIR=out/AndroidReleaseOfficial \
@@ -63,8 +63,9 @@ from devil.android.sdk import intent # pylint: disable=import-error
 # Recording a WPR archive and uploading it:
 # shell> CHROMIUM_OUTPUT_DIR=out/AndroidReleaseOfficial tools/perf/record_wpr \
 #            mobile_startup_benchmark --browser=android-chrome \
-#            --also-run-disabled-tests --story-filter=maps_pwa:with_http_cache \
-#            --output-dir=/tmp/maps_pwa_output --upload
+#            --also-run-disabled-tests \
+#            --story-filter=mobile_pwa:with_http_cache \
+#            --output-dir=/tmp/mobile_pwa_output --upload
 # Note: "startup_mobile_benchmark" instead of "startup.mobile".
 
 _NUMBER_OF_ITERATIONS = 10
@@ -94,12 +95,12 @@ class _MobileStartupSharedState(story_module.SharedState):
     self.platform.SetPerformanceMode(finder_options.performance_mode)
     self._perf_mode_set = (finder_options.performance_mode !=
                            android_device.KEEP_PERFORMANCE_MODE)
-    maps_webapk = core_util.FindLatestApkOnHost(
-        finder_options.chrome_root, 'MapsWebApk.apk')
-    if not maps_webapk:
-      raise Exception('MapsWebApk not found! Follow the Mini-HOWTO in '
-                      'startup_mobile.py')
-    self.platform.InstallApplication(maps_webapk)
+    webapk = core_util.FindLatestApkOnHost(finder_options.chrome_root,
+                                           'WebApk.apk')
+    if not webapk:
+      raise Exception('WebApk not found! Follow the Mini-HOWTO in '
+                      'startup_mobile.py' + finder_options.chrome_root)
+    self.platform.InstallApplication(webapk)
     wpr_mode = wpr_modes.WPR_REPLAY
     self._number_of_iterations = _NUMBER_OF_ITERATIONS
     if finder_options.use_live_sites:
@@ -150,13 +151,13 @@ class _MobileStartupSharedState(story_module.SharedState):
                       action='android.intent.action.VIEW'),
         blocking=True)
 
-  def LaunchMapsPwa(self):
+  def LaunchMobilePwa(self):
     # Launches a bound webapk. The APK should be installed by the shared state
     # constructor. Upon launch, Chrome extracts the icon and the URL from the
     # APK.
     self.platform.WaitForBatteryTemperature(_MAX_BATTERY_TEMP)
     self.platform.StartActivity(intent.Intent(
-        package='org.chromium.maps_go_webapk',
+        package='org.chromium.webapk',
         activity='org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity',
         category='android.intent.category.LAUNCHER',
         action='android.intent.action.MAIN'),
@@ -247,15 +248,16 @@ class _MobileStartupWithCctIntentStory(story_module.Story):
         action_runner.tab.WaitForDocumentReadyStateToBeComplete()
 
 
-class _MapsPwaStartupStory(story_module.Story):
+class _MobilePwaStartupStory(story_module.Story):
   def __init__(self):
-    super(_MapsPwaStartupStory, self).__init__(
-        _MobileStartupSharedState, name='maps_pwa:with_http_cache')
+    super(_MobilePwaStartupStory,
+          self).__init__(_MobileStartupSharedState,
+                         name='mobile_pwa:with_http_cache')
 
   def Run(self, shared_state):
     for _ in range(shared_state.number_of_iterations):
-      # TODO(pasko): Flush HTTP cache for 'maps_pwa:no_http_cache'.
-      shared_state.LaunchMapsPwa()
+      # TODO(pasko): Flush HTTP cache for 'mobile_pwa:no_http_cache'.
+      shared_state.LaunchMobilePwa()
       with shared_state.FindBrowser() as browser:
         action_runner = browser.foreground_tab.action_runner
         action_runner.tab.WaitForDocumentReadyStateToBeComplete()
@@ -269,7 +271,7 @@ class _MobileStartupStorySet(story_module.StorySet):
     self.AddStory(_MobileStartupWithIntentStory())
     self.AddStory(_MobileStartupWithIntentStoryWarm())
     self.AddStory(_MobileStartupWithCctIntentStory())
-    self.AddStory(_MapsPwaStartupStory())
+    self.AddStory(_MobilePwaStartupStory())
 
 
 @benchmark.Info(emails=['pasko@chromium.org', 'lizeb@chromium.org'],

@@ -5844,7 +5844,7 @@ if (!is_android) {
       ]
 
       # Needed by startup.mobile benchmark.
-      data_deps += [ "//chrome/android/webapk/shell_apk:maps_go_webapk" ]
+      data_deps += [ "//chrome/android/webapk/shell_apk:webapk" ]
 
       if (telemetry_target_suffix == "_android_clank_chrome") {
         # Depending on Android version, either Chrome.apk or Monochrome.apk can

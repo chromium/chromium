@@ -3120,10 +3120,6 @@
         "name": "startup.mobile/intent:warm:bbc"
     },
     {
-        "duration": "39.0",
-        "name": "startup.mobile/maps_pwa:with_http_cache"
-    },
-    {
         "duration": "2.0",
         "name": "system_health.common_mobile/background:media:imgur:2019"
     },
