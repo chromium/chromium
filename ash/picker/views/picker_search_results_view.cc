@@ -113,7 +113,8 @@ void PickerSearchResultsView::AddResultToSection(
           [&](const PickerSearchResult::BrowsingHistoryData& data) {
             auto item_view = std::make_unique<PickerItemView>(
                 std::move(select_result_callback));
-            item_view->SetPrimaryText(base::UTF8ToUTF16(data.url.spec()));
+            item_view->SetPrimaryText(data.title);
+            item_view->SetSecondaryText(base::UTF8ToUTF16(data.url.spec()));
             item_view->SetLeadingIcon(data.icon);
             section_view->AddListItem(std::move(item_view));
           },

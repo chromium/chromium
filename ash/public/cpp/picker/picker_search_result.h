@@ -58,6 +58,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
 
   struct BrowsingHistoryData {
     GURL url;
+    std::u16string title;
     ui::ImageModel icon;
 
     bool operator==(const BrowsingHistoryData&) const;
@@ -75,6 +76,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   ~PickerSearchResult();
 
   static PickerSearchResult BrowsingHistory(const GURL& url,
+                                            std::u16string title,
                                             ui::ImageModel icon);
   static PickerSearchResult Text(std::u16string_view text);
   static PickerSearchResult Emoji(std::u16string_view emoji);

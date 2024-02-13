@@ -65,9 +65,10 @@ PickerSearchResult PickerSearchResult::Gif(const GURL& url,
 }
 
 PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,
+                                                       std::u16string title,
                                                        ui::ImageModel icon) {
-  return PickerSearchResult(
-      BrowsingHistoryData{.url = url, .icon = std::move(icon)});
+  return PickerSearchResult(BrowsingHistoryData{
+      .url = url, .title = std::move(title), .icon = std::move(icon)});
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

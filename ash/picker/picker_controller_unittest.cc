@@ -175,7 +175,7 @@ TEST_F(PickerControllerTest,
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
 
   controller.InsertResultOnNextFocus(PickerSearchResult::BrowsingHistory(
-      GURL("http://foo.com"), ui::ImageModel{}));
+      GURL("http://foo.com"), u"Foo", ui::ImageModel{}));
   controller.widget_for_testing()->CloseNow();
   ui::FakeTextInputClient input_field(input_method,
                                       {.type = ui::TEXT_INPUT_TYPE_TEXT});

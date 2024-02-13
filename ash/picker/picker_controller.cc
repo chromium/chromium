@@ -146,10 +146,10 @@ PickerSearchResults::Section GetFakeLinksSection() {
       u"Matching links",
       {{
           PickerSearchResult::BrowsingHistory(
-              GURL("http://www.foo.com"),
+              GURL("http://www.foo.com"), u"Foo",
               ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
           PickerSearchResult::BrowsingHistory(
-              GURL("http://crbug.com"),
+              GURL("http://crbug.com"), u"Crbug",
               ui::ImageModel::FromVectorIcon(kPlaceholderIcon)),
       }});
 }

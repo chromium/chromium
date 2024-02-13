@@ -148,7 +148,7 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
         app_list_controller_delegate_.GetUrlForSearchResult(*result);
     if (result_url.has_value()) {
       picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
-          *result_url, result->icon().icon));
+          *result_url, result->title(), result->icon().icon));
     } else {
       picker_results.push_back(ash::PickerSearchResult::Text(result->title()));
     }
