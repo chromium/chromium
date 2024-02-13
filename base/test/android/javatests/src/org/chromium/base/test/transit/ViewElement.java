@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.allOf;
 
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
@@ -17,37 +18,69 @@ import androidx.test.espresso.ViewInteraction;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** An Element representing a view characteristic of a ConditionalState. */
 public class ViewElement {
+    @IntDef({Scope.CONDITIONAL_STATE_SCOPED, Scope.SHARED, Scope.UNSCOPED})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Scope {
+        int CONDITIONAL_STATE_SCOPED = 0;
+        int SHARED = 1;
+        int UNSCOPED = 2;
+    }
 
     private final Matcher<View> mViewMatcher;
-    private final boolean mOwned;
+    private final @Scope int mScope;
     private final String mViewMatcherDescription;
 
+    /** Alias for {@link #sharedViewElement(Matcher)} as the default way to declare ViewElements. */
+    public static ViewElement viewElement(Matcher<View> viewMatcher) {
+        return sharedViewElement(viewMatcher);
+    }
+
     /**
-     * Create a shared-ownership ViewElement that matches |viewMatcher|.
+     * Create a shared ViewElement that matches |viewMatcher|.
      *
-     * <p>Shared-ownership ViewElements should be gone after the ConditionalState is FINISHED when
-     * transitioning to a ConditionalState that does not own declare a ViewElement with the same
-     * matcher.
+     * <p>ViewElements are matched to View instances as ENTER conditions.
+     *
+     * <p>Shared ViewElements add an EXIT condition that the View instance matched is gone unless
+     * transitioning to a ConditionalState that declares a ViewElement with an equal Matcher<View>.
+     *
+     * <p>This is a good default method to the declare ViewElements; when in doubt, use this.
      */
     public static ViewElement sharedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, /* owned= */ true);
+        return new ViewElement(viewMatcher, Scope.SHARED);
     }
 
     /**
-     * Create an unowned ViewElement that matches |viewMatcher|.
+     * Create a ConditionalState-scoped ViewElement that matches |viewMatcher|.
      *
-     * <p>Unowned ViewElements are the most permissive; they may or may not be gone after the
-     * ConditionalState is FINISHED.
+     * <p>ViewElements are matched to View instances as ENTER conditions.
+     *
+     * <p>ConditionalState-scoped ViewElements are the most restrictive; they generate an EXIT
+     * condition that the View instance matched is gone.
      */
-    public static ViewElement unownedViewElement(Matcher<View> viewMatcher) {
-        return new ViewElement(viewMatcher, /* owned= */ false);
+    public static ViewElement scopedViewElement(Matcher<View> viewMatcher) {
+        return new ViewElement(viewMatcher, Scope.CONDITIONAL_STATE_SCOPED);
     }
 
-    private ViewElement(Matcher<View> viewMatcher, boolean owned) {
+    /**
+     * Create an unscoped ViewElement that matches |viewMatcher|.
+     *
+     * <p>ViewElements are matched to View instances as ENTER conditions.
+     *
+     * <p>Unscoped ViewElements are the most permissive; they do not generate EXIT conditions,
+     * therefore they may or may not be gone.
+     */
+    public static ViewElement unscopedViewElement(Matcher<View> viewMatcher) {
+        return new ViewElement(viewMatcher, Scope.UNSCOPED);
+    }
+
+    private ViewElement(Matcher<View> viewMatcher, @Scope int scope) {
         mViewMatcher = viewMatcher;
-        mOwned = owned;
+        mScope = scope;
 
         // Capture the description as soon as possible to compare ViewElements added to different
         // states by their description. Espresso Matcher descriptions are not stable; the integer
@@ -67,8 +100,9 @@ public class ViewElement {
         return mViewMatcher;
     }
 
-    boolean isOwned() {
-        return mOwned;
+    @Scope
+    int getScope() {
+        return mScope;
     }
 
     /**

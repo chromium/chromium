@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import org.chromium.base.test.transit.Elements;
@@ -29,17 +30,17 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
     public static final ViewElement APP_MENU_LIST = sharedViewElement(withId(R.id.app_menu_list));
     // withId() cannot differentiate items because android:id is id/menu_item_text for all items.
     public static final ViewElement CLOSE_TAB_MENU_ITEM =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withText(R.string.close_tab),
                             isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
     public static final ViewElement NEW_TAB_MENU_ITEM =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withText(R.string.menu_new_tab),
                             isDescendantOfA(APP_MENU_LIST.getViewMatcher())));
     public static final ViewElement NEW_INCOGNITO_TAB_MENU_ITEM =
-            sharedViewElement(
+            scopedViewElement(
                     allOf(
                             withText(R.string.menu_new_incognito_tab),
                             isDescendantOfA(APP_MENU_LIST.getViewMatcher())));

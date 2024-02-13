@@ -115,8 +115,10 @@ Example of a concrete `TransitStation`:
 ```
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
 public class TabSwitcherStation extends TransitStation {
-    public static final Matcher<View> NEW_TAB_BUTTON = withId(R.id.new_tab_button);
-    public static final Matcher<View> INCOGNITO_TOGGLE_TABS = withId(R.id.incognito_toggle_tabs);
+    public static final ViewElement NEW_TAB_BUTTON =
+            viewElement(withId(R.id.new_tab_button));
+    public static final ViewElement INCOGNITO_TOGGLE_TABS =
+            viewElement(withId(R.id.incognito_toggle_tabs));
 
     private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
 
@@ -133,7 +135,7 @@ public class TabSwitcherStation extends TransitStation {
     public NewTabPageStation openNewTabFromButton() {
         recheckEnterConditions();
         NewTabPageStation newTab = new NewTabPageStation(mChromeTabbedActivityTestRule);
-        Trip.travelSync(this, newTab, (e) -> onView(NEW_TAB_BUTTON).perform(click()))
+        return Trip.travelSync(this, newTab, (e) -> NEW_TAB_BUTTON.perform(click()))
     }
 ```
 

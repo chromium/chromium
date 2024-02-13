@@ -8,7 +8,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.base.test.transit.ViewElement.unownedViewElement;
+import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.StationFacility;
@@ -29,7 +29,7 @@ public abstract class BasePageStation extends TransitStation {
     // TODO(crbug.com/1524512): This should be owned, but the tab_switcher_button exists in the
     // tab switcher, even though the tab switcher's toolbar is drawn over it.
     public static final ViewElement TAB_SWITCHER_BUTTON =
-            unownedViewElement(withId(R.id.tab_switcher_button));
+            unscopedViewElement(withId(R.id.tab_switcher_button));
 
     protected final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
     protected final boolean mIncognito;

@@ -5,16 +5,24 @@
 package org.chromium.chrome.test.transit;
 
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.chromium.base.test.transit.ViewElement.scopedViewElement;
 
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.R;
 
 /** The tab switcher screen showing regular tabs. */
 public class RegularTabSwitcherStation extends TabSwitcherStation {
+
+    public static final ViewElement EMPTY_STATE_TEXT =
+            scopedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
 
     public RegularTabSwitcherStation(ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
         super(chromeTabbedActivityTestRule, /* incognito= */ false);

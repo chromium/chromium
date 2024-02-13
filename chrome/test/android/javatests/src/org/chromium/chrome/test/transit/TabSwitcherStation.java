@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.either;
@@ -71,8 +70,6 @@ public abstract class TabSwitcherStation extends TransitStation {
 
     public static final ViewElement INCOGNITO_TOGGLE_TABS =
             sharedViewElement(withId(R.id.incognito_toggle_tabs));
-    public static final ViewElement EMPTY_STATE_TEXT =
-            sharedViewElement(withText(R.string.tabswitcher_no_tabs_empty_state));
     public static final ViewElement RECYCLER_VIEW =
             sharedViewElement(
                     allOf(

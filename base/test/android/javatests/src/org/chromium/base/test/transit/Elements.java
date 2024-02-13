@@ -14,6 +14,7 @@ import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.GatedDisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.MatchedViewProvider;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
+import org.chromium.base.test.transit.ViewElement.Scope;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,10 +150,18 @@ public class Elements {
                 matchedViewProvider = displayedCondition;
             }
 
-            if (mViewElement.isOwned()) {
-                mExitCondition = new NotDisplayedAnymoreCondition(viewMatcher, matchedViewProvider);
-            } else {
-                mExitCondition = null;
+            switch (mViewElement.getScope()) {
+                case Scope.CONDITIONAL_STATE_SCOPED:
+                case Scope.SHARED:
+                    mExitCondition =
+                            new NotDisplayedAnymoreCondition(viewMatcher, matchedViewProvider);
+                    break;
+                case Scope.UNSCOPED:
+                    mExitCondition = null;
+                    break;
+                default:
+                    mExitCondition = null;
+                    assert false;
             }
         }
 

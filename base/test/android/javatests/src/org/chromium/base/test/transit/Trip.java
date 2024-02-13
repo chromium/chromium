@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.test.transit.ConditionWaiter.ConditionWaitStatus;
 import org.chromium.base.test.transit.Elements.ViewElementInState;
+import org.chromium.base.test.transit.ViewElement.Scope;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -122,17 +123,29 @@ public class Trip extends Transition {
 
         // Create exit Conditions for Views that should disappear
         for (ViewElementInState element : originElements.getViewElements()) {
+            // Ownership.UNOWNED ViewElements never generate exit Conditions.
+            if (element.getViewElement().getScope() == Scope.UNSCOPED) {
+                continue;
+            }
+
+            // Only Ownership.UNOWNED ViewElements had a null exit Condition, so this is non-null.
             Condition exitCondition = element.getExitCondition();
-            if (exitCondition != null) {
+
+            // Ownership.SHARED ViewElements should generate exit Conditions when the destination
+            // does not have the same ViewElement.
+            if (element.getViewElement().getScope() == Scope.SHARED) {
                 boolean isInBothOriginAndDestination =
                         destinationViewElementDescriptions.contains(
                                 element.getViewElement().getViewMatcherDescription());
-                if (!isInBothOriginAndDestination) {
-                    waitStatuses.add(
-                            new ConditionWaitStatus(
-                                    exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
+                if (isInBothOriginAndDestination) {
+                    continue;
                 }
             }
+
+            // Ownership.SHARED ViewElements sometimes generate exit Conditions.
+            // Ownership.UNIQUE ViewElements always generate exit Conditions.
+            waitStatuses.add(
+                    new ConditionWaitStatus(exitCondition, ConditionWaiter.ConditionOrigin.EXIT));
         }
 
         // Create enter Conditions for Views that should appear
