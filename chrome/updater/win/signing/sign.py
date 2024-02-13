@@ -70,7 +70,7 @@ class SigningError(Exception):
 class Signer:
     """A container for a signing operation."""
     def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity,
-                 certificate_file_path, certificate_password):
+                 certificate_file_path, certificate_password, sign_flags):
         """Inits a signer with the necessary tools."""
         self._tmpdir = tmpdir
         self._lzma_exe = lzma_exe
@@ -79,6 +79,7 @@ class Signer:
         self._identity = identity
         self._certificate_file_path = certificate_file_path
         self._certificate_password = certificate_password
+        self._sign_flags = sign_flags
 
     def _add_tagging_cert(self, in_file):
         """Adds the tagging cert. Returns the path to the tagged file."""
@@ -93,16 +94,20 @@ class Signer:
     def _sign_item(self, in_file):
         """Sign an executable in-place."""
         # Retries may be required: lore states the timestamp server is flaky.
-        command = [
-            self._signtool_exe, 'sign', '/v', '/tr',
-            'http://timestamp.digicert.com', '/td', 'SHA256', '/fd', 'SHA256'
-        ]
-        if self._certificate_file_path:
-            command += ['/f', self._certificate_file_path]
-            if self._certificate_password:
-                command += ['/p', self._certificate_password]
+        command = [self._signtool_exe, 'sign']
+        if self._sign_flags:
+            command += self._sign_flags
         else:
-            command += ['/s', 'My', '/n', self._identity]
+            command += [
+                '/v', '/tr', 'http://timestamp.digicert.com', '/td', 'SHA256',
+                '/fd', 'SHA256'
+            ]
+            if self._certificate_file_path:
+                command += ['/f', self._certificate_file_path]
+                if self._certificate_password:
+                    command += ['/p', self._certificate_password]
+            else:
+                command += ['/s', 'My', '/n', self._identity]
 
         command += [in_file]
         subprocess.run(command, check=True)
@@ -268,9 +273,11 @@ def main():
         shutil.move(
             Signer(tmpdir, args.lzma_7z, args.signtool, args.tagging_exe,
                    args.identity, args.certificate_file_path,
-                   args.certificate_password).sign_metainstaller(
-                       args.in_file, args.appid, args.installer_path,
-                       args.manifest_path, args.manifest_dict_replacements),
+                   args.certificate_password,
+                   []).sign_metainstaller(args.in_file, args.appid,
+                                          args.installer_path,
+                                          args.manifest_path,
+                                          args.manifest_dict_replacements),
             args.out_file)
 
 
