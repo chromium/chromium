@@ -26,6 +26,11 @@ import {Oobe} from '../../cr_ui.js';
 
 import {getTemplate} from './demo_preferences.html.js';
 
+// The retailer name input has the max length of 256 characters.
+const RETAILER_NAME_INPUT_MAX_LENGTH = 256;
+// The store number input has the max length of 256 characters.
+const STORE_NUMBER_INPUT_MAX_LENGTH = 256;
+
 const DemoPreferencesScreenBase =
     mixinBehaviors(
         [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
@@ -205,12 +210,26 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
    * Based on the country, retailer name, and store number preferences being
    * correctly set.
    *
+   * We need to check all fields (parameters) are not undefined, not null and
+   * non-empty (console.log(!!"") => false) before checking their value or
+   * length.
+   *
+   * The retailer name must be a non-empty string in the max length of 256
+   * characters.
+   * The store number must be a non-empty numerical string in the max length
+   * of 256 characters.
+   *
+   * TODO(b/324086625): Add help text of the string length limit on the
+   * retailer name field and store number field.
    */
   private userCanContinue_(
       retailerNameInput: string, storeNumberInput: string,
       isCountrySelected: boolean): boolean {
-    return !!retailerNameInput && RegExp('^[0-9]+$').test(storeNumberInput) &&
-        isCountrySelected;
+    return !!retailerNameInput && !!isCountrySelected && !!storeNumberInput &&
+        isCountrySelected &&
+        storeNumberInput.length <= STORE_NUMBER_INPUT_MAX_LENGTH &&
+        retailerNameInput.length <= RETAILER_NAME_INPUT_MAX_LENGTH &&
+        RegExp('^[0-9]+$').test(storeNumberInput);
   }
 
   /**
@@ -218,6 +237,9 @@ export class DemoPreferencesScreen extends DemoPreferencesScreenBase {
    * only consider the input invalid if it's nonempty, thus the different
    * pattern than in {@link userCanContinue_}
    *
+   * TODO(b/324086625): Add help text of the string length limit on the
+   * retailer name field and store number field on the Demo Mode preferences
+   * screen.
    */
   private isStoreNumberInputInvalid_(storeNumberInput: string): boolean {
     return !RegExp('^[0-9]*$').test(storeNumberInput);

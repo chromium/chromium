@@ -718,6 +718,20 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   SetAndVerifyInvalidRetailerNameAndStoreNumber("ValidRetailer", "");
   SetAndVerifyInvalidRetailerNameAndStoreNumber("ValidRetailer", "1234a");
   SetAndVerifyInvalidRetailerNameAndStoreNumber("ValidRetailer", "12-34");
+  // Have the store number numerical but have 257 characters
+  SetAndVerifyInvalidRetailerNameAndStoreNumber(
+      "ValidRetailer",
+      "257257257257257257257257257257257257257257257257257257257257257257257257"
+      "257257257257257257257257257257257257257257257257257257257257257257257257"
+      "257257257257257257257257257257257257257257257257257257257257257257257257"
+      "25725725725725725725725725725725725725725");
+  // Have the retailer Name have 257 characters
+  SetAndVerifyInvalidRetailerNameAndStoreNumber(
+      "257characters257characters257characters257characters257characters257char"
+      "acters257characters257characters257characters257characters257characters2"
+      "57characters257characters257characters257characters257characters257chara"
+      "cters257characters257characters257charact",
+      "1234");
 
   // Verify that continue button goes back to being disabled after enabled
   // for correct input
