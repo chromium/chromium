@@ -18,17 +18,19 @@ class PwaUniversalInstallBottomSheetMediator {
     private final PropertyModel mModel;
 
     PwaUniversalInstallBottomSheetMediator(
-            Activity activity, Runnable installCallback, Runnable addShortcutCallback) {
+            Activity activity,
+            boolean webAppAlreadyInstalled,
+            Runnable installCallback,
+            Runnable addShortcutCallback,
+            Runnable openAppCallback) {
         mActivity = activity;
-        mModel = PwaUniversalInstallProperties.createModel(installCallback, addShortcutCallback);
-
-        setPeekingState();
-    }
-
-    private void setPeekingState() {
+        mModel =
+                PwaUniversalInstallProperties.createModel(
+                        installCallback, addShortcutCallback, openAppCallback);
         mModel.set(
                 PwaUniversalInstallProperties.TITLE,
                 mActivity.getString(R.string.pwa_uni_install_title));
+        mModel.set(PwaUniversalInstallProperties.SHOW_OPEN_OPTION, webAppAlreadyInstalled);
     }
 
     PropertyModel getModel() {

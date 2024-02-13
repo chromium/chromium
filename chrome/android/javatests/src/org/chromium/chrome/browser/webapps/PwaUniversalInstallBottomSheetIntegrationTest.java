@@ -12,6 +12,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.not;
+
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -64,6 +66,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
 
     private CallbackHelper mOnInstallCallback = new CallbackHelper();
     private CallbackHelper mOnAddShortcutCallback = new CallbackHelper();
+    private CallbackHelper mOnOpenAppCallback = new CallbackHelper();
 
     @Before
     public void setUp() throws Exception {
@@ -86,6 +89,10 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         mOnAddShortcutCallback.notifyCalled();
     }
 
+    private void onOpenAppCalled() {
+        mOnOpenAppCallback.notifyCalled();
+    }
+
     private Pair<Bitmap, Boolean> constructTestIconData() {
         int size = 48;
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
@@ -93,7 +100,8 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         return Pair.create(bitmap, /* maskable= */ false);
     }
 
-    private void showPwaUniversalInstallBottomSheet() throws Exception {
+    private void showPwaUniversalInstallBottomSheet(boolean webAppAlreadyInstalled)
+            throws Exception {
         PwaUniversalInstallBottomSheetCoordinator.setIconCallForTesting(
                 this::constructTestIconData);
         PwaUniversalInstallBottomSheetCoordinator pwaUniversalInstallBottomSheetCoordinator =
@@ -102,6 +110,8 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
                         mActivityTestRule.getActivity().getCurrentWebContents(),
                         this::onInstallCalled,
                         this::onAddShortcutCalled,
+                        this::onOpenAppCalled,
+                        webAppAlreadyInstalled,
                         mBottomSheetController,
                         /* arrowId= */ 0);
         Assert.assertTrue(
@@ -113,10 +123,18 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         assertDialogShowing(true);
     }
 
-    // TODO(finnur): Add similar checks (and a test) for when webapp is already installed when the
-    // dialog opens. The dialog should then offer to open the app instead of installing it.
     private void assertInitialStateCorrectForInstall() {
         onView(withText("Install")).check(matches(isDisplayed()));
+        onView(withText("Create shortcut")).check(matches(isDisplayed()));
+        onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
+
+        // Ensure this does not show alongside the Install label:
+        onView(withText("Click to open the app instead")).check(matches(not(isDisplayed())));
+    }
+
+    private void assertInitialStateCorrectForOpen() {
+        onView(withText("This app is already installed")).check(matches(isDisplayed()));
+        onView(withText("Click to open the app instead")).check(matches(isDisplayed()));
         onView(withText("Create shortcut")).check(matches(isDisplayed()));
         onView(withText("Shortcuts open in Chrome")).check(matches(isDisplayed()));
     }
@@ -125,7 +143,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaUniversalInstall"})
     public void testInstallWebappCallback() throws Exception {
-        showPwaUniversalInstallBottomSheet();
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
         assertInitialStateCorrectForInstall();
 
         onView(withId(R.id.arrow_install)).perform(click());
@@ -139,7 +157,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     // This is exactly the same test as above, with one exception: the click is on the main target
     // area and not the arrow (but the outcome should be the same).
     public void testForwardedInstallWebappCallback() throws Exception {
-        showPwaUniversalInstallBottomSheet();
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
         assertInitialStateCorrectForInstall();
 
         onView(withId(R.id.option_text_install)).perform(click());
@@ -151,7 +169,7 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaUniversalInstall"})
     public void testAddShortcutCallback() throws Exception {
-        showPwaUniversalInstallBottomSheet();
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
         assertInitialStateCorrectForInstall();
 
         onView(withId(R.id.arrow_shortcut)).perform(click());
@@ -165,11 +183,37 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
     // This is exactly the same test as above, with one exception: the click is on the main target
     // area and not the arrow (but the outcome should be the same).
     public void testForwardedAddShortcutCallback() throws Exception {
-        showPwaUniversalInstallBottomSheet();
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ false);
         assertInitialStateCorrectForInstall();
 
         onView(withId(R.id.option_text_shortcut)).perform(click());
         mOnAddShortcutCallback.waitForNext("Shortcut event not signaled");
+        assertDialogShowing(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaUniversalInstall"})
+    public void testOpenAppCallback() throws Exception {
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ true);
+        assertInitialStateCorrectForOpen();
+
+        onView(withId(R.id.arrow_install)).perform(click());
+        mOnOpenAppCallback.waitForNext("Open app event not signaled");
+        assertDialogShowing(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaUniversalInstall"})
+    // This is exactly the same test as above, with one exception: the click is on the main target
+    // area and not the arrow (but the outcome should be the same).
+    public void testForwardedOpenAppCallback() throws Exception {
+        showPwaUniversalInstallBottomSheet(/* webAppAlreadyInstalled= */ true);
+        assertInitialStateCorrectForOpen();
+
+        onView(withId(R.id.option_text_install)).perform(click());
+        mOnOpenAppCallback.waitForNext("Open app event not signaled");
         assertDialogShowing(false);
     }
 

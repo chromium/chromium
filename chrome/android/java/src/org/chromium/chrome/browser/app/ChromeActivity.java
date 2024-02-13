@@ -12,6 +12,7 @@ import android.app.assist.AssistContent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -3069,6 +3070,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     currentTab, AppMenuVerbiage.APP_MENU_OPTION_INSTALL);
         }
 
+        ResolveInfo resolveInfo =
+                AppMenuPropertiesDelegateImpl.queryWebApkResolveInfo(this, currentTab);
+        boolean webAppInstalled =
+                resolveInfo != null && resolveInfo.activityInfo.packageName != null;
+
         PwaUniversalInstallBottomSheetCoordinator pwaUniversalInstallBottomSheetCoordinator =
                 new PwaUniversalInstallBottomSheetCoordinator(
                         this,
@@ -3081,6 +3087,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             doAddToHomescreenOrInstallWebApp(
                                     currentTab, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
                         },
+                        () -> {
+                            doOpenWebApk(currentTab);
+                        },
+                        webAppInstalled,
                         controller,
                         R.drawable.ic_forward_arrow_black_24dp);
         if (!pwaUniversalInstallBottomSheetCoordinator.show()) {

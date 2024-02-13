@@ -30,11 +30,19 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ProgressBar
+            android:id="@+id/spinny_install"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="center_vertical" />
+
         <ImageView
             android:id="@+id/app_icon_install"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="12dp"
+            android:visibility="gone"
             android:importantForAccessibility="no" />
 
         <LinearLayout
@@ -55,6 +63,7 @@ found in the LICENSE file.
                 android:id="@+id/option_text_open_instead"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/pwa_uni_install_option_open_explanation"
                 android:visibility="gone"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
         </LinearLayout>
@@ -64,7 +73,7 @@ found in the LICENSE file.
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="28dp"
+            android:layout_gravity="center_vertical"
             android:importantForAccessibility="no" />
     </LinearLayout>
 
@@ -80,11 +89,19 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ProgressBar
+            android:id="@+id/spinny_shortcut"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="center_vertical" />
+
         <ImageView
             android:id="@+id/app_icon_shortcut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_margin="12dp"
+            android:visibility="gone"
             android:importantForAccessibility="no" />
 
         <LinearLayout
@@ -114,7 +131,7 @@ found in the LICENSE file.
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="28dp"
+            android:layout_gravity="center_vertical"
             android:importantForAccessibility="no" />
     </LinearLayout>
 </LinearLayout>

@@ -47,6 +47,8 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
 
     private void onAddShortcutCalled() {}
 
+    private void onOpenAppCalled() {}
+
     private Pair<Bitmap, Boolean> constructTestIconData() {
         int size = 48;
         Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
@@ -70,6 +72,8 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
                         webContents,
                         this::onInstallCalled,
                         this::onAddShortcutCalled,
+                        this::onOpenAppCalled,
+                        /* appInstalled= */ false,
                         mBottomSheetControllerMock,
                         0);
 

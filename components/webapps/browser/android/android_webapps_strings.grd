@@ -214,6 +214,12 @@
       <message name="IDS_PWA_UNI_INSTALL_OPTION_INSTALL" desc="The label for the Install option in the Universal Install sheet.">
          Install
       </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_ALREADY_INSTALLED" desc="When the web app is already installed, the label for the Install/Open option (in the Universal Install sheet) should explain that install is not possible, but opening the app is.">
+         This app is already installed
+      </message>
+      <message name="IDS_PWA_UNI_INSTALL_OPTION_OPEN_EXPLANATION" desc="The label in the Universal Install sheet that explains that the app can be opened instead of installing.">
+         Click to open the app instead
+      </message>
       <message name="IDS_PWA_UNI_INSTALL_OPTION_SHORTCUT" desc="The label for adding a shortcut in the Universal Install sheet.">
          Create shortcut
       </message>

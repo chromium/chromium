@@ -123,6 +123,7 @@ source_set("browser") {
       "android/installable/installable_ambient_badge_client.h",
       "android/installable/installable_ambient_badge_message_controller.cc",
       "android/installable/installable_ambient_badge_message_controller.h",
+      "android/pwa_universal_install_bottom_sheet_coordinator.cc",
       "android/shortcut_info.cc",
       "android/shortcut_info.h",
       "android/webapk/webapk_icon_hasher.cc",

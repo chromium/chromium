@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
 
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.webapps.R;
 import org.chromium.content_public.browser.WebContents;
 
@@ -65,29 +64,27 @@ public class PwaUniversalInstallBottomSheetView {
                                         context.getResources().getDisplayMetrics())));
 
         // Setup the app icon, with a placeholder as fallback in case of an error.
-        Pair<Bitmap, Boolean> iconWithMetadata;
+        Pair<Bitmap, Boolean> iconWithMetadata = null;
         try {
             iconWithMetadata = iconCall.call();
         } catch (Exception exception) {
-            iconWithMetadata = null;
         }
-        Bitmap appIcon = iconWithMetadata != null ? iconWithMetadata.first : null;
-        boolean isAdaptive = iconWithMetadata != null ? iconWithMetadata.second : false;
+
+        if (iconWithMetadata != null) {
+            setIcon(iconWithMetadata.first, iconWithMetadata.second);
+        }
+
+        if (arrowId != 0) {
+            ((ImageView) mContentView.findViewById(R.id.arrow_install))
+                    .setBackgroundResource(arrowId);
+            ((ImageView) mContentView.findViewById(R.id.arrow_shortcut))
+                    .setBackgroundResource(arrowId);
+        }
+    }
+
+    public void setIcon(Bitmap appIcon, boolean isAdaptive) {
         assert (!isAdaptive || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 : "Adaptive icons should not be provided pre-Android O.";
-
-        if (appIcon == null) {
-            int iconColor = context.getColor(R.color.default_favicon_background_color);
-            RoundedIconGenerator iconGenerator =
-                    new RoundedIconGenerator(
-                            context.getResources(),
-                            APP_ICON_SIZE_DP,
-                            APP_ICON_SIZE_DP,
-                            APP_ICON_CORNER_RADIUS_DP,
-                            iconColor,
-                            APP_ICON_TEXT_SIZE_DP);
-            appIcon = iconGenerator.generateIconForText("?");
-        }
 
         ImageView app_icon_install = mContentView.findViewById(R.id.app_icon_install);
         ImageView app_icon_shortcut = mContentView.findViewById(R.id.app_icon_shortcut);
@@ -99,12 +96,11 @@ public class PwaUniversalInstallBottomSheetView {
             app_icon_shortcut.setImageBitmap(appIcon);
         }
 
-        if (arrowId != 0) {
-            ((ImageView) mContentView.findViewById(R.id.arrow_install))
-                    .setBackgroundResource(arrowId);
-            ((ImageView) mContentView.findViewById(R.id.arrow_shortcut))
-                    .setBackgroundResource(arrowId);
-        }
+        // Swap out the spinners for icons.
+        mContentView.findViewById(R.id.spinny_install).setVisibility(View.GONE);
+        mContentView.findViewById(R.id.spinny_shortcut).setVisibility(View.GONE);
+        app_icon_install.setVisibility(View.VISIBLE);
+        app_icon_shortcut.setVisibility(View.VISIBLE);
     }
 
     public View getContentView() {

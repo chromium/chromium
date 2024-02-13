@@ -11,14 +11,18 @@ import android.view.View;
 
 import androidx.annotation.MainThread;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.concurrent.Callable;
 
 /** The Coordinator for managing the Pwa Universal Install bottom sheet experience. */
+@JNINamespace("webapps")
 public class PwaUniversalInstallBottomSheetCoordinator {
     // If set, this swaps out the icon fetching callback for testing.
     private static Callable<Pair<Bitmap, Boolean>> sIconCall;
@@ -35,6 +39,7 @@ public class PwaUniversalInstallBottomSheetCoordinator {
 
     private final Runnable mInstallCallback;
     private final Runnable mAddShortcutCallback;
+    private final Runnable mOpenAppCallback;
 
     /** Constructs the PwaUniversalInstallBottomSheetCoordinator. */
     @MainThread
@@ -43,12 +48,15 @@ public class PwaUniversalInstallBottomSheetCoordinator {
             WebContents webContents,
             Runnable installCallback,
             Runnable addShortcutCallback,
+            Runnable openAppCallback,
+            boolean webAppAlreadyInstalled,
             BottomSheetController bottomSheetController,
             int arrowId) {
         mWebContents = webContents;
         mController = bottomSheetController;
         mInstallCallback = installCallback;
         mAddShortcutCallback = addShortcutCallback;
+        mOpenAppCallback = openAppCallback;
 
         mView = new PwaUniversalInstallBottomSheetView();
         mView.initialize(
@@ -56,7 +64,11 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         mContent = new PwaUniversalInstallBottomSheetContent(mView);
         mMediator =
                 new PwaUniversalInstallBottomSheetMediator(
-                        activity, this::onInstallClicked, this::onAddShortcutClicked);
+                        activity,
+                        webAppAlreadyInstalled,
+                        this::onInstallClicked,
+                        this::onAddShortcutClicked,
+                        this::onOpenAppClicked);
 
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), mView, PwaUniversalInstallBottomSheetViewBinder::bind);
@@ -71,9 +83,14 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         return mController.requestShowContent(mContent, /* animate= */ true);
     }
 
+    /**
+     * This function starts the icon fetching asynchronously and returns null to signify that the
+     * icons are not yet available. This is overwritten in tests to return actual icon data
+     * synchronously.
+     */
     private Pair<Bitmap, Boolean> getIcon() {
-        AppBannerManager manager = AppBannerManager.forWebContents(mWebContents);
-        return manager != null ? manager.getIcon(mWebContents) : null;
+        fetchAppIcon(mWebContents); // We get a reply back through onAppIconFetched below.
+        return null;
     }
 
     private void onInstallClicked() {
@@ -86,7 +103,28 @@ public class PwaUniversalInstallBottomSheetCoordinator {
         mAddShortcutCallback.run();
     }
 
+    private void onOpenAppClicked() {
+        mController.hideContent(mContent, /* animate= */ true);
+        mOpenAppCallback.run();
+    }
+
     public View getBottomSheetViewForTesting() {
         return mView.getContentView();
+    }
+
+    public void fetchAppIcon(WebContents webContents) {
+        PwaUniversalInstallBottomSheetCoordinatorJni.get()
+                .fetchAppIcon(PwaUniversalInstallBottomSheetCoordinator.this, webContents);
+    }
+
+    @CalledByNative
+    public void onAppIconFetched(Bitmap icon, boolean adaptive) {
+        mView.setIcon(icon, adaptive);
+    }
+
+    @NativeMethods
+    interface Natives {
+        public void fetchAppIcon(
+                PwaUniversalInstallBottomSheetCoordinator caller, WebContents webContents);
     }
 }

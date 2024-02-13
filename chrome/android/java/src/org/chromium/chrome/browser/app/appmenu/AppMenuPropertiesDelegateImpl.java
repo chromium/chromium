@@ -901,40 +901,49 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         universalInstallItem.setVisible(false);
         openWebApkItem.setVisible(false);
 
-        if (currentTab != null && shouldShowHomeScreenMenuItem) {
-            long addToHomeScreenStart = SystemClock.elapsedRealtime();
-            ResolveInfo resolveInfo = queryWebApkResolveInfo(mContext, currentTab);
-            RecordHistogram.recordTimesHistogram(
-                    "Android.PrepareMenu.OpenWebApkVisibilityCheck",
-                    SystemClock.elapsedRealtime() - addToHomeScreenStart);
+        if (currentTab == null || !shouldShowHomeScreenMenuItem) {
+            return;
+        }
 
-            boolean openWebApkItemVisible =
-                    resolveInfo != null && resolveInfo.activityInfo.packageName != null;
+        long addToHomeScreenStart = SystemClock.elapsedRealtime();
+        ResolveInfo resolveInfo = queryWebApkResolveInfo(mContext, currentTab);
+        RecordHistogram.recordTimesHistogram(
+                "Android.PrepareMenu.OpenWebApkVisibilityCheck",
+                SystemClock.elapsedRealtime() - addToHomeScreenStart);
 
-            if (openWebApkItemVisible) {
-                String appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
-                openWebApkItem.setTitle(mContext.getString(R.string.menu_open_webapk, appName));
-                openWebApkItem.setVisible(true);
-            } else {
-                AppBannerManager.InstallStringPair installStrings =
-                        getAddToHomeScreenTitle(currentTab);
+        boolean openWebApkItemVisible =
+                resolveInfo != null && resolveInfo.activityInfo.packageName != null;
 
-                if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
-                    addTohomescreenItem.setTitle(installStrings.titleTextId);
-                    addTohomescreenItem.setVisible(true);
-                } else if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
-                        universalInstallItem.setVisible(true);
-                    } else {
-                        installWebAppItem.setTitle(installStrings.titleTextId);
-                        installWebAppItem.setVisible(true);
-                    }
-                }
+        if (openWebApkItemVisible) {
+            // This is the 'webapp is already installed' case, so we offer to open the webapp.
+            String appName = resolveInfo.loadLabel(mContext.getPackageManager()).toString();
+            openWebApkItem.setTitle(mContext.getString(R.string.menu_open_webapk, appName));
+            openWebApkItem.setVisible(true);
+
+            // If universal install flag is enabled, we also offer the universal install dialog so
+            // that the user still has the option to setup a shortcut to the webapp.
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
+                universalInstallItem.setVisible(true);
             }
+            return;
+        }
+
+        AppBannerManager.InstallStringPair installStrings = getAddToHomeScreenTitle(currentTab);
+
+        if (installStrings.titleTextId == AppBannerManager.PWA_PAIR.titleTextId) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI)) {
+                universalInstallItem.setVisible(true);
+            } else {
+                installWebAppItem.setTitle(installStrings.titleTextId);
+                installWebAppItem.setVisible(true);
+            }
+        } else if (installStrings.titleTextId == AppBannerManager.NON_PWA_PAIR.titleTextId) {
+            addTohomescreenItem.setTitle(installStrings.titleTextId);
+            addTohomescreenItem.setVisible(true);
         }
     }
 
-    private ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
+    public static ResolveInfo queryWebApkResolveInfo(Context context, Tab currentTab) {
         String manifestId = AppBannerManager.maybeGetManifestId(currentTab.getWebContents());
         ResolveInfo resolveInfo =
                 WebApkValidator.queryFirstWebApkResolveInfo(
