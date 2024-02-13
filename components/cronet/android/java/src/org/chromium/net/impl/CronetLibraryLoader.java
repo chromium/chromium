@@ -139,11 +139,17 @@ public class CronetLibraryLoader {
     static void initializeOnInitThread() {
         assert onInitThread();
 
+        var applicationContext = ContextUtils.getApplicationContext();
         // Load HTTP flags. This is a potentially expensive call, so we do this in parallel with
         // library loading in the hope of minimizing impact on Cronet initialization latency.
         assert sHttpFlags == null;
-        Context applicationContext = ContextUtils.getApplicationContext();
-        Flags flags = HttpFlagsLoader.load(applicationContext);
+        Flags flags;
+        if (!CronetManifest.shouldReadHttpFlags(applicationContext)) {
+            Log.d(TAG, "Not loading HTTP flags because they are disabled in the manifest");
+            flags = null;
+        } else {
+            flags = HttpFlagsLoader.load(applicationContext);
+        }
         sHttpFlags =
                 ResolvedFlags.resolve(
                         flags != null ? flags : Flags.newBuilder().build(),
