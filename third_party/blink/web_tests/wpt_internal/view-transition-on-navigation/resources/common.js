@@ -47,3 +47,15 @@ function unblockRendering() {
     }
   });
 }
+
+// Use external/wpt/html/browsers/browsing-the-web/back-forward-cache/resources/executor.js
+// when migrating to external WPTs.
+window.disableBFCache = () => {
+  return new Promise(resolve => {
+    // Use page's UUID as a unique lock name.
+    navigator.locks.request("test", () => {
+      resolve();
+      return new Promise(() => {});
+    });
+  });
+};

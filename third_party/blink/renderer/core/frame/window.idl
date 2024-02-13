@@ -172,6 +172,9 @@
     //  90 is when rotated counter clockwise.
     [HighEntropy=Direct, MeasureAs=WindowOrientation, RuntimeEnabled=OrientationEvent] readonly attribute long orientation;
 
+    // Event handler attribute for the pageconceal event.
+    [RuntimeEnabled=PageConcealEvent] attribute EventHandler onpageconceal;
+
     // Event handler attribute for the pagereveal event.
     // https://drafts.csswg.org/css-view-transitions-2/#reveal-event
     [RuntimeEnabled=PageRevealEvent] attribute EventHandler onpagereveal;

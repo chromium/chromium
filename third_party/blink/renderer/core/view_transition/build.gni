@@ -5,6 +5,8 @@
 blink_core_sources_view_transition = [
   "dom_view_transition.cc",
   "dom_view_transition.h",
+  "page_conceal_event.cc",
+  "page_conceal_event.h",
   "page_reveal_event.cc",
   "page_reveal_event.h",
   "view_transition.cc",

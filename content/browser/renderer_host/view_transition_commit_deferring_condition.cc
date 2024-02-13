@@ -61,6 +61,7 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
   if (current_request_origin != new_request_origin) {
     return nullptr;
   }
+  CHECK(!current_request_origin.opaque());
 
   return base::WrapUnique(
       new ViewTransitionCommitDeferringCondition(navigation_request));
@@ -80,10 +81,17 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
   auto* render_frame_host =
       navigation_request->frame_tree_node()->current_frame_host();
 
+  blink::mojom::PageConcealEventParamsPtr page_conceal_event_params =
+      navigation_request->WillDispatchPageConceal();
+  CHECK(page_conceal_event_params);
+
   // TODO(crbug.com/1372584):  Implement a timeout, to avoid blocking the
   // navigation for too long.
-  render_frame_host->SnapshotDocumentForViewTransition(base::BindOnce(
-      &OnSnapshotAck, std::move(resume), navigation_request->GetWeakPtr()));
+  render_frame_host->GetAssociatedLocalFrame()
+      ->SnapshotDocumentForViewTransition(
+          std::move(page_conceal_event_params),
+          base::BindOnce(&OnSnapshotAck, std::move(resume),
+                         navigation_request->GetWeakPtr()));
   return Result::kDefer;
 }
 

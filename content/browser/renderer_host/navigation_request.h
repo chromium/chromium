@@ -1322,6 +1322,11 @@ class CONTENT_EXPORT NavigationRequest
   // this navigation.
   bool HasLoader() const;
 
+  // Notifies that an IPC will be sent to the old Document's renderer to
+  // dispatch the `pageconceal` event. Returns the parameters which should be
+  // used for the event if this is a same-origin navigation.
+  blink::mojom::PageConcealEventParamsPtr WillDispatchPageConceal();
+
  private:
   friend class NavigationRequestTest;
 
@@ -2842,6 +2847,13 @@ class CONTENT_EXPORT NavigationRequest
   // before ready to commit time, which is when the regular origin to commit
   // value is available.
   std::optional<url::Origin> tentative_data_origin_to_commit_;
+
+  // `pageconceal` can be fired at different stages of the navigation lifecycle:
+  // - ready to commit if this navigation is associated with a ViewTransition.
+  // - unload old document if there is no ViewTransition opt-in.
+  // This tracks whether the pageconceal event has been fired for this
+  // navigation.
+  bool did_fire_page_conceal_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

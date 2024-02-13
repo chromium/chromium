@@ -28,6 +28,7 @@ import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/close_watcher/close_listener.mojom";
 import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
+import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -1080,7 +1081,8 @@ interface LocalFrame {
 
   // Requests a one-time snapshot of the document state for a ViewTransition.
   // See https://drafts.csswg.org/css-view-transitions-1/ for details.
-  SnapshotDocumentForViewTransition() => (
+  SnapshotDocumentForViewTransition(
+    PageConcealEventParams page_conceal_event_params) => (
       blink.mojom.ViewTransitionState view_transition_state);
 
   // Allows the browser to add a resource timing entry for a subframe

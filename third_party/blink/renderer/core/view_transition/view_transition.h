@@ -358,9 +358,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   ViewTransitionStateCallback transition_state_callback_;
 
   // This is the object that implements the IDL interface exposed to script. It
-  // is cleared if the document is torn down. It can also be null when
-  // ViewTransition is created on the outgoing page of a cross-document
-  // navigation (via CreateForSnapshotNavigation).
+  // is cleared if the document is torn down.
   Member<DOMViewTransition> script_delegate_;
 
   bool in_main_lifecycle_update_ = false;

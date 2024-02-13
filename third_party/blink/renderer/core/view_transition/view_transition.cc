@@ -201,7 +201,10 @@ ViewTransition::ViewTransition(PassKey,
       document_tag_(NextDocumentTag()),
       style_tracker_(
           MakeGarbageCollected<ViewTransitionStyleTracker>(*document_)),
-      transition_state_callback_(std::move(callback)) {
+      transition_state_callback_(std::move(callback)),
+      script_delegate_(MakeGarbageCollected<DOMViewTransition>(
+          *document_->GetExecutionContext(),
+          *this)) {
   TRACE_EVENT0("blink", "ViewTransition::ViewTransition - CreatedForSnapshot");
   DCHECK(transition_state_callback_);
   ProcessCurrentState();
@@ -244,12 +247,14 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (IsTerminalState(state_))
     return;
 
+  // TODO(khushalsagar): Figure out the promise handling when this is on the
+  // old Document for a cross-document navigation.
+
   // Cleanup logic which is tied to ViewTransition objects created using the
   // script API. script_delegate_ is cleared when the Document is being torn
   // down and script specific callbacks don't need to be dispatched in that
   // case.
   if (script_delegate_) {
-    CHECK_NE(creation_type_, CreationType::kForSnapshot);
     script_delegate_->DidSkipTransition(response);
   }
 

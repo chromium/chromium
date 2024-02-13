@@ -10242,6 +10242,60 @@ bool NavigationRequest::HasLoader() const {
   return loader_.get() != nullptr;
 }
 
+blink::mojom::PageConcealEventParamsPtr
+NavigationRequest::WillDispatchPageConceal() {
+  CHECK(!did_fire_page_conceal_);
+
+  did_fire_page_conceal_ = true;
+
+  // The `pageconceal` event is fired on the old Document to provide information
+  // about the new Document. The information shared must be restricted to
+  // same-origin Documents.
+  const bool is_same_origin =
+      frame_tree_node_->current_origin().IsSameOriginWith(common_params_->url);
+  if (!is_same_origin) {
+    return nullptr;
+  }
+
+  CHECK(!frame_tree_node_->current_origin().opaque());
+
+  auto page_conceal_event_params = blink::mojom::PageConcealEventParams::New();
+  page_conceal_event_params->url = common_params_->url;
+
+  switch (common_params_->navigation_type) {
+    case blink::mojom::NavigationType::RELOAD:
+    case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
+      page_conceal_event_params->navigation_type =
+          blink::mojom::NavigationTypeForNavigationApi::kReload;
+      break;
+
+    case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
+      page_conceal_event_params->navigation_type =
+          blink::mojom::NavigationTypeForNavigationApi::kTraverse;
+      page_conceal_event_params->page_state = commit_params_->page_state;
+      break;
+
+    case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
+      page_conceal_event_params->navigation_type =
+          common_params_->should_replace_current_entry
+              ? blink::mojom::NavigationTypeForNavigationApi::kReplace
+              : blink::mojom::NavigationTypeForNavigationApi::kPush;
+      break;
+
+    case blink::mojom::NavigationType::RESTORE:
+    case blink::mojom::NavigationType::RESTORE_WITH_POST:
+      NOTREACHED_NORETURN()
+          << "session restore should not have an old Document";
+
+    case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
+    case blink::mojom::NavigationType::SAME_DOCUMENT:
+      NOTREACHED_NORETURN()
+          << "Same-document navigations shouldn't fire pageconceal";
+  }
+
+  return page_conceal_event_params;
+}
+
 void NavigationRequest::MaybeRecordTraceEventsAndHistograms() {
   if (navigation_handle_timing_.navigation_commit_sent_time.is_null() ||
       IsSameDocument() || IsRestore() ||

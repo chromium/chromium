@@ -202,6 +202,14 @@ void NavigationApi::InitializeForNewWindow(
   UpdateActivation(previous_entry, load_type);
 }
 
+void NavigationApi::UpdateCurrentEntryForTesting(HistoryItem& item) {
+  current_entry_index_++;
+  entries_.resize(current_entry_index_ + 1);
+  entries_[current_entry_index_] = MakeEntryFromItem(item);
+  keys_to_indices_.insert(entries_[current_entry_index_]->key(),
+                          current_entry_index_);
+}
+
 void NavigationApi::UpdateForNavigation(HistoryItem& item,
                                         WebFrameLoadType type) {
   // A same-document navigation (e.g., a document.open()) in a

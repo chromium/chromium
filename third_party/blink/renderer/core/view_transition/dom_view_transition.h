@@ -28,8 +28,7 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
   using PromiseProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
 
  public:
-  // Constructor for navigation-initiated view transition (used only in the new
-  // document).
+  // Constructor for navigation-initiated view transition.
   explicit DOMViewTransition(ExecutionContext&, ViewTransition&);
 
   // Constructor for script-initiated view transition. Also delegated from the

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>View transitions: pageconceal navigationactivation for push navigations</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+@view-transition {
+  navigation: auto;
+}
+</style>
+<script>
+const expectedUrl = location.href + '?new';
+
+const params = new URLSearchParams(location.search);
+const is_initial_page = !params.has('new');
+
+if (is_initial_page) {
+  onload = () => {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      location.href = location.href + '?new';
+    }));
+  };
+
+  let pageconcealfired = false;
+  onpageconceal = (e) => {
+    assert_not_equals(e.viewTransition, null, 'viewTransition should be enabled in pageconceal');
+    assert_equals(e.activation.entry.url, expectedUrl, 'activation url incorrect in pageconceal');
+    assert_equals(e.activation.navigationType, "push", 'navigation type incorrect in pageconceal');
+    assert_equals(e.activation.from, navigation.currentEntry, 'from entry incorrect in pageconceal');
+    assert_false(e.activation.entry.sameDocument, 'new entry must be cross-document');
+    pageconcealfired = true;
+  };
+  onpagehide = (e) => {
+    assert_true(pageconcealfired);
+  };
+} else {
+  promise_test(async () => {
+    const ev = await new Promise(
+        resolve => addEventListener('pagereveal', e => resolve(e)));
+
+    assert_not_equals(ev.viewTransition, null, 'viewTransition should be enabled in pagereveal');
+  });
+}
+</script>

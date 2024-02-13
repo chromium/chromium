@@ -2830,6 +2830,11 @@
       status: "experimental",
       base_feature: "none",
     },
+    {
+      name: "PageConcealEvent",
+      status: "experimental",
+      implied_by: ["ViewTransitionOnNavigation"],
+    },
     // The following are developer opt-outs and opt-ins for page freezing. If
     // neither is specified then heuristics will be applied to determine whether
     // the page is eligible.

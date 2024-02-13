@@ -11132,14 +11132,6 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
   }
 }
 
-void RenderFrameHostImpl::SnapshotDocumentForViewTransition(
-    blink::mojom::LocalFrame::SnapshotDocumentForViewTransitionCallback
-        callback) {
-  DCHECK(IsRenderFrameLive());
-  GetAssociatedLocalFrame()->SnapshotDocumentForViewTransition(
-      std::move(callback));
-}
-
 #if BUILDFLAG(ENABLE_PPAPI)
 RenderFrameHostImplPpapiSupport& RenderFrameHostImpl::GetPpapiSupport() {
   if (!ppapi_support_) {

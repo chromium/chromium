@@ -738,6 +738,7 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/url_pattern/url_pattern_init.idl",
   "//third_party/blink/renderer/core/url_pattern/url_pattern_options.idl",
   "//third_party/blink/renderer/core/url_pattern/url_pattern_result.idl",
+  "//third_party/blink/renderer/core/view_transition/page_conceal_event.idl",
   "//third_party/blink/renderer/core/view_transition/page_reveal_event.idl",
   "//third_party/blink/renderer/core/view_transition/view_transition.idl",
   "//third_party/blink/renderer/core/view_transition/view_transition_callback.idl",

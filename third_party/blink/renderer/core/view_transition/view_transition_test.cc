@@ -29,6 +29,8 @@
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -1293,12 +1295,30 @@ TEST_P(ViewTransitionTest, GetAnimationsCrashTest) {
 }
 
 TEST_P(ViewTransitionTest, ScriptCallAfterNavigationTransition) {
+  GetDocument().domWindow()->GetSecurityContext().SetSecurityOriginForTesting(
+      SecurityOrigin::Create(KURL("http://test.com")));
+  GetDocument()
+      .domWindow()
+      ->GetFrame()
+      ->Loader()
+      .SetIsNotOnInitialEmptyDocument();
+
+  auto* current_item = MakeGarbageCollected<HistoryItem>();
+  current_item->SetURL(KURL("http://test.com"));
+  GetDocument().domWindow()->navigation()->UpdateCurrentEntryForTesting(
+      *current_item);
+
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   ExceptionState& exception_state = v8_scope.GetExceptionState();
 
+  auto page_conceal_params = mojom::blink::PageConcealEventParams::New();
+  page_conceal_params->url = KURL("http://test.com");
+  page_conceal_params->navigation_type =
+      mojom::blink::NavigationTypeForNavigationApi::kPush;
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
-      GetDocument(), base::BindOnce([](const ViewTransitionState&) {}));
+      GetDocument(), std::move(page_conceal_params),
+      base::BindOnce([](const ViewTransitionState&) {}));
 
   ASSERT_TRUE(ViewTransitionSupplement::From(GetDocument())->GetTransition());
 

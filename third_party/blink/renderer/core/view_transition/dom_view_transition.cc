@@ -35,12 +35,13 @@ DOMViewTransition::DOMViewTransition(ExecutionContext& execution_context,
     : DOMViewTransition(execution_context,
                         view_transition,
                         /*update_dom_callback=*/nullptr) {
-  CHECK(view_transition.IsForNavigationOnNewDocument());
-  // In a cross-document view transition, the DOM is "updated" by the
-  // navigation so by the time we create this object (in the pagereveal
-  // event), the update is complete.
-  dom_updated_promise_property_->ResolveWithUndefined();
-  dom_callback_result_ = DOMCallbackResult::kSucceeded;
+  if (view_transition.IsForNavigationOnNewDocument()) {
+    // In a cross-document view transition, the DOM is "updated" by the
+    // navigation so by the time we create this object (in the pagereveal
+    // event), the update is complete.
+    dom_updated_promise_property_->ResolveWithUndefined();
+    dom_callback_result_ = DOMCallbackResult::kSucceeded;
+  }
 }
 
 DOMViewTransition::DOMViewTransition(

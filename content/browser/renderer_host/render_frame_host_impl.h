@@ -2892,10 +2892,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     kIframeNestedWithinFencedFrame
   };
 
-  void SnapshotDocumentForViewTransition(
-      blink::mojom::LocalFrame::SnapshotDocumentForViewTransitionCallback
-          callback);
-
   // See comment on the member declaration.
   const base::UnguessableToken& devtools_frame_token() const {
     return devtools_frame_token_;

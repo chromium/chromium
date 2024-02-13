@@ -1347,9 +1347,10 @@ void LocalFrameMojoHandler::SetV8CompileHints(
 }
 
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
+    mojom::blink::PageConcealEventParamsPtr params,
     SnapshotDocumentForViewTransitionCallback callback) {
   ViewTransitionSupplement::SnapshotDocumentForNavigation(
-      *frame_->GetDocument(), std::move(callback));
+      *frame_->GetDocument(), std::move(params), std::move(callback));
 }
 
 void LocalFrameMojoHandler::DispatchBeforeUnload(

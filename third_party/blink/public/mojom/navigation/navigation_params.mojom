@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -71,6 +72,14 @@ enum NavigationType {
 
   // Navigation to another document.
   DIFFERENT_DOCUMENT,
+};
+
+// Maps to https://html.spec.whatwg.org/multipage/nav-history-apis.html#dom-navigateevent-navigationtype-dev.
+enum NavigationTypeForNavigationApi {
+  kPush,
+  kTraverse,
+  kReplace,
+  kReload
 };
 
 // Used by the renderer to indicate a case where a standard navigation that
@@ -614,4 +623,18 @@ struct CommitNavigationParams {
 
   // The cookie deprecation label for cookie deprecation facilitated testing.
   string? cookie_deprecation_label;
+};
+
+// Parameters used to dispatch the `pageconceal` event on the old Document for
+// a navigation. Only generated for same-origin navigations.
+struct PageConcealEventParams {
+  // The URL of the destination page.
+  url.mojom.Url url;
+
+  // Used to retrieve the destination history item to create a
+  // NavigationHistoryEntry. Only provided for traverse navigations.
+  mojo_base.mojom.ByteString page_state;
+
+  // The type of navigation which will hide/unload this Document.
+  NavigationTypeForNavigationApi navigation_type;
 };

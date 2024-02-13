@@ -256,6 +256,7 @@
     "reading",
     "readingerror",
     "readystatechange",
+    "pageconceal",
     "pagereveal",
     "reflectionchange",
     "rejectionhandled",

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<title>View transitions: pageconceal navigationactivation for traverse navigations</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/common.js"></script>
+<style></style>
+<script>
+const params = new URLSearchParams(location.search);
+const is_initial_page_first_navigation = !params.has('new') && navigation.entries().length == 1;
+const is_initial_page_back_navigation = !params.has('new') && navigation.entries().length > 1;
+const is_new_page = params.has('new');
+
+function enableViewTransition() {
+  document.styleSheets[0].insertRule(`
+      @view-transition {
+        navigation: auto;
+      }
+    `);
+}
+
+if (is_new_page)
+  enableViewTransition();
+
+function backNavOnDesinationPage() {
+  enableViewTransition();
+
+  promise_test(async () => {
+    const ev = await new Promise(
+        resolve => addEventListener('pagereveal', e => resolve(e)));
+
+    assert_not_equals(ev.viewTransition, null, 'viewTransition should be enabled in pagereveal');
+  });
+}
+
+if (is_initial_page_first_navigation) {
+  // Navigate to the new page to populate the session history.
+  onload = async () => {
+    await disableBFCache();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      location.href = location.href + '?new';
+    }));
+  };
+
+  let pageconcealfired = false;
+  onpageconceal = (e) => {
+    assert_equals(e.viewTransition, null, 'viewTransition should not be enabled in pageconceal on first navigation');
+    pageconcealfired = true;
+  };
+  onpagehide = (e) => {
+    assert_true(pageconcealfired);
+  };
+
+  onpageshow = (e) => {
+    assert_false(e.persisted, 'the test should run without BFCache');
+  }
+} else if (is_initial_page_back_navigation) {
+  // Without BFCache
+  backNavOnDesinationPage();
+} else {
+  assert_true(is_new_page);
+  assert_true(navigation.canGoBack);
+  onload = () => {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      navigation.back();
+    }));
+  };
+
+  onpageconceal = (e) => {
+    assert_not_equals(e.viewTransition, null, 'viewTransition should be enabled in pageconceal on back navigation');
+    assert_equals(e.activation.entry, navigation.entries()[0], 'activation url incorrect in pageconceal');
+    assert_equals(e.activation.navigationType, "traverse", 'navigation type incorrect in pageconceal');
+    assert_equals(e.activation.from, navigation.currentEntry, 'from entry incorrect in pageconceal');
+    assert_false(e.activation.entry.sameDocument, 'new entry must be cross-document');
+  };
+}
+</script>
