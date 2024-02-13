@@ -86,6 +86,13 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
             'isInitiallyInflight, lastDeviceRequestId)',
       },
 
+      updateIsDone: {
+        type: Boolean,
+        value: false,
+        computed: 'isUpdateDone(installationProgress.state)',
+        reflectToAttribute: true,
+      },
+
       /**
        * This property is used to keep track of the ID of the last-received
        * DeviceRequest. If this property is not null, it means there is a
