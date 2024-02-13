@@ -20607,6 +20607,31 @@
             ]
         }
     ],
+    "V8IntelJCCErratumMitigation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8IntelJCCErratumMitigation"
+                    ]
+                },
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "V8IntelJCCErratumMitigation"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8LocalCompileHints": [
         {
             "platforms": [
