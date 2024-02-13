@@ -8038,7 +8038,11 @@
           'INTEL_UHD_630',
         ],
       },
-      'optimization_guide_nogpu_gtests': {},
+      'optimization_guide_nogpu_gtests': {
+        'mixins': [
+          'gce',
+        ],
+      },
     },
 
     'optimization_guide_linux_script_tests': {

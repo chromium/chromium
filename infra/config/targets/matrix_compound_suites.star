@@ -1361,7 +1361,11 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "optimization_guide_linux_gtests",
     basic_suites = {
-        "optimization_guide_nogpu_gtests": None,
+        "optimization_guide_nogpu_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "gce",
+            ],
+        ),
         "optimization_guide_gpu_gtests": targets.legacy_matrix_config(
             # TODO(b:322815244): Add AMD and NVIDIA variants once driver issues
             # are resolved.
