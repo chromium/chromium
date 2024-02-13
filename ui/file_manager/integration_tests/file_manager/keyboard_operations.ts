@@ -3,20 +3,18 @@
 // found in the LICENSE file.
 
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {TREEITEM_DOWNLOADS, TREEITEM_DRIVE} from './create_new_folder.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 
 /**
  * Waits until a dialog with an OK button is shown, and accepts it by clicking
  * on the dialog's OK button.
  *
- * @param {string} appId The Files app windowId.
- * @return {Promise<void>} Promise to be fulfilled after clicking the OK button.
+ * @param appId The Files app windowId.
+ * @return Promise to be fulfilled after clicking the OK button.
  */
-export async function waitAndAcceptDialog(appId) {
+async function waitAndAcceptDialog(appId: string): Promise<void> {
   const okButton = '.cr-dialog-ok';
 
   // Wait until the dialog is shown.
@@ -32,12 +30,10 @@ export async function waitAndAcceptDialog(appId) {
 /**
  * Tests copying a file to the same file list.
  *
- * @param {string} path The path to be tested, Downloads or Drive.
+ * @param path The path to be tested, Downloads or Drive.
  */
-async function keyboardCopy(path) {
+async function keyboardCopy(path: string) {
   const appId =
-      // @ts-ignore: error TS4111: Property 'world' comes from an index
-      // signature, so it must be accessed with ['world'].
       await setupAndWaitUntilReady(path, [ENTRIES.world], [ENTRIES.world]);
 
   // Copy the file into the same file list.
@@ -45,15 +41,9 @@ async function keyboardCopy(path) {
       await remoteCall.callRemoteTestUtil('copyFile', appId, ['world.ogv']),
       'copyFile failed');
   // Check: the copied file should appear in the file list.
-  // @ts-ignore: error TS4111: Property 'world' comes from an index signature,
-  // so it must be accessed with ['world'].
   const expectedEntryRows = [ENTRIES.world.getExpectedRow()].concat(
       [['world (1).ogv', '56 KB', 'OGG video']]);
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, expectedEntryRows, {ignoreLastModifiedTime: true});
   const files = await remoteCall.callRemoteTestUtil('getFileList', appId, []);
   if (path === RootPath.DRIVE) {
@@ -68,11 +58,11 @@ async function keyboardCopy(path) {
 /**
  * Tests deleting a file from the file list.
  *
- * @param {string} path The path to be tested, Downloads or Drive.
- * @param {boolean=} confirmDeletion If the file system doesn't support trash,
- *     need to confirm the deletion.
+ * @param path The path to be tested, Downloads or Drive.
+ * @param confirmDeletion If the file system doesn't support trash, need to
+ *     confirm the deletion.
  */
-async function keyboardDelete(path, confirmDeletion = false) {
+async function keyboardDelete(path: string, confirmDeletion: boolean = false) {
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.hello], [ENTRIES.hello]);
 
@@ -93,13 +83,13 @@ async function keyboardDelete(path, confirmDeletion = false) {
  * Tests deleting a folder from the file list. The folder is also shown in the
  * Files app directory tree, and should not be shown there when deleted.
  *
- * @param {string} path The path to be tested, Downloads or Drive.
- * @param {string} parentLabel The directory tree item label.
- * @param {boolean=} confirmDeletion If the file system doesn't support trash,
- *     need to confirm the deletion.
+ * @param path The path to be tested, Downloads or Drive.
+ * @param parentLabel The directory tree item label.
+ * @param confirmDeletion If the file system doesn't support trash, need to
+ *     confirm the deletion.
  */
 async function keyboardDeleteFolder(
-    path, parentLabel, confirmDeletion = false) {
+    path: string, parentLabel: string, confirmDeletion: boolean = false) {
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
 
@@ -129,12 +119,13 @@ async function keyboardDeleteFolder(
 /**
  * Renames a file.
  *
- * @param {string} appId The Files app windowId.
- * @param {string} oldName Old name of a file.
- * @param {string} newName New name of a file.
- * @return {Promise<void>} Promise to be fulfilled on success.
+ * @param appId The Files app windowId.
+ * @param oldName Old name of a file.
+ * @param newName New name of a file.
+ * @return Promise to be fulfilled on success.
  */
-async function renameFile(appId, oldName, newName) {
+async function renameFile(
+    appId: string, oldName: string, newName: string): Promise<void> {
   const textInput = '#file-list .table-row[renaming] input.rename';
 
   // Select the file.
@@ -161,11 +152,12 @@ async function renameFile(appId, oldName, newName) {
  * Tests renaming a folder. An extra enter key is sent to the file list during
  * renaming to check the folder cannot be entered while it is being renamed.
  *
- * @param {string} path Initial path (Downloads or Drive).
- * @param {string} parentLabel The directory tree item label.
- * @return {Promise<void>} Promise to be fulfilled on success.
+ * @param path Initial path (Downloads or Drive).
+ * @param parentLabel The directory tree item label.
+ * @return Promise to be fulfilled on success.
  */
-async function testRenameFolder(path, parentLabel) {
+async function testRenameFolder(
+    path: string, parentLabel: string): Promise<void> {
   const textInput = '#file-list .table-row[renaming] input.rename';
   const appId =
       await setupAndWaitUntilReady(path, [ENTRIES.photos], [ENTRIES.photos]);
@@ -225,10 +217,10 @@ async function testRenameFolder(path, parentLabel) {
 /**
  * Tests renaming a file.
  *
- * @param {string} path Initial path (Downloads or Drive).
- * @return {Promise<void>} Promise to be fulfilled on success.
+ * @param path Initial path (Downloads or Drive).
+ * @return Promise to be fulfilled on success.
  */
-async function testRenameFile(path) {
+async function testRenameFile(path: string): Promise<void> {
   const newFile = [['New File Name.txt', '51 bytes', 'Plain text', '']];
 
   const appId =
@@ -253,79 +245,53 @@ async function testRenameFile(path) {
   await remoteCall.waitForFiles(appId, newFile, {ignoreLastModifiedTime: true});
 }
 
-// @ts-ignore: error TS4111: Property 'keyboardCopyDownloads' comes from an
-// index signature, so it must be accessed with ['keyboardCopyDownloads'].
-testcase.keyboardCopyDownloads = () => {
+export function keyboardCopyDownloads() {
   return keyboardCopy(RootPath.DOWNLOADS);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'keyboardCopyDrive' comes from an index
-// signature, so it must be accessed with ['keyboardCopyDrive'].
-testcase.keyboardCopyDrive = () => {
+export function keyboardCopyDrive() {
   return keyboardCopy(RootPath.DRIVE);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'keyboardDeleteDownloads' comes from an
-// index signature, so it must be accessed with ['keyboardDeleteDownloads'].
-testcase.keyboardDeleteDownloads = () => {
+export function keyboardDeleteDownloads() {
   return keyboardDelete(RootPath.DOWNLOADS);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'keyboardDeleteDrive' comes from an index
-// signature, so it must be accessed with ['keyboardDeleteDrive'].
-testcase.keyboardDeleteDrive = () => {
+export function keyboardDeleteDrive() {
   return keyboardDelete(RootPath.DRIVE, /*confirmDeletion=*/ true);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'keyboardDeleteFolderDownloads' comes from
-// an index signature, so it must be accessed with
-// ['keyboardDeleteFolderDownloads'].
-testcase.keyboardDeleteFolderDownloads = () => {
-  return keyboardDeleteFolder(RootPath.DOWNLOADS, TREEITEM_DOWNLOADS);
-};
+export function keyboardDeleteFolderDownloads() {
+  return keyboardDeleteFolder(RootPath.DOWNLOADS, 'Downloads');
+}
 
-// @ts-ignore: error TS4111: Property 'keyboardDeleteFolderDrive' comes from an
-// index signature, so it must be accessed with ['keyboardDeleteFolderDrive'].
-testcase.keyboardDeleteFolderDrive = () => {
+export function keyboardDeleteFolderDrive() {
   return keyboardDeleteFolder(
-      RootPath.DRIVE, TREEITEM_DRIVE, /*confirmDeletion=*/ true);
-};
+      RootPath.DRIVE, 'My Drive', /*confirmDeletion=*/ true);
+}
 
-// @ts-ignore: error TS4111: Property 'renameFileDownloads' comes from an index
-// signature, so it must be accessed with ['renameFileDownloads'].
-testcase.renameFileDownloads = () => {
+export function renameFileDownloads() {
   return testRenameFile(RootPath.DOWNLOADS);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'renameFileDrive' comes from an index
-// signature, so it must be accessed with ['renameFileDrive'].
-testcase.renameFileDrive = () => {
+export function renameFileDrive() {
   return testRenameFile(RootPath.DRIVE);
-};
+}
 
-// @ts-ignore: error TS4111: Property 'renameNewFolderDownloads' comes from an
-// index signature, so it must be accessed with ['renameNewFolderDownloads'].
-testcase.renameNewFolderDownloads = () => {
-  return testRenameFolder(RootPath.DOWNLOADS, TREEITEM_DOWNLOADS);
-};
+export function renameNewFolderDownloads() {
+  return testRenameFolder(RootPath.DOWNLOADS, 'Downloads');
+}
 
-// @ts-ignore: error TS4111: Property 'renameNewFolderDrive' comes from an index
-// signature, so it must be accessed with ['renameNewFolderDrive'].
-testcase.renameNewFolderDrive = () => {
-  return testRenameFolder(RootPath.DRIVE, TREEITEM_DRIVE);
-};
+export function renameNewFolderDrive() {
+  return testRenameFolder(RootPath.DRIVE, 'My Drive');
+}
 
 /**
  * Tests renaming partitions with the keyboard on the file list.
  */
-// @ts-ignore: error TS4111: Property 'renameRemovableWithKeyboardOnFileList'
-// comes from an index signature, so it must be accessed with
-// ['renameRemovableWithKeyboardOnFileList'].
-testcase.renameRemovableWithKeyboardOnFileList = async () => {
+export async function renameRemovableWithKeyboardOnFileList() {
   // Open Files app on local downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'world' comes from an index
-      // signature, so it must be accessed with ['world'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.world]);
 
   // Mount removable device with partitions.
@@ -375,29 +341,21 @@ testcase.renameRemovableWithKeyboardOnFileList = async () => {
   await remoteCall.waitForElementLost(appId, textInput);
 
   // verify the partition was successfully renamed.
-  // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-  expectedRows[2][0] = smallerPartitionName;
+  expectedRows[2]![0] = smallerPartitionName;
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreLastModifiedTime:
-      // true; }' is not assignable to parameter of type '{ orderCheck: boolean
-      // | null | undefined; ignoreFileSize: boolean | null | undefined;
-      // ignoreLastModifiedTime: boolean | null | undefined; }'.
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Even though the Files app rename flow worked, the background.js page
   // console errors about not being able to 'mount' the older volume name
   // due to a disk_mount_manager.cc error: user/fake-usb not found.
   return IGNORE_APP_ERRORS;
-};
+}
 
 /**
  * Tests that the root html element .focus-outline-visible class appears for
  * keyboard interaction and is removed on mouse interaction.
  */
-// @ts-ignore: error TS4111: Property 'keyboardFocusOutlineVisible' comes from
-// an index signature, so it must be accessed with
-// ['keyboardFocusOutlineVisible'].
-testcase.keyboardFocusOutlineVisible = async () => {
+export async function keyboardFocusOutlineVisible() {
   // Open Files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -412,16 +370,13 @@ testcase.keyboardFocusOutlineVisible = async () => {
 
   // Check: the html element should not have focus-outline-visible class.
   await remoteCall.waitForElementLost(appId, htmlFocusOutlineVisible);
-};
+}
 
 /**
  * Tests that the root html element .pointer-active class is added and removed
  * for mouse interaction.
  */
-// @ts-ignore: error TS4111: Property 'keyboardFocusOutlineVisibleMouse' comes
-// from an index signature, so it must be accessed with
-// ['keyboardFocusOutlineVisibleMouse'].
-testcase.keyboardFocusOutlineVisibleMouse = async () => {
+export async function keyboardFocusOutlineVisibleMouse() {
   // Open Files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -443,16 +398,13 @@ testcase.keyboardFocusOutlineVisibleMouse = async () => {
 
   // Check: the html element should not have pointer-active class.
   await remoteCall.waitForElementLost(appId, htmlPointerActive);
-};
+}
 
 /**
  * Tests that the root html element .pointer-active class will be removed with
  * pointerup event triggered by touch.
  */
-// @ts-ignore: error TS4111: Property 'pointerActiveRemovedByTouch' comes from
-// an index signature, so it must be accessed with
-// ['pointerActiveRemovedByTouch'].
-testcase.pointerActiveRemovedByTouch = async () => {
+export async function pointerActiveRemovedByTouch() {
   // Open Files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -472,15 +424,13 @@ testcase.pointerActiveRemovedByTouch = async () => {
 
   // Check: the html element should not have pointer-active class.
   await remoteCall.waitForElementLost(appId, htmlPointerActive);
-};
+}
 
 /**
  * Tests that the root html element .pointer-active class should not be added if
  * the PointerDown event is triggered by touch.
  */
-// @ts-ignore: error TS4111: Property 'noPointerActiveOnTouch' comes from an
-// index signature, so it must be accessed with ['noPointerActiveOnTouch'].
-testcase.noPointerActiveOnTouch = async () => {
+export async function noPointerActiveOnTouch() {
   // Open Files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -493,16 +443,13 @@ testcase.noPointerActiveOnTouch = async () => {
   // Check: the html element should not have pointer-active class.
   const htmlPointerActive = ['html.pointer-active'];
   await remoteCall.waitForElementLost(appId, htmlPointerActive);
-};
+}
 
 /**
  * Test that selecting "Google Drive" in the directory tree with the keyboard
  * expands it and selects "My Drive".
  */
-// @ts-ignore: error TS4111: Property 'keyboardSelectDriveDirectoryTree' comes
-// from an index signature, so it must be accessed with
-// ['keyboardSelectDriveDirectoryTree'].
-testcase.keyboardSelectDriveDirectoryTree = async () => {
+export async function keyboardSelectDriveDirectoryTree() {
   // Open Files app.
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.world], [ENTRIES.hello]);
@@ -539,16 +486,13 @@ testcase.keyboardSelectDriveDirectoryTree = async () => {
 
   // My Drive should be selected.
   await directoryTree.waitForSelectedItemByLabel('My Drive');
-};
+}
 
 /**
  * Tests that while the delete dialog is displayed, it is not possible to press
  * CONTROL-C to copy a file.
  */
-// @ts-ignore: error TS4111: Property 'keyboardDisableCopyWhenDialogDisplayed'
-// comes from an index signature, so it must be accessed with
-// ['keyboardDisableCopyWhenDialogDisplayed'].
-testcase.keyboardDisableCopyWhenDialogDisplayed = async () => {
+export async function keyboardDisableCopyWhenDialogDisplayed() {
   // Open Files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
@@ -588,14 +532,12 @@ testcase.keyboardDisableCopyWhenDialogDisplayed = async () => {
   // Check: no files should be pasted.
   const files = TestEntryInfo.getExpectedRows([ENTRIES.hello]);
   await remoteCall.waitForFiles(appId, files);
-};
+}
 
 /**
  * Tests Ctrl+N opens a new windows crbug.com/933302.
  */
-// @ts-ignore: error TS4111: Property 'keyboardOpenNewWindow' comes from an
-// index signature, so it must be accessed with ['keyboardOpenNewWindow'].
-testcase.keyboardOpenNewWindow = async () => {
+export async function keyboardOpenNewWindow() {
   // Open Files app.
   const appId =
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
@@ -622,4 +564,4 @@ testcase.keyboardOpenNewWindow = async () => {
         'Waiting for new window to open, current windows: ' +
             currentWindowsIds);
   });
-};
+}

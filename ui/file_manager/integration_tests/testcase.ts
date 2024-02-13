@@ -26,7 +26,7 @@ import * as formatDialogTests from './file_manager/format_dialog.js';
 // import * as guestOsTests from './file_manager/guest_os.js';
 // import * as holdingSpaceTests from './file_manager/holding_space.js';
 // import * as installLinuxPackageDialogTests from './file_manager/install_linux_package_dialog.js';
-// import * as keyboardOperationsTests from './file_manager/keyboard_operations.js';
+import * as keyboardOperationsTests from './file_manager/keyboard_operations.js';
 import * as manageDialogTests from './file_manager/manage_dialog.js';
 // import * as metadataTests from './file_manager/metadata.js';
 // import * as metricsTests from './file_manager/metrics.js';
@@ -84,7 +84,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   // ...guestOsTests,
   // ...holdingSpaceTests,
   // ...installLinuxPackageDialogTests,
-  // ...keyboardOperationsTests,
+  ...keyboardOperationsTests,
   ...manageDialogTests,
   // ...metadataTests,
   // ...metricsTests,
