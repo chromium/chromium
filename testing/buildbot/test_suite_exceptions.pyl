@@ -1425,6 +1425,15 @@
           '--tast-shard-method=hash',
         ],
       },
+      'chromeos-betty-pi-arc-chrome-dchecks': {
+        'swarming': {
+          # DCHECK builder is slower than non-DCHECK one.
+          'shards': 20,
+        },
+        'args': [
+          '--tast-shard-method=hash',
+        ],
+      },
       'chromeos-eve-chrome': {
         'swarming': {
           # Increased timeout to 4 hours due to shard timeout.
