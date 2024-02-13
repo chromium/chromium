@@ -100,20 +100,6 @@ bool DOMSelection::IsBaseFirstInSelection() const {
   return Selection().GetSelectionInDOMTree().IsBaseFirst();
 }
 
-// TODO(tkent): Following four functions based on VisibleSelection should be
-// removed.
-static Position AnchorPosition(const VisibleSelection& selection) {
-  Position anchor =
-      selection.IsBaseFirst() ? selection.Start() : selection.End();
-  return anchor.ParentAnchoredEquivalent();
-}
-
-static Position FocusPosition(const VisibleSelection& selection) {
-  Position focus =
-      selection.IsBaseFirst() ? selection.End() : selection.Start();
-  return focus.ParentAnchoredEquivalent();
-}
-
 Node* DOMSelection::anchorNode() const {
   if (Range* range = PrimaryRangeOrNull()) {
     if (!DomWindow() || IsBaseFirstInSelection())
@@ -548,7 +534,7 @@ Range* DOMSelection::PrimaryRangeOrNull() const {
 
 EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
   const VisibleSelection& selection = GetVisibleSelection();
-  const Position& anchor = blink::AnchorPosition(selection);
+  const Position& anchor = selection.Base().ParentAnchoredEquivalent();
   if (IsSelectionOfDocument() && !anchor.AnchorNode()->IsInShadowTree())
     return FirstEphemeralRangeOf(selection);
 
@@ -556,7 +542,7 @@ EphemeralRange DOMSelection::CreateRangeFromSelectionEditor() const {
   if (!anchor_node)  // crbug.com/595100
     return EphemeralRange();
 
-  const Position& focus = FocusPosition(selection);
+  const Position& focus = selection.Extent().ParentAnchoredEquivalent();
   const Position shadow_adjusted_focus =
       Position(ShadowAdjustedNode(focus), ShadowAdjustedOffset(focus));
   const Position shadow_adjusted_anchor =
