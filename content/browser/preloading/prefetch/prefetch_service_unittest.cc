@@ -38,6 +38,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/fake_service_worker_context.h"
+#include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/preloading_test_util.h"
@@ -5905,6 +5906,204 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(blink::mojom::SpeculationEagerness::kEager,
                     blink::mojom::SpeculationEagerness::kModerate,
                     blink::mojom::SpeculationEagerness::kConservative));
+
+blink::UserAgentMetadata GetFakeUserAgentMetadata() {
+  blink::UserAgentMetadata metadata;
+  metadata.brand_version_list.emplace_back("fake", "42");
+  metadata.brand_full_version_list.emplace_back("fake", "42.0.1701.99");
+  metadata.full_version = "42.0.1701.99";
+  return metadata;
+}
+
+class PrefetchServiceClientHintsTest : public PrefetchServiceTest {
+ protected:
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    auto browser_context = PrefetchServiceTest::CreateBrowserContext();
+    TestBrowserContext::FromBrowserContext(browser_context.get())
+        ->SetClientHintsControllerDelegate(&client_hints_controller_delegate_);
+    return browser_context;
+  }
+
+  MockClientHintsControllerDelegate& client_hints_controller_delegate() {
+    return client_hints_controller_delegate_;
+  }
+
+ private:
+  MockClientHintsControllerDelegate client_hints_controller_delegate_{
+      GetFakeUserAgentMetadata()};
+};
+
+TEST_F(PrefetchServiceClientHintsTest, NoClientHintsWhenDisabled) {
+  base::test::ScopedFeatureList disable_prefetch_ch;
+  disable_prefetch_ch.InitAndDisableFeature(features::kPrefetchClientHints);
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com/two"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(GURL("https://example.com/"),
+                             network::mojom::ReferrerPolicy::kStrictOrigin));
+  task_environment()->RunUntilIdle();
+
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  EXPECT_FALSE(pending->request.headers.HasHeader("Sec-CH-UA"));
+}
+
+TEST_F(PrefetchServiceClientHintsTest, LowEntropyClientHints) {
+  base::test::ScopedFeatureList enable_prefetch_ch;
+  enable_prefetch_ch.InitAndEnableFeature(features::kPrefetchClientHints);
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com/two"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(GURL("https://example.com/"),
+                             network::mojom::ReferrerPolicy::kStrictOrigin));
+  task_environment()->RunUntilIdle();
+
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  EXPECT_TRUE(pending->request.headers.HasHeader("Sec-CH-UA"));
+}
+
+TEST_F(PrefetchServiceClientHintsTest, HighEntropyClientHints) {
+  base::test::ScopedFeatureList enable_prefetch_ch;
+  enable_prefetch_ch.InitAndEnableFeature(features::kPrefetchClientHints);
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  NavigateAndCommit(GURL("https://example.com/"));
+  client_hints_controller_delegate().SetMostRecentMainFrameViewportSize(
+      gfx::Size(800, 600));
+  client_hints_controller_delegate().PersistClientHints(
+      url::Origin::Create(GURL("https://example.com/")),
+      /*parent_rfh=*/nullptr,
+      {network::mojom::WebClientHintsType::kViewportWidth});
+
+  MakePrefetchOnMainFrame(
+      GURL("https://example.com/two"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(GURL("https://example.com/"),
+                             network::mojom::ReferrerPolicy::kStrictOrigin));
+  task_environment()->RunUntilIdle();
+
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  EXPECT_TRUE(pending->request.headers.HasHeader("Sec-CH-UA"));
+  std::string viewport_width;
+  EXPECT_TRUE(pending->request.headers.GetHeader("Sec-CH-Viewport-Width",
+                                                 &viewport_width));
+
+  // Even though we hinted it above, if the actual RenderWidgetHostView reports
+  // its size that gets used above. So accept any positive integer. (This
+  // notably affects the results on Android.)
+  int viewport_width_int;
+  EXPECT_TRUE(base::StringToInt(viewport_width, &viewport_width_int));
+  EXPECT_GT(viewport_width_int, 0);
+}
+
+TEST_F(PrefetchServiceClientHintsTest, CrossSiteNone) {
+  base::test::ScopedFeatureList enable_prefetch_ch;
+  enable_prefetch_ch.InitAndEnableFeatureWithParameters(
+      features::kPrefetchClientHints, {{"cross_site_behavior", "none"}});
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  NavigateAndCommit(GURL("https://a.test/"));
+  client_hints_controller_delegate().SetMostRecentMainFrameViewportSize(
+      gfx::Size(800, 600));
+  client_hints_controller_delegate().PersistClientHints(
+      url::Origin::Create(GURL("https://b.test/")),
+      /*parent_rfh=*/nullptr,
+      {network::mojom::WebClientHintsType::kViewportWidth});
+
+  MakePrefetchOnMainFrame(
+      GURL("https://b.test/"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(GURL("https://a.test/"),
+                             network::mojom::ReferrerPolicy::kStrictOrigin));
+  task_environment()->RunUntilIdle();
+
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  EXPECT_FALSE(pending->request.headers.HasHeader("Sec-CH-UA"));
+  EXPECT_FALSE(pending->request.headers.HasHeader("Sec-CH-Viewport-Width"));
+}
+
+TEST_F(PrefetchServiceClientHintsTest, CrossSiteLowEntropy) {
+  base::test::ScopedFeatureList enable_prefetch_ch;
+  enable_prefetch_ch.InitAndEnableFeatureWithParameters(
+      features::kPrefetchClientHints, {{"cross_site_behavior", "low_entropy"}});
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  NavigateAndCommit(GURL("https://a.test/"));
+  client_hints_controller_delegate().SetMostRecentMainFrameViewportSize(
+      gfx::Size(800, 600));
+  client_hints_controller_delegate().PersistClientHints(
+      url::Origin::Create(GURL("https://b.test/")),
+      /*parent_rfh=*/nullptr,
+      {network::mojom::WebClientHintsType::kViewportWidth});
+
+  MakePrefetchOnMainFrame(
+      GURL("https://b.test/"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(GURL("https://a.test/"),
+                             network::mojom::ReferrerPolicy::kStrictOrigin));
+  task_environment()->RunUntilIdle();
+
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  EXPECT_TRUE(pending->request.headers.HasHeader("Sec-CH-UA"));
+  EXPECT_FALSE(pending->request.headers.HasHeader("Sec-CH-Viewport-Width"));
+}
+
+TEST_F(PrefetchServiceClientHintsTest, CrossSiteAll) {
+  base::test::ScopedFeatureList enable_prefetch_ch;
+  enable_prefetch_ch.InitAndEnableFeatureWithParameters(
+      features::kPrefetchClientHints, {{"cross_site_behavior", "all"}});
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+  NavigateAndCommit(GURL("https://a.test/"));
+  client_hints_controller_delegate().SetMostRecentMainFrameViewportSize(
+      gfx::Size(800, 600));
+  client_hints_controller_delegate().PersistClientHints(
+      url::Origin::Create(GURL("https://b.test/")),
+      /*parent_rfh=*/nullptr,
+      {network::mojom::WebClientHintsType::kViewportWidth});
+
+  MakePrefetchOnMainFrame(
+      GURL("https://b.test/"),
+      PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                   /*use_prefetch_proxy=*/false,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(GURL("https://a.test/"),
+                             network::mojom::ReferrerPolicy::kStrictOrigin));
+  task_environment()->RunUntilIdle();
+
+  auto* pending = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending);
+  EXPECT_TRUE(pending->request.headers.HasHeader("Sec-CH-UA"));
+  EXPECT_TRUE(pending->request.headers.HasHeader("Sec-CH-Viewport-Width"));
+}
 
 }  // namespace
 }  // namespace content

@@ -38,6 +38,26 @@ BASE_DECLARE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped);
 // whenever possible.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUsesHTTPCache);
 
+// If enabled, prefetches may include client hints request headers.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchClientHints);
+
+// This allows controlling the behavior of client hints with prefetches in case
+// an unexpected issue arises with the planned behavior, or one is suspected and
+// we want to debug more easily.
+// TODO(crbug.com/41497015): Remove this control once a behavior is shipped and
+// stabilized.
+enum class PrefetchClientHintsCrossSiteBehavior {
+  // Send no client hints cross-site.
+  kNone,
+  // Send only the "low-entropy" hints which are included by default.
+  kLowEntropy,
+  // Send all client hints that would normally be sent.
+  kAll,
+};
+CONTENT_EXPORT extern const base::FeatureParam<
+    PrefetchClientHintsCrossSiteBehavior>
+    kPrefetchClientHintsCrossSiteBehavior;
+
 // If explicitly disabled, prefetch proxy is not used.
 BASE_DECLARE_FEATURE(kPrefetchProxy);
 

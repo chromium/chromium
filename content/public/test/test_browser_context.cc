@@ -86,6 +86,11 @@ void TestBrowserContext::SetOriginTrialsControllerDelegate(
   origin_trials_controller_delegate_ = delegate;
 }
 
+void TestBrowserContext::SetClientHintsControllerDelegate(
+    ClientHintsControllerDelegate* delegate) {
+  client_hints_controller_delegate_ = delegate;
+}
+
 base::FilePath TestBrowserContext::GetPath() {
   return browser_context_dir_.GetPath();
 }
@@ -138,7 +143,7 @@ TestBrowserContext::GetPermissionControllerDelegate() {
 
 ClientHintsControllerDelegate*
 TestBrowserContext::GetClientHintsControllerDelegate() {
-  return nullptr;
+  return client_hints_controller_delegate_;
 }
 
 BackgroundFetchDelegate* TestBrowserContext::GetBackgroundFetchDelegate() {

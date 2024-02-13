@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/client_hints.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents.h"
@@ -41,8 +42,10 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -415,12 +418,16 @@ PrefetchContainer::PrefetchContainer(
       referrer_(referrer),
       no_vary_search_hint_(std::move(no_vary_search_hint)),
       prefetch_document_manager_(prefetch_document_manager),
+      browser_context_(
+          referring_render_frame_host.GetBrowserContext()->GetWeakPtr()),
       ukm_source_id_(GetUkmSourceId(prefetch_document_manager_)),
       request_id_(base::UnguessableToken::Create().ToString()),
       initiator_devtools_navigation_token_(
           referring_render_frame_host.GetDevToolsNavigationToken()) {
   auto* web_contents =
       WebContentsImpl::FromRenderFrameHostImpl(&referring_render_frame_host);
+  is_javascript_enabled_ =
+      web_contents->GetOrCreateWebPreferences().javascript_enabled;
   auto* preloading_data =
       PreloadingData::GetOrCreateForWebContents(web_contents);
   if (!matcher) {
@@ -687,10 +694,31 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   // some which are added by throttles). These aren't yet supported for
   // prefetch, including browsing topics and client hints.
   net::HttpRequestHeaders updated_headers;
+  std::vector<std::string> headers_to_remove;
   updated_headers.SetHeader("Sec-Purpose",
                             IsProxyRequiredForURL(redirect_info.new_url)
                                 ? "prefetch;anonymous-client-ip"
                                 : "prefetch");
+
+  // Remove any existing client hints headers (except, below, if we still want
+  // to send this particular hint).
+  if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
+    const auto& client_hints = network::GetClientHintToNameMap();
+    headers_to_remove.reserve(headers_to_remove.size() + client_hints.size());
+    for (const auto& [_, header] : client_hints) {
+      headers_to_remove.push_back(header);
+    }
+  }
+
+  // Then add the client hints that are appropriate for the redirect.
+  AddClientHintsHeaders(url::Origin::Create(redirect_info.new_url),
+                        &updated_headers);
+
+  // To avoid spurious reordering, don't remove headers that will be updated
+  // anyway.
+  base::EraseIf(headers_to_remove, [&](const std::string& header) {
+    return updated_headers.HasHeader(header);
+  });
 
   // TODO(jbroman): We have several places that invoke
   // `net::RedirectUtil::UpdateHttpRequest` and then need to do very similar
@@ -698,7 +726,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   bool should_clear_upload = false;
   net::RedirectUtil::UpdateHttpRequest(
       resource_request_->url, resource_request_->method, redirect_info,
-      /*removed_headers=*/std::nullopt, std::move(updated_headers),
+      std::move(headers_to_remove), std::move(updated_headers),
       &resource_request_->headers, &should_clear_upload);
   CHECK(!should_clear_upload);
 
@@ -1326,6 +1354,8 @@ void PrefetchContainer::MakeResourceRequest(
       break;
   }
 
+  AddClientHintsHeaders(origin, &request->headers);
+
   const auto& devtools_observer = GetDevToolsObserver();
   if (devtools_observer && !IsDecoy()) {
     request->trusted_params->devtools_observer =
@@ -1340,6 +1370,53 @@ void PrefetchContainer::UpdateReferrer(
     const network::mojom::ReferrerPolicy& new_referrer_policy) {
   referrer_.url = new_referrer_url;
   referrer_.policy = new_referrer_policy;
+}
+
+void PrefetchContainer::AddClientHintsHeaders(
+    const url::Origin& origin,
+    net::HttpRequestHeaders* request_headers) {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
+    return;
+  }
+  BrowserContext* browser_context = browser_context_.get();
+  if (!browser_context_) {
+    return;
+  }
+  ClientHintsControllerDelegate* client_hints_delegate =
+      browser_context->GetClientHintsControllerDelegate();
+  if (!client_hints_delegate) {
+    return;
+  }
+
+  // TODO(crbug.com/1524069): Consider supporting UA override mode here
+  const bool is_ua_override_on = false;
+  net::HttpRequestHeaders client_hints_headers;
+  AddClientHintsHeadersToPrefetchNavigation(
+      origin, &client_hints_headers, browser_context, client_hints_delegate,
+      is_ua_override_on, is_javascript_enabled_);
+
+  // Merge in the client hints which are suitable to include given this is a
+  // prefetch, and potentially a cross-site only. (This logic might need to be
+  // revisited if we ever supported prefetching in another site's partition,
+  // such as in a subframe.)
+  const bool is_same_site =
+      net::SchemefulSite(referring_origin_) == net::SchemefulSite(origin);
+  const auto cross_site_behavior =
+      features::kPrefetchClientHintsCrossSiteBehavior.Get();
+  if (is_same_site ||
+      cross_site_behavior ==
+          features::PrefetchClientHintsCrossSiteBehavior::kAll) {
+    request_headers->MergeFrom(client_hints_headers);
+  } else if (cross_site_behavior ==
+             features::PrefetchClientHintsCrossSiteBehavior::kLowEntropy) {
+    std::string header_value;
+    for (const auto& [ch, header] : network::GetClientHintToNameMap()) {
+      if (blink::IsClientHintSentByDefault(ch) &&
+          client_hints_headers.GetHeader(header, &header_value)) {
+        request_headers->SetHeader(header, std::move(header_value));
+      }
+    }
+  }
 }
 
 std::ostream& operator<<(std::ostream& ostream,

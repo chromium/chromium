@@ -33,6 +33,7 @@ class CookieManager;
 
 namespace content {
 
+class BrowserContext;
 class PrefetchCookieListener;
 class PrefetchDocumentManager;
 class PrefetchNetworkContext;
@@ -540,6 +541,10 @@ class CONTENT_EXPORT PrefetchContainer {
   void SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
       PrefetchStatus prefetch_status);
 
+  // Add client hints headers to a request bound for |origin|.
+  void AddClientHintsHeaders(const url::Origin& origin,
+                             net::HttpRequestHeaders* request_headers);
+
   // Returns the `SinglePrefetch` to be prefetched next. This is the last
   // element in `redirect_chain_`, because, during prefetching from the network,
   // we push back `SinglePrefetch`s to `redirect_chain_` and access the latest
@@ -590,6 +595,9 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // The |PrefetchDocumentManager| that requested |this|.
   base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager_;
+
+  // The |BrowserContext| in which this is being run.
+  base::WeakPtr<BrowserContext> browser_context_;
 
   // The current status, if any, of the prefetch.
   // TODO(crbug.com/1494771): Use `load_state_` instead for non-metrics purpose.
@@ -680,6 +688,12 @@ class CONTENT_EXPORT PrefetchContainer {
   base::OnceClosure on_received_head_callback_;
 
   std::unique_ptr<base::OneShotTimer> timeout_timer_;
+
+  // Whether JavaScript is on in this contents (or was, when this prefetch
+  // started). This affects Client Hints behavior. Per-origin settings are
+  // handled later, according to
+  // |ClientHintsControllerDelegate::IsJavaScriptAllowed|.
+  bool is_javascript_enabled_ = false;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };
