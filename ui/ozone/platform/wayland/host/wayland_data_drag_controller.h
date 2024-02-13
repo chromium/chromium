@@ -50,32 +50,29 @@ class WaylandWindowManager;
 class WaylandShmBuffer;
 class WaylandSurface;
 
-// WaylandDataDragController implements regular data exchange on top of the
-// Wayland Drag and Drop protocol.  The data can be dragged within the Chromium
-// window, or between Chromium and other application in both directions.
+// WaylandDataDragController implements regular mouse/touch-driven data exchange
+// on top of the Wayland Drag-and-Drop protocol. Data can be dragged within
+// Chromium windows, or between Chromium and other applications in both
+// directions.
 //
-// The outgoing drag starts via the StartSession() method.  For more context,
+// Outgoing drag sessions start via the StartSession() method. For more context,
 // see WaylandTopLevelWindow::StartDrag().
 //
-// The incoming drag starts with the call to OnDragEnter() from the Wayland side
-// (the data device), and ends up in call to WaylandWindow::OnDragEnter(), but
-// two ways of coming there are possible:
+// Incoming drag sessions start with calls to OnDragOffer/OnDragEnter() from the
+// Wayland side (the data device), and end up in calls to WaylandWindow's
+// OnDragEnter() and OnDragDataAvailable(), but two ways of getting there are
+// possible:
 //
-// 1.  The drag has been initiated by a Chromium window.  In this case, the data
+// 1. The drag has been initiated from a Chromium window. In this case, the data
 // that is being dragged is available right away, and therefore the controller
 // can forward the data to the window immediately.
 //
-// 2.  The data is being dragged from another application.  Before notifying the
-// window, the controller requests the data from the source side, which results
-// in a number of requests to Wayland and data transfers from it.  Only after
-// data records of all supported MIME types have been received, the window will
-// be notified.
-//
-// It is possible that further drag events come while the data is still being
-// transferred.  The drag motion event is ignored; the window will first receive
-// OnDragEnter, and any OnDragMotion that comes after that.  The drag leave
-// event stops the transfer and cancels the operation; the window will not
-// receive anything at all.
+// 2. The data is being dragged from another application. In this case, the
+// window is notified right away about the enter event and a data fetching task
+// is posted to the thread pool. Once fully fetched, the data is delivered to
+// the entered window. If the drag cursor leaves the window or the entered
+// windows gets destroyed while the data is still being fetched, the fetching
+// task is cancelled and the whole drag session is aborted.
 class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                                   public WaylandDataSource::Delegate,
                                   public WaylandWindowObserver,
