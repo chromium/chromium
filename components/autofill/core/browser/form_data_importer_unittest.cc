@@ -1711,6 +1711,92 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
   ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 }
 
+// Tests that an address can be imported from an Indian address form without
+// synthesized field types.
+TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillUseINAddressModel,
+       features::kAutofillEnableDependentLocalityParsing},
+      {});
+  // The address does not contain synthesized types.
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, "INFirst INSecond"},
+      {ADDRESS_HOME_STREET_LOCATION, "12/110, Flat no. 504, Raja Apartments"},
+      {ADDRESS_HOME_LANDMARK, "Opp to Ayyappa Swamy temple"},
+      {ADDRESS_HOME_DEPENDENT_LOCALITY, "Kondapur"},
+      {ADDRESS_HOME_CITY, "Hyderabad"},
+      {ADDRESS_HOME_STATE, "Telangana"},
+      {ADDRESS_HOME_ZIP, "500084"},
+      {ADDRESS_HOME_COUNTRY, "IN"},
+  };
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  form_structure->field(1)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_STREET_LOCATION));
+  form_structure->field(2)->SetTypeTo(AutofillType(ADDRESS_HOME_LANDMARK));
+  form_structure->field(3)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY));
+  // Verify that the profile is imported.
+  AutofillProfile in_profile(AddressCountryCode("IN"));
+  in_profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"INFirst INSecond",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_LOCATION, u"12/110, Flat no. 504, Raja Apartments",
+      VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK,
+                                              u"Opp to Ayyappa Swamy temple",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                              u"Kondapur",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Hyderabad",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"Telangana",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"500084",
+                                              VerificationStatus::kObserved);
+
+  in_profile.FinalizeAfterImport();
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {in_profile});
+}
+
+// Tests that an address cannot be imported from an Indian address form which
+// contains synthesized fields. We don't allow that because the address will
+// likely look incomplete when shown to the user.
+TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kAutofillUseINAddressModel,
+       features::kAutofillEnableDependentLocalityParsing},
+      {});
+  // The address contains synthesized types which are not supported during
+  // form import.
+  ASSERT_TRUE(i18n_model_definition::IsSynthesizedType(
+      ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK, AddressCountryCode("IN")));
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_STREET_LOCATION, "12/110, Flat no. 504, Raja Apartments"},
+      // ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK is a synthesized field
+      // type.
+      {ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
+       "Kondapur, Opp to Ayyappa Swamy temple"},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, "IN"},
+  };
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  form_structure->field(1)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_STREET_LOCATION));
+  form_structure->field(2)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
+  // Verify that no profile is imported.
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
 // Tests that a profile is created for countries with composed names.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_CompleteComposedCountryName) {

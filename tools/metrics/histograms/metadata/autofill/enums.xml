@@ -117,6 +117,8 @@ chromium-metrics-reviews@google.com.
   <int value="27" label="Line1 or house number requirement: Violated"/>
   <int value="28" label="Deprecated full name requirement: Fulfilled"/>
   <int value="29" label="Deprecated full name requirement: Violated"/>
+  <int value="30" label="No synthesized types: Fulfilled"/>
+  <int value="31" label="No synthesized types: Violated"/>
 </enum>
 
 <enum name="AutofillAddressProfileImportStatus">

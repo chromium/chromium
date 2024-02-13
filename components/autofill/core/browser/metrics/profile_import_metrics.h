@@ -61,7 +61,12 @@ enum class AddressProfileImportRequirementMetric {
   kLine1OrHouseNumberRequirementViolated = 27,
   kDeprecatedNameRequirementFulfilled = 28,
   kDeprecatedNameRequirementViolated = 29,
-  kMaxValue = kDeprecatedNameRequirementViolated,
+
+  // The form is not allowed to contain any synthesized types.
+  kNoSythesizedTypesRequirementFulfilled = 30,
+  kNoSythesizedTypesRequirementViolated = 31,
+
+  kMaxValue = kNoSythesizedTypesRequirementViolated,
 };
 
 // Represents the status of the field type requirements that are specific to

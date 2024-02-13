@@ -17,6 +17,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -26,6 +27,8 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
@@ -136,6 +139,15 @@ bool ShouldOfferVirtualCardEnrollment(
   }
 
   return true;
+}
+
+bool HasSynthesizedTypes(
+    const base::flat_map<FieldType, std::u16string>& observed_field_values,
+    AddressCountryCode country_code) {
+  return base::ranges::any_of(observed_field_values, [country_code](
+                                                         const auto& entry) {
+    return i18n_model_definition::IsSynthesizedType(entry.first, country_code);
+  });
 }
 
 }  // namespace
@@ -613,6 +625,12 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   AutofillProfile candidate_profile = ConstructProfileFromObservedValues(
       observed_field_values, import_log_buffer, import_metadata);
 
+  // After ensuring the correct country is set on the profile, we can search for
+  // any synthesized nodes. If any of these exist, we'll exclude the profile
+  // from the import process
+  bool has_synthesized_types = HasSynthesizedTypes(
+      observed_field_values, candidate_profile.GetAddressCountryCode());
+
   // This is done prior to checking the validity of the profile, because multi-
   // step import profile merging requires the profile to be finalized. Ideally
   // we would return false here if it fails, but that breaks the metrics.
@@ -622,7 +640,8 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // `ValidateNonEmptyValues()` goes first to collect metrics.
   bool has_invalid_information =
       !ValidateNonEmptyValues(candidate_profile, import_log_buffer) ||
-      has_multiple_distinct_email_addresses || has_invalid_field_types;
+      has_multiple_distinct_email_addresses || has_invalid_field_types ||
+      has_synthesized_types;
 
   // Profiles with valid information qualify for multi-step imports.
   // This requires the profile to be finalized to apply the merging logic.
@@ -651,6 +670,10 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       has_invalid_field_types
           ? AddressImportRequirement::kNoInvalidFieldTypesRequirementViolated
           : AddressImportRequirement::kNoInvalidFieldTypesRequirementFulfilled);
+  autofill_metrics::LogAddressFormImportRequirementMetric(
+      has_synthesized_types
+          ? AddressImportRequirement::kNoSythesizedTypesRequirementViolated
+          : AddressImportRequirement::kNoSythesizedTypesRequirementFulfilled);
   autofill_metrics::LogAddressFormImportRequirementMetric(
       import_metadata.observed_invalid_country
           ? AddressImportRequirement::kCountryValidRequirementViolated
