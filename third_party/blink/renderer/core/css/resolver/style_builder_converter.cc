@@ -825,7 +825,8 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
   if (value.IsPrimitiveValue()) {
     const auto& primitive_value = To<CSSPrimitiveValue>(value);
     DCHECK(primitive_value.IsNumber());
-    return FontSizeAdjust(primitive_value.GetFloatValue());
+    return FontSizeAdjust(
+        primitive_value.ComputeNumber(state.CssToLengthConversionData()));
   }
 
   DCHECK(value.IsValuePair());
@@ -836,7 +837,9 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
   if (pair.Second().IsPrimitiveValue()) {
     const auto& primitive_value = To<CSSPrimitiveValue>(pair.Second());
     DCHECK(primitive_value.IsNumber());
-    return FontSizeAdjust(primitive_value.GetFloatValue(), metric);
+    return FontSizeAdjust(
+        primitive_value.ComputeNumber(state.CssToLengthConversionData()),
+        metric);
   }
 
   DCHECK(To<CSSIdentifierValue>(pair.Second()).GetValueID() ==
