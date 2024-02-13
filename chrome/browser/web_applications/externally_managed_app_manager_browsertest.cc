@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -284,7 +283,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   const webapps::AppId placeholder_app_id =
       GenerateAppId(std::nullopt, install_url);
-  apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
@@ -335,7 +333,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
 
   const webapps::AppId placeholder_app_id =
       GenerateAppId(std::nullopt, install_url);
-  apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
@@ -353,8 +350,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
             result_code_.value());
 
   const webapps::AppId new_app_id = GenerateAppId("some_id", start_url);
-
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(new_app_id, placeholder_app_id);
   EXPECT_FALSE(registrar().IsInstalled(placeholder_app_id));
@@ -1025,7 +1020,6 @@ IN_PROC_BROWSER_TEST_F(PlaceholderUpdateRelaunchBrowserTest,
 
   const webapps::AppId placeholder_app_id =
       GenerateAppId(std::nullopt, install_url);
-  apps::AppReadinessWaiter(profile(), placeholder_app_id).Await();
 
   // Enable prevent-close close for the placeholder.
   AddPreventCloseToApp(install_url.spec(), kRunWindowed);
@@ -1067,7 +1061,6 @@ IN_PROC_BROWSER_TEST_F(PlaceholderUpdateRelaunchBrowserTest,
 
   // Wait until the final version of the app is installed.
   const webapps::AppId final_app_id = GenerateAppId("some_id", install_url);
-  apps::AppReadinessWaiter(profile(), final_app_id).Await();
 
   // Check that the placeholder app is indeed closed.
   WaitForNumberOfAppInstances(placeholder_app_id,
