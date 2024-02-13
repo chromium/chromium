@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import android.os.Build;
 import android.os.ConditionVariable;
 import android.os.Process;
+import android.os.SystemClock;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -184,12 +185,64 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         return mLogger;
     }
 
+    /**
+     * Helper class to log a CronetInitializedInfo atom as soon as it's been completely filled by
+     * all contributing threads. This is slightly subtle because the contributing threads are racing
+     * each other to fill out the atom.
+     */
+    private static final class CronetInitializedInfoLogger {
+        private final CronetLogger mCronetLogger;
+        private final long mStartUptimeMillis;
+        private final CronetLogger.CronetInitializedInfo mCronetInitializedInfo =
+                new CronetLogger.CronetInitializedInfo();
+
+        public CronetInitializedInfoLogger(
+                CronetLogger cronetLogger, long cronetInitializationRef, long startUptimeMillis) {
+            mCronetLogger = cronetLogger;
+            mCronetInitializedInfo.cronetInitializationRef = cronetInitializationRef;
+            mStartUptimeMillis = startUptimeMillis;
+        }
+
+        public void setEngineCreationLatencyMillis() {
+            int elapsedTime = getElapsedTime();
+            synchronized (mCronetInitializedInfo) {
+                assert mCronetInitializedInfo.engineCreationLatencyMillis < 0;
+                mCronetInitializedInfo.engineCreationLatencyMillis = elapsedTime;
+                maybeLog();
+            }
+        }
+
+        public void setEngineAsyncLatencyMillis() {
+            int elapsedTime = getElapsedTime();
+            synchronized (mCronetInitializedInfo) {
+                assert mCronetInitializedInfo.engineAsyncLatencyMillis < 0;
+                mCronetInitializedInfo.engineAsyncLatencyMillis = elapsedTime;
+                maybeLog();
+            }
+        }
+
+        private void maybeLog() {
+            if (mCronetInitializedInfo.engineCreationLatencyMillis < 0
+                    || mCronetInitializedInfo.engineAsyncLatencyMillis < 0) {
+                return;
+            }
+            mCronetLogger.logCronetInitializedInfo(mCronetInitializedInfo);
+        }
+
+        private int getElapsedTime() {
+            int elapsedTime = (int) (SystemClock.uptimeMillis() - mStartUptimeMillis);
+            assert elapsedTime >= 0;
+            return elapsedTime;
+        }
+    }
+
     @UsedByReflection("CronetEngine.java")
-    public CronetUrlRequestContext(final CronetEngineBuilderImpl builder) {
+    public CronetUrlRequestContext(final CronetEngineBuilderImpl builder, long startUptimeMillis) {
         mRttListenerList.disableThreadAsserts();
         mThroughputListenerList.disableThreadAsserts();
         mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
-        CronetLibraryLoader.ensureInitialized(builder.getContext(), builder);
+        boolean triggeredInitialization =
+                CronetLibraryLoader.ensureInitialized(builder.getContext(), builder);
         if (builder.httpCacheMode() == HttpCacheType.DISK) {
             mInUseStoragePath = builder.storagePath();
             synchronized (sInUseStoragePaths) {
@@ -213,16 +266,25 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 CronetLoggerFactory.createLogger(
                         builder.getContext(), CronetEngineBuilderImpl.getCronetSource());
         mLogId = mLogger.generateId();
+        var builderLoggerInfo = builder.toLoggerInfo();
         try {
             mLogger.logCronetEngineCreation(
                     getLogId(),
-                    builder.toLoggerInfo(),
+                    builderLoggerInfo,
                     buildCronetVersion(),
                     CronetEngineBuilderImpl.getCronetSource());
         } catch (RuntimeException e) {
             // Handle any issue gracefully, we should never crash due failures while logging.
             Log.i(LOG_TAG, "Error while trying to log CronetEngine creation: ", e);
         }
+
+        var cronetInitializedInfoLogger =
+                triggeredInitialization
+                        ? new CronetInitializedInfoLogger(
+                                mLogger,
+                                builderLoggerInfo.getCronetInitializationRef(),
+                                startUptimeMillis)
+                        : null;
 
         // Init native Chromium URLRequestContext on init thread.
         CronetLibraryLoader.postToInitThread(
@@ -238,8 +300,37 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                                             mUrlRequestContextAdapter,
                                             CronetUrlRequestContext.this);
                         }
+
+                        if (cronetInitializedInfoLogger != null) {
+                            // If we get here, it means all the init thread work (either scheduled
+                            // from here or from CronetLibraryLoader) is done, so one-time async
+                            // initialization is finished.
+                            //
+                            // Note: there is one edge case where this code can produce a
+                            // misleadingly low latency figure: if we already tried to initialize
+                            // Cronet before, but the initialization procedure failed (e.g. failed
+                            // to load the native library). In this case, some of the init thread
+                            // work has already been done before, and the async latency on this
+                            // successful initialization attempt does *not* capture some/most of the
+                            // work done on the init thread. This is probably fine because this
+                            // "failed to init, but succeeded on a subsequent try" scenario seems
+                            // unlikely to occur in practice; in reality, it's more likely the
+                            // entire app will crash on the first failed attempt.
+                            //
+                            // Note: there is a race condition where, if another thread is also
+                            // running this code, it could end up interleaving its own
+                            // initRequestContextOnInitThread() call before this one, which would
+                            // artificially inflate this latency. This is probably fine since this
+                            // is unlikely to happen and even if it did happen, it would likely have
+                            // a negligible impact on the metrics.
+                            cronetInitializedInfoLogger.setEngineAsyncLatencyMillis();
+                        }
                     }
                 });
+
+        if (cronetInitializedInfoLogger != null) {
+            cronetInitializedInfoLogger.setEngineCreationLatencyMillis();
+        }
     }
 
     @VisibleForTesting

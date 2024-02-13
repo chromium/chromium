@@ -53,20 +53,23 @@ public class CronetLibraryLoader {
     @VisibleForTesting public static final String LOG_FLAG_NAME = "Cronet_log_me";
 
     /**
-     * Ensure that native library is loaded and initialized. Can be called from
-     * any thread, the load and initialization is performed on init thread.
+     * Ensure that native library is loaded and initialized. Can be called from any thread, the load
+     * and initialization is performed on init thread.
+     *
+     * @return True if the library was initialized as part of this call, false if it was already
+     *     initialized.
      */
-    public static void ensureInitialized(
+    public static boolean ensureInitialized(
             Context applicationContext, final CronetEngineBuilderImpl builder) {
-        ensureInitialized(applicationContext, builder, /* libAlreadyLoaded= */ false);
+        return ensureInitialized(applicationContext, builder, /* libAlreadyLoaded= */ false);
     }
 
-    public static void ensureInitialized(
+    public static boolean ensureInitialized(
             Context applicationContext,
             final CronetEngineBuilderImpl builder,
             boolean libAlreadyLoaded) {
         synchronized (sLoadLock) {
-            if (sInitialized) return;
+            if (sInitialized) return false;
             ContextUtils.initApplicationContext(applicationContext);
             // The init thread may already be running if a previous initialization attempt failed.
             // In this case there is no need to spin it up again.
@@ -100,6 +103,7 @@ public class CronetLibraryLoader {
             setNativeLoggingLevel();
             sWaitForLibLoad.open();
             sInitialized = true;
+            return true;
         }
     }
 

@@ -28,6 +28,8 @@ public abstract class CronetLogger {
     public abstract void logCronetEngineBuilderInitializedInfo(
             CronetEngineBuilderInitializedInfo info);
 
+    public abstract void logCronetInitializedInfo(CronetInitializedInfo info);
+
     /**
      * Logs a cronetEngine creation action with the details of the creation.
      *
@@ -67,6 +69,13 @@ public abstract class CronetLogger {
         public CronetVersion apiVersion;
         public CronetVersion implVersion;
         public int uid;
+    }
+
+    public static final class CronetInitializedInfo {
+        public long cronetInitializationRef;
+        public int engineCreationLatencyMillis = -1;
+        public int engineAsyncLatencyMillis = -1;
+        // TODO(b/313418339): add the HTTP flags fields
     }
 
     /** Aggregates the information about a CronetEngine configuration. */

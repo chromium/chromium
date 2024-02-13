@@ -80,6 +80,19 @@ public class CronetLoggerImpl extends CronetLogger {
     }
 
     @Override
+    public void logCronetInitializedInfo(CronetInitializedInfo info) {
+        CronetStatsLog.write(
+                CronetStatsLog.CRONET_INITIALIZED,
+                info.cronetInitializationRef,
+                info.engineCreationLatencyMillis,
+                info.engineAsyncLatencyMillis,
+                /* http_flags_latency_millis= */ -1,
+                /* http_flags_successful= */ OptionalBoolean.UNSET.getValue(),
+                /* http_flags_names= */ null,
+                /* http_flags_values= */ null);
+    }
+
+    @Override
     public void logCronetEngineCreation(
             long cronetEngineId,
             CronetEngineBuilderInfo builder,

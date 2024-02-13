@@ -5,6 +5,7 @@
 package org.chromium.net.impl;
 
 import android.content.Context;
+import android.os.SystemClock;
 
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
@@ -36,11 +37,13 @@ public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
 
     @Override
     public ExperimentalCronetEngine build() {
+        var startUptimeMillis = SystemClock.uptimeMillis();
+
         if (getUserAgent() == null) {
             setUserAgent(getDefaultUserAgent());
         }
 
-        ExperimentalCronetEngine builder = new CronetUrlRequestContext(this);
+        ExperimentalCronetEngine builder = new CronetUrlRequestContext(this, startUptimeMillis);
 
         // Clear MOCK_CERT_VERIFIER reference if there is any, since
         // the ownership has been transferred to the engine.

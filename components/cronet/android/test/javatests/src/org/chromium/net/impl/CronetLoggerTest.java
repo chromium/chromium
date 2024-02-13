@@ -27,7 +27,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetLoggerTestRule;
 import org.chromium.net.CronetTestRule;
@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Test logging functionalities. */
-@Batch(Batch.UNIT_TESTS)
+@DoNotBatch(reason = "Some logging is done from one-time static initialization")
 @RunWith(JUnit4.class)
 @RequiresMinAndroidApi(Build.VERSION_CODES.O)
 @IgnoreFor(
@@ -219,6 +219,12 @@ public final class CronetLoggerTest {
             assertThat(builderInfo).isNotNull();
             assertThat(builderInfo.getCronetInitializationRef())
                     .isEqualTo(info.cronetInitializationRef);
+
+            mTestLogger.waitForCronetInitializedInfo();
+            var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+            assertThat(cronetInitializedInfo).isNotNull();
+            assertThat(cronetInitializedInfo.cronetInitializationRef)
+                    .isEqualTo(info.cronetInitializationRef);
         } finally {
             CronetEngineBuilderImpl.sApiLevel = originalApiLevel;
         }
@@ -229,11 +235,11 @@ public final class CronetLoggerTest {
     public void testCronetEngineBuilderInitializedLoggedFromApi() {
         assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(0);
         // The test framework bypasses the logic in CronetEngine.Builder, so we have to call it
-        // directly. We want to use the test framework context though for things like intercepting
-        // manifest reads.
+        // directly. We want to use the test framework context though for things like
+        // intercepting manifest reads.
         // TODO(https://crbug.com/1521393): this is ugly. Ideally the test framework should be
-        // refactored to stop violating the Single Responsibility Principle (e.g. Context management
-        // and implementation selection should be separated)
+        // refactored to stop violating the Single Responsibility Principle (e.g. Context
+        // management and implementation selection should be separated)
         var builder = new CronetEngine.Builder(mTestRule.getTestFramework().getContext());
         assertThat(mTestLogger.callsToLogCronetEngineBuilderInitializedInfo()).isEqualTo(1);
         var info = mTestLogger.getLastCronetEngineBuilderInitializedInfo();
@@ -252,6 +258,12 @@ public final class CronetLoggerTest {
         final CronetEngineBuilderInfo builderInfo = mTestLogger.getLastCronetEngineBuilderInfo();
         assertThat(builderInfo).isNotNull();
         assertThat(builderInfo.getCronetInitializationRef())
+                .isEqualTo(info.cronetInitializationRef);
+
+        mTestLogger.waitForCronetInitializedInfo();
+        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+        assertThat(cronetInitializedInfo).isNotNull();
+        assertThat(cronetInitializedInfo.cronetInitializationRef)
                 .isEqualTo(info.cronetInitializationRef);
     }
 
@@ -320,6 +332,23 @@ public final class CronetLoggerTest {
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(0);
+    }
+
+    @Test
+    @SmallTest
+    public void testCronetInitializedInfo() {
+        // Creating another builder to ensure the cronet initialization ref allocation goes through
+        // TestLogger.
+        mTestRule
+                .getTestFramework()
+                .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext())
+                .build();
+        mTestLogger.waitForCronetInitializedInfo();
+        var cronetInitializedInfo = mTestLogger.getLastCronetInitializedInfo();
+        assertThat(cronetInitializedInfo).isNotNull();
+        assertThat(cronetInitializedInfo.cronetInitializationRef).isNotEqualTo(0);
+        assertThat(cronetInitializedInfo.engineCreationLatencyMillis).isAtLeast(0);
+        assertThat(cronetInitializedInfo.engineAsyncLatencyMillis).isAtLeast(0);
     }
 
     @Test
@@ -554,16 +583,20 @@ public final class CronetLoggerTest {
         private AtomicInteger mNextId = new AtomicInteger();
         private final AtomicInteger mCallsToLogCronetEngineBuilderInitializedInfo =
                 new AtomicInteger();
+        private final AtomicInteger mCallsToCronetInitializedInfo = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetEngineCreation = new AtomicInteger();
         private AtomicInteger mCallsToLogCronetTrafficInfo = new AtomicInteger();
         private AtomicLong mCronetEngineId = new AtomicLong();
         private AtomicLong mCronetRequestId = new AtomicLong();
         private final AtomicReference<CronetEngineBuilderInitializedInfo>
                 mCronetEngineBuilderInitializedInfo = new AtomicReference<>();
+        private final AtomicReference<CronetInitializedInfo> mCronetInitializedInfo =
+                new AtomicReference<>();
         private AtomicReference<CronetTrafficInfo> mTrafficInfo = new AtomicReference<>();
         private AtomicReference<CronetEngineBuilderInfo> mBuilderInfo = new AtomicReference<>();
         private AtomicReference<CronetVersion> mVersion = new AtomicReference<>();
         private AtomicReference<CronetSource> mSource = new AtomicReference<>();
+        private final ConditionVariable mCronetInitializedInfoCalled = new ConditionVariable();
         private final ConditionVariable mBlock = new ConditionVariable();
 
         @Override
@@ -575,6 +608,13 @@ public final class CronetLoggerTest {
         public void logCronetEngineBuilderInitializedInfo(CronetEngineBuilderInitializedInfo info) {
             mCallsToLogCronetEngineBuilderInitializedInfo.incrementAndGet();
             mCronetEngineBuilderInitializedInfo.set(info);
+        }
+
+        @Override
+        public void logCronetInitializedInfo(CronetInitializedInfo info) {
+            mCallsToCronetInitializedInfo.incrementAndGet();
+            mCronetInitializedInfo.set(info);
+            mCronetInitializedInfoCalled.open();
         }
 
         @Override
@@ -610,6 +650,11 @@ public final class CronetLoggerTest {
             return mCallsToLogCronetEngineCreation.get();
         }
 
+        public void waitForCronetInitializedInfo() {
+            mCronetInitializedInfoCalled.block();
+            mCronetInitializedInfoCalled.close();
+        }
+
         public void waitForLogCronetTrafficInfo() {
             mBlock.block();
             mBlock.close();
@@ -625,6 +670,10 @@ public final class CronetLoggerTest {
 
         public CronetEngineBuilderInitializedInfo getLastCronetEngineBuilderInitializedInfo() {
             return mCronetEngineBuilderInitializedInfo.get();
+        }
+
+        public CronetInitializedInfo getLastCronetInitializedInfo() {
+            return mCronetInitializedInfo.get();
         }
 
         public CronetTrafficInfo getLastCronetTrafficInfo() {
