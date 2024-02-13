@@ -120,3 +120,12 @@ export class FileManagerBase implements FileManagerBaseInterface extends Base {
     return show;
   }
 }
+
+export async function functionShouldBeRewrittenAndAsyncAdded() {
+  // The function name should be rewritten as well as the trailing semicolon
+  // along with a new async specifier added.
+}
+
+export async function functionShouldBeRewritten() {
+  // The function name should be rewritten as well as the trailing semicolon.
+}

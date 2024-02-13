@@ -26,6 +26,10 @@ COMMENT_JSDOC = re.compile(
     r'@private|@protected|@override'
 )
 
+TESTCASE_NAMESPACE = re.compile(r"testcase\.(.*) =( async)? \(\) => {")
+IMPORT_TESTCASE = re.compile(r"import {testcase} from '../testcase.js';")
+ARROW_FUNCTION_CLOSE_BRACE = re.compile(r"^};$")
+
 # Matching:` this.bla;``  or `private this.bla;`
 NON_INITIALIZED_PROP = re.compile(r'\s+this\.[\w_]+;')
 # Matching: this.bla = 'anything';
@@ -77,6 +81,10 @@ def process_js_file(js_fname):
                 lines.append(line)
                 continue
 
+            # Don't include testcase import.
+            if IMPORT_TESTCASE.match(line):
+                continue
+
             # Fully commented out line, ignores inline comment.
             if is_comment(line):
                 if ts_ignoring:
@@ -96,6 +104,7 @@ def process_js_file(js_fname):
             lines.append(line)
 
     processing_comment = False
+    processing_arrow_function = False
     idx = -1
     while (idx < len(lines) - 1):
         idx += 1
@@ -122,6 +131,19 @@ def process_js_file(js_fname):
 
         if not is_jsdoc_star(line):
             processing_comment = False
+
+        # Arrow functions end with a ';' after their closing brace, remove it.
+        if processing_arrow_function and ARROW_FUNCTION_CLOSE_BRACE.match(
+                line):
+            lines[idx] = "}\n"
+            processing_arrow_function = False
+            continue
+
+        # Rewrite testcase imports to exports instead.
+        match = TESTCASE_NAMESPACE.search(line)
+        if match:
+            processing_arrow_function = True
+            lines[idx] = f"export async function {match.group(1)}() " "{\n"
 
     # Remove the lines marked for deletion.
     remove_lines(lines)
@@ -636,8 +658,8 @@ def process_js_files(files):
             # Process as `file_names.gni` to remove the .js file and add it to
             # the `ts_files = ` section.
             if b == _INTEGRATION_TESTS_ROOT.joinpath('BUILD.gn'):
-              new_build_file = process_file_names_gni(js_path.absolute(), b)
-              replace_file(b, new_build_file)
+                new_build_file = process_file_names_gni(js_path.absolute(), b)
+                replace_file(b, new_build_file)
 
         # Only process file_names.gni for Files app and Image Loader.
         if js_path_abs_str.startswith((str(_FILES_APP_ROOT),
