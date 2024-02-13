@@ -16,6 +16,7 @@ source_set("configs") {
 
   deps = [
     "//chrome/browser/ui:ui",
+    "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//content/public/browser",
     "//extensions/buildflags:buildflags",

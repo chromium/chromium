@@ -6880,8 +6880,8 @@ static_library("ui") {
 
   if (enable_compose) {
     sources += [
-      "webui/compose/compose_ui.cc",
-      "webui/compose/compose_ui.h",
+      "webui/compose/compose_untrusted_ui.cc",
+      "webui/compose/compose_untrusted_ui.h",
     ]
     deps += [
       "//chrome/common/compose:mojo_bindings",

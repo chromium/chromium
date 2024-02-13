@@ -227,7 +227,7 @@ class ChromeComposeClient
   // Time that the last call to show the dialog was started.
   base::TimeTicks show_dialog_start_;
 
-  // Used to test Compose in a tab at |chrome://compose|.
+  // Used to test Compose in a tab at |chrome-untrusted://compose|.
   std::unique_ptr<ComposeSession> debug_session_;
 
   // Collects per-pageload UKM metrics and reports them on destruction (if any

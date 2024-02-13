@@ -356,13 +356,13 @@
       "chrome://welcome/*",
       "chrome://vc-background/*",
       "chrome://app-settings/*",
-      "chrome://compose/*",
       "chrome://search-engine-choice/*"
     ]
   }, {
     "channel": "stable",
     "contexts": ["webui_untrusted"],
     "matches": [
+      "chrome-untrusted://compose/*",
       "chrome-untrusted://help-app/*",
       "chrome-untrusted://media-app/*",
       "chrome-untrusted://mako/*",

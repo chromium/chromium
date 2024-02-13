@@ -57,8 +57,6 @@
 
 namespace {
 
-const char kComposeURL[] = "chrome://compose/";
-
 bool ShouldResumeSessionFromEntryPoint(
     ChromeComposeClient::EntryPoint entry_point) {
   switch (entry_point) {
@@ -122,7 +120,8 @@ void ChromeComposeClient::BindComposeDialog(
 
   url::Origin origin =
       GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  if (origin == url::Origin::Create(GURL(kComposeURL))) {
+  if (origin ==
+      url::Origin::Create(GURL(chrome::kChromeUIUntrustedComposeUrl))) {
     debug_session_ = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
         GetSessionId(), GetInnerTextProvider(), autofill::FieldRendererId(-1));

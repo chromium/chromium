@@ -1121,7 +1121,7 @@ TEST_F(ChromeComposeClientTest, TestSaveThenComposeThenRestoreWebUIState) {
 }
 
 TEST_F(ChromeComposeClientTest, NoStateWorksAtChromeCompose) {
-  NavigateAndCommitActiveTab(GURL("chrome://compose"));
+  NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
   // We skip the dialog showing here, as there is no dialog required at this
   // URL.
   BindMojo();
@@ -1178,10 +1178,10 @@ TEST_F(ChromeComposeClientTest, TestCancelMetrics) {
                   ukm::builders::Compose_SessionProgress::kCanceledName, 1)));
 }
 
-// Tests that closing the session at chrome://compose does not crash the
-// browser, even though there is no dialog shown at that URL.
+// Tests that closing the session at chrome-untrusted://compose does not crash
+// the browser, even though there is no dialog shown at that URL.
 TEST_F(ChromeComposeClientTest, TestCloseUIAtChromeCompose) {
-  NavigateAndCommitActiveTab(GURL("chrome://compose"));
+  NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
   // We skip the dialog showing here, as there is no dialog required at this
   // URL.
   BindMojo();
@@ -2981,11 +2981,12 @@ TEST_F(ChromeComposeClientTest, TestCannotSendMessagesAfterClosingDialog) {
 }
 
 // Tests that the Compose client crashes the browser if a webcontents
-// sends any more messages after closing the dialog at chrome://contents.
+// sends any more messages after closing the dialog at
+// chrome-untrusted://compose.
 TEST_F(ChromeComposeClientTest,
        TestCannotSendMessagesAfterClosingDialogAtChromeCompose) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
-  NavigateAndCommitActiveTab(GURL("chrome://compose"));
+  NavigateAndCommitActiveTab(GURL(chrome::kChromeUIUntrustedComposeUrl));
   // We skip the dialog showing here, as there is no dialog required at this
   // URL.
   BindMojo();

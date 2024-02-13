@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://compose/word_streamer.js';
+import 'chrome-untrusted://compose/word_streamer.js';
 
-import {WordStreamer} from 'chrome://compose/word_streamer.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import {WordStreamer} from 'chrome-untrusted://compose/word_streamer.js';
+import {assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
 interface Update {
   words: string[];

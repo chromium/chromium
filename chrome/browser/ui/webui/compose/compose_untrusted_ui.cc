@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/compose/compose_ui.h"
+#include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 
 #include <string>
 #include <utility>
@@ -12,8 +12,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
-#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,14 +24,21 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
-ComposeUI::ComposeUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui) {
+bool ComposeUIUntrustedConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return ComposeEnabling::IsEnabledForProfile(
+      Profile::FromBrowserContext(browser_context));
+}
+
+ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
+    : ui::UntrustedBubbleWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
-      chrome::kChromeUIComposeHost);
-  webui::SetupWebUIDataSource(
+      chrome::kChromeUIUntrustedComposeUrl);
+webui::SetupWebUIDataSource(
       source, base::make_span(kComposeResources, kComposeResourcesSize),
       IDR_COMPOSE_COMPOSE_HTML);
   webui::SetupChromeRefresh2023(source);
@@ -100,18 +107,35 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
   const compose::Config& config = compose::GetComposeConfig();
   source->AddInteger("savedStateTimeoutInMilliseconds",
                      config.saved_state_timeout_milliseconds);
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::StyleSrc,
+      "style-src 'self' chrome-untrusted://resources chrome-untrusted://theme "
+      "'unsafe-inline';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FontSrc,
+      "font-src 'self' chrome-untrusted://resources;");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ImgSrc,
+      "img-src 'self' chrome-untrusted://resources;");
+
+  // If the ThemeSource isn't added here, since Compose is chrome-untrusted,
+  // it will be unable to load stylesheets until a new tab is opened.
+  raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(
+                                           profile, /*serve_untrusted=*/true));
 }
 
-ComposeUI::~ComposeUI() = default;
+ComposeUntrustedUI::~ComposeUntrustedUI() = default;
 
-void ComposeUI::BindInterface(
+void ComposeUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
         pending_receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
-void ComposeUI::BindInterface(
+void ComposeUntrustedUI::BindInterface(
     mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandlerFactory>
         factory) {
   if (session_handler_factory_.is_bound()) {
@@ -120,7 +144,7 @@ void ComposeUI::BindInterface(
   session_handler_factory_.Bind(std::move(factory));
 }
 
-void ComposeUI::CreateComposeSessionPageHandler(
+void ComposeUntrustedUI::CreateComposeSessionPageHandler(
     mojo::PendingReceiver<compose::mojom::ComposeClientPageHandler>
         close_handler,
     mojo::PendingReceiver<compose::mojom::ComposeSessionPageHandler> handler,
@@ -138,4 +162,4 @@ void ComposeUI::CreateComposeSessionPageHandler(
   }
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(ComposeUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(ComposeUntrustedUI)
