@@ -62,6 +62,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -232,6 +233,7 @@ bool ChromePermissionsClient::IsCookieDeletionDisabled(
 }
 
 void ChromePermissionsClient::GetUkmSourceId(
+    ContentSettingsType permission_type,
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     const GURL& requesting_origin,
@@ -239,6 +241,11 @@ void ChromePermissionsClient::GetUkmSourceId(
   if (web_contents) {
     ukm::SourceId source_id =
         web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    std::move(callback).Run(source_id);
+  } else if (permission_type == ContentSettingsType::NOTIFICATIONS) {
+    ukm::SourceId source_id =
+        ukm::UkmRecorder::GetSourceIdForNotificationPermission(
+            base::PassKey<ChromePermissionsClient>(), requesting_origin);
     std::move(callback).Run(source_id);
   } else {
     // We only record a permission change if the origin is in the user's

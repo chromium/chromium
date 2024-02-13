@@ -68,6 +68,7 @@ bool IsAllowlistedSourceId(SourceId source_id) {
     case ukm::SourceIdObj::Type::DEFAULT:
     case ukm::SourceIdObj::Type::DEPRECATED_DESKTOP_WEB_APP_ID:
     case ukm::SourceIdObj::Type::WORKER_ID:
+    case ukm::SourceIdObj::Type::NOTIFICATION_ID:
       return false;
   }
 }
@@ -753,6 +754,7 @@ UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
     case SourceIdType::WEB_IDENTITY_ID:
     case SourceIdType::CHROMEOS_WEBSITE_ID:
     case SourceIdType::EXTENSION_ID:
+    case SourceIdType::NOTIFICATION_ID:
       return UkmConsentType::MSBB;
   }
   return UkmConsentType::MSBB;
@@ -804,7 +806,8 @@ void UkmRecorderImpl::MaybeMarkForDeletion(SourceId source_id) {
     case ukm::SourceIdObj::Type::NO_URL_ID:
     case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
-    case ukm::SourceIdObj::Type::EXTENSION_ID: {
+    case ukm::SourceIdObj::Type::EXTENSION_ID:
+    case ukm::SourceIdObj::Type::NOTIFICATION_ID: {
       // Don't keep sources of these types after current report because their
       // entries are logged only at source creation time.
       MarkSourceForDeletion(source_id);

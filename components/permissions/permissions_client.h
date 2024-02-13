@@ -133,13 +133,14 @@ class PermissionsClient {
       content::BrowserContext* browser_context,
       const GURL& origin);
 
-  // Retrieves the ukm::SourceId (if any) associated with this |browser_context|
-  // and |web_contents|. |web_contents| may be null. |callback| will be called
-  // with the result, and may be run synchronously if the result is available
-  // immediately.
+  // Retrieves the ukm::SourceId (if any) associated with this
+  // |permission_type|, |browser_context|, and |web_contents|. |web_contents|
+  // may be null. |callback| will be called with the result, and may be run
+  // synchronously if the result is available immediately.
   using GetUkmSourceIdCallback =
-      base::OnceCallback<void(std::optional<ukm::SourceId>)>;
-  virtual void GetUkmSourceId(content::BrowserContext* browser_context,
+      base::OnceCallback<void(absl::optional<ukm::SourceId>)>;
+  virtual void GetUkmSourceId(ContentSettingsType permission_type,
+                              content::BrowserContext* browser_context,
                               content::WebContents* web_contents,
                               const GURL& requesting_origin,
                               GetUkmSourceIdCallback callback);

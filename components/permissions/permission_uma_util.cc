@@ -1075,7 +1075,7 @@ void PermissionUmaUtil::RecordPermissionUsage(
     content::WebContents* web_contents,
     const GURL& requesting_origin) {
   PermissionsClient::Get()->GetUkmSourceId(
-      browser_context, web_contents, requesting_origin,
+      permission_type, browser_context, web_contents, requesting_origin,
       base::BindOnce(&RecordPermissionUsageUkm, permission_type));
 }
 
@@ -1142,7 +1142,7 @@ void PermissionUmaUtil::RecordPermissionAction(
   }
 
   PermissionsClient::Get()->GetUkmSourceId(
-      browser_context, web_contents, requesting_origin,
+      permission, browser_context, web_contents, requesting_origin,
       base::BindOnce(
           &RecordPermissionActionUkm, action, gesture_type, permission,
           dismiss_count, ignore_count, source_ui, time_to_decision,

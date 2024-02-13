@@ -499,16 +499,7 @@ views::Label* GetChosenObjectDescriptionLabel(
 
 TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
   GURL origin_url = GURL(kUrl).DeprecatedGetOriginAsURL();
-  TestingProfile* profile =
-      static_cast<TestingProfile*>(web_contents_helper_->profile());
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->AddPage(origin_url, base::Time::Now(),
-                           history::SOURCE_BROWSED);
-  base::RunLoop origin_queried_waiter;
-  history_service->set_origin_queried_closure_for_testing(
-      origin_queried_waiter.QuitClosure());
 
   PermissionInfoList list(1);
   list.back().type = ContentSettingsType::NOTIFICATIONS;
@@ -518,8 +509,6 @@ TEST_F(PageInfoBubbleViewTest, NotificationPermissionRevokeUkm) {
 
   list.back().setting = CONTENT_SETTING_BLOCK;
   api_->SetPermissionInfo(list);
-
-  origin_queried_waiter.Run();
 
   auto entries = ukm_recorder.GetEntriesByName("Permission");
   EXPECT_EQ(1u, entries.size());

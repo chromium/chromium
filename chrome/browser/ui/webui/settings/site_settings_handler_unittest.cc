@@ -2435,14 +2435,6 @@ TEST_P(SiteSettingsHandlerTest, SetCategory_GetException_ResetCategory) {
 TEST_P(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
   const std::string google("https://www.google.com");
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  auto* history_service = HistoryServiceFactory::GetForProfile(
-      profile(), ServiceAccessType::EXPLICIT_ACCESS);
-  history_service->AddPage(GURL(google), base::Time::Now(),
-                           history::SOURCE_BROWSED);
-  base::RunLoop origin_queried_waiter;
-  history_service->set_origin_queried_closure_for_testing(
-      origin_queried_waiter.QuitClosure());
-
   {
     base::Value::List set_notification_origin_args;
     set_notification_origin_args.Append(google);
@@ -2466,8 +2458,6 @@ TEST_P(SiteSettingsHandlerTest, NotificationPermissionRevokeUkm) {
     handler()->HandleSetCategoryPermissionForPattern(
         set_notification_origin_args);
   }
-
-  origin_queried_waiter.Run();
 
   auto entries = ukm_recorder.GetEntriesByName("Permission");
   EXPECT_EQ(1u, entries.size());
