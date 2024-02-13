@@ -10,8 +10,7 @@
 
 namespace ash {
 
-class LocalDataLossWarningScreenView
-    : public base::SupportsWeakPtr<LocalDataLossWarningScreenView> {
+class LocalDataLossWarningScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "local-data-loss-warning", "LocalDataLossWarningScreen"};
@@ -26,10 +25,11 @@ class LocalDataLossWarningScreenView
   virtual void Show(bool is_owner,
                     const std::string& email,
                     bool can_go_back) = 0;
+  virtual base::WeakPtr<LocalDataLossWarningScreenView> AsWeakPtr() = 0;
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class LocalDataLossWarningScreenHandler
+class LocalDataLossWarningScreenHandler final
     : public BaseScreenHandler,
       public LocalDataLossWarningScreenView {
  public:
@@ -49,6 +49,10 @@ class LocalDataLossWarningScreenHandler
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(::login::LocalizedValuesBuilder* builder) final;
+  base::WeakPtr<LocalDataLossWarningScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<LocalDataLossWarningScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

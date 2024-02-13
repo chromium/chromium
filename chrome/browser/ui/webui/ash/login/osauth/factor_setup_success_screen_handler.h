@@ -18,8 +18,7 @@ namespace ash {
 
 // Interface for dependency injection between FactorSetupSuccessScreen and its
 // actual representation. Owned by FactorSetupSuccessScreen.
-class FactorSetupSuccessScreenView
-    : public base::SupportsWeakPtr<FactorSetupSuccessScreenView> {
+class FactorSetupSuccessScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "factor-setup-success", "FactorSetupSuccessScreen"};
@@ -28,11 +27,15 @@ class FactorSetupSuccessScreenView
 
   // Shows the contents of the screen.
   virtual void Show(base::Value::Dict params) = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<FactorSetupSuccessScreenView> AsWeakPtr() = 0;
 };
 
 // A class that handles the WebUI hooks in error screen.
-class FactorSetupSuccessScreenHandler : public BaseScreenHandler,
-                                        public FactorSetupSuccessScreenView {
+class FactorSetupSuccessScreenHandler final
+    : public BaseScreenHandler,
+      public FactorSetupSuccessScreenView {
  public:
   using TView = FactorSetupSuccessScreenView;
 
@@ -48,6 +51,7 @@ class FactorSetupSuccessScreenHandler : public BaseScreenHandler,
  private:
   // FactorSetupSuccessScreenView:
   void Show(base::Value::Dict params) override;
+  base::WeakPtr<FactorSetupSuccessScreenView> AsWeakPtr() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

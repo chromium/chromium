@@ -51,4 +51,9 @@ void CryptohomeRecoveryScreenHandler::ShowReauthNotification() {
   CallExternalAPI("showReauthNotification");
 }
 
+base::WeakPtr<CryptohomeRecoveryScreenView>
+CryptohomeRecoveryScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

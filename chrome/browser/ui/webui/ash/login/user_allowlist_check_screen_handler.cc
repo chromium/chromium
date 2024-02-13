@@ -39,4 +39,9 @@ void UserAllowlistCheckScreenHandler::Show(bool enterprise_managed,
 
 void UserAllowlistCheckScreenHandler::Hide() {}
 
+base::WeakPtr<UserAllowlistCheckScreenView>
+UserAllowlistCheckScreenHandler::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

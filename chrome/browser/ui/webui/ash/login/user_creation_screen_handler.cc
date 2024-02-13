@@ -110,6 +110,10 @@ void UserCreationScreenHandler::SetChildSetupStep() {
   CallExternalAPI("setChildSetupStep");
 }
 
+base::WeakPtr<UserCreationView> UserCreationScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void UserCreationScreenHandler::SetIsBackButtonVisible(bool value) {
   CallExternalAPI("setIsBackButtonVisible", value);
 }

@@ -82,7 +82,8 @@ class FakeWakeLock : public device::mojom::WakeLock {
 
 // Fake ArcVmDataMigrationScreenView implementation to expose the UI state and
 // free disk space / battery state info sent from ArcVmDataMigrationScreen.
-class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
+class FakeArcVmDataMigrationScreenView final
+    : public ArcVmDataMigrationScreenView {
  public:
   FakeArcVmDataMigrationScreenView() = default;
   ~FakeArcVmDataMigrationScreenView() override = default;
@@ -101,6 +102,10 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
   double migration_progress() { return migration_progress_; }
   base::TimeDelta estimated_remaining_time() {
     return estimated_remaining_time_;
+  }
+
+  base::WeakPtr<ArcVmDataMigrationScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -136,6 +141,7 @@ class FakeArcVmDataMigrationScreenView : public ArcVmDataMigrationScreenView {
   bool is_connected_to_charger_ = false;
   double migration_progress_ = 0.0;
   base::TimeDelta estimated_remaining_time_ = base::TimeDelta();
+  base::WeakPtrFactory<ArcVmDataMigrationScreenView> weak_ptr_factory_{this};
 };
 
 // Fake ArcVmDataMigrationScreen that exposes whether it has encountered a fatal

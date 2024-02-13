@@ -15,4 +15,9 @@ void ApplyOnlinePasswordScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<ApplyOnlinePasswordScreenView>
+ApplyOnlinePasswordScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

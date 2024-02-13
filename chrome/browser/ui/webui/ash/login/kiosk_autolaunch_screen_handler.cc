@@ -37,6 +37,11 @@ void KioskAutolaunchScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<KioskAutolaunchScreenView>
+KioskAutolaunchScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void KioskAutolaunchScreenHandler::UpdateKioskApp() {
   if (!is_visible_)
     return;

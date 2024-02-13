@@ -27,6 +27,11 @@ void LocalDataLossWarningScreenHandler::Show(bool is_owner,
   ShowInWebUI(std::move(dict));
 }
 
+base::WeakPtr<LocalDataLossWarningScreenView>
+LocalDataLossWarningScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void LocalDataLossWarningScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   // TODO(b/305201812): Rename string constant.

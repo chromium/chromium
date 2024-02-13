@@ -39,4 +39,8 @@ void GaiaInfoScreenHandler::SetQuickStartVisible() {
   CallExternalAPI("setQuickStartVisible");
 }
 
+base::WeakPtr<GaiaInfoScreenView> GaiaInfoScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

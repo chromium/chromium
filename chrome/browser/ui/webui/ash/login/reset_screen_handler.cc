@@ -148,4 +148,8 @@ void ResetScreenHandler::HandleSetTpmFirmwareUpdateChecked(bool value) {
   is_tpm_firmware_update_checked_ = value;
 }
 
+base::WeakPtr<ResetView> ResetScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash

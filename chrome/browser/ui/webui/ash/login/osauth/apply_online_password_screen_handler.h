@@ -14,8 +14,7 @@ class ApplyOnlinePasswordScreen;
 
 // Interface for dependency injection between ApplyOnlinePasswordScreen and
 // its WebUI representation.
-class ApplyOnlinePasswordScreenView
-    : public base::SupportsWeakPtr<ApplyOnlinePasswordScreenView> {
+class ApplyOnlinePasswordScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "apply-online-password", "ApplyOnlinePasswordScreen"};
@@ -24,10 +23,12 @@ class ApplyOnlinePasswordScreenView
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
+  virtual base::WeakPtr<ApplyOnlinePasswordScreenView> AsWeakPtr() = 0;
 };
 
-class ApplyOnlinePasswordScreenHandler : public ApplyOnlinePasswordScreenView,
-                                         public BaseScreenHandler {
+class ApplyOnlinePasswordScreenHandler final
+    : public ApplyOnlinePasswordScreenView,
+      public BaseScreenHandler {
  public:
   using TView = ApplyOnlinePasswordScreenView;
 
@@ -43,9 +44,12 @@ class ApplyOnlinePasswordScreenHandler : public ApplyOnlinePasswordScreenView,
  private:
   // ApplyOnlinePasswordScreenView
   void Show() override;
+  base::WeakPtr<ApplyOnlinePasswordScreenView> AsWeakPtr() override;
 
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override {}
+
+  base::WeakPtrFactory<ApplyOnlinePasswordScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -19,6 +19,10 @@ void PackagedLicenseScreenHandler::Show() {
   ShowInWebUI();
 }
 
+base::WeakPtr<PackagedLicenseView> PackagedLicenseScreenHandler::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PackagedLicenseScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("oobePackagedLicenseTitle", IDS_OOBE_PACKAGED_LICENSE_TITLE);

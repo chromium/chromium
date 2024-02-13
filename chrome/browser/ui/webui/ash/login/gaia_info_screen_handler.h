@@ -15,7 +15,7 @@ class GaiaInfoScreen;
 
 // Interface for dependency injection between GaiaInfoScreen and its
 // WebUI representation.
-class GaiaInfoScreenView : public base::SupportsWeakPtr<GaiaInfoScreenView> {
+class GaiaInfoScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{"gaia-info",
                                                        "GaiaInfoScreen"};
@@ -25,10 +25,13 @@ class GaiaInfoScreenView : public base::SupportsWeakPtr<GaiaInfoScreenView> {
   // Shows the contents of the screen.
   virtual void Show() = 0;
   virtual void SetQuickStartVisible() = 0;
+
+  // Gets a WeakPtr to the instance.
+  virtual base::WeakPtr<GaiaInfoScreenView> AsWeakPtr() = 0;
 };
 
-class GaiaInfoScreenHandler : public BaseScreenHandler,
-                              public GaiaInfoScreenView {
+class GaiaInfoScreenHandler final : public BaseScreenHandler,
+                                    public GaiaInfoScreenView {
  public:
   using TView = GaiaInfoScreenView;
 
@@ -46,6 +49,10 @@ class GaiaInfoScreenHandler : public BaseScreenHandler,
   // GaiaInfoScreenView:
   void Show() override;
   void SetQuickStartVisible() override;
+  base::WeakPtr<GaiaInfoScreenView> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<GaiaInfoScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

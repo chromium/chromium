@@ -16,8 +16,7 @@ namespace ash {
 
 // Interface for dependency injection between ArcVmDataMigrationScreen and its
 // WebUI representation.
-class ArcVmDataMigrationScreenView
-    : public base::SupportsWeakPtr<ArcVmDataMigrationScreenView> {
+class ArcVmDataMigrationScreenView {
  public:
   inline constexpr static StaticOobeScreenId kScreenId{
       "arc-vm-data-migration", "ArcVmDataMigrationScreen"};
@@ -40,10 +39,12 @@ class ArcVmDataMigrationScreenView
   virtual void SetBatteryState(bool enough, bool connected) = 0;
   virtual void SetMigrationProgress(double progress) = 0;
   virtual void SetEstimatedRemainingTime(const base::TimeDelta& delta) = 0;
+  virtual base::WeakPtr<ArcVmDataMigrationScreenView> AsWeakPtr() = 0;
 };
 
-class ArcVmDataMigrationScreenHandler : public BaseScreenHandler,
-                                        public ArcVmDataMigrationScreenView {
+class ArcVmDataMigrationScreenHandler final
+    : public BaseScreenHandler,
+      public ArcVmDataMigrationScreenView {
  public:
   using TView = ArcVmDataMigrationScreenView;
 
@@ -67,6 +68,9 @@ class ArcVmDataMigrationScreenHandler : public BaseScreenHandler,
   void SetBatteryState(bool enough, bool connected) override;
   void SetMigrationProgress(double progress) override;
   void SetEstimatedRemainingTime(const base::TimeDelta& delta) override;
+  base::WeakPtr<ArcVmDataMigrationScreenView> AsWeakPtr() override;
+
+  base::WeakPtrFactory<ArcVmDataMigrationScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
