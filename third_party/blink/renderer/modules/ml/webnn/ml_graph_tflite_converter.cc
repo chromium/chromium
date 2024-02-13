@@ -8,7 +8,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
@@ -107,7 +106,7 @@ uint32_t GetOperatorCodeIndex(tflite::BuiltinOperator code,
 struct TfLitePadding {
   tflite::Padding mode;
   // The explicit paddings are used to create TfLite Pad operator.
-  absl::optional<Vector<uint32_t>> paddings;
+  std::optional<Vector<uint32_t>> paddings;
 };
 
 // Helper to get tflite padding mode for convolution 2d or pooling 2d.
@@ -389,7 +388,7 @@ base::expected<OperatorOffset, String> SerializeConv2d(
   RETURN_IF_ERROR(padding_mode);
 
   // Insert a Pad operator before TfLite Conv2d if needed for explicit padding.
-  absl::optional<int32_t> explicit_pad_index;
+  std::optional<int32_t> explicit_pad_index;
   const auto& explicit_padding = padding_mode->paddings;
   if (explicit_padding) {
     const auto serialization_result = SerializeExplicitPad(
@@ -628,7 +627,7 @@ base::expected<OperatorOffset, String> SerializeGemm(
   // are [batch, input_channels] and [output_channels, input_channels], so the
   // Transpose operator need to be inserted before Gemm When bTranspose option
   // is false.
-  absl::optional<int32_t> transpose_index;
+  std::optional<int32_t> transpose_index;
   if (!options->bTranspose()) {
     const auto* const filter = gemm->Inputs()[1].Get();
     CHECK_EQ(filter->Dimensions().size(), 2u);
@@ -819,7 +818,7 @@ base::expected<OperatorOffset, String> SerializePool2d(
       options, input_size2d, filter_size2d, stride_size2d, dilation_size2d);
   RETURN_IF_ERROR(padding_mode);
   // Insert a Pad operator before TfLite Pool2d if needed for explicit padding.
-  absl::optional<int32_t> explicit_pad_index;
+  std::optional<int32_t> explicit_pad_index;
   const auto& explicit_padding = padding_mode->paddings;
   if (explicit_padding) {
     const auto serialization_result = SerializeExplicitPad(

@@ -67,11 +67,11 @@ def make_factory_methods(cg_context):
 
     func_decl = CxxFuncDeclNode(name="Create",
                                 arg_decls=["const String& value"],
-                                return_type="absl::optional<${class_name}>",
+                                return_type="std::optional<${class_name}>",
                                 static=True)
     func_def = CxxFuncDefNode(name="Create",
                               arg_decls=["const String& value"],
-                              return_type="absl::optional<${class_name}>",
+                              return_type="std::optional<${class_name}>",
                               class_name=cg_context.class_name)
     func_def.set_base_template_vars(cg_context.template_bindings())
     decls.append(func_decl)
@@ -82,7 +82,7 @@ def make_factory_methods(cg_context):
         T("const auto& result = bindings::FindIndexInEnumStringTable"
           "(value, string_table_);"),
         T("if (!result)\n"
-          "  return absl::nullopt;"),
+          "  return std::nullopt;"),
         T("return ${class_name}(static_cast<Enum>(result.value()));"),
     ])
 
@@ -350,9 +350,11 @@ def generate_enumeration(enumeration_identifier):
     header_node.accumulator.add_class_decls([
         "ExceptionState",
     ])
+    header_node.accumulator.add_stdcpp_include_headers([
+        "optional",
+    ])
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
-        "third_party/abseil-cpp/absl/types/optional.h",
         "third_party/blink/renderer/platform/bindings/enumeration_base.h",
     ])
     source_node.accumulator.add_include_headers([

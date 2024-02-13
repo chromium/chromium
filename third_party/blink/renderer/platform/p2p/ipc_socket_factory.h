@@ -28,8 +28,8 @@ class P2PSocketDispatcher;
 class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
  public:
   PLATFORM_EXPORT explicit IpcPacketSocketFactory(
-      WTF::CrossThreadFunction<void(
-          base::OnceCallback<void(absl::optional<base::UnguessableToken>)>)>
+      WTF::CrossThreadFunction<
+          void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
           devtools_token_getter,
       P2PSocketDispatcher* socket_dispatcher,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -58,7 +58,7 @@ class IpcPacketSocketFactory : public rtc::PacketSocketFactory {
 
  private:
   WTF::CrossThreadFunction<void(
-      base::OnceCallback<void(absl::optional<base::UnguessableToken>)>)>
+      base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
       devtools_token_getter_;
   const bool batch_udp_packets_;
 

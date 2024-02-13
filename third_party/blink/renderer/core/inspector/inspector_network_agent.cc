@@ -1830,7 +1830,7 @@ InspectorNetworkAgent::BuildInitiatorObject(
 }
 
 void InspectorNetworkAgent::WillCreateP2PSocketUdp(
-    absl::optional<base::UnguessableToken>* devtools_token) {
+    std::optional<base::UnguessableToken>* devtools_token) {
   *devtools_token = devtools_token_;
 }
 

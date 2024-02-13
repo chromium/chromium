@@ -173,7 +173,7 @@ BuildObjectForViewOrScrollTimeline(AnimationTimeline* timeline) {
                 scroll_snapshot_timeline->GetAxis(),
                 scroll_container->IsHorizontalWritingMode()))
             .build();
-    absl::optional<ScrollSnapshotTimeline::ScrollOffsets> scroll_offsets =
+    std::optional<ScrollSnapshotTimeline::ScrollOffsets> scroll_offsets =
         scroll_snapshot_timeline->GetResolvedScrollOffsets();
     if (scroll_offsets.has_value()) {
       timeline_object->setStartOffset(scroll_offsets->start);

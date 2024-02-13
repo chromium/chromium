@@ -105,7 +105,7 @@ class FragmentTreeDumper {
   }
 
   void Append(const PhysicalFragment* fragment,
-              absl::optional<PhysicalOffset> fragment_offset,
+              std::optional<PhysicalOffset> fragment_offset,
               Vector<String>& attributes,
               unsigned indent = 2) {
     AppendIndentation(indent, fragment);

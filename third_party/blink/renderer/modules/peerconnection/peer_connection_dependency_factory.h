@@ -199,8 +199,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   void CleanupPeerConnectionFactory();
 
   void DoGetDevtoolsToken(
-      base::OnceCallback<void(absl::optional<base::UnguessableToken>)> then);
-  absl::optional<base::UnguessableToken> GetDevtoolsToken();
+      base::OnceCallback<void(std::optional<base::UnguessableToken>)> then);
+  std::optional<base::UnguessableToken> GetDevtoolsToken();
   scoped_refptr<base::SequencedTaskRunner> context_task_runner_;
 
   // network_manager_ must be deleted on the network thread. The network manager

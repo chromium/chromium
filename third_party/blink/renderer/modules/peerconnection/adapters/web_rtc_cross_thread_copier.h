@@ -47,9 +47,9 @@ class MediaStreamVideoTrack;
 namespace WTF {
 
 template <>
-struct CrossThreadCopier<absl::optional<base::UnguessableToken>>
+struct CrossThreadCopier<std::optional<base::UnguessableToken>>
     : public CrossThreadCopierPassThrough<
-          absl::optional<base::UnguessableToken>> {
+          std::optional<base::UnguessableToken>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 

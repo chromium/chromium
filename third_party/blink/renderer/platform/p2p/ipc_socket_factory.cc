@@ -128,7 +128,7 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
       uint16_t max_port,
       const rtc::SocketAddress& remote_address,
       WTF::CrossThreadFunction<void(
-          base::OnceCallback<void(absl::optional<base::UnguessableToken>)>)>&
+          base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>&
           devtools_token);
 
   // rtc::AsyncPacketSocket interface.
@@ -169,7 +169,7 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
       net::NetworkTrafficAnnotationTag traffic_annotation,
       mojo::PendingRemote<network::mojom::blink::P2PSocketClient> remote,
       mojo::PendingReceiver<network::mojom::blink::P2PSocket> receiver,
-      absl::optional<base::UnguessableToken> devtools_token);
+      std::optional<base::UnguessableToken> devtools_token);
   int SendToInternal(const void* pv,
                      size_t cb,
                      const rtc::SocketAddress& addr,
@@ -324,7 +324,7 @@ bool IpcPacketSocket::Init(
     uint16_t max_port,
     const rtc::SocketAddress& remote_address,
     WTF::CrossThreadFunction<
-        void(base::OnceCallback<void(absl::optional<base::UnguessableToken>)>)>&
+        void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>&
         devtools_token_getter) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(state_, kIsUninitialized);
@@ -382,7 +382,7 @@ void IpcPacketSocket::DoCreateSocket(
     net::NetworkTrafficAnnotationTag traffic_annotation,
     mojo::PendingRemote<network::mojom::blink::P2PSocketClient> remote,
     mojo::PendingReceiver<network::mojom::blink::P2PSocket> receiver,
-    absl::optional<base::UnguessableToken> devtools_token) {
+    std::optional<base::UnguessableToken> devtools_token) {
   CHECK(dispatcher);
 
   dispatcher->GetP2PSocketManager()->CreateSocket(
@@ -791,7 +791,7 @@ void AsyncDnsAddressResolverImpl::OnAddressResolved(
 
 IpcPacketSocketFactory::IpcPacketSocketFactory(
     WTF::CrossThreadFunction<
-        void(base::OnceCallback<void(absl::optional<base::UnguessableToken>)>)>
+        void(base::OnceCallback<void(std::optional<base::UnguessableToken>)>)>
         devtools_token_getter,
     P2PSocketDispatcher* socket_dispatcher,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,

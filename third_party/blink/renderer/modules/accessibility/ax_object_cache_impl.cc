@@ -3274,7 +3274,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
       // embedding token, which may not be present when the cache is first
       // initialized.
       if (GetDocument().GetFrame()) {
-        const absl::optional<base::UnguessableToken>& embedding_token =
+        const std::optional<base::UnguessableToken>& embedding_token =
             GetDocument().GetFrame()->GetEmbeddingToken();
         if (embedding_token && !embedding_token->is_empty()) {
           if (auto* client = GetWebLocalFrameClient()) {

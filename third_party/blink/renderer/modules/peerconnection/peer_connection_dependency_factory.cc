@@ -741,14 +741,14 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
 }
 
 void PeerConnectionDependencyFactory::DoGetDevtoolsToken(
-    base::OnceCallback<void(absl::optional<base::UnguessableToken>)> then) {
+    base::OnceCallback<void(std::optional<base::UnguessableToken>)> then) {
   context_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
           [](PeerConnectionDependencyFactory* factory)
-              -> absl::optional<base::UnguessableToken> {
+              -> std::optional<base::UnguessableToken> {
             if (!factory) {
-              return absl::nullopt;
+              return std::nullopt;
             }
             return factory->GetDevtoolsToken();
           },
@@ -756,13 +756,13 @@ void PeerConnectionDependencyFactory::DoGetDevtoolsToken(
       std::move(then));
 }
 
-absl::optional<base::UnguessableToken>
+std::optional<base::UnguessableToken>
 PeerConnectionDependencyFactory::GetDevtoolsToken() {
   if (!GetExecutionContext()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   CHECK(GetExecutionContext()->IsContextThread());
-  absl::optional<base::UnguessableToken> devtools_token;
+  std::optional<base::UnguessableToken> devtools_token;
   probe::WillCreateP2PSocketUdp(GetExecutionContext(), &devtools_token);
   return devtools_token;
 }
