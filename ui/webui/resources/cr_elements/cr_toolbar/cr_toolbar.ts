@@ -3,16 +3,12 @@
 // found in the LICENSE file.
 
 import '../cr_icon_button/cr_icon_button.js';
-import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_toolbar_search_field.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-
-import {getCss as getHiddenCss} from '../cr_hidden_style_lit.css.js';
-import {getCss as getIconsCss} from '../cr_icons_lit.css.js';
 
 import {getCss} from './cr_toolbar.css.js';
 import {getHtml} from './cr_toolbar.html.js';
@@ -30,11 +26,7 @@ export class CrToolbarElement extends CrLitElement {
   }
 
   static override get styles() {
-    return [
-      getHiddenCss(),
-      getIconsCss(),
-      getCss(),
-    ];
+    return getCss();
   }
 
   override render() {

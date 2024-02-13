@@ -7,16 +7,13 @@
  * 'cr-expand-button' is a chrome-specific wrapper around a button that toggles
  * between an opened (expanded) and closed state.
  */
-import '../cr_actionable_row_style_lit.css.js';
 import '../cr_icon_button/cr_icon_button.js';
-import '../cr_shared_vars.css.js';
 import '../icons.html.js';
 
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss as getActionableRowCss} from '../cr_actionable_row_style_lit.css.js';
 import type {CrIconButtonElement} from '../cr_icon_button/cr_icon_button.js';
 
 import {getCss} from './cr_expand_button.css.js';
@@ -34,10 +31,7 @@ export class CrExpandButtonElement extends CrLitElement {
   }
 
   static override get styles() {
-    return [
-      getActionableRowCss(),
-      getCss(),
-    ];
+    return getCss();
   }
 
   override render() {

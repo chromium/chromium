@@ -4,6 +4,9 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=./other1.css.js
+ * #import=./other2.css.js
+ * #include=other1 other2
  * #css_wrapper_metadata_end */
 
 /* Purposefully empty since this style is generated at build time from the
