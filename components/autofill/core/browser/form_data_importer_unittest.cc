@@ -522,6 +522,7 @@ class FormDataImporterTest : public testing::Test {
   FormDataImporterTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillUseI18nAddressModel,
+         features::kAutofillEnableDependentLocalityParsing,
          features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
@@ -1288,10 +1289,6 @@ TEST_F(FormDataImporterTest, ImportThirdAddressProfiles) {
 // Test that with dependent locality parsing enabled, dependent locality fields
 // are imported.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_DependentLocality) {
-  base::test::ScopedFeatureList dependent_locality_feature;
-  dependent_locality_feature.InitAndEnableFeature(
-      features::kAutofillEnableDependentLocalityParsing);
-
   // The Mexican address format contains a dependent locality.
   TypeValuePairs mx_profile =
       GetDefaultProfileTypeValuePairsWithOverriddenCountry("MX");
