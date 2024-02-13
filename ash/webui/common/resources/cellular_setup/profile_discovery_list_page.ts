@@ -15,6 +15,7 @@ import './profile_discovery_list_item.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {ESimProfileProperties} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './profile_discovery_list_page.html.js';
@@ -44,6 +45,21 @@ export class ProfileDiscoveryListPageElement extends
 
   pendingProfileProperties: ESimProfileProperties[];
   selectedProfileProperties: ESimProfileProperties|null;
+
+  attemptToFocusOnFirstProfile(): boolean {
+    if (!this.pendingProfileProperties ||
+        this.pendingProfileProperties.length === 0) {
+      return false;
+    }
+
+    const items =
+        this.shadowRoot!.querySelectorAll('profile-discovery-list-item');
+    const item = items[0] as HTMLElement;
+    assert(items.length > 0);
+    item.focus();
+    item.setAttribute('selected', 'true');
+    return true;
+  }
 
   private isProfilePropertiesSelected_(profileProperties:
                                            ESimProfileProperties): boolean {

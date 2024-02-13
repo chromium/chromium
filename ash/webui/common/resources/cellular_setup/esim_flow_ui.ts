@@ -29,6 +29,7 @@ import {ButtonBarState, ButtonState} from './cellular_types.js';
 import {getTemplate} from './esim_flow_ui.html.js';
 import {getEuicc, getPendingESimProfiles} from './esim_manager_utils.js';
 import {getESimManagerRemote} from './mojo_interface_provider.js';
+import {ProfileDiscoveryListPageElement} from './profile_discovery_list_page';
 import {SubflowMixin} from './subflow_mixin.js';
 
 export enum EsimPageName {
@@ -827,6 +828,22 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         'Navigate backward faled for : ' + this.state_ +
         ' this state does not support backward navigation.');
     assertNotReached();
+  }
+
+  /** SubflowMixin override */
+  override maybeFocusPageElement(): boolean {
+    if (this.state_ !== EsimUiState.PROFILE_SELECTION) {
+      return false;
+    }
+
+    const profileDiscoveryPage =
+        this.shadowRoot!.querySelector<ProfileDiscoveryListPageElement>(
+            '#profileDiscoveryPage');
+
+    if (!profileDiscoveryPage) {
+      return false;
+    }
+    return profileDiscoveryPage!.attemptToFocusOnFirstProfile();
   }
 
   private onForwardNavigationRequested_(): void {
