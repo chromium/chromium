@@ -65,6 +65,15 @@ namespace {
 using mojom::CursorType;
 using mojom::DragOperation;
 
+// Wayland compositors usually remove keyboard focus during drag
+// sessions, thus modifier events are not sent, instead they are handled
+// at server side, and clients are indirectly notified through, e.g:
+// wl_data_offer.dnd_actions events.
+// There is an open discussion about being more explicit about this on
+// the spec: https://gitlab.freedesktop.org/wayland/wayland/-/issues/441
+// For now, assume no keyboard modifiers info is available during dnd.
+static constexpr int kWaylandDndModifiers = 0;
+
 bool OverlayStackOrderCompare(const wl::WaylandOverlayConfig& i,
                               const wl::WaylandOverlayConfig& j) {
   return i.z_order < j.z_order;
@@ -762,8 +771,7 @@ void WaylandWindow::OnDragEnter(const gfx::PointF& point, int operations) {
   if (!drop_handler) {
     return;
   }
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragEnter(point, operations, /*modifiers=*/0);
+  drop_handler->OnDragEnter(point, operations, kWaylandDndModifiers);
 }
 
 void WaylandWindow::OnDragDataAvailable(std::unique_ptr<OSExchangeData> data) {
@@ -780,8 +788,7 @@ int WaylandWindow::OnDragMotion(const gfx::PointF& point, int operations) {
   if (!drop_handler) {
     return 0;
   }
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  return drop_handler->OnDragMotion(point, operations, /*modifiers=*/0);
+  return drop_handler->OnDragMotion(point, operations, kWaylandDndModifiers);
 }
 
 void WaylandWindow::OnDragDrop() {
@@ -789,8 +796,7 @@ void WaylandWindow::OnDragDrop() {
   if (!drop_handler) {
     return;
   }
-  // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragDrop(/*modifiers=*/0);
+  drop_handler->OnDragDrop(kWaylandDndModifiers);
 }
 
 void WaylandWindow::OnDragLeave() {
