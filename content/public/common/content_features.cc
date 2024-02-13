@@ -496,12 +496,13 @@ BASE_FEATURE(kInstalledAppProvider,
 // isolated web apps via the isolated-app:// scheme, and other advanced isolated
 // app functionality. See https://github.com/reillyeon/isolated-web-apps for a
 // general overview.
-// This also enables support for IWA Controlled Frame, providing the Controlled
-// Frame tag to IWA apps. See
-// https://github.com/chasephillips/controlled-frame/blob/main/EXPLAINER.md for
-// more info. Please don't use this feature flag directly to guard the IWA code.
-// Use IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled() in the browser process
-// or check kEnableIsolatedWebAppsInRenderer command line flag in the renderer
+// This also enables support for Controlled Frame, providing the Controlled
+// Frame tag to IWA apps assuming that Controlled Frame isn't otherwise
+// disabled via the kControlledFrame feature. See
+// https://github.com/WICG/controlled-frame/blob/main/README.md for more info.
+// Please don't use this feature flag directly to guard the IWA code.  Use
+// IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled() in the browser process or
+// check kEnableIsolatedWebAppsInRenderer command line flag in the renderer
 // process.
 BASE_FEATURE(kIsolatedWebApps,
              "IsolatedWebApps",

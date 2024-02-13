@@ -7,15 +7,14 @@
 #include <string>
 
 #include "base/containers/contains.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/initialize_extensions_client.h"
-#include "content/public/common/content_features.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "url/url_constants.h"
 #endif
@@ -60,6 +59,10 @@ bool AvailabilityCheck(const std::string& api_full_name,
                        int context_id,
                        bool check_developer_mode,
                        const extensions::ContextData& context_data) {
+  if (!base::FeatureList::IsEnabled(features::kControlledFrame)) {
+    return false;
+  }
+
   bool is_allowed_for_scheme = url.SchemeIs("isolated-app");
 
 #if BUILDFLAG(IS_CHROMEOS)

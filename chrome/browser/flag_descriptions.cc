@@ -1242,6 +1242,12 @@ const char kEnableIsolatedWebAppDevModeName[] =
 const char kEnableIsolatedWebAppDevModeDescription[] =
     "Enables the installation of unverified Isolated Web Apps";
 
+const char kEnableControlledFrameName[] = "Enable Controlled Frame";
+const char kEnableControlledFrameDescription[] =
+    "Enables experimental support for Controlled Frame. See "
+    "https://github.com/WICG/controlled-frame/blob/main/EXPLAINER.md "
+    "for more information.";
+
 const char kEnableShortcutCustomizationAppName[] =
     "Enable shortcut customization app";
 const char kEnableShortcutCustomizationAppDescription[] =

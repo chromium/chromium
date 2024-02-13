@@ -2354,6 +2354,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-controlled-frame",
+    "owners": [ "cmp@chromium.org", "odejesush@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-cooperative-scheduling",
     "owners": [ "keishi@chromium.org" ],
     "expiry_milestone": 85

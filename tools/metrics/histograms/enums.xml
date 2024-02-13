@@ -18600,6 +18600,7 @@ from previous Chrome versions.
   <int value="-950411190"
       label="WebViewCpuAffinityRestrictToLittleCores:enabled"/>
   <int value="-950384924" label="OmniboxDisableInstantExtendedLimit:enabled"/>
+  <int value="-949956361" label="ControlledFrame:disabled"/>
   <int value="-949178861" label="enable-new-avatar-menu"/>
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
   <int value="-948684341" label="OmniboxBlurWithEscape:enabled"/>
@@ -20948,6 +20949,7 @@ from previous Chrome versions.
   <int value="138995035" label="SafeBrowsingAsyncRealTimeCheck:enabled"/>
   <int value="139569991" label="SharingDeviceExpiration:disabled"/>
   <int value="139603247" label="AudioHFPMicSRToggle:disabled"/>
+  <int value="139974547" label="ControlledFrame:enabled"/>
   <int value="140257184" label="ChromeOSAmbientModeNewUrl:enabled"/>
   <int value="140427435" label="OmniboxReportSearchboxStats:enabled"/>
   <int value="140778694"
