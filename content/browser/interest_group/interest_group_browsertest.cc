@@ -18435,12 +18435,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 
     void PreconnectSockets(uint32_t num_streams,
                            const GURL& url,
-                           bool allow_credentials,
+                           network::mojom::CredentialsMode credentials_mode,
                            const net::NetworkAnonymizationKey&
                                network_anonymization_key) override {
       EXPECT_EQ(1u, num_streams);
       EXPECT_EQ(expected_url_, url);
-      EXPECT_TRUE(allow_credentials);
+      EXPECT_EQ(credentials_mode, network::mojom::CredentialsMode::kInclude);
       run_loop_.Quit();
     }
 

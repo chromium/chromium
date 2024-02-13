@@ -680,7 +680,8 @@ void AdAuctionServiceImpl::PreconnectSocket(
   render_frame_host()
       .GetStoragePartition()
       ->GetNetworkContext()
-      ->PreconnectSockets(/*num_streams=*/1, url, /*allow_credentials=*/false,
+      ->PreconnectSockets(/*num_streams=*/1, url,
+                          network::mojom::CredentialsMode::kOmit,
                           network_anonymization_key);
 }
 
@@ -1109,7 +1110,8 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
       .GetStoragePartition()
       ->GetNetworkContext()
       ->PreconnectSockets(
-          /*num_streams=*/1, state.seller.GetURL(), /*allow_credentials=*/true,
+          /*num_streams=*/1, state.seller.GetURL(),
+          network::mojom::CredentialsMode::kInclude,
           render_frame_host()
               .GetIsolationInfoForSubresources()
               .network_anonymization_key());

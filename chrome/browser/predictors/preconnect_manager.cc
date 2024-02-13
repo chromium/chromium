@@ -194,8 +194,11 @@ void PreconnectManager::PreconnectUrl(
 
   auto* network_context = GetNetworkContext();
 
-  network_context->PreconnectSockets(num_sockets, url, allow_credentials,
-                                     network_anonymization_key);
+  network_context->PreconnectSockets(
+      num_sockets, url,
+      allow_credentials ? network::mojom::CredentialsMode::kInclude
+                        : network::mojom::CredentialsMode::kOmit,
+      network_anonymization_key);
 }
 
 std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(

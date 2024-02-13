@@ -1435,14 +1435,11 @@ interface NetworkContext {
 
   // Tries to preconnect to |url|. |num_streams| may be used to request more
   // than one connection be established in parallel.
-  // |allow_credentials| is true if the connection is to be pooled with
-  // credentialed requests and false otherwise.
-  // |network_anonymization_key| specifies the NetworkAnonymizationKey to
-  // associate with the preconnected sockets. The sockets will only be
-  // used for requests associated with the same key.
+  // The sockets will only be used for requests which share the same values for
+  // |credentials_mode| and |network_anonymization_key|.
   PreconnectSockets(uint32 num_streams,
                     url.mojom.Url url,
-                    bool allow_credentials,
+                    network.mojom.CredentialsMode credentials_mode,
                     NetworkAnonymizationKey network_anonymization_key);
 
   // Creates a P2PSocketManager instance, used for WebRTC.

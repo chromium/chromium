@@ -4706,9 +4706,34 @@ TEST_F(NetworkContextTest, PreconnectOne) {
   ASSERT_TRUE(test_server.Start());
 
   network_context->PreconnectSockets(1, test_server.base_url(),
-                                     /*allow_credentials=*/true,
+                                     network::mojom::CredentialsMode::kInclude,
                                      net::NetworkAnonymizationKey());
   connection_listener.WaitForAcceptedConnections(1u);
+}
+
+TEST_F(NetworkContextTest, PreconnectDifferentCredentialsMode) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  ConnectionListener connection_listener;
+  net::EmbeddedTestServer test_server;
+  test_server.SetConnectionListener(&connection_listener);
+  ASSERT_TRUE(test_server.Start());
+
+  network_context->PreconnectSockets(1, test_server.base_url(),
+                                     network::mojom::CredentialsMode::kOmit,
+                                     net::NetworkAnonymizationKey());
+  network_context->PreconnectSockets(1, test_server.base_url(),
+                                     network::mojom::CredentialsMode::kInclude,
+                                     net::NetworkAnonymizationKey());
+  network_context->PreconnectSockets(
+      1, test_server.base_url(),
+      network::mojom::CredentialsMode::kOmitBug_775438_Workaround,
+      net::NetworkAnonymizationKey());
+
+  // The requests above should each trigger the connection of a different
+  // socket, since they specify a different credentials mode.
+  connection_listener.WaitForAcceptedConnections(3u);
 }
 
 TEST_F(NetworkContextTest, PreconnectHSTS) {
@@ -4750,7 +4775,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
         net::SecureDnsPolicy::kAllow, /*disable_cert_network_fetches=*/false);
 
     network_context->PreconnectSockets(1, server_http_url,
-                                       /*allow_credentials=*/false,
+                                       network::mojom::CredentialsMode::kOmit,
                                        network_anonymization_key);
     connection_listener.WaitForAcceptedConnections(1u);
 
@@ -4761,7 +4786,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
     network_context->url_request_context()->transport_security_state()->AddHSTS(
         server_http_url.host(), expiry, false);
     network_context->PreconnectSockets(1, server_http_url,
-                                       /*allow_credentials=*/false,
+                                       network::mojom::CredentialsMode::kOmit,
                                        network_anonymization_key);
     connection_listener.WaitForAcceptedConnections(1u);
 
@@ -4781,7 +4806,7 @@ TEST_F(NetworkContextTest, PreconnectZero) {
   ASSERT_TRUE(test_server.Start());
 
   network_context->PreconnectSockets(0, test_server.base_url(),
-                                     /*allow_credentials=*/true,
+                                     network::mojom::CredentialsMode::kInclude,
                                      net::NetworkAnonymizationKey());
   base::RunLoop().RunUntilIdle();
 
@@ -4803,7 +4828,7 @@ TEST_F(NetworkContextTest, PreconnectTwo) {
   ASSERT_TRUE(test_server.Start());
 
   network_context->PreconnectSockets(2, test_server.base_url(),
-                                     /*allow_credentials=*/true,
+                                     network::mojom::CredentialsMode::kInclude,
                                      net::NetworkAnonymizationKey());
   connection_listener.WaitForAcceptedConnections(2u);
 
@@ -4822,7 +4847,7 @@ TEST_F(NetworkContextTest, PreconnectFour) {
   ASSERT_TRUE(test_server.Start());
 
   network_context->PreconnectSockets(4, test_server.base_url(),
-                                     /*allow_credentials=*/true,
+                                     network::mojom::CredentialsMode::kInclude,
                                      net::NetworkAnonymizationKey());
 
   connection_listener.WaitForAcceptedConnections(4u);
@@ -4846,7 +4871,7 @@ TEST_F(NetworkContextTest, PreconnectMax) {
   EXPECT_GT(76, max_num_sockets);
 
   network_context->PreconnectSockets(76, test_server.base_url(),
-                                     /*allow_credentials=*/true,
+                                     network::mojom::CredentialsMode::kInclude,
                                      net::NetworkAnonymizationKey());
 
   // Wait until |max_num_sockets| have been connected.
@@ -4883,10 +4908,10 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
   const auto kKey2 = net::NetworkAnonymizationKey::CreateSameSite(kSiteBar);
   const auto kNak1 = net::NetworkAnonymizationKey::CreateSameSite(kSiteFoo);
   const auto kNak2 = net::NetworkAnonymizationKey::CreateSameSite(kSiteBar);
-  network_context->PreconnectSockets(1, test_server.base_url(),
-                                     /*allow_credentials=*/false, kKey1);
-  network_context->PreconnectSockets(2, test_server.base_url(),
-                                     /*allow_credentials=*/false, kKey2);
+  network_context->PreconnectSockets(
+      1, test_server.base_url(), network::mojom::CredentialsMode::kOmit, kKey1);
+  network_context->PreconnectSockets(
+      2, test_server.base_url(), network::mojom::CredentialsMode::kOmit, kKey2);
   connection_listener.WaitForAcceptedConnections(3u);
 
   url::SchemeHostPort destination(test_server.base_url());
