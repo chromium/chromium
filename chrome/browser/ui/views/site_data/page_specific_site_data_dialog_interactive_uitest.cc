@@ -203,9 +203,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   }
 
  protected:
-  virtual void SetUpFeatureList() {
-    feature_list_.InitWithFeatures({net::features::kPartitionedCookies}, {});
-  }
+  virtual void SetUpFeatureList() { feature_list_.InitWithFeatures({}, {}); }
 
   virtual void SetUpCookieControlMode() {
     browser()->profile()->GetPrefs()->SetInteger(

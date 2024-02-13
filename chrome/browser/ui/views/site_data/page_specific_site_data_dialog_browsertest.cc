@@ -58,10 +58,6 @@ class PageSpecificSiteDataDialogBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PageSpecificSiteDataDialogBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {net::features::kPartitionedCookies, {}}};
-    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
-
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
@@ -152,7 +148,6 @@ class PageSpecificSiteDataDialogBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
