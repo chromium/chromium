@@ -12695,12 +12695,7 @@
     "OmniboxPrefBasedConsentHelper": [
         {
             "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "ios"
             ],
             "experiments": [
                 {
