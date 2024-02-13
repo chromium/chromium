@@ -680,6 +680,16 @@ if (enable_hevc_parser_and_hw_decoder) {
   }
 }
 
+fuzzer_test("media_h264_decoder_fuzzer") {
+  sources = [ "h264_decoder_fuzzer.cc" ]
+  deps = [
+    ":gpu",
+    "//base",
+    "//media",
+  ]
+  seed_corpuses = [ "//media/test/data" ]
+}
+
 if (use_av1_hw_decoder) {
   fuzzer_test("media_av1_decoder_fuzzer") {
     sources = [ "av1_decoder_fuzzertest.cc" ]
