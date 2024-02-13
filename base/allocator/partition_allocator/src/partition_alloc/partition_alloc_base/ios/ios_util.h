@@ -11,22 +11,6 @@
 
 namespace partition_alloc::internal::base::ios {
 
-// Returns whether the operating system is iOS 12 or later.
-// TODO(crbug.com/1129482): Remove once minimum supported version is at least 12
-PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) bool IsRunningOnIOS12OrLater();
-
-// Returns whether the operating system is iOS 13 or later.
-// TODO(crbug.com/1129483): Remove once minimum supported version is at least 13
-PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) bool IsRunningOnIOS13OrLater();
-
-// Returns whether the operating system is iOS 14 or later.
-// TODO(crbug.com/1129484): Remove once minimum supported version is at least 14
-PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) bool IsRunningOnIOS14OrLater();
-
-// Returns whether the operating system is iOS 15 or later.
-// TODO(crbug.com/1227419): Remove once minimum supported version is at least 15
-PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) bool IsRunningOnIOS15OrLater();
-
 // Returns whether the operating system is at the given version or later.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix);

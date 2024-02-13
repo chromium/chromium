@@ -358,8 +358,7 @@ class CertVerifyProcInternalTest
 #if BUILDFLAG(IS_IOS)
     // Beginning with iOS 13, the minimum key size for RSA/DSA algorithms is
     // 2048 bits. See https://support.apple.com/en-us/HT210176
-    if (verify_proc_type() == CERT_VERIFY_PROC_IOS &&
-        base::ios::IsRunningOnIOS13OrLater()) {
+    if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
       return size < 2048;
     }
 #endif
@@ -371,15 +370,13 @@ class CertVerifyProcInternalTest
   // current platform.
   bool IsInvalidRsaDsaKeySize(int size) const {
 #if BUILDFLAG(IS_IOS)
-    if (base::ios::IsRunningOnIOS12OrLater()) {
-      // On iOS using SecTrustEvaluateWithError it is not possible to
-      // distinguish between weak and invalid key sizes.
-      return IsWeakRsaDsaKeySize(size);
-    }
-#endif
-
+    // On iOS using SecTrustEvaluateWithError it is not possible to
+    // distinguish between weak and invalid key sizes.
+    return IsWeakRsaDsaKeySize(size);
+#else
     // This platform does not mark certificates with weak keys as invalid.
     return false;
+#endif
   }
 
   static bool ParseKeyType(const std::string& key_type,
@@ -451,12 +448,6 @@ class CertVerifyProcInternalTest
   }
 
   bool VerifyProcTypeIsIOSAtMostOS14() const {
-#if BUILDFLAG(IS_IOS)
-    if (verify_proc_type() == CERT_VERIFY_PROC_IOS &&
-        !base::ios::IsRunningOnIOS15OrLater()) {
-      return true;
-    }
-#endif
     return false;
   }
 

@@ -10,26 +10,6 @@
 
 namespace partition_alloc::internal::base::ios {
 
-bool IsRunningOnIOS12OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(12, 0, 0);
-  return is_running_on_or_later;
-}
-
-bool IsRunningOnIOS13OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(13, 0, 0);
-  return is_running_on_or_later;
-}
-
-bool IsRunningOnIOS14OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(14, 0, 0);
-  return is_running_on_or_later;
-}
-
-bool IsRunningOnIOS15OrLater() {
-  static const bool is_running_on_or_later = IsRunningOnOrLater(15, 0, 0);
-  return is_running_on_or_later;
-}
-
 bool IsRunningOnOrLater(int32_t major, int32_t minor, int32_t bug_fix) {
   static const class OSVersion {
    public:
