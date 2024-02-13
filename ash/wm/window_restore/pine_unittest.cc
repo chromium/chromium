@@ -16,7 +16,7 @@
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
-#include "ash/wm/window_restore/window_restore_controller.h"
+#include "ash/wm/window_restore/pine_controller.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/button/image_button.h"
@@ -39,7 +39,7 @@ class PineTest : public AshTestBase {
 
 TEST_F(PineTest, Show) {
   Shell::Get()
-      ->window_restore_controller()
+      ->pine_controller()
       ->MaybeStartPineOverviewSessionDevAccelerator();
   WaitForOverviewEntered();
 

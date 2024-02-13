@@ -5,14 +5,11 @@
 #ifndef ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_DATA_H_
 #define ASH_WM_WINDOW_RESTORE_PINE_CONTENTS_DATA_H_
 
-#include <memory>
+#include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ui/gfx/image/image_skia.h"
-
-namespace app_restore {
-class RestoreData;
-}
 
 namespace ash {
 
@@ -24,18 +21,38 @@ struct ASH_EXPORT PineContentsData {
   PineContentsData& operator=(const PineContentsData&) = delete;
   ~PineContentsData();
 
+  struct AppInfo {
+    explicit AppInfo(const std::string& id);
+    AppInfo(const std::string& app_id,
+            const std::string& tab_title,
+            const std::vector<std::string>& tab_urls);
+    AppInfo(const AppInfo&);
+    ~AppInfo();
+    // App id. Used to retrieve the app name and app icon from the app registry
+    // cache.
+    std::string app_id;
+    // Used for browser and PWAs. Shows a more descriptive title than "Chrome".
+    std::string tab_title;
+    // Used by browser only. Urls of up to 5 tabs including the active tab. Used
+    // to retrieve favicons.
+    std::vector<std::string> tab_urls;
+  };
+
+  using AppsInfos = std::vector<AppInfo>;
+
   // Image read from the pine image file. Will be null if pine image file was
   // missing or decoding failed.
   gfx::ImageSkia image;
 
-  // Contains the app data needed to show app titles, app icons, favicons, etc.
-  // Read from the full restore file.
-  // TODO(sammiequon): Use a subset of `app_restore::RestoreData` here instead
-  // as it contains a lot of unnecessary information.
-  std::unique_ptr<app_restore::RestoreData> restore_data;
+  // List of `AppInfo`'s. Each one representing an app window. There may be
+  // multiple entries with the same app id.
+  AppsInfos apps_infos;
+
+  // True if the previous session crashed. The pine dialog will have slightly
+  // different strings in this case.
+  bool last_session_crashed = false;
 
   // TODO(sammiequon): Add ok/cancel callbacks.
-  // TODO(sammiequon): Add dialog type (crash, update, normal).
 };
 
 }  // namespace ash

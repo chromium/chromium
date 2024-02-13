@@ -2833,6 +2833,8 @@ component("ash") {
     "wm/window_restore/pine_contents_view.h",
     "wm/window_restore/pine_context_menu_model.cc",
     "wm/window_restore/pine_context_menu_model.h",
+    "wm/window_restore/pine_controller.cc",
+    "wm/window_restore/pine_controller.h",
     "wm/window_restore/window_restore_controller.cc",
     "wm/window_restore/window_restore_controller.h",
     "wm/window_restore/window_restore_util.cc",

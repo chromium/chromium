@@ -15,7 +15,7 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/pine_context_menu_model.h"
-#include "ash/wm/window_restore/window_restore_controller.h"
+#include "ash/wm/window_restore/pine_controller.h"
 #include "base/barrier_callback.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/strcat.h"
@@ -214,8 +214,9 @@ class PineItemsOverflowView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemsOverflowView, views::BoxLayoutView)
 
  public:
-  explicit PineItemsOverflowView(const PineContentsView::AppsData& apps) {
-    const int elements = static_cast<int>(apps.size());
+  explicit PineItemsOverflowView(
+      const PineContentsData::AppsInfos& apps_infos) {
+    const int elements = static_cast<int>(apps_infos.size());
     CHECK_GE(elements, kOverflowMinElements);
 
     // TODO(hewer): Fix margins so the icons and text are aligned with
@@ -257,9 +258,9 @@ class PineItemsOverflowView : public views::BoxLayoutView {
         image_view_map_[i] = image_view;
 
         // The callback may be called synchronously.
-        const auto& [app_id, favicons] = apps[i];
+        const PineContentsData::AppInfo& app_info = apps_infos[i];
         delegate->GetIconForAppId(
-            app_id, kAppIdImageSize,
+            app_info.app_id, kAppIdImageSize,
             base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
                            weak_ptr_factory_.GetWeakPtr(), i));
       }
@@ -301,9 +302,9 @@ class PineItemsOverflowView : public views::BoxLayoutView {
         image_view_map_[i] = image_view;
 
         // The callback may be called synchronously.
-        const auto& [app_id, favicons] = apps[i];
+        const PineContentsData::AppInfo& app_info = apps_infos[i];
         delegate->GetIconForAppId(
-            app_id, kAppIdImageSize,
+            app_info.app_id, kAppIdImageSize,
             base::BindOnce(&PineItemsOverflowView::SetIconForIndex,
                            weak_ptr_factory_.GetWeakPtr(), i));
       }
@@ -420,8 +421,9 @@ class PineItemsContainerView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemsContainerView, views::BoxLayoutView)
 
  public:
-  explicit PineItemsContainerView(const PineContentsView::AppsData& apps) {
-    const int elements = static_cast<int>(apps.size());
+  explicit PineItemsContainerView(
+      const PineContentsData::AppsInfos& apps_infos) {
+    const int elements = static_cast<int>(apps_infos.size());
     CHECK_GT(elements, 0);
 
     SetBackground(views::CreateRoundedRectBackground(SK_ColorWHITE,
@@ -438,11 +440,11 @@ class PineItemsContainerView : public views::BoxLayoutView {
     auto* delegate = Shell::Get()->saved_desk_delegate();
 
     for (int i = 0; i < elements; ++i) {
-      const auto& [app_id, favicons] = apps[i];
+      const PineContentsData::AppInfo& app_info = apps_infos[i];
       // If there are more than four elements, we will need to save the last
       // space for the overflow view to condense the remaining info.
       if (elements >= kOverflowMinElements && i >= kOverflowMinThreshold) {
-        AddChildView(std::make_unique<PineItemsOverflowView>(apps));
+        AddChildView(std::make_unique<PineItemsOverflowView>(apps_infos));
         break;
       }
 
@@ -450,17 +452,19 @@ class PineItemsContainerView : public views::BoxLayoutView {
       // `cache` might be null in a test environment. In that case, we will
       // use an empty title.
       if (cache) {
-        cache->ForOneApp(app_id, [&title](const apps::AppUpdate& update) {
-          title = update.Name();
-        });
+        cache->ForOneApp(
+            app_info.app_id,
+            [&title](const apps::AppUpdate& update) { title = update.Name(); });
       }
 
-      PineItemView* item_view =
-          AddChildView(std::make_unique<PineItemView>(title, favicons));
+      // TODO(hewer|sammiequon): `PineItemView` should just take `app_info` and
+      // `cache` as a constructor argument.
+      PineItemView* item_view = AddChildView(
+          std::make_unique<PineItemView>(title, app_info.tab_urls));
 
       // The callback may be called synchronously.
       delegate->GetIconForAppId(
-          app_id, kAppIdImageSize,
+          app_info.app_id, kAppIdImageSize,
           base::BindOnce(
               [](base::WeakPtr<PineItemView> item_view_ptr,
                  const gfx::ImageSkia& icon) {
@@ -548,24 +552,12 @@ PineContentsView::PineContentsView() {
       ->SetFlexForView(spacer, 1);
 
   const PineContentsData* pine_contents_data =
-      WindowRestoreController::Get()->pine_contents_data();
+      Shell::Get()->pine_controller()->pine_contents_data();
   CHECK(pine_contents_data);
   if (pine_contents_data->image.isNull()) {
-    // TODO(hewer|sammiequon): Move this developer testing data to
-    // `WindowRestoreController::MaybeStartPineOverviewSessionDevAccelerator()`.
-    AppsData kTestingAppsData = {
-        {"mgndgikekgjfcpckkfioiadnlibdjbkf",  // Chrome
-         {"https://www.cnn.com/", "https://www.youtube.com/",
-          "https://www.google.com/"}},
-        {"njfbnohfdkmbmnjapinfcopialeghnmh", {}},  // Camera
-        {"odknhmnlageboeamepcngndbggdpaobj", {}},  // Settings
-        {"fkiggjmkendpmbegkagpmagjepfkpmeb", {}},  // Files
-        {"oabkinaljpjeilageghcdlnekhphhphl", {}},  // Calculator
-        {"mgndgikekgjfcpckkfioiadnlibdjbkf",       // Chrome
-         {"https://www.google.com/maps/"}},
-    };
-    PineItemsContainerView* container_view = AddChildView(
-        std::make_unique<PineItemsContainerView>(kTestingAppsData));
+    PineItemsContainerView* container_view =
+        AddChildView(std::make_unique<PineItemsContainerView>(
+            pine_contents_data->apps_infos));
     container_view->SetPreferredSize(kItemsContainerPreferredSize);
   } else {
     views::ImageView* preview =

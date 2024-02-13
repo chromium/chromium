@@ -4,12 +4,22 @@
 
 #include "ash/wm/window_restore/pine_contents_data.h"
 
-#include "components/app_restore/restore_data.h"
-
 namespace ash {
 
 PineContentsData::PineContentsData() = default;
 
 PineContentsData::~PineContentsData() = default;
+
+PineContentsData::AppInfo::AppInfo(const std::string& app_id)
+    : app_id(app_id) {}
+
+PineContentsData::AppInfo::AppInfo(const std::string& app_id,
+                                   const std::string& tab_title,
+                                   const std::vector<std::string>& tab_urls)
+    : app_id(app_id), tab_title(tab_title), tab_urls(tab_urls) {}
+
+PineContentsData::AppInfo::AppInfo(const AppInfo&) = default;
+
+PineContentsData::AppInfo::~AppInfo() = default;
 
 }  // namespace ash

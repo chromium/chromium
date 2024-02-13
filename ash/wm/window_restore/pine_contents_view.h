@@ -28,11 +28,6 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   METADATA_HEADER(PineContentsView, views::BoxLayoutView)
 
  public:
-  // Temporary typedefs to describe a bunch of apps. An app is described by an
-  // app id and a vector of urls, which can be empty if the app is not Chrome.
-  using AppData = std::pair<std::string, std::vector<std::string>>;
-  using AppsData = std::vector<AppData>;
-
   PineContentsView();
   PineContentsView(const PineContentsView&) = delete;
   PineContentsView& operator=(const PineContentsView&) = delete;
