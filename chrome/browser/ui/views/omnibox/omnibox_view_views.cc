@@ -1357,6 +1357,11 @@ void OmniboxViewViews::OnFocus() {
 
   GetRenderText()->SetElideBehavior(gfx::NO_ELIDE);
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // The text offsets are no longer valid when the elide behavior changes.
+  SetNeedsAccessibleTextOffsetsUpdate();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
   // Focus changes can affect the visibility of any keyword hint.
   if (location_bar_view_ && model()->is_keyword_hint())
     location_bar_view_->DeprecatedLayoutImmediately();
@@ -1423,6 +1428,11 @@ void OmniboxViewViews::OnBlur() {
   // text, since the start of the text may not be at the left edge).
   gfx::RenderText* render_text = GetRenderText();
   render_text->SetElideBehavior(gfx::ELIDE_TAIL);
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // The text offsets are no longer valid when the elide behavior changes.
+  SetNeedsAccessibleTextOffsetsUpdate();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   // In cases where there's a lot of whitespace in the text being shown, we want
   // the elision marker to be at the right of the text field, so don't elide

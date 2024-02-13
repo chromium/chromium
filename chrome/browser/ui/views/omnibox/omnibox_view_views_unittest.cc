@@ -51,6 +51,7 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/input_method.h"
@@ -61,6 +62,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/render_text_test_api.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 
 using gfx::Range;
@@ -103,7 +105,6 @@ class TestingOmniboxView : public OmniboxViewViews {
   void ResetStyles();
 
   // OmniboxViewViews:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {}
   void OnThemeChanged() override;
 
   using OmniboxView::OnInlineAutocompleteTextMaybeChanged;
@@ -959,6 +960,46 @@ TEST_F(OmniboxViewViewsTest, SchemeStrikethrough) {
   style = omnibox_view()->GetLatestStyleForRange(kSchemeRange);
   EXPECT_FALSE(style.has_value());
 }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+TEST_F(OmniboxViewViewsTest,
+       AccessibleTextOffsetsUpdatesAfterElideBehaviorChange) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+
+  // Make the Omnibox very narrow (so it couldn't fit the whole string).
+  int kOmniboxWidth = 60;
+  gfx::RenderText* render_text = omnibox_view()->GetRenderText();
+  render_text->SetDisplayRect(gfx::Rect(0, 0, kOmniboxWidth, 10));
+  render_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  const std::u16string text = u"http://www.example.com/?query=1";
+  omnibox_view()->SetWindowTextAndCaretPos(text, 23U, false, false);
+
+  EXPECT_EQ(gfx::ELIDE_TAIL, render_text->elide_behavior());
+  ui::AXNodeData node_data;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_offsets = {
+      0,  6,  10, 14, 21, 24, 29, 33, 42, 52, 52, 52, 52, 52, 52, 52,
+      52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52};
+  EXPECT_EQ(node_data.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets);
+
+  omnibox_textfield()->OnFocus();
+
+  EXPECT_EQ(gfx::NO_ELIDE, render_text->elide_behavior());
+  ui::AXNodeData node_data_2;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(&node_data_2);
+  std::vector<int32_t> expected_offsets_2 = {
+      0,   6,   10,  14,  21,  24,  29,  33,  42,  51,  59,
+      62,  68,  74,  80,  90,  97,  100, 107, 109, 115, 122,
+      132, 137, 142, 149, 156, 162, 166, 172, 180, 188};
+  EXPECT_EQ(node_data_2.GetIntListAttribute(
+                ax::mojom::IntListAttribute::kCharacterOffsets),
+            expected_offsets_2);
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 class OmniboxViewViewsClipboardTest
     : public OmniboxViewViewsTest,

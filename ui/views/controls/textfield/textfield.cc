@@ -1061,10 +1061,12 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // If the accessible value changed since the last time we computed the text
   // offsets, we need to recompute them.
   if (::features::IsUiaProviderEnabled() &&
-      ax_value_used_to_compute_offsets_ != ax_value) {
+      (ax_value_used_to_compute_offsets_ != ax_value ||
+       needs_ax_text_offsets_update_)) {
     GetViewAccessibility().ClearTextOffsets();
     RefreshAccessibleTextOffsets();
     ax_value_used_to_compute_offsets_ = ax_value;
+    needs_ax_text_offsets_update_ = false;
   }
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
@@ -2496,6 +2498,12 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
       return ui::TextEditCommand::INVALID_COMMAND;
   }
 }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+void Textfield::SetNeedsAccessibleTextOffsetsUpdate() {
+  needs_ax_text_offsets_update_ = true;
+}
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, private:

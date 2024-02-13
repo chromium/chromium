@@ -535,6 +535,12 @@ class VIEWS_EXPORT Textfield : public View,
   // Get the default command for a given key |event|.
   virtual ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event);
 
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  // Called when the accessible text offsets for the textfield need to be
+  // recomputed on the next pass.
+  virtual void SetNeedsAccessibleTextOffsetsUpdate();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+
   // Update the cursor position in the text field.
   void UpdateCursorViewPosition();
 
@@ -853,6 +859,9 @@ class VIEWS_EXPORT Textfield : public View,
   // The string used to compute the text offsets for accessibility. This is used
   // to determine if the offsets need to be recomputed.
   std::u16string ax_value_used_to_compute_offsets_;
+
+  // Whether the last computed text offsets are still valid.
+  bool needs_ax_text_offsets_update_;
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
   // Context menu related members.
