@@ -11139,6 +11139,7 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h",
           "../browser/ui/webui/ash/settings/integration_tests/keyboard_modifier_remapping_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/keyboard_six_pack_keys_interactive_uitest.cc",
+          "../browser/ui/webui/ash/settings/integration_tests/mouse_button_renaming_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/mouse_scroll_acceleration_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/open_keyboard_subpage_interactive_uitest.cc",
           "../browser/ui/webui/ash/settings/integration_tests/open_touchpad_subpage_interactive_uitest.cc",

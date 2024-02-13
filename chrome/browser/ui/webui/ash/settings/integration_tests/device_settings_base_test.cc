@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/settings/integration_tests/device_settings_base_test.h"
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "ui/events/test/event_generator.h"
 
@@ -56,7 +57,8 @@ DeviceSettingsBaseTest::DeviceSettingsBaseTest() {
   webcontents_id_ = kOsSettingsWebContentsId;
 
   feature_list_.InitWithFeatures({features::kInputDeviceSettingsSplit,
-                                  features::kAltClickAndSixPackCustomization},
+                                  features::kAltClickAndSixPackCustomization,
+                                  features::kPeripheralCustomization},
                                  {});
 }
 
