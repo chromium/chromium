@@ -127,6 +127,8 @@ extern const char kTabHoverCardAdditionalMaxWidthDelay[];
 BASE_DECLARE_FEATURE(kTabOrganization);
 bool IsTabOrganization();
 
+BASE_DECLARE_FEATURE(kMultiTabOrganization);
+
 // The target (and minimum) interval between proactive nudge triggers. Measured
 // against a clock that only runs while Chrome is in the foreground.
 extern const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod;

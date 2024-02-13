@@ -230,6 +230,10 @@ bool IsTabOrganization() {
          base::FeatureList::IsEnabled(features::kTabOrganization);
 }
 
+BASE_FEATURE(kMultiTabOrganization,
+             "MultiTabOrganization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kTabOrganizationTriggerPeriod{
     &kTabOrganization, "trigger_period", base::Hours(6)};
 

@@ -184,6 +184,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   }
   source->AddBoolean("tabOrganizationEnabled", tab_organization_enabled);
   source->AddBoolean(
+      "multiTabOrganizationEnabled",
+      base::FeatureList::IsEnabled(features::kMultiTabOrganization));
+  source->AddBoolean(
       "tabOrganizationRefreshButtonEnabled",
       base::FeatureList::IsEnabled(features::kTabOrganizationRefreshButton));
 

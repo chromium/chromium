@@ -63,6 +63,11 @@ export class TabOrganizationPageElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showTabOrganizationFRE'),
       },
+
+      multiTabOrganization_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('multiTabOrganizationEnabled'),
+      },
     };
   }
 
@@ -77,6 +82,7 @@ export class TabOrganizationPageElement extends PolymerElement {
   private organizationId_: number = -1;
   private isLastOrganization_: boolean = false;
   private showFRE_: boolean;
+  private multiTabOrganization_: boolean;
   private documentVisibilityChangedListener_: () => void;
   private futureState_: TabOrganizationState|null;
 
