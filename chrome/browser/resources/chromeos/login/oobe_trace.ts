@@ -26,31 +26,31 @@
  * will be written into an UMA metric.
  */
 
-import {assert} from '//resources/ash/common/assert.js';
-
 import {loadTimeData} from './i18n_setup.js';
 
-export const TraceEvent = {
-  FIRST_INSTRUCTION: 'FIRST_INSTRUCTION',
-  FIRST_LINE_AFTER_IMPORTS: 'FIRST_LINE_AFTER_IMPORTS',
-  PRIORITY_SCREENS_ADDED: 'PRIORITY_SCREENS_ADDED',
-  COMMON_SCREENS_ADDED: 'COMMON_SCREENS_ADDED',
-  REMAINING_SCREENS_ADDED: 'REMAINING_SCREENS_ADDED',
-  DOM_CONTENT_LOADED: 'DOM_CONTENT_LOADED',
-  OOBE_INITIALIZED: 'OOBE_INITIALIZED',
-  FIRST_SCREEN_SHOWN: 'FIRST_SCREEN_SHOWN',
-  FIRST_OOBE_LOTTIE_INITIALIZED: 'FIRST_OOBE_LOTTIE_INITIALIZED',
-  LAST_OOBE_LOTTIE_INITIALIZED: 'LAST_OOBE_LOTTIE_INITIALIZED',
-  WELCOME_ANIMATION_PLAYING: 'WELCOME_ANIMATION_PLAYING',
-};
+export enum TraceEvent {
+  FIRST_INSTRUCTION = 'FIRST_INSTRUCTION',
+  FIRST_LINE_AFTER_IMPORTS = 'FIRST_LINE_AFTER_IMPORTS',
+  PRIORITY_SCREENS_ADDED = 'PRIORITY_SCREENS_ADDED',
+  COMMON_SCREENS_ADDED = 'COMMON_SCREENS_ADDED',
+  REMAINING_SCREENS_ADDED = 'REMAINING_SCREENS_ADDED',
+  DOM_CONTENT_LOADED = 'DOM_CONTENT_LOADED',
+  OOBE_INITIALIZED = 'OOBE_INITIALIZED',
+  FIRST_SCREEN_SHOWN = 'FIRST_SCREEN_SHOWN',
+  FIRST_OOBE_LOTTIE_INITIALIZED = 'FIRST_OOBE_LOTTIE_INITIALIZED',
+  LAST_OOBE_LOTTIE_INITIALIZED = 'LAST_OOBE_LOTTIE_INITIALIZED',
+  WELCOME_ANIMATION_PLAYING = 'WELCOME_ANIMATION_PLAYING',
+}
 
 // Event log containing a TraceEvent and a timestamp.
-const eventLogs = [];
+const eventLogs: EventEntry[] = [];
 window.oobeTraceLogs = eventLogs;
 
 class EventEntry {
-  constructor(traceEventName) {
-    assert(traceEventName in TraceEvent);
+  name: string;
+  delta: number;
+
+  constructor(traceEventName: TraceEvent) {
     this.name = traceEventName;
     this.delta = performance.now();
   }
@@ -66,11 +66,11 @@ let firstScreenShownEventLogged = false;
 let welcomeAnimationPlayEventLogged = false;
 let firstOobeLottieEventLogged = false;
 
-export function traceExecution(traceEvent) {
+export function traceExecution(traceEvent: TraceEvent): void {
   eventLogs.push(new EventEntry(traceEvent));
 }
 
-export function traceFirstScreenShown() {
+export function traceFirstScreenShown(): void {
   if (firstScreenShownEventLogged) {
     return;
   }
@@ -78,7 +78,7 @@ export function traceFirstScreenShown() {
   traceExecution(TraceEvent.FIRST_SCREEN_SHOWN);
 }
 
-export function traceWelcomeAnimationPlay() {
+export function traceWelcomeAnimationPlay(): void {
   if (welcomeAnimationPlayEventLogged) {
     return;
   }
@@ -86,7 +86,7 @@ export function traceWelcomeAnimationPlay() {
   traceExecution(TraceEvent.WELCOME_ANIMATION_PLAYING);
 }
 
-export function traceOobeLottieExecution() {
+export function traceOobeLottieExecution(): void {
   if (firstOobeLottieEventLogged) {
     maybeTraceLastOobeLottieInitialization();
   } else {
@@ -101,14 +101,11 @@ export function traceOobeLottieExecution() {
  * until writing it into the 'eventLog'. Any subsequent calls will clear the
  * timer so that only the last initialization will be actually stored.
  */
-let scheduledLastOobeLottieTrace = null;
-function maybeTraceLastOobeLottieInitialization() {
+let scheduledLastOobeLottieTrace: number = 0;
+function maybeTraceLastOobeLottieInitialization(): void {
   // Amount of time to wait until logging the last OOBE Lottie Initialization.
   const LAST_OOBE_LOTTIE_TIMEOUT_MSECS = 3 * 1000;
-
-  if (scheduledLastOobeLottieTrace) {
-    clearTimeout(scheduledLastOobeLottieTrace);
-  }
+  clearTimeout(scheduledLastOobeLottieTrace);
 
   const entry = new EventEntry(TraceEvent.LAST_OOBE_LOTTIE_INITIALIZED);
   scheduledLastOobeLottieTrace = setTimeout(() => {
@@ -120,7 +117,7 @@ function maybeTraceLastOobeLottieInitialization() {
 // Maybe output the timings to the console to be parsed when the command line
 // switch 'oobe-print-frontend-timings' is present. More details can be found in
 // go/oobe-frontend-trace-timings
-function maybePrintTraces() {
+function maybePrintTraces(): void {
   if (!loadTimeData.valueExists('printFrontendTimings') ||
       !loadTimeData.getBoolean('printFrontendTimings')) {
     return;
@@ -147,4 +144,11 @@ function maybePrintTraces() {
   }
   output += '_OOBE_TRACE_END';
   console.error(output);
+}
+
+declare global {
+  interface Window {
+    oobeInitializationBeginTimestamp: DOMHighResTimeStamp;
+    oobeTraceLogs: EventEntry[];
+  }
 }

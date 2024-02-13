@@ -9,5 +9,4 @@
  * that gets executed when OOBE starts.
  */
 
-const oobeInitializationBeginTimestamp = performance.now();
-window.oobeInitializationBeginTimestamp = oobeInitializationBeginTimestamp;
+window.oobeInitializationBeginTimestamp = performance.now();
