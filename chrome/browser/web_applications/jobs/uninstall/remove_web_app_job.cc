@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -27,53 +28,23 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
-
-namespace {
-
-bool CanUninstallAllManagementSources(
-    webapps::WebappUninstallSource uninstall_source) {
-  // Check that the source was from a known 'user' or allowed ones such
-  // as kMigration.
-  return uninstall_source == webapps::WebappUninstallSource::kUnknown ||
-         uninstall_source == webapps::WebappUninstallSource::kAppMenu ||
-         uninstall_source == webapps::WebappUninstallSource::kAppsPage ||
-         uninstall_source == webapps::WebappUninstallSource::kOsSettings ||
-         uninstall_source == webapps::WebappUninstallSource::kAppManagement ||
-         uninstall_source == webapps::WebappUninstallSource::kMigration ||
-         uninstall_source == webapps::WebappUninstallSource::kAppList ||
-         uninstall_source == webapps::WebappUninstallSource::kShelf ||
-         uninstall_source == webapps::WebappUninstallSource::kSync ||
-         uninstall_source == webapps::WebappUninstallSource::kStartupCleanup ||
-         uninstall_source == webapps::WebappUninstallSource::kTestCleanup ||
-         uninstall_source ==
-             webapps::WebappUninstallSource::kHealthcareUserInstallCleanup ||
-         uninstall_source ==
-             webapps::WebappUninstallSource::kIwaEnterprisePolicy;
-}
-
-}  // namespace
 
 RemoveWebAppJob::RemoveWebAppJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
     base::Value::Dict& debug_value,
-    webapps::AppId app_id,
-    bool is_initial_request)
+    webapps::AppId app_id)
     : uninstall_source_(uninstall_source),
       profile_(profile),
       debug_value_(debug_value),
-      app_id_(app_id),
-      is_initial_request_(is_initial_request) {
+      app_id_(app_id) {
   base::Value::Dict dict;
   debug_value_->Set("!job", "RemoveWebAppJob");
   debug_value_->Set("app_id", app_id_);
-  debug_value_->Set("is_initial_request", is_initial_request_);
-  if (is_initial_request_) {
-    CHECK(CanUninstallAllManagementSources(uninstall_source_));
-  }
 }
 
 RemoveWebAppJob::~RemoveWebAppJob() = default;
@@ -93,22 +64,8 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
     has_isolated_storage_ = true;
   }
 
-  if (is_initial_request_) {
-    // The following CHECK streamlines the user uninstall and sync uninstall
-    // flow, because for sync uninstalls, the web_app source is removed before
-    // being synced, so the first condition fails by the time an Uninstall is
-    // invoked.
-    // TODO(crbug.com/1447308): Checking kSync shouldn't be needed once
-    // this issue is resolved.
-    // TODO(crbug.com/1427340): Change this to be:
-    // if (uninstall_source is user initiated) {
-    //   CHECK(user can uninstall);
-    //   Add to user uninstalled prefs.
-    // }
-    CHECK(app->CanUserUninstallWebApp() ||
-          uninstall_source_ == webapps::WebappUninstallSource::kSync)
-        << app->AsDebugValue().DebugString();
-
+  if (webapps::IsUserUninstall(uninstall_source_)) {
+    CHECK(app->CanUserUninstallWebApp());
     if (app->IsPreinstalledApp()) {
       // Update the default uninstalled web_app prefs if it is a preinstalled
       // app but being removed by user.
@@ -280,7 +237,7 @@ void RemoveWebAppJob::ProcessSubAppsPendingRemovalOrComplete() {
   sub_job_ = std::make_unique<RemoveInstallSourceJob>(
       uninstall_source_, profile_.get(),
       *debug_value_->EnsureDict("sub_app_jobs")->EnsureDict(sub_app_id),
-      sub_app_id, WebAppManagement::Type::kSubApp);
+      sub_app_id, WebAppManagementTypes({WebAppManagement::Type::kSubApp}));
   sub_job_->Start(*lock_,
                   base::IgnoreArgs<webapps::UninstallResultCode>(base::BindOnce(
                       &RemoveWebAppJob::ProcessSubAppsPendingRemovalOrComplete,

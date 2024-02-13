@@ -53,9 +53,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_prepare_and_store_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
-#include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
-#include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
-#include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -73,6 +70,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 
@@ -373,7 +371,7 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
       location);
 }
 
-void WebAppCommandScheduler::RemoveInstallUrl(
+void WebAppCommandScheduler::RemoveInstallUrlMaybeUninstall(
     std::optional<webapps::AppId> app_id,
     WebAppManagement::Type install_source,
     const GURL& install_url,
@@ -387,27 +385,28 @@ void WebAppCommandScheduler::RemoveInstallUrl(
       location);
 }
 
-void WebAppCommandScheduler::RemoveInstallSource(
+void WebAppCommandScheduler::RemoveInstallManagementMaybeUninstall(
     const webapps::AppId& app_id,
     WebAppManagement::Type install_source,
     webapps::WebappUninstallSource uninstall_source,
     UninstallJob::Callback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveInstallSource(
-          uninstall_source, *profile_, app_id, install_source,
+      WebAppUninstallCommand::CreateForRemoveInstallManagements(
+          uninstall_source, *profile_, app_id, {install_source},
           std::move(callback)),
       location);
 }
 
-void WebAppCommandScheduler::UninstallWebApp(
+void WebAppCommandScheduler::RemoveUserUninstallableManagements(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,
     UninstallJob::Callback callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          uninstall_source, *profile_, app_id, std::move(callback)),
+      WebAppUninstallCommand::CreateForRemoveInstallManagements(
+          uninstall_source, *profile_, app_id, kUserUninstallableSources,
+          std::move(callback)),
       location);
 }
 

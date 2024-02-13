@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -108,7 +109,7 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
   if (is_only_install_url) {
     sub_job_ = std::make_unique<RemoveInstallSourceJob>(
         uninstall_source_, profile_.get(), *debug_value_->EnsureDict("sub_job"),
-        app->app_id(), install_source_);
+        app->app_id(), WebAppManagementTypes({install_source_}));
     sub_job_->Start(
         *lock_, base::BindOnce(&RemoveInstallUrlJob::CompleteAndSelfDestruct,
                                weak_ptr_factory_.GetWeakPtr()));

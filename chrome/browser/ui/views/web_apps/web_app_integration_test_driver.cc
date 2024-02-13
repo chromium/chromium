@@ -1030,7 +1030,7 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         ASSERT_TRUE(app->CanUserUninstallWebApp());
         UninstallCompleteWaiter uninstall_waiter(profile, app_id);
         base::test::TestFuture<webapps::UninstallResultCode> future;
-        provider->scheduler().UninstallWebApp(
+        provider->scheduler().RemoveUserUninstallableManagements(
             app_id, webapps::WebappUninstallSource::kAppsPage,
             future.GetCallback());
         EXPECT_TRUE(UninstallSucceeded(future.Get()));

@@ -282,7 +282,7 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
 
   web_app->SetValidatedScopeExtensions(validated_scope_extensions);
 
-  if (existing_web_app) {
+  if (existing_web_app && !options.bypass_os_hooks) {
     // There is a chance that existing sources type(s) are user uninstallable
     // but the newly added source type is NOT user uninstallable. In this
     // case, the following call will unregister os uninstallation.

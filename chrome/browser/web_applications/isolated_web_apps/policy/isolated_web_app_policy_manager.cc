@@ -421,8 +421,9 @@ void BulkIwaUninstaller::UninstallApp(
     const web_package::SignedWebBundleId& id) {
   IsolatedWebAppUrlInfo url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(id);
-  provider_->scheduler().UninstallWebApp(
-      url_info.app_id(), webapps::WebappUninstallSource::kIwaEnterprisePolicy,
+  provider_->scheduler().RemoveInstallManagementMaybeUninstall(
+      url_info.app_id(), WebAppManagement::Type::kCommandLine,
+      webapps::WebappUninstallSource::kIwaEnterprisePolicy,
       base::BindOnce(&BulkIwaUninstaller::OnAppUninstalled,
                      weak_factory_.GetWeakPtr()));
 }

@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
 
   // Uninstall one of the IWAs.
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider().scheduler().UninstallWebApp(
+  provider().scheduler().RemoveUserUninstallableManagements(
       url_info_2.app_id(), webapps::WebappUninstallSource::kAppsPage,
       future.GetCallback());
   auto code = future.Get();

@@ -20,17 +20,17 @@ namespace web_app {
 
 class RemoveInstallSourceJob;
 
-// See public API WebAppCommandScheduler::UninstallWebApp() for docs.
+// This should VERY rarely be used directly, and instead just used from other
+// jobs once all install managements are removed.
 class RemoveWebAppJob : public UninstallJob {
  public:
-  // `is_initial_request` indicates that this operation is not a byproduct of
-  // removing the last install source from a web app via external management and
-  // will be treated as a user uninstall.
+  // `webapps::IsUserUninstall(uninstall_source)` indicates that this operation
+  // is not a byproduct of removing the last install source from a web app via
+  // external management and will be treated as a user uninstall.
   RemoveWebAppJob(webapps::WebappUninstallSource uninstall_source,
                   Profile& profile,
                   base::Value::Dict& debug_value,
-                  webapps::AppId app_id,
-                  bool is_initial_request = true);
+                  webapps::AppId app_id);
   ~RemoveWebAppJob() override;
 
   // UninstallJob:
@@ -53,7 +53,6 @@ class RemoveWebAppJob : public UninstallJob {
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;
   const webapps::AppId app_id_;
-  const bool is_initial_request_;
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.

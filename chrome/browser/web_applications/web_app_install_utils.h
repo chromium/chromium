@@ -124,13 +124,16 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
 
-// The function should be called before removing a source from the WebApp.
+// The function should be called after removing a source from the WebApp.
+// TODO: Remove this when cleaning up after os integration sub-manager launch.
 void MaybeRegisterOsUninstall(const WebApp* web_app,
-                              WebAppManagement::Type source_uninstalling,
+                              WebAppManagementTypes original_sources,
                               OsIntegrationManager& os_integration_manager,
                               InstallOsHooksCallback callback);
 
 // The function should be called before adding source to the WebApp.
+// TODO(crbug.com/1401125): Remove this when cleaning up after os integration
+// sub-manager launch.
 void MaybeUnregisterOsUninstall(const WebApp* web_app,
                                 WebAppManagement::Type source_installing,
                                 OsIntegrationManager& os_integration_manager);

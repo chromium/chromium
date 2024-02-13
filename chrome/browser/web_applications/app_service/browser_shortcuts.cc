@@ -140,7 +140,7 @@ void BrowserShortcuts::RemoveShortcut(const std::string& host_app_id,
       provider_->registrar_unsafe().CanUserUninstallWebApp(web_app->app_id()));
   webapps::WebappUninstallSource webapp_uninstall_source =
       ConvertUninstallSourceToWebAppUninstallSource(uninstall_source);
-  provider_->scheduler().UninstallWebApp(
+  provider_->scheduler().RemoveUserUninstallableManagements(
       web_app->app_id(), webapp_uninstall_source, base::DoNothing());
 }
 

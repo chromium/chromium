@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 
 namespace webapps {
 enum class UninstallResultCode;
@@ -38,11 +39,8 @@ class UninstallAllUserInstalledWebAppsCommand
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
 
  private:
-  base::Value::Dict& GetDebugDictForAppAndSource(const webapps::AppId& app_id,
-                                                 WebAppManagement::Type type);
-
   void ProcessNextUninstallOrComplete();
-  void JobComplete(WebAppManagement::Type install_source,
+  void JobComplete(WebAppManagementTypes types,
                    webapps::UninstallResultCode code);
 
   std::unique_ptr<AllAppsLock> lock_;
@@ -52,9 +50,6 @@ class UninstallAllUserInstalledWebAppsCommand
 
   std::vector<std::string> errors_;
   std::vector<webapps::AppId> ids_to_uninstall_;
-  std::vector<std::pair<std::unique_ptr<RemoveInstallSourceJob>,
-                        WebAppManagement::Type>>
-      pending_jobs_;
   std::unique_ptr<RemoveInstallSourceJob> active_job_;
 
   base::WeakPtrFactory<UninstallAllUserInstalledWebAppsCommand> weak_factory_{

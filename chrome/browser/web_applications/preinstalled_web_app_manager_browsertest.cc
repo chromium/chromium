@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // Actually uninstall web app.
   {
     base::test::TestFuture<webapps::UninstallResultCode> future;
-    provider().scheduler().UninstallWebApp(
+    provider().scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
     ASSERT_EQ(future.Get(), webapps::UninstallResultCode::kSuccess);
     ASSERT_FALSE(registrar().IsInstalled(app_id));

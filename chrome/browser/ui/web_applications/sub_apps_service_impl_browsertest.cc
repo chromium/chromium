@@ -184,7 +184,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
 
   void UninstallParentAppBySource(WebAppManagement::Type source) {
     base::test::TestFuture<void> uninstall_future;
-    provider().scheduler().RemoveInstallSource(
+    provider().scheduler().RemoveInstallManagementMaybeUninstall(
         parent_app_id_, source, webapps::WebappUninstallSource::kAppsPage,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);

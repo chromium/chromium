@@ -542,7 +542,7 @@ void SubAppsServiceImpl::RemoveSubApp(
         manifest_id_path, SubAppsServiceResultCode::kFailure));
   }
 
-  provider->scheduler().RemoveInstallSource(
+  provider->scheduler().RemoveInstallManagementMaybeUninstall(
       sub_app_id, WebAppManagement::Type::kSubApp,
       webapps::WebappUninstallSource::kSubApp,
       base::BindOnce(

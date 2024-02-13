@@ -25,6 +25,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
+#include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -183,20 +184,25 @@ class WebAppRegistrarTest : public WebAppTest {
   }
 
   void Uninstall(const webapps::AppId& app_id) {
-    base::test::TestFuture<webapps::UninstallResultCode> future;
-    fake_provider().scheduler().UninstallWebApp(
-        app_id, webapps::WebappUninstallSource::kTestCleanup,
-        future.GetCallback());
-    EXPECT_TRUE(future.Wait());
-    EXPECT_EQ(future.Get<webapps::UninstallResultCode>(),
-              webapps::UninstallResultCode::kSuccess);
+    // There is no longer a universal uninstall, so just remove each management.
+    WebAppManagementTypes managements =
+        registrar().GetAppById(app_id)->GetSources();
+    for (WebAppManagement::Type type : managements) {
+      base::test::TestFuture<webapps::UninstallResultCode> future;
+      fake_provider().scheduler().RemoveInstallManagementMaybeUninstall(
+          app_id, type, webapps::WebappUninstallSource::kTestCleanup,
+          future.GetCallback());
+      EXPECT_TRUE(future.Wait());
+      EXPECT_EQ(future.Get<webapps::UninstallResultCode>(),
+                webapps::UninstallResultCode::kSuccess);
+    }
   }
 
   void UninstallViaRemoveSource(
       const webapps::AppId& app_id,
       web_app::WebAppManagement::Type management_type) {
     base::test::TestFuture<webapps::UninstallResultCode> future;
-    fake_provider().scheduler().RemoveInstallSource(
+    fake_provider().scheduler().RemoveInstallManagementMaybeUninstall(
         app_id, management_type, webapps::WebappUninstallSource::kTestCleanup,
         future.GetCallback());
     EXPECT_TRUE(future.Wait());

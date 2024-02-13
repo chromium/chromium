@@ -26,7 +26,10 @@ namespace web_app {
 
 class RemoveInstallSourceJob;
 
-// See public API WebAppCommandScheduler::RemoveInstallUrl() for docs.
+// See public API WebAppCommandScheduler::RemoveInstallUrlMaybeUninstall() for
+// docs.
+// Note: This can remove an installation management if no install urls are left,
+// and the whole app if no managements are left.
 class RemoveInstallUrlJob : public UninstallJob {
  public:
   RemoveInstallUrlJob(webapps::WebappUninstallSource uninstall_source,

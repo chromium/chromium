@@ -102,16 +102,12 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .WillOnce(testing::Return(true));
 
-  base::RunLoop loop;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> result_future;
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      result_future.GetCallback());
+  ASSERT_TRUE(result_future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kSuccess, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
@@ -138,17 +134,12 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .WillOnce(testing::Return(true));
 
-  base::RunLoop loop;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveInstallSource(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          WebAppManagement::kDefault,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> result_future;
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      result_future.GetCallback());
+  ASSERT_TRUE(result_future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kSuccess, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
@@ -175,53 +166,12 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .WillOnce(testing::Return(false));
 
-  base::RunLoop loop;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kError, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
-  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
-}
-
-TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
-  auto web_app = test::CreateWebApp(GURL("https://www.example.com"),
-                                    WebAppManagement::kSync);
-  webapps::AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update =
-        provider()->sync_bridge_unsafe().BeginUpdate();
-    update->CreateApp(std::move(web_app));
-  }
-
-  OsHooksErrors result;
-  result.set(true);
-  EXPECT_CALL(*os_integration_manager_,
-              Synchronize(app_id, testing::_, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>());
-  EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(result));
-
-  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
-      GetWebAppsRootDirectory(profile()), app_id);
-
-  EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
-      .WillOnce(testing::Return(true));
-
-  base::RunLoop loop;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kError, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> result_future;
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      result_future.GetCallback());
+  ASSERT_TRUE(result_future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kError, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
@@ -242,16 +192,13 @@ TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .Times(0);
 
-  base::RunLoop loop;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kNoAppToUninstall, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> result_future;
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      result_future.GetCallback());
+  ASSERT_TRUE(result_future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kNoAppToUninstall,
+            result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
@@ -277,12 +224,11 @@ TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .Times(0);
 
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kShutdown, code);
-          })));
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, webapps::WebappUninstallSource::kAppMenu,
+      base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
+        EXPECT_EQ(webapps::UninstallResultCode::kShutdown, code);
+      }));
 
   provider()->command_manager().Shutdown();
   // App is not uninstalled.
@@ -316,16 +262,11 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .WillOnce(testing::Return(true));
 
-  base::RunLoop loop;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kSuccess, future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
   EXPECT_TRUE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
                   .DoesAppIdExist(app_id));
@@ -354,16 +295,11 @@ TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
   EXPECT_CALL(*file_utils_wrapper_, DeleteFileRecursively(deletion_path))
       .WillOnce(testing::Return(true));
 
-  base::RunLoop loop;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          webapps::WebappUninstallSource::kAppMenu, *profile(), app_id,
-          base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
-            EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
-            loop.Quit();
-          })));
-
-  loop.Run();
+  base::test::TestFuture<webapps::UninstallResultCode> future;
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kSuccess, future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -387,7 +323,7 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
 
   EXPECT_CALL(*os_integration_manager_,
               Synchronize(app_id, testing::_, testing::_))
-      .Times(0);
+      .WillOnce(base::test::RunOnceCallback<1>());
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .Times(0);
 
@@ -399,13 +335,7 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
     EXPECT_CALL(*os_integration_manager_,
                 MacAppShimOnAppInstalledForProfile(app_id))
         .Times(1);
-    EXPECT_CALL(*os_integration_manager_,
-                RegisterWebAppOsUninstallation(app_id, testing::_))
-        .Times(1);
   }
-  EXPECT_CALL(*os_integration_manager_,
-              Synchronize(app_id, testing::_, testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>());
 #else
   EXPECT_CALL(*os_integration_manager_,
               RegisterWebAppOsUninstallation(app_id, testing::_))
@@ -419,9 +349,9 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
       .Times(0);
 
   base::RunLoop run_loop;
-  auto command = WebAppUninstallCommand::CreateForRemoveInstallSource(
+  auto command = WebAppUninstallCommand::CreateForRemoveInstallManagements(
       webapps::WebappUninstallSource::kExternalPolicy, *profile(), app_id,
-      WebAppManagement::kPolicy,
+      {WebAppManagement::kPolicy},
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(webapps::UninstallResultCode::kSuccess, code);
         run_loop.Quit();
@@ -453,7 +383,7 @@ TEST_F(WebAppUninstallCommandTest, Shutdown) {
   }
 
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider()->scheduler().UninstallWebApp(
+  provider()->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
   provider()->Shutdown();
   ASSERT_TRUE(future.Wait());
@@ -464,7 +394,7 @@ TEST_F(WebAppUninstallCommandTest, Shutdown) {
 
   // Test post-shutdown behavior.
   base::test::TestFuture<webapps::UninstallResultCode> future2;
-  provider()->scheduler().UninstallWebApp(
+  provider()->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future2.GetCallback());
   provider()->Shutdown();
   ASSERT_TRUE(future2.Wait());
@@ -509,9 +439,8 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
       .WillOnce(testing::Return(true));
 
   base::test::TestFuture<webapps::UninstallResultCode> result_future;
-  provider()->command_manager().ScheduleCommand(
-      WebAppUninstallCommand::CreateForRemoveWebApp(
-          GetParam().source, *profile(), app_id, result_future.GetCallback()));
+  provider()->scheduler().RemoveUserUninstallableManagements(
+      app_id, GetParam().source, result_future.GetCallback());
   ASSERT_TRUE(result_future.Wait());
   EXPECT_EQ(webapps::UninstallResultCode::kSuccess, result_future.Get());
   EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);

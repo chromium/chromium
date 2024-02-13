@@ -550,12 +550,15 @@ class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
  public:
   using WebAppCommandScheduler::WebAppCommandScheduler;
 
-  void UninstallWebApp(const webapps::AppId& app_id,
-                       webapps::WebappUninstallSource uninstall_source,
-                       UninstallJob::Callback callback,
-                       const base::Location& location) override {
+  void RemoveInstallManagementMaybeUninstall(
+      const webapps::AppId& app_id,
+      WebAppManagement::Type management_type,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallJob::Callback callback,
+      const base::Location& location) override {
     tried_to_uninstall_ = true;
     EXPECT_TRUE(base::Contains(expected_apps_to_remove_, app_id));
+    EXPECT_EQ(management_type, WebAppManagement::Type::kCommandLine);
     EXPECT_EQ(uninstall_source,
               webapps::WebappUninstallSource::kIwaEnterprisePolicy);
     auto app = expected_apps_to_remove_.find(app_id);

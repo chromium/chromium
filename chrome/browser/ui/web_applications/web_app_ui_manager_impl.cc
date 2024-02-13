@@ -767,8 +767,8 @@ void WebAppUiManagerImpl::ScheduleUninstallIfUserRequested(
     final_callback = std::move(complete_callback);
   }
 
-  provider->scheduler().UninstallWebApp(app_id, uninstall_source,
-                                        std::move(final_callback));
+  provider->scheduler().RemoveUserUninstallableManagements(
+      app_id, uninstall_source, std::move(final_callback));
 }
 
 void WebAppUiManagerImpl::OnUninstallCancelled(

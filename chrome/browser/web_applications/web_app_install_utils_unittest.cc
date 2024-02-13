@@ -1848,13 +1848,18 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
 
   base::RunLoop run_loop;
   MaybeRegisterOsUninstall(
-      web_app.get(), WebAppManagement::kPolicy, manager,
-      base::BindLambdaForTesting(
-          [&](OsHooksErrors os_hooks_errors) { run_loop.Quit(); }));
+      web_app.get(), WebAppManagementTypes({WebAppManagement::kPolicy}),
+      manager, base::BindLambdaForTesting([&](OsHooksErrors os_hooks_errors) {
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 
 TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
+  if (AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
+                    "existing OS integration flow";
+  }
   // MaybeRegisterOsUninstall
   // Scenario 2.
   // web app sources: kSync, kPolicy
@@ -1881,8 +1886,9 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
   web_app->AddSource(WebAppManagement::kSync);
   web_app->AddSource(WebAppManagement::kPolicy);
   EXPECT_FALSE(web_app->CanUserUninstallWebApp());
-  MaybeRegisterOsUninstall(web_app.get(), WebAppManagement::kSync, manager,
-                           base::DoNothing());
+  MaybeRegisterOsUninstall(web_app.get(),
+                           WebAppManagementTypes({WebAppManagement::kSync}),
+                           manager, base::DoNothing());
 
   // Scenario 3.
   auto web_app2 = std::make_unique<WebApp>(app_id);
@@ -1890,8 +1896,9 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
   web_app2->AddSource(WebAppManagement::kSync);
   web_app2->AddSource(WebAppManagement::kWebAppStore);
   EXPECT_TRUE(web_app2->CanUserUninstallWebApp());
-  MaybeRegisterOsUninstall(web_app2.get(), WebAppManagement::kDefault, manager,
-                           base::DoNothing());
+  MaybeRegisterOsUninstall(web_app2.get(),
+                           WebAppManagementTypes({WebAppManagement::kDefault}),
+                           manager, base::DoNothing());
 }
 
 TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
@@ -1924,6 +1931,10 @@ TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
 }
 
 TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsSettings_NoUnregistration) {
+  if (AreSubManagersExecuteEnabled()) {
+    GTEST_SKIP() << "Skipping tests as enabling sub managers bypasses "
+                    "existing OS integration flow";
+  }
   // MaybeUnregisterOsUninstall
   // Scenario 2.
   // web app sources: kSync, kPolicy

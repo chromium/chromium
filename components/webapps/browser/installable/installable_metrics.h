@@ -221,6 +221,10 @@ enum class WebappUninstallSource {
   kMaxValue = kIwaEnterprisePolicy,
 };
 
+std::ostream& operator<<(std::ostream& os, WebappUninstallSource source);
+
+bool IsUserUninstall(WebappUninstallSource source);
+
 // This is the result of the promotability check that is recorded in the
 // Webapp.CheckServiceWorker.Status histogram.
 // Do not reorder or reuse any values in this enum. New values must be added to

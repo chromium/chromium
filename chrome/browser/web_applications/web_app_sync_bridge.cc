@@ -795,7 +795,7 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
           apps_to_delete, callback);
     } else {
       for (const webapps::AppId& app_id : apps_to_delete) {
-        command_scheduler_->UninstallWebApp(
+        command_scheduler_->RemoveUserUninstallableManagements(
             app_id, webapps::WebappUninstallSource::kSync,
             base::BindOnce(callback, app_id));
       }
@@ -992,9 +992,9 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
         base::BindRepeating(&WebAppSyncBridge::OnWebAppUninstallComplete,
                             weak_ptr_factory_.GetWeakPtr());
     for (const auto& app_id : apps_uninstalling) {
-      command_scheduler_->UninstallWebApp(app_id,
-                                          webapps::WebappUninstallSource::kSync,
-                                          base::BindOnce(callback, app_id));
+      command_scheduler_->RemoveUserUninstallableManagements(
+          app_id, webapps::WebappUninstallSource::kSync,
+          base::BindOnce(callback, app_id));
     }
   }
 }

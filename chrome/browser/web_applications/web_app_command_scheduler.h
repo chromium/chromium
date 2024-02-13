@@ -263,34 +263,42 @@ class WebAppCommandScheduler {
   // TODO(crbug.com/1434692): There could potentially be multiple app matches
   // for `install_source` and `install_url` when `app_id` is not provided,
   // handle this case better than "first matching".
-  virtual void RemoveInstallUrl(std::optional<webapps::AppId> app_id,
-                                WebAppManagement::Type install_source,
-                                const GURL& install_url,
-                                webapps::WebappUninstallSource uninstall_source,
-                                UninstallJob::Callback callback,
-                                const base::Location& location = FROM_HERE);
-
-  // Schedules a command that removes an install source from a given web app,
-  // will uninstall the web app if no install sources remain. May cause a web
-  // app to become user uninstallable, will deploy uninstall OS hooks in that
-  // case.
-  // Virtual for testing.
-  virtual void RemoveInstallSource(
-      const webapps::AppId& app_id,
+  virtual void RemoveInstallUrlMaybeUninstall(
+      std::optional<webapps::AppId> app_id,
       WebAppManagement::Type install_source,
+      const GURL& install_url,
       webapps::WebappUninstallSource uninstall_source,
       UninstallJob::Callback callback,
       const base::Location& location = FROM_HERE);
 
-  // Schedules a command that removes a web app from the database and cleans up
-  // all assets and OS integrations. Disconnects it from any of its sub apps and
-  // uninstalls them too if they have no other install sources. Adds the
+  // Schedules a command that removes an install sources from a given web app.
+  // This will uninstall the web app if no install sources remain. This also
+  // disconnects it from any of its sub apps and uninstalls them too if they
+  // have no other install sources.
+  //
+  // Notes: This may cause a web app to become user uninstallable. In that case
+  // it will deploy uninstall OS hooks to ensure that it can be uninstallable
+  // via the OS (windows control panel -> apps -> uninstall).
+  virtual void RemoveInstallManagementMaybeUninstall(
+      const webapps::AppId& app_id,
+      WebAppManagement::Type install_management,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallJob::Callback callback,
+      const base::Location& location = FROM_HERE);
+
+  // Removes all management types that the user can remove, adds the
   // uninstall web app to `UserUninstalledPreinstalledWebAppPrefs` if it was
-  // default installed.
-  virtual void UninstallWebApp(const webapps::AppId& app_id,
-                               webapps::WebappUninstallSource uninstall_source,
-                               UninstallJob::Callback callback,
-                               const base::Location& location = FROM_HERE);
+  // `kDefault` installed. Will CHECK-fail if `uninstall_source` is not
+  // `webapps::IsUserUninstall`.
+  //
+  // Notes: This may cause a web app to become user uninstallable. In that case
+  // it will deploy uninstall OS hooks to ensure that it can be uninstallable
+  // via the OS.
+  void RemoveUserUninstallableManagements(
+      const webapps::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallJob::Callback callback,
+      const base::Location& location = FROM_HERE);
 
   // Schedules a command that uninstalls all user-installed web apps.
   void UninstallAllUserInstalledWebApps(

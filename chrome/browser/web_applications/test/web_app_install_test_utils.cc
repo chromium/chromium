@@ -176,7 +176,7 @@ void UninstallWebApp(Profile* profile, const webapps::AppId& app_id) {
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile);
   base::test::TestFuture<webapps::UninstallResultCode> future;
   DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
-  provider->scheduler().UninstallWebApp(
+  provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 
@@ -200,7 +200,7 @@ bool UninstallAllWebApps(Profile* profile) {
       if (source == WebAppManagement::kSync)
         continue;
       base::test::TestFuture<webapps::UninstallResultCode> result;
-      provider->scheduler().RemoveInstallSource(
+      provider->scheduler().RemoveInstallManagementMaybeUninstall(
           app_id, source, webapps::WebappUninstallSource::kTestCleanup,
           result.GetCallback());
       if (!result.Wait() ||
@@ -215,8 +215,8 @@ bool UninstallAllWebApps(Profile* profile) {
       if (source != WebAppManagement::kSync)
         continue;
       base::test::TestFuture<webapps::UninstallResultCode> result;
-      provider->scheduler().UninstallWebApp(
-          app_id, webapps::WebappUninstallSource::kTestCleanup,
+      provider->scheduler().RemoveInstallManagementMaybeUninstall(
+          app_id, source, webapps::WebappUninstallSource::kTestCleanup,
           result.GetCallback());
       if (!result.Wait() ||
           result.Get() == webapps::UninstallResultCode::kError) {

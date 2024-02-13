@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_SOURCE_JOB_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_UNINSTALL_REMOVE_INSTALL_SOURCE_JOB_H_
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
@@ -17,14 +18,16 @@ namespace web_app {
 
 class RemoveWebAppJob;
 
-// See public API WebAppCommandScheduler::RemoveInstallSource() for docs.
+// See public API
+// WebAppCommandScheduler::RemoveInstallManagementMaybeUninstall() for docs.
+// Note: This can remove the whole app if no managements are left.
 class RemoveInstallSourceJob : public UninstallJob {
  public:
   RemoveInstallSourceJob(webapps::WebappUninstallSource uninstall_source,
                          Profile& profile,
                          base::Value::Dict& debug_value,
                          webapps::AppId app_id,
-                         WebAppManagement::Type install_source);
+                         WebAppManagementTypes install_managements_to_remove);
   ~RemoveInstallSourceJob() override;
 
   const webapps::AppId& app_id() const { return app_id_; }
@@ -42,7 +45,7 @@ class RemoveInstallSourceJob : public UninstallJob {
   const raw_ref<Profile> profile_;
   const raw_ref<base::Value::Dict> debug_value_;
   const webapps::AppId app_id_;
-  const WebAppManagement::Type install_source_;
+  const WebAppManagementTypes install_managements_to_remove_;
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.

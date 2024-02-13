@@ -1422,7 +1422,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
       << color_utils::SkColorToRgbString(icon_pixel_color.value());
 
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider->scheduler().UninstallWebApp(
+  provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 }
@@ -1512,7 +1512,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu, ShortcutsMenuSuccess) {
           .find("/banners/launch_url2"));
 
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider().scheduler().UninstallWebApp(
+  provider().scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
   EXPECT_THAT(tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
@@ -1571,7 +1571,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
 
   bool sub_manager_execute_enabled = AreSubManagersExecuteEnabled();
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider().scheduler().UninstallWebApp(
+  provider().scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
   if (sub_manager_execute_enabled) {
@@ -1623,7 +1623,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
 
   // Uninstall the web app
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider->scheduler().UninstallWebApp(
+  provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 
@@ -2366,7 +2366,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
 
   // Uninstall the web app
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider().scheduler().UninstallWebApp(
+  provider().scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppsPage, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
   EXPECT_THAT(tester.GetAllSamples("WebApp.FileHandlersUnregistration.Result"),
@@ -2448,7 +2448,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
   ASSERT_TRUE(temp_dir.Delete());
   // Uninstall the web app
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  provider().scheduler().UninstallWebApp(
+  provider().scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppsPage, future.GetCallback());
   EXPECT_TRUE(UninstallSucceeded(future.Get()));
 }

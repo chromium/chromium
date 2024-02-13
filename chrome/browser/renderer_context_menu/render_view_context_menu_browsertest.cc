@@ -1062,7 +1062,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
     base::RunLoop run_loop;
 
     ASSERT_TRUE(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
-    provider->scheduler().UninstallWebApp(
+    provider->scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppMenu,
         base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
           EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);

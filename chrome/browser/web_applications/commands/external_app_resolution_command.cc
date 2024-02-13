@@ -488,7 +488,8 @@ void ExternalAppResolutionCommand::OnAllAppsLockGrantedRemovePlaceholder(
       webapps::WebappUninstallSource::kPlaceholderReplacement, *profile_,
       *GetMutableDebugValue().EnsureDict("remove_placeholder_job"),
       *installed_placeholder_app_id_,
-      ConvertExternalInstallSourceToSource(install_options_.install_source));
+      WebAppManagementTypes({ConvertExternalInstallSourceToSource(
+          install_options_.install_source)}));
 
   remove_placeholder_job_->Start(
       *all_apps_lock_,

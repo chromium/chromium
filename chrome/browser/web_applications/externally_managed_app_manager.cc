@@ -156,7 +156,7 @@ void ExternallyManagedAppManager::UninstallApps(
     ExternalInstallSource install_source,
     const UninstallCallback& callback) {
   for (auto& url : uninstall_urls) {
-    provider_->scheduler().RemoveInstallUrl(
+    provider_->scheduler().RemoveInstallUrlMaybeUninstall(
         /*app_id=*/std::nullopt,
         ConvertExternalInstallSourceToSource(install_source), url,
         ConvertExternalInstallSourceToUninstallSource(install_source),

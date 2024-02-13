@@ -48,7 +48,7 @@ class WebAppUninstallBrowserTest : public WebAppControllerBrowserTest {
 
     base::test::TestFuture<webapps::UninstallResultCode> future;
     DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
-    provider->scheduler().UninstallWebApp(
+    provider->scheduler().RemoveUserUninstallableManagements(
         app_id, webapps::WebappUninstallSource::kAppMenu, future.GetCallback());
     EXPECT_EQ(future.Get(), webapps::UninstallResultCode::kSuccess);
 
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
   EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(app_id));
   DCHECK(provider->registrar_unsafe().CanUserUninstallWebApp(app_id));
-  provider->scheduler().UninstallWebApp(
+  provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         if (quit_run_loop)
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
   EXPECT_EQ(1u, provider->command_manager().GetCommandCountForTesting());
 
   // Trigger second uninstall call and wait for result.
-  provider->scheduler().UninstallWebApp(
+  provider->scheduler().RemoveUserUninstallableManagements(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         if (quit_run_loop)

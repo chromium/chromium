@@ -269,7 +269,7 @@ class IsolatedWebAppBrowsingDataClearingTest
         }));
 
     base::test::TestFuture<webapps::UninstallResultCode> future;
-    provider().scheduler().UninstallWebApp(
+    provider().scheduler().RemoveUserUninstallableManagements(
         url_info.app_id(), webapps::WebappUninstallSource::kAppsPage,
         future.GetCallback());
 

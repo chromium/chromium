@@ -5,15 +5,27 @@
 #include "chrome/browser/web_applications/commands/uninstall_all_user_installed_web_apps_command.h"
 
 #include "base/check.h"
+#include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/sync/base/model_type.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
 namespace {
+std::string TypesToString(const WebAppManagementTypes& types) {
+  std::vector<std::string> types_str;
+  for (WebAppManagement::Type type : WebAppManagementTypes::All()) {
+    if (types.Has(type)) {
+      types_str.push_back(base::ToString(type));
+    }
+  }
+  return base::JoinString(types_str, ",");
+}
 std::optional<std::string> ConstructErrorMessage(
     const std::vector<std::string>& errors) {
   std::optional<std::string> error_message = std::nullopt;
@@ -55,28 +67,7 @@ void UninstallAllUserInstalledWebAppsCommand::StartWithLock(
   ProcessNextUninstallOrComplete();
 }
 
-base::Value::Dict&
-UninstallAllUserInstalledWebAppsCommand::GetDebugDictForAppAndSource(
-    const webapps::AppId& app_id,
-    WebAppManagement::Type type) {
-  return *GetMutableDebugValue().EnsureDict(
-      base::StrCat({app_id, base::ToString(type)}));
-}
-
 void UninstallAllUserInstalledWebAppsCommand::ProcessNextUninstallOrComplete() {
-  // Start next pending job.
-  if (!pending_jobs_.empty()) {
-    std::swap(active_job_, pending_jobs_.back().first);
-    auto install_source = pending_jobs_.back().second;
-    pending_jobs_.pop_back();
-
-    active_job_->Start(
-        *lock_,
-        base::BindOnce(&UninstallAllUserInstalledWebAppsCommand::JobComplete,
-                       weak_factory_.GetWeakPtr(), install_source));
-    return;
-  }
-
   // All pending jobs and app IDs are finished.
   if (ids_to_uninstall_.empty()) {
     CompleteAndSelfDestruct(
@@ -89,28 +80,31 @@ void UninstallAllUserInstalledWebAppsCommand::ProcessNextUninstallOrComplete() {
   webapps::AppId app_id = ids_to_uninstall_.back();
   ids_to_uninstall_.pop_back();
 
-  for (auto install_source : kUserDrivenInstallSources) {
-    pending_jobs_.emplace_back(
-        std::make_unique<RemoveInstallSourceJob>(
-            uninstall_source_, *profile_,
-            GetDebugDictForAppAndSource(app_id, install_source), app_id,
-            install_source),
-        install_source);
-  }
+  WebAppManagementTypes types_to_remove =
+      base::Intersection(kUserDrivenInstallSources,
+                         lock_->registrar().GetAppById(app_id)->GetSources());
+  active_job_ = std::make_unique<RemoveInstallSourceJob>(
+      uninstall_source_, *profile_, *GetMutableDebugValue().EnsureDict(app_id),
+      app_id, types_to_remove);
 
-  ProcessNextUninstallOrComplete();
+  active_job_->Start(
+      *lock_,
+      base::BindOnce(&UninstallAllUserInstalledWebAppsCommand::JobComplete,
+                     weak_factory_.GetWeakPtr(), types_to_remove));
 }
 
 void UninstallAllUserInstalledWebAppsCommand::JobComplete(
-    WebAppManagement::Type install_source,
+    WebAppManagementTypes types,
     webapps::UninstallResultCode code) {
   CHECK(active_job_);
 
   if (code != webapps::UninstallResultCode::kSuccess &&
       code != webapps::UninstallResultCode::kNoAppToUninstall) {
-    errors_.push_back(base::StrCat({active_job_->app_id(), "[",
-                                    base::ToString(install_source),
-                                    "]: ", base::ToString(code)}));
+    std::string error_message =
+        base::StrCat({active_job_->app_id(), "[", TypesToString(types),
+                      "]: ", base::ToString(code)});
+    errors_.push_back(error_message);
+    GetMutableDebugValue().EnsureList("errors")->Append(error_message);
   }
 
   active_job_.reset();

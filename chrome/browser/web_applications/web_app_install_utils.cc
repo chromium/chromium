@@ -1109,17 +1109,21 @@ void CreateWebAppInstallTabHelpers(content::WebContents* web_contents) {
 }
 
 void MaybeRegisterOsUninstall(const WebApp* web_app,
-                              WebAppManagement::Type source_uninstalling,
+                              WebAppManagementTypes sources_uninstalling,
                               OsIntegrationManager& os_integration_manager,
                               InstallOsHooksCallback callback) {
+  if (AreSubManagersExecuteEnabled()) {
+    std::move(callback).Run(OsHooksErrors());
+    return;
+  }
 #if BUILDFLAG(IS_WIN)
   // |web_app| object will remove target |source_uninstalling| type.
   // If the remaining source types and they happen to be user
   // uninstallable, then it should register OsSettings.
   WebAppManagementTypes sources = web_app->GetSources();
-  DCHECK(sources.Has(source_uninstalling));
+  DCHECK(sources.HasAny(sources_uninstalling));
   bool user_installable_before_uninstall = CanUserUninstallWebApp(sources);
-  sources.Remove(source_uninstalling);
+  sources.RemoveAll(sources_uninstalling);
   bool user_installable_after_uninstall = CanUserUninstallWebApp(sources);
 
   if (!user_installable_before_uninstall && user_installable_after_uninstall) {
@@ -1142,6 +1146,9 @@ void MaybeRegisterOsUninstall(const WebApp* web_app,
 void MaybeUnregisterOsUninstall(const WebApp* web_app,
                                 WebAppManagement::Type source_installing,
                                 OsIntegrationManager& os_integration_manager) {
+  if (AreSubManagersExecuteEnabled()) {
+    return;
+  }
 #if BUILDFLAG(IS_WIN)
   // |web_app| object will add target |source_installing| type.
   // If the old source types are user installable, but new type is not, then
