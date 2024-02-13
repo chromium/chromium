@@ -25,6 +25,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_device_info/device_info.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "content/public/browser/web_ui.h"
@@ -59,9 +60,10 @@ std::u16string FormatRelativeTime(const base::Time& time) {
 }
 
 // Helper method to create mojom tab objects from SessionTab objects.
-history::mojom::TabPtr SessionTabToMojom(const ::sessions::SessionTab& tab,
-                                         const std::string& session_tag,
-                                         const std::string& session_name) {
+history::mojom::TabPtr SessionTabToMojom(
+    const ::sessions::SessionTab& tab,
+    const syncer::DeviceInfo::FormFactor device_type,
+    const std::string& session_name) {
   if (tab.navigations.empty()) {
     return nullptr;
   }
@@ -76,7 +78,8 @@ history::mojom::TabPtr SessionTabToMojom(const ::sessions::SessionTab& tab,
   }
 
   auto tab_mojom = history::mojom::Tab::New();
-  tab_mojom->session_tag = session_tag;
+  tab_mojom->device_type =
+      history::mojom::DeviceType(static_cast<int>(device_type));
   tab_mojom->session_name = session_name;
   base::Value::Dict dictionary;
   NewTabUI::SetUrlTitleAndDirection(&dictionary, current_navigation.title(),
@@ -94,7 +97,7 @@ history::mojom::TabPtr SessionTabToMojom(const ::sessions::SessionTab& tab,
 // Helper method to append mojom tab objects from SessionWindow objects.
 void SessionWindowToMojom(std::vector<history::mojom::TabPtr>& tabs_mojom,
                           const ::sessions::SessionWindow& window,
-                          const std::string& session_tag,
+                          const syncer::DeviceInfo::FormFactor device_type,
                           const std::string& session_name) {
   if (window.tabs.empty()) {
     return;
@@ -102,7 +105,7 @@ void SessionWindowToMojom(std::vector<history::mojom::TabPtr>& tabs_mojom,
 
   for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
     tabs_mojom.push_back(
-        SessionTabToMojom(*tab.get(), session_tag, session_name));
+        SessionTabToMojom(*tab.get(), device_type, session_name));
   }
 }
 
@@ -110,13 +113,14 @@ void SessionWindowToMojom(std::vector<history::mojom::TabPtr>& tabs_mojom,
 std::vector<history::mojom::TabPtr> SessionToMojom(
     const sync_sessions::SyncedSession* session) {
   std::vector<history::mojom::TabPtr> tabs_mojom;
-  const std::string& session_tag = session->GetSessionTag();
+  const syncer::DeviceInfo::FormFactor device_type =
+      session->GetDeviceFormFactor();
   const std::string& session_name = session->GetSessionName();
 
   // Order tabs by visual order within window.
   for (const auto& window_pair : session->windows) {
     SessionWindowToMojom(tabs_mojom, window_pair.second->wrapped_window,
-                         session_tag, session_name);
+                         device_type, session_name);
   }
   return tabs_mojom;
 }
@@ -225,8 +229,7 @@ void TabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
     const int kSampleSessionsCount = 3;
     for (int i = 0; i < kSampleSessionsCount; i++) {
       auto session_tabs_mojom = SessionToMojom(
-          SampleSession("Test Name",
-                        ("Test Tag " + base::NumberToString(i)).c_str(), 3, 1)
+          SampleSession(("Test Name " + base::NumberToString(i)).c_str(), 3, 1)
               .get());
       for (auto& tab_mojom : session_tabs_mojom) {
         tabs_mojom.push_back(std::move(tab_mojom));

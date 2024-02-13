@@ -86,9 +86,9 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
   const size_t kSampleTabsCount = 2;
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   for (size_t i = 0; i < kSampleSessionsCount; i++) {
-    sample_sessions.push_back(SampleSession(
-        "Test Name", ("Test Tag " + base::NumberToString(i)).c_str(), 1,
-        kSampleTabsCount, i));
+    sample_sessions.push_back(
+        SampleSession(("Test Name " + base::NumberToString(i)).c_str(), 1,
+                      kSampleTabsCount, i));
   }
 
   EXPECT_CALL(*mock_session_sync_service().GetOpenTabsUIDelegate(),
@@ -169,10 +169,10 @@ TEST_F(TabResumptionPageHandlerTest, GetTabs) {
     // be ranked 1 (tab_id = 0), 1 (tab_id = 1), 0 (tab_id = 2), 0 (tab_id = 3)
     // with regard to session_tag.
     ASSERT_EQ(
-        "Test Tag " + base::NumberToString(
-                          ((kSampleSessionsCount * kSampleTabsCount - 1) - i) /
-                          kSampleSessionsCount),
-        tab_mojom->session_tag);
+        "Test Name " + base::NumberToString(
+                           ((kSampleSessionsCount * kSampleTabsCount - 1) - i) /
+                           kSampleSessionsCount),
+        tab_mojom->session_name);
     ASSERT_EQ(GURL(kSampleUrl), tab_mojom->url);
   }
 }
@@ -182,7 +182,7 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
   std::vector<std::unique_ptr<sync_sessions::SyncedSession>> sample_sessions;
   for (size_t i = 0; i < kSampleSessionsCount; i++) {
     sample_sessions.push_back(SampleSession(
-        "Test Name", ("Test Tag " + base::NumberToString(i)).c_str(), 1, 1, i));
+        ("Test Name " + base::NumberToString(i)).c_str(), 1, 1, i));
   }
 
   EXPECT_CALL(*mock_session_sync_service().GetOpenTabsUIDelegate(),
@@ -267,9 +267,9 @@ TEST_F(TabResumptionPageHandlerTest, BlocklistTest) {
     ASSERT_TRUE(tab_mojom);
     // Ranking reverses the order due to setting timestamp as
     // now - 1 hour + session_index * tab_index minutes.
-    // Third entry is gone from blocklist so this starts at "Test Tag 1".
-    ASSERT_EQ("Test Tag " + base::NumberToString(kSampleSessionsCount - i - 2),
-              tab_mojom->session_tag);
+    // Third entry is gone from blocklist so this starts at "Test Name 1".
+    ASSERT_EQ("Test Name " + base::NumberToString(kSampleSessionsCount - i - 2),
+              tab_mojom->session_name);
     ASSERT_EQ(GURL(kSampleUrl), tab_mojom->url);
   }
 }

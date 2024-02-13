@@ -12,7 +12,10 @@ assert(!is_android)
 grd_prefix = "new_tab_page"
 
 build_webui("build") {
-  icons_html_files = [ "modules/v2/icons.html" ]
+  icons_html_files = [
+    "modules/v2/icons.html",
+    "modules/v2/tab_resumption/icons.html",
+  ]
 
   static_files = [
     "new_tab_page.html",

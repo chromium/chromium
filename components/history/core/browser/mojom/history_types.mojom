@@ -7,11 +7,19 @@ module history.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
+// Device Types.
+enum DeviceType {
+  kUnknown,
+  kDesktop,
+  kPhone,
+  kTablet,
+};
+
 // Represents a tab generated from synced sessions.
 struct Tab {
-  // Id for a sync client. Used to look up session in session map.
-  // See components/sync_sessions/synced_session_tracker.cc.
-  string session_tag;
+  // Type of device for displaying device icon
+  // See components/sync_device_info/device_info.h
+  DeviceType device_type;
 
   // Name of session to be displayed on surfaces such as NTP.
   string session_name;

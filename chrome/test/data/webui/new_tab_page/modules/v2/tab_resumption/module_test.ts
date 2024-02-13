@@ -16,7 +16,7 @@ import {installMock} from '../../../test_support.js';
 
 function createSampleTabs(count: number): Tab[] {
   return new Array(count).fill(0).map(
-      (_, i) => createSampleTab({sessionTag: i.toString()}));
+      (_, i) => createSampleTab({sessionName: i.toString()}));
 }
 
 function createSampleTab(
@@ -24,7 +24,7 @@ function createSampleTab(
     ): Tab {
   const tab: Tab = Object.assign(
       {
-        sessionTag: 'Test Tag',
+        deviceType: 1,
         sessionName: 'Test Device',
         url: {url: 'https://www.foo.com'},
         title: 'Test Tab Title',

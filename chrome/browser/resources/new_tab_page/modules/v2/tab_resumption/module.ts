@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../history_clusters/page_favicon.js';
 
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -10,6 +12,7 @@ import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {Tab} from '../../../history_types.mojom-webui.js';
+import {DeviceType} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import type {InfoDialogElement} from '../../info_dialog';
 import {ModuleDescriptor} from '../../module_descriptor.js';
@@ -42,6 +45,13 @@ export class TabResumptionModuleElement extends I18nMixin
       /** The cluster displayed by this element. */
       tabs: {
         type: Object,
+      },
+
+      /** To determine if the hover layer should have all rounded corners. */
+      isSingleTab_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: `computeIsSingleTab_(tabs)`,
       },
     };
   }
@@ -129,6 +139,29 @@ tabs:
             TabResumptionProxyImpl.getInstance().handler.restoreModule(),
       },
     }));
+  }
+
+  private computeDomain_(tab: Tab): string {
+    let domain = (new URL(tab.url.url)).hostname;
+    domain = domain.replace('www.', '');
+    return domain;
+  }
+
+  private computeIcon_(tab: Tab): string {
+    switch (tab.deviceType) {
+      case DeviceType.kDesktop:
+        return 'tab_resumption:computer';
+      case DeviceType.kPhone:
+        return 'tab_resumption:phone';
+      case DeviceType.kTablet:
+        return 'tab_resumption:tablet';
+      default:
+        return 'tab_resumption:globe';
+    }
+  }
+
+  private computeIsSingleTab_(): boolean {
+    return this.tabs && this.tabs.length === 1;
   }
 }
 

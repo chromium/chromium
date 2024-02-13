@@ -67,11 +67,13 @@
         var(--ntp-module-item-border-radius);
   }
 
-  .tab-icon {
-    height: 18px;
-    margin-inline-end: 17px;
-    margin-inline-start: 17px;
-    width: 18px;
+  :host([is-single-tab_]) .tab {
+    border-radius: var(--ntp-module-item-border-radius);
+  }
+
+  .icon {
+    background-color: var(--color-new-tab-page-module-background);
+    margin-inline: 10px;
   }
 
   .tab-info {
@@ -87,17 +89,11 @@
     color: var(--color-new-tab-page-secondary-foreground);
   }
 
-  .tab-device,
   .tab-title,
   .tab-domain {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .tab-device {
-    font-size: 11px;
-    line-height: 13px;
   }
 
   .tab-title {
@@ -110,7 +106,13 @@
     display: flex;
     flex-direction: row;
     font-size: 11px;
-    line-height: 13px;
+    line-height: 16px;
+  }
+
+  .tab-device {
+    height: 16px;
+    margin-inline: 0 4px;
+    width: 16px;
   }
 
   .date {
@@ -133,13 +135,13 @@
   <template id="tabRepeat" is="dom-repeat" items="[[tabs]]">
     <a class="tab" href="[[item.url.url]]" on-click="onTabClick_">
       <div id="hover-layer"></div>
-      <page-favicon id="icon" url="[[item.url]]" size="16">
+      <page-favicon class="icon" url="[[item.url]]" size="16">
       </page-favicon>
       <div class="tab-info">
-        <div class="tab-device">[[item.sessionName]]</div>
         <div class="tab-title">[[item.title]]</div>
         <div class="tab-description">
-          <div class="tab-domain">[[item.url.url]]</div>
+          <iron-icon class="tab-device" icon="[[computeIcon_(item)]]"></iron-icon>
+          <div class="tab-domain">[[computeDomain_(item)]]</div>
           <span class="dot">&nbsp&#8226&nbsp</span>
           <div class="date">[[item.relativeTimeText]]</div>
         </div>

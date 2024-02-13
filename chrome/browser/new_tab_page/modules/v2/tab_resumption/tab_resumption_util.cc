@@ -53,7 +53,6 @@ std::unique_ptr<sync_sessions::SyncedSessionWindow> SampleSessionWindow(
 
 std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
     const char session_name[],
-    const char session_tag[],
     int num_windows,
     int num_tabs,
     int curr_session) {
@@ -63,7 +62,6 @@ std::unique_ptr<sync_sessions::SyncedSession> SampleSession(
         SampleSessionWindow(num_tabs, curr_session);
   }
 
-  sample_session->SetSessionTag(session_tag);
   sample_session->SetSessionName(session_name);
   sample_session->SetModifiedTime(base::Time::Now());
 
