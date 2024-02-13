@@ -117,12 +117,6 @@ static const char kJSFrontendURL[] = "devtools://devtools/bundled/js_app.html";
 static const char kFallbackFrontendURL[] =
     "devtools://devtools/bundled/inspector.html";
 
-// The possible values for the DevTools GenAI enterprise policy.
-enum class DevToolsGenAiEnterprisePolicyValue {
-  kAllow = 0,
-  kDisable = 2,
-};
-
 bool FindInspectedBrowserAndTabIndex(
     WebContents* inspected_web_contents, Browser** browser, int* tab) {
   if (!inspected_web_contents)
@@ -518,9 +512,6 @@ void DevToolsWindow::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDictionaryPref(
       prefs::kDevToolsSyncedPreferencesSyncDisabled);
-  registry->RegisterIntegerPref(
-      prefs::kDevToolsGenAiSettings,
-      static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow));
 }
 
 // static
@@ -1259,9 +1250,7 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
         url += "&veLogging=true";
       }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
-          profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
-              static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow)) {
+      if (base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
         url += "&enableAida=true&aidaModelId=" +
                features::kDevToolsConsoleInsightsModelId.Get() +
                "&aidaTemperature=" +

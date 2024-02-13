@@ -1215,7 +1215,6 @@ policies:
   1214: GoogleLocationServicesEnabled
   1215: ProvisionManagedClientCertificateForUser
   1216: LocalUserFilesAllowed
-  1217: DevToolsGenAiSettings
 atomic_groups:
   1: Homepage
   2: RemoteAccess

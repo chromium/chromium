@@ -37,7 +37,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/device/tcp_device_provider.h"
-#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
@@ -3742,87 +3741,4 @@ IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
 
   ASSERT_NE(webcontents->GetPrimaryMainFrame()->GetProcess(),
             webcontents2->GetPrimaryMainFrame()->GetProcess());
-}
-
-class DevToolsConsoleInsightsTest : public DevToolsTest {
- public:
-  DevToolsConsoleInsightsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDevToolsConsoleInsights);
-    policy_provider_.SetDefaultReturns(
-        /*is_initialization_complete_return=*/true,
-        /*is_first_policy_load_complete_return=*/true);
-    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
-        &policy_provider_);
-  }
-
-  ~DevToolsConsoleInsightsTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
- protected:
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
-};
-
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       CanBeDisabledByEnterprisePolicy) {
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_NE(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
-#else
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
-#endif
-  CloseDevToolsWindow();
-
-  // Disable via enterprise policy.
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kDevToolsGenAiSettings,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(/* disable */ 2),
-               nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  base::RunLoop().RunUntilIdle();
-
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
-  CloseDevToolsWindow();
-
-  // Enable via enterprise policy.
-  policies.Set(policy::key::kDevToolsGenAiSettings,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(/* allow */ 0),
-               nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  base::RunLoop().RunUntilIdle();
-
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_NE(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
-#else
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
-#endif
-  CloseDevToolsWindow();
-
-  // Use value for a potential future "enable and don't store data for model
-  // training" policy to disable via enterprise policy.
-  policies.Set(policy::key::kDevToolsGenAiSettings,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  base::RunLoop().RunUntilIdle();
-
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-  EXPECT_EQ(std::string::npos,
-            wc->GetLastCommittedURL().query().find("&enableAida=true"));
-  CloseDevToolsWindow();
 }
