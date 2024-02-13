@@ -9329,6 +9329,53 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
 }
 
+// Tests that there will be no crash when dragging a snapped window in overview
+// toward the edge. In this case, the overview components will become too small
+// to meet the minimum requirement of the fundamental UI layers such as virtual
+// desk bar, shadow. See the regression behavior in http://b/324478757.
+TEST_F(SplitViewOverviewSessionInClamshellTest,
+       NoCrashWhenDraggingSnappedWindowToEdge) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+
+  // Create another desk to ensure the desk bar shows in overview.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+
+  ToggleOverview();
+  WaitForOverviewEnterAnimation();
+  EXPECT_TRUE(IsInOverviewSession());
+  std::unique_ptr<aura::Window> window1(
+      CreateAppWindow(gfx::Rect(0, 0, 200, 100)));
+  std::unique_ptr<aura::Window> window2(
+      CreateAppWindow(gfx::Rect(100, 100, 200, 100)));
+  const WindowSnapWMEvent event(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+      WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  auto* window1_state = WindowState::Get(window1.get());
+  window1_state->OnWMEvent(&event);
+  WaitForOverviewEntered();
+  EXPECT_TRUE(window1_state->IsSnapped());
+  EXPECT_TRUE(IsInOverviewSession());
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      window1.get()->GetBoundsInScreen().right_center());
+  gfx::Point drag_end_point = GetWorkAreaInScreen(window1.get()).right_center();
+  drag_end_point.Offset(/*delta_x=*/-10, 0);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(drag_end_point);
+  EXPECT_TRUE(IsInOverviewSession());
+  EXPECT_TRUE(WindowState::Get(window1.get())->is_dragged());
+
+  // Verify that shadow is applied on the overview item.
+  auto* overview_item2 = GetOverviewItemForWindow(window2.get());
+  const auto shadow_content_bounds =
+      overview_item2->get_shadow_content_bounds_for_testing();
+  EXPECT_FALSE(shadow_content_bounds.IsEmpty());
+}
+
 // Tests that when a split view window carries over to clamshell split view
 // while the divider is being dragged, the window resize is properly completed.
 TEST_F(SplitViewOverviewSessionInClamshellTest,
