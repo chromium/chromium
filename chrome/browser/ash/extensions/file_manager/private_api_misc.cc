@@ -420,15 +420,14 @@ FileManagerPrivateOpenSettingsSubpageFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-FileManagerPrivateInternalGetMimeTypeFunction::
-    FileManagerPrivateInternalGetMimeTypeFunction() = default;
+FileManagerPrivateGetMimeTypeFunction::FileManagerPrivateGetMimeTypeFunction() =
+    default;
 
-FileManagerPrivateInternalGetMimeTypeFunction::
-    ~FileManagerPrivateInternalGetMimeTypeFunction() = default;
+FileManagerPrivateGetMimeTypeFunction::
+    ~FileManagerPrivateGetMimeTypeFunction() = default;
 
-ExtensionFunction::ResponseAction
-FileManagerPrivateInternalGetMimeTypeFunction::Run() {
-  using fmpi::GetMimeType::Params;
+ExtensionFunction::ResponseAction FileManagerPrivateGetMimeTypeFunction::Run() {
+  using fmp::GetMimeType::Params;
   const optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
@@ -443,13 +442,13 @@ FileManagerPrivateInternalGetMimeTypeFunction::Run() {
 
   app_file_handler_util::GetMimeTypeForLocalPath(
       profile, file_system_url.path(),
-      base::BindOnce(
-          &FileManagerPrivateInternalGetMimeTypeFunction::OnGetMimeType, this));
+      base::BindOnce(&FileManagerPrivateGetMimeTypeFunction::OnGetMimeType,
+                     this));
 
   return RespondLater();
 }
 
-void FileManagerPrivateInternalGetMimeTypeFunction::OnGetMimeType(
+void FileManagerPrivateGetMimeTypeFunction::OnGetMimeType(
     const std::string& mimeType) {
   Respond(WithArguments(mimeType));
 }

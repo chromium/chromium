@@ -114,16 +114,15 @@ class FileManagerPrivateOpenSettingsSubpageFunction : public ExtensionFunction {
 };
 
 // Implements the chrome.fileManagerPrivate.getMimeType method.
-class FileManagerPrivateInternalGetMimeTypeFunction
-    : public LoggedExtensionFunction {
+class FileManagerPrivateGetMimeTypeFunction : public LoggedExtensionFunction {
  public:
-  DECLARE_EXTENSION_FUNCTION("fileManagerPrivateInternal.getMimeType",
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getMimeType",
                              FILEMANAGERPRIVATEINTERNAL_GETMIMETYPE)
 
-  FileManagerPrivateInternalGetMimeTypeFunction();
+  FileManagerPrivateGetMimeTypeFunction();
 
  protected:
-  ~FileManagerPrivateInternalGetMimeTypeFunction() override;
+  ~FileManagerPrivateGetMimeTypeFunction() override;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

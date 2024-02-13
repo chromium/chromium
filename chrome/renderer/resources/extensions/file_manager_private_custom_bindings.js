@@ -165,13 +165,6 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       });
 
   apiFunctions.setHandleRequest(
-      'getMimeType', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
-        fileManagerPrivateInternal.getMimeType(
-            url, callbackAdaptor(successCallback, failureCallback));
-      });
-
-  apiFunctions.setHandleRequest(
       'searchFiles', function(params, successCallback, failureCallback) {
         const newParams = {
           query: params.query,
