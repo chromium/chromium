@@ -566,8 +566,8 @@ BASE_FEATURE(kIPHiOSPullToRefreshFeature,
 BASE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos,
              "IPH_iOSReplaceSyncPromosWithSignInPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSTabGridSwipeLeftForIncognito,
-             "IPH_iOSTabGridSwipeLeftForIncognito",
+BASE_FEATURE(kIPHiOSTabGridSwipeRightForIncognito,
+             "IPH_iOSTabGridSwipeRightForIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSDockingPromoFeature,
              "IPH_iOSDockingPromo",
@@ -597,8 +597,14 @@ BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kDefaultBrowserEligibilitySlidingWindowParam{
-    &kDefaultBrowserEligibilitySlidingWindow, /*name=*/"sliding-window-days",
+    &kDefaultBrowserEligibilitySlidingWindow,
+    /*name=*/"sliding-window-days",
     /*default_value=*/365};
+
+const char kGestureInProductHelpMaxOccurrence[] = "gesture-iph-max-occurrence";
+const char kGestureInProductHelpDaysBetweenOccurrences[] =
+    "gesture-iph-days-between-occurrences";
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -618,9 +624,9 @@ BASE_FEATURE(kIPHCookieControlsFeature,
 BASE_FEATURE(kIPH3pcdUserBypassFeature,
              "IPH_3pcdUserBypass",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kIPHGoogleOneOfferNotificationFeature,
@@ -728,18 +734,20 @@ BASE_FEATURE(kIPHScalableIphGamingFeature,
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// This can be enabled by default, as the DesktopPWAsLinkCapturing flag is
-// needed for the IPH linked to this feature to work, and use-cases to show
-// the IPH are guarded by that flag.
+// This can be enabled by default, as the DesktopPWAsLinkCapturing
+// flag is needed for the IPH linked to this feature to work, and
+// use-cases to show the IPH are guarded by that flag.
 BASE_FEATURE(kIPHDesktopPWAsLinkCapturingLaunch,
              "IPH_DesktopPWAsLinkCapturingLaunch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_FEATURE(kIPHiOSPasswordPromoDesktopFeature,
              "IPH_iOSPasswordPromoDesktop",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID) &&
+        // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace feature_engagement

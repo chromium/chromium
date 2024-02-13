@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/test/scoped_mock_clock_override.h"
 #import "base/test/task_environment.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -77,6 +78,42 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
+  std::map<std::string, std::string> IPHiOSPullToRefreshFeatureParams() {
+    std::map<std::string, std::string> params;
+    params["availability"] = "any";
+    params["session_rate"] = "==0";
+    params["event_used"] = "name:pull_to_refresh_feature_used;comparator:==0;"
+                           "window:61;storage:61";
+    params["event_trigger"] = "name:iph_pull_to_refresh_trigger;comparator:==0;"
+                              "window:7;storage:7";
+    // Default variation.
+    params["event_1"] = "name:iph_pull_to_refresh_trigger;comparator:<1;"
+                        "window:61;storage:61";
+    params["event_2"] = "name:multi_gesture_refresh_used;"
+                        "comparator:>=2;window:7;storage:"
+                        "7";
+    return params;
+  }
+
+  std::map<std::string, std::string>
+  IPHiOSTabGridSwipeRightForIncognitoParams() {
+    std::map<std::string, std::string> params;
+    params["availability"] = "any";
+    params["session_rate"] = "==0";
+    params["event_used"] = "name:swipe_right_for_incognito_used;comparator:==0;"
+                           "window:61;storage:61";
+    params["event_trigger"] =
+        "name:swipe_left_for_incognito_trigger;comparator:==0;"
+        "window:7;storage:7";
+    // Variation that allows >1 maximum impressions.
+    params["event_1"] = "name:swipe_left_for_incognito_trigger;comparator:<2;"
+                        "window:61;storage:61";
+    params["event_2"] = "name:incognito_page_control_tapped;"
+                        "comparator:>=2;window:7;storage:"
+                        "7";
+    return params;
+  }
+
   std::map<std::string, std::string> IPHiOSTabGridToolbarItemParams() {
     std::map<std::string, std::string> params;
     params["event_trigger"] = "name:iph_tab_grid_toolbar_item_trigger;"
@@ -112,6 +149,23 @@ class FeatureEngagementTest : public PlatformTest {
         "name:share_toolbar_item_used;comparator:==0;window:365;storage:365";
     params["session_rate"] = "==0";
     params["availability"] = "any";
+    return params;
+  }
+
+  std::map<std::string, std::string> IPHiOSSwipeBackForwardFeatureParams() {
+    std::map<std::string, std::string> params;
+    params["availability"] = "any";
+    params["session_rate"] = "==0";
+    params["event_used"] = "name:swiped_back_forward_used;comparator:==0;"
+                           "window:61;storage:61";
+    // Variation that allows one impression per month.
+    params["event_trigger"] = "name:swipe_back_forward_trigger;comparator:==0;"
+                              "window:30;storage:30";
+    params["event_1"] = "name:swipe_back_forward_trigger;comparator:<2;"
+                        "window:61;storage:61";
+    params["event_2"] = "name:back_forward_button_tapped;"
+                        "comparator:>=2;window:30;storage:"
+                        "30";
     return params;
   }
 
@@ -365,6 +419,266 @@ TEST_F(FeatureEngagementTest, TestTabGridToolbarItemIPHShouldNotShow) {
 
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSTabGridToolbarItemFeature));
+}
+
+// Verifies that the pull down to refresh IPH is not triggered
+// due to being used already.
+TEST_F(FeatureEngagementTest, TestPullDownToRefreshIPHShouldNotShowAfterUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSPullToRefreshFeature,
+        IPHiOSPullToRefreshFeatureParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+  // Ensure that the pull-to-refresh has been used to prevent triggering.
+  tracker->NotifyEvent(feature_engagement::events::kIOSPullToRefreshUsed);
+  // Make sure other prerequisites are met.
+  tracker->NotifyEvent(feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  tracker->NotifyEvent(feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPullToRefreshFeature));
+}
+
+// Verifies that the pull down to refresh IPH only happens after the user uses a
+// multi-gesture tap to refresh twice.
+TEST_F(FeatureEngagementTest,
+       TestTabGridPullDownToRefreshShouldNotShowBeforeTwoMutiGestureRefreshes) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSPullToRefreshFeature,
+        IPHiOSPullToRefreshFeatureParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Perform the mult-gesture refresh twice. The IPH should only show after the
+  // second refresh.
+  tracker->NotifyEvent(feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPullToRefreshFeature));
+  tracker->NotifyEvent(feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPullToRefreshFeature));
+}
+
+// Verifies that the pull down to refresh IPH would NOT be triggered more than
+// allowed by frequency configurations.
+TEST_F(
+    FeatureEngagementTest,
+    TestTabGridPullDownToRefreshIPHShouldBeTriggeredWithinFrequencyConstraints) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSPullToRefreshFeature,
+        IPHiOSPullToRefreshFeatureParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Assume that the IPH is already triggered.
+  tracker->NotifyEvent("iph_pull_to_refresh_trigger");
+  // Tap button within the event window.
+  scoped_clock.Advance(base::Days(59));
+  tracker->NotifyEvent(feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  tracker->NotifyEvent(feature_engagement::events::kIOSMultiGestureRefreshUsed);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPullToRefreshFeature));
+}
+
+// Verifies that the swipe for incognito IPH on the tab grid is not triggered
+// due to being used already.
+TEST_F(FeatureEngagementTest,
+       TestTabGridSwipeToIncognitoIPHShouldNotShowAfterUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSTabGridSwipeRightForIncognito,
+        IPHiOSTabGridSwipeRightForIncognitoParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+  // Ensure that the swipe for incognito has been used to prevent triggering.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSSwipeRightForIncognitoUsed);
+  // Make sure other prerequisites are met.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridSwipeRightForIncognito));
+}
+
+// Verifies that the swipe for incognito IPH only happens after the user taps to
+// go to incognito twice.
+TEST_F(FeatureEngagementTest,
+       TestTabGridSwipeToIncognitoIPHShouldNotShowBeforeTwoTapsToIncognito) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSTabGridSwipeRightForIncognito,
+        IPHiOSTabGridSwipeRightForIncognitoParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Tap the page control to go to incognito twice. The IPH should only show
+  // after the second tap.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridSwipeRightForIncognito));
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridSwipeRightForIncognito));
+}
+
+// Verifies that the swipe for incognito IPH would NOT be triggered more than
+// allowed by frequency configurations.
+TEST_F(
+    FeatureEngagementTest,
+    TestTabGridSwipeToIncognitoIPHShouldBeTriggeredWithinFrequencyConstraints) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSTabGridSwipeRightForIncognito,
+        IPHiOSTabGridSwipeRightForIncognitoParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Assume that the IPH is already triggered.
+  tracker->NotifyEvent("swipe_left_for_incognito_trigger");
+  // Tap button to go to incognito immediately; the IPH should NOT be triggered.
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridSwipeRightForIncognito));
+  // Do so 7 days later; the IPH should be triggered since it has been 7 days
+  // after last trigger.
+  scoped_clock.Advance(base::Days(7));
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridSwipeRightForIncognito));
+  tracker->Dismissed(feature_engagement::kIPHiOSTabGridSwipeRightForIncognito);
+  // Do so 7 days later. The IPH should NOT be triggered since it has already
+  // been triggered twice within the last 61 days.
+  scoped_clock.Advance(base::Days(7));
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  tracker->NotifyEvent(
+      feature_engagement::events::kIOSIncognitoPageControlTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSTabGridSwipeRightForIncognito));
+}
+
+// Verifies that the swipe back/forward IPH is not triggered
+// due to being used already.
+TEST_F(FeatureEngagementTest, TestSwipeBackForwardIPHShouldNotShowAfterUsed) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSSwipeBackForwardFeature,
+        IPHiOSSwipeBackForwardFeatureParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+  // Ensure that the swipe back/forward gesture has been used to prevent
+  // triggering.
+  tracker->NotifyEvent(feature_engagement::events::kIOSSwipeBackForwardUsed);
+  // Make sure other prerequisites are met.
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+}
+
+// Verifies that the swipe back/forward IPH only happens after the user taps to
+// go back or forward twice.
+TEST_F(FeatureEngagementTest,
+       TestSwipeBackForwardIPHShouldNotShowBeforeTwoTapsToIncognito) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSSwipeBackForwardFeature,
+        IPHiOSSwipeBackForwardFeatureParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Tap the back/forward button to navigate pages twice. The IPH should only
+  // show after the second tap.
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+}
+
+// Verifies that the swipe back/forward IPH would NOT be triggered more than
+// allowed by frequency configurations.
+TEST_F(FeatureEngagementTest,
+       TestSwipeBackForwardIPHShouldBeTriggeredWithinFrequencyConstraints) {
+  base::ScopedMockClockOverride scoped_clock;
+  scoped_clock.Advance(base::Time::UnixEpoch() - base::Time());
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSSwipeBackForwardFeature,
+        IPHiOSSwipeBackForwardFeatureParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  // Assume that the IPH is already triggered.
+  tracker->NotifyEvent("swipe_back_forward_trigger");
+  // Tap button to go to incognito immediately; the IPH should NOT be triggered.
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+  // Do so 7 days later; the IPH should NOT be triggered.
+  scoped_clock.Advance(base::Days(7));
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  tracker->NotifyEvent(feature_engagement::events::kIOSBackForwardButtonTapped);
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
+  // Check back 30 days after initial trigger.
+  scoped_clock.Advance(base::Days(23));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSSwipeBackForwardFeature));
 }
 
 // Verifies that the History IPH is triggered after the proper conditions

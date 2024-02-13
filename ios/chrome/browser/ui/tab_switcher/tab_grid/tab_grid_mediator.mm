@@ -134,7 +134,7 @@
       case TabSwitcherPageChangeInteraction::kScrollDrag:
       case TabSwitcherPageChangeInteraction::kAccessibilitySwipe:
         _engagementTracker->NotifyEvent(
-            feature_engagement::events::kIOSSwipeLeftForIncognitoUsed);
+            feature_engagement::events::kIOSSwipeRightForIncognitoUsed);
         break;
       case TabSwitcherPageChangeInteraction::kControlTap:
       case TabSwitcherPageChangeInteraction::kControlDrag:

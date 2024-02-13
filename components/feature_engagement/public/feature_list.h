@@ -271,8 +271,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSPullToRefreshFeature,
                        "IPH_iOSPullToRefreshFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSReplaceSyncPromosWithSignInPromos,
                        "IPH_iOSReplaceSyncPromosWithSignInPromos");
-DEFINE_VARIATION_PARAM(kIPHiOSTabGridSwipeLeftForIncognito,
-                       "IPH_iOSTabGridSwipeLeftForIncognito");
+DEFINE_VARIATION_PARAM(kIPHiOSTabGridSwipeRightForIncognito,
+                       "IPH_iOSTabGridSwipeRightForIncognito");
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoFeature, "IPH_iOSDockingPromo");
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoRemindMeLaterFeature,
                        "IPH_iOSDockingPromoRemindMeLater");
@@ -603,7 +603,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSParcelTrackingFeature),
         VARIATION_ENTRY(kIPHiOSPullToRefreshFeature),
         VARIATION_ENTRY(kIPHiOSReplaceSyncPromosWithSignInPromos),
-        VARIATION_ENTRY(kIPHiOSTabGridSwipeLeftForIncognito),
+        VARIATION_ENTRY(kIPHiOSTabGridSwipeRightForIncognito),
         VARIATION_ENTRY(kIPHiOSDockingPromoFeature),
         VARIATION_ENTRY(kIPHiOSDockingPromoRemindMeLaterFeature),
         VARIATION_ENTRY(kIPHiOSPromoAllTabsFeature),

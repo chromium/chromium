@@ -1608,6 +1608,22 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(::switches::kMinorModeRestrictionsForHistorySyncOptIn)},
+    {"ios-iph-pull-to-refresh",
+     flag_descriptions::kIPHiOSPullToRefreshFeatureName,
+     flag_descriptions::kIPHiOSPullToRefreshFeatureDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(feature_engagement::kIPHiOSPullToRefreshFeature)},
+    {"ios-iph-swipe-back-forward",
+     flag_descriptions::kIPHiOSSwipeBackForwardFeatureName,
+     flag_descriptions::kIPHiOSSwipeBackForwardFeatureDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(feature_engagement::kIPHiOSSwipeBackForwardFeature)},
+    {"ios-iph-tab-grid-swipe-right-for-incognito",
+     flag_descriptions::kIPHiOSTabGridSwipeRightForIncognitoName,
+     flag_descriptions::kIPHiOSTabGridSwipeRightForIncognitoDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         feature_engagement::kIPHiOSTabGridSwipeRightForIncognito)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -116,7 +116,7 @@ const char kParcelTracked[] = "parcel_tracked";
 const char kIOSMultiGestureRefreshUsed[] = "multi_gesture_refresh_used";
 const char kIOSPullToRefreshUsed[] = "pull_to_refresh_feature_used";
 const char kIOSIncognitoPageControlTapped[] = "incognito_page_control_tapped";
-const char kIOSSwipeLeftForIncognitoUsed[] = "swipe_left_for_incognito_used";
+const char kIOSSwipeRightForIncognitoUsed[] = "swipe_right_for_incognito_used";
 const char kIOSBackForwardButtonTapped[] = "back_forward_button_tapped";
 const char kIOSSwipeBackForwardUsed[] = "swiped_back_forward_used";
 #endif  // BUILDFLAG(IS_IOS)

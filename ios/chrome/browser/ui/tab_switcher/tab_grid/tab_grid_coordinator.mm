@@ -1166,21 +1166,21 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
          feature_engagement::TrackerFactory::GetForBrowserState(
              self.regularBrowser->GetBrowserState())
              ->WouldTriggerHelpUI(
-                 feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito);
+                 feature_engagement::kIPHiOSTabGridSwipeRightForIncognito);
 }
 
 - (BOOL)tabGridShouldPresentSwipeToIncognitoIPH {
   return feature_engagement::TrackerFactory::GetForBrowserState(
              self.regularBrowser->GetBrowserState())
       ->ShouldTriggerHelpUI(
-          feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito);
+          feature_engagement::kIPHiOSTabGridSwipeRightForIncognito);
 }
 
 - (void)tabGridDidDismissSwipeToIncognitoIPH {
   feature_engagement::TrackerFactory::GetForBrowserState(
       self.regularBrowser->GetBrowserState())
       ->DismissedWithSnooze(
-          feature_engagement::kIPHiOSTabGridSwipeLeftForIncognito,
+          feature_engagement::kIPHiOSTabGridSwipeRightForIncognito,
           feature_engagement::Tracker::SnoozeAction::DISMISSED);
 }
 
