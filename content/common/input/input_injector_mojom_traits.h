@@ -59,6 +59,16 @@ struct StructTraits<content::mojom::SyntheticSmoothDragDataView,
     return r.speed_in_pixels_s;
   }
 
+  static float vsync_offset_ms(
+      const content::SyntheticSmoothDragGestureParams& r) {
+    return r.vsync_offset_ms;
+  }
+
+  static content::mojom::InputEventPattern input_event_pattern(
+      const content::SyntheticSmoothDragGestureParams& r) {
+    return r.input_event_pattern;
+  }
+
   static bool Read(content::mojom::SyntheticSmoothDragDataView r,
                    content::SyntheticSmoothDragGestureParams* out);
 };
@@ -78,6 +88,15 @@ struct StructTraits<content::mojom::SyntheticPinchDataView,
   static float relative_pointer_speed_in_pixels_s(
       const content::SyntheticPinchGestureParams& r) {
     return r.relative_pointer_speed_in_pixels_s;
+  }
+
+  static float vsync_offset_ms(const content::SyntheticPinchGestureParams& r) {
+    return r.vsync_offset_ms;
+  }
+
+  static content::mojom::InputEventPattern input_event_pattern(
+      const content::SyntheticPinchGestureParams& r) {
+    return r.input_event_pattern;
   }
 
   static bool Read(content::mojom::SyntheticPinchDataView r,
@@ -130,6 +149,16 @@ struct StructTraits<content::mojom::SyntheticSmoothScrollDataView,
   static int32_t modifiers(
       const content::SyntheticSmoothScrollGestureParams& r) {
     return r.modifiers;
+  }
+
+  static float vsync_offset_ms(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.vsync_offset_ms;
+  }
+
+  static content::mojom::InputEventPattern input_event_pattern(
+      const content::SyntheticSmoothScrollGestureParams& r) {
+    return r.input_event_pattern;
   }
 
   static bool Read(content::mojom::SyntheticSmoothScrollDataView r,

@@ -135,6 +135,8 @@ bool StructTraits<content::mojom::SyntheticSmoothDragDataView,
 
   out->gesture_source_type = data.gesture_source_type();
   out->speed_in_pixels_s = data.speed_in_pixels_s();
+  out->vsync_offset_ms = data.vsync_offset_ms();
+  out->input_event_pattern = data.input_event_pattern();
   return true;
 }
 
@@ -153,6 +155,8 @@ bool StructTraits<content::mojom::SyntheticSmoothScrollDataView,
   out->fling_velocity_x = data.fling_velocity_x();
   out->fling_velocity_y = data.fling_velocity_y();
   out->modifiers = data.modifiers();
+  out->vsync_offset_ms = data.vsync_offset_ms();
+  out->input_event_pattern = data.input_event_pattern();
   return true;
 }
 
@@ -167,6 +171,8 @@ bool StructTraits<content::mojom::SyntheticPinchDataView,
   out->scale_factor = data.scale_factor();
   out->relative_pointer_speed_in_pixels_s =
       data.relative_pointer_speed_in_pixels_s();
+  out->vsync_offset_ms = data.vsync_offset_ms();
+  out->input_event_pattern = data.input_event_pattern();
   return true;
 }
 

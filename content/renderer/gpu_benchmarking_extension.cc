@@ -403,7 +403,9 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
                        bool scroll_by_page,
                        bool cursor_visible,
                        bool scroll_by_percentage,
-                       int modifiers) {
+                       int modifiers,
+                       float vsync_offset_ms,
+                       int input_event_pattern) {
   DCHECK(!(precise_scrolling_deltas && scroll_by_page));
   DCHECK(!(precise_scrolling_deltas && scroll_by_percentage));
   DCHECK(!(scroll_by_page && scroll_by_percentage));
@@ -443,6 +445,9 @@ bool BeginSmoothScroll(GpuBenchmarkingContext* context,
       static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
   gesture_params.prevent_fling = prevent_fling;
 
   if (scroll_by_page)
@@ -487,7 +492,9 @@ bool BeginSmoothDrag(GpuBenchmarkingContext* context,
                      float end_y,
                      v8::Local<v8::Function> callback,
                      int gesture_source_type,
-                     float speed_in_pixels_s) {
+                     float speed_in_pixels_s,
+                     float vsync_offset_ms,
+                     int input_event_pattern) {
   if (ThrowIfPointOutOfBounds(context, args, gfx::Point(start_x, start_y),
                               "Start point not in bounds")) {
     return false;
@@ -504,6 +511,9 @@ bool BeginSmoothDrag(GpuBenchmarkingContext* context,
   gfx::Vector2dF distance = end_point - gesture_params.start_point;
   gesture_params.distances.push_back(distance);
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
   gesture_params.gesture_source_type =
       static_cast<content::mojom::GestureSourceType>(gesture_source_type);
 
@@ -651,6 +661,18 @@ gin::ObjectTemplateBuilder GpuBenchmarking::GetObjectTemplateBuilder(
                     content::mojom::GestureSourceType::kTouchpadInput))
       .SetValue("PEN_INPUT", GestureSourceTypeAsInt(
                                  content::mojom::GestureSourceType::kPenInput))
+      .SetValue(
+          "DEFAULT_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern))
+      .SetValue(
+          "ONE_PER_VSYNC_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kOnePerVsync))
+      .SetValue(
+          "TWO_PER_VSYNC_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kTwoPerVsync))
+      .SetValue(
+          "EVERY_OTHER_VSYNC_INPUT_PATTERN",
+          static_cast<int>(content::mojom::InputEventPattern::kEveryOtherVsync))
       .SetMethod("gestureSourceTypeSupported",
                  &GpuBenchmarking::GestureSourceTypeSupported)
       .SetMethod("smoothScrollBy", &GpuBenchmarking::SmoothScrollBy)
@@ -784,6 +806,9 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   bool cursor_visible = true;
   bool scroll_by_percentage = false;
   std::string keys_value;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &pixels_to_scroll) ||
       !GetOptionalArg(args, &callback) || !GetOptionalArg(args, &start_x) ||
@@ -795,7 +820,9 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
       !GetOptionalArg(args, &scroll_by_page) ||
       !GetOptionalArg(args, &cursor_visible) ||
       !GetOptionalArg(args, &scroll_by_percentage) ||
-      !GetOptionalArg(args, &keys_value)) {
+      !GetOptionalArg(args, &keys_value) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -838,7 +865,8 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
       &context, args, input_injector_, pixels_to_scrol_vector.value(), callback,
       gesture_source_type, speed_in_pixels_s, true /* prevent_fling */, start_x,
       start_y, fling_velocity, precise_scrolling_deltas, scroll_by_page,
-      cursor_visible, scroll_by_percentage, modifiers);
+      cursor_visible, scroll_by_percentage, modifiers, vsync_offset_ms,
+      input_event_pattern);
 }
 
 // SmoothScrollByXY does not take direction as one of the arguments, and
@@ -870,6 +898,9 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   // ToButtonModifiers, multiple values are expressed as a string separated by
   // comma.
   std::string buttons_value;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &pixels_to_scroll_x) ||
       !GetOptionalArg(args, &pixels_to_scroll_y) ||
@@ -882,7 +913,9 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
       !GetOptionalArg(args, &cursor_visible) ||
       !GetOptionalArg(args, &scroll_by_percentage) ||
       !GetOptionalArg(args, &keys_value) ||
-      !GetOptionalArg(args, &buttons_value)) {
+      !GetOptionalArg(args, &buttons_value) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -930,7 +963,7 @@ bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
       &context, args, input_injector_, distances, callback, gesture_source_type,
       speed_in_pixels_s, true /* prevent_fling */, start_x, start_y,
       fling_velocity, precise_scrolling_deltas, scroll_by_page, cursor_visible,
-      scroll_by_percentage, modifiers);
+      scroll_by_percentage, modifiers, vsync_offset_ms, input_event_pattern);
 }
 
 bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
@@ -943,19 +976,25 @@ bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
   int gesture_source_type =
       GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
   float speed_in_pixels_s = 800;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetArg(args, &start_x) || !GetArg(args, &start_y) ||
       !GetArg(args, &end_x) || !GetArg(args, &end_y) ||
       !GetOptionalArg(args, &callback) ||
       !GetOptionalArg(args, &gesture_source_type) ||
-      !GetOptionalArg(args, &speed_in_pixels_s)) {
+      !GetOptionalArg(args, &speed_in_pixels_s) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
   EnsureRemoteInterface();
   return BeginSmoothDrag(&context, args, input_injector_, start_x, start_y,
                          end_x, end_y, callback, gesture_source_type,
-                         speed_in_pixels_s);
+                         speed_in_pixels_s, vsync_offset_ms,
+                         input_event_pattern);
 }
 
 // TODO(lanwei): Swipe takes pixels_to_scroll and direction. When the
@@ -975,6 +1014,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
   float fling_velocity = 0;
   int gesture_source_type =
       GestureSourceTypeAsInt(content::mojom::GestureSourceType::kTouchInput);
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &direction) ||
       !GetOptionalArg(args, &pixels_to_scroll) ||
@@ -982,7 +1024,9 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
       !GetOptionalArg(args, &start_y) ||
       !GetOptionalArg(args, &speed_in_pixels_s) ||
       !GetOptionalArg(args, &fling_velocity) ||
-      !GetOptionalArg(args, &gesture_source_type)) {
+      !GetOptionalArg(args, &gesture_source_type) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -1012,7 +1056,8 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
       false /* prevent_fling */, start_x, start_y,
       fling_velocity_vector.value(), true /* precise_scrolling_deltas */,
       false /* scroll_by_page */, true /* cursor_visible */,
-      false /* scroll_by_percentage */, 0 /* modifiers */);
+      false /* scroll_by_percentage */, 0 /* modifiers */, vsync_offset_ms,
+      input_event_pattern);
 }
 
 bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
@@ -1027,6 +1072,9 @@ bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
   float start_x = content_rect.width() / 2;
   float start_y = content_rect.height() / 2;
   float speed_in_pixels_s = 800;
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetOptionalArg(args, &direction) ||
       !GetOptionalArg(args, &distance_length) ||
@@ -1034,7 +1082,9 @@ bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
       !GetOptionalArg(args, &repeat_count) ||
       !GetOptionalArg(args, &callback) || !GetOptionalArg(args, &start_x) ||
       !GetOptionalArg(args, &start_y) ||
-      !GetOptionalArg(args, &speed_in_pixels_s)) {
+      !GetOptionalArg(args, &speed_in_pixels_s) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -1050,6 +1100,9 @@ bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
   SyntheticSmoothScrollGestureParams gesture_params;
 
   gesture_params.speed_in_pixels_s = speed_in_pixels_s;
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
 
   gesture_params.anchor.SetPoint(start_x, start_y);
 
@@ -1093,11 +1146,16 @@ bool GpuBenchmarking::PinchBy(gin::Arguments* args) {
   float relative_pointer_speed_in_pixels_s = 800;
   int gesture_source_type =
       GestureSourceTypeAsInt(content::mojom::GestureSourceType::kDefaultInput);
+  float vsync_offset_ms = 0.0f;
+  int input_event_pattern =
+      static_cast<int>(content::mojom::InputEventPattern::kDefaultPattern);
 
   if (!GetArg(args, &scale_factor) || !GetArg(args, &anchor_x) ||
       !GetArg(args, &anchor_y) || !GetOptionalArg(args, &callback) ||
       !GetOptionalArg(args, &relative_pointer_speed_in_pixels_s) ||
-      !GetOptionalArg(args, &gesture_source_type)) {
+      !GetOptionalArg(args, &gesture_source_type) ||
+      !GetOptionalArg(args, &vsync_offset_ms) ||
+      !GetOptionalArg(args, &input_event_pattern)) {
     return false;
   }
 
@@ -1123,6 +1181,9 @@ bool GpuBenchmarking::PinchBy(gin::Arguments* args) {
 
   gesture_params.gesture_source_type =
       static_cast<content::mojom::GestureSourceType>(gesture_source_type);
+  gesture_params.vsync_offset_ms = vsync_offset_ms;
+  gesture_params.input_event_pattern =
+      static_cast<content::mojom::InputEventPattern>(input_event_pattern);
 
   switch (gesture_params.gesture_source_type) {
     case content::mojom::GestureSourceType::kDefaultInput:
