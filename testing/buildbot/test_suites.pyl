@@ -3221,6 +3221,34 @@
       },
     },
 
+    'gpu_passthrough_graphite_telemetry_tests': {
+      'screenshot_sync_passthrough_graphite_tests': {
+        'telemetry_test_name': 'screenshot_sync',
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--dont-restore-color-profile-after-test',
+          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
+        ],
+        'android_args': [
+          '--extra-browser-args=--force-online-connection-state-for-indicator',
+          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+        ],
+        'chromeos_args': [
+          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'lacros_args': [
+          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+        'ci_only': True,
+      },
+    },
+
     'gpu_passthrough_telemetry_tests': {
       'context_lost_passthrough_tests': {
         'telemetry_test_name': 'context_lost',
@@ -6699,8 +6727,20 @@
       'gpu_webgl_conformance_validating_telemetry_tests',
     ],
 
-    'gpu_pixel_4_and_6_telemetry_tests': [
+    'gpu_pixel_4_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
+      'gpu_passthrough_telemetry_tests',
+      'gpu_validating_telemetry_tests',
+      'gpu_webcodecs_validating_telemetry_test',
+      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
+      'gpu_webgl2_conformance_validating_telemetry_tests',
+      'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
+      'gpu_webgl_conformance_validating_telemetry_tests',
+    ],
+
+    'gpu_pixel_6_telemetry_tests': [
+      'gpu_common_and_optional_telemetry_tests',
+      'gpu_passthrough_graphite_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_validating_telemetry_tests',
       'gpu_webcodecs_validating_telemetry_test',

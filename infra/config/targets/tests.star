@@ -1893,6 +1893,14 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.gpu_telemetry_test(
+    name = "screenshot_sync_passthrough_graphite_tests",
+    telemetry_test_name = "screenshot_sync",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.gpu_telemetry_test(
     name = "screenshot_sync_passthrough_tests",
     telemetry_test_name = "screenshot_sync",
     mixins = [

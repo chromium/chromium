@@ -4059,7 +4059,7 @@
         # should be running the same tests as 'Android FYI Release (Pixel 6)'.
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_pixel_6_telemetry_tests',
         },
       },
       'Android FYI Release (NVIDIA Shield TV)': {
@@ -4120,7 +4120,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_pixel_4_telemetry_tests',
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
@@ -4136,7 +4136,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_pixel_6_telemetry_tests',
         },
       },
       'Android FYI Release (Samsung A13)': {
@@ -6852,7 +6852,7 @@
           'gpu-swarming-pool',
         ],
         'test_suites': {
-          'gpu_telemetry_tests': 'gpu_pixel_4_and_6_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_pixel_4_telemetry_tests',
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },

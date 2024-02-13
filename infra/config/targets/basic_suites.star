@@ -2895,6 +2895,36 @@ targets.legacy_basic_suite(
     },
 )
 
+# This is esentially a copy of gpu_passthrough_telemetry_tests running with
+# Graphite. Initially limited to just the tests that pass on Android.
+targets.legacy_basic_suite(
+    name = "gpu_passthrough_graphite_telemetry_tests",
+    tests = {
+        "screenshot_sync_passthrough_graphite_tests": targets.legacy_test_config(
+            args = [
+                "--dont-restore-color-profile-after-test",
+                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle",
+            ],
+            android_args = [
+                # TODO(crbug.com/1093085): Remove this once we fix the tests.
+                "--extra-browser-args=--force-online-connection-state-for-indicator",
+                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+            ],
+            chromeos_args = [
+                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+            ],
+            lacros_args = [
+                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+            ci_only = True,
+        ),
+    },
+)
+
 targets.legacy_basic_suite(
     name = "gpu_passthrough_telemetry_tests",
     tests = {
