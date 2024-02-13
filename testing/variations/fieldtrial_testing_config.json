@@ -17864,7 +17864,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableWAL",
+                    "name": "Enabled",
                     "enable_features": [
                         "SharedStorageAPIEnableWALForDatabase"
                     ]
