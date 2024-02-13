@@ -12,8 +12,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_not_started.html.js';
-import type {TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
-import {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
+import type {TabSearchSignInBrowserProxy} from './tab_search_sign_in_browser_proxy.js';
+import {TabSearchSignInBrowserProxyImpl} from './tab_search_sign_in_browser_proxy.js';
 
 const TabOrganizationNotStartedElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -40,8 +40,8 @@ export class TabOrganizationNotStartedElement extends
   showFre: boolean;
 
   private signedIn_: boolean = false;
-  private syncBrowserProxy_: TabSearchSyncBrowserProxy =
-      TabSearchSyncBrowserProxyImpl.getInstance();
+  private signInBrowserProxy_: TabSearchSignInBrowserProxy =
+      TabSearchSignInBrowserProxyImpl.getInstance();
 
   static get template() {
     return getTemplate();
@@ -50,7 +50,8 @@ export class TabOrganizationNotStartedElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.syncBrowserProxy_.getSignInState().then(this.setSignedIn_.bind(this));
+    this.signInBrowserProxy_.getSignInState().then(
+        this.setSignedIn_.bind(this));
     this.addWebUiListener('has-account-changed', this.setSignedIn_.bind(this));
   }
 

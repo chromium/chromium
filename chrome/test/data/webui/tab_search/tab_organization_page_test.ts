@@ -5,19 +5,19 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {Tab, TabOrganizationPageElement, TabOrganizationResultsElement, TabOrganizationSession} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSyncBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {TabOrganizationError, TabOrganizationState, TabSearchApiProxyImpl, TabSearchSignInBrowserProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
-import {TestTabSearchSyncBrowserProxy} from './test_tab_search_sync_browser_proxy.js';
+import {TestTabSearchSignInBrowserProxy} from './test_tab_search_sign_in_browser_proxy.js';
 
 suite('TabOrganizationPageTest', () => {
   let tabOrganizationPage: TabOrganizationPageElement;
   let tabOrganizationResults: TabOrganizationResultsElement;
   let testApiProxy: TestTabSearchApiProxy;
-  let testSyncProxy: TestTabSearchSyncBrowserProxy;
+  let testSignInProxy: TestTabSearchSignInBrowserProxy;
 
   async function tabOrganizationPageSetup() {
     testApiProxy = new TestTabSearchApiProxy();
@@ -25,8 +25,8 @@ suite('TabOrganizationPageTest', () => {
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
-    testSyncProxy = new TestTabSearchSyncBrowserProxy();
-    TabSearchSyncBrowserProxyImpl.setInstance(testSyncProxy);
+    testSignInProxy = new TestTabSearchSignInBrowserProxy();
+    TabSearchSignInBrowserProxyImpl.setInstance(testSignInProxy);
 
     tabOrganizationPage = document.createElement('tab-organization-page');
 
@@ -42,8 +42,8 @@ suite('TabOrganizationPageTest', () => {
     testApiProxy.setSession(session);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
-    testSyncProxy = new TestTabSearchSyncBrowserProxy();
-    TabSearchSyncBrowserProxyImpl.setInstance(testSyncProxy);
+    testSignInProxy = new TestTabSearchSignInBrowserProxy();
+    TabSearchSignInBrowserProxyImpl.setInstance(testSignInProxy);
 
     tabOrganizationResults = document.createElement('tab-organization-results');
     tabOrganizationResults.name =

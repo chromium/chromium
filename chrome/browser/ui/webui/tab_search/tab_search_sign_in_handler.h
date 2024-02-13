@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_SYNC_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_SYNC_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_SIGN_IN_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_SIGN_IN_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -13,18 +13,17 @@
 
 class Profile;
 
-// A class allowing TabSearch WebUI to interact with the sync
-// service and identity manager and observing and propagating relevant
-// events to the WebUI.
-class TabSearchSyncHandler : public content::WebUIMessageHandler,
+// A class allowing TabSearch WebUI to interact with the identity manager and
+// observing and propagating relevant events to the WebUI.
+class TabSearchSignInHandler : public content::WebUIMessageHandler,
                              public signin::IdentityManager::Observer {
  public:
-  explicit TabSearchSyncHandler(Profile* profile);
+  explicit TabSearchSignInHandler(Profile* profile);
 
-  TabSearchSyncHandler(const TabSearchSyncHandler&) = delete;
-  TabSearchSyncHandler& operator=(const TabSearchSyncHandler&) = delete;
+  TabSearchSignInHandler(const TabSearchSignInHandler&) = delete;
+  TabSearchSignInHandler& operator=(const TabSearchSignInHandler&) = delete;
 
-  ~TabSearchSyncHandler() override;
+  ~TabSearchSignInHandler() override;
 
  private:
   // WebUIMessageHandler:
@@ -49,4 +48,4 @@ class TabSearchSyncHandler : public content::WebUIMessageHandler,
       identity_manager_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_SYNC_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_TAB_SEARCH_TAB_SEARCH_SIGN_IN_HANDLER_H_
