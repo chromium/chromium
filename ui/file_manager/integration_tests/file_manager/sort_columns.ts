@@ -3,16 +3,13 @@
 // found in the LICENSE file.
 
 import {ENTRIES, RootPath, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
  * Tests the order is sorted correctly for each of the columns.
  */
-// @ts-ignore: error TS4111: Property 'sortColumns' comes from an index
-// signature, so it must be accessed with ['sortColumns'].
-testcase.sortColumns = async () => {
+export async function sortColumns() {
   const NAME_ASC = TestEntryInfo.getExpectedRows([
     ENTRIES.photos,
     ENTRIES.beautiful,
@@ -90,10 +87,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(1)']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, NAME_ASC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -110,10 +103,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(1)']);
   await remoteCall.waitForElement(appId, iconSortedDesc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, NAME_DESC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -125,10 +114,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(2)']);
   await remoteCall.waitForElement(appId, iconSortedDesc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, SIZE_DESC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -145,10 +130,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(2)']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, SIZE_ASC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -166,10 +147,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(3)']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, TYPE_ASC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -181,10 +158,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(3)']);
   await remoteCall.waitForElement(appId, iconSortedDesc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, TYPE_DESC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -202,10 +175,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
   await remoteCall.waitForElement(appId, iconSortedDesc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, DATE_DESC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -217,10 +186,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(4)']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, DATE_ASC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -237,10 +202,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#sort-menu-sort-by-name']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, NAME_ASC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -252,10 +213,6 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(1)']);
   await remoteCall.waitForElement(appId, iconSortedDesc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, NAME_DESC, {orderCheck: true});
 
   // Fetch A11y messages.
@@ -268,14 +225,10 @@ testcase.sortColumns = async () => {
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#sort-menu-sort-by-name']);
   await remoteCall.waitForElement(appId, iconSortedAsc);
-  // @ts-ignore: error TS2345: Argument of type '{ orderCheck: true; }' is not
-  // assignable to parameter of type '{ orderCheck: boolean | null | undefined;
-  // ignoreFileSize: boolean | null | undefined; ignoreLastModifiedTime: boolean
-  // | null | undefined; }'.
   await remoteCall.waitForFiles(appId, NAME_ASC, {orderCheck: true});
 
   // Fetch A11y messages.
   a11yMessages =
       await remoteCall.callRemoteTestUtil('getA11yAnnounces', appId, []);
   chrome.test.assertEq(11, a11yMessages.length, 'Missing a11y message');
-};
+}

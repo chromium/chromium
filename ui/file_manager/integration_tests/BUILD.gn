@@ -36,7 +36,6 @@ js_files = [
   "file_manager/recents.js",
   "file_manager/restore_prefs.js",
   "file_manager/search.js",
-  "file_manager/sort_columns.js",
   "file_manager/tab_index.js",
   "file_manager/tasks.js",
   "file_manager/test_data.js",
@@ -132,8 +131,7 @@ ts_files = [
   # "file_manager/search.ts",
 
   "file_manager/share.ts",
-
-  # "file_manager/sort_columns.ts",
+  "file_manager/sort_columns.ts",
 
   # "file_manager/tab_index.ts",
 
@@ -146,7 +144,6 @@ ts_files = [
   # "file_manager/transfer.ts",
 
   "file_manager/trash.ts",
-
   "file_manager/traverse.ts",
 
   "file_manager/zip_files.ts",
