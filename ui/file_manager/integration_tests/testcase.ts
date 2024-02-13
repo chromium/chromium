@@ -30,7 +30,7 @@ import * as filesTooltipTests from './file_manager/files_tooltip.js';
 import * as manageDialogTests from './file_manager/manage_dialog.js';
 // import * as metadataTests from './file_manager/metadata.js';
 // import * as metricsTests from './file_manager/metrics.js';
-// import * as myFilesTests from './file_manager/my_files.js';
+import * as myFilesTests from './file_manager/my_files.js';
 import * as navigationTests from './file_manager/navigation.js';
 // import * as officeTests from './file_manager/office.js';
 import * as openAudioMediaAppTests from './file_manager/open_audio_media_app.js';
@@ -88,7 +88,7 @@ export const testcase: Record<TestFunctionName, TestFunction> = {
   ...manageDialogTests,
   // ...metadataTests,
   // ...metricsTests,
-  // ...myFilesTests,
+  ...myFilesTests,
   ...navigationTests,
   // ...officeTests,
   ...openAudioMediaAppTests,

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {addEntries, ENTRIES, EntryType, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {mountCrostini, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -11,9 +10,9 @@ import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
 /**
  * Select My files in directory tree and wait for load.
  *
- * @param {string} appId ID of the app window.
+ * @param appId ID of the app window.
  */
-async function selectMyFiles(appId) {
+async function selectMyFiles(appId: string) {
   // Select My Files folder.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.selectItemByLabel('My files');
@@ -24,20 +23,13 @@ async function selectMyFiles(appId) {
   const crostiniRow = ['Linux files', '--', 'Folder'];
   await remoteCall.waitForFiles(
       appId, [downloadsRow, playFilesRow, crostiniRow],
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 }
 
 /**
  * Tests if MyFiles is displayed when flag is true.
  */
-// @ts-ignore: error TS4111: Property 'showMyFiles' comes from an index
-// signature, so it must be accessed with ['showMyFiles'].
-testcase.showMyFiles = async () => {
+export async function showMyFiles() {
   const expectedElementLabels = [
     'Recent',
     'My files',
@@ -53,8 +45,6 @@ testcase.showMyFiles = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
@@ -68,7 +58,7 @@ testcase.showMyFiles = async () => {
   // Check that My Files is displayed on breadcrumbs.
   const expectedBreadcrumbs = '/My files/Downloads';
   remoteCall.waitUntilCurrentDirectoryIsChanged(appId, expectedBreadcrumbs);
-};
+}
 
 /**
  * Tests directory tree refresh doesn't hide Downloads folder.
@@ -78,13 +68,9 @@ testcase.showMyFiles = async () => {
  * DirectoryTree expects NavigationModelItem to be the same instance through
  * updates.
  */
-// @ts-ignore: error TS4111: Property 'directoryTreeRefresh' comes from an index
-// signature, so it must be accessed with ['directoryTreeRefresh'].
-testcase.directoryTreeRefresh = async () => {
+export async function directoryTreeRefresh() {
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Mount a USB volume.
@@ -96,20 +82,15 @@ testcase.directoryTreeRefresh = async () => {
 
   // Select Downloads folder.
   await directoryTree.selectItemByLabel('Downloads');
-};
+}
 
 /**
  * Tests My Files displaying Downloads on file list (RHS) and opening Downloads
  * from file list.
  */
-// @ts-ignore: error TS4111: Property 'myFilesDisplaysAndOpensEntries' comes
-// from an index signature, so it must be accessed with
-// ['myFilesDisplaysAndOpensEntries'].
-testcase.myFilesDisplaysAndOpensEntries = async () => {
+export async function myFilesDisplaysAndOpensEntries() {
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select My files in directory tree.
@@ -122,20 +103,13 @@ testcase.myFilesDisplaysAndOpensEntries = async () => {
 
   // Wait for file list to Downloads' content.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       appId, [ENTRIES.beautiful.getExpectedRow()],
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Get the selected navigation tree item.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   await directoryTree.waitForSelectedItemByLabel('Downloads');
-};
+}
 
 /**
  * Tests My files updating its children recursively.
@@ -143,9 +117,7 @@ testcase.myFilesDisplaysAndOpensEntries = async () => {
  * If it doesn't update its children recursively it can cause directory tree to
  * not show or hide sub-folders crbug.com/864453.
  */
-// @ts-ignore: error TS4111: Property 'myFilesUpdatesChildren' comes from an
-// index signature, so it must be accessed with ['myFilesUpdatesChildren'].
-testcase.myFilesUpdatesChildren = async () => {
+export async function myFilesUpdatesChildren() {
   const hiddenFolder = new TestEntryInfo({
     type: EntryType.DIRECTORY,
     targetPath: '.hidden-folder',
@@ -162,8 +134,6 @@ testcase.myFilesUpdatesChildren = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select Downloads folder.
@@ -194,14 +164,7 @@ testcase.myFilesUpdatesChildren = async () => {
 
   // Check the hidden folder to be displayed in RHS.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       appId, TestEntryInfo.getExpectedRows([hiddenFolder, ENTRIES.beautiful]),
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Wait for Downloads folder to have the expand icon because of hidden folder.
@@ -214,15 +177,13 @@ testcase.myFilesUpdatesChildren = async () => {
   // Check the hidden folder to be displayed in LHS.
   // Children of Downloads and named ".hidden-folder".
   await directoryTree.waitForChildItemByLabel('Downloads', '.hidden-folder');
-};
+}
 
 /**
  * Check naming a folder after navigating inside MyFiles using file list (RHS).
  * crbug.com/889636.
  */
-// @ts-ignore: error TS4111: Property 'myFilesFolderRename' comes from an index
-// signature, so it must be accessed with ['myFilesFolderRename'].
-testcase.myFilesFolderRename = async () => {
+export async function myFilesFolderRename() {
   const textInput = '#file-list .table-row[renaming] input.rename';
 
   // Open Files app on local Downloads.
@@ -271,24 +232,15 @@ testcase.myFilesFolderRename = async () => {
   const expectedRows2 = [['new name', '--', 'Folder', '']];
   await remoteCall.waitForFiles(
       appId, expectedRows2,
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
-};
+}
 
 /**
  * Tests that MyFiles only auto expands once.
  */
-// @ts-ignore: error TS4111: Property 'myFilesAutoExpandOnce' comes from an
-// index signature, so it must be accessed with ['myFilesAutoExpandOnce'].
-testcase.myFilesAutoExpandOnce = async () => {
+export async function myFilesAutoExpandOnce() {
   // Open Files app on local Downloads.
   const appId = await setupAndWaitUntilReady(
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       RootPath.DOWNLOADS, [ENTRIES.photos], [ENTRIES.beautiful]);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
 
@@ -304,28 +256,18 @@ testcase.myFilesAutoExpandOnce = async () => {
 
   // Wait for My Drive to selected.
   await remoteCall.waitForFiles(
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       appId, [ENTRIES.beautiful.getExpectedRow()],
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Check that MyFiles is still collapsed.
   await directoryTree.waitForItemToCollapseByLabel('My files');
-};
+}
 
 /**
  * Tests that My files refreshes its contents when PlayFiles is mounted.
  * crbug.com/946972.
  */
-// @ts-ignore: error TS4111: Property 'myFilesUpdatesWhenAndroidVolumeMounts'
-// comes from an index signature, so it must be accessed with
-// ['myFilesUpdatesWhenAndroidVolumeMounts'].
-testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
+export async function myFilesUpdatesWhenAndroidVolumeMounts() {
   // Mount Downloads.
   await sendTestMessage({name: 'mountDownloads'});
 
@@ -334,8 +276,6 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
 
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
 
@@ -346,11 +286,6 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   await directoryTree.selectItemByLabel('My files');
   await remoteCall.waitForFiles(
       appId, [downloadsRow, crostiniRow],
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Mount Play files volume.
@@ -363,11 +298,6 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   await directoryTree.waitForItemByLabel('Play files');
   await remoteCall.waitForFiles(
       appId, [downloadsRow, playFilesRow, crostiniRow],
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Un-mount Play files volume.
@@ -379,27 +309,18 @@ testcase.myFilesUpdatesWhenAndroidVolumeMounts = async () => {
   // Check: Play files should disappear from file list.
   await remoteCall.waitForFiles(
       appId, [downloadsRow, crostiniRow],
-      // @ts-ignore: error TS2345: Argument of type '{ ignoreFileSize: true;
-      // ignoreLastModifiedTime: true; }' is not assignable to parameter of type
-      // '{ orderCheck: boolean | null | undefined; ignoreFileSize: boolean |
-      // null | undefined; ignoreLastModifiedTime: boolean | null | undefined;
-      // }'.
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Check: Play files should disappear from directory tree.
   await directoryTree.waitForItemLostByLabel('Play files');
-};
+}
 
 /**
  * Tests that toolbar delete is not shown for Downloads, or Linux files.
  */
-// @ts-ignore: error TS4111: Property 'myFilesToolbarDelete' comes from an index
-// signature, so it must be accessed with ['myFilesToolbarDelete'].
-testcase.myFilesToolbarDelete = async () => {
+export async function myFilesToolbarDelete() {
   // Open Files app on local Downloads.
   const appId =
-      // @ts-ignore: error TS4111: Property 'beautiful' comes from an index
-      // signature, so it must be accessed with ['beautiful'].
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
   // Select My files in directory tree.
@@ -429,4 +350,4 @@ testcase.myFilesToolbarDelete = async () => {
 
   // Test that the delete button isn't visible.
   await remoteCall.waitForElement(appId, hiddenDeleteButton);
-};
+}

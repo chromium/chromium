@@ -36,7 +36,6 @@ js_files = [
   "file_manager/keyboard_operations.js",
   "file_manager/metadata.js",
   "file_manager/metrics.js",
-  "file_manager/my_files.js",
   "file_manager/office.js",
   "file_manager/providers.js",
   "file_manager/recents.js",
@@ -121,8 +120,7 @@ ts_files = [
 
   # "file_manager/metrics.ts",
 
-  # "file_manager/my_files.ts",
-
+  "file_manager/my_files.ts",
   "file_manager/navigation.ts",
 
   # "file_manager/office.ts",
