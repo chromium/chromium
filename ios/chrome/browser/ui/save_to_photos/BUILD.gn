@@ -15,6 +15,7 @@ source_set("save_to_photos") {
     "//components/prefs",
     "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/drive/model:manage_storage_url_util",
     "//ios/chrome/browser/photos/model",
     "//ios/chrome/browser/photos/model:metrics",
     "//ios/chrome/browser/photos/model:photos_service_factory",

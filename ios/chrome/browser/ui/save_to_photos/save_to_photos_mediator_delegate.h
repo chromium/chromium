@@ -34,7 +34,6 @@
                             tryAgainAction:(ProceduralBlock)tryAgainAction
                                cancelTitle:(NSString*)cancelTitle
                               cancelAction:(ProceduralBlock)cancelAction;
-- (void)hideTryAgainOrCancelAlert;
 
 // Show and hide StoreKit.
 - (void)showStoreKitWithProductIdentifier:(NSString*)productIdentifer

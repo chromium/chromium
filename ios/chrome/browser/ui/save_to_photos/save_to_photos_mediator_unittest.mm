@@ -17,8 +17,12 @@
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
@@ -121,6 +125,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
     browser_state_ = builder.Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     web_state_ = std::make_unique<web::FakeWebState>();
     FakeImageFetchTabHelper::CreateForWebState(web_state_.get());
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -128,6 +133,16 @@ class SaveToPhotosMediatorTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
+    mock_application_handler_ =
+        OCMStrictProtocolMock(@protocol(ApplicationCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_application_handler_
+                     forProtocol:@protocol(ApplicationCommands)];
+    mock_manage_storage_alert_handler_ =
+        OCMStrictProtocolMock(@protocol(ManageStorageAlertCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_manage_storage_alert_handler_
+                     forProtocol:@protocol(ManageStorageAlertCommands)];
 
     mock_application_ = OCMClassMock([UIApplication class]);
     OCMStub([mock_application_ sharedApplication]).andReturn(mock_application_);
@@ -158,10 +173,12 @@ class SaveToPhotosMediatorTest : public PlatformTest {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForBrowserState(browser_state_.get());
     return [[SaveToPhotosMediator alloc]
-        initWithPhotosService:photos_service
-                  prefService:pref_service
-        accountManagerService:account_manager_service
-              identityManager:identity_manager];
+            initWithPhotosService:photos_service
+                      prefService:pref_service
+            accountManagerService:account_manager_service
+                  identityManager:identity_manager
+        manageStorageAlertHandler:mock_manage_storage_alert_handler_
+               applicationHandler:mock_application_handler_];
   }
 
   // Sign-in with a fake account.
@@ -186,10 +203,13 @@ class SaveToPhotosMediatorTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> web_state_;
   id mock_application_;
   id<SystemIdentity> fake_identity_;
   base::HistogramTester histogram_tester_;
+  id mock_application_handler_;
+  id mock_manage_storage_alert_handler_;
 };
 
 // Tests that the mediator attempts to fetch the image data when started.

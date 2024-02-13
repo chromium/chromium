@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_photos_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator.h"
 #import "ios/chrome/browser/ui/save_to_photos/save_to_photos_mediator_delegate.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
@@ -34,6 +36,7 @@
 #import "url/gurl.h"
 
 @interface SaveToPhotosCoordinator () <AccountPickerCoordinatorDelegate,
+                                       ManageStorageAlertCommands,
                                        SaveToPhotosMediatorDelegate,
                                        StoreKitCoordinatorDelegate>
 
@@ -44,7 +47,7 @@
   web::Referrer _referrer;
   base::WeakPtr<web::WebState> _webState;
   SaveToPhotosMediator* _mediator;
-  AlertCoordinator* _alertCoordinator;
+  UIAlertController* _alertController;
   StoreKitCoordinator* _storeKitCoordinator;
   AccountPickerCoordinator* _accountPickerCoordinator;
 }
@@ -67,6 +70,13 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  [dispatcher startDispatchingToTarget:self
+                           forProtocol:@protocol(ManageStorageAlertCommands)];
+  id<ManageStorageAlertCommands> manageStorageAlertHandler =
+      HandlerForProtocol(dispatcher, ManageStorageAlertCommands);
+  id<ApplicationCommands> applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   PhotosService* photosService =
       PhotosServiceFactory::GetForBrowserState(browserState);
@@ -75,11 +85,13 @@
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(browserState);
-  _mediator =
-      [[SaveToPhotosMediator alloc] initWithPhotosService:photosService
-                                              prefService:prefService
-                                    accountManagerService:accountManagerService
-                                          identityManager:identityManager];
+  _mediator = [[SaveToPhotosMediator alloc]
+          initWithPhotosService:photosService
+                    prefService:prefService
+          accountManagerService:accountManagerService
+                identityManager:identityManager
+      manageStorageAlertHandler:manageStorageAlertHandler
+             applicationHandler:applicationHandler];
   _mediator.delegate = self;
   [_mediator startWithImageURL:_imageURL
                       referrer:_referrer
@@ -87,10 +99,12 @@
 }
 
 - (void)stop {
+  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [_mediator disconnect];
   _mediator = nil;
-  [_alertCoordinator stop];
-  _alertCoordinator = nil;
+  [_alertController.presentingViewController dismissViewControllerAnimated:NO
+                                                                completion:nil];
+  _alertController = nil;
   [_storeKitCoordinator stop];
   _storeKitCoordinator = nil;
   [_accountPickerCoordinator stopAnimated:NO];
@@ -131,41 +145,46 @@
 - (void)showTryAgainOrCancelAlertWithTitle:(NSString*)title
                                    message:(NSString*)message
                              tryAgainTitle:(NSString*)tryAgainTitle
-                            tryAgainAction:(ProceduralBlock)tryAgainAction
+                            tryAgainAction:(ProceduralBlock)tryAgainBlock
                                cancelTitle:(NSString*)cancelTitle
-                              cancelAction:(ProceduralBlock)cancelAction {
-  if (_alertCoordinator) {
-    [_alertCoordinator stop];
-    _alertCoordinator = nil;
+                              cancelAction:(ProceduralBlock)cancelBlock {
+  if (_alertController) {
+    [_alertController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
   }
-
+  _alertController =
+      [UIAlertController alertControllerWithTitle:title
+                                          message:message
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction* tryAgainAction =
+      [UIAlertAction actionWithTitle:tryAgainTitle
+                               style:UIAlertActionStyleDefault
+                             handler:^(UIAlertAction* action) {
+                               if (tryAgainBlock) {
+                                 tryAgainBlock();
+                               }
+                             }];
+  UIAlertAction* cancelAction =
+      [UIAlertAction actionWithTitle:cancelTitle
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction* action) {
+                               if (cancelBlock) {
+                                 cancelBlock();
+                               }
+                             }];
+  [_alertController addAction:tryAgainAction];
+  [_alertController addAction:cancelAction];
+  [_alertController setPreferredAction:tryAgainAction];
   UIViewController* alertBaseViewController =
-      self.baseViewController.presentedViewController;
+      _accountPickerCoordinator.viewController;
   if (!alertBaseViewController) {
     alertBaseViewController = self.baseViewController;
   }
-
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:alertBaseViewController
-                         browser:self.browser
-                           title:title
-                         message:message];
-  [_alertCoordinator addItemWithTitle:tryAgainTitle
-                               action:tryAgainAction
-                                style:UIAlertActionStyleDefault
-                            preferred:YES
-                              enabled:YES];
-  [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:cancelAction
-                                style:UIAlertActionStyleCancel
-                            preferred:NO
-                              enabled:YES];
-  [_alertCoordinator start];
-}
-
-- (void)hideTryAgainOrCancelAlert {
-  [_alertCoordinator stop];
-  _alertCoordinator = nil;
+  CHECK(alertBaseViewController);
+  [alertBaseViewController presentViewController:_alertController
+                                        animated:YES
+                                      completion:nil];
 }
 
 - (void)showStoreKitWithProductIdentifier:(NSString*)productIdentifer
@@ -264,6 +283,47 @@
     (AccountPickerCoordinator*)accountPickerCoordinator {
   [_mediator accountPickerWasHidden];
   _accountPickerCoordinator = nil;
+}
+
+#pragma mark - ManageStorageAlertCommands
+
+- (void)showManageStorageAlertForIdentity:(id<SystemIdentity>)identity {
+  if (_alertController) {
+    [_alertController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
+  }
+  _alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_MANAGE_STORAGE_ALERT_TITLE)
+                       message:l10n_util::GetNSString(
+                                   IDS_IOS_MANAGE_STORAGE_ALERT_MESSAGE)
+                preferredStyle:UIAlertControllerStyleAlert];
+  __weak __typeof(_mediator) weakMediator = _mediator;
+  UIAlertAction* manageStorageAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_MANAGE_STORAGE_ALERT_MANAGE_STORAGE_BUTTON)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                [weakMediator showManageStorageForIdentity:identity];
+              }];
+  UIAlertAction* cancelAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction* action){
+                             }];
+  [_alertController addAction:manageStorageAction];
+  [_alertController addAction:cancelAction];
+  [_alertController setPreferredAction:manageStorageAction];
+  UIViewController* alertBaseViewController =
+      _accountPickerCoordinator.viewController;
+  if (!alertBaseViewController) {
+    alertBaseViewController = self.baseViewController;
+  }
+  CHECK(alertBaseViewController);
+  [alertBaseViewController presentViewController:_alertController
+                                        animated:YES
+                                      completion:nil];
 }
 
 @end
