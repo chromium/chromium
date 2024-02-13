@@ -7,12 +7,14 @@
 #include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/test/active_window_waiter.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "ash/webui/shortcut_customization_ui/url_constants.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
@@ -74,13 +76,15 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void ClickTopSearchResult(aura::Window* primary_root_window,
-                            const std::u16string app_title) {
+  void ClickTopSearchResult(
+      aura::Window* primary_root_window,
+      const std::u16string app_title,
+      SearchResultListView::SearchResultListType list_type) {
     SearchResultListView* top_result_list =
         AppListTestApi().GetTopVisibleSearchResultListView();
     ASSERT_TRUE(top_result_list);
-    EXPECT_EQ(top_result_list->list_type_for_test(),
-              SearchResultListView::SearchResultListType::kApps);
+    EXPECT_EQ(top_result_list->list_type_for_test(), list_type);
+
     SearchResultView* top_result_view = top_result_list->GetResultViewAt(0);
     ASSERT_TRUE(top_result_view);
     ASSERT_TRUE(top_result_view->result());
@@ -101,6 +105,12 @@ class AppListSearchWithAppShortcutsBrowserTest
       chromeos::features::kCrosWebAppShortcutUiUpdate};
 };
 
+class AppListSearchWithCustomizableShortcutsBrowserTest
+    : public AppListSearchBrowserTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSearchCustomizableShortcutsInLauncher};
+};
+
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
   const std::string app_id = web_app::kOsSettingsAppId;
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
@@ -109,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
 
   ActiveWindowWaiter window_waiter(primary_root_window);
 
-  ClickTopSearchResult(primary_root_window, u"Settings");
+  ClickTopSearchResult(primary_root_window, u"Settings",
+                       SearchResultListView::SearchResultListType::kApps);
 
   // Wait for the OS Settings window to activate.
   aura::Window* app_window = window_waiter.Wait();
@@ -128,13 +139,56 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenFeedbackApp) {
   content::TestNavigationObserver navigation_observer(feedback_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  ClickTopSearchResult(primary_root_window, u"Feedback");
+  ClickTopSearchResult(primary_root_window, u"Feedback",
+                       SearchResultListView::SearchResultListType::kApps);
 
   // Wait for the Feedback app to launch.
   navigation_observer.Wait();
   Browser* feedback_browser = FindSystemWebAppBrowser(
       browser()->profile(), SystemWebAppType::OS_FEEDBACK);
   EXPECT_TRUE(feedback_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenShortcutsApp) {
+  aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
+  SearchForSystemApp(primary_root_window, u"Key Shortcuts",
+                     web_app::kShortcutCustomizationAppId);
+
+  GURL shortcut_customization_url = GURL(kChromeUIShortcutCustomizationAppURL);
+  content::TestNavigationObserver navigation_observer(
+      shortcut_customization_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  ClickTopSearchResult(primary_root_window, u"Key Shortcuts",
+                       SearchResultListView::SearchResultListType::kApps);
+
+  // Wait for the Shortcut Customization app to launch.
+  navigation_observer.Wait();
+  Browser* shortcut_customization_browser = FindSystemWebAppBrowser(
+      browser()->profile(), SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+  EXPECT_TRUE(shortcut_customization_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(AppListSearchWithCustomizableShortcutsBrowserTest,
+                       OpenShortcutsAppFromShortcut) {
+  // Launch the app from the Launcher via searching for a shortcut
+  aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
+  SearchForSystemApp(primary_root_window, u"Open notifications",
+                     web_app::kShortcutCustomizationAppId);
+
+  GURL shortcut_customization_url = GURL(kChromeUIShortcutCustomizationAppURL);
+  content::TestNavigationObserver navigation_observer(
+      shortcut_customization_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  ClickTopSearchResult(primary_root_window, u"Open notifications",
+                       SearchResultListView::SearchResultListType::kHelp);
+
+  // Wait for the Shortcut Customization app to launch.
+  navigation_observer.Wait();
+  Browser* shortcut_customization_browser = FindSystemWebAppBrowser(
+      browser()->profile(), SystemWebAppType::SHORTCUT_CUSTOMIZATION);
+  EXPECT_TRUE(shortcut_customization_browser);
 }
 
 IN_PROC_BROWSER_TEST_F(AppListSearchWithAppShortcutsBrowserTest,
