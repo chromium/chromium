@@ -2,26 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/ash/common/assert.js';
-import { loadTimeData } from './i18n_setup.js';
-import { $ } from '//resources/ash/common/util.js';
+import {assert} from '//resources/js/assert.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {$} from '//resources/js/util.js';
 
-/**
- * @fileoverview JS helpers used on login.
- */
+import {ScreensList} from './screens.js';
 
 /**
  * Listens to key events on input element.
- * @param {Element} element DOM element
- * @param {Object} callback
  */
-export function addSubmitListener(element, callback) {
-  element.addEventListener('keydown', (function(callback, e) {
-                                        if (e.keyCode != 13) {
-                                          return;
-                                        }
-                                        callback();
-                                      }).bind(undefined, callback));
+export function addSubmitListener(
+    element: HTMLElement, callback: () => void): void {
+  element.addEventListener(
+      'keydown', (function(callback: () => void, e: KeyboardEvent) {
+                   if (e.code != 'Enter') {
+                     return;
+                   }
+                   callback();
+                 }).bind(undefined, callback));
 }
 
 /**
@@ -33,10 +31,11 @@ export function addSubmitListener(element, callback) {
  * If a screen should be added only under some certain conditions, it must have
  * the `condition` property associated with a boolean flag. If the condition
  * yields true it will be added, otherwise it is skipped.
- * @param {!Array<{tag: string, id: string}>} screenList
  */
-export function addScreensToMainContainer(screenList) {
-  const screenContainer = ($('inner-container'));
+export function addScreensToMainContainer(screenList: ScreensList): void {
+  const screenContainer = $('inner-container');
+  assert(screenContainer);
+
   for (const screen of screenList) {
     if (screen.condition) {
       if (!loadTimeData.getBoolean(screen.condition)) {
@@ -52,7 +51,9 @@ export function addScreensToMainContainer(screenList) {
       screenElement.classList.add(...screen.extra_classes);
     }
     screenContainer.appendChild(screenElement);
-    assert(
-        !!$(screen.id).shadowRoot, `Error! No shadow root in <${screen.tag}>`);
+
+    const addedScreen = $(screen.id);
+    assert(addedScreen, `Error! <${screen.tag}> does not exist`);
+    assert(addedScreen.shadowRoot, `Error! No shadow root in <${screen.tag}>`);
   }
 }

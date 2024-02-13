@@ -32,7 +32,7 @@ unconditional_existing_files = [
   "i18n_setup.ts",
   "install_oobe_error_store.ts",
   "lazy_load_screens.ts",
-  "login_ui_tools.js",
+  "login_ui_tools.ts",
   "multi_tap_detector.js",
   "oobe.js",
   "oobe_trace.js",
