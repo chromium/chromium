@@ -1357,6 +1357,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {features::kAutofillUseI18nAddressModel,
+       features::kAutofillUseINAddressModel,
        features::kAutofillEnableSupportForLandmark,
        features::kAutofillEnableSupportForBetweenStreets,
        features::kAutofillEnableSupportForAdminLevel2,
@@ -1384,6 +1385,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
       ADDRESS_HOME_LANDMARK,
       ADDRESS_HOME_OVERFLOW,
       ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+      ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
       ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
       ADDRESS_HOME_BETWEEN_STREETS,
       ADDRESS_HOME_BETWEEN_STREETS_1,
