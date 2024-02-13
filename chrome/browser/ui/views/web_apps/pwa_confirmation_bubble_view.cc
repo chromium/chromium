@@ -243,10 +243,10 @@ void PWAConfirmationBubbleView::WindowClosing() {
     if (base::FeatureList::IsEnabled(
             metrics::structured::kAppDiscoveryLogging)) {
       metrics::structured::StructuredMetricsClient::Record(
-          std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-                        .SetWebAppInstallStatus(
-                            ToLong(web_app::WebAppInstallStatus::kCancelled))
-                        .SetAppId(app_id)));
+          cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+              .SetWebAppInstallStatus(
+                  ToLong(web_app::WebAppInstallStatus::kCancelled))
+              .SetAppId(app_id));
     }
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 
@@ -277,10 +277,10 @@ bool PWAConfirmationBubbleView::Accept() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
     metrics::structured::StructuredMetricsClient::Record(
-        std::move(cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-                      .SetWebAppInstallStatus(
-                          ToLong(web_app::WebAppInstallStatus::kAccepted))
-                      .SetAppId(app_id)));
+        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+            .SetWebAppInstallStatus(
+                ToLong(web_app::WebAppInstallStatus::kAccepted))
+            .SetAppId(app_id));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -346,9 +346,9 @@ void ShowPWAInstallBubble(
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
     webapps::AppId app_id =
         web_app::GenerateAppIdFromManifestId(web_app_info->manifest_id);
-    cros_events::AppDiscovery_Browser_AppInstallDialogShown()
-        .SetAppId(app_id)
-        .Record();
+    metrics::structured::StructuredMetricsClient::Record(
+        cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
+            app_id));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

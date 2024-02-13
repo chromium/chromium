@@ -169,13 +169,13 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
 
   // Record a couple of events and verify that they are recorded.
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_one::TestEventOne()
-                    .SetTestMetricOne("metric one")
-                    .SetTestMetricTwo(10)));
+      structured::events::v2::test_project_one::TestEventOne()
+          .SetTestMetricOne("metric one")
+          .SetTestMetricTwo(10));
 
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_five::TestEventSix()
-                    .SetTestMetricSix("metric six")));
+      structured::events::v2::test_project_five::TestEventSix()
+          .SetTestMetricSix("metric six"));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -220,13 +220,13 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
 
   // Record a couple of events and verify that they are recorded.
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_one::TestEventOne()
-                    .SetTestMetricOne("metric one")
-                    .SetTestMetricTwo(10)));
+      structured::events::v2::test_project_one::TestEventOne()
+          .SetTestMetricOne("metric one")
+          .SetTestMetricTwo(10));
 
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_five::TestEventSix()
-                    .SetTestMetricSix("metric six")));
+      structured::events::v2::test_project_five::TestEventSix()
+          .SetTestMetricSix("metric six"));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -265,9 +265,9 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService, SystemProfilePopulated) {
 
   // Record an event inorder to build a log.
   structured::StructuredMetricsClient::Record(
-      std::move(structured::events::v2::test_project_one::TestEventOne()
-                    .SetTestMetricOne("metric one")
-                    .SetTestMetricTwo(10)));
+      structured::events::v2::test_project_one::TestEventOne()
+          .SetTestMetricOne("metric one")
+          .SetTestMetricTwo(10));
 
   // This will timeout and fail the test if events have not been recorded
   // successfully.
@@ -325,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(TestStructuredMetricsService,
   structured_metrics_mixin_.UpdateRecordingState(false);
   WaitForConsentChanges();
 
-  structured::events::v2::test_project_seven::TestEventEight().Record();
+  structured::StructuredMetricsClient::Record(
+      structured::events::v2::test_project_seven::TestEventEight());
 
   structured_metrics_mixin_.WaitUntilEventRecorded(kProjectSevenHash,
                                                    kEventEightHash);

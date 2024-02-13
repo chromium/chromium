@@ -419,9 +419,9 @@ void ShowWebAppDetailedInstallDialog(
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
     webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(manifest_id);
-    metrics::structured::StructuredMetricsClient::Record(std::move(
+    metrics::structured::StructuredMetricsClient::Record(
         cros_events::AppDiscovery_Browser_AppInstallDialogShown().SetAppId(
-            app_id)));
+            app_id));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
@@ -483,10 +483,11 @@ void WebAppDetailedInstallDialogDelegate::OnAccept() {
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
     const webapps::AppId app_id =
         web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-    cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-        .SetWebAppInstallStatus(ToLong(web_app::WebAppInstallStatus::kAccepted))
-        .SetAppId(app_id)
-        .Record();
+    metrics::structured::StructuredMetricsClient::Record(
+        cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+            .SetWebAppInstallStatus(
+                ToLong(web_app::WebAppInstallStatus::kAccepted))
+            .SetAppId(app_id));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -563,11 +564,11 @@ void WebAppDetailedInstallDialogDelegate::MeasureIphOnDialogClose() {
             metrics::structured::kAppDiscoveryLogging)) {
       const webapps::AppId app_id =
           web_app::GenerateAppIdFromManifestId(install_info_->manifest_id);
-      cros_events::AppDiscovery_Browser_AppInstallDialogResult()
-          .SetWebAppInstallStatus(
-              ToLong(web_app::WebAppInstallStatus::kCancelled))
-          .SetAppId(app_id)
-          .Record();
+      metrics::structured::StructuredMetricsClient::Record(
+          cros_events::AppDiscovery_Browser_AppInstallDialogResult()
+              .SetWebAppInstallStatus(
+                  ToLong(web_app::WebAppInstallStatus::kCancelled))
+              .SetAppId(app_id));
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
     std::move(callback_).Run(false, std::move(install_info_));
