@@ -24,8 +24,9 @@ namespace media_message_center {
 
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
     : public views::View {
+  METADATA_HEADER(MediaControlsProgressView, views::View)
+
  public:
-  METADATA_HEADER(MediaControlsProgressView);
   explicit MediaControlsProgressView(
       base::RepeatingCallback<void(double)> seek_callback,
       bool is_modern_notification = false);

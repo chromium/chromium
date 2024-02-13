@@ -34,8 +34,9 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
                              public content::WebContentsObserver,
                              public views::WidgetDelegateView,
                              public views::WidgetObserver {
+  METADATA_HEADER(NativeAppWindowViews, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(NativeAppWindowViews);
   NativeAppWindowViews();
   NativeAppWindowViews(const NativeAppWindowViews&) = delete;
   NativeAppWindowViews& operator=(const NativeAppWindowViews&) = delete;

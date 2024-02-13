@@ -53,8 +53,9 @@ class MESSAGE_CENTER_EXPORT MessageView
     : public views::View,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
+  METADATA_HEADER(MessageView, views::View)
+
  public:
-  METADATA_HEADER(MessageView);
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnSlideStarted(const std::string& notification_id) {}

@@ -56,8 +56,9 @@ constexpr char16_t kKeyNameDelimiter[] = u"|";
 // Class containing the instruction text. Contains fancy styling on the keyboard
 // key (not just a simple label).
 class SubtleNotificationView::InstructionView : public views::View {
+  METADATA_HEADER(InstructionView, views::View)
+
  public:
-  METADATA_HEADER(InstructionView);
   // Creates an InstructionView with specific text. |text| may contain one or
   // more segments delimited by a pair of pipes ('|'); each of these segments
   // will be displayed as a keyboard key. e.g., "Press |Alt|+|Q| to exit" will
@@ -257,5 +258,5 @@ void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetNameChecked(accessible_name);
 }
 
-BEGIN_METADATA(SubtleNotificationView, views::View)
+BEGIN_METADATA(SubtleNotificationView)
 END_METADATA

@@ -249,7 +249,7 @@ const gfx::VectorIcon& NotificationControlButtonsView::GetSnoozeButtonIcon()
   return snooze_button_icon_ ? *snooze_button_icon_ : kDefaultSnoozeIcon;
 }
 
-BEGIN_METADATA(NotificationControlButtonsView, views::View)
+BEGIN_METADATA(NotificationControlButtonsView)
 END_METADATA
 
 }  // namespace message_center

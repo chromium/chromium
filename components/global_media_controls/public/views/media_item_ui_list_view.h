@@ -22,8 +22,9 @@ class MediaItemUIView;
 // handles adding/removing separators and creating a scrollable view.
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
     : public views::ScrollView {
+  METADATA_HEADER(MediaItemUIListView, views::ScrollView)
+
  public:
-  METADATA_HEADER(MediaItemUIListView);
   struct SeparatorStyle {
     SeparatorStyle(SkColor separator_color, int separator_thickness);
 

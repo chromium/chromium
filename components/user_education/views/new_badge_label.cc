@@ -174,7 +174,7 @@ void NewBadgeLabel::SetBorder(std::unique_ptr<views::Border> b) {
   NOTREACHED() << "Calling SetBorder() externally is currently not allowed.";
 }
 
-BEGIN_METADATA(NewBadgeLabel, views::Label)
+BEGIN_METADATA(NewBadgeLabel)
 ADD_PROPERTY_METADATA(bool, DisplayNewBadge)
 ADD_PROPERTY_METADATA(NewBadgeLabel::BadgePlacement, BadgePlacement)
 ADD_PROPERTY_METADATA(bool, PadAfterNewBadge)

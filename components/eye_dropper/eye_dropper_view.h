@@ -31,8 +31,9 @@ class EyeDropperView : public content::EyeDropper,
                        public aura::WindowObserver,
 #endif
                        public views::WidgetDelegateView {
+  METADATA_HEADER(EyeDropperView, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(EyeDropperView);
   EyeDropperView(gfx::NativeView parent,
                  gfx::NativeView event_handler,
                  content::EyeDropperListener* listener);

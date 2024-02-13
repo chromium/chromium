@@ -420,7 +420,7 @@ void EyeDropperView::OnColorSelectionCanceled() {
   listener_->ColorSelectionCanceled();
 }
 
-BEGIN_METADATA(EyeDropperView, views::WidgetDelegateView)
+BEGIN_METADATA(EyeDropperView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Size, Size)
 ADD_READONLY_PROPERTY_METADATA(float, Diameter)
 END_METADATA

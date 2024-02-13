@@ -45,9 +45,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
       public global_media_controls::MediaItemUI,
       public views::SlideOutControllerDelegate,
       public views::FocusChangeListener {
- public:
-  METADATA_HEADER(MediaItemUIView);
+  METADATA_HEADER(MediaItemUIView, views::Button)
 
+ public:
   // MediaItemUIView is used in multiple places so some optional parameters may
   // not be set:
   // - Chrome OS media UI will set notification_theme for color theme.

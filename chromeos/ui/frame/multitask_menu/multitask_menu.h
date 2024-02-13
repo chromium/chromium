@@ -25,9 +25,9 @@ namespace chromeos {
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
     : public views::BubbleDialogDelegateView,
       public display::DisplayObserver {
- public:
-  METADATA_HEADER(MultitaskMenu);
+  METADATA_HEADER(MultitaskMenu, views::BubbleDialogDelegateView)
 
+ public:
   MultitaskMenu(views::View* anchor,
                 views::Widget* parent_widget,
                 bool close_on_move_out);

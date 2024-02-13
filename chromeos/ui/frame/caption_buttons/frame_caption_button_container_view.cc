@@ -905,7 +905,7 @@ FrameCaptionButtonContainerView::GetMultitaskMenuNudgeController() {
   return &nudge_controller_;
 }
 
-BEGIN_METADATA(FrameCaptionButtonContainerView, views::View)
+BEGIN_METADATA(FrameCaptionButtonContainerView)
 END_METADATA
 
 }  // namespace chromeos

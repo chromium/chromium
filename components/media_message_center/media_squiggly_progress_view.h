@@ -22,8 +22,9 @@ namespace media_message_center {
 class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSquigglyProgressView
     : public views::BoxLayoutView,
       public gfx::AnimationDelegate {
+  METADATA_HEADER(MediaSquigglyProgressView, views::BoxLayoutView)
+
  public:
-  METADATA_HEADER(MediaSquigglyProgressView);
   explicit MediaSquigglyProgressView(
       ui::ColorId playing_foreground_color_id,
       ui::ColorId playing_background_color_id,

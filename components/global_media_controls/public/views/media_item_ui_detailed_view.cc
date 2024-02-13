@@ -61,8 +61,9 @@ constexpr gfx::Size kControlsButtonSize = gfx::Size(32, 32);
 constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
 
 class MediaLabelButton : public views::Button {
+  METADATA_HEADER(MediaLabelButton, views::Button)
+
  public:
-  METADATA_HEADER(MediaLabelButton);
   MediaLabelButton(const views::Label::CustomFont& font,
                    int text_line_height,
                    ui::ColorId text_color_id,
@@ -96,12 +97,13 @@ class MediaLabelButton : public views::Button {
   raw_ptr<views::Label> label_;
 };
 
-BEGIN_METADATA(MediaLabelButton, views::Button)
+BEGIN_METADATA(MediaLabelButton)
 END_METADATA
 
 class MediaButton : public views::ImageButton {
+  METADATA_HEADER(MediaButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(MediaButton);
   MediaButton(PressedCallback callback,
               int button_id,
               const gfx::VectorIcon& vector_icon,
@@ -153,7 +155,7 @@ class MediaButton : public views::ImageButton {
   const ui::ColorId foreground_disabled_color_id_;
 };
 
-BEGIN_METADATA(MediaButton, views::ImageButton)
+BEGIN_METADATA(MediaButton)
 END_METADATA
 
 // If the image does not fit the square view, scale the image to fill the view
@@ -737,7 +739,7 @@ views::View* MediaItemUIDetailedView::GetDeviceSelectorSeparatorForTesting() {
   return device_selector_view_separator_;
 }
 
-BEGIN_METADATA(MediaItemUIDetailedView, views::View)
+BEGIN_METADATA(MediaItemUIDetailedView)
 END_METADATA
 
 }  // namespace global_media_controls

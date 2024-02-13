@@ -20,9 +20,9 @@ namespace chromeos {
 // image, and optionally setting a text and sub image.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCenterButton
     : public views::FrameCaptionButton {
- public:
-  METADATA_HEADER(FrameCenterButton);
+  METADATA_HEADER(FrameCenterButton, views::FrameCaptionButton)
 
+ public:
   FrameCenterButton(PressedCallback callback);
   FrameCenterButton(const FrameCenterButton&) = delete;
   FrameCenterButton& operator=(const FrameCenterButton&) = delete;

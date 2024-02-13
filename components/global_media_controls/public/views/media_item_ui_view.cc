@@ -59,9 +59,9 @@ constexpr int kMinVisibleActionsForExpanding = 4;
 }  // anonymous namespace
 
 class MediaItemUIView::DismissButton : public views::ImageButton {
- public:
-  METADATA_HEADER(DismissButton);
+  METADATA_HEADER(DismissButton, views::ImageButton)
 
+ public:
   explicit DismissButton(PressedCallback callback)
       : views::ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
@@ -497,7 +497,7 @@ void MediaItemUIView::OnSizeChanged() {
     observer.OnMediaItemUISizeChanged();
 }
 
-BEGIN_METADATA(MediaItemUIView, views::Button)
+BEGIN_METADATA(MediaItemUIView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Title)
 END_METADATA
 

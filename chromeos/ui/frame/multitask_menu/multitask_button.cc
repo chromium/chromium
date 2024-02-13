@@ -109,7 +109,7 @@ void MultitaskButton::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->DrawRoundRect(pattern_bounds, kButtonCornerRadius, pattern_flags);
 }
 
-BEGIN_METADATA(MultitaskButton, views::Button)
+BEGIN_METADATA(MultitaskButton)
 END_METADATA
 
 }  // namespace chromeos

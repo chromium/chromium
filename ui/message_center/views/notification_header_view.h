@@ -30,9 +30,9 @@ class Label;
 namespace message_center {
 
 class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
- public:
-  METADATA_HEADER(NotificationHeaderView);
+  METADATA_HEADER(NotificationHeaderView, views::Button)
 
+ public:
   explicit NotificationHeaderView(PressedCallback callback = PressedCallback());
   NotificationHeaderView(const NotificationHeaderView&) = delete;
   NotificationHeaderView& operator=(const NotificationHeaderView&) = delete;

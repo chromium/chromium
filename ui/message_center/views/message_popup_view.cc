@@ -256,7 +256,7 @@ bool MessagePopupView::IsWidgetValid() const {
   return GetWidget() && !GetWidget()->IsClosed();
 }
 
-BEGIN_METADATA(MessagePopupView, views::WidgetDelegateView)
+BEGIN_METADATA(MessagePopupView)
 END_METADATA
 
 }  // namespace message_center

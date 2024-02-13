@@ -64,9 +64,10 @@ enum class MediaDisplayPage {
 // CrOS implementation of media notification view.
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
     : public media_message_center::MediaNotificationView {
- public:
-  METADATA_HEADER(MediaItemUIDetailedView);
+  METADATA_HEADER(MediaItemUIDetailedView,
+                  media_message_center::MediaNotificationView)
 
+ public:
   MediaItemUIDetailedView(
       media_message_center::MediaNotificationContainer* container,
       base::WeakPtr<media_message_center::MediaNotificationItem> item,

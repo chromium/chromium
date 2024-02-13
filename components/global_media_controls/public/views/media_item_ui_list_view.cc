@@ -117,7 +117,7 @@ base::WeakPtr<MediaItemUIListView> MediaItemUIListView::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-BEGIN_METADATA(MediaItemUIListView, views::ScrollView)
+BEGIN_METADATA(MediaItemUIListView)
 END_METADATA
 
 }  // namespace global_media_controls

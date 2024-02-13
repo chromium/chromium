@@ -736,7 +736,7 @@ void NotificationView::HeaderRowPressed() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(NotificationView, NotificationViewBase)
+BEGIN_METADATA(NotificationView)
 END_METADATA
 
 }  // namespace message_center

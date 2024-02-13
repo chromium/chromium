@@ -22,9 +22,9 @@ class Notification;
 class MESSAGE_CENTER_EXPORT MessagePopupView
     : public views::FocusChangeListener,
       public views::WidgetDelegateView {
- public:
-  METADATA_HEADER(MessagePopupView);
+  METADATA_HEADER(MessagePopupView, views::WidgetDelegateView)
 
+ public:
   MessagePopupView(MessageView* message_view,
                    MessagePopupCollection* popup_collection,
                    bool a11y_feedback_on_init);

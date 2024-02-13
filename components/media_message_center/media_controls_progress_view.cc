@@ -243,7 +243,7 @@ void MediaControlsProgressView::HandleSeeking(const gfx::Point& location) {
   seek_callback_.Run(seek_to_progress);
 }
 
-BEGIN_METADATA(MediaControlsProgressView, views::View)
+BEGIN_METADATA(MediaControlsProgressView)
 END_METADATA
 
 }  // namespace media_message_center

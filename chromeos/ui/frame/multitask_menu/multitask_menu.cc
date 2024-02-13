@@ -121,7 +121,7 @@ void MultitaskMenu::OnDisplayMetricsChanged(const display::Display& display,
     HideBubble();
 }
 
-BEGIN_METADATA(MultitaskMenu, views::BubbleDialogDelegateView)
+BEGIN_METADATA(MultitaskMenu)
 END_METADATA
 
 }  // namespace chromeos

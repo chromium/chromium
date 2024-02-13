@@ -435,7 +435,7 @@ bool MediaSquigglyProgressView::is_live_for_testing() const {
   return is_live_;
 }
 
-BEGIN_METADATA(MediaSquigglyProgressView, views::View)
+BEGIN_METADATA(MediaSquigglyProgressView)
 END_METADATA
 
 }  // namespace media_message_center

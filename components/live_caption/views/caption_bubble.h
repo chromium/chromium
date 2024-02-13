@@ -77,8 +77,9 @@ using ResetInactivityTimerCallback = base::RepeatingCallback<void()>;
 //
 class CaptionBubble : public views::BubbleDialogDelegateView,
                       public gfx::AnimationDelegate {
+  METADATA_HEADER(CaptionBubble, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(CaptionBubble);
   CaptionBubble(PrefService* profile_prefs,
                 const std::string& application_locale,
                 base::OnceClosure destroyed_callback);

@@ -115,9 +115,9 @@ views::BubbleBorder::Arrow TranslateArrow(HelpBubbleArrow arrow) {
 }
 
 class MdIPHBubbleButton : public views::MdTextButton {
- public:
-  METADATA_HEADER(MdIPHBubbleButton);
+  METADATA_HEADER(MdIPHBubbleButton, views::MdTextButton)
 
+ public:
   MdIPHBubbleButton(const HelpBubbleDelegate* delegate,
                     PressedCallback callback,
                     const std::u16string& text,
@@ -197,15 +197,16 @@ class MdIPHBubbleButton : public views::MdTextButton {
   bool is_default_button_;
 };
 
-BEGIN_METADATA(MdIPHBubbleButton, views::MdTextButton)
+BEGIN_METADATA(MdIPHBubbleButton)
 END_METADATA
 
 // Displays a simple "X" close button that will close a promo bubble view.
 // The alt-text and button callback can be set based on the needs of the
 // specific bubble.
 class ClosePromoButton : public views::ImageButton {
+  METADATA_HEADER(ClosePromoButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(ClosePromoButton);
   ClosePromoButton(const HelpBubbleDelegate* delegate,
                    const std::u16string accessible_name,
                    PressedCallback callback)
@@ -242,12 +243,13 @@ class ClosePromoButton : public views::ImageButton {
   const raw_ptr<const HelpBubbleDelegate> delegate_;
 };
 
-BEGIN_METADATA(ClosePromoButton, views::ImageButton)
+BEGIN_METADATA(ClosePromoButton)
 END_METADATA
 
 class DotView : public views::View {
+  METADATA_HEADER(DotView, views::View)
+
  public:
-  METADATA_HEADER(DotView);
   DotView(const HelpBubbleDelegate* delegate, gfx::Size size, bool should_fill)
       : delegate_(delegate), size_(size), should_fill_(should_fill) {
     // In order to anti-alias properly, we'll grow by the stroke width and then
@@ -299,7 +301,7 @@ class DotView : public views::View {
 
 constexpr int DotView::kStrokeWidth;
 
-BEGIN_METADATA(DotView, views::View)
+BEGIN_METADATA(DotView)
 END_METADATA
 
 views::MenuItemView* GetAnchorAsMenuItem(
@@ -1065,7 +1067,7 @@ void HelpBubbleView::SetForceAnchorRect(gfx::Rect force_anchor_rect) {
   local_anchor_bounds_ = force_anchor_rect;
 }
 
-BEGIN_METADATA(HelpBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(HelpBubbleView)
 END_METADATA
 
 }  // namespace user_education

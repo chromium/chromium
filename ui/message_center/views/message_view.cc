@@ -618,7 +618,7 @@ void MessageView::UpdateControlButtonsVisibilityWithNotification(
   UpdateControlButtonsVisibility();
 }
 
-BEGIN_METADATA(MessageView, views::View)
+BEGIN_METADATA(MessageView)
 END_METADATA
 
 }  // namespace message_center

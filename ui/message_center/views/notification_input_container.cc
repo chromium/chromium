@@ -231,7 +231,7 @@ void NotificationInputContainer::UpdateButtonImage() {
           GetColorProvider()->GetColor(icon_color_id), kInputReplyButtonSize));
 }
 
-BEGIN_METADATA(NotificationInputContainer, views::View)
+BEGIN_METADATA(NotificationInputContainer)
 END_METADATA
 
 }  // namespace message_center

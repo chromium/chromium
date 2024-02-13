@@ -577,7 +577,7 @@ void FrameSizeButton::OnLongTapDelayTimerEnded(bool is_mouse,
   }
 }
 
-BEGIN_METADATA(FrameSizeButton, views::FrameCaptionButton)
+BEGIN_METADATA(FrameSizeButton)
 END_METADATA
 
 }  // namespace chromeos

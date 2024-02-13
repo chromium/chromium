@@ -451,7 +451,7 @@ bool NativeAppWindowViews::GetCanMaximizeWindow() const {
          !WidgetHasHitTestMask();
 }
 
-BEGIN_METADATA(NativeAppWindowViews, views::WidgetDelegateView)
+BEGIN_METADATA(NativeAppWindowViews)
 ADD_READONLY_PROPERTY_METADATA(bool, CanMaximizeWindow)
 ADD_READONLY_PROPERTY_METADATA(bool, CanResizeWindow)
 END_METADATA

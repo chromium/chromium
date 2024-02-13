@@ -83,8 +83,9 @@ void ConfigureLabel(views::Label* label,
 // ExpandButton forwards all mouse and key events to NotificationHeaderView, but
 // takes tab focus for accessibility purpose.
 class ExpandButton : public views::ImageView {
+  METADATA_HEADER(ExpandButton, views::ImageView)
+
  public:
-  METADATA_HEADER(ExpandButton);
   ExpandButton();
   ~ExpandButton() override;
 
@@ -137,7 +138,7 @@ void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
-BEGIN_METADATA(ExpandButton, views::ImageView)
+BEGIN_METADATA(ExpandButton)
 END_METADATA
 
 }  // namespace
@@ -475,7 +476,7 @@ void NotificationHeaderView::UpdateColors() {
   }
 }
 
-BEGIN_METADATA(NotificationHeaderView, views::Button)
+BEGIN_METADATA(NotificationHeaderView)
 END_METADATA
 
 }  // namespace message_center

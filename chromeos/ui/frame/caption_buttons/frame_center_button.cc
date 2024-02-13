@@ -288,7 +288,7 @@ void FrameCenterButton::OnBackgroundColorChanged() {
     text_->SetColor(GetButtonColor(GetBackgroundColor()));
 }
 
-BEGIN_METADATA(FrameCenterButton, views::FrameCaptionButton)
+BEGIN_METADATA(FrameCenterButton)
 END_METADATA
 
 }  // namespace chromeos

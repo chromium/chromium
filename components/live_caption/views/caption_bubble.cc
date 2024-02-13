@@ -226,8 +226,9 @@ namespace captions {
 
 #if BUILDFLAG(IS_WIN)
 class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
+  METADATA_HEADER(MediaFoundationRendererErrorMessageView, views::StyledLabel)
+
  public:
-  METADATA_HEADER(MediaFoundationRendererErrorMessageView);
   explicit MediaFoundationRendererErrorMessageView(
       CaptionBubble* caption_bubble)
       : caption_bubble_(caption_bubble) {}
@@ -248,7 +249,7 @@ class MediaFoundationRendererErrorMessageView : public views::StyledLabel {
   const raw_ptr<CaptionBubble> caption_bubble_;  // Not owned.
 };
 
-BEGIN_METADATA(MediaFoundationRendererErrorMessageView, views::StyledLabel)
+BEGIN_METADATA(MediaFoundationRendererErrorMessageView)
 END_METADATA
 
 #endif
@@ -256,8 +257,9 @@ END_METADATA
 // CaptionBubble implementation of BubbleFrameView. This class takes care
 // of making the caption draggable.
 class CaptionBubbleFrameView : public views::BubbleFrameView {
+  METADATA_HEADER(CaptionBubbleFrameView, views::BubbleFrameView)
+
  public:
-  METADATA_HEADER(CaptionBubbleFrameView);
   explicit CaptionBubbleFrameView(
       std::vector<raw_ptr<views::View, VectorExperimental>> buttons,
       ResetInactivityTimerCallback reset_inactivity_timer_cb)
@@ -315,7 +317,7 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   ResetInactivityTimerCallback reset_inactivity_timer_cb_;
 };
 
-BEGIN_METADATA(CaptionBubbleFrameView, views::BubbleFrameView)
+BEGIN_METADATA(CaptionBubbleFrameView)
 END_METADATA
 
 class CaptionBubbleLabelAXModeObserver;
@@ -328,8 +330,9 @@ class CaptionBubbleLabelAXModeObserver;
 // braille display so that a braille user can read the caption text line by
 // line.
 class CaptionBubbleLabel : public views::Label {
+  METADATA_HEADER(CaptionBubbleLabel, views::Label)
+
  public:
-  METADATA_HEADER(CaptionBubbleLabel);
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
   CaptionBubbleLabel() {
     ax_mode_observer_ =
@@ -434,7 +437,7 @@ class CaptionBubbleLabel : public views::Label {
 #endif
 };
 
-BEGIN_METADATA(CaptionBubbleLabel, views::Label)
+BEGIN_METADATA(CaptionBubbleLabel)
 END_METADATA
 
 class LanguageLabelButton : public views::LabelButton {
@@ -490,7 +493,7 @@ class LanguageLabelButton : public views::LabelButton {
   views::Label* GetLabel() { return label(); }
 };
 
-BEGIN_METADATA(LanguageLabelButton, views::LabelButton)
+BEGIN_METADATA(LanguageLabelButton)
 END_METADATA
 
 #if defined(NEED_FOCUS_FOR_ACCESSIBILITY)
@@ -1642,7 +1645,7 @@ views::View* CaptionBubble::GetHeaderForTesting() {
   return header_container_.get();
 }
 
-BEGIN_METADATA(CaptionBubble, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CaptionBubble)
 END_METADATA
 
 }  // namespace captions

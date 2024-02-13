@@ -14,8 +14,9 @@ namespace message_center {
 // ProportionalImageViews scale and center their images while preserving their
 // original proportions.
 class MESSAGE_CENTER_EXPORT ProportionalImageView : public views::View {
+  METADATA_HEADER(ProportionalImageView, views::View)
+
  public:
-  METADATA_HEADER(ProportionalImageView);
   explicit ProportionalImageView(const gfx::Size& view_size);
   ProportionalImageView(const ProportionalImageView&) = delete;
   ProportionalImageView& operator=(const ProportionalImageView&) = delete;

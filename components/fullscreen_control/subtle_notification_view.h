@@ -26,8 +26,9 @@ class Widget;
 // functionality for displaying keyboard shortcuts (rendering the keys inside a
 // rounded rectangle).
 class SubtleNotificationView : public views::View {
+  METADATA_HEADER(SubtleNotificationView, views::View)
+
  public:
-  METADATA_HEADER(SubtleNotificationView);
   SubtleNotificationView();
   SubtleNotificationView(const SubtleNotificationView&) = delete;
   SubtleNotificationView& operator=(const SubtleNotificationView&) = delete;

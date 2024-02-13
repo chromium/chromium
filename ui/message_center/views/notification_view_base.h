@@ -69,10 +69,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
     : public MessageView,
       public views::InkDropObserver,
       public NotificationInputDelegate {
+  METADATA_HEADER(NotificationViewBase, MessageView)
  public:
   // This defines an enumeration of IDs that can uniquely identify a view within
   // the scope of NotificationViewBase.
-  METADATA_HEADER(NotificationViewBase);
   enum ViewId {
     // We start from 1 because 0 is the default view ID.
     kHeaderRow = 1,

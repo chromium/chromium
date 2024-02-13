@@ -100,7 +100,7 @@ gfx::ImageSkia LargeImageView::CalculateDrawnImage() const {
   return cropped_image;
 }
 
-BEGIN_METADATA(LargeImageView, views::View)
+BEGIN_METADATA(LargeImageView)
 END_METADATA
 
 }  // namespace message_center

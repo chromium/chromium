@@ -36,8 +36,9 @@ class MESSAGE_CENTER_EXPORT NotificationInputDelegate {
 class MESSAGE_CENTER_EXPORT NotificationInputContainer
     : public views::View,
       public views::TextfieldController {
+  METADATA_HEADER(NotificationInputContainer, views::View)
+
  public:
-  METADATA_HEADER(NotificationInputContainer);
   explicit NotificationInputContainer(
       NotificationInputDelegate* delegate = nullptr);
   NotificationInputContainer(const NotificationInputContainer&) = delete;

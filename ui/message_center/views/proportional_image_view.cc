@@ -85,7 +85,7 @@ gfx::Size ProportionalImageView::GetImageDrawingSize() {
   return GetImageSizeForContainerSize(max_size, image_.Size());
 }
 
-BEGIN_METADATA(ProportionalImageView, views::View)
+BEGIN_METADATA(ProportionalImageView)
 END_METADATA
 
 }  // namespace message_center
