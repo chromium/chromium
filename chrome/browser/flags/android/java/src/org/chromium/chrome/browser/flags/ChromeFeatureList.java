@@ -461,6 +461,8 @@ public abstract class ChromeFeatureList {
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
+    public static final String TABLET_TAB_SWITCHER_LONG_PRESS_MENU =
+            "TabletTabSwitcherLongPressMenu";
     public static final String TABLET_TOOLBAR_INCOGNITO_STATUS = "TabletToolbarIncognitoStatus";
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";
     public static final String TAB_TO_GTS_ANIMATION = "TabToGTSAnimation";
