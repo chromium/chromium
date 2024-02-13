@@ -706,6 +706,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          {features::kBackForwardCache, {}},
          {features::kFledgeUseInterestGroupCache, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
+         {blink::features::kFledgeSampleDebugReports, {}},
          // This is in field trial config, but we want this consistent among
          // bots.
          {blink::features::kFledgeCustomMaxAuctionAdComponents,

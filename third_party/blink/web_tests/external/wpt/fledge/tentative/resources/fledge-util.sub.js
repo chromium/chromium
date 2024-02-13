@@ -148,6 +148,35 @@ async function waitForObservedRequests(uuid, expectedRequests) {
   }
 }
 
+
+// Similar to waitForObservedRequests, but ignore forDebuggingOnly reports.
+async function waitForObservedRequestsIgnoreDebugOnlyReports(
+  uuid, expectedRequests) {
+  // Sort array for easier comparison, as observed request order does not
+  // matter, and replace UUID to print consistent errors on failure.
+  expectedRequests =
+      expectedRequests.sort().map((url) => url.replace(uuid, '<uuid>'));
+
+  while (true) {
+    let numTrackedRequest = 0;
+    let trackedData = await fetchTrackedData(uuid);
+
+    // Clean up "trackedRequests" in same manner as "expectedRequests".
+    let trackedRequests = trackedData.trackedRequests.sort().map(
+        (url) => url.replace(uuid, '<uuid>'));
+
+    for (const trackedRequest of trackedRequests) {
+      // Ignore forDebuggingOnly reports, since their appearance is random.
+      if (!trackedRequest.includes('forDebuggingOnly')) {
+        assert_in_array(trackedRequest, expectedRequests);
+        numTrackedRequest++;
+      }
+    }
+
+    if (numTrackedRequest == expectedRequests.length) break;
+  }
+}
+
 // Creates a bidding script with the provided code in the method bodies. The
 // bidding script's generateBid() method will return a bid of 9 for the first
 // ad, after the passed in code in the "generateBid" input argument has been
