@@ -1,6 +1,6 @@
 // META: script=/resources/test-only-api.js
 // META: script=/webhid/resources/common.js
-// META: script=/webhid/resources/automation.js
+// META: script=resources/automation.js
 'use strict';
 
 const kTestVendorId = 0x1234;
