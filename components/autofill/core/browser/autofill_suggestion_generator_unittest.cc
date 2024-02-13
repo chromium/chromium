@@ -1284,12 +1284,14 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
               ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile().guid()),
-              {{Suggestion::Text(u"House number")}}),
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}}),
           EqualsFieldByFieldFillingSuggestion(
               PopupItemId::kAddressFieldByFieldFilling,
               profile().GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
               ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile().guid()),
-              {{Suggestion::Text(u"Street")}})));
+              {{Suggestion::Text(l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
 }
 
 TEST_F(
@@ -1554,14 +1556,17 @@ TEST_F(
                   PopupItemId::kAddressFieldByFieldFilling,
                   profile.GetInfo(ADDRESS_HOME_STREET_NAME, app_locale()),
                   ADDRESS_HOME_STREET_NAME, Suggestion::Guid(profile.guid()),
-                  {{Suggestion::Text(u"Street")}})));
+                  {{Suggestion::Text(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}})));
   // The address line 2 (seventh child) should have the house number as child.
-  EXPECT_THAT(suggestions[0].children[2].children,
-              ElementsAre(EqualsFieldByFieldFillingSuggestion(
-                  PopupItemId::kAddressFieldByFieldFilling,
-                  profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
-                  ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()),
-                  {{Suggestion::Text(u"House number")}})));
+  EXPECT_THAT(
+      suggestions[0].children[2].children,
+      ElementsAre(EqualsFieldByFieldFillingSuggestion(
+          PopupItemId::kAddressFieldByFieldFilling,
+          profile.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, app_locale()),
+          ADDRESS_HOME_HOUSE_NUMBER, Suggestion::Guid(profile.guid()),
+          {{Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}})));
 }
 
 TEST_F(

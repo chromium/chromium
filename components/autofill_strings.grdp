@@ -186,7 +186,7 @@
   </message>
 
   <message name="IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT" desc="The secondary text displayed on a street name suggestion." meaning="The label for the street namefield type store by autofill.">
-    Street
+    Street name
   </message>
 
   <message name="IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the footer of the Autofill sub menu to fill everything from the address profile." meaning="Fill every available information from the address profile.">
