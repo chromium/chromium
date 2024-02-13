@@ -83,7 +83,7 @@ ExtensionFunction::ResponseAction DocumentScanGetScannerListFunction::Run() {
   DocumentScanAPIHandler::Get(browser_context())
       ->GetScannerList(
           ChromeExtensionFunctionDetails(this).GetNativeWindowForUI(),
-          extension_, std::move(params->filter),
+          extension_, user_gesture(), std::move(params->filter),
           base::BindOnce(
               &DocumentScanGetScannerListFunction::OnScannerListReceived,
               this));

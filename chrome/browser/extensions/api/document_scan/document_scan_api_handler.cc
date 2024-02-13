@@ -103,7 +103,8 @@ DocumentScanAPIHandler::DocumentScanAPIHandler(
 
 DocumentScanAPIHandler::~DocumentScanAPIHandler() = default;
 
-DocumentScanAPIHandler::ExtensionState::ExtensionState() = default;
+DocumentScanAPIHandler::ExtensionState::ExtensionState()
+    : discovery_approved(false) {}
 DocumentScanAPIHandler::ExtensionState::~ExtensionState() = default;
 
 // static
@@ -209,14 +210,18 @@ void DocumentScanAPIHandler::OnSimpleScanCompleted(
 void DocumentScanAPIHandler::GetScannerList(
     gfx::NativeWindow native_window,
     scoped_refptr<const Extension> extension,
+    bool user_gesture,
     api::document_scan::DeviceFilter filter,
     GetScannerListCallback callback) {
+  ExtensionState& state = extension_state_[extension->id()];
+  bool approved = state.discovery_approved && user_gesture;
+
   auto discovery_runner = std::make_unique<ScannerDiscoveryRunner>(
       native_window, browser_context_, std::move(extension), document_scan_);
 
   ScannerDiscoveryRunner* raw_runner = discovery_runner.get();
   raw_runner->Start(
-      crosapi::mojom::ScannerEnumFilter::From(filter),
+      approved, crosapi::mojom::ScannerEnumFilter::From(filter),
       base::BindOnce(&DocumentScanAPIHandler::OnScannerListReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(discovery_runner), std::move(callback)));
@@ -236,6 +241,14 @@ void DocumentScanAPIHandler::OnScannerListReceived(
   state.scanner_handles.clear();
   state.active_job_handles.clear();
   state.approved_scanner_handles.clear();
+
+  // If the response contains any result other than access denied, the user must
+  // have approved discovery.  If the result is access denied, the user either
+  // denied the discovery dialog or the backend refused to do discovery.  Treat
+  // both cases as not approved so the user will be prompted again.
+  state.discovery_approved =
+      api_response.result != api::document_scan::OperationResult::kAccessDenied;
+
   for (auto& scanner : api_response.scanners) {
     state.active_scanner_ids[scanner.scanner_id] = {.name = scanner.name};
   }

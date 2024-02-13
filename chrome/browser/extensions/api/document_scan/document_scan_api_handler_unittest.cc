@@ -129,7 +129,8 @@ class DocumentScanAPIHandlerTest : public testing::Test {
 
     GetScannerListFuture list_future;
     document_scan_api_handler_->GetScannerList(
-        /*native_window=*/nullptr, extension, {}, list_future.GetCallback());
+        /*native_window=*/nullptr, extension, /*user_gesture=*/false, {},
+        list_future.GetCallback());
     const api::document_scan::GetScannerListResponse& list_response =
         list_future.Get();
 
@@ -288,8 +289,8 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryDenied) {
   api::document_scan::DeviceFilter filter;
   GetScannerListFuture future;
   document_scan_api_handler_->GetScannerList(
-      /*native_window=*/nullptr, extension_, std::move(filter),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter), future.GetCallback());
 
   const api::document_scan::GetScannerListResponse& response = future.Get();
   EXPECT_EQ(response.result,
@@ -303,8 +304,8 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryApproved) {
   api::document_scan::DeviceFilter filter;
   GetScannerListFuture future;
   document_scan_api_handler_->GetScannerList(
-      /*native_window=*/nullptr, extension_, std::move(filter),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter), future.GetCallback());
 
   const api::document_scan::GetScannerListResponse& response = future.Get();
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
@@ -322,13 +323,119 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_DiscoveryTrusted) {
   api::document_scan::DeviceFilter filter;
   GetScannerListFuture future;
   document_scan_api_handler_->GetScannerList(
-      /*native_window=*/nullptr, extension_, std::move(filter),
-      future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter), future.GetCallback());
 
   const api::document_scan::GetScannerListResponse& response = future.Get();
   EXPECT_EQ(response.result, api::document_scan::OperationResult::kSuccess);
   ASSERT_EQ(response.scanners.size(), 1U);
   EXPECT_EQ(response.scanners[0].model, "Scanner");
+}
+
+TEST_F(DocumentScanAPIHandlerTest,
+       GetScannerList_MultipleDiscoveryPreservesApproval) {
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+
+  // First request is denied.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  api::document_scan::DeviceFilter filter;
+  GetScannerListFuture future1;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter), future1.GetCallback());
+  const api::document_scan::GetScannerListResponse& response1 = future1.Get();
+  EXPECT_EQ(response1.result,
+            api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_EQ(response1.scanners.size(), 0U);
+
+  // Second request is approved by the user.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
+  GetScannerListFuture future2;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter), future2.GetCallback());
+  const api::document_scan::GetScannerListResponse& response2 = future2.Get();
+  EXPECT_EQ(response2.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_EQ(response2.scanners.size(), 1U);
+  EXPECT_EQ(response2.scanners[0].model, "Scanner");
+
+  // After approval, user-initiated request is approved without showing the
+  // dialog.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  GetScannerListFuture future3;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      std::move(filter), future3.GetCallback());
+  const api::document_scan::GetScannerListResponse& response3 = future3.Get();
+  EXPECT_EQ(response3.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_EQ(response3.scanners.size(), 1U);
+  EXPECT_EQ(response3.scanners[0].model, "Scanner");
+
+  // Unsolicited request is denied in spite of previous approval.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  GetScannerListFuture future4;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter), future4.GetCallback());
+  const api::document_scan::GetScannerListResponse& response4 = future4.Get();
+  EXPECT_EQ(response4.result,
+            api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_EQ(response4.scanners.size(), 0U);
+
+  // User-initiated request is no longer automatically approved because of
+  // previous denial.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  GetScannerListFuture future5;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      std::move(filter), future5.GetCallback());
+  const api::document_scan::GetScannerListResponse& response5 = future5.Get();
+  EXPECT_EQ(response5.result,
+            api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_EQ(response5.scanners.size(), 0U);
+}
+
+TEST_F(DocumentScanAPIHandlerTest, GetScannerList_ApprovalFollowsExtension) {
+  GetDocumentScan().AddScanner(CreateTestScannerInfo());
+
+  auto extension2 = ExtensionBuilder("extension2")
+                        .SetID("extension2id")
+                        .AddPermission(kExtensionPermissionName)
+                        .Build();
+
+  // First request is approved by the user.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(true);
+  api::document_scan::DeviceFilter filter;
+  GetScannerListFuture future1;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter), future1.GetCallback());
+  const api::document_scan::GetScannerListResponse& response1 = future1.Get();
+  EXPECT_EQ(response1.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_EQ(response1.scanners.size(), 1U);
+  EXPECT_EQ(response1.scanners[0].model, "Scanner");
+
+  // First extension's saved approval doesn't apply to second extension.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  GetScannerListFuture future2;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension2, /*user_gesture=*/true,
+      std::move(filter), future2.GetCallback());
+  const api::document_scan::GetScannerListResponse& response2 = future2.Get();
+  EXPECT_EQ(response2.result,
+            api::document_scan::OperationResult::kAccessDenied);
+  EXPECT_EQ(response2.scanners.size(), 0U);
+
+  // First extension's second request uses saved approval.
+  ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(false);
+  GetScannerListFuture future3;
+  document_scan_api_handler_->GetScannerList(
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/true,
+      std::move(filter), future3.GetCallback());
+  const api::document_scan::GetScannerListResponse& response3 = future3.Get();
+  EXPECT_EQ(response3.result, api::document_scan::OperationResult::kSuccess);
+  ASSERT_EQ(response3.scanners.size(), 1U);
+  EXPECT_EQ(response3.scanners[0].model, "Scanner");
 }
 
 TEST_F(DocumentScanAPIHandlerTest, GetScannerList_SameIdBetweenCalls) {
@@ -338,16 +445,16 @@ TEST_F(DocumentScanAPIHandlerTest, GetScannerList_SameIdBetweenCalls) {
   api::document_scan::DeviceFilter filter1;
   GetScannerListFuture future1;
   document_scan_api_handler_->GetScannerList(
-      /*native_window=*/nullptr, extension_, std::move(filter1),
-      future1.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter1), future1.GetCallback());
 
   // Since the DocumentScanAsh service hasn't changed, the same ID should come
   // back for the same device.
   api::document_scan::DeviceFilter filter2;
   GetScannerListFuture future2;
   document_scan_api_handler_->GetScannerList(
-      /*native_window=*/nullptr, extension_, std::move(filter2),
-      future2.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false,
+      std::move(filter2), future2.GetCallback());
 
   const api::document_scan::GetScannerListResponse& response1 = future1.Get();
   const api::document_scan::GetScannerListResponse& response2 = future2.Get();
@@ -1219,7 +1326,8 @@ TEST_F(DocumentScanAPIHandlerTest, CancelScan_GetListClears) {
 
   GetScannerListFuture list_future;
   document_scan_api_handler_->GetScannerList(
-      /*native_window=*/nullptr, extension_, {}, list_future.GetCallback());
+      /*native_window=*/nullptr, extension_, /*user_gesture=*/false, {},
+      list_future.GetCallback());
   const api::document_scan::GetScannerListResponse& list_response =
       list_future.Get();
   EXPECT_EQ(list_response.result,

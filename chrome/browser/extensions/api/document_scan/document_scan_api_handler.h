@@ -91,11 +91,14 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
   // If the user approves, gets a list of available scanners that match
   // `filter`.  Explicit approval is obtained through a Chrome dialog or by
   // adding the extension ID to the list of trusted document scan extensions.
+  // `user_gesture` indicates whether the scan was initiated by a user action
+  // and should be passed as the result of `ExtensionFunction::user_gesture()`.
   // The result of the denial or the backend call will be passed to `callback`.
-  // Note that scanner and job handles previously issued by the backend may
+  // Note that scanner and job handles previously issued by the backend will
   // become invalid after calling this function.
   void GetScannerList(gfx::NativeWindow native_window,
                       scoped_refptr<const Extension> extension,
+                      bool user_gesture,
                       api::document_scan::DeviceFilter filter,
                       GetScannerListCallback callback);
 
@@ -201,6 +204,10 @@ class DocumentScanAPIHandler : public BrowserContextKeyedAPI {
     // A set of scanner handles the user has approved for scanning.  These can
     // be used to start new scan jobs until the handles are closed.
     std::set<std::string> approved_scanner_handles;
+
+    // Whether the user has confirmed that this extension is allowed to discover
+    // scanners.
+    bool discovery_approved;
   };
 
   // BrowserContextKeyedAPI:
