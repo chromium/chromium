@@ -13715,21 +13715,6 @@
             ]
         }
     ],
-    "PassExplicitSyncPassphraseToGmsCore": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PassExplicitSyncPassphraseToGmsCore"
-                    ]
-                }
-            ]
-        }
-    ],
     "PassHistogramSharedMemoryOnLaunch": [
         {
             "platforms": [
@@ -15802,21 +15787,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RemoveOldWebStateRestoration"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RemoveUPMUnenrollment": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RemoveUPMUnenrollment"
                     ]
                 }
             ]
@@ -19642,6 +19612,23 @@
                     },
                     "enable_features": [
                         "UMAPseudoMetricsEffect"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UPMLocalPasswordsNoMigration": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PassExplicitSyncPassphraseToGmsCore",
+                        "RemoveUPMUnenrollment",
+                        "UnifiedPasswordManagerLocalPasswordsAndroidNoMigration"
                     ]
                 }
             ]
