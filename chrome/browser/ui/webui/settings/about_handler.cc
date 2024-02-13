@@ -393,7 +393,7 @@ void AboutHandler::RegisterMessages() {
 
 void AboutHandler::OnJavascriptAllowed() {
   apply_changes_from_upgrade_observer_ = true;
-  version_updater_.reset(VersionUpdater::Create(web_ui()->GetWebContents()));
+  version_updater_ = VersionUpdater::Create(web_ui()->GetWebContents());
   policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
       g_browser_process->policy_service(),
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));

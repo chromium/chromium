@@ -19,8 +19,10 @@ class WebContents;
 class VersionUpdaterCros : public VersionUpdater,
                            public ash::UpdateEngineClient::Observer {
  public:
+  explicit VersionUpdaterCros(content::WebContents* web_contents);
   VersionUpdaterCros(const VersionUpdaterCros&) = delete;
   VersionUpdaterCros& operator=(const VersionUpdaterCros&) = delete;
+  ~VersionUpdaterCros() override;
 
   // VersionUpdater implementation.
   void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
@@ -39,13 +41,6 @@ class VersionUpdaterCros : public VersionUpdater,
 
   // Gets the last update status, without triggering a new check or download.
   void GetUpdateStatus(StatusCallback callback);
-
- protected:
-  friend class VersionUpdater;
-
-  // Clients must use VersionUpdater::Create().
-  explicit VersionUpdaterCros(content::WebContents* web_contents);
-  ~VersionUpdaterCros() override;
 
  private:
   // UpdateEngineClient::Observer implementation.

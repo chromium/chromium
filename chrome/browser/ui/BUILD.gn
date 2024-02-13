@@ -4476,7 +4476,6 @@ static_library("ui") {
       "views/frame/native_browser_frame_factory_mac.mm",
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.h",
       "views/tab_contents/chrome_web_contents_view_delegate_views_mac.mm",
-      "webui/help/version_updater_mac.h",
       "webui/help/version_updater_mac.mm",
       "webui/settings/mac_system_settings_handler.cc",
       "webui/settings/mac_system_settings_handler.h",
@@ -4608,16 +4607,12 @@ static_library("ui") {
     if (is_chrome_branded) {
       sources += [
         "webui/help/version_updater_win.cc",
-        "webui/help/version_updater_win.h",
         "webui/settings/incompatible_applications_handler_win.cc",
         "webui/settings/incompatible_applications_handler_win.h",
       ]
       deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
     } else {
-      sources += [
-        "webui/help/version_updater_basic.cc",
-        "webui/help/version_updater_basic.h",
-      ]
+      sources += [ "webui/help/version_updater_basic.cc" ]
     }
   } else {  # 'OS!="win"
     if (toolkit_views) {
@@ -4669,7 +4664,6 @@ static_library("ui") {
     sources += [
       "views/frame/browser_desktop_window_tree_host.h",
       "webui/help/version_updater_basic.cc",
-      "webui/help/version_updater_basic.h",
       "webui/settings/settings_utils_linux.cc",
     ]
     deps += [
@@ -6318,7 +6312,6 @@ static_library("ui") {
         "views/frame/native_browser_frame_factory_aura.cc",
         "views/status_icons/status_tray_fuchsia.cc",
         "webui/help/version_updater_basic.cc",
-        "webui/help/version_updater_basic.h",
         "webui/settings/settings_utils_fuchsia.cc",
       ]
     }
