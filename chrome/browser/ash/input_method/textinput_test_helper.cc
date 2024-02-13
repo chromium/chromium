@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
 
+#include <string_view>
+
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -198,7 +200,7 @@ void TextInputTestHelper::WaitForPassageOfTimeMillis(const int milliseconds) {
 bool TextInputTestHelper::ConvertRectFromString(const std::string& str,
                                                 gfx::Rect* rect) {
   DCHECK(rect);
-  std::vector<base::StringPiece> rect_piece = base::SplitStringPiece(
+  std::vector<std::string_view> rect_piece = base::SplitStringPiece(
       str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (rect_piece.size() != 4UL)
     return false;

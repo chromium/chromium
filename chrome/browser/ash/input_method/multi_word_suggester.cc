@@ -6,10 +6,10 @@
 
 #include <cmath>
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -155,7 +155,7 @@ bool ShouldShowTabGuide(Profile* profile) {
   return (time_since_epoch - first_accepted) <= base::Days(7);
 }
 
-bool CouldSuggestWithSurroundingText(const base::StringPiece16& text,
+bool CouldSuggestWithSurroundingText(std::u16string_view text,
                                      const gfx::Range selection_range) {
   return selection_range.is_empty() && selection_range.end() == text.size() &&
          text.size() >= kMinimumNumberOfCharsToProduceSuggestion;
@@ -165,7 +165,7 @@ bool u16_isalpha(char16_t ch) {
   return (ch >= u'A' && ch <= u'Z') || (ch >= u'a' && ch <= u'z');
 }
 
-bool WouldBeInCompletionMode(const base::StringPiece16& text) {
+bool WouldBeInCompletionMode(std::u16string_view text) {
   return !text.empty() && u16_isalpha(text.back());
 }
 

@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -89,13 +90,13 @@ class DiacriticsNudge : public ash::SystemNudge {
 
 using AssistiveWindowButton = ui::ime::AssistiveWindowButton;
 
-std::vector<std::u16string> SplitDiacritics(base::StringPiece16 diacritics) {
+std::vector<std::u16string> SplitDiacritics(std::u16string_view diacritics) {
   return base::SplitString(diacritics, kDiacriticsSeperator,
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
 std::vector<std::u16string> GetDiacriticsFor(char key_character,
-                                             base::StringPiece engine_id) {
+                                             std::string_view engine_id) {
   // Currently only supporting US English.
   // TODO(b/260915965): Add support for other engines.
   if (engine_id != "xkb:us::eng") {
@@ -106,7 +107,7 @@ std::vector<std::u16string> GetDiacriticsFor(char key_character,
   // distance from target key consistent.
   // TODO(b/260915965): Add more sets here for other engines.
   static constexpr auto kUSEnglishDiacriticsMap =
-      base::MakeFixedFlatMap<char, base::StringPiece16>(
+      base::MakeFixedFlatMap<char, std::u16string_view>(
           {{'a', u"à;á;â;ä;æ;ã;å;ā"},
            {'A', u"À;Á;Â;Ä;Æ;Ã;Å;Ā"},
            {'c', u"ç"},

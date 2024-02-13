@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -52,7 +53,7 @@ class ComponentExtensionIMEManagerDelegateImpl
 
   // Parses manifest string into dictionary value.
   static std::optional<base::Value::Dict> ParseManifest(
-      const base::StringPiece& manifest_string);
+      std::string_view manifest_string);
 
   // Reads extension information: description, option page. This function
   // returns true on success, otherwise returns false.
