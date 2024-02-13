@@ -123,6 +123,8 @@ std::unique_ptr<WebAuthn::Credential> BuildCredentialFromRegistration(
                             registration->private_key->GetPKCS8PrivateKey()))
                         .SetSignCount(registration->counter)
                         .SetIsResidentCredential(registration->is_resident)
+                        .SetBackupEligibility(registration->backup_eligible)
+                        .SetBackupState(registration->backup_state)
                         .Build();
 
   if (registration->rp)
@@ -375,6 +377,18 @@ void WebAuthnHandler::AddCredential(
             },
             std::move(callback)));
     return;
+  }
+
+  // VirtualFidoDevice takes care of setting BE & BS flags to the default
+  // authenticator values whenever a new credential is created. Only override
+  // the values if the client specified them.
+  if (credential->HasBackupEligibility()) {
+    authenticator->SetBackupEligibility(
+        credential_id, credential->GetBackupEligibility(/*unused*/ false));
+  }
+  if (credential->HasBackupState()) {
+    authenticator->SetBackupState(credential_id,
+                                  credential->GetBackupState(/*unused*/ false));
   }
 
   callback->sendSuccess();

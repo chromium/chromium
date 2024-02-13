@@ -129,6 +129,15 @@ class CONTENT_EXPORT VirtualAuthenticator
   void RemoveObserver(Observer* observer);
   bool HasObserversForTest();
 
+  // Set the BE flag for a given |key_handle|. |key_handle| must match a
+  // credential.
+  void SetBackupEligibility(const std::vector<uint8_t>& key_handle,
+                            bool backup_eligibility);
+  // Set the BS flag for a given |key_handle|. |key_handle| must match a
+  // credential.
+  void SetBackupState(const std::vector<uint8_t>& key_handle,
+                      bool backup_state);
+
   // blink::test::mojom::VirtualAuthenticator:
   void GetLargeBlob(const std::vector<uint8_t>& key_handle,
                     GetLargeBlobCallback callback) override;
