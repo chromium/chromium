@@ -26,6 +26,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
@@ -144,6 +145,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
              loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')),
       },
 
+      isIpProtectionAvailable_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isIpProtectionV1Enabled'),
+      },
+
       showTrackingProtectionRollbackNotice_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean(
@@ -166,6 +172,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private enableFirstPartySetsUI_: boolean;
   private is3pcdRedesignEnabled_: boolean;
   private isCookieSettingsUiAlignmentEnabled_: boolean;
+  private isIpProtectionAvailable_: boolean;
   private isCookiesUiV2_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -200,6 +207,13 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     }
   }
 
+  private getPageDescription_(): string {
+    return this.i18n(
+        this.isCookieSettingsUiAlignmentEnabled_ ?
+            'thirdPartyCookiesAlignedPageDescription' :
+            'thirdPartyCookiesPageDescription');
+  }
+
   private getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_():
       string {
     return this.i18n(
@@ -217,6 +231,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
   private onSiteDataClick_() {
     Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
+  }
+
+  private onIpProtectionLearnMoreClicked_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('ipProtectionLearnMoreUrl'));
   }
 
   private onGeneratedPrefsUpdated_() {
@@ -237,6 +256,11 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
       this.metricsBrowserProxy_.recordAction(
           'Settings.PrivacySandbox.Block3PCookies');
     }
+  }
+
+  private onIpProtectionChanged_() {
+    this.metricsBrowserProxy_.recordSettingsPageHistogram(
+        PrivacyElementInteractions.IP_PROTECTION);
   }
 
   private onCookieControlsModeChanged_() {

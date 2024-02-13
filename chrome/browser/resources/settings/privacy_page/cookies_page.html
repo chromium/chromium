@@ -112,7 +112,7 @@
         $i18nRaw{trackingProtectionRollbackNotice}
       </div>
       <div id="explanationText" class="secondary">
-        $i18n{thirdPartyCookiesPageDescription}
+        [[getPageDescription_()]]
       </div>
       <div id="generalControls">
         <template is="dom-if" if="[[!isCookieSettingsUiAlignmentEnabled_]]">
@@ -230,23 +230,34 @@
         </div>
       </div>
     </template>
-    <template is="dom-if" if="[[isCookiesUiV2_]]">
-      <h2 id="advancedHeader">$i18n{trackingProtectionAdvancedLabel}</h2>
-      <settings-toggle-button
-          id="blockThirdPartyToggle"
-          pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
-          label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
-          sub-label="
-            $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
-          learn-more-url="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
-          learn-more-aria-label="
-            $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
-          on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
-          hidden="[[!is3pcdRedesignEnabled_]]"
-          icon="settings:visibility-off">
-      </settings-toggle-button>
-    </template>
+    <h2 id="advancedHeader" hidden="[[!isCookiesUiV2_]]">
+      $i18n{trackingProtectionAdvancedLabel}
+    </h2>
+    <settings-toggle-button
+        id="blockThirdPartyToggle"
+        pref="{{prefs.tracking_protection.block_all_3pc_toggle_enabled}}"
+        label="$i18n{trackingProtectionThirdPartyCookiesToggleLabel}"
+        sub-label="
+          $i18n{trackingProtectionThirdPartyCookiesToggleSubLabel}"
+        learn-more-url="
+          $i18n{trackingProtectionThirdPartyCookiesLearnMoreUrl}"
+        learn-more-aria-label="
+          $i18n{trackingProtectionThirdPartyCookiesLearnMoreAriaLabel}"
+        on-settings-boolean-control-change="onBlockAll3pcToggleChanged_"
+        hidden="[[!is3pcdRedesignEnabled_]]"
+        icon="settings:visibility-off">
+    </settings-toggle-button>
+    <settings-toggle-button
+        id="ipProtectionToggle"
+        pref="{{prefs.tracking_protection.ip_protection_enabled}}"
+        label="$i18n{trackingProtectionIpProtectionToggleLabel}"
+        sub-label-with-link="
+          $i18n{trackingProtectionIpProtectionToggleSubLabel}"
+        on-sub-label-link-clicked="onIpProtectionLearnMoreClicked_"
+        on-settings-boolean-control-change="onIpProtectionChanged_"
+        hidden="[[!isIpProtectionAvailable_]]"
+        icon="settings:location-disabled">
+    </settings-toggle-button>
     <settings-do-not-track-toggle id="doNotTrack" prefs="{{prefs}}">
     </settings-do-not-track-toggle>
     <cr-link-row id="site-data-trigger" class="hr"

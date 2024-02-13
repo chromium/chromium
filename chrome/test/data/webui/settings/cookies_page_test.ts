@@ -275,7 +275,9 @@ suite('CookieSettingsUiAlignmentTest', function() {
     assertTrue(isChildVisible(page, '#allowThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdParty'));
     assertTrue(isChildVisible(page, '#blockThirdPartyIncognito'));
+    // By default these toggles should be hidden.
     assertFalse(isChildVisible(page, '#blockThirdPartyToggle'));
+    assertFalse(isChildVisible(page, '#ipProtectionToggle'));
   });
 });
 
@@ -456,6 +458,53 @@ suite('TrackingProtectionSettings', function() {
     assertEquals(
         page.getPref('tracking_protection.block_all_3pc_toggle_enabled.value'),
         true);
+  });
+});
+
+suite('IpProtectionToggle', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      is3pcdCookieSettingsRedesignEnabled: false,
+      isCookieSettingsUiAlignmentEnabled: true,
+      isIpProtectionV1Enabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    flush();
+  });
+
+  test('CheckVisibility', function() {
+    // Setting is visible
+    assertTrue(isChildVisible(page, '#ipProtectionToggle'));
+  });
+
+  test('ToggleIpProtection', async function() {
+    page.set('prefs.tracking_protection.ip_protection_enabled.value', false);
+    const ipProtectionToggle =
+        page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#ipProtectionToggle')!;
+    assertTrue(!!ipProtectionToggle);
+
+    ipProtectionToggle.click();
+    const result =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.IP_PROTECTION, result);
+    assertEquals(
+        page.getPref('tracking_protection.ip_protection_enabled.value'), true);
   });
 });
 

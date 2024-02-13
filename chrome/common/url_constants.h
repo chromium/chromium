@@ -307,6 +307,10 @@ inline constexpr char16_t kMemorySaverModeTabDiscardingHelpUrl[] =
 inline constexpr char16_t kIncognitoHelpCenterURL[] =
     u"https://support.google.com/chrome?p=incognito";
 
+// The URL for the Help Center page about IP Protection.
+inline constexpr char kIpProtectionHelpCenterURL[] =
+    "https://support.google.com/chrome?p=ip_protection";
+
 // The URL for "Learn more" page for Isolated Web Apps.
 // TODO(crbug.com/1480695): Update this URL with proper user-facing explainer.
 inline constexpr char16_t kIsolatedWebAppsLearnMoreUrl[] =

@@ -3148,7 +3148,7 @@
     Hide your IP address
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some requests will be sent through privacy servers when the feature is on. Provides a link to a help center article." translateable="false">
-    When you’re signed in to Chrome, this setting can limit what suspected trackers can see as you browse. When a page loads, some requests for content get sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="$1" aria-label="$2" aria-description="$3" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
+    When you’re signed in to Chrome, this setting can limit what suspected trackers can see as you browse. When a page loads, some requests for content get sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the sub-label text of the IP protection toggle." translateable="false">
     Learn more about hiding your IP address
