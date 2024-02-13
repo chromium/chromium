@@ -4,7 +4,7 @@
 
 import * as androidPhotosTests from './file_manager/android_photos.js';
 // clang-format off
-// import * as breadcrumbsTests from './file_manager/breadcrumbs.js';
+import * as breadcrumbsTests from './file_manager/breadcrumbs.js';
 // import * as contextMenuTests from './file_manager/context_menu.js';
 // import * as copyBetweenWindowsTests from './file_manager/copy_between_windows.js';
 // import * as createNewFolderTests from './file_manager/create_new_folder.js';
@@ -62,7 +62,7 @@ export type TestFunction = (() => void)|(() => Promise<void>);
  */
 export const testcase: Record<TestFunctionName, TestFunction> = {
   ...androidPhotosTests,
-  // ...breadcrumbsTests,
+  ...breadcrumbsTests,
   // ...contextMenuTests,
   // ...copyBetweenWindowsTests,
   // ...createNewFolderTests,

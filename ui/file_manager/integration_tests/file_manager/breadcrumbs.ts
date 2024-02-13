@@ -5,8 +5,8 @@
  * @fileoverview Tests that breadcrumbs work.
  */
 
+import type {ElementObject} from '../prod/file_manager/shared_types.js';
 import {createNestedTestFolders, ENTRIES, getCaller, getUserActionCount, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
-import {testcase} from '../testcase.js';
 
 import {remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DirectoryTreePageObject} from './page_objects/directory_tree.js';
@@ -15,12 +15,8 @@ async function getBreadcrumbTagName() {
   return 'xf-breadcrumb';
 }
 
-// @ts-ignore: error TS4111: Property 'breadcrumbsNavigate' comes from an index
-// signature, so it must be accessed with ['breadcrumbsNavigate'].
-testcase.breadcrumbsNavigate = async () => {
+export async function breadcrumbsNavigate() {
   const files = [ENTRIES.hello, ENTRIES.photos];
-  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
-  // is not assignable to parameter of type 'TestEntryInfo[]'.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, files, []);
 
   const breadcrumbsTag = await getBreadcrumbTagName();
@@ -34,22 +30,17 @@ testcase.breadcrumbsNavigate = async () => {
       appId, [breadcrumbsTag, 'button:nth-last-of-type(2)']);
 
   // Wait for the contents of Downloads to load again.
-  // @ts-ignore: error TS2345: Argument of type '(TestEntryInfo | undefined)[]'
-  // is not assignable to parameter of type 'TestEntryInfo[]'.
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows(files));
 
   // A user action should have been recorded for the breadcrumbs.
   chrome.test.assertEq(
       1, await getUserActionCount('FileBrowser.ClickBreadcrumbs'));
-};
+}
 
 /**
  * Tests that Downloads is translated in the breadcrumbs.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsDownloadsTranslation' comes
-// from an index signature, so it must be accessed with
-// ['breadcrumbsDownloadsTranslation'].
-testcase.breadcrumbsDownloadsTranslation = async () => {
+export async function breadcrumbsDownloadsTranslation() {
   // Switch UI to Portuguese (Portugal).
   await sendTestMessage({name: 'switchLanguage', language: 'pt-PT'});
 
@@ -74,14 +65,12 @@ testcase.breadcrumbsDownloadsTranslation = async () => {
   // Wait and check breadcrumb translation.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(
       appId, '/Os meus ficheiros/Transferências/photos');
-};
+}
 
 /**
  * Tests that the breadcrumbs correctly render a short (3 component) path.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsRenderShortPath' comes from an
-// index signature, so it must be accessed with ['breadcrumbsRenderShortPath'].
-testcase.breadcrumbsRenderShortPath = async () => {
+export async function breadcrumbsRenderShortPath() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(1);
 
@@ -100,9 +89,7 @@ testcase.breadcrumbsRenderShortPath = async () => {
   const breadcrumbElement =
       await remoteCall.waitForElement(appId, [breadcrumbsTag]);
   const path = breadcrumb.slice(1);  // remove leading "/" char
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq(path, breadcrumbElement.attributes.path);
+  chrome.test.assertEq(path, breadcrumbElement.attributes['path']);
 
   // Check: some of the main breadcrumb buttons should be visible.
   const buttons = [breadcrumbsTag, 'button'];
@@ -123,16 +110,13 @@ testcase.breadcrumbsRenderShortPath = async () => {
   // Check: the breadcrumb elider button should not exist.
   const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitForElementLost(appId, eliderButton);
-};
+}
 
 /**
  * Tests that short breadcrumbs paths (of 4 or fewer components) should not
  * be rendered elided. The elider button not exist.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsEliderButtonNotExist' comes
-// from an index signature, so it must be accessed with
-// ['breadcrumbsEliderButtonNotExist'].
-testcase.breadcrumbsEliderButtonNotExist = async () => {
+export async function breadcrumbsEliderButtonNotExist() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
@@ -151,9 +135,7 @@ testcase.breadcrumbsEliderButtonNotExist = async () => {
   const breadcrumbElement =
       await remoteCall.waitForElement(appId, [breadcrumbsTag]);
   const path = breadcrumb.slice(1);  // remove leading "/" char
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq(path, breadcrumbElement.attributes.path);
+  chrome.test.assertEq(path, breadcrumbElement.attributes['path']);
 
   // Check: all of the main breadcrumb buttons should be visible.
   const buttons = [breadcrumbsTag, 'button'];
@@ -176,14 +158,12 @@ testcase.breadcrumbsEliderButtonNotExist = async () => {
   // Check: the breadcrumb elider button should not exist.
   const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitForElementLost(appId, eliderButton);
-};
+}
 
 /**
  * Tests that the breadcrumbs correctly render a long (5 component) path.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsRenderLongPath' comes from an
-// index signature, so it must be accessed with ['breadcrumbsRenderLongPath'].
-testcase.breadcrumbsRenderLongPath = async () => {
+export async function breadcrumbsRenderLongPath() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
@@ -202,9 +182,7 @@ testcase.breadcrumbsRenderLongPath = async () => {
   const breadcrumbElement =
       await remoteCall.waitForElement(appId, [breadcrumbsTag]);
   const path = breadcrumb.slice(1);  // remove leading "/" char
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq(path, breadcrumbElement.attributes.path);
+  chrome.test.assertEq(path, breadcrumbElement.attributes['path']);
 
   // Check: some of the main breadcrumb buttons should be visible.
   const buttons = [breadcrumbsTag, 'button[id]'];
@@ -225,15 +203,13 @@ testcase.breadcrumbsRenderLongPath = async () => {
   // Check: the breadcrumb elider button should be shown.
   const eliderButton = [breadcrumbsTag, '[elider]'];
   await remoteCall.waitForElement(appId, eliderButton);
-};
+}
 
 /**
  * Tests that clicking a main breadcumb button makes the app navigate and
  * update the breadcrumb to that item.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsMainButtonClick' comes from an
-// index signature, so it must be accessed with ['breadcrumbsMainButtonClick'].
-testcase.breadcrumbsMainButtonClick = async () => {
+export async function breadcrumbsMainButtonClick() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
@@ -252,9 +228,7 @@ testcase.breadcrumbsMainButtonClick = async () => {
   const breadcrumbElement =
       await remoteCall.waitForElement(appId, [breadcrumbsTag]);
   const path = breadcrumb.slice(1);  // remove leading "/" char
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq(path, breadcrumbElement.attributes.path);
+  chrome.test.assertEq(path, breadcrumbElement.attributes['path']);
 
   // Click the "second" main breadcrumb button (2nd path component).
   await remoteCall.waitAndClickElement(
@@ -263,16 +237,13 @@ testcase.breadcrumbsMainButtonClick = async () => {
   // Check: the breadcrumb path should be updated due to navigation.
   await remoteCall.waitForElement(
       appId, [`${breadcrumbsTag}[path="My files/Downloads"]`]);
-};
+}
 
 /**
  * Tests that an Enter key on a main breadcumb button item makes the app
  * navigate and update the breadcrumb to that item.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsMainButtonEnterKey' comes from
-// an index signature, so it must be accessed with
-// ['breadcrumbsMainButtonEnterKey'].
-testcase.breadcrumbsMainButtonEnterKey = async () => {
+export async function breadcrumbsMainButtonEnterKey() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
@@ -291,9 +262,7 @@ testcase.breadcrumbsMainButtonEnterKey = async () => {
   const breadcrumbElement =
       await remoteCall.waitForElement(appId, [breadcrumbsTag]);
   const path = breadcrumb.slice(1);  // remove leading "/" char
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq(path, breadcrumbElement.attributes.path);
+  chrome.test.assertEq(path, breadcrumbElement.attributes['path']);
 
   // Send an Enter key to the "second" main breadcrumb button.
   const secondButton = [breadcrumbsTag, 'button[id="second"]'];
@@ -304,16 +273,13 @@ testcase.breadcrumbsMainButtonEnterKey = async () => {
   // Check: the breadcrumb path should be updated due to navigation.
   await remoteCall.waitForElement(
       appId, [`${breadcrumbsTag}[path="My files/Downloads"]`]);
-};
+}
 
 /**
  * Tests that a breadcrumbs elider button click opens its drop down menu and
  * that clicking the button again, closes the drop down menu.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsEliderButtonClick' comes from
-// an index signature, so it must be accessed with
-// ['breadcrumbsEliderButtonClick'].
-testcase.breadcrumbsEliderButtonClick = async () => {
+export async function breadcrumbsEliderButtonClick() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
@@ -358,16 +324,13 @@ testcase.breadcrumbsEliderButtonClick = async () => {
 
   // Check: the focus should return to the elider button.
   await remoteCall.waitForElement(appId, eliderFocus);
-};
+}
 
 /**
  * Tests that pressing Enter key on the breadcrumbs elider button opens its
  * drop down menu, then pressing Escape key closes the drop down menu.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsEliderButtonKeyboard' comes
-// from an index signature, so it must be accessed with
-// ['breadcrumbsEliderButtonKeyboard'].
-testcase.breadcrumbsEliderButtonKeyboard = async () => {
+export async function breadcrumbsEliderButtonKeyboard() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(4);
 
@@ -420,16 +383,13 @@ testcase.breadcrumbsEliderButtonKeyboard = async () => {
 
   // Check: the focus should return to the elider button.
   await remoteCall.waitForElement(appId, eliderFocus);
-};
+}
 
 /**
  * Tests that clicking outside the elider button drop down menu makes that
  * drop down menu close.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsEliderMenuClickOutside' comes
-// from an index signature, so it must be accessed with
-// ['breadcrumbsEliderMenuClickOutside'].
-testcase.breadcrumbsEliderMenuClickOutside = async () => {
+export async function breadcrumbsEliderMenuClickOutside() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(5);
 
@@ -457,16 +417,13 @@ testcase.breadcrumbsEliderMenuClickOutside = async () => {
 
   // Check: the elider button drop-down menu should close.
   await remoteCall.waitForElementLost(appId, menu);
-};
+}
 
 /**
  * Tests that clicking an elider button drop down menu item makes the app
  * navigate and update the breadcrumb to that item.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsEliderMenuItemClick' comes
-// from an index signature, so it must be accessed with
-// ['breadcrumbsEliderMenuItemClick'].
-testcase.breadcrumbsEliderMenuItemClick = async () => {
+export async function breadcrumbsEliderMenuItemClick() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
@@ -485,9 +442,7 @@ testcase.breadcrumbsEliderMenuItemClick = async () => {
   const breadcrumbElement =
       await remoteCall.waitForElement(appId, [breadcrumbsTag]);
   const path = breadcrumb.slice(1);  // remove leading "/" char
-  // @ts-ignore: error TS4111: Property 'path' comes from an index signature, so
-  // it must be accessed with ['path'].
-  chrome.test.assertEq(path, breadcrumbElement.attributes.path);
+  chrome.test.assertEq(path, breadcrumbElement.attributes['path']);
 
   // Click the breadcrumb elider button when it appears.
   const eliderButton = [breadcrumbsTag, '[elider]'];
@@ -517,16 +472,13 @@ testcase.breadcrumbsEliderMenuItemClick = async () => {
   // Check: the breadcrumb path should be updated due to navigation.
   await remoteCall.waitForElement(
       appId, [`${breadcrumbsTag}[path="My files/Downloads"]`]);
-};
+}
 
 /**
  * Tests that a <shift>-Tab key on the elider button drop down menu closes
  * the menu and focuses button#first to the left of the elider button.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsEliderMenuItemTabLeft' comes
-// from an index signature, so it must be accessed with
-// ['breadcrumbsEliderMenuItemTabLeft'].
-testcase.breadcrumbsEliderMenuItemTabLeft = async () => {
+export async function breadcrumbsEliderMenuItemTabLeft() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
@@ -561,16 +513,13 @@ testcase.breadcrumbsEliderMenuItemTabLeft = async () => {
   // Check: the "first" main button should be focused.
   await remoteCall.waitForElement(
       appId, [breadcrumbsTag, 'button[id="first"]:focus']);
-};
+}
 
 /**
  * Tests that a Tab key on the elider button drop down menu closes the menu
  * and focuses button#second to the right of the elider button.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsEliderMenuItemTabRight' comes
-// from an index signature, so it must be accessed with
-// ['breadcrumbsEliderMenuItemTabRight'].
-testcase.breadcrumbsEliderMenuItemTabRight = async () => {
+export async function breadcrumbsEliderMenuItemTabRight() {
   // Build an array of nested folder test entries.
   const nestedFolderTestEntries = createNestedTestFolders(3);
 
@@ -604,17 +553,14 @@ testcase.breadcrumbsEliderMenuItemTabRight = async () => {
   // Check: the "second" main button should be focused.
   await remoteCall.waitForElement(
       appId, [breadcrumbsTag, 'button[id="second"]:focus']);
-};
+}
 
 /**
  * Tests that when the breadcrumbs + action bar buttons exceed the available
  * viewport width, their width is updated to fit the space instead of exceeding
  * the viewport and having some of the action bar buttons not visible.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbsDontExceedAvailableViewport'
-// comes from an index signature, so it must be accessed with
-// ['breadcrumbsDontExceedAvailableViewport'].
-testcase.breadcrumbsDontExceedAvailableViewport = async () => {
+export async function breadcrumbsDontExceedAvailableViewport() {
   const nestedFolderTestEntries = createNestedTestFolders(2);
 
   // Open FilesApp on Downloads containing the test entries.
@@ -628,14 +574,12 @@ testcase.breadcrumbsDontExceedAvailableViewport = async () => {
   // Get the spacer with between breadcrumbs and action bar buttons, this
   // indicates the available space we can resize the window before the text in
   // the breadcrumb is clamped.
-  const spacerWidth = await remoteCall.waitForElementStyles(
+  const spacerWidth: ElementObject = await remoteCall.waitForElementStyles(
       appId, 'div.dialog-header > .spacer', ['width']);
 
   // Shrink the window by the available spacer width -10px to ensure the
   // breadcrumbs don't start clamping text.
-  // @ts-ignore: error TS18048: 'spacerWidth.renderedWidth' is possibly
-  // 'undefined'.
-  const newWindowWidth = outerWidth - spacerWidth.renderedWidth + 10;
+  const newWindowWidth = outerWidth - spacerWidth.renderedWidth! + 10;
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'resizeWindow', appId, [newWindowWidth, outerHeight]));
 
@@ -657,19 +601,19 @@ testcase.breadcrumbsDontExceedAvailableViewport = async () => {
   // to the directory the below calculation occurs prior to the relayout
   // happening, repeat until the values agree with each other.
   const caller = getCaller();
-  // @ts-ignore: error TS7030: Not all code paths return a value.
   await repeatUntil(async () => {
     const actualDialogHeaderWidth = await remoteCall.waitForElementStyles(
         appId, 'div.dialog-header', ['width']);
-    if (expectedDialogHeaderWidth.renderedWidth !==
+    if (expectedDialogHeaderWidth.renderedWidth ===
         actualDialogHeaderWidth.renderedWidth) {
-      return pending(
-          caller, 'Expected dialog header width is %s, got %s',
-          expectedDialogHeaderWidth.renderedWidth,
-          actualDialogHeaderWidth.renderedWidth);
+      return;
     }
+    return pending(
+        caller, 'Expected dialog header width is %s, got %s',
+        expectedDialogHeaderWidth.renderedWidth,
+        actualDialogHeaderWidth.renderedWidth);
   });
-};
+}
 
 /**
  * Test that navigating back from a sub-folder in Google Drive> Shared With Me
@@ -677,10 +621,7 @@ testcase.breadcrumbsDontExceedAvailableViewport = async () => {
  * Internally Shared With Me uses some of the Drive Search code, this confused
  * the DirectoryModel clearing the search state in the Store.
  */
-// @ts-ignore: error TS4111: Property 'breadcrumbNavigateBackToSharedWithMe'
-// comes from an index signature, so it must be accessed with
-// ['breadcrumbNavigateBackToSharedWithMe'].
-testcase.breadcrumbNavigateBackToSharedWithMe = async () => {
+export async function breadcrumbNavigateBackToSharedWithMe() {
   // Open Files app on Drive containing "Shared with me" file entries.
   const sharedSubFolderName = ENTRIES.sharedWithMeDirectory.nameText;
   const appId = await setupAndWaitUntilReady(
@@ -707,4 +648,4 @@ testcase.breadcrumbNavigateBackToSharedWithMe = async () => {
 
   // Wait until the breadcrumb path is updated.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
-};
+}
