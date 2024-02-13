@@ -328,6 +328,13 @@ void MessageSection::Update(
       label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT;
       show_label_tooltip = false;
       break;
+    case ExtensionsMenuMainPageView::MessageSectionState::kPolicyBlockedAccess:
+      container_type = ContainerType::kTextContainer;
+      label_id = IDS_EXTENSIONS_MENU_MESSAGE_SECTION_POLICY_BLOCKED_ACCESS_TEXT;
+      // Tooltip can only be visible on this state, and if there are any
+      // enterprise extensions installed.
+      show_label_tooltip = has_enterprise_extensions;
+      break;
     case ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess:
       container_type = ContainerType::kRequestsAccessContainer;
       // This state has a static label, thus we don't need to pass a label id.
