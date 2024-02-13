@@ -25,6 +25,7 @@
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
@@ -238,6 +239,11 @@ IN_PROC_BROWSER_TEST_F(UpdaterServiceBrowserTest,
   MockComponentInstallation(metadata);
 
   ASSERT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 1u);
+  ASSERT_EQ(GetCookieSettings()
+                ->GetTpcdMetadataGrants()
+                .front()
+                .metadata.tpcd_metadata_rule_source(),
+            content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
       kEmbedded, net::SiteForCookies(), kEmbedder, {}));
 }

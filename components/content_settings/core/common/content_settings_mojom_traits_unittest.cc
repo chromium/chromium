@@ -6,6 +6,7 @@
 
 #include "base/test/gtest_util.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings.mojom.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
@@ -88,6 +89,9 @@ TEST(ContentSettingsTraitsTest, Roundtrips_RuleMetadata) {
   original.SetExpirationAndLifetime(base::Time::FromSecondsSinceUnixEpoch(345),
                                     base::Days(2));
   original.set_session_model(content_settings::SessionModel::UserSession);
+  original.set_tpcd_metadata_rule_source(
+      content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST);
+
   content_settings::RuleMetaData round_tripped;
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<

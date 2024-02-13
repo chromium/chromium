@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "components/content_settings/core/common/content_settings.mojom.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 
 namespace tpcd::metadata {
@@ -54,6 +55,11 @@ class Parser {
   static constexpr char const* kSourceTest = "SOURCE_TEST";
   static constexpr char const* kSource1pDt = "SOURCE_1P_DT";
   static constexpr char const* kSource3pDt = "SOURCE_3P_DT";
+
+  // Converts the TPCD `MetadataEntry` `Source` field to its corresponding
+  // `content_settings::RuleSource` enum value.
+  static content_settings::mojom::TpcdMetadataRuleSource ToRuleSource(
+      const std::string& source);
 
   // Start Parser testing methods:
   MetadataEntries GetInstalledMetadataForTesting();

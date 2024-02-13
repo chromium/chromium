@@ -128,6 +128,11 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.lifetime_;
   }
 
+  static const content_settings::mojom::TpcdMetadataRuleSource&
+  tpcd_metadata_rule_source(const content_settings::RuleMetaData& r) {
+    return r.tpcd_metadata_rule_source_;
+  }
+
   static bool Read(content_settings::mojom::RuleMetaDataDataView data,
                    content_settings::RuleMetaData* out);
 };

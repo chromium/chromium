@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "components/content_settings/core/common/features.h"
@@ -24,6 +25,32 @@ namespace tpcd::metadata {
 Parser* Parser::GetInstance() {
   static base::NoDestructor<Parser> instance;
   return instance.get();
+}
+
+// static
+content_settings::mojom::TpcdMetadataRuleSource Parser::ToRuleSource(
+    const std::string& source) {
+  if (source == kSourceTest) {
+    return content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST;
+  } else if (source == kSource1pDt) {
+    return content_settings::mojom::TpcdMetadataRuleSource::SOURCE_1P_DT;
+  } else if (source == kSource3pDt) {
+    return content_settings::mojom::TpcdMetadataRuleSource::SOURCE_3P_DT;
+  } else if (source == "SOURCE_DOGFOOD") {
+    return content_settings::mojom::TpcdMetadataRuleSource::SOURCE_DOGFOOD;
+  } else if (source == "SOURCE_CRITICAL_SECTOR") {
+    return content_settings::mojom::TpcdMetadataRuleSource::
+        SOURCE_CRITICAL_SECTOR;
+  } else if (source == "SOURCE_CUJ") {
+    return content_settings::mojom::TpcdMetadataRuleSource::SOURCE_CUJ;
+  } else if (source == "SOURCE_GOV_EDU_TLD") {
+    return content_settings::mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD;
+  }
+
+  // `SOURCE_UNSPECIFIED` is never send by the server. It is considered
+  // invalid by the sanitizer. Thus, used here as a translation for any new,
+  // uncategorized server source type.
+  return content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED;
 }
 
 Parser::Parser() = default;

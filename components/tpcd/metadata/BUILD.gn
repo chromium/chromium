@@ -13,6 +13,7 @@ source_set("metadata") {
   public_deps = [
     "//base",
     "//components/content_settings/core/common:features",
+    "//components/content_settings/core/common:mojo_bindings",
     "//net",
     "//third_party/abseil-cpp:absl",
     "//third_party/zlib/google:compression_utils",
