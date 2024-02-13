@@ -582,9 +582,18 @@ void TabSearchPageHandler::TriggerFeedback(int32_t session_id) {
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
+void TabSearchPageHandler::TriggerSync() {
+  Profile* profile = chrome::FindLastActive()->profile();
+  signin_ui_util::EnableSyncFromSingleAccountPromo(
+      profile,
+      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin),
+      signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
+}
+
 void TabSearchPageHandler::TriggerSignIn() {
   Profile* profile = chrome::FindLastActive()->profile();
-  signin_ui_util::ShowSigninPromptFromPromo(
+  signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
       profile, signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION);
 }
 
@@ -592,6 +601,15 @@ void TabSearchPageHandler::OpenHelpPage() {
   Browser* browser = chrome::FindLastActive();
   GURL help_url("https://support.google.com/chrome?p=auto_tab_group");
   NavigateParams params(browser, help_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+}
+
+void TabSearchPageHandler::OpenSyncSettings() {
+  Browser* browser = chrome::FindLastActive();
+  GURL settings_url("chrome://settings/syncSetup/advanced");
+  NavigateParams params(browser, settings_url,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);

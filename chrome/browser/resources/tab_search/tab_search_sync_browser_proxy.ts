@@ -7,17 +7,38 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 /**
  * @see chrome/browser/ui/webui/tab_search/tab_search_sync_handler.cc
  */
+export interface AccountInfo {
+  name: string;
+  email: string;
+  avatarImage?: string;
+}
+
+export interface SyncInfo {
+  syncing: boolean;
+  paused: boolean;
+  syncingHistory: boolean;
+}
+
 export interface TabSearchSyncBrowserProxy {
   /**
-   * Returns whether the user is signed in
+   * Gets the current sync info.
    */
-  getSignInState(): Promise<boolean>;
+  getSyncInfo(): Promise<SyncInfo>;
+
+  /**
+   * Gets the current account info.
+   */
+  getAccountInfo(): Promise<AccountInfo>;
 }
 
 export class TabSearchSyncBrowserProxyImpl implements
     TabSearchSyncBrowserProxy {
-  getSignInState() {
-    return sendWithPromise('GetSignInState');
+  getSyncInfo() {
+    return sendWithPromise('GetSyncInfo');
+  }
+
+  getAccountInfo() {
+    return sendWithPromise('GetAccountInfo');
   }
 
   static getInstance(): TabSearchSyncBrowserProxy {

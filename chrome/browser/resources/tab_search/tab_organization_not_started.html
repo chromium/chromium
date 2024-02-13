@@ -45,9 +45,9 @@
       [[getTitle_(showFre)]]
     </div>
     <div class="tab-organization-body">
-      [[getBody_(showFre, signedIn_)]]
+      [[getBody_(showFre, sync_, account_)]]
       <template is="dom-if"
-          if="[[shouldShowBodyLink_(showFre, signedIn_)]]">
+          if="[[shouldShowBodyLink_(showFre, sync_, account_)]]">
         <a class="tab-organization-link"
             role="link"
             tabindex="0"
@@ -58,9 +58,22 @@
       </template>
     </div>
   </div>
+  <template is="dom-if" if="[[shouldShowAccountInfo_(sync_, account_)]]">
+    <div class="account-row">
+      <!-- Decorative image, intentionally empty alt text -->
+      <img class="account-image" alt=""
+          src="[[getAccountImageSrc_(account_.avatarImage)]]">
+      <div class="account-text">
+        <div class="tab-organization-header">[[account_.name]]</div>
+        <div class="tab-organization-body account-email">
+          [[account_.email]]
+        </div>
+      </div>
+    </div>
+  </template>
   <cr-button class="action-button"
-      aria-label="[[getButtonAriaLabel_(showFre, signedIn_)]]"
+      aria-label="[[getButtonAriaLabel_(sync_, account_)]]"
       on-click="onButtonClick_">
-    [[getButtonText_(showFre, signedIn_)]]
+    [[getButtonText_(sync_, account_)]]
   </cr-button>
 </div>
