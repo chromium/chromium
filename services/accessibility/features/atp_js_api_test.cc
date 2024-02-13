@@ -1260,8 +1260,9 @@ TEST_F(AutomationJSApiTest, GetDesktop) {
   WaitForJSTestComplete();
 }
 
-// Ensures chrome.automation.getFocus exists and gets the correct node.
-TEST_F(AutomationJSApiTest, GetFocus) {
+// Ensures chrome.automation.getFocus|getAccessibilityFocus exist and gets the
+// correct node.
+TEST_F(AutomationJSApiTest, GetFocuses) {
   std::vector<ui::AXTreeUpdate> updates;
   updates.emplace_back();
   auto& tree_update = updates.back();
@@ -1293,6 +1294,14 @@ TEST_F(AutomationJSApiTest, GetFocus) {
             desktop.firstChild !== desktop.lastChild) {
           remote.testComplete(/*success=*/false);
         }
+
+        // No accessibility focus at the time.
+        chrome.automation.getAccessibilityFocus(focus => {
+          if (focus) {
+            remote.testComplete(/*success=*/false);
+          }
+        });
+
         const button = desktop.firstChild;
         if (button.role !== 'button') {
           remote.testComplete(/*success=*/false);
@@ -1302,12 +1311,21 @@ TEST_F(AutomationJSApiTest, GetFocus) {
             button.indexInParent !== 0 || button.children.length !== 0) {
           remote.testComplete(/*success=*/false);
         }
-        chrome.automation.getFocus(focus => {
+        button.setAccessibilityFocus();
+        chrome.automation.getAccessibilityFocus(focus => {
           if (!focus) {
             remote.testComplete(/*success=*/false);
           }
-         remote.testComplete(/*success=*/focus === button);
+          if (focus !== button) {
+            remote.testComplete(/*success=*/false);
+          }
+          chrome.automation.getFocus(focus => {
+            if (!focus) {
+              remote.testComplete(/*success=*/false);
+            }
+           remote.testComplete(/*success=*/focus === button);
         });
+      });
     });
   )JS");
   WaitForJSTestComplete();

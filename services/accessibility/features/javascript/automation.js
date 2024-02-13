@@ -2212,6 +2212,19 @@ class AtpAutomation {
     }
   }
 
+  getAccessibilityFocus(callback) {
+    let focusedNodeInfo = natives.GetAccessibilityFocus();
+    if (!focusedNodeInfo) {
+      callback(null);
+      return;
+    }
+    const tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
+    if (tree) {
+      callback(tree.get(focusedNodeInfo.nodeId));
+      return;
+    }
+  }
+
   // TODO(b/262638176): Add other chrome.automation methods.
 };
 
