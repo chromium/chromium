@@ -5,6 +5,7 @@
 #include <windows.h>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -198,8 +199,8 @@ bool OSCryptImpl::EncryptString(const std::string& plaintext,
   DCHECK_EQ(kKeyLength, aead.KeyLength());
   DCHECK_EQ(kNonceLength, aead.NonceLength());
 
-  std::string nonce;
-  crypto::RandBytes(base::WriteInto(&nonce, kNonceLength + 1), kNonceLength);
+  std::string nonce(kNonceLength, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(nonce));
 
   if (!aead.Seal(plaintext, nonce, std::string(), ciphertext))
     return false;
@@ -251,8 +252,8 @@ bool OSCryptImpl::Init(PrefService* local_state) {
 
   // If there is no key in the local state, or if DPAPI decryption fails,
   // generate a new key.
-  std::string key;
-  crypto::RandBytes(base::WriteInto(&key, kKeyLength + 1), kKeyLength);
+  std::string key(kKeyLength, '\0');
+  crypto::RandBytes(base::as_writable_byte_span(key));
 
   if (!EncryptAndStoreKey(key, local_state)) {
     return false;
