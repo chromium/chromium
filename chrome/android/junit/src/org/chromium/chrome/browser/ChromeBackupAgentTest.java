@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -47,6 +48,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -63,6 +65,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -84,6 +87,7 @@ import java.util.concurrent.CountDownLatch;
 @Config(
         manifest = Config.NONE,
         shadows = {ChromeBackupAgentTest.BackupManagerShadow.class})
+@DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
 public class ChromeBackupAgentTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
     @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
@@ -119,6 +123,7 @@ public class ChromeBackupAgentTest {
 
     private ChromeBackupAgentImpl mAgent;
     private AsyncInitTaskRunner mTaskRunner;
+    private boolean mIsAccountManaged;
 
     private final CoreAccountInfo mAccountInfo =
             CoreAccountInfo.createFromEmailAndGaiaId(
@@ -195,6 +200,15 @@ public class ChromeBackupAgentTest {
                         })
                 .when(mSigninManager)
                 .signin(eq(mAccountInfo), anyInt(), any());
+
+        doAnswer(
+                        (invocation) -> {
+                            Callback<Boolean> callback = invocation.getArgument(1);
+                            callback.onResult(mIsAccountManaged);
+                            return null;
+                        })
+                .when(mSigninManager)
+                .isAccountManaged(eq(mAccountInfo), any());
 
         // Mock initializing the browser
         doReturn(true).when(mAgent).initializeBrowser();
@@ -704,6 +718,60 @@ public class ChromeBackupAgentTest {
     }
 
     /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
+     * signed-in user only.
+     */
+    @Test
+    @EnableFeatures({
+        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS
+    })
+    @DisableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+    public void testOnRestore_withSignInUser_policyOnSigninDisabled() throws IOException {
+        mIsAccountManaged = true;
+        executeNormalRestoreAndCheckPrefs(
+                /* withSyncingUser= */ false, /* withSignedInUser= */ true);
+
+        verifyRestoreFinishWithSignin();
+    }
+
+    /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
+     * signed-in user only.
+     */
+    @Test
+    @EnableFeatures({
+        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN
+    })
+    public void testOnRestore_withSignInUser_policyOnSigninEnabled() throws IOException {
+        mIsAccountManaged = true;
+        executeNormalRestoreAndCheckPrefs(
+                /* withSyncingUser= */ false, /* withSignedInUser= */ true);
+
+        verifyRestoreFinishWithSignin();
+    }
+
+    /**
+     * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains the previously
+     * signed-in user only.
+     */
+    @Test
+    @EnableFeatures({
+        SigninFeatures.RESTORE_SIGNED_IN_ACCOUNT_AND_SETTINGS_FROM_BACKUP,
+        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN
+    })
+    public void testOnRestore_withSignInUser_notManaged_policyOnSigninEnabled() throws IOException {
+        mIsAccountManaged = false;
+        executeNormalRestoreAndCheckPrefs(
+                /* withSyncingUser= */ false, /* withSignedInUser= */ true);
+
+        verifyRestoreFinishWithSignin();
+    }
+
+    /**
      * Test method for {@link ChromeBackupAgent#onRestore}. The backup contains a record for the
      * previously singed-in user and another for the syncing user.
      */
@@ -1033,6 +1101,13 @@ public class ChromeBackupAgentTest {
         // Verify that sign-in without sync is triggered for the given account.
         verify(mSigninManager, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
                 .signin(eq(mAccountInfo), anyInt(), any());
+
+        if (SigninFeatureMap.isEnabled(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+                && mIsAccountManaged) {
+            verify(mSigninManager).setUserAcceptedAccountManagement(true);
+        } else {
+            verify(mSigninManager, never()).setUserAcceptedAccountManagement(anyBoolean());
+        }
     }
 
     private void verifyRestoreFinishWithSigninAndSync() {

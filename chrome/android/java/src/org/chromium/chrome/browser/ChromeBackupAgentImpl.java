@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
@@ -602,19 +603,8 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                     final AccountManagerFacade accountManagerFacade =
                             AccountManagerFacadeProvider.getInstance();
 
-                    AccountUtils.checkChildAccountStatus(
-                            accountManagerFacade,
-                            getAccountInfos(),
-                            (isChild, unused) -> {
-                                if (isChild) {
-                                    // TODO(crbug.com/1318350):
-                                    // Pre-AllowSyncOffForChildAccounts, the backup sign-in for
-                                    // child accounts would happen in SigninChecker anyways.
-                                    // Maybe it should be handled by this  class once the feature
-                                    // launches.
-                                    return;
-                                }
-
+                    Runnable signinRunnable =
+                            () -> {
                                 // signinManager.addSignInStateObserver(observer);
                                 signinManager.runAfterOperationInProgress(
                                         () -> {
@@ -624,7 +614,40 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
                                                             .POST_DEVICE_RESTORE_BACKGROUND_SIGNIN,
                                                     callback);
                                         });
-                            });
+                            };
+
+                    Callback<Boolean> accountManagedCallback =
+                            (isManaged) -> {
+                                // If restoring a managed account, the user most likely already
+                                // accepted account management previously and we don't have the
+                                // ability to re-show the confirmation dialog here anyways.
+                                if (isManaged) signinManager.setUserAcceptedAccountManagement(true);
+                                signinRunnable.run();
+                            };
+
+                    AccountManagerFacade.ChildAccountStatusListener listener =
+                            (isChild, unused) -> {
+                                if (isChild) {
+                                    // TODO(crbug.com/1318350):
+                                    // Pre-AllowSyncOffForChildAccounts, the backup sign-in for
+                                    // child accounts would happen in SigninChecker anyways.
+                                    // Maybe it should be handled by this  class once the
+                                    // feature launches.
+                                    callback.onSignInAborted();
+                                    return;
+                                }
+
+                                if (SigninFeatureMap.isEnabled(
+                                        SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)) {
+                                    signinManager.isAccountManaged(
+                                            accountInfo, accountManagedCallback);
+                                } else {
+                                    signinRunnable.run();
+                                }
+                            };
+
+                    AccountUtils.checkChildAccountStatus(
+                            accountManagerFacade, getAccountInfos(), listener);
                 });
     }
 
