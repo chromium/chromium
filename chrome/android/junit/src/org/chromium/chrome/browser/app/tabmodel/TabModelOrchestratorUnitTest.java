@@ -121,6 +121,38 @@ public class TabModelOrchestratorUnitTest {
                 startupInfo.incognitoActiveIndex);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"TabStripPerformance"})
+    public void testTabModelStartupInfo_IgnoreIncognito() {
+        mTabModelOrchestrator.loadState(true, null);
+
+        // Send test tab model info.
+        int numIncognitoTabs = 2;
+        int numStandardTabs = 3;
+        int incognitoIndex = 1;
+        int standardIndex = 2;
+        boolean fromMerge = false;
+        readTabState(numStandardTabs, numIncognitoTabs, standardIndex, incognitoIndex, fromMerge);
+
+        // Verify that the {@link TabModelStartupInfo} is as expected.
+        ArgumentCaptor<TabModelStartupInfo> startupInfoCaptor =
+                ArgumentCaptor.forClass(TabModelStartupInfo.class);
+        verify(mMockTabModelStartupInfoSupplier).set(startupInfoCaptor.capture());
+        TabModelStartupInfo startupInfo = startupInfoCaptor.getValue();
+
+        assertEquals("Unexpected standard tab count.", numStandardTabs, startupInfo.standardCount);
+        assertEquals("Unexpected incognito tab count.", 0, startupInfo.incognitoCount);
+        assertEquals(
+                "Unexpected standard active tab index.",
+                standardIndex,
+                startupInfo.standardActiveIndex);
+        assertEquals(
+                "Unexpected incognito active tab index.",
+                TabModel.INVALID_TAB_INDEX,
+                startupInfo.incognitoActiveIndex);
+    }
+
     private void readTabState(
             int numStandardTabs,
             int numIncognitoTabs,
