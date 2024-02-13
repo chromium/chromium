@@ -23,7 +23,7 @@ component("jni_zero") {
     "core.cc",
     "core.h",
     "jni_int_wrapper.h",
-    "jni_zero_helper.h",
+    "jni_zero.h",
     "logging.cc",
     "logging.h",
     "scoped_java_ref.cc",

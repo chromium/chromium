@@ -251,7 +251,7 @@ template("generate_jni_impl") {
       if (defined(invoker.jni_generator_include)) {
         _jni_generator_include = invoker.jni_generator_include
       } else {
-        _jni_generator_include = "//third_party/jni_zero/jni_zero_helper.h"
+        _jni_generator_include = "//third_party/jni_zero/jni_zero.h"
       }
 
       # The sources aren't compiled so don't check their dependencies.

@@ -6,7 +6,7 @@
 #include "chromecast/app/cast_main_delegate.h"
 #include "content/public/app/content_main.h"
 #include "content/public/browser/android/compositor.h"
-#include "third_party/jni_zero/jni_zero_helper.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 extern "C" {
 // This JNI registration method is found and called by module framework code.

@@ -453,9 +453,9 @@ First, build a module native interface. Supply a JNI method named
 on all Chrome build variants, including Monochrome (unlike base module JNI).
 
 ```c++
-#include "third_party/jni_zero/jni_zero_helper.h"
 #include "base/android/jni_utils.h"
 #include "chrome/android/modules/foo/internal/jni_registration.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 extern "C" {
 // This JNI registration method is found and called by module framework code.
