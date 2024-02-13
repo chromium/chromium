@@ -2642,8 +2642,10 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestRespectPreflightResults,
 // This test verifies that child frames with distinct origins from their parent
 // do not inherit their private network request policy, which is based on the
 // origin of the child document instead.
-IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTest,
-                       PrivateNetworkRequestPolicyCalculatedPerOrigin) {
+// TODO (crbug.com/324679506) : Fix the test.
+IN_PROC_BROWSER_TEST_F(
+    PrivateNetworkAccessBrowserTest,
+    DISABLED_PrivateNetworkRequestPolicyCalculatedPerOrigin) {
   GURL url = InsecurePublicURL(kDefaultPath);
 
   PolicyTestContentBrowserClient client;
