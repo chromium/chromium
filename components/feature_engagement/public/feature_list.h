@@ -271,8 +271,6 @@ DEFINE_VARIATION_PARAM(kIPHiOSPullToRefreshFeature,
                        "IPH_iOSPullToRefreshFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSReplaceSyncPromosWithSignInPromos,
                        "IPH_iOSReplaceSyncPromosWithSignInPromos");
-DEFINE_VARIATION_PARAM(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
-                       "IPH_iOSBlueDotPromoEnhancedSafeBrowsing");
 DEFINE_VARIATION_PARAM(kIPHiOSTabGridSwipeLeftForIncognito,
                        "IPH_iOSTabGridSwipeLeftForIncognito");
 DEFINE_VARIATION_PARAM(kIPHiOSDockingPromoFeature, "IPH_iOSDockingPromo");

@@ -228,7 +228,6 @@ BASE_DECLARE_FEATURE(kIPHiOSChoiceScreenFeature);
 BASE_DECLARE_FEATURE(kIPHiOSParcelTrackingFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPullToRefreshFeature);
 BASE_DECLARE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos);
-BASE_DECLARE_FEATURE(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature);
 BASE_DECLARE_FEATURE(kIPHiOSTabGridSwipeLeftForIncognito);
 BASE_DECLARE_FEATURE(kIPHiOSDockingPromoFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDockingPromoRemindMeLaterFeature);

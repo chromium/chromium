@@ -225,10 +225,6 @@ extern const char kIOSBackForwardButtonTapped[];
 // The user has swiped from the edge to navigate backward or forward on a tab.
 extern const char kIOSSwipeBackForwardUsed[];
 
-// The user has met a condition that makes the Enhanced Safe Browsing
-// inline and blue-dot promos eligible to be displayed.
-extern const char kEnhancedSafeBrowsingPromoCriterionMet[];
-
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

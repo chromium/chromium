@@ -145,7 +145,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSParcelTrackingFeature,
     &kIPHiOSPullToRefreshFeature,
     &kIPHiOSReplaceSyncPromosWithSignInPromos,
-    &kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
     &kIPHiOSTabGridSwipeLeftForIncognito,
     &kIPHiOSDockingPromoFeature,
     &kIPHiOSDockingPromoRemindMeLaterFeature,

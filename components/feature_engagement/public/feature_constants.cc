@@ -566,9 +566,6 @@ BASE_FEATURE(kIPHiOSPullToRefreshFeature,
 BASE_FEATURE(kIPHiOSReplaceSyncPromosWithSignInPromos,
              "IPH_iOSReplaceSyncPromosWithSignInPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
-             "IPH_iOSBlueDotPromoEnhancedSafeBrowsing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSTabGridSwipeLeftForIncognito,
              "IPH_iOSTabGridSwipeLeftForIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
