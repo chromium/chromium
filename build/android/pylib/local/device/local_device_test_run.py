@@ -242,7 +242,6 @@ class LocalDeviceTestRun(test_run.TestRun):
     tests_and_names = ((t, self._GetUniqueTestName(t)) for t in tests)
 
     tests_and_results = {}
-    # TODO(crbug/1257820): Add retry logic for PRE_ tests.
     for test, name in tests_and_names:
       if name.endswith('*'):
         tests_and_results[name] = (test, [
@@ -255,7 +254,10 @@ class LocalDeviceTestRun(test_run.TestRun):
                                 for test, result in tests_and_results.values()
                                 if is_failure_result(result))
 
-    return [t for t, r in failed_tests_and_results if self._ShouldRetry(t, r)]
+    failed_tests = [
+        t for t, r in failed_tests_and_results if self._ShouldRetry(t, r)
+    ]
+    return self._AppendPreTestsForRetry(failed_tests, tests)
 
   def _ApplyExternalSharding(self, tests, shard_index, total_shards):
     logging.info('Using external sharding settings. This is shard %d/%d',
@@ -394,6 +396,10 @@ class LocalDeviceTestRun(test_run.TestRun):
   def _GroupTests(self, tests):
     # pylint: disable=no-self-use
     return tests
+
+  def _AppendPreTestsForRetry(self, failed_tests, tests):
+    # pylint: disable=no-self-use,unused-argument
+    return failed_tests
 
   def _RunTest(self, device, test):
     raise NotImplementedError

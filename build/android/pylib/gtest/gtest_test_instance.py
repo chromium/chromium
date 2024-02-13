@@ -432,8 +432,6 @@ class GtestTestInstance(test_instance.TestInstance):
         self._flags.extend(flag for flag in stripped_lines if flag)
     if args.run_disabled:
       self._flags.append('--gtest_also_run_disabled_tests')
-    if args.run_pre_tests:
-      self._flags.append('--gtest_also_run_pre_tests')
 
   @property
   def activity(self):
@@ -550,6 +548,10 @@ class GtestTestInstance(test_instance.TestInstance):
   @property
   def use_existing_test_data(self):
     return self._use_existing_test_data
+
+  @property
+  def run_pre_tests(self):
+    return self._run_pre_tests
 
   #override
   def TestType(self):

@@ -84,6 +84,46 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
     self.assertTrue(isSliceInList(expectedTestcase2, actualTestCase))
     self.assertTrue(isSliceInList(expectedOtherTestcase, actualTestCase))
 
+  def testAppendPreTests(self):
+    failed_tests = [
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.abc_testcase2",
+        "TestClass1.PRE_def_testcase3",
+        "TestClass1.otherTestCase",
+    ]
+    tests = [
+        "TestClass1.testcase1",
+        "TestClass1.otherTestCase",
+        "TestClass1.def_testcase3",
+        "TestClass1.PRE_testcase1",
+        "TestClass1.abc_testcase2",
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.PRE_abc_testcase2",
+        "TestClass1.PRE_def_testcase3",
+        "TestClass1.PRE_PRE_abc_testcase2",
+    ]
+    expectedTestcase1 = [
+        "TestClass1.PRE_PRE_testcase1",
+        "TestClass1.PRE_testcase1",
+        "TestClass1.testcase1",
+    ]
+    expectedTestcase2 = [
+        "TestClass1.PRE_PRE_abc_testcase2",
+        "TestClass1.PRE_abc_testcase2",
+        "TestClass1.abc_testcase2",
+    ]
+    expectedTestcase3 = [
+        "TestClass1.PRE_def_testcase3",
+        "TestClass1.def_testcase3",
+    ]
+    expectedOtherTestcase = [
+        "TestClass1.otherTestCase",
+    ]
+    actualTestCase = self._obj._AppendPreTestsForRetry(failed_tests, tests)
+    self.assertTrue(isSliceInList(expectedTestcase1, actualTestCase))
+    self.assertTrue(isSliceInList(expectedTestcase2, actualTestCase))
+    self.assertTrue(isSliceInList(expectedTestcase3, actualTestCase))
+    self.assertTrue(isSliceInList(expectedOtherTestcase, actualTestCase))
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)
