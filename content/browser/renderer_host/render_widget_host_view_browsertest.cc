@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/features.h"
@@ -1738,16 +1737,9 @@ void CheckSurfaceRangeRemovedAfterCopy(viz::SurfaceRange range,
 }
 
 class RenderWidgetHostViewCopyFromSurfaceBrowserTest
-    : public RenderWidgetHostViewBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public RenderWidgetHostViewBrowserTest {
  public:
   RenderWidgetHostViewCopyFromSurfaceBrowserTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
-    }
-
     // Enable `RenderDocument` to guarantee renderer/RFH swap for cross-site
     // navigations.
     InitAndEnableRenderDocumentFeature(&scoped_feature_list_render_document_,
@@ -1768,11 +1760,10 @@ class RenderWidgetHostViewCopyFromSurfaceBrowserTest
   bool SetUpSourceSurface(const char* wait_message) override { return false; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedFeatureList scoped_feature_list_render_document_;
 };
 
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
                        AsyncCopyFromSurface) {
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
@@ -1860,7 +1851,7 @@ class ScopedSnapshotWaiter : public WebContentsObserver {
 // A "best effort" browser test: issue an exact `CopyOutputRequest` during a
 // cross-renderer navigation, when the navigation is about to commit in the
 // browser. We should always be able to get a desired snapshot back.
-IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
                        CopyExactSurfaceDuringCrossRendererNavigations) {
   ASSERT_TRUE(
       NavigateToURL(shell()->web_contents(),
@@ -1878,10 +1869,6 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostViewCopyFromSurfaceBrowserTest,
   // Blocks until we get the desired snapshot of "empty.html".
   waiter.Wait();
 }
-
-INSTANTIATE_TEST_SUITE_P(EnableDisableSlim,
-                         RenderWidgetHostViewCopyFromSurfaceBrowserTest,
-                         ::testing::Bool());
 #endif
 
 namespace {

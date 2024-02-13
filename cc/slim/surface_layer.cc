@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "cc/layers/surface_layer.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -20,36 +18,14 @@ namespace cc::slim {
 
 // static
 scoped_refptr<SurfaceLayer> SurfaceLayer::Create() {
-  scoped_refptr<cc::SurfaceLayer> cc_layer;
-  if (!features::IsSlimCompositorEnabled()) {
-    cc_layer = cc::SurfaceLayer::Create();
-  }
-  return base::AdoptRef(new SurfaceLayer(std::move(cc_layer)));
+  return base::AdoptRef(new SurfaceLayer());
 }
 
-SurfaceLayer::SurfaceLayer(scoped_refptr<cc::SurfaceLayer> cc_layer)
-    : Layer(std::move(cc_layer)) {
-  if (this->cc_layer()) {
-    this->cc_layer()->SetSurfaceHitTestable(true);
-  }
-}
-
+SurfaceLayer::SurfaceLayer() = default;
 SurfaceLayer::~SurfaceLayer() = default;
-
-cc::SurfaceLayer* SurfaceLayer::cc_layer() const {
-  return static_cast<cc::SurfaceLayer*>(cc_layer_.get());
-}
-
-const viz::SurfaceId& SurfaceLayer::surface_id() const {
-  return cc_layer() ? cc_layer()->surface_id() : surface_range_.end();
-}
 
 void SurfaceLayer::SetSurfaceId(const viz::SurfaceId& surface_id,
                                 const cc::DeadlinePolicy& deadline_policy) {
-  if (cc_layer()) {
-    cc_layer()->SetSurfaceId(surface_id, deadline_policy);
-    return;
-  }
   if (surface_range_.end() == surface_id &&
       deadline_policy.use_existing_deadline()) {
     return;
@@ -65,10 +41,6 @@ void SurfaceLayer::SetSurfaceId(const viz::SurfaceId& surface_id,
 
 void SurfaceLayer::SetStretchContentToFillBounds(
     bool stretch_content_to_fill_bounds) {
-  if (cc_layer()) {
-    cc_layer()->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
-    return;
-  }
   if (stretch_content_to_fill_bounds_ == stretch_content_to_fill_bounds) {
     return;
   }
@@ -76,26 +48,8 @@ void SurfaceLayer::SetStretchContentToFillBounds(
   NotifyPropertyChanged();
 }
 
-bool SurfaceLayer::stretch_content_to_fill_bounds() const {
-  return cc_layer() ? cc_layer()->stretch_content_to_fill_bounds()
-                    : stretch_content_to_fill_bounds_;
-}
-
-void SurfaceLayer::SetMayContainVideo(bool may_contain_video) {
-  if (cc_layer()) {
-    cc_layer()->SetMayContainVideo(may_contain_video);
-    return;
-  }
-  // No slim implementation. This method probably should not exist.
-  // crbug.com/1410291
-}
-
 void SurfaceLayer::SetOldestAcceptableFallback(
     const viz::SurfaceId& surface_id) {
-  if (cc_layer()) {
-    cc_layer()->SetOldestAcceptableFallback(surface_id);
-    return;
-  }
   // The fallback should never move backwards.
   DCHECK(!surface_range_.start() ||
          !surface_range_.start()->IsNewerThan(surface_id));
@@ -109,18 +63,7 @@ void SurfaceLayer::SetOldestAcceptableFallback(
       surface_range_.end()));
 }
 
-const std::optional<viz::SurfaceId>& SurfaceLayer::oldest_acceptable_fallback()
-    const {
-  return cc_layer() ? cc_layer()->oldest_acceptable_fallback()
-                    : surface_range_.start();
-}
-
 void SurfaceLayer::SetLayerTree(LayerTree* tree) {
-  if (cc_layer()) {
-    Layer::SetLayerTree(tree);
-    return;
-  }
-
   if (layer_tree() == tree) {
     return;
   }
@@ -136,7 +79,6 @@ void SurfaceLayer::SetLayerTree(LayerTree* tree) {
 }
 
 void SurfaceLayer::SetSurfaceRange(const viz::SurfaceRange& surface_range) {
-  DCHECK(!cc_layer());
   if (surface_range_ == surface_range) {
     return;
   }

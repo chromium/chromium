@@ -7,11 +7,9 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/resources/ui_resource_manager.h"
-#include "cc/slim/features.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/layer_tree.h"
@@ -34,25 +32,7 @@
 
 namespace cc::slim {
 
-class SlimLayerTest : public testing::TestWithParam<bool> {
- public:
-  SlimLayerTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
-    }
-  }
-
-  static bool HasNonTrivialMaskFilterInfo(const Layer* layer) {
-    return layer->HasNonTrivialMaskFilterInfo();
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(SlimLayerTest, LayerTreeManipulation) {
+TEST(SlimLayerTest, LayerTreeManipulation) {
   scoped_refptr<Layer> layer1 = Layer::Create();
   scoped_refptr<Layer> layer2 = Layer::Create();
   scoped_refptr<Layer> layer3 = Layer::Create();
@@ -108,7 +88,7 @@ TEST_P(SlimLayerTest, LayerTreeManipulation) {
   EXPECT_TRUE(layer4->HasOneRef());
 }
 
-TEST_P(SlimLayerTest, LayerProperties) {
+TEST(SlimLayerTest, LayerProperties) {
   scoped_refptr<Layer> layer = Layer::Create();
 
   layer->SetPosition(gfx::PointF(1.f, 2.f));
@@ -153,45 +133,31 @@ TEST_P(SlimLayerTest, LayerProperties) {
   filters.push_back(Filter::CreateBrightness(0.5f));
   layer->SetFilters(std::move(filters));
 
-  if (GetParam()) {
-    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
-  }
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
   layer->SetRoundedCorner(gfx::RoundedCornersF(50));
   EXPECT_EQ(layer->corner_radii(), gfx::RoundedCornersF(50));
-  if (GetParam()) {
-    EXPECT_TRUE(HasNonTrivialMaskFilterInfo(layer.get()));
-  }
+  EXPECT_TRUE(layer->HasNonTrivialMaskFilterInfo());
   layer->SetRoundedCorner(gfx::RoundedCornersF());
-  if (GetParam()) {
-    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
-  }
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
 
   gfx::LinearGradient gradient;
   gradient.AddStep(0.0f, 0);
   gradient.AddStep(1.0f, 255);
-  if (GetParam()) {
-    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
-  }
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
   layer->SetGradientMask(gradient);
   EXPECT_EQ(layer->gradient_mask(), gradient);
-  if (GetParam()) {
-    EXPECT_TRUE(HasNonTrivialMaskFilterInfo(layer.get()));
-  }
+  EXPECT_TRUE(layer->HasNonTrivialMaskFilterInfo());
   layer->SetGradientMask(gfx::LinearGradient());
-  if (GetParam()) {
-    EXPECT_FALSE(HasNonTrivialMaskFilterInfo(layer.get()));
-  }
+  EXPECT_FALSE(layer->HasNonTrivialMaskFilterInfo());
 }
 
-TEST_P(SlimLayerTest, SurfaceLayerProperties) {
+TEST(SlimLayerTest, SurfaceLayerProperties) {
   scoped_refptr<SurfaceLayer> layer = SurfaceLayer::Create();
 
   layer->SetStretchContentToFillBounds(true);
   EXPECT_TRUE(layer->stretch_content_to_fill_bounds());
   layer->SetStretchContentToFillBounds(false);
   EXPECT_FALSE(layer->stretch_content_to_fill_bounds());
-
-  layer->SetMayContainVideo(true);
 
   base::UnguessableToken token = base::UnguessableToken::Create();
   viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
@@ -206,7 +172,7 @@ TEST_P(SlimLayerTest, SurfaceLayerProperties) {
   EXPECT_EQ(layer->surface_id(), end);
 }
 
-TEST_P(SlimLayerTest, UIResourceLayerProperties) {
+TEST(SlimLayerTest, UIResourceLayerProperties) {
   scoped_refptr<UIResourceLayer> layer = UIResourceLayer::Create();
 
   layer->SetUIResourceId(1);
@@ -223,9 +189,6 @@ TEST_P(SlimLayerTest, UIResourceLayerProperties) {
 
   layer->SetVertexOpacity(0.1f, 0.2f, 0.3f, 0.4f);
 
-  if (!base::FeatureList::IsEnabled(features::kSlimCompositor)) {
-    return;
-  }
   TestLayerTreeClient client;
   LayerTree::InitParams params;
   params.client = &client;
@@ -238,7 +201,7 @@ TEST_P(SlimLayerTest, UIResourceLayerProperties) {
             1u);
 }
 
-TEST_P(SlimLayerTest, NinePatchLayerProperties) {
+TEST(SlimLayerTest, NinePatchLayerProperties) {
   scoped_refptr<NinePatchLayer> layer = NinePatchLayer::Create();
 
   auto image_info =
@@ -253,9 +216,6 @@ TEST_P(SlimLayerTest, NinePatchLayerProperties) {
   layer->SetFillCenter(true);
   layer->SetNearestNeighbor(true);
 
-  if (!base::FeatureList::IsEnabled(features::kSlimCompositor)) {
-    return;
-  }
   TestLayerTreeClient client;
   LayerTree::InitParams params;
   params.client = &client;
@@ -267,7 +227,7 @@ TEST_P(SlimLayerTest, NinePatchLayerProperties) {
             1u);
 }
 
-TEST_P(SlimLayerTest, NumDescendantsThatDrawContent) {
+TEST(SlimLayerTest, NumDescendantsThatDrawContent) {
   auto layer0 = Layer::Create();
   auto layer1 = Layer::Create();
   auto layer2 = Layer::Create();
@@ -315,7 +275,5 @@ TEST_P(SlimLayerTest, NumDescendantsThatDrawContent) {
   EXPECT_EQ(layer1->NumDescendantsThatDrawContent(), 1);
   EXPECT_EQ(layer2->NumDescendantsThatDrawContent(), 2);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, SlimLayerTest, testing::Bool());
 
 }  // namespace cc::slim

@@ -7,9 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
@@ -31,7 +29,6 @@ namespace {
 class SlimLayerTreeTest : public testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
     layer_tree_ = std::make_unique<TestLayerTreeImpl>(&client_);
   }
 
@@ -80,7 +77,6 @@ class SlimLayerTreeTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestLayerTreeClient client_;
   std::unique_ptr<TestLayerTreeImpl> layer_tree_;
   uint64_t sequence_id_ = 0;

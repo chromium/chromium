@@ -12,9 +12,7 @@
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
-#include "cc/layers/layer.h"
 #include "cc/paint/filter_operation.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/shared_quad_state.h"
@@ -46,14 +44,9 @@ cc::FilterOperations ToCcFilters(std::vector<cc::slim::Filter> filters) {
 
 // static
 scoped_refptr<Layer> Layer::Create() {
-  scoped_refptr<cc::Layer> cc_layer;
-  if (!features::IsSlimCompositorEnabled()) {
-    cc_layer = cc::Layer::Create();
-  }
-  return base::AdoptRef(new Layer(std::move(cc_layer)));
+  return base::AdoptRef(new Layer());
 }
-Layer::Layer(scoped_refptr<cc::Layer> cc_layer)
-    : cc_layer_(std::move(cc_layer)), id_(g_next_id.GetNext() + 1) {}
+Layer::Layer() : id_(g_next_id.GetNext() + 1) {}
 
 Layer::~Layer() {
   RemoveAllChildren();
@@ -80,16 +73,10 @@ Layer* Layer::RootLayer() {
 }
 
 void Layer::AddChild(scoped_refptr<Layer> child) {
-  if (cc_layer()) {
-    cc_layer()->AddChild(child->cc_layer());
-  }
   InsertChildSlim(std::move(child), children_.size());
 }
 
 void Layer::InsertChild(scoped_refptr<Layer> child, size_t position) {
-  if (cc_layer()) {
-    cc_layer()->InsertChild(child->cc_layer(), position);
-  }
   InsertChildSlim(std::move(child), position);
 }
 
@@ -110,10 +97,6 @@ void Layer::WillAddChildSlim(Layer* child) {
 }
 
 void Layer::ReplaceChild(Layer* old_child, scoped_refptr<Layer> new_child) {
-  if (cc_layer()) {
-    cc_layer()->ReplaceChild(old_child->cc_layer(),
-                             new_child ? new_child->cc_layer() : nullptr);
-  }
   if (old_child->parent_ != this || old_child == new_child.get()) {
     return;
   }
@@ -134,9 +117,6 @@ void Layer::ReplaceChild(Layer* old_child, scoped_refptr<Layer> new_child) {
 }
 
 void Layer::RemoveFromParent() {
-  if (cc_layer()) {
-    cc_layer()->RemoveFromParent();
-  }
   RemoveFromParentSlim();
 }
 
@@ -153,10 +133,6 @@ void Layer::RemoveFromParentSlim() {
 }
 
 void Layer::RemoveAllChildren() {
-  if (cc_layer()) {
-    cc_layer()->RemoveAllChildren();
-  }
-
   if (children_.empty()) {
     return;
   }
@@ -172,11 +148,9 @@ void Layer::RemoveAllChildren() {
 bool Layer::HasAncestor(Layer* layer) const {
   for (Layer* ancestor = parent_; ancestor; ancestor = ancestor->parent_) {
     if (ancestor == layer) {
-      DCHECK(!cc_layer() || cc_layer()->HasAncestor(layer->cc_layer()));
       return true;
     }
   }
-  DCHECK(!cc_layer() || !cc_layer()->HasAncestor(layer->cc_layer()));
   return false;
 }
 
@@ -206,10 +180,6 @@ void Layer::ChangeDrawableDescendantsBySlim(int num) {
 }
 
 void Layer::SetPosition(const gfx::PointF& position) {
-  if (cc_layer()) {
-    cc_layer()->SetPosition(position);
-    return;
-  }
   if (position_ == position) {
     return;
   }
@@ -217,15 +187,7 @@ void Layer::SetPosition(const gfx::PointF& position) {
   NotifySubtreeChanged();
 }
 
-const gfx::PointF Layer::position() const {
-  return cc_layer() ? cc_layer()->position() : position_;
-}
-
 void Layer::SetBounds(const gfx::Size& bounds) {
-  if (cc_layer()) {
-    cc_layer()->SetBounds(bounds);
-    return;
-  }
   if (bounds_ == bounds) {
     return;
   }
@@ -237,15 +199,7 @@ void Layer::SetBounds(const gfx::Size& bounds) {
   }
 }
 
-const gfx::Size& Layer::bounds() const {
-  return cc_layer() ? cc_layer()->bounds() : bounds_;
-}
-
 void Layer::SetTransform(const gfx::Transform& transform) {
-  if (cc_layer()) {
-    cc_layer()->SetTransform(transform);
-    return;
-  }
   CHECK(transform.Is2dTransform());
   if (transform_ == transform) {
     return;
@@ -254,15 +208,7 @@ void Layer::SetTransform(const gfx::Transform& transform) {
   NotifySubtreeChanged();
 }
 
-const gfx::Transform& Layer::transform() const {
-  return cc_layer() ? cc_layer()->transform() : transform_;
-}
-
 void Layer::SetTransformOrigin(const gfx::Point3F& origin) {
-  if (cc_layer()) {
-    cc_layer()->SetTransformOrigin(origin);
-    return;
-  }
   if (transform_origin_ == origin) {
     return;
   }
@@ -270,15 +216,7 @@ void Layer::SetTransformOrigin(const gfx::Point3F& origin) {
   NotifySubtreeChanged();
 }
 
-gfx::Point3F Layer::transform_origin() const {
-  return cc_layer() ? cc_layer()->transform_origin() : transform_origin_;
-}
-
 void Layer::SetIsDrawable(bool drawable) {
-  if (cc_layer()) {
-    cc_layer()->SetIsDrawable(drawable);
-    return;
-  }
   if (is_drawable_ == drawable) {
     return;
   }
@@ -287,10 +225,6 @@ void Layer::SetIsDrawable(bool drawable) {
 }
 
 void Layer::SetBackgroundColor(SkColor4f color) {
-  if (cc_layer()) {
-    cc_layer()->SetBackgroundColor(color);
-    return;
-  }
   if (background_color_ == color) {
     return;
   }
@@ -298,15 +232,7 @@ void Layer::SetBackgroundColor(SkColor4f color) {
   NotifyPropertyChanged();
 }
 
-SkColor4f Layer::background_color() const {
-  return cc_layer() ? cc_layer()->background_color() : background_color_;
-}
-
 void Layer::SetContentsOpaque(bool opaque) {
-  if (cc_layer()) {
-    cc_layer()->SetContentsOpaque(opaque);
-    return;
-  }
   if (contents_opaque_ == opaque) {
     return;
   }
@@ -314,17 +240,9 @@ void Layer::SetContentsOpaque(bool opaque) {
   NotifySubtreeChanged();
 }
 
-bool Layer::contents_opaque() const {
-  return cc_layer() ? cc_layer()->contents_opaque() : contents_opaque_;
-}
-
 void Layer::SetOpacity(float opacity) {
   DCHECK_GE(opacity, 0.f);
   DCHECK_LE(opacity, 1.f);
-  if (cc_layer()) {
-    cc_layer()->SetOpacity(opacity);
-    return;
-  }
   if (opacity_ == opacity) {
     return;
   }
@@ -332,18 +250,7 @@ void Layer::SetOpacity(float opacity) {
   NotifySubtreeChanged();
 }
 
-float Layer::opacity() const {
-  return cc_layer() ? cc_layer()->opacity() : opacity_;
-}
-
-bool Layer::draws_content() const {
-  return cc_layer() ? cc_layer()->draws_content() : draws_content_;
-}
-
 int Layer::NumDescendantsThatDrawContent() const {
-  if (cc_layer()) {
-    return cc_layer()->NumDescendantsThatDrawContent();
-  }
   return num_descendants_that_draw_content_;
 }
 
@@ -360,10 +267,6 @@ void Layer::UpdateDrawsContent() {
 }
 
 void Layer::SetHideLayerAndSubtree(bool hide) {
-  if (cc_layer()) {
-    cc_layer()->SetHideLayerAndSubtree(hide);
-    return;
-  }
   if (hide_layer_and_subtree_ == hide) {
     return;
   }
@@ -371,16 +274,7 @@ void Layer::SetHideLayerAndSubtree(bool hide) {
   NotifySubtreeChanged();
 }
 
-bool Layer::hide_layer_and_subtree() const {
-  return cc_layer() ? cc_layer()->hide_layer_and_subtree()
-                    : hide_layer_and_subtree_;
-}
-
 void Layer::SetMasksToBounds(bool masks_to_bounds) {
-  if (cc_layer()) {
-    cc_layer()->SetMasksToBounds(masks_to_bounds);
-    return;
-  }
   if (masks_to_bounds_ == masks_to_bounds) {
     return;
   }
@@ -389,10 +283,6 @@ void Layer::SetMasksToBounds(bool masks_to_bounds) {
 }
 
 void Layer::SetRoundedCorner(const gfx::RoundedCornersF& corner_radii) {
-  if (cc_layer()) {
-    cc_layer()->SetRoundedCorner(corner_radii);
-    return;
-  }
   if (rounded_corners_ == corner_radii) {
     return;
   }
@@ -400,15 +290,7 @@ void Layer::SetRoundedCorner(const gfx::RoundedCornersF& corner_radii) {
   NotifySubtreeChanged();
 }
 
-const gfx::RoundedCornersF& Layer::corner_radii() const {
-  return cc_layer() ? cc_layer()->corner_radii() : rounded_corners_;
-}
-
 void Layer::SetGradientMask(const gfx::LinearGradient& gradient_mask) {
-  if (cc_layer()) {
-    cc_layer()->SetGradientMask(gradient_mask);
-    return;
-  }
   if (gradient_mask_ == gradient_mask) {
     return;
   }
@@ -416,23 +298,11 @@ void Layer::SetGradientMask(const gfx::LinearGradient& gradient_mask) {
   NotifySubtreeChanged();
 }
 
-const gfx::LinearGradient& Layer::gradient_mask() const {
-  return cc_layer() ? cc_layer()->gradient_mask() : gradient_mask_;
-}
-
 bool Layer::HasNonTrivialMaskFilterInfo() const {
   return !rounded_corners_.IsEmpty() || !gradient_mask_.IsEmpty();
 }
 
-bool Layer::masks_to_bounds() const {
-  return cc_layer() ? cc_layer()->masks_to_bounds() : masks_to_bounds_;
-}
-
 void Layer::SetFilters(std::vector<Filter> filters) {
-  if (cc_layer()) {
-    cc_layer()->SetFilters(ToCcFilters(std::move(filters)));
-    return;
-  }
   if (filters_ == filters) {
     return;
   }
@@ -533,9 +403,6 @@ viz::SharedQuadState* Layer::CreateAndAppendSharedQuadState(
 }
 
 void Layer::NotifySubtreeChanged() {
-  if (cc_layer()) {
-    return;
-  }
   subtree_property_changed_ = true;
   if (layer_tree_) {
     static_cast<LayerTreeImpl*>(layer_tree_)->NotifyTreeChanged();
@@ -543,9 +410,6 @@ void Layer::NotifySubtreeChanged() {
 }
 
 void Layer::NotifyPropertyChanged() {
-  if (cc_layer()) {
-    return;
-  }
   property_changed_ = true;
   if (layer_tree_) {
     static_cast<LayerTreeImpl*>(layer_tree_)->NotifyTreeChanged();

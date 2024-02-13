@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "cc/layers/ui_resource_layer.h"
-#include "cc/slim/features.h"
 #include "cc/slim/frame_data.h"
 #include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
@@ -18,27 +16,13 @@ namespace cc::slim {
 
 // static
 scoped_refptr<UIResourceLayer> UIResourceLayer::Create() {
-  scoped_refptr<cc::UIResourceLayer> cc_layer;
-  if (!features::IsSlimCompositorEnabled()) {
-    cc_layer = cc::UIResourceLayer::Create();
-  }
-  return base::AdoptRef(new UIResourceLayer(std::move(cc_layer)));
+  return base::AdoptRef(new UIResourceLayer());
 }
 
-UIResourceLayer::UIResourceLayer(scoped_refptr<cc::UIResourceLayer> cc_layer)
-    : Layer(std::move(cc_layer)) {}
-
+UIResourceLayer::UIResourceLayer() = default;
 UIResourceLayer::~UIResourceLayer() = default;
 
-cc::UIResourceLayer* UIResourceLayer::cc_layer() const {
-  return static_cast<cc::UIResourceLayer*>(cc_layer_.get());
-}
-
 void UIResourceLayer::SetUIResourceId(cc::UIResourceId id) {
-  if (cc_layer()) {
-    cc_layer()->SetUIResourceId(id);
-    return;
-  }
   bitmap_.reset();
   if (resource_id_ == id) {
     return;
@@ -48,10 +32,6 @@ void UIResourceLayer::SetUIResourceId(cc::UIResourceId id) {
 }
 
 void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
-  if (cc_layer()) {
-    cc_layer()->SetBitmap(bitmap);
-    return;
-  }
   bitmap_ = bitmap;
   if (!layer_tree()) {
     return;
@@ -64,10 +44,6 @@ void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
 
 void UIResourceLayer::SetUV(const gfx::PointF& top_left,
                             const gfx::PointF& bottom_right) {
-  if (cc_layer()) {
-    cc_layer()->SetUV(top_left, bottom_right);
-    return;
-  }
   if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right) {
     return;
   }
@@ -81,11 +57,6 @@ void UIResourceLayer::SetVertexOpacity(float bottom_left,
                                        float top_left,
                                        float top_right,
                                        float bottom_right) {
-  if (cc_layer()) {
-    cc_layer()->SetVertexOpacity(bottom_left, top_left, top_right,
-                                 bottom_right);
-    return;
-  }
   // Indexing according to the quad vertex generation:
   // 1--2
   // |  |
@@ -104,10 +75,6 @@ void UIResourceLayer::SetVertexOpacity(float bottom_left,
 }
 
 void UIResourceLayer::SetLayerTree(LayerTree* tree) {
-  if (cc_layer()) {
-    Layer::SetLayerTree(tree);
-    return;
-  }
   if (tree == layer_tree()) {
     return;
   }

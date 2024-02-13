@@ -21,36 +21,4 @@ specific_include_rules = {
   "test_frame_sink_impl.cc": [
     "+components/viz/test/test_context_provider.h",
   ],
-
-  # Allowed while slim wraps cc.
-  "frame_sink_cc_wrapper.cc": [
-    "+cc/mojo_embedder/async_layer_tree_frame_sink.h",
-  ],
-  "layer.cc": [
-    "+cc/layers/layer.h",
-  ],
-  "layer_tree_cc_wrapper.cc": [
-    "+cc/animation/animation_host.h",
-    "+cc/base/switches.h",
-    "+cc/mojo_embedder/async_layer_tree_frame_sink.h",
-    "+cc/trees/layer_tree_host.h",
-    "+cc/trees/layer_tree_settings.h",
-    "+cc/trees/swap_promise.h",
-  ],
-  "layer_tree_cc_wrapper.h": [
-    "+cc/trees/layer_tree_host_client.h",
-    "+cc/trees/layer_tree_host_single_thread_client.h",
-  ],
-  "nine_patch_layer.cc": [
-    "+cc/layers/nine_patch_layer.h",
-  ],
-  "solid_color_layer.cc": [
-    "+cc/layers/solid_color_layer.h",
-  ],
-  "surface_layer.cc": [
-    "+cc/layers/surface_layer.h",
-  ],
-  "ui_resource_layer.cc": [
-    "+cc/layers/ui_resource_layer.h",
-  ],
 }

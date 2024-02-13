@@ -8,13 +8,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "cc/base/region.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
-#include "cc/slim/features.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -51,7 +49,6 @@ using testing::ElementsAre;
 class SlimLayerTreeCompositorFrameTest : public testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
     layer_tree_ = std::make_unique<TestLayerTreeImpl>(&client_);
     layer_tree_->SetVisible(true);
 
@@ -120,7 +117,6 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   TestLayerTreeClient client_;
   std::unique_ptr<TestLayerTreeImpl> layer_tree_;
   base::WeakPtr<TestFrameSinkImpl> frame_sink_;

@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "cc/slim/features.h"
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
@@ -57,8 +56,7 @@ bool IsOffsetAdjustValid(
 namespace {
 
 bool IsAndroidSurfaceControlMagnifierEnabled() {
-  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl() &&
-                        features::IsSlimCompositorEnabled();
+  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl();
   return enabled;
 }
 
