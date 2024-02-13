@@ -96,6 +96,7 @@ class CONTENT_EXPORT WebContentsAndroid {
   void SetImportance(JNIEnv* env, jint importance);
   void SuspendAllMediaPlayers(JNIEnv* env);
   void SetAudioMuted(JNIEnv* env, jboolean mute);
+  jboolean IsAudioMuted(JNIEnv* env);
 
   jboolean FocusLocationBarByDefault(JNIEnv* env);
   bool IsFullscreenForCurrentTab(JNIEnv* env);

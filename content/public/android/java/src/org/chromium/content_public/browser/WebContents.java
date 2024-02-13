@@ -275,6 +275,11 @@ public interface WebContents extends Parcelable {
     void setAudioMuted(boolean mute);
 
     /**
+     * @return Whether all audio output from this WebContents is muted.
+     */
+    boolean isAudioMuted();
+
+    /**
      * @return Whether the location bar should be focused by default for this page.
      */
     boolean focusLocationBarByDefault();

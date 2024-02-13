@@ -639,6 +639,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
+    public boolean isAudioMuted() {
+        checkNotDestroyed();
+        return WebContentsImplJni.get().isAudioMuted(mNativeWebContentsAndroid);
+    }
+
+    @Override
     public boolean focusLocationBarByDefault() {
         checkNotDestroyed();
         return WebContentsImplJni.get().focusLocationBarByDefault(mNativeWebContentsAndroid);
@@ -1279,6 +1285,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void suspendAllMediaPlayers(long nativeWebContentsAndroid);
 
         void setAudioMuted(long nativeWebContentsAndroid, boolean mute);
+
+        boolean isAudioMuted(long nativeWebContentsAndroid);
 
         boolean focusLocationBarByDefault(long nativeWebContentsAndroid);
 

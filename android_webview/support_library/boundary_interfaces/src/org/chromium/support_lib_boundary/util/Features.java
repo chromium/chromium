@@ -267,4 +267,8 @@ public class Features {
     // WebSettingsCompat.getWebViewMediaIntegrityApiDefaultStatus
     // WebSettingsCompat.getWebViewMediaIntegrityApiOverrideRules
     public static final String WEBVIEW_MEDIA_INTEGRITY_API_STATUS = "WEBVIEW_INTEGRITY_API_STATUS";
+
+    // WebViewCompat.setAudioMuted
+    // WebViewCompat.isAudioMuted
+    public static final String MUTE_AUDIO = "MUTE_AUDIO";
 }
