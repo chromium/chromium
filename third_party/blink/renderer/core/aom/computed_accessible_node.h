@@ -51,7 +51,7 @@ class ComputedAccessibleNode : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ComputedAccessibleNode(AXID, Document*);
+  CORE_EXPORT ComputedAccessibleNode(AXID, Document*);
   ~ComputedAccessibleNode() override;
 
   void Trace(Visitor*) const override;

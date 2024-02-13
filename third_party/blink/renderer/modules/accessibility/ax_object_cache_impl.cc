@@ -43,6 +43,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
@@ -2131,6 +2132,8 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
   autofill_suggestion_availability_map_.erase(obj_id);
   fixed_or_sticky_node_ids_.erase(obj_id);
   cached_bounding_boxes_.erase(obj_id);
+  computed_node_mapping_.erase(obj_id);
+
   // Clear id from relation cache.
   if (relation_cache_) {
     relation_cache_->RemoveAXID(obj_id);
@@ -4773,6 +4776,8 @@ void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(
                                      event_intents);
 
   obj->UpdateCachedAttributeValuesIfNeeded(true);
+
+  computed_node_mapping_.erase(obj->AXObjectID());
 }
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayout(AXObject* obj) {
@@ -5719,6 +5724,20 @@ void AXObjectCacheImpl::OnPermissionStatusChange(
   accessibility_event_permission_ = status;
 }
 
+ComputedAccessibleNode* AXObjectCacheImpl::GetOrCreateComputedAccessibleNode(
+    AXID axid) {
+  auto iter = computed_node_mapping_.find(axid);
+  if (iter != computed_node_mapping_.end()) {
+    return iter->value;
+  }
+
+  ComputedAccessibleNode* ax_node =
+      MakeGarbageCollected<ComputedAccessibleNode>(axid, document_);
+  computed_node_mapping_.insert(axid, ax_node);
+
+  return ax_node;
+}
+
 bool AXObjectCacheImpl::CanCallAOMEventListeners() const {
   return accessibility_event_permission_ == mojom::PermissionStatus::GRANTED;
 }
@@ -5740,6 +5759,7 @@ void AXObjectCacheImpl::RequestAOMEventListenerPermission() {
 
 void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(agents_);
+  visitor->Trace(computed_node_mapping_);
   visitor->Trace(document_);
   visitor->Trace(popup_document_);
   visitor->Trace(last_selected_from_active_descendant_);

@@ -51,6 +51,7 @@ class AbstractInlineTextBox;
 class AriaNotificationOptions;
 class AXObject;
 class AccessibleNode;
+class ComputedAccessibleNode;
 class HTMLCanvasElement;
 class HTMLOptionElement;
 class HTMLFrameOwnerElement;
@@ -210,6 +211,8 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   virtual void AddAriaNotification(Node*,
                                    const String,
                                    const AriaNotificationOptions*) = 0;
+
+  virtual ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID) = 0;
 
   typedef AXObjectCache* (*AXObjectCacheCreateFunction)(Document&,
                                                         const ui::AXMode&);

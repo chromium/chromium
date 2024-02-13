@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_aria_notification_options.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
 #include "third_party/blink/renderer/core/accessibility/blink_ax_event_intent.h"
+#include "third_party/blink/renderer/core/aom/computed_accessible_node.h"
 #include "third_party/blink/renderer/core/editing/commands/selection_for_undo_step.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -610,6 +611,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   // AXObjectCacheImpl that a serialization was sent.
   void OnSerializationStartSend() override;
 
+  ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID) override;
+
 #if DCHECK_IS_ON()
   // This is called after a node's included status changes, to update the
   // included_node_count_ which is used to debug tree mismatches between the the
@@ -1117,6 +1120,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   // insertion. The items in the vector are in the order that the operations
   // were made in.
   HashMap<AXID, WTF::Vector<TextChangedOperation>> text_operation_in_node_ids_;
+
+  // Used to keep track of which ComputedAccessibleNodes have already been
+  // instantiated in this document to avoid constructing duplicates.
+  HeapHashMap<AXID, Member<ComputedAccessibleNode>> computed_node_mapping_;
 
   // The source of the event that is currently being handled.
   ax::mojom::blink::EventFrom active_event_from_ =

@@ -3146,8 +3146,6 @@ void Document::Shutdown() {
     }
   }
 
-  computed_node_mapping_.clear();
-
   DetachLayoutTree();
   layout_view_ = nullptr;
   DCHECK(!View()->IsAttached());
@@ -9098,7 +9096,6 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(slot_assignment_engine_);
   visitor->Trace(viewport_data_);
   visitor->Trace(lazy_load_image_observer_);
-  visitor->Trace(computed_node_mapping_);
   visitor->Trace(mime_handler_view_before_unload_event_listener_);
   visitor->Trace(cookie_jar_);
   visitor->Trace(synchronous_mutation_observer_set_);
@@ -9231,14 +9228,13 @@ bool Document::ChildrenCanHaveStyle() const {
   return false;
 }
 
-ComputedAccessibleNode* Document::GetOrCreateComputedAccessibleNode(
-    AXID ax_id) {
-  DCHECK(ax_id) << "Invalid ax_id";
-  if (!base::Contains(computed_node_mapping_, ax_id)) {
-    auto* node = MakeGarbageCollected<ComputedAccessibleNode>(ax_id, this);
-    computed_node_mapping_.insert(ax_id, node);
+ComputedAccessibleNode* Document::GetOrCreateComputedAccessibleNode(AXID axid) {
+  DCHECK(axid) << "Invalid ax_id";
+  if (AXObjectCache* cache = ExistingAXObjectCache()) {
+    return cache->GetOrCreateComputedAccessibleNode(axid);
   }
-  return computed_node_mapping_.at(ax_id);
+
+  return nullptr;
 }
 
 void Document::SetShowBeforeUnloadDialog(bool show_dialog) {
