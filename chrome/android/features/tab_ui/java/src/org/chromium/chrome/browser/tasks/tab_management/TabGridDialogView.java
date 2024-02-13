@@ -14,6 +14,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -34,6 +35,7 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -813,7 +815,13 @@ public class TabGridDialogView extends FrameLayout {
         mDialogContainerView.addView(toolbarView);
         mDialogContainerView.addView(recyclerView);
         mDialogContainerView.addView(mUngroupBar);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID)) {
+            // Add the data sharing bottom toolbar view.
+            LayoutInflater inflater = LayoutInflater.from(mDialogContainerView.getContext());
+            inflater.inflate(R.layout.data_sharing_group_bar, mDialogContainerView, true);
+        }
         mDialogContainerView.addView(mSnackBarContainer);
+
         RelativeLayout.LayoutParams params =
                 (RelativeLayout.LayoutParams) recyclerView.getLayoutParams();
         params.setMargins(0, mToolbarHeight, 0, 0);
