@@ -7572,7 +7572,7 @@ static_library("browser") {
       "//chrome/browser/pdf:pdf_pref_names",
       "//components/pdf/browser",
       "//components/pdf/browser:interceptors",
-      "//components/pdf/common",
+      "//components/pdf/common:constants",
       "//extensions/common/api",
       "//pdf:buildflags",
       "//pdf:features",

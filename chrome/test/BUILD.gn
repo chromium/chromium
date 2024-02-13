@@ -3099,7 +3099,7 @@ if (!is_android) {
         "../browser/pdf",
         "../browser/pdf:pdf_extension_test_utils",
         "//components/pdf/browser",
-        "//components/pdf/common",
+        "//components/pdf/common:constants",
         "//pdf:features",
         "//pdf/loader",
       ]

@@ -6,9 +6,6 @@ import("//pdf/features.gni")
 
 assert(enable_pdf)
 
-static_library("common") {
-  sources = [
-    "internal_plugin_helpers.cc",
-    "internal_plugin_helpers.h",
-  ]
+source_set("constants") {
+  sources = [ "constants.h" ]
 }

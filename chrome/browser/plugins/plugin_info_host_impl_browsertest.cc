@@ -46,7 +46,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/common/pdf_util.h"
-#include "components/pdf/common/internal_plugin_helpers.h"
+#include "components/pdf/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {

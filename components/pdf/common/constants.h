@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PDF_COMMON_INTERNAL_PLUGIN_HELPERS_H_
-#define COMPONENTS_PDF_COMMON_INTERNAL_PLUGIN_HELPERS_H_
+#ifndef COMPONENTS_PDF_COMMON_CONSTANTS_H_
+#define COMPONENTS_PDF_COMMON_CONSTANTS_H_
 
 namespace pdf {
 
 // MIME type of the internal PDF plugin.
-extern const char kInternalPluginMimeType[];
+inline constexpr char kInternalPluginMimeType[] =
+    "application/x-google-chrome-pdf";
 
 }  // namespace pdf
 
-#endif  // COMPONENTS_PDF_COMMON_INTERNAL_PLUGIN_HELPERS_H_
+#endif  // COMPONENTS_PDF_COMMON_CONSTANTS_H_

@@ -292,7 +292,7 @@ static_library("renderer") {
     ]
 
     deps += [
-      "//components/pdf/common",
+      "//components/pdf/common:constants",
       "//components/pdf/renderer",
       "//pdf:features",
     ]

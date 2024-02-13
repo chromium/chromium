@@ -274,7 +274,7 @@ static_library("common_lib") {
   }
 
   if (enable_pdf) {
-    deps += [ "//components/pdf/common" ]
+    deps += [ "//components/pdf/common:constants" ]
   }
 
   if (enable_ppapi) {
