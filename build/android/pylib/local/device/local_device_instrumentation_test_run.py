@@ -861,7 +861,6 @@ class LocalDeviceInstrumentationTestRun(
       timeout = min(MAX_BATCH_TEST_TIMEOUT,
                     FIXED_TEST_TIMEOUT_OVERHEAD + sum(timeouts))
     else:
-      assert test['is_junit4']
       test_name = instrumentation_test_instance.GetTestName(test)
       test_display_name = self._GetUniqueTestName(test)
 

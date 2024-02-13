@@ -84,9 +84,6 @@ class TestListPickleException(test_exception.TestException):
   pass
 
 
-# TODO(jbudorick): Make these private class methods of
-# InstrumentationTestInstance once the instrumentation junit3_runner_class is
-# deprecated.
 def ParseAmInstrumentRawOutput(raw_output):
   """Parses the output of an |am instrument -r| call.
 
@@ -285,13 +282,12 @@ def FilterTests(tests,
     unique_test_name = GetUniqueTestName(test, sep='.')
     test_names.add(unique_test_name)
 
-    if test['is_junit4']:
-      junit4_test_name = GetTestNameWithoutParameterPostfix(test, sep='.')
-      test_names.add(junit4_test_name)
+    junit4_test_name = GetTestNameWithoutParameterSuffix(test, sep='.')
+    test_names.add(junit4_test_name)
 
-      unqualified_junit4_test_name = \
-        GetTestNameWithoutParameterPostfix(unqualified_class_test, sep='.')
-      test_names.add(unqualified_junit4_test_name)
+    unqualified_junit4_test_name = GetTestNameWithoutParameterSuffix(
+        unqualified_class_test, sep='.')
+    test_names.add(unqualified_junit4_test_name)
     return test_names
 
   def get_tests_from_names(tests, test_names, tests_to_names):
@@ -504,14 +500,6 @@ def SaveTestsToPickle(pickle_path, tests):
     pickle.dump(pickle_data, pickle_file)
 
 
-class MissingJUnit4RunnerException(test_exception.TestException):
-  """Raised when JUnit4 runner is not provided or specified in apk manifest"""
-
-  def __init__(self):
-    super().__init__(
-        'JUnit4 runner is not provided or specified in test apk manifest.')
-
-
 def GetTestName(test, sep='#'):
   """Gets the name of the given test.
 
@@ -531,9 +519,8 @@ def GetTestName(test, sep='#'):
   return test_name
 
 
-def GetTestNameWithoutParameterPostfix(
-      test, sep='#', parameterization_sep='__'):
-  """Gets the name of the given JUnit4 test without parameter postfix.
+def GetTestNameWithoutParameterSuffix(test, sep='#', parameterization_sep='__'):
+  """Gets the name of the given JUnit4 test without parameter suffix.
 
   For most WebView JUnit4 javatests, each test is parameterizatized with
   "__sandboxed_mode" to run in both non-sandboxed mode and sandboxed mode.
@@ -544,10 +531,10 @@ def GetTestNameWithoutParameterPostfix(
   Args:
     test: the instrumentation test dict.
     sep: the character(s) that should join the class name and the method name.
-    parameterization_sep: the character(s) that seperate method name and method
-                          parameterization postfix.
+    parameterization_sep: the character(s) that separate method name and method
+                          parameterization suffix.
   Returns:
-    The test name without parameter postfix as a string.
+    The test name without parameter suffix as a string.
   """
   name = GetTestName(test, sep=sep)
   return name.split(parameterization_sep)[0]
@@ -597,7 +584,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     self._test_apk_as_instant = False
     self._test_apk_incremental_install_json = None
     self._test_package = None
-    self._junit3_runner_class = None
     self._junit4_runner_class = None
     self._junit4_runner_supports_listing = None
     self._test_support_apk = None
@@ -728,25 +714,12 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._test_package = self._test_apk.GetPackageName()
     all_instrumentations = self._test_apk.GetAllInstrumentations()
-    all_junit3_runner_classes = [
-        x for x in all_instrumentations if ('0xffffffff' in x.get(
-            'chromium-junit3', ''))]
-    all_junit4_runner_classes = [
-        x for x in all_instrumentations if ('0xffffffff' not in x.get(
-            'chromium-junit3', ''))]
 
-    if len(all_junit3_runner_classes) > 1:
-      logging.warning('This test apk has more than one JUnit3 instrumentation')
-    if len(all_junit4_runner_classes) > 1:
-      logging.warning('This test apk has more than one JUnit4 instrumentation')
+    if len(all_instrumentations) > 1:
+      logging.warning('This test apk has more than one instrumentation')
 
-    self._junit3_runner_class = (
-      all_junit3_runner_classes[0]['android:name']
-      if all_junit3_runner_classes else self.test_apk.GetInstrumentationName())
-
-    self._junit4_runner_class = (
-      all_junit4_runner_classes[0]['android:name']
-      if all_junit4_runner_classes else None)
+    self._junit4_runner_class = (all_instrumentations[0]['android:name']
+                                 if all_instrumentations else None)
 
     if self._junit4_runner_class:
       if self._test_apk_incremental_install_json:
@@ -968,10 +941,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     return self._is_unit_test
 
   @property
-  def junit3_runner_class(self):
-    return self._junit3_runner_class
-
-  @property
   def junit4_runner_class(self):
     return self._junit4_runner_class
 
@@ -1142,9 +1111,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   def ProcessRawTests(self, raw_tests):
     inflated_tests = self._ParameterizeTestsWithFlags(
         self._InflateTests(raw_tests))
-    if self._junit4_runner_class is None and any(
-        t['is_junit4'] for t in inflated_tests):
-      raise MissingJUnit4RunnerException()
     filtered_tests = FilterTests(inflated_tests, self._test_filters,
                                  self._annotations, self._excluded_annotations)
     if self._test_filters and not filtered_tests:
@@ -1170,8 +1136,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
             'class': c['class'],
             'method': m['method'],
             'annotations': a,
-            # TODO(https://crbug.com/1084729): Remove is_junit4.
-            'is_junit4': True
         })
     return inflated_tests
 

@@ -4,12 +4,16 @@
 
 package org.chromium.base.test;
 
+import android.os.Bundle;
+
+import androidx.test.InstrumentationRegistry;
 import androidx.test.internal.runner.listener.InstrumentationRunListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.runner.Description;
+import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
 
@@ -18,6 +22,7 @@ import org.chromium.base.Log;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
@@ -26,17 +31,17 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /** A RunListener that list out all the test information into a json file. */
 public class TestListInstrumentationRunListener extends InstrumentationRunListener {
     private static final String TAG = "TestListRunListener";
+    private static final String LIST_ALL_TESTS_FLAG =
+            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.TestList";
+
     private static final Set<String> SKIP_METHODS =
-            new HashSet<>(
-                    Arrays.asList(
-                            new String[] {"toString", "hashCode", "annotationType", "equals"}));
+            Set.of("toString", "hashCode", "annotationType", "equals");
 
     private final Map<Class<?>, JSONObject> mTestClassJsonMap = new HashMap<>();
     private Failure mFirstFailure;
@@ -82,11 +87,8 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
                         + desc.getTestClass());
     }
 
-    /**
-     * Create a JSONArray with all the test class JSONObjects and save it to
-     * listed output path.
-     */
-    public void saveTestsToJson(String outputPath) throws IOException {
+    /** Create a JSONArray with all the test class JSONObjects and save it to listed output path. */
+    private void saveTestsToJson(String outputPath) {
         if (mFirstFailure != null) {
             throw new RuntimeException(
                     "Failed on " + mFirstFailure.getDescription(), mFirstFailure.getException());
@@ -97,7 +99,7 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
             writer.write(allTestClassesJSON.toString());
         } catch (IOException e) {
             Log.e(TAG, "failed to write json to file", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -185,5 +187,11 @@ public class TestListInstrumentationRunListener extends InstrumentationRunListen
                 return obj;
             }
         }
+    }
+
+    @Override
+    public void instrumentationRunFinished(
+            PrintStream streamResult, Bundle resultBundle, Result junitResults) {
+        saveTestsToJson(InstrumentationRegistry.getArguments().getString(LIST_ALL_TESTS_FLAG));
     }
 }

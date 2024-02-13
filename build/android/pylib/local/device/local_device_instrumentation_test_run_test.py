@@ -34,7 +34,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         'annotations': {},
         'class': 'SadTest',
         'method': 'testFailure',
-        'is_junit4': True,
     }
     result = base_test_result.BaseTestResult(
         'SadTest.testFailure', base_test_result.ResultType.FAIL)
@@ -45,7 +44,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         'annotations': {'RetryOnFailure': None},
         'class': 'SadTest',
         'method': 'testRetryOnFailure',
-        'is_junit4': True,
     }
     result = base_test_result.BaseTestResult(
         'SadTest.testRetryOnFailure', base_test_result.ResultType.FAIL)
@@ -56,7 +54,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         'annotations': {},
         'class': 'SadTest',
         'method': 'testNotRun',
-        'is_junit4': True,
     }
     result = base_test_result.BaseTestResult(
         'SadTest.testNotRun', base_test_result.ResultType.NOTRUN)
@@ -71,7 +68,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         },
         'class': 'WPRDummyTest',
         'method': 'testRun',
-        'is_junit4': True,
     }
     self.assertTrue(
         local_device_instrumentation_test_run._IsWPRRecordReplayTest(test))
@@ -85,7 +81,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         },
         'class': 'WPRDummyTest',
         'method': 'testRun',
-        'is_junit4': True,
     }
     self.assertFalse(
         local_device_instrumentation_test_run._IsWPRRecordReplayTest(test))
@@ -99,7 +94,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         },
         'class': 'WPRDummyTest',
         'method': 'testRun',
-        'is_junit4': True,
     }
     self.assertEqual(
         local_device_instrumentation_test_run._GetWPRArchivePath(test), 'abc')
@@ -113,7 +107,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         },
         'class': 'WPRDummyTest',
         'method': 'testRun',
-        'is_junit4': True,
     }
     self.assertFalse(
         local_device_instrumentation_test_run._GetWPRArchivePath(test))
@@ -127,7 +120,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         },
         'class': 'DummyTest',
         'method': 'testRun',
-        'is_junit4': True,
     }
     self.assertTrue(local_device_instrumentation_test_run._IsRenderTest(test))
 
@@ -140,7 +132,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         },
         'class': 'DummyTest',
         'method': 'testRun',
-        'is_junit4': True,
     }
     self.assertFalse(local_device_instrumentation_test_run._IsRenderTest(test))
 
