@@ -12,7 +12,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.components.autofill.AddressNormalizer;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.SubKeyRequester;
@@ -277,20 +276,6 @@ public class AutofillTestHelper {
     public long getDateNDaysAgoForTesting(final int days) {
         return runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getDateNDaysAgoForTesting(days));
-    }
-
-    public Iban getIban(final String guid) {
-        return runOnUiThreadBlockingNoException(
-                () -> PersonalDataManager.getInstance().getIban(guid));
-    }
-
-    public String addOrUpdateLocalIban(final Iban iban) throws TimeoutException {
-        int callCount = mOnPersonalDataChangedHelper.getCallCount();
-        String guid =
-                runOnUiThreadBlockingNoException(
-                        () -> PersonalDataManager.getInstance().addOrUpdateLocalIban(iban));
-        mOnPersonalDataChangedHelper.waitForCallback(callCount);
-        return guid;
     }
 
     /**

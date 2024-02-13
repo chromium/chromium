@@ -170,7 +170,6 @@ java_cpp_enum("autofill_core_browser_java_enums") {
     "../core/browser/data_model/autofill_profile.h",
     "../core/browser/data_model/autofill_structured_address_component.h",
     "../core/browser/data_model/credit_card.h",
-    "../core/browser/data_model/iban.h",
     "../core/browser/field_types.h",
     "../core/browser/metrics/payments/mandatory_reauth_metrics.h",
     "../core/browser/metrics/payments/virtual_card_enrollment_metrics.h",

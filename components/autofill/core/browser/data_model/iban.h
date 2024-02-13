@@ -22,9 +22,6 @@ class Iban : public AutofillDataModel {
   using Guid = base::StrongAlias<class GuidTag, std::string>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, int64_t>;
 
-  // A java IntDef@ is generated from this.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IbanRecordType
   enum RecordType {
     // An IBAN extracted from a submitted form, whose record type is currently
     // unknown or irrelevant.
