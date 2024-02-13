@@ -391,7 +391,9 @@ HRESULT NetworkFetcher::ReadData() {
 void NetworkFetcher::ReadDataComplete(size_t num_bytes_read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   read_buffer_.resize(num_bytes_read);
-  write_data_callback_.Run();
+  if (write_data_callback_) {
+    write_data_callback_.Run();
+  }
 }
 
 void NetworkFetcher::RequestError(DWORD error) {
